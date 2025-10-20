@@ -10,6 +10,9 @@
     <string name="terms_of_service_url" translatable="false">https://threema.com/tos/?lang=%1$s&amp;version=%2$s&amp;theme=%3$s&amp;platform=android</string>
     <string name="eula_url" translatable="false">https://threema.com/eula/?lang=%1$s&amp;version=%2$s&amp;theme=%3$s&amp;platform=android</string>
     <string name="support_url" translatable="false">https://threema.com/android/support/</string>
+    <!-- The marketing name of the remote secret feature -->
+    <string name="remote_secret" translatable="false">DualLock</string>
+    <string name="remote_secret_learn_more_url" translatable="false">https://threema.com/faq/duallock</string>
     <string name="threema_safe" translatable="false">Threema Safe</string>
     <string name="safe_enter_server_address_explain" translatable="false">server.example.com</string>
     <string name="lp_map_copyright" translatable="false">© Threema © MapTiler © OpenStreetMap contributors</string>

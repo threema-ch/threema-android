@@ -85,7 +85,7 @@ class GroupCreateTask(
             MdD2D.TransactionScope.Scope.GROUP_SYNC,
             TRANSACTION_TTL_MAX,
             precondition = {
-                groupModelRepository.getByGroupIdentity(groupIdentity)?.data?.value?.let { it.isMember && it.otherMembers.isNotEmpty() } == true
+                groupModelRepository.getByGroupIdentity(groupIdentity)?.data?.let { it.isMember && it.otherMembers.isNotEmpty() } == true
             },
         ).execute {
             executeActiveGroupUpdate(handle)
@@ -94,7 +94,7 @@ class GroupCreateTask(
 
     private suspend fun executeActiveGroupUpdate(handle: ActiveTaskCodec) {
         val groupModel = groupModelRepository.getByGroupIdentity(groupIdentity)
-        val groupModelData = groupModel?.data?.value ?: run {
+        val groupModelData = groupModel?.data ?: run {
             logger.warn("Group sync race occurred: Group model does not exist")
             return
         }
@@ -124,7 +124,7 @@ class GroupCreateTask(
             is SetProfilePicture -> {
                 if (persistedGroupAvatar == null) {
                     logger.warn("Group sync race occurred: No group avatar is persisted")
-                } else if (!persistedGroupAvatar.contentEquals(profilePictureChange.profilePicture)) {
+                } else if (!persistedGroupAvatar.contentEquals(profilePictureChange.profilePicture.profilePictureBytes)) {
                     logger.warn("Group sync race occurred: Different group avatar is persisted")
                 }
             }

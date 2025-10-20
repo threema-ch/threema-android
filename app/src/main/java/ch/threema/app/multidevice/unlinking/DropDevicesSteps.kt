@@ -120,7 +120,6 @@ private suspend fun dropDevices(
             keys = multiDeviceProperties.keys,
             scope = TransactionScope.Scope.DROP_DEVICE,
             ttl = TRANSACTION_TTL_MAX,
-            precondition = null,
         ).execute {
             val thisDeviceId = multiDeviceProperties.mediatorDeviceId
 

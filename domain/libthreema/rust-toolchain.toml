@@ -1,3 +1,6 @@
 [toolchain]
-# Keep this in sync with `_RUST_VERSION` in `.devcontainer/env.sh`!
-channel = "1.85"
+# When changing this, do the following:
+#
+# - update the MSRV in `.clippy.toml`
+# - increase the `image` version in `./.devcontainer.json` and `.gitlab-ci.yml`
+channel = "1.89"

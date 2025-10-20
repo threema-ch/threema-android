@@ -1,20 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ch.threema.app.ui.CheckableRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/listitem_background_selector"
     android:descendantFocusability="blocksDescendants"
     android:minHeight="18dp"
     android:orientation="vertical"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp">
+    android:paddingHorizontal="@dimen/grid_unit_x1">
 
     <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:duplicateParentState="true">
 
@@ -23,9 +21,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:padding="0dp"
+            android:clickable="false"
             android:duplicateParentState="true"
-            android:clickable="false" />
+            android:padding="0dp" />
 
         <com.google.android.material.radiobutton.MaterialRadioButton
             android:id="@+id/choice_radio"
@@ -33,12 +31,12 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/choice_checkbox"
-            android:duplicateParentState="true"
-            android:clickable="false" />
+            android:clickable="false"
+            android:duplicateParentState="true" />
 
         <ch.threema.app.emojis.EmojiConversationTextView
-            style="@style/Threema.TextAppearance.BodyLarge"
             android:id="@+id/choice_name"
+            style="@style/Threema.MaterialAlertDialog.Body.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignWithParentIfMissing="true"
@@ -47,19 +45,20 @@
             android:layout_marginTop="5dip"
             android:layout_toLeftOf="@+id/vote_count"
             android:layout_toRightOf="@id/choice_radio"
-            android:text="Name"
-            android:textColor="?attr/colorOnBackground" />
+            android:textColor="?attr/colorOnBackground"
+            tools:text="Option Name" />
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Threema.MaterialButton.CountView"
             android:id="@+id/vote_count"
+            style="@style/Threema.MaterialButton.CountView"
             android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginLeft="8dp"
-            android:layout_marginRight="8dp"
-            app:backgroundTint="?attr/colorPrimary" />
+            android:layout_marginHorizontal="@dimen/grid_unit_x1"
+            android:textColor="?attr/colorOnPrimary"
+            app:backgroundTint="?attr/colorPrimary"
+            tools:text="25" />
 
     </RelativeLayout>
 </ch.threema.app.ui.CheckableRelativeLayout>

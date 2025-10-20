@@ -65,7 +65,7 @@ suspend fun runActiveGroupStateResyncSteps(
         return
     }
 
-    val groupModelData = groupModel.data.value ?: run {
+    val groupModelData = groupModel.data ?: run {
         logger.error("Cannot run active group state resync steps for deleted group")
         return
     }

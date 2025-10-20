@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import ch.threema.app.R
@@ -53,22 +54,30 @@ import ch.threema.storage.models.DistributionListModel
 import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.ReceiverModel
 import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 
 @Composable
 fun AvatarAsync(
     modifier: Modifier = Modifier,
-    avatarCacheService: AvatarCacheService,
     receiverModel: ReceiverModel,
     contentDescription: String?,
     @DrawableRes fallbackIcon: Int,
     showWorkBadge: Boolean,
 ) {
+    // Fallback composable for compose previews
+    if (LocalInspectionMode.current) {
+        PreviewFallback(receiverModel, showWorkBadge)
+        return
+    }
+
+    val avatarCacheService = koinInject<AvatarCacheService>()
+
     var avatarBitmap: ImageBitmap? by remember { mutableStateOf(null) }
 
     LaunchedEffect(Unit) {
         launch {
             avatarBitmap = when (receiverModel) {
-                is ContactModel -> avatarCacheService.getContactAvatar(receiverModel, AvatarOptions.PRESET_DEFAULT_FALLBACK)
+                is ContactModel -> avatarCacheService.getIdentityAvatar(receiverModel.identity, AvatarOptions.PRESET_DEFAULT_FALLBACK)
                 is GroupModel -> avatarCacheService.getGroupAvatar(receiverModel, AvatarOptions.PRESET_DEFAULT_FALLBACK)
                 is DistributionListModel -> avatarCacheService.getDistributionListAvatarLow(receiverModel)
                 else -> null
@@ -129,9 +138,26 @@ fun Avatar(
     }
 }
 
+@Composable
+private fun PreviewFallback(
+    receiverModel: ReceiverModel,
+    showWorkBadge: Boolean,
+) {
+    Avatar(
+        avatar = null,
+        contentDescription = null,
+        fallbackIcon = when (receiverModel) {
+            is GroupModel -> R.drawable.ic_group
+            is DistributionListModel -> R.drawable.ic_distribution_list
+            else -> R.drawable.ic_contact
+        },
+        showWorkBadge = showWorkBadge,
+    )
+}
+
 @Preview
 @Composable
-private fun Avatar_Preview() {
+private fun AvatarAsync_Preview() {
     ThreemaThemePreview {
         Avatar(
             avatar = null,

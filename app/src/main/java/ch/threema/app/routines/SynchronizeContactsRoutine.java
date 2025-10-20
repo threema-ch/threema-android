@@ -71,8 +71,9 @@ import ch.threema.domain.models.TypingIndicatorPolicy;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.models.WorkVerificationLevel;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
+import ch.threema.data.datatypes.IdColor;
 
 public class SynchronizeContactsRoutine implements Runnable {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsRoutine");
@@ -88,12 +89,11 @@ public class SynchronizeContactsRoutine implements Runnable {
     private final ExcludedSyncIdentitiesService excludedSyncIdentitiesService;
     private final DeviceService deviceService;
     private final PreferenceService preferenceService;
-    private final IdentityStoreInterface identityStore;
+    private final IdentityStore identityStore;
     private final BlockedIdentitiesService blockedIdentitiesService;
 
     private OnStatusUpdate onStatusUpdate;
     private final List<OnFinished> onFinished = new ArrayList<>();
-    private final List<OnStarted> onStarted = new ArrayList<>();
 
     @NonNull
     private final Set<String> processingIdentities;
@@ -101,17 +101,11 @@ public class SynchronizeContactsRoutine implements Runnable {
     private boolean running = false;
 
     public interface OnStatusUpdate {
-        void newStatus(final long percent, final String message);
-
         void error(final Exception x);
     }
 
     public interface OnFinished {
         void finished(boolean success, long modifiedAccounts, List<ContactModel> createdContacts, long deletedAccounts);
-    }
-
-    public interface OnStarted {
-        void started(boolean fullSync);
     }
 
     public SynchronizeContactsRoutine(
@@ -125,7 +119,7 @@ public class SynchronizeContactsRoutine implements Runnable {
         @NonNull ExcludedSyncIdentitiesService excludedSyncIdentitiesService,
         DeviceService deviceService,
         PreferenceService preferenceService,
-        IdentityStoreInterface identityStore,
+        IdentityStore identityStore,
         BlockedIdentitiesService blockedIdentitiesService,
         @NonNull Set<String> processingIdentities
     ) {
@@ -171,10 +165,6 @@ public class SynchronizeContactsRoutine implements Runnable {
         }
 
         this.running = true;
-
-        for (OnStarted s : this.onStarted) {
-            s.started(this.isFullSync());
-        }
 
         boolean success = false;
 
@@ -289,7 +279,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 
                 //try to get the contact
                 ContactModel contact = contactModelRepository.getByIdentity(identity);
-                ContactModelData data = contact != null ? contact.getData().getValue() : null;
+                ContactModelData data = contact != null ? contact.getData() : null;
                 //contact does not exist, create a new one
                 if (contact == null || data == null) {
                     ContactModelData contactModelData = ContactModelData.javaCreate(
@@ -299,7 +289,7 @@ public class SynchronizeContactsRoutine implements Runnable {
                         "",
                         "",
                         null,
-                        ContactModelData.getIdColorIndexInt(identity),
+                        IdColor.ofIdentity(identity),
                         VerificationLevel.SERVER_VERIFIED,
                         WorkVerificationLevel.NONE,
                         IdentityType.NORMAL,   // TODO(ANDR-3044): Fetch identity type
@@ -326,7 +316,7 @@ public class SynchronizeContactsRoutine implements Runnable {
                         continue;
                     }
 
-                    data = contact.getData().getValue();
+                    data = contact.getData();
                     if (data == null) {
                         logger.error("Contact data is null");
                         continue;
@@ -448,11 +438,6 @@ public class SynchronizeContactsRoutine implements Runnable {
 
     public SynchronizeContactsRoutine addOnFinished(OnFinished onFinished) {
         this.onFinished.add(onFinished);
-        return this;
-    }
-
-    public SynchronizeContactsRoutine addOnStarted(OnStarted onStarted) {
-        this.onStarted.add(onStarted);
         return this;
     }
 

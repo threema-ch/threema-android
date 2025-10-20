@@ -44,7 +44,7 @@ public class DeadlineListServiceImpl implements DeadlineListService {
 
     @Override
     public void init() {
-        this.hashMap = preferenceService.getStringHashMap(this.uniqueListName, false);
+        this.hashMap = new HashMap<>(preferenceService.getStringMap(this.uniqueListName));
     }
 
     @Override
@@ -76,7 +76,7 @@ public class DeadlineListServiceImpl implements DeadlineListService {
             synchronized (this.lock) {
                 if (this.hashMap.containsKey(uid)) {
                     this.hashMap.remove(uid);
-                    this.preferenceService.setStringHashMap(this.uniqueListName, this.hashMap);
+                    preferenceService.setStringMap(uniqueListName, hashMap);
                 }
             }
         }
@@ -106,7 +106,7 @@ public class DeadlineListServiceImpl implements DeadlineListService {
     public void clear() {
         if (this.hashMap != null) {
             this.hashMap.clear();
-            this.preferenceService.setStringHashMap(this.uniqueListName, this.hashMap);
+            preferenceService.setStringMap(uniqueListName, hashMap);
         }
     }
 
@@ -115,7 +115,7 @@ public class DeadlineListServiceImpl implements DeadlineListService {
         if (this.hashMap != null && uid != null) {
             synchronized (this.lock) {
                 this.hashMap.put(uid, String.valueOf(timeout));
-                this.preferenceService.setStringHashMap(this.uniqueListName, this.hashMap);
+                preferenceService.setStringMap(uniqueListName, hashMap);
             }
         }
     }

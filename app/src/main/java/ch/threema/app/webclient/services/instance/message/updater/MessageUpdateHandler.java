@@ -219,16 +219,6 @@ public class MessageUpdateHandler extends MessageUpdater {
             this.dispatch(removedMessageModels, Protocol.ARGUMENT_MODE_REMOVED);
         }
 
-        @Override
-        public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {
-            // Ignore
-        }
-
-        @Override
-        public void onResendDismissed(@NonNull AbstractMessageModel messageModel) {
-            // Ignore
-        }
-
         private void dispatch(List<AbstractMessageModel> messages, @Mode String mode) {
             handler.post(new Runnable() {
                 @Override

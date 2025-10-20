@@ -25,7 +25,6 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.PowerManager;
 import android.text.format.DateUtils;
 
@@ -136,14 +135,9 @@ public class PollingHelper implements QueueSendCompleteListener {
                 // cancel pending alarms
                 alarmManager.cancel(pendingIntent);
 
+                // try again in two minutes
                 logger.info("Schedule another fetching attempt in two minutes");
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    // try again in two minutes
-                    alarmManager.setAndAllowWhileIdle(AlarmManager.RTC, System.currentTimeMillis() + timeout, pendingIntent);
-                } else {
-                    alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + timeout, pendingIntent);
-                }
+                alarmManager.setAndAllowWhileIdle(AlarmManager.RTC, System.currentTimeMillis() + timeout, pendingIntent);
 
                 // return false
                 connectionAcquired = false;

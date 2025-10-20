@@ -26,3 +26,5 @@ fun String.withoutLastLine(): String = dropLastWhile { it != '\n' }.dropLast(1)
 fun String.lastLine(): String = takeLastWhile { it != '\n' }
 
 fun String.takeUnlessEmpty(): String? = takeUnless { it.isEmpty() }
+
+fun String.takeUnlessBlank(): String? = takeUnless { it.isBlank() }

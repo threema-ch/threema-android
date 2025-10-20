@@ -24,7 +24,6 @@ package ch.threema.app.webclient.converter;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.os.Build;
 import android.provider.ContactsContract;
 
 import java.util.ArrayList;
@@ -126,9 +125,7 @@ public class Contact extends Converter {
         final MsgpackArrayBuilder emailBuilder = new MsgpackArrayBuilder();
 
         if (contact.isLinkedToAndroidContact()) {
-            //if android is older than version M or read contacts permission granted
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M
-                || ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
+            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED) {
                 final String lookupKey = contact.getAndroidContactLookupKey();
 
@@ -234,7 +231,8 @@ public class Contact extends Converter {
     @NonNull
     public static String getColor(ContactModel contact) throws ConversionException {
         try {
-            return String.format("#%06X", (0xFFFFFF & contact.getColorLight()));
+            int idColor = contact.getIdColor().getColorLight();
+            return String.format("#%06X", (0xFFFFFF & idColor));
         } catch (NullPointerException e) {
             throw new ConversionException(e);
         }

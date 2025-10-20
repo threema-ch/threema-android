@@ -48,11 +48,12 @@ import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.blob.BlobUploader
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
+import java.net.URL
 import java.util.Date
-import javax.net.ssl.HttpsURLConnection
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -112,7 +113,7 @@ class GroupCreateTaskTest {
             MUST_NOT_BE_CALLED()
         }
 
-        override fun createAvatarURLConnection(identity: String?): HttpsURLConnection {
+        override fun getAvatarURL(identity: Identity): URL {
             MUST_NOT_BE_CALLED()
         }
     }

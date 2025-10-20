@@ -28,7 +28,6 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -48,6 +47,7 @@ import com.neovisionaries.ws.client.WebSocketFrame;
 import com.neovisionaries.ws.client.WebSocketListener;
 import com.neovisionaries.ws.client.WebSocketState;
 
+import org.koin.java.KoinJavaComponent;
 import org.saltyrtc.client.helpers.UnsignedHelper;
 import org.saltyrtc.client.keystore.Box;
 import org.saltyrtc.client.nonce.SignalingChannelNonce;
@@ -86,27 +86,22 @@ import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.asynctasks.SendToSupportBackgroundTask;
 import ch.threema.app.asynctasks.SendToSupportResult;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.MessageService;
-import ch.threema.app.services.UserService;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.SSLUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.WebRTCUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.webclient.utils.DefaultNoopPeerConnectionObserver;
 import ch.threema.app.webclient.utils.DefaultNoopWebSocketListener;
 import ch.threema.app.webclient.webrtc.PeerConnectionWrapper;
-import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.ContactModel;
-import ch.threema.data.repositories.ContactModelRepository;
-import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.localcrypto.MasterKeyLockedException;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
@@ -125,9 +120,8 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
     private static final int WS_TEST_TIMEOUT_MS = WS_CONNECT_TIMEOUT_MS + 3000;
     private static final int RTC_TEST_TIMEOUT_MS = 12000;
 
-    // Threema services
-    @Nullable
-    private ContactService contactService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     // Views
     @Nullable
@@ -198,16 +192,8 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 
     @Override
     protected boolean initActivity(Bundle savedInstanceState) {
-        logger.trace("initActivity");
         if (!super.initActivity(savedInstanceState)) {
             return false;
-        }
-
-        // Initialize services
-        try {
-            this.contactService = this.serviceManager.getContactService();
-        } catch (MasterKeyLockedException e) {
-            logger.error("Could not initialize services", e);
         }
 
         // Get view references
@@ -326,43 +312,28 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 
     @SuppressLint("StaticFieldLeak")
     private void sendToSupport(@NonNull String caption) {
-        final MessageService messageService;
-        try {
-            messageService = serviceManager.getMessageService();
-        } catch (ThreemaException e) {
-            logger.error("Exception", e);
-            return;
-        }
-
-        if (this.contactService == null) {
-            return;
-        }
-
-        final UserService userService = serviceManager.getUserService();
-        final APIConnector apiConnector = serviceManager.getAPIConnector();
-        final ContactModelRepository contactModelRepository = serviceManager.getModelRepositories().getContacts();
         if (backgroundExecutor == null) {
             this.backgroundExecutor = new BackgroundExecutor();
         }
 
         backgroundExecutor.execute(new SendToSupportBackgroundTask(
-            userService.getIdentity(),
-            apiConnector,
-            contactModelRepository,
+            dependencies.getUserService().getIdentity(),
+            dependencies.getApiConnector(),
+            dependencies.getContactModelRepository(),
             this
         ) {
             @Override
             @NonNull
             public SendToSupportResult onSupportAvailable(@NonNull ContactModel contactModel) {
-                MessageReceiver<?> messageReceiver = contactService.createReceiver(contactModel);
+                MessageReceiver<?> messageReceiver = dependencies.getContactService().createReceiver(contactModel);
                 try {
-                    messageService.sendText(clipboardString +
+                    dependencies.getMessageService().sendText(clipboardString +
                         "\n---\n" +
                         caption +
                         "\n---\n" +
                         ConfigUtils.getSupportDeviceInfo() + "\n" +
                         "Threema " + ConfigUtils.getAppVersion() + "\n" +
-                        getMyIdentity(), messageReceiver);
+                        dependencies.getUserService().getIdentity(), messageReceiver);
                     finish();
                     return SendToSupportResult.SUCCESS;
                 } catch (Exception e) {
@@ -416,22 +387,18 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 
         this.addLogSeparator();
 
-        if (Build.VERSION.SDK_INT >= 21) { // Ignore Android 4
-            // Add available networks
-            final Network[] networks = connectivityManager.getAllNetworks();
-            this.addToLog("Networks (" + networks.length + "):", false);
-            for (Network network : networks) {
-                final NetworkInfo info = connectivityManager.getNetworkInfo(network);
-                final String typeName = info.getTypeName();
-                final String fullType = info.getSubtypeName().isEmpty() ? typeName : typeName + "/" + info.getSubtypeName();
-                final String detailedState = info.getDetailedState().toString();
-                final String failover = "failover=" + info.isFailover();
-                final String available = "available=" + info.isAvailable();
-                final String roaming = "roaming=" + info.isRoaming();
-                this.addToLog("- " + fullType + ", " + detailedState + ", " + failover + ", " + available + ", " + roaming, false);
-            }
-        } else {
-            this.addToLog("API level " + Build.VERSION.SDK_INT + ", ignoring network info");
+        // Add available networks
+        final Network[] networks = connectivityManager.getAllNetworks();
+        this.addToLog("Networks (" + networks.length + "):", false);
+        for (Network network : networks) {
+            final NetworkInfo info = connectivityManager.getNetworkInfo(network);
+            final String typeName = info.getTypeName();
+            final String fullType = info.getSubtypeName().isEmpty() ? typeName : typeName + "/" + info.getSubtypeName();
+            final String detailedState = info.getDetailedState().toString();
+            final String failover = "failover=" + info.isFailover();
+            final String available = "available=" + info.isAvailable();
+            final String roaming = "roaming=" + info.isRoaming();
+            this.addToLog("- " + fullType + ", " + detailedState + ", " + failover + ", " + available + ", " + roaming, false);
         }
 
         this.addLogSeparator();
@@ -518,9 +485,8 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
         // Get configuration
         // Note: Below needs to be kept in sync with how dual stack mode is applied to the
         //       SaltyRTC WebSocket code.
-        assert this.preferenceService != null;
         DualStackMode dualStackMode = DualStackMode.BOTH;
-        if (!this.preferenceService.allowWebrtcIpv6()) {
+        if (!dependencies.getPreferenceService().allowWebrtcIpv6()) {
             dualStackMode = DualStackMode.IPV4_ONLY;
         }
         this.addToLog("Setting: dualStackMode=" + dualStackMode.name());
@@ -531,7 +497,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
         try {
             this.ws = new WebSocketFactory()
                 .setConnectionTimeout(WS_CONNECT_TIMEOUT_MS)
-                .setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(WS_HOST))
+                .setSSLSocketFactory(SSLUtil.getSSLSocketFactory(WS_HOST))
                 .setVerifyHostname(true)
                 .setDualStackMode(dualStackMode)
                 .createSocket(url)
@@ -567,8 +533,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
         this.addToLog("Starting WebRTC tests");
 
         // Get configuration
-        assert this.preferenceService != null;
-        final boolean allowIpv6 = this.preferenceService.allowWebrtcIpv6();
+        final boolean allowIpv6 = dependencies.getPreferenceService().allowWebrtcIpv6();
         this.addToLog("Setting: allowWebrtcIpv6=" + allowIpv6);
 
         // Set up peer connection

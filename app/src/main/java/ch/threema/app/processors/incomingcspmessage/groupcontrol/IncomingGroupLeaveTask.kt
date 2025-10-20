@@ -32,6 +32,7 @@ import ch.threema.domain.models.BasicContact
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.domain.types.Identity
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingGroupLeaveTask")
 
@@ -65,7 +66,7 @@ class IncomingGroupLeaveTask(
         // Look up the group
         val groupModel = groupModelRepository.getByGroupIdentity(groupIdentity)
 
-        val groupModelData = groupModel?.data?.value
+        val groupModelData = groupModel?.data
 
         if (groupModelData == null || !groupModelData.isMember) {
             if (userService.identity == creatorIdentity) {
@@ -141,7 +142,7 @@ class IncomingGroupLeaveTask(
         return ReceiveStepsResult.DISCARD
     }
 
-    private fun fetchCreatorContact(identity: String): BasicContact? {
+    private fun fetchCreatorContact(identity: Identity): BasicContact? {
         // Fetch and cache the contact. Note that the contact is only fetched from the server if the
         // contact is not already known.
         contactService.fetchAndCacheContact(identity)
@@ -149,7 +150,7 @@ class IncomingGroupLeaveTask(
             // If the contact is unknown, it should be cached at this point.
             contactStore.getCachedContact(identity)
                 // If the contact is not cached, then this implies that the contact must be known.
-                ?: contactModelRepository.getByIdentity(identity)?.data?.value?.toBasicContact()
+                ?: contactModelRepository.getByIdentity(identity)?.data?.toBasicContact()
 
         return basicContact
     }

@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package app;
+
+option java_package = "ch.threema.protobuf";
+option java_multiple_files = true;
+
+message EncryptedDataWithNonceAhead {
+  bytes nonce = 1;
+  bytes data = 2;
+}

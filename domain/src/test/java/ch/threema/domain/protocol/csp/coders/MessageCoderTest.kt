@@ -21,6 +21,7 @@
 
 package ch.threema.domain.protocol.csp.coders
 
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.NonceScope
 import ch.threema.domain.helpers.InMemoryContactStore
 import ch.threema.domain.helpers.InMemoryIdentityStore
@@ -41,12 +42,11 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage
 import ch.threema.domain.stores.ContactStore
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.testhelpers.TestHelpers.noopContactStore
 import ch.threema.domain.testhelpers.TestHelpers.noopIdentityStore
 import ch.threema.domain.testhelpers.TestHelpers.noopNonceFactory
 import ch.threema.domain.testhelpers.TestHelpers.setMessageDefaultSenderAndReceiver
-import com.neilalexander.jnacl.NaCl
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -58,22 +58,22 @@ class MessageCoderTest {
 
     init {
 
-        val myPublicKey = ByteArray(NaCl.PUBLICKEYBYTES)
-        val myPrivateKey = ByteArray(NaCl.SECRETKEYBYTES)
-        val peerPublicKey = ByteArray(NaCl.PUBLICKEYBYTES)
-        val peerPrivateKey = ByteArray(NaCl.SECRETKEYBYTES)
+        val myPublicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES)
+        val myPrivateKey = ByteArray(NaCl.SECRET_KEY_BYTES)
+        val peerPublicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES)
+        val peerPrivateKey = ByteArray(NaCl.SECRET_KEY_BYTES)
 
-        NaCl.genkeypair(myPublicKey, myPrivateKey)
-        NaCl.genkeypair(peerPublicKey, peerPrivateKey)
+        NaCl.generateKeypairInPlace(myPublicKey, myPrivateKey)
+        NaCl.generateKeypairInPlace(peerPublicKey, peerPrivateKey)
 
-        val myIdentityStore: IdentityStoreInterface = InMemoryIdentityStore(
+        val myIdentityStore: IdentityStore = InMemoryIdentityStore(
             "01234567",
             null,
             myPrivateKey,
             "Me",
         )
 
-        val peerIdentityStore: IdentityStoreInterface = InMemoryIdentityStore(
+        val peerIdentityStore: IdentityStore = InMemoryIdentityStore(
             "0ABCDEFG",
             null,
             peerPrivateKey,
@@ -236,7 +236,7 @@ class MessageCoderTest {
     private fun encode(abstractMessage: AbstractMessage): MessageBox {
         abstractMessage.toIdentity = "0ABCDEFG"
         abstractMessage.fromIdentity = "01234567"
-        return encoder.encode(abstractMessage, ByteArray(NaCl.NONCEBYTES))
+        return encoder.encode(abstractMessage, ByteArray(NaCl.NONCE_BYTES))
     }
 
     private fun encodeAndDecode(abstractMessage: AbstractMessage): AbstractMessage =

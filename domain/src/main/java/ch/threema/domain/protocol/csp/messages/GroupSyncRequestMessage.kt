@@ -24,6 +24,7 @@ package ch.threema.domain.protocol.csp.messages
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.conversationOrNull
@@ -74,7 +75,7 @@ class GroupSyncRequestMessage : AbstractGroupMessage() {
         @Throws(BadMessageException::class)
         fun fromReflected(
             message: MdD2D.IncomingMessage,
-            myIdentity: String,
+            myIdentity: Identity,
         ): GroupSyncRequestMessage {
             val groupSyncRequestMessage = fromByteArray(message.body.toByteArray(), myIdentity)
             groupSyncRequestMessage.initializeCommonProperties(message)
@@ -93,7 +94,7 @@ class GroupSyncRequestMessage : AbstractGroupMessage() {
 
         @JvmStatic
         @Throws(BadMessageException::class)
-        fun fromByteArray(data: ByteArray, creatorIdentity: String): GroupSyncRequestMessage =
+        fun fromByteArray(data: ByteArray, creatorIdentity: Identity): GroupSyncRequestMessage =
             fromByteArray(
                 data = data,
                 offset = 0,
@@ -107,7 +108,7 @@ class GroupSyncRequestMessage : AbstractGroupMessage() {
             data: ByteArray,
             offset: Int,
             length: Int,
-            creatorIdentity: String,
+            creatorIdentity: Identity,
         ): GroupSyncRequestMessage {
             when {
                 length != ProtocolDefines.GROUP_ID_LEN -> throw BadMessageException("Bad length ($length) for group-sync-request message")

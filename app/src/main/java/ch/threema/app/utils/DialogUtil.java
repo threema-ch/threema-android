@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -39,7 +40,7 @@ import ch.threema.base.utils.LoggingUtil;
 public abstract class DialogUtil {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DialogUtil");
 
-    public static void dismissDialog(FragmentManager fragmentManager, String tag, boolean allowStateLoss) {
+    public static void dismissDialog(@Nullable FragmentManager fragmentManager, String tag, boolean allowStateLoss) {
         logger.debug("dismissDialog: {}", tag);
 
         if (fragmentManager == null) {

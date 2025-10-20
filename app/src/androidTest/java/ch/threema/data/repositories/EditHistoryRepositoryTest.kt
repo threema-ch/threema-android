@@ -53,10 +53,12 @@ class EditHistoryRepositoryTest {
         )
 
         databaseService = TestDatabaseService()
+        val serviceManager = ThreemaApplication.requireServiceManager()
         val testCoreServiceManager = TestCoreServiceManager(
             version = AppVersionProvider.appVersion,
             databaseService = databaseService,
-            preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
+            preferenceStore = serviceManager.preferenceStore,
+            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
             taskManager = TestTaskManager(UnusedTaskCodec()),
         )
         editHistoryRepository = ModelRepositories(testCoreServiceManager).editHistory

@@ -37,7 +37,6 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
@@ -46,6 +45,7 @@ import ch.threema.domain.protocol.api.work.WorkDirectory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 import ch.threema.domain.protocol.api.work.WorkDirectoryFilter;
+import ch.threema.domain.stores.IdentityStore;
 
 public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, WorkDirectoryContact> {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DirectoryDataSource");

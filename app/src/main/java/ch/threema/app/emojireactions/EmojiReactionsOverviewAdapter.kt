@@ -32,6 +32,7 @@ import ch.threema.storage.models.AbstractMessageModel
 import kotlin.collections.eachCount
 import kotlin.collections.groupingBy
 import kotlin.collections.sortedByDescending
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 
 class EmojiReactionsOverviewAdapter(
@@ -45,10 +46,10 @@ class EmojiReactionsOverviewAdapter(
     init {
         fragmentActivity.lifecycleScope.launch {
             fragmentActivity.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.emojiReactionsUiState.collect { uiState ->
+                viewModel.viewState.filterNotNull().collect { viewState ->
                     items.clear()
                     val reactions: MutableList<EmojiReactionData> =
-                        uiState.emojiReactions.toMutableList()
+                        viewState.emojiReactions.toMutableList()
                     if (reactions.isNotEmpty()) {
                         val sortedList = reactions.groupingBy { it.emojiSequence }
                             .eachCount()

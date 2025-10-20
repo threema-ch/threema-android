@@ -22,7 +22,7 @@
 package ch.threema.app.rating
 
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.base.utils.Utils
+import ch.threema.common.toHexString
 import java.security.SecureRandom
 
 class RatingReferenceProvider
@@ -43,6 +43,6 @@ constructor(
     private fun generateRatingReference(): String {
         val ratingRef = ByteArray(32)
         secureRandom.nextBytes(ratingRef)
-        return Utils.byteArrayToHexString(ratingRef)
+        return ratingRef.toHexString()
     }
 }

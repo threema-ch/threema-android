@@ -21,15 +21,13 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.DistributionListMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import androidx.annotation.NonNull;
+
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 /**
  * Create forwardSecurityMode field in group and distribution list message model.
@@ -37,21 +35,22 @@ import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
 public class DatabaseUpdateToVersion74 implements DatabaseUpdate {
     public static final int VERSION = 74;
 
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion74(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion74(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 
     @Override
     public void run() throws SQLException {
-        if (!fieldExists(this.sqLiteDatabase, GroupMessageModel.TABLE, AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE)) {
-            sqLiteDatabase.rawExecSQL("ALTER TABLE " + GroupMessageModel.TABLE + " ADD COLUMN " +
-                AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE + " TINYINT DEFAULT 0");
+        if (!fieldExists(this.sqLiteDatabase, "m_group_message", "forwardSecurityMode")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE m_group_message ADD COLUMN " +
+                "forwardSecurityMode TINYINT DEFAULT 0");
         }
-        if (!fieldExists(this.sqLiteDatabase, DistributionListMessageModel.TABLE, AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE)) {
-            sqLiteDatabase.rawExecSQL("ALTER TABLE " + DistributionListMessageModel.TABLE + " ADD COLUMN " +
-                AbstractMessageModel.COLUMN_FORWARD_SECURITY_MODE + " TINYINT DEFAULT 0");
+        if (!fieldExists(this.sqLiteDatabase, "distribution_list_message", "forwardSecurityMode")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE distribution_list_message ADD COLUMN " +
+                "forwardSecurityMode TINYINT DEFAULT 0");
         }
     }
 

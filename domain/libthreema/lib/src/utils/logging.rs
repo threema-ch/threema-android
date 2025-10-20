@@ -1,8 +1,8 @@
 //! Logging-related utilities
-#[cfg(feature = "cli")]
+#[cfg(any(test, feature = "cli"))]
 use tracing::level_filters::LevelFilter;
 
-#[cfg(feature = "cli")]
+#[cfg(any(test, feature = "cli"))]
 /// Initialise basic stderr logging with the provided level filter.
 ///
 /// # Panics

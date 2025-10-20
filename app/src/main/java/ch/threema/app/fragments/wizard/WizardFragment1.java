@@ -159,13 +159,13 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
         }
 
         @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(@NonNull Editable editable) {
             boolean passwordOk = getPasswordOK(password1.getText().toString(), password2.getText().toString());
 
             OnSettingsChangedListener listener = (WizardFragment1.OnSettingsChangedListener) getActivity();
             if (listener != null) {
                 if (passwordOk) {
-                    listener.onSafePasswordSet(s.toString());
+                    listener.onSafePasswordSet(editable.toString());
                 } else {
                     listener.onSafePasswordSet(null);
                 }

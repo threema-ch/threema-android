@@ -53,6 +53,11 @@ public interface SessionService {
     boolean isEnabled();
 
     /**
+     * Return whether or not there are currently running sessions.
+     */
+    boolean hasRunningSessions();
+
+    /**
      * Return a list of all sessions.
      */
     @NonNull

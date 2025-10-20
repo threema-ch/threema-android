@@ -31,7 +31,7 @@
             android:shadowRadius="3"
             android:text="@string/enable_storage_access_for_media"
             android:textAlignment="center"
-            android:textAppearance="@style/Threema.TextAppearance.Emptyview"
+            android:textAppearance="@style/Threema.TextAppearance.EmptyView"
             android:textColor="@android:color/white"
             app:layout_constraintBottom_toTopOf="@+id/permission_button"
             app:layout_constraintLeft_toLeftOf="parent"

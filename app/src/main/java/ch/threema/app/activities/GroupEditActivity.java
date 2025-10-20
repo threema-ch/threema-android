@@ -22,57 +22,21 @@
 package ch.threema.app.activities;
 
 import android.content.Intent;
-import android.os.Bundle;
 import android.text.InputType;
 
 import java.io.File;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.ContactEditDialog;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.ConversationCategoryService;
-import ch.threema.app.services.FileService;
-import ch.threema.app.services.GroupService;
-import ch.threema.app.services.UserService;
-import ch.threema.app.utils.LogUtil;
-import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.GroupModel;
 
 public abstract class GroupEditActivity extends ThreemaToolbarActivity {
     protected static final String DIALOG_TAG_GROUPNAME = "groupName";
 
-    protected ContactService contactService;
-    protected GroupService groupService;
-    protected @NonNull GroupModelRepository groupModelRepository;
-    protected UserService userService;
-    protected FileService fileService;
-    @Nullable
-    protected ConversationCategoryService conversationCategoryService;
-    private File avatarFile = null;
-    private boolean isAvatarRemoved = false;
-
     @Override
     protected void handleDeviceInsets() {
         // Prevent super method behaviour
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        try {
-            this.contactService = this.serviceManager.getContactService();
-            this.groupService = this.serviceManager.getGroupService();
-            this.groupModelRepository = this.serviceManager.getModelRepositories().getGroups();
-            this.userService = this.serviceManager.getUserService();
-            this.fileService = this.serviceManager.getFileService();
-            this.conversationCategoryService = this.serviceManager.getConversationCategoryService();
-        } catch (Exception e) {
-            LogUtil.exception(e, this);
-        }
     }
 
     protected void launchGroupSetNameAndAvatarDialog() {
@@ -82,8 +46,8 @@ public abstract class GroupEditActivity extends ThreemaToolbarActivity {
                 R.string.group_name,
                 -1,
                 inputType,
-                avatarFile,
-                isAvatarRemoved,
+                null,
+                false,
                 GroupModel.GROUP_NAME_MAX_LENGTH_BYTES)
             .show(getSupportFragmentManager(), DIALOG_TAG_GROUPNAME);
     }

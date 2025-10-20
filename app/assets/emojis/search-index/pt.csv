@@ -16,7 +16,7 @@
 ☔|acessório|chuva|clima|gotas|sombrinha|guarda-chuva com gotas de chuva|meteorologia
 ☕|café|cafeína|cafezinho|chá|inverno|quente|beber|bebida|vapor
 ☘️|irlanda|irlandês|planta|trevo de três folhas
-☠️|caveira e ossos cruzados|morte|ossos cruzados|pirata|cara|corpo|monstro
+☠️|morte|ossos cruzados|pirata|cara|caveira e ossos cruzados|corpo|monstro
 ☢️|perigo|radiação|radiativo|radioativo|símbolo|sinal
 ☣️|biológico|ciência|resíduos biológicos|risco|perigo biológico|símbolo|sinal
 ☦️|cristão|cruz ortodoxa|religião|ortodoxa
@@ -47,7 +47,7 @@
 ✔️|✓|check|feito|marca de seleção|marca de verificação simples|marcar|selecionar|verificação|marcado|visto
 ✖️|×|cancelar|multiplicação|multiplicar|sinal de multiplicação|x de multiplicação|x preto
 ✡️|judaico|judeu|religião|david|estrela de david|judaísmo
-✨|*|brilhos|estrelas brilhantes|faíscas|mágica|centelha|cintilação|magia
+✨|*|brilhantes|brilhos|faíscas|mágica|centelha|cintilação|estrelas brilhantes|magia
 ✳️|*|asterisco de oito pontas|estrela|asterisco com oito raios
 ✴️|*|estrela de oito pontas|oito pontas|estrela com oito pontas
 ❄️|clima|floco de neve|frio|neve|meteorologia
@@ -56,7 +56,7 @@
 ❔|?|delineado|interrogação|pergunta|ponto de interrogação branco|pontuação|sinal de interrogação branco
 ❕|!|delineado|exclamação|mark|ponto de exclamação branco|pontuação|sinal de exclamação branco
 ❗|!|exclamação|ponto de exclamação vermelho|pontuação
-❣️|amor|coração|exclamação de coração|exclamação em forma de coração|pontuação|s2|sinal|ponto de exclamação com coração
+❣️|amor|coração|exclamação|pontuação|s2|sinal|ponto de exclamação com coração
 ❤️|amor|coração vermelho|s2|emoção
 ➕|+|cruz|mais|matemática|símbolo de adição|sinal de maior|sinal de mais|somar|adição|sinal de adição
 ➖|-|−|diminuir|matemática|menos|símbolo de subtração|sinal de menos|travessão|sinal de subtração|subtração|subtracção
@@ -68,19 +68,19 @@
 ㊙️|segredo|alfabeto|botão japonês de segredo|ideográfico circular segredo|ideograma|japonês|秘|"segredo"|botão "segredo" em japonês
 😀|engraçado|feliz|lol|rindo|risada|riso|rosto risonho|sorridente|cara sorridente|dentes|sorriso
 😃|aberto|boca|feliz|olhos arregalados|risada|risonho|rosto sorrindo com boca aberta|sorridente|sorrindo|sorriso|aberta|cara sorridente com olhos bem abertos
-😄|aberta|boca|engraçado|feliz|lol|olhos|risada|risonho|rosto|sorridente|sorrindo|sorriso com olhos fechados|cara a sorrir com boca aberta e olhos sorridentes
+😄|aberta|boca|engraçado|feliz|haha|lol|risada|risonho|sorridente|sorriso|cara a sorrir com boca aberta e olhos sorridentes|olho
 😁|feliz|olhos sorrindo|rindo|rosto contente com olhos sorridentes|rosto rindo com olhos sorridentes|sorridente|sorrindo|sorriso aberto|cara sorridente com olhos sorridentes|dentes
 😆|gargalhada|gargalhando|hahaha|kkk|olhos fechados|rir|rosto risonho com olhos semicerrados|sorriso com olhos fechados|sorriso estilo xd|aberta|ahahah|boca|cara a sorrir com boca aberta e olhos bem fechados|feliz|riso|satisfação
 😅|estressada|estressado|nervoso|rindo|rosto risonho com gota de suor|sorriso com suor frio|sorriso mas com suor frio|suando frio|suor frio|aberta|cara a sorrir com boca aberta e suor|frio
-🤣|chão|chorando|choro|engraçada|engraçado|felicidade|feliz|gargalhada|hahaha|kkk|lágrimas|rindo|rir|risada|riso|rolando|rosto|a rebolar no chão a rir|cara|chorar a rir|cómico|hilariante|rebolar a rir
+🤣|chão|choro|engraçada|feliz|gargalhada|haha|kkk|lágrimas|rindo|rir|risada|rolando|a rebolar no chão a rir|cara|chorar a rir|cómico|hilariante|rebolar a rir
 😂|alegria|chorando de rir|engraçada|engraçado|gargalhada|hahaha|kkk|lágrimas de alegria|rosto chorando de rir|rosto com lágrimas de alegria|ahahah|cara com lágrimas de felicidade|chorar a rir|cómico|felicidade|hilariante|riso|sorriso
 🙂|feliz|rosto levemente sorridente|rosto sorrindo|sorriso leve|cara a sorrir ligeiramente|contente
 🙃|de cabeça para baixo|rosto de cabeça para baixo|rosto invertido|ao contrário|cara ao contrário|sorriso
-🫠|calor|derretendo|derreter|desaparecer|dissolver|envergonhada|envergonhado|haha|líquido|quente|rosto derretendo|sarcasmo|sarcástica|sarcástico|smiley|abrasador|cara a derreter|derretido|muito calor|muito quente
+🫠|calor|derretendo|derreter|desaparecer|dissolver|envergonhada|haha|quente|sarcasmo|sarcástica|vergonha|abrasador|cara a derreter|derretido|líquido|muito calor|muito quente
 😉|flerte|piscada|rosto com olho piscando|rosto piscando|cara a piscar o olho|piscadela
-😊|encabulada|encabulado|envergonhada|envergonhado|feliz|olhos sorrindo|rosado|rosto e olhos sorrindo|rosto sorridente com olhos sorridentes|rosto sorrindo|ruborizar|satisfeita|satisfeito|sorriso|vergonha|cara a sorrir com olhos sorridentes|corado
+😊|alegre|encabulada|envergonhada|feliz|fofo|ruborizar|satisfeita|sim|sorriso|vergonha|cara a sorrir com olhos sorridentes|corado|olho|satisfeito
 😇|anjinho|anjo|auréola|inocente|rosto sorridente com auréola|sorriso com auréola|cara a sorrir com auréola|fantasia
-🥰|amando|amei|amo você|amor|apaixonada|apaixonado|coração|crush|paixão|romance|rosto sorridente com 3 corações|rosto sorridente com corações|te amo|amo-te|cara sorridente com corações
+🥰|amando|amei|apaixonada|coração|crush|paixão|romance|rosto|sorridente|te amo|amo-te|amor|apaixonado|cara sorridente com corações
 😍|amor|apaixonado|coração|olhar apaixonado|olhos de coração|paixão|romance|rosto sorridente com olhos de coração|cara a sorrir com olhos em forma de coração|sorriso
 🤩|estrela|gargalhando|olhos|rosto com olhar maravilhado|super animada|super animado|super feliz|superanimada|superanimado|superfeliz|cara sorridente com estrelas nos olhos|entusiasmado
 😘|beijo|flerte|jogando beijos|mandando beijo|rosto jogando beijos|rosto mandando um beijo|cara a atirar um beijo|coração|flirt|namoriscar|romântico
@@ -88,32 +88,32 @@
 ☺️|corada|corado|relaxado|rosto sorrindo não preenchido|sorridente|sorriso|cara a sorrir|contorno
 😚|beijando com os olhos fechados|beijinho|mandando beijo|olhos fechados|rosto beijando com olhos fechados|beijo|cara a dar um beijo com olhos fechados|corado|fechado|flirt
 😙|beijar e sorrir|beijinho|beijos|flerte|mandando beijo|olhos sorrindo|rosto beijando com olhos sorridentes|rosto beijando com um sorriso|sorriso|amor|cara a dar um beijo com olhos sorridentes
-🥲|aliviada|aliviado|chorando|chorar|contente|emocionada|emocionado|felicidade|feliz|grata|gratidão|grato|lágrima|orgulhosa|orgulhoso|rir|sorrindo|sorriso|cara sorridente com lágrima|sorridente
+🥲|aliviada|chorar|contente|emocionado|felicidade|feliz|grata|gratidão|lágrima|orgulhosa|rir|sorrir|aliviado|cara sorridente com lágrima|grato|orgulhoso|sorridente
 😋|apetitoso|comida gostosa|delicioso|gostoso|nham|rosto com sorriso|rosto saboreando comida|saboroso|sorriso|cara a saborear uma refeição deliciosa|saborear
 😛|língua para fora|rosto com língua para fora|rosto mostrando a língua|cara com língua de fora
 😜|brincadeira|língua para fora com piscadela|piscadela|piscando e mostrando a língua|provocação|rosto piscando e com língua para fora|cara com língua de fora e olho a piscar|olho|piada
 🤪|cara de maluco|doida|doido|excêntrico|grande|louca|louco|olhar de maluco|pequeno|rosto bizarro|cara louca|olhos loucos
 😝|eca|horrível|língua para fora com os olhos fechados|olhos fechados|rosto com olhos semicerrados e língua para fora|cara com língua de fora e olhos bem fechados|sabor
-🤑|avarenta|avarento|caro|cifrão|dinheiro na boca|ganância|grana|rica|rico|riqueza|rosto com cifrões|boca|cara com cifrões
+🤑|avarenta|caro|cifrão|ganância|grana|rica|riqueza|boca|cara com cifrões|dinheiro na boca
 🤗|abraço|carinho|feliz|mãos abraçando|rosto abraçando|rosto sorrindo|abraçar|cara a dar um abraço
 🤭|hehe|ops|risadinha|risonho|rosto com a mão sobre a boca|sorriso envergonhado|vergonha|cara com mão na boca|risinho|surpresa|ups
-🫢|assustada|assustado|chocada|chocado|descrença|em choque|embaraçar|espanto|nossa|omg|passada|passado|quieta|quieto|rosto com olhos abertos e mão sobre a boca|surpresa|temor|cara com olhos abertos e mão sobre a boca|escandalizado|horrorizado|não posso acreditar
+🫢|assustada|chocada|descrença|em choque|espanto|nossa|omg|passada|quieta|surpresa|temor|assustado|cara com olhos abertos e mão sobre a boca|chocado|embaraçar|escandalizado|horrorizado|não posso acreditar
 🫣|cativada|cativado|envergonhada|envergonhado|esconder|espiadinha|espiando|espiar|olhar fixamente|rosto com olho espiando|smiley|tímida|tímido|vergonha|acanhado|cara com olho a espreitar|cara com olho tapado|espreitar
 🤫|faça silêncio|fica quieta|quieta|quieto|rosto fazendo sinal de silêncio|silêncio|cara de segredo|segredo
 🤔|curiosa|curioso|dúvida|hmm|ideias|mão no queixo|pensando|pensativa|pensativo|rosto|cara a pensar|queixo|refletir
-🫡|boa sorte|ensolarado|exército|ok|respeito|rosto saudando|saudação|sim senhora|smiley|tropas|bater continência|cara a saudar
+🫡|boa sorte|exército|ok|respeito|saudação|senhor|sim|bater continência|cara a saudar|ensolarado|tropas
 🤐|boca fechada|calada|calado|quieta|quieto|rosto com boca de zíper|segredo|zíper|cara com boca com fecho de correr|fecho de correr
 🤨|cética|ceticismo|cético|confusa|confuso|desconfiada|desconfiado|desconfiança|rosto com sobrancelha levantada|cara com sobrancelha levantada|sobrancelha levantada|surpreso
 😐|neutro|putz|rosto sem emoção|sem comentários|sem emoção|sem reação|cara|inexpressivo|neutra
 😑|aff|inespressiva|inespressivo|nada a dizer|rosto inexpressivo|sem comentários|sem expressão|tanto faz|cara sem expressão|inexpressivo|pouco convencido|pouco impressionado
 😶|calada|calado|quieto|rosto sem boca|sem boca|sem comentários|sem palavras|boca|cara sem boca|sem expressão|silencioso
-🫥|deprimida|deprimido|desaparecer|esconder|escondida|escondido|indiferença|introvertido|invisível|meh|rosto com linha pontilhada|smiley|tanto faz|cara com linha pontilhada
+🫥|deprimida|desaparecer|esconder|escondido|indiferença|introvertido|invisível|meh|tanto faz|cara com linha pontilhada|deprimido
 😶‍🌫️|cabeça nas nuvens|distraído|rosto nas nuvens|rosto no nevoeiro|cara nas nuvens|cara no nevoeiro
 😏|flerte|rosto com sorriso maroto|sorriso maldoso|sorriso malicioso|sorriso maroto|suspeito|cara com sorriso sarcástico|sorriso pretensioso
 😒|aff|blasé|nada engraçado|não achou graça|não está feliz|rosto aborrecido|rosto de que não achou graça|rosto de quem não achou graça|aborrecido|cara aborrecida|descontente
 🙄|olhando para cima|revirando os olhos|rolando os olhos|rosto com olhos revirados|tanto faz|virando os olhos|a revirar os olhos|cara com olhos revirados|olhos a revirar|revirar
 😬|fazendo careta|rosto expressando desagrado|rosto fazendo careta|sem graça|cara a fazer caretas|caretas|dentes|sorrir
-😮‍💨|alívio|assobio|assoprando|assopro|assovio|cansada|cansado|choque|exalar|exausta|exausto|fumaça|rosto exalando|suspirando|suspiro triste|arfar|cara a exalar|desmotivação|desmotivado|fumo|ofegar|soprar|sopro
+😮‍💨|alívio|assobio|assopro|cansaço|cansada|choque|exalar|exausta|fumaça|suspiro|triste|arfar|cara a exalar|desmotivação|desmotivado|exausto|fumo|ofegar|soprar|sopro
 🤥|mentindo|mentira|mentiroso|nariz crescendo|pinocchio|pinóquio|rosto de mentiroso|cara de mentiroso
 🫨|choque|louco|loucura|meu deus|pânico|rosto|surpresa|susto|terremoto|tremendo|vibração|vibrar|abanar|atordoamento|cara a abanar|desconcerto|espanto|terramoto
 🙂‍↔️|balançar|cabeça balançando na horizontal|cabeça virando de um lado para o outro|não|negar|abanar|cabeça a balançar na horizontal|cabeça a virar de um lado para o outro
@@ -123,18 +123,19 @@
 😪|cara de sono|rosto com sono|rosto sonolento|cansado|cara sonolenta|chorar|sono
 🤤|babando|babar|rosto|salivando|cara a babar-se
 😴|boa noite|cama|cansada|cansado|cochilo|dormindo|dormir|rosto|soneca|sono|zzz|bocejar|bocejo|cara a dormir|tanto faz
+🫩|cansaço|cansada|cansado|dorminhoco|exausta|exausto|olheiras|rosto com bolsas embaixo dos olhos|rosto com olheiras|dorminhoca|olhos|tarde
 😷|doente|gripado|máscara médica|resfriado|rosto com máscara médica|cara com máscara de médico|constipação|médico|remédio
 🤒|de cama|doente|febre|febril|rosto com termômetro|termômetro|cara com termómetro|termómetro
 🤕|acidentado|doente|ferimento|machucado|rosto com atadura na cabeça|rosto com curativos|cara com ligadura na cabeça|ligadura|magoado
 🤢|doente|enjoado|enjoo|náusea|rosto nauseado|vômito|cara|nauseada|vómito
-🤮|doente|nojenta|nojento|nojo|rosto vomitando|vomitando|vômito|vomito, rosto vomitando, vomitar, passando mal|cara a vomitar|vomitar|vómito
+🤮|doente|nojenta|nojento|nojo|rosto vomitando|vomitando|vômito|cara a vomitar|vomitar|vómito
 🤧|de cama|doente|espirrando|espirro|gripado|resfriado|rosto espirrando|cara a espirrar|gripe|santinho
 🥵|calor|febre|febril|insolação|língua de fora|ofegante|quente|rosto fervendo de calor|rosto vermelho|suando|suor|cara com calor|cara vermelha|transpiração
-🥶|abaixo de zero|congelando|congelei|frio|gélido|glacial|rosto azul de frio|rosto gelado|roxo de frio|cara azul|cara com frio|frieira|gelar|sincelo
+🥶|abaixo de zero|azul|congelando|congelei|frio|gelado|gélido|glacial|rosto|cara azul|cara com frio|frieira|gelar|sincelo
 🥴|alcoolizado|bêbada|bêbado|boca ondulada|embriagada|embriagado|intoxicado|olhos tortos|rosto|tonta|tonto|cara embriagada
-😵|rosto atordoado|tontura|atordoado|cansado|cara atordoada|doente|tonto
-😵‍💫|caramba|confusa|confuso|desnorteada|desnorteado|eita|espirais|hipnotizado|problema|putz|rosto com olhos em espiral|tonta|tonto|tontura|uau|cara com olhos em espiral
-🤯|cabeça explodindo, em choque, perplexo|chocado|cabeça a explodir|espantoso|explodir
+😵|acabado|atordoado|doente|morto|rosto|tontura|cansado|cara atordoada|tonto
+😵‍💫|caramba|confuso|desnorteado|eita|espirais|hipnotizado|problema|putz|tonto|tontura|uau|cara com olhos em espiral|rosto com olhos em espiral
+🤯|chocada|chocado|chocante|choque|explodindo|incrível|perplexo|surpreendente|surpresa|surpreso|cabeça a explodir|espantoso|explodir
 🤠|cara de cauboi|cauboi|caubói|cowboy|rosto com chapéu de caubói|sertanejo|vaqueiro|cara sorridente com chapéu de vaqueiro|chapéu|cobói|vaqueira
 🥳|animação|aniversário|apito|chapéu|comemoração|comemorar|feliz aniversário|festa|língua de sogra|parabéns|rosto festivo|viva|cara de festa|corneta
 🥸|bigode|disfarce|espião|incógnito|nariz|óculos|pessoa|rosto disfarçado|sobrancelha|cara disfarçada
@@ -142,15 +143,15 @@
 🤓|cdf|esperto|estudioso|inteligência|inteligente|nerd|óculos de grau|rosto de nerd|sabe tudo|sabe-tudo|caixa de óculos|cara de cromo|cara de nerd|cromo|sabichão|totó
 🧐|conservador|rosto com monóculo|cara com monóculo|formal|luxo|rico
 😕|confuso|indeciso|não entendi|não tenho certeza|rosto|cara confusa|não sei|triste
-🫤|cético|confusa|confusão|confuso|desapontado|dúvida|frustração|frustrada|frustrado|indiferença|inseguro|meh|rosto com boca diagonal|smiley|tanto faz|cara com boca diagonal|duvidoso|incerto|sei lá|seja o que for
+🫤|cético|confusão|decepção|desapontado|dúvida|frustração|indiferença|inseguro|meh|tanto faz|cara com boca diagonal|duvidoso|incerto|rosto com boca diagonal|sei lá|seja o que for
 😟|decepcionado|preocupado|rosto|cara preocupada|surpreendido|triste
 🙁|rosto meio triste|tristeza|tristinho|cara ligeiramente franzida|sobrolho menos franzido
 😮|boca aberta|boquiaberto|empatia|pasmo|rosto com boca aberta|aberta|cara com boca aberta|incrível|não acredito|pena
-😯|espantado|rosto|surpreso|uau|cara de surpresa|expectante|pasmado
+😯|espantado|rosto|surpreso|uau|cara expectante|espanto|pasmado|surpresa
 😲|chocado|estupefato|rosto espantado|totalmente chocado|cara espantada|estupefacto|surpreso
 😳|atordoado|deslumbrado|horrorizado|impressionado|rosto|ruborizado|vergonha|aturdido|cara corada|corado|envorganhado
 🥺|implorando|olhar de cachorrinho|olhos grandes|perdão|por favor|por que não|pq não|rosto|triste|cara que implora|cara suplicante|implorar
-🥹|admiração|chorar|com raiva|emoção|gratidão|iti malia|lágrimas de alegria|orgulhoso|por favor|resistir|rosto segurando as lágrimas|smiley|tristeza|cara a conter as lágrimas|cara com lágrimas de alegria|cara com lágrimas de emoção|lágrimas nos olhos|sentimentos
+🥹|admiração|alegria|chorar|com raiva|emoção|gratidão|iti malia|por favor|resistir|tristeza|cara a conter as lágrimas|cara com lágrimas de alegria|cara com lágrimas de emoção|lágrimas de alegria|lágrimas nos olhos|orgulhoso|sentimentos
 😦|aberta|assustado|boca|decepcionado|inesperado|rosto assustado|rosto franzido com boca aberta|uau|cara franzida com boca aberta|sobrolho franzido|surpreendido
 😧|angustiado|rosto|sofrendo|cara angustiada|descontente|surpreendido
 😨|ansiedade|assustado|com medo|medo|preocupado|rosto amedrontado|amedrontado|ansioso|cara cheia de medo
@@ -163,61 +164,61 @@
 😣|concentração|concentrado|dor de cabeça|foco|perseverança|perseverante|rosto|cara
 😞|decepção|desapontado|desapontamento|rosto decepcionado|triste|cara desiludida|desiludido
 😓|rosto cabisbaixo com gota de suor|rosto com suor frio|suando frio|suor frio|cara cabisbaixa com gota de suor|frio
-😩|aborrecido|cansado|cansei|exausto|infeliz|perdi|rosto desolado|cara fatigada|sonolento
+😩|aborrecido|cansado|cansei|decepcionado|desolado|exausto|infeliz|perdi|rosto|cara fatigada|sonolento
 😫|cansado|desesperado|exausto|rosto|cara cansada|espirro
 🥱|bocejo|cansada|cansado|com sono|entediada|entediado|rosto bocejando|sono|zzz|aborrecido|cara a bocejar|dormir|tanto faz
 😤|brava|bravo|furiosa|furioso|irritada|irritado|rosto soltando vapor pelo nariz|soltando fumaça|triunfo|vitória|cara com vapor a sair do nariz|zangado
 😡|bravo|furioso|irado|rosto|vermelho|zangado|cara amuada|cara zangada|enfurecido|fúria|mal-humorado
 😠|irado|rosto|zangado|cara irritada|infeliz|irritado
-🤬|rosto com símbolos na boca|xingando, falando mal, censurado, mal educado|cara com símbolos na boca|censura|palavrão|praguejar
+🤬|boca|censurado|fala|mal|rosto|rude|símbolos|xingando|cara com símbolos na boca|palavrão|praguejar
 😈|chifres|diabinho|diabo|malícia|rosto|roxa|sorridente|sorriso|cara a sorrir com cornos|conto de fadas|cornos|fantasia|maldade
-👿|demônio|diabinho|diabo|pequeno demônio|rosto bravo|rosto zangado com chifres|cara zangada com cornos|demónio|fantasia|mau
-💀|caveira|conto de fadas|corpo|morte|rosto|cara|monstro
-💩|cocô|estrume|excremento|fezes|pilha de cocô|caca|cara|cheira mal|cocó|desenho|malcheiroso|monstro|monte de cocó|poia
-🤡|cara de palhaço|circo|engraçado|palhaço|rosto de palhaço
-👹|assustador|conto de fadas|demoníaco|malvado|máscara|monstro|ogro japonês|oni|rosto|cara|criatura|diabo|fantasia|japonês|ogre
-👺|bravo|conto de fadas|duende japonês|goblin|japonês|máscara|monstro|raiva|rosto|tengu|zangado|cara|criatura|fantasia
-👻|assombração|assombrado|buu|conto de fadas|fantasma|halloween|rosto|cara|criatura|fantasia|monstro
+👿|bravo|chifres|demônio|diabinho|diabo|rosto|zangado|cara zangada com cornos|demónio|fantasia|mau
+💀|caveira|corpo|fadas|morte|rosto|cara|conto de fadas|monstro
+💩|cocô|estrume|excremento|fezes|pilha|caca|cara|cheira mal|cocó|desenho|malcheiroso|monstro|monte de cocó|poia
+🤡|circo|engraçado|palhaço|piada|cara de palhaço|rosto de palhaço
+👹|assustador|conto de fadas|demoníaco|japonês|malvado|máscara|monstro|ogro|oni|rosto|cara|criatura|diabo|fantasia|ogre
+👺|bravo|fadas|goblin|japonês|máscara|monstro|raiva|rosto|tengu|zangado|cara|conto de fadas|criatura|duende japonês|fantasia
+👻|assombração|assombrado|buu|fadas|fantasma|halloween|rosto|cara|conto de fadas|criatura|fantasia|monstro
 👽|alienígena|extraterrestre|ovni|rosto|cara|criatura|espaço|et|fantasia|monstro
-👾|alien|e.t.|extraterrestre|game|invasores alienígenas|monstro alienígena|ovni|pixelado|rosto|cara|criatura|et|fantasia|invasores espaciais|jogo
+👾|alien|e.t.|extraterrestre|game|monstro|ovni|pixelado|cara|criatura|et|fantasia|invasores espaciais|jogo
 🤖|monstro|robô|robotizado|rosto|cara de robô
-😺|aberta|animal|boca|feliz|gato|rosto de gato sorrindo com boca aberta|sorriso|cara|sorridente|sorrir
-😸|olho|rindo|rosto de gato com olhos sorrindo e riso|rosto de gato rindo|rosto de gato sorrindo com olhos sorridentes|sorridente|sorriso|cara|gato sorridente com olhos sorridentes|riso
-😹|alegria|chorando de rir|choro de felicidade|engraçado|felicidade|feliz|gato chorando de rir|lágrimas de felicidade|rindo|risos|rosto de gato com lágrimas de alegria|cara|gato com lágrimas de felicidade
-😻|aberta|amor|apaixonado|boca|coração|olho|rosto de fato com olhos no formato de coração|rosto de gato sorridente com olhos de coração|sorriso|cara|gato a sorrir com olhos em forma de coração
+😺|aberta|animal|boca|feliz|gato|rosto|sorrindo|sorriso|cara|sorridente|sorrir
+😸|rindo|riso|rosto|sorrindo|sorriso|cara|gato sorridente com olhos sorridentes|olho
+😹|alegria|chorando|choro|engraçado|felicidade|feliz|lágrimas|rir|risos|rosto|cara|gato com lágrimas de felicidade
+😻|adorei|amor|apaixonado|coração|paixão|rosto|sorriso|cara|gato a sorrir com olhos em forma de coração|olho
 😼|irônico|rosto|sorriso|cara|gato com sorriso forçado|irónico|troçar
-😽|beijando|beijo|fechados|olho fechado|olhos|rosto de gato mandando um beijo|cara|gato a dar um beijo com olhos fechados
-🙀|gato|meu deus!|muito surpreso|oh!|rosto de gato desolado|surpresa|cansado|cara de gato cansado|cara de gato surpreendido|exausto|surpreendido
-😿|chorando|chorar|choro|lágrima|rosto de gato chorando|triste|cara|gato a chorar
-😾|bravo|fazendo bico|gato|rosto de gato fazendo bico|rosto de gato mal-humorado|amuado|cara|mal-humorado
-🙈|envergonhado|macaco com olhos tapados|macaco não veja o mal|macaco que não vê nada|não veja o mal|olhos tapados|vergonha|cara|gesto|macaco com as mãos a tapar os olhos|proibido
-🙉|macaco com ouvidos tapados|macaco não ouça o mal|macaco que não ouve nada|não ouça o mal|não ouço|não quero ouvir|ouvidos tapados|cara|gesto|macaco com as mãos a tapar os ouvidos|ouvir|proibido
-🙊|animal|boca tapada|macaco com as mãos tapando a boca|macaco que não fala nada|não posso contar|não posso falar|segredo|silencio|ups|cara|falar|gesto|macaco com as mãos a tapar a boca|macaco que não diz nada|proibido
+😽|beijando|beijo|fechado|olho|rosto|cara|gato a dar um beijo com olhos fechados
+🙀|choque|desolado|gato|meu deus|oh!|rosto|surpresa|surpreso|cansado|cara de gato cansado|cara de gato surpreendido|exausto|surpreendido
+😿|chorando|choro|lágrima|rosto|triste|cara|gato a chorar
+😾|bico|bravo|gato|mal-humorado|rosto|amuado|cara
+🙈|envergonhado|não veja o mal|não vi nada|tapados|vergonha|cara|gesto|macaco com as mãos a tapar os olhos|macaco com olhos tapados|macaco que não vê nada|olhos tapados|proibido
+🙉|não ouça o mal|não ouço|não ouve nada|não quero ouvir|tapados|cara|gesto|macaco com as mãos a tapar os ouvidos|macaco que não ouve nada|ouvidos tapados|ouvir|proibido
+🙊|animal|boca tapada|não fale nada|não posso contar|não posso falar|segredo|silencio|ups|cara|falar|gesto|macaco com as mãos a tapar a boca|macaco que não diz nada|proibido
 💌|carta de amor|coração|correspondência com coração|romance|amor|correio
 💘|amor|cupido|emoção|flechado|paixão|romance|s2|coração com seta|seta
-💝|amor|aniversário|coração com fita|dia dos namorados|emoção|fita|s2|coração com laço|romance
-💖|amor|brilhante|coração brilhante|emoção|emocionante|s2|cintilante|coração a brilhar|entusiasmado
-💗|amor|animado|coração crescendo|emoção|nervosismo|pulsando|s2|a crescer|coração a crescer|entusiasmado|nervoso|palpitação
+💝|amor|aniversário|dia dos namorados|fita|presente|s2|coração com fita|coração com laço|romance
+💖|amor|brilhante|emoção|emocionante|s2|cintilante|coração a brilhar|entusiasmado
+💗|amor|animado|batendo|crescendo|emoção|nervosismo|s2|a crescer|coração a crescer|entusiasmado|nervoso|palpitação
 💓|amor|batendo|emoção|pulsante|s2|batimento|coração a bater|coração pulsante|palpitante
 💞|adorável|amor|bonitinho|coração|emoção|girando|s2|aniversário|corações a girar|corações a rodopiar|corações rodopiantes|girar|rodopiante
-💕|amantes|amor|coração|dois corações|emoção|s2|aniversário|corações
-💟|amor|coração decorativo|decoração de coração|s2|coração branco|coração roxo|decoração com coração
-💔|coração partido|coração quebrado|decepção amorosa|desilusão amorosa|emoção|rompimento|s2|sofrendo|sofrimento|triste|partido|partir
+💕|amor|aniversário|casal|coração|emoção|s2|corações|dois corações
+💟|amor|decorativo|roxo|s2|selo|coração branco|coração decorativo|coração roxo|decoração com coração
+💔|amorosa|coração|decepção|desilusão|emoção|partido|quebrado|rompimento|s2|sofrendo|sofrimento|triste|partir
 ❤️‍🔥|amor|chamas|coração em chamas|coração sagrado|fogo|luxúria
 ❤️‍🩹|bem|bom|coração remendado|curando|mais saudável|melhorando|recuperação
-🩷|adorar|adorável|adorei|amável|amo você|amor|coração|curtir|emoção|especial|eu te amo|fofo|gostar|gostei|rosa|te amo|cor-de-rosa|querido|ternura
+🩷|adorável|adorei|amo você|amor|coração|curtir|emoção|especial|fofo|gostar|gostei|te amo|cor-de-rosa|querido|rosa|ternura
 🧡|emoção|laranja|s2|coração cor de laranja
 💛|amarelo|amor|coração|emoção|love|s2
 💚|coração|emoção|s2|verde|amor
 💙|azul|coração|emoção|s2
-🩵|adorar|adorei|amo você|amor|azul claro|azul-claro|ciano|cor do céu|coração|emoção|especial|eu te amo|fofo|gostar|gostei|te amo|verde-azulado|afeição|carinho|celeste|ternura
+🩵|adorar|adorei|amo você|amor|coração|emoção|especial|fofo|gostar|gostei|te amo|afeição|azul-claro|carinho|celeste|cor do céu|ternura
 💜|coração lilás|emoção|roxo|s2
 🤎|coração|marrom|s2|castanho
 🖤|coração|negro|preto|s2|malvado|mau
-🩶|adorar|adorei|amo você|amor|ardósia|cinza|coração|emoção|especial|eu te amo|gostar|gostei|prata|te amo|chumbo|cinzento|prateado
+🩶|adorar|adorei|amo você|amor|coração|emoção|especial|gostar|gostei|te amo|ardósia|chumbo|cinza|cinzento|prata|prateado
 🤍|branco|coração|s2
 💋|beijo|lábios|marca de beijo|romance|coração
-💯|100 pontos|cem pontos|certamente|certeza|conte comigo|pontuação total|concordo totalmente|perfeito
+💯|certamente|certeza|conte comigo|pontos|sem dúvida|top|total|100 pontos|cem pontos|concordo totalmente|perfeito|pontuação
 💢|com raiva|emoção|engraçado|raiva|símbolo de raiva|desenho|enfurecido|irritado|símbolo de fúria|zangado
 💥|colisão|emoção|engraçado|explosão|símbolo de colisão|bomba|bum|desenho
 💫|brilhante|emoção|engraçado|estrelas|olhando para as estrelas|zonzo|desenho|estrela cadente|tonto
@@ -226,48 +227,48 @@
 🕳️|buraco no chão
 💬|balão de conversa|balão de diálogo|diálogo|engraçado|balão de fala|desenho|fala|mensagem
 👁️‍🗨️|balão de diálogo|olho no balão de diálogo|testemunha|balão de fala|olho em balão de fala
-🗨️|balão de diálogo à esquerda|balão de diálogo preto|balão de fala do lado esquerdo|diálogo|fala
-🗯️|balão de diálogo enérgico|balão de raiva à direita|discurso furioso|enérgico|irado|raiva|balão de raiva do lado direito|enfurecido|irritado
+🗨️|azul|conversa|diálogo|esquerda|balão de fala do lado esquerdo|fala
+🗯️|briga|conversa|diálogo|direita|discurso|discussão|enérgico|furioso|irado|raiva|balão de raiva do lado direito|enfurecido|irritado
 💭|balão de pensamento|engraçado|ideia|invenção|inventando|pensamento|pensando|desenho|devaneio|sonho
 💤|boa noite|cansada|cansado|com sono|dormindo|dormir|emoção|engraçado|roncando|zzz|desenho|sesta|sonolento
-👋|aceno|até mais|está aí?|flw|mão acenando|oi|olá|taí?|tchau|acenar|adeus|corpo|estás aí?|mão a acenar
-🤚|dorso da mão levantado|levantada|palma da mão levantada|para tudo|pare|mão com costas para fora
-🖐️|5|cinco dedos|mão aberta com os dedos separados|mão aberta indicando cinco|palma da mão|pare|corpo|dedos abertos|mão erguida com dedos afastados|parar
-✋|5|cinco|high five|mão erguida|mão levantada|papel|pare|corpo|dá cá mais cinco|parar
+👋|acenando|aceno|até mais|está aí?|flw|oi|olá|taí?|tchau|acenar|adeus|corpo|estás aí?|mão a acenar
+🤚|dorso|levantada|levantado|para tudo|pare|mão com costas para fora|palma
+🖐️|5|aberta|palma|pare|separados|cinco dedos|corpo|dedos abertos|mão aberta com os dedos separados|mão erguida com dedos afastados|parar
+✋|5|cinco|erguida|high five|levantada|papel|pare|toca aqui|corpo|dá cá mais cinco|mão erguida|parar
 🖖|dedos|jornada nas estrelas|mão|saudação star trek|saudação vulcana|spock|star trek|startrek|corpo|vulcano
-🫱|apertar|aperto de mão|direita|mão para a direita|para a direita|pegar|segurar|ajudar|estender a mão|mão estendida para a direita
-🫲|apertar|aperto de mão|esquerda|mão para a esquerda|para a esquerda|pegar|segurar|mão estendida para a esquerda
+🫱|apertar|aperto|direita|pegar|segurar|ajudar|estender a mão|mão estendida para a direita|mão para a direita|para a direita
+🫲|apertar|esquerda|pegar|segurar|aperto de mão|mão estendida para a esquerda|mão para a esquerda|para a esquerda
 🫳|cair|derrubar|descartar|mão com a palma para baixo|pegar|segurar|soltar|xô|apanhar|deixar cair|largar
 🫴|acenar|levantar|mão com a palma para cima|oferecer|pegar|segurar|venha|deitar a mão|vem
-🫷|bate aqui|bloquear|empurrar|esperar|esquerda|high five|mão empurrando para a esquerda|para a esquerda|parar|pausar|recusar|toca aqui|aguardar|mais cinco|mão a empurrar para a esquerda
-🫸|bate aqui|bloquear|direita|empurrar|esperar|high five|mão empurrando para a direita|para a direita|parar|pausar|recusar|toca aqui|aguardar|mais cinco|mão a empurrar para a direita
+🫷|bate aqui|bloquear|empurrar|esperar|esquerda|high five|parar|pausar|recusar|toca aqui|aguardar|mais cinco|mão a empurrar para a esquerda
+🫸|bate aqui|bloquear|direita|empurrar|esperar|high five|parar|pausar|recusar|toca aqui|aguardar|mais cinco|mão a empurrar para a direita
 👌|beliscar|certo|concordo|ótimo|rude|sinalizando|beliscão|compreendi|corpo|gesto de ok|mão com gesto de ok|ok com a mão|sinal de ok com a mão
-🤌|beliscado|como|dedos comprimidos|gesto de mão|hã|interrogação|itália|mão de coxinha|mão italiana|o quê|sarcástico
-🤏|beliscar|mão beliscando|pequena quantidade|pequeno|pouco|pouquinho|dedos|mão a dar um beliscão|um pouco
-✌️|mão com sinal de vitória|mão em v de vitória|paz|sim!|vitória|corpo
+🤌|beliscado|coxinha|gesto de mão|hã|interrogação|itália|italiana|mão|maravilha|o quê|sarcástico|dedos comprimidos
+🤏|beliscar|pequena quantidade|pequeno|pouco|pouquinho|dedos|mão a dar um beliscão|um pouco
+✌️|beleza|paz|sim|v de vitória|vitória|corpo|mão com sinal de vitória|mão em v de vitória
 🤞|boa sorte|cruzados|dedos|mão|sorte|torcendo|figas
 🫰|<3|amor|army|caro|coração|dinheiro|estalar|k-pop|kpop|mão com dedo indicador e polegar cruzados|dispendioso|gesto de esfregar os dedos
-🤟|gesto de "te amo"|mão|te amo, gesto de amor|amo-te|gesto "amo-te"|gesto de amo-te|três dedos
+🤟|amor|mão|te amo|amo-te|gesto "amo-te"|gesto de amo-te|três dedos
 🤘|chifres|dedos|metal|saudação do rock|cornos|corpo|mão a fazer cornos|rock’n’roll
-🤙|legal|ligar|mão|me liga|sinal "me liga"|chamada|gesto "liga-me"|gesto de liga-me|gesto liga-me|liga-me
-👈|dedo apontado para esquerda|dedo indicador|dedo para esquerda|dorso da mão com dedo indicador apontando para a esquerda|apontar|costas da mão com dedo indicador a apontar para a esquerda|indicador|mão
-👉|dedo apontado para direita|dedo indicador|dedo para direita|dorso da mão com dedo indicador apontando para a direita|apontar|corpo|costas da mão com dedo indicador a apontar para a direita|indicador|mão
-👆|dedo apontado para cima|dedo indicador|dedo para cima|dorso da mão com dedo indicador apontando para cima|mão|apontar|corpo|costas da mão com dedo indicador a apontar para cima|indicador|para cima
+🤙|legal|ligar|mão|me liga|chamada|gesto "liga-me"|gesto de liga-me|gesto liga-me|liga-me
+👈|dedo|dorso|esquerda|indicador|mão|apontar|costas da mão com dedo indicador a apontar para a esquerda
+👉|apontar|dedo|direita|dorso|indicador|mão|corpo|costas da mão com dedo indicador a apontar para a direita
+👆|cima|dedo para cima|dorso|indicador|mão|apontar|corpo|costas da mão com dedo indicador a apontar para cima|para cima
 🖕|dedo do meio|gesto ofensivo|mão|dedo médio
 👇|abaixo|dedo apontado para baixo|dedo indicador|dedo para baixo|dorso da mão com dedo indicador apontando para baixo|embaixo|apontar|corpo|costas da mão com dedo indicador a apontar para baixo|indicador|mão|para baixo
 ☝️|dedo apontando para cima|eu|indicador apontando para cima|mão|apontar|dedo indicador a apontar para cima|para cima
 🫵|aí|cutucar|dedo|indicador apontando para o visualizador|mão|tu|você|acusar|apontar o dedo|indicador a apontar para o espetador
-👍|beleza|concordo|dedão para cima|jóia|mão|ok|para cima|polegar para cima|sim|sinal|valeu|combinado|compreendi|corpo|fantástico|fixe|gosto
+👍|beleza|cima|concordo|dedão|joia|mão|ok|sim|sinal|valeu|combinado|compreendi|corpo|fantástico|fixe|gosto|para cima|polegar para cima
 👎|dedão para baixo|desaprovação|desaprovado|mão|não gostei|para baixo|polegar para baixo|ruim|sinal|corpo|não concordo|não gosto
 ✊|pedra|punho erguido|punho levantado|solidariedade|cerrado|corpo|mão|soco
-👊|punho fechado|soco|cerrado|concordo|corpo|mão fechada|punho a aproximar-se
-🤛|esquerdo|mão fechada|soco|esquerda|punho voltado para a esquerda
+👊|beleza|fechado|força|soco|tá ligado|cerrado|concordo|corpo|mão fechada|punho a aproximar-se|punho fechado
+🤛|esquerdo|fechada|mão|soco|esquerda|punho voltado para a esquerda
 🤜|direito|soco|direita|punho voltado para a direita
 👏|aplauso|bom trabalho|mãos aplaudindo|palmas|parabéns|sinal|aprovação|bater palmas|corpo|mãos a bater palmas
 🙌|ambas as mãos|comemoração|levantando ambas as mãos para comemorar|mãos para cima|viva|celebração|corpo|gesto|mãos levantadas|mãos no ar
 🫶|<3|amei|amo você|amor|coração|mãos de coração|te amo|amo-te|mão-coração|mãos em forma de coração
 👐|abertas|mãos abertas|sinal de mãos abertas|abraço|corpo|mãos de jazz
-🤲|oração|palmas juntas, oração, mãos armadas, oração, devoção|palmas unidas para cima|mãos abertas|mãos em concha|mãos estendidas|palmas abertas|palmas juntas abertas|palmas juntas para cima|prece
+🤲|cima|devoção|juntas|oração|unidas|mãos abertas|mãos em concha|mãos estendidas|palmas abertas|palmas juntas abertas|palmas juntas para cima|prece
 🤝|aperto de mãos|combinado|cumprimento|mãos|acordo|passou-bem|reunião
 🙏|gesto|mãos juntas|rezando|rezar|agradecimento|pedido|por favor|reverência
 ✍️|caneta|escrevendo à mão|corpo|escrever|mão a escrever
@@ -281,7 +282,7 @@
 👂|corpo|escutar|orelha|ouvido|audição|ouvir|som
 🦻|acessibilidade|aparelho auditivo|deficiência auditiva|ouvido com aparelho auditivo|surda|surdo|orelha com aparelho auditivo
 👃|cheirar|cheiro|corpo|nariz|odor|rosto|cara|narina
-🧠|cérebro, inteligência, inteligente|inteligente
+🧠|cérebro|inteligência|inteligente
 🫀|anatomia|batimento cardíaco|cardiologia|centro|coração humano|coração vermelho|órgão|pulsação|pulso|s2
 🫁|anatomia|espiração|exalação|inalação|órgão|pulmão|pulmões|respiração
 🦷|branco|dente|dentista
@@ -290,9 +291,9 @@
 👁️|olho|parte do corpo|rosto|corpo|um olho
 👅|corpo|rosto|lamber|língua de fora
 👄|batom|beijo|boca|corpo|lábios|rosto
-🫦|ansioso|batom|beijo|desconfortável|flertando|lábios|medo|mordendo o lábio|mordida|nervosa|nervoso|preocupação|preocupada|preocupado|sedução|sexy|vontade|bâton|flartar|flertar|flirt|morder o lábio|namoriscar
+🫦|ansioso|batom|beijo|flertar|lábios|medo|mordida|nervoso|preocupação|sedução|sexy|vontade|bâton|desconfortável|flartar|flirt|morder o lábio|namoriscar|preocupado
 👶|bebê|bebezinho|grávida|neném|pessoas|recém-nascido|bebé|criança|gravidez|jovem
-🧒|criança, neutro em termos de gênero, jovem, criança|género neutro|jovem|novo|pessoa
+🧒|criança|filho|jovem|neto|pequeno|género neutro|novo|pessoa
 👦|garoto|guri|jovem|loiro|menino|pessoas|piá|criança|rapaz
 👧|filha|garota|menina|menininha|neta|pessoas|franja|jovem|rapariga|totós
 🧑|adulta|adulto|pessoa|género neutro
@@ -301,10 +302,10 @@
 🧔|barba|barbudo|homem|pessoa: barba
 🧔‍♂️|barba|homem: barba|homem: barbudo
 👱‍♂️|cabelo|homem: cabelo loiro|loiro|louro|homem com cabelo loiro|homem com cabelo louro|homem loiro
-👩|adulta|garota|guria|loira|menina|mina|mulher|corte de cabelo|loura|pessoa
+👩|adulta|garota|guria|loira|menina|mina|mulher|pessoa
 🧔‍♀️|barba|mulher: barba
 👱‍♀️|garota|guria|loira|loura|menina|mulher: cabelo loiro|mulher com cabelo loiro|mulher com cabelo louro
-🧓|adulto mais velho, neutro em termos de gênero|idoso|género neutro|pessoa de idade|pessoa idosa
+🧓|adulto|avô|idoso|sábio|velho|vovó|género neutro|pessoa de idade|pessoa idosa
 👴|adulto|avô|careca|idoso|pessoas|vovô|homem de idade avançada|sábio|velho
 👵|adulta|idosa|pessoas|velhinha|vovó|vovozinha|avó|mulher de idade avançada|sábia|velha
 🙍|brava|bravo|chateada|chateado|franzindo a sobrancelha|franzindo a testa|gesto|pessoa franzindo a sobrancelha|triste|aborrecida|cara triste|dececionada|desapontada|descontente|desiludida|pessoa aborrecida|pessoa de sobrolho franzido
@@ -313,11 +314,11 @@
 🙎|beicinho|beiço|careta|chateada|chateado|emburrada|emburrado|fazendo bico|gesto|pessoa fazendo bico|aborrecida|amuada|carrancuda|desapontada|desiludida|mal-humorada|mal-humorado|pessoa aborrecida|pessoa amuada|zangada
 🙎‍♂️|apontando|bico|cara feia|gesto|homem fazendo bico|homen apontando|amuar|beicinho|homem amuado
 🙎‍♀️|bico|cara feia|mulher fazendo bico|beicinho|gesto|mulher amuada
-🙅|de jeito nenhum|gesto|mão|não pode|pessoa fazendo gesto de não|proibido|sem chance|discordar|errado|negar|negativo|nem pensar|nunca|pessoa a dizer não|pessoa que faz gesto de não|recusar
+🙅|de jeito nenhum|gesto|mão|não|proibido|sem chance|discordar|errado|negar|negativo|nem pensar|nunca|pessoa a dizer não|pessoa que faz gesto de não|recusar
 🙅‍♂️|gesto|homem fazendo gesto de não|mão|menino|não|proibido|proibir|homem que faz gesto de não
 🙅‍♀️|gesto|mão|mulher fazendo gesto de não|proibido|mulher que faz gesto de não|não
 🙆|exercício|gesto para ok|mãos para cima|ok|pessoa fazendo gesto de ok|braços levantados|pessoa a dizer ok|pessoa que faz gesto de ok
-🙆‍♂️|exercício|gesto|homem fazendo gesto de ok|mão|menino|ok|homem que faz gesto de ok
+🙆‍♂️|cabeça|exercício|gesto|mão|menino|nossa|ok|homem que faz gesto de ok
 🙆‍♀️|gesto|mão|mulher fazendo gesto de ok|ok|mulher que faz gesto de ok
 💁|ajuda|diva|divo|fala sério|informações|jogada de cabelo|mão|pessoa com a mão virada para cima|pessoa com a palma virada para cima|sarcasmo|atrevida|boato|fofocar|mexerico|ousada|pessoa atrevida|rumor|sarcástica
 💁‍♂️|ajuda|fofoca|garoto|gorjeta|guri|homem com a palma virada para cima|menino|sarcasmo|sarcástico|atrevido|diva|mão de gorjeta|o que quiser
@@ -363,7 +364,7 @@
 👩‍🏭|fábrica|indústria|mulher|trabalhadora|industrial|montagem|operária fabril
 🧑‍💼|arquiteto|colarinho branco|gerente|negócios|trabalhador de escritório|empregado de escritório
 👨‍💼|arquiteto|colarinho branco|empresário|escritório|funcionário de escritório|gerente|homem|administrador|empresa|trabalhador de escritório
-👩‍💼|arquiteta|colarinho branco|empresária|escritório|funcionára de escritório|funcionária de escritório|gerente|mulher|administradora|empresa|trabalhadora de escritório
+👩‍💼|arquiteta|branco|colarinho|empresária|escritório|gerente|mulher|administradora|empresa|funcionária de escritório|trabalhadora de escritório
 🧑‍🔬|biólogo|cientista|engenheiro|físico|químico
 👨‍🔬|biólogo|cientista homem|físico|homem|professor|químico|cientista (homem)|engenheiro|farmacêutico|matemático
 👩‍🔬|bióloga|física|mulher|professora|química|cientista (mulher)|engenheira|farmacêutica|matemática
@@ -374,7 +375,7 @@
 👨‍🎤|artista|ator|cantor|homem|pop|rock|estrela do rock
 👩‍🎤|artista|atriz|cantora|mulher|pop|rock|estrela do rock
 🧑‍🎨|artista|paleta
-👨‍🎨|artista plástico|homem|pintor de quadros|pintura|artista (homem)|paleta
+👨‍🎨|homem|pintor|pintura|plástico|quadros|artista (homem)|paleta
 👩‍🎨|artista plástica|mulher|pintura|artista (mulher)|paleta|pintora
 🧑‍✈️|avião|piloto
 👨‍✈️|avião|homem|piloto de avião homem|piloto (homem)
@@ -383,15 +384,15 @@
 👨‍🚀|astronauta homem|espaço|foguete|homem|astronauta (homem)
 👩‍🚀|espaço|foguete|mulher|astronauta (mulher)
 🧑‍🚒|bombeiro|caminhão de bombeiros|camião dos bombeiros|carro dos bombeiros
-👨‍🚒|bombeiro|caminhão do corpo de bombeiros|corpo de bombeiros|fogo|homem|incêndio|carro de bombeiros|carro dos bombeiros
-👩‍🚒|bombeira|bombeiro mulher|caminhão do corpo de bombeiros|corpo de bombeiros|fogo|incêndio|mulher|carro de bombeiros|carro dos bombeiros
+👨‍🚒|bombeiro|caminhão|corpo de bombeiros|fogo|homem|incêndio|carro de bombeiros|carro dos bombeiros
+👩‍🚒|bombeira|caminhão|corpo de bombeiros|fogo|incêndio|mulher|carro de bombeiros|carro dos bombeiros
 👮|autoridade|multar|polícia|policial|prender|agente da polícia|apreender|lei|pessoa polícia|senhor agente
 👮‍♂️|homem|policial|tira|agente|bófia|chui|polícia (homem)
 👮‍♀️|autoridade|mulher|multar|policial|prender|tira|agente da polícia|apreender|bófia|chui|lei|polícia (mulher)|senhora agente
 🕵️|detetive|espião|investigador|rosto com lupa|homem
 🕵️‍♂️|detetive homem|espião|homem|investigador|detetive (homem)
 🕵️‍♀️|espiã|espionar|investigadora|investigar|mulher|crime|detetive (mulher)|espia
-💂|guarda|pessoas|segurança|capacete|londres|palácio de buckingham
+💂|guarda|londres|pessoas|segurança|capacete|palácio de buckingham
 💂‍♂️|guarda|homem|segurança (homem)|uniforme
 💂‍♀️|buckingham|guarda|londres|mulher|palacio|realeza|capacete|palácio de buckingham|segurança (mulher)|uniforme
 🥷|assassino|furtividade|guerra|habilidades|lutador|ninja|oculto|pessoa|soldado|escondido|secreto
@@ -400,12 +401,12 @@
 👷‍♀️|construção|contrução|mulher|operário|pedreira|pedreiro|capacete de proteção|operária da construção civil|trabalhadora da construção civil
 🫅|coroa|monarca|nobre|pessoa com coroa|princesa|príncipe|rainha|realeza|reino
 🤴|príncipe|realeza|rei|monarquia
-👸|conto de fadas|coroa|fantasia|loira|menina|mulher|pessoas|princesa|rainha|realeza
+👸|coroa|fadas|fantasia|loira|menina|mulher|pessoas|princesa|rainha|conto de fadas|realeza
 👳|pessoa com turbante|turbante|cara com barba|homem|rosto com barba
 👳‍♂️|homem com turbante|turbante
 👳‍♀️|mulher com turbante|turbante
 👲|chapéu chinês|gua pi mao|guapimao|homem com gua pi mao|homem de boné|pessoas|chinês|homem com chapéu chinês
-🧕|hijab|lenço|mulher com lenço de cabeça, hijab, mantilha, tichel, bandana, lenço de cabeça|mulher com véu|mulher com lenço islâmico|mulher com lenço na cabeça
+🧕|cabeça|hijab|lenço|mulher com lenço islâmico|mulher com lenço na cabeça|mulher com véu
 🤵|festa|gala|homem de smoking|noivo|pessoa de smoking|smoking|formal
 🤵‍♂️|homem de smoking|smoking
 🤵‍♀️|mulher de smoking|smoking
@@ -415,55 +416,55 @@
 🤰|estou grávida|grávida|gravidez|mulher
 🫃|cheia|cheio|comi demais|excesso de peso|gravidez|grávido|inchado|pessoa|barriga de cerveja|comer demais|homem grávido
 🫄|cheia|cheio|comi demais|excesso de peso|grávida|gravidez|inchada|barriga cheia|comer demais|pessoa grávida
-🤱|amamentação|amamentando, amamentação, leite materno|bebê|neném|amamentar|bebé|dar de mamar|seio
-👩‍🍼|alimentando|amamentação|amamentando|amor|bebê|mãe|mamãe|neném|pessoa|recém nascido|recém-nascido|alimentar|bebé|mulher a alimentar bebé
+🤱|amamentação|bebê|leite|mãe|materno|neném|amamentar|bebé|dar de mamar|seio
+👩‍🍼|alimentando|amamentação|amamentando|amor|bebê|mãe|mamãe|nascido|neném|pessoa|recém-nascido|alimentar|bebé|mulher a alimentar bebé
 👨‍🍼|alimentando|amamentação|amamentando|amor|bebê|neném|pai|papai|pessoa|recém nascido|recém-nascido|alimentar|bebé|homem a alimentar bebé
 🧑‍🍼|alimentando|amamentação|amamentar|bebê|homem|mãe|mulher|neném|pai|recém-nascido|alimentar|bebé|pessoa a alimentar bebé
-👼|anjo|bebê|conto de fadas|rosto|bebé|cara|fantasia
+👼|anjo|bebê|fadas|rosto|bebé|cara|conto de fadas|fantasia
 🎅|comemoração|festas|natal|noel|papai|celebração|conto de fadas|fantasia|pai
-🤶|comemoração|mamãe noel|natal|noel|mãe|senhora noel
-🧑‍🎄|bom velhinho|chapéu|feliz natal|festas|gorro|natal|noel|papai noel|pessoa|feriado|pai natal|sra. natal
+🤶|comemoração|mamãe|natal|noel|vovó|celebração|conto de fadas|fantasia|mãe
+🧑‍🎄|chapéu|feliz|festas|gorro|mamãe|natal|noel|pessoa|celebração|comemoração|pai natal|sra. natal
 🦸|bem|boa|bom|herói|heroína|super-herói|super-homem|superman|superpoder|capa|supermulher|voar
 🦸‍♂️|bom|herói|homem super-herói|superpoder
 🦸‍♀️|boa|herói|heroína|mulher|super-heroína|superpoder
 🦹|bandido|criminoso|malvado|mau|supervilão|vilão|maléfico|pessoa|superpoderes
 🦹‍♂️|criminoso|homem supervilão|mal|vilão|mau|superpoderoso
 🦹‍♀️|criminosa|má|superpoder|supervilã|vilã|mulher supervilã
-🧙|bruxa|fantasia|feiticeira|feiticeiro|feitiço|maga|magia|mago, feiticeiro, bruxo, feiticeiro, feitiço, magia|rpg|bruxo|mágico|pessoa bruxa|pessoa feiticeira|sábio
+🧙|bruxa|fantasia|feiticeira|feiticeiro|feitiço|maga|magia|mago|rpg|bruxo|mágico|pessoa bruxa|pessoa feiticeira|sábio
 🧙‍♂️|feiticeiro|homem mago|mago|bruxo
 🧙‍♀️|bruxa|feiticeira|maga
-🧚|asas|conto de fadas|fada|fantasia|ser encantado|fábula
+🧚|asas|conto|encantado|fada|fantasia|ser|fábula
 🧚‍♂️|fada|homem fada|homem-fada
 🧚‍♀️|fada|mulher fada|mulher-fada
-🧛|assustador|dia das bruxas|drácula|fantasia|halloween|monstro|sangue|terror|vampiro|dentes|disfarce|morto-vivo|pessoa vampiro|sobrenatural
+🧛|assustador|bruxas|dia|drácula|fantasia|halloween|monstro|sangue|terror|vampiro|dentes|disfarce|morto-vivo|pessoa vampiro|sobrenatural
 🧛‍♂️|drácula|homem vampiro|vampiro|homem-vampiro|morto-vivo
 🧛‍♀️|mulher vampira|vampira|morta-viva
 🧜|canto|cauda|contos|criatura|fada|fundo|mar|oceano|ser encantado|sereia|sirene|tridente|disfarce|fábula|fantasia|peixe|pessoa sereia|sobrenatural|tritão
 🧜‍♂️|sereio|tritão (homem)
 🧜‍♀️|sereia
-🧝|elfo, duende, légolas|fantasia|magia|mágico|místico|rpg|ser encantado|conto|disfarce|elfo mágico|fábula|orelhas pontiagudas|pessoa elfo|senhor dos anéis|sobrenatural
+🧝|duende|fantasia|légolas|magia|mágico|místico|rpg|ser encantado|conto|disfarce|elfo mágico|fábula|orelhas pontiagudas|pessoa elfo|senhor dos anéis|sobrenatural
 🧝‍♂️|duende homem|elfo homem|elfo (homem)|mágico
 🧝‍♀️|duende mulher|elfa|elfo (mulher)|mágico
-🧞|desejos|fantasia|gênio da lâmpada|lâmpada mágica|místico|djinn|esfregar a lâmpada|génio|lamparina|magia|pessoa génio
+🧞|desejos|fantasia|gênio|lâmpada|mágica|místico|djinn|esfregar a lâmpada|génio|lamparina|magia|pessoa génio
 🧞‍♂️|homem gênio|djinn|génio (homem)
 🧞‍♀️|mulher gênio|djinn|génio (mulher)
-🧟|apocalipse|assustador|cazumbi|dia das bruxas|halloween|morto-vivo|terror|zumbi, morto-vivo, halloween, dia das bruxas, assustador|pessoa zombie|susto|zombie
+🧟|apocalipse|assustador|bruxas|dia|halloween|morto-vivo|terror|zumbi|pessoa zombie|susto|zombie
 🧟‍♂️|cazumbi|homem zumbi|homem zombie|morto-vivo
 🧟‍♀️|cazumbi|mulher zumbi|morta-viva|mulher zombie
-🧌|conto de fadas|fantasia|gigante|monstro|ogro|troll|monstrengo|ogre
+🧌|fadas|fantasia|gigante|monstro|ogro|troll|conto de fadas|monstrengo|ogre
 💆|dor de cabeça|massagem facial|pele|pessoa recebendo massagem facial|relaxar|rosto|spa|tensão|acalmar|cafuné|calma|cara|descontrair|pessoa a receber massagem|pessoa a receber uma massagem|salão de beleza|tratamento
 💆‍♂️|acalmar|dor de cabeça|homem recebendo massagem facial|massagem|menino|relaxamento|relaxar|rosto|salão|tensão|tenso|cara|face|homem a receber uma massagem
 💆‍♀️|massagem|mulher recebendo massagem facial|relaxamento|cara|face|mulher a receber uma massagem
 💇|beleza|cortando o cabelo|corte de cabelo|pessoa cortando o cabelo|salão de beleza|cabeleireiro|cabelo|cortar o cabelo|pessoa a cortar o cabelo|tesouras
 💇‍♂️|barbeiro|beleza|cabelo|menino|corte de cabelo|homem a cortar o cabelo|salão de beleza
 💇‍♀️|corte de cabelo|mulher cortando o cabelo|salão de beleza|mulher a cortar o cabelo|permanente
-🚶|andar|caminhada|caminhar|pedestre|perambulando|pessoa andando|pessoa caminhando|deambular|exercício|passear|passos|pessoa a andar|pessoa a caminhar|vaguear
+🚶|andar|caminhada|caminhar|pedestre|perambulando|deambular|exercício|passear|passos|pessoa a andar|pessoa a caminhar|vaguear
 🚶‍♂️|andar|caminhar|homem andando|homem caminhando|boleia|homem a andar
 🚶‍♀️|andando|andar|caminhada|caminhando|caminhar|passeio|pedestre|perambulando|boleia|mulher a andar|passear|peão
 🧍|de pé|pessoa em pé
 🧍‍♂️|em pé|homem em pé
 🧍‍♀️|em pé|mulher em pé
-🧎|ajoelhada|ajoelhar|de joelhos|pessoa ajoelhada|pessoa ajoelhando|joelhos|pessoa de joelhos
+🧎|ajoelhado|ajoelhar|joelhos|pedir|por favor|pessoa ajoelhada|pessoa de joelhos
 🧎‍♂️|ajoelhado|homem ajoelhando|homem de joelhos
 🧎‍♀️|ajoelhada|mulher ajoelhando|mulher de joelhos
 🧑‍🦯|acessibilidade|cego|pessoa com bengala para cegos
@@ -475,16 +476,16 @@
 🧑‍🦽|acessibilidade|cadeira de rodas|pessoa em cadeira de rodas manual
 👨‍🦽|acessibilidade|cadeira de rodas|homem em cadeira de rodas manual
 👩‍🦽|acessibilidade|cadeira de rodas|mulher em cadeira de rodas manual
-🏃|correr|corrida|esporte|maratona|maratonista|pessoa correndo|pressa|corredor|despachar|exercício|pessoa a correr|rápido|velocidade
-🏃‍♂️|corrida|esporte|homem correndo|maratona|homem a correr
-🏃‍♀️|corredora|correndo|corrida|esporte|garota|guria|maratona|menina|pressa|rápida|rápido|com pressa|mulher a correr
+🏃|correndo|correr|corrida|esporte|maratona|maratonista|pressa|corredor|despachar|exercício|pessoa a correr|rápido|velocidade
+🏃‍♂️|corrida|esporte|homem correndo|maratona|correr|homem a correr|pressa
+🏃‍♀️|corredora|correndo|corrida|esporte|garota|guria|maratona|menina|pressa|rápida|rápido|correr|mulher a correr
 💃|bailarina|dançando|flamenco|pessoas|salsa|tango|vamos dançar|dançarina|mulher a dançar
-🕺|dançando|dançar|flamenco|homem a dançar|tango
+🕺|dançando|dançarino|flamenco|homem a dançar|pessoas
 🕴️|homem de terno levitando|terno|fato|homem em fato executivo a levitar|negócios
-👯|amigas|coelho|dançarinas|festa|gêmeas|bailarinas|coelhinho|gémeas|melhor amiga|melhores amigas|mulher|orelhas de coelho|par|pessoas com orelhas de coelho|pessoas dançarinas|rapariga
-👯‍♂️|dançarinos|festa|festejando|homem|homens com orelhas de coelho|meninos|orelha de coelho|orelhas de coelho|máscara
-👯‍♀️|dançarinas|festa|mulheres com orelhas de coelho|orelha de coelho|amigas|máscara
-🧖|mulher na sauna úmida, sauna úmida, sauna, banho|pessoa na sauna|relaxar|sauna|spa|banho turco|descontrair|repousar
+👯|amigas|coelho|dançarinas|festa|gêmeas|coelhinhas|gémeas|melhores amigas|mulher|orelhas de coelho|par|pessoas com orelhas de coelho|pessoas dançarinas|rapariga
+👯‍♂️|coelho|dançarino|festa|homem|meninos|amigos|gémeos|homens com orelhas de coelho|máscara|orelhas de coelho|par|rapaz
+👯‍♀️|dançarinas|festa|mulheres com orelhas de coelho|orelha de coelho|amigas|gémeas|máscara|orelhas de coelho|par|rapariga
+🧖|homem|mulher|relaxar|sauna|spa|banho turco|descontrair|pessoa na sauna|repousar
 🧖‍♂️|homem na sauna|sauna|banho turco
 🧖‍♀️|mulher na sauna|sauna|banho turco
 🧗|alpinista|escalada|escalando|escalar|esporte|montanha|alpinismo|desporto|montanhismo|montanhista|pessoa a escalar|subir|trepadora
@@ -493,55 +494,55 @@
 🤺|esgrima|esgrimista|espada|esporte|desporto|pessoa a esgrimir
 🏇|esporte|jockey|jóquei|cavalo de corrida|corrida de cavalos|desporto
 ⛷️|esporte|esquiador|frio|neve
-🏂|esporte|inverno|praticante de snowboard|snowboarder|desporto|esqui|neve
+🏂|esporte|inverno|neve|ski|snowboard|desporto|esqui|praticante de snowboard
 🏌️|esporte|golfe|golfista|jogando|bola de golfe|campo de golfe|desporto|jogador de golfe|pessoa a jogar golfe|pga|tacada
 🏌️‍♂️|golfe|homem golfista|homem jogando golfe|golfista|homem a jogar golfe|taco
-🏌️‍♀️|bola|esporte|garota|golfe|guria|menina|mulher golfista|mulher jogando golfe|golfista|mulher a jogar golfe|taco
-🏄|esporte|ondas|pegar onda|pessoa surfando|praia|prancha|surfar|surfe|surfista|board|desporto aquático|oceano|pessoa a surfar
+🏌️‍♀️|bola|esporte|garota|golfe|golfista|menina|mulher a jogar golfe|taco
+🏄|esporte|ondas|praia|prancha|surfista|board|desporto aquático|oceano|pessoa a surfar
 🏄‍♂️|homem surfista|surfando|homem a surfar|prancha|surfista
 🏄‍♀️|esporte|garota|guria|mar|menina|onda|praia|surfando|surfe|surfista|mulher a surfar|prancha
-🚣|bote|canoa|pessoa remando|transporte|veículo|andar de barco|barco a remos|lago|navegar|pescar|pessoa a remar|remar|remos|rio
+🚣|bote|canoa|mar|oceano|rio|andar de barco|barco a remos|lago|navegar|pescar|pessoa a remar|remar|remos|veículo
 🚣‍♂️|esporte|homem remando|remador|remo|barco|canoa|homem a remar
-🚣‍♀️|barco|caiaque|canoa|esporte|garota|guria|lago|menina|pescaria|remada|remadora|remando|remo|rio|mulher a remar
-🏊|esporte|natação|pessoa nadando|triatlo|bruços|desporto aquático|exercício|nadador|nadar de bruços|pessoa a nadar
+🚣‍♀️|barco|caiaque|canoa|esporte|garota|menina|pescaria|remadora|remando|remo|rio|lago|mulher a remar
+🏊|esporte|natação|olimpíada|triatlo|bruços|desporto aquático|exercício|nadador|nadar de bruços|pessoa a nadar
 🏊‍♂️|homem nadando|nadar|natação|homem a nadar
-🏊‍♀️|esporte|mulher nadando|nadadora|nadar|natação|desporto|mulher a nadar
-⛹️|arremesso|atleta|bater bola|cesta|esporte|lance livre|pessoa batendo bola|pessoa jogando basquete|afundar|basketball|basquetebol|bola de basquetebol|desporto|driblar|jogador de basquetebol|lançamento livre|pessoa a jogar basquetebol|pessoa com bola
+🏊‍♀️|esporte|homem|nadadora|nado|natação|olimpíada|triatlo|desporto|mulher a nadar|nadar
+⛹️|arremesso|atleta|bater bola|cesta|esporte|lance livre|afundar|basketball|basquetebol|bola de basquetebol|desporto|driblar|jogador de basquetebol|lançamento livre|pessoa a jogar basquetebol|pessoa com bola
 ⛹️‍♂️|basquete|bola|esporte|homem jogando basquete|homem com bola
 ⛹️‍♀️|basketball|basquete|bola|esporte|garota|jogadora|jogo|menina|desporto|mulher com bola
 🏋️|bodybuilder|esporte|fisiculturista|força|levantar|culturismo|exercício|ginásio|halteres|halterofilista|levantamento de pesos|musculação|pesos|pessoa a levantar pesos|treino
 🏋️‍♂️|esporte|força|homem levantando peso|peso|homem halterofilista|levantamento de pesos
-🏋️‍♀️|esporte|força|garota|guria|levantadora de peso|malhando|malhar|menina|mulher levantando peso|peso|desporto|levantamento de pesos|mulher halterofilista
+🏋️‍♀️|esporte|força|garota|guria|levantadora de peso|levantar|malhar|menina|peso|desporto|levantamento de pesos|mulher halterofilista
 🚴|bicicleta|bike|ciclismo|ciclista|esporte|pedalar|andar de bicicleta|buga|desporto|exercício|pessoa a andar de bicicleta|triatlo
 🚴‍♂️|bicicleta|esporte|homem ciclista|passeio|ciclista (homem)|homem a andar de bicicleta
 🚴‍♀️|bicicleta|bike|ciclismo|esporte|garota|guria|menina|passeio|pedalando|pedalar|ciclista (mulher)|desporto|mulher a andar de bicicleta
-🚵|bicicleta|ciclismo|ciclista|esporte|montanha|mountain bike|pedalando|trilha|andar de bicicleta|btt|desporto|exercício|pessoa a andar de bicicleta|praticante de btt|triatlo
+🚵|bicicleta|ciclismo|ciclista|esporte|montanha|mountain bike|pedalando|trilha|andar de bicicleta|betetista|btt|desporto|exercício|pessoa a andar de bicicleta
 🚵‍♂️|bicicleta|ciclista|homem fazendo mountain bike|mountain bike|betetista (homem)|montanha
-🚵‍♀️|bicicleta|bike|ciclista|esporte|garota|guria|menina|montanha|mountain bike|mulher fazendo mountain bike|pedalando|pedalar|betetista (mulher)|btt|desporto
+🚵‍♀️|bicicleta|bike|ciclista|esporte|garota|guria|menina|montanha|mountain|mulher|pedalar|betetista (mulher)|btt|desporto
 🤸|animada|animado|esporte|estrelinha|feliz|ginasta|ginástica|brincar|cambalhota|desporto|estrela acrobática|fazer a roda|felicidade|pessoa a fazer a roda
 🤸‍♂️|animado|esporte|estrela|estrelinha|feliz|ginástica|menino|virar|brincar|cambalhota|desporto|fazer a roda|felicidade|homem a fazer a roda
 🤸‍♀️|animada|esporte|estrela|feliz|ginasta|ginástica|menina|virar|brincar|cambalhota|desporto|fazer a roda|felicidade|mulher a fazer a roda
-🤼|combate|esporte|luta greco-romana|luta livre|lutadores|pessoas lutando|ringue|desporto|duelo|luta greco romana|lutar|pessoas a lutar|wrestling
-🤼‍♂️|combate|esporte|homem|homens lutando|luta greco-romana|luta livre|ringue|desporto|duelo|homens a lutar|luta greco romana|lutador de luta livre|lutadores de luta livre|lutar|pessoas|wrestling
-🤼‍♀️|combate|esporte|luta greco-romana|luta livre|mulheres lutando|ringue|desporto|duelo|luta greco romana|lutadora de luta livre|lutadoras de luta livre|lutar|mulheres a lutar|pessoas|wrestling
-🤽|esporte aquático|pessoa jogando polo aquático|piscina|polo aquático|água|desporto aquático|nadar|natação|pessoa a jogar polo aquático
+🤼|combate|esporte|greco-romana|livre|torneio|desporto|duelo|luta greco romana|luta livre|lutadores|lutar|pessoas a lutar|pessoas lutando|wrestling
+🤼‍♂️|combate|esporte|greco-romana|homem|livre|torneio|desporto|duelo|homens a lutar|luta greco romana|luta livre|lutador de luta livre|lutadores de luta livre|lutar|pessoas|wrestling
+🤼‍♀️|combate|esporte|greco-romana|livre|torneio|desporto|duelo|luta greco romana|luta livre|lutadora de luta livre|lutadoras de luta livre|lutar|mulheres a lutar|pessoas|wrestling
+🤽|aquático|competição|esporte|piscina|água|desporto aquático|nadar|natação|pessoa a jogar polo aquático|polo aquático
 🤽‍♂️|aquático|esporte|jogador|jogando|piscina|desporto aquático|homem a jogar polo aquático|nadar|natação|polo aquático
 🤽‍♀️|aquático|esporte|jogadora|menina|piscina|desporto aquático|mulher a jogar polo aquático|nadar|natação|polo aquático
-🤾|atleta|esporte|gol|handball|handebol|jogador|jogando|passe|andebol|apanhar|atirar|bola de andebol|desporto|jogar andebol|jogo do mata|lançar|pessoa a jogar andebol
+🤾|atleta|esporte|gol|handball|handebol|jogador|passe|andebol|apanhar|atirar|bola de andebol|desporto|jogar andebol|jogo do mata|lançar|pessoa a jogar andebol
 🤾‍♂️|bola|esporte|handball|handebol|jogando|menino|quadra|andebol|desporto|homem a jogar andebol|jogador de andebol
 🤾‍♀️|esporte|gol|handball|handebol|jogando|menina|passe|quadra|andebol|atirar|bola de andebol|desporto|jogadora de andebol|jogar andebol|jogo do mata|lançar|mulher a jogar andebol
-🤹|equilíbrio|fazer malabarismo|habilidade|malabares|malabarismo|malabarista|multitarefa|homem a fazer malabarismo|pessoa a fazer malabarismo
-🤹‍♂️|equilíbrio|fazer malabarismo|habilidade|malabares|malabarismo|malabarista|multitarefa|homem a fazer malabarismo
+🤹|equilíbrio|habilidade|malabares|malabarismo|multitarefa|homem a fazer malabarismo|malabarista|pessoa a fazer malabarismo
+🤹‍♂️|equilíbrio|habilidade|malabares|malabarismo|multitarefa|homem a fazer malabarismo|malabarista
 🤹‍♀️|equilíbrio|habilidade|malabarismo|malabarista|multitarefa|mulher a fazer malabarismo
-🧘|ioga|meditação|pernas cruzadas|pessoa em posição de lótus, meditação, yoga, serenidade, pernas cruzadas, pernas cruzadas, relaxar|pessoa na posição de lótus|relaxar|yoga|zen|descontrair|paz|pessoa a meditar|posição de lótus
+🧘|cruzadas|ioga|lótus|meditação|postura|relaxar|serenidade|yoga|zen|descontrair|paz|pernas cruzadas|pessoa a meditar|posição de lótus
 🧘‍♂️|homem na posição de lótus|ioga|meditação|yoga
 🧘‍♀️|ioga|meditação|mulher na posição de lótus|yoga
-🛀|água|banheira|banho de banheira|banho de espuma|pessoa tomando banho|pessoa a tomar banho
-🛌|boa noite|cama|cochilo|dormindo|dormir|hotel|pessoa deitada na cama|soneca|sono|cansado|pessoa na cama|zzz
-🧑‍🤝‍🧑|casal|de mãos dadas|mãos dadas|parceiros|parceria|pessoas de mãos dadas|segurando
-👭|amigas|casal|duas mulheres de mão dadas|duas mulheres de mãos dadas|garotas|gurias|irmãs|mãos dadas|moças|pessoas|lgbtqia|mulheres de mãos dadas
-👫|amigos|casal|homem e mulher de mãos dadas|mãos dadas|pessoas|mulher e homem de mãos dadas
-👬|amigos|casal|dois homens de mãos dadas|gêmeos|homem|irmãos|mãos dadas|namorados|pessoas|gémeos|homens de mãos dadas|lgbtqia|signo
+🛀|água|banheira|banho|espuma|pessoa a tomar banho
+🛌|cama|cochilo|dormindo|dormir|hotel|noite|soneca|sono|boa noite|cansado|pessoa deitada na cama|pessoa na cama|zzz
+🧑‍🤝‍🧑|amigos|casal|dadas|gêmeos|parceiros|parceria|mãos dadas|pessoas de mãos dadas
+👭|amigas|casal|dadas|gêmeas|parceiras|parceria|pessoa|duas mulheres de mãos dadas|irmãs|lgbtqia|mãos dadas|mulheres de mãos dadas
+👫|amigos|casal|mãos dadas|pessoas|homem e mulher de mãos dadas|mulher e homem de mãos dadas
+👬|amigos|casal|gêmeos|homem|irmãos|mãos dadas|namorados|pessoas|dois homens de mãos dadas|gémeos|homens de mãos dadas|lgbtqia|signo
 💏|amor|beijar|beijo|casal|coração|pessoas|romance|aniversário
 💑|casal apaixonado|casal com um coração|coração|pessoas|romance|amor|casal com coração
 🗣️|berro|falando|grito|silhueta|voz|cabeça a falar|cara|falar
@@ -549,11 +550,12 @@
 👥|amigos|busto|dupla|pessoas|silhueta de bustos
 🫂|abraçando|abraço|adeus|amizade|amor|carinho|conforto|obrigado|olá|pessoas se abraçando|pessoas a abraçarem-se|pessoas a darem um abraço|pessoas abraçadas
 👪|família|filho|mãe|pai|pessoas|um filho|criança|homem e mulher com rapaz
-🧑‍🧑‍🧒|adulto|criança|família: adulto, adulto, criança
+🧑‍🧑‍🧒|adulto|criança|família
 🧑‍🧑‍🧒‍🧒|adultos|crianças|família|filha|filho
-🧑‍🧒|criança|família: adulto, criança
+🧑‍🧒|adulto|criança|família
 🧑‍🧒‍🧒|adulto|crianças|família
 👣|corpo|gravura|pegadas|pés descalços|rastro|a caminho|andar|caminhar|descalço
+🫆|identidade|impressão digital|investigação forense|segurança
 🐵|animal|macaco|rosto de macaco|banana|cara de macaco
 🐒|animal|macaco|banana
 🦍|animal|gorila|macaco
@@ -662,7 +664,12 @@
 🐙|animal|oceano|octopus|polvo
 🐚|animal|caramujo|concha do mar|concha em espiral|búzio|espiral|praia
 🪸|coral|mudança climática|oceano|recife|corais|marinho|mergulho|tropical
-🪼|água-viva|ai|animal|aquário|ferrão|invertebrado|marinha|medusa|oceano|plâncton|queimadura|tentáculos|vida marinha|alforreca|geleia
+🪼|água-viva|ai|animal|aquário|ferrão|invertebrado|marinha|medusa|oceano|queimadura|tentáculos|alforreca|geleia
+🦀|animal marinho|câncer|signo de câncer|zodíaco|caranguejo (animal)
+🦞|animal|bisque|caldo|fruto do mar|garras|lagosta|mariscada|marisco|pinças
+🦐|animal|camarão|comida|crustáceo|gamba|marisco
+🦑|animal|comida|lula|molusco
+🦪|frutos do mar|mar|mergulho|ostra|pérola
 🐌|animal|escargot|caracoleta|jardim
 🦋|beleza|borboleta|inseto|bonita|insecto
 🐛|animal|centopeia|inseto|lagarta|bicho|insecto|jardim
@@ -675,7 +682,7 @@
 🕷️|animal|aranha|dias das bruxas|halloween|inseto|insecto
 🕸️|aranha|halloween|inseto|teia de aranha
 🦂|animal|deserto|inseto|zodíaco|escorpião (animal)|signo
-🦟|aedes aegypti|animal|chicungunha|dengue|doença|febre amarela|inseto|malária|mosquito|pernilongo|vírus|zica|insecto|melga
+🦟|aedes|aegypti|amarela|animal|chicungunha|dengue|doença|febre|inseto|malária|mosquito|pernilongo|vírus|zica|insecto|melga
 🪰|animal|apodrecendo|doença|inseto|larva|mosca-varejeira|praga|varejeira|decomposição
 🪱|anelídeo|animal|minhoca|parasita|verme
 🦠|ameba|bactéria|ciência|micróbio|vírus
@@ -706,6 +713,7 @@
 🪹|aninhando|galhos|lar|ninho vazio|passarinho|pássaro|aninhada|aninhado|aninhar|casa|melancolia|nidificar
 🪺|aninhando|galhos|lar|ninho com ovos|ovos|passarinho|pássaro|aninhada|aninhado|aninhar|nidificar
 🍄|champignon|cogumelo|fungo|mario|planta|venenoso
+🪾|árvore seca|árvore sem folhas|inverno|seca|madeira|morta|ramos|sem folhas|tronco
 🍇|fruta|uvas|baco|vinho
 🍈|fruta|melão|meloa
 🍉|fruta|melancia|fatia
@@ -744,6 +752,7 @@
 🫚|cerveja|comida|erva|especiaria|gengibre|natural|raiz|saúde|tempero|alimentação|plantas
 🫛|comida|edamame|ervilha|feijão|grão|legume|leguminosa|pé de feijão|vagem|vegetal|alimentação|feijões|verde
 🍄‍🟫|champignon|cogumelo marrom|comida|fungos|natureza|trufa|vegetal|vegetariano|cogumelo castanho|ingrediente|shiitake|topping
+🫜|beterraba|legume|nabo|raiz|tubérculo|vegetal
 🍞|pão de forma|pão para fatiar|restaurante|torrada|tostex|hidrato de carbono
 🥐|café da manhã|comida|croissant|fome|pão|folhado|francês|pequeno-almoço
 🥖|baguete|bisnaga|comida|pão francês|cacete|francês
@@ -789,17 +798,12 @@
 🍢|espetinho|frutos do mar no espetinho|oden|restaurante|comida|espetada|kebab|marisco
 🍣|comida japonesa|restaurante japonês|sashimi|sushi
 🍤|camarão empanado|camarão frito|restaurante|tempura|frito|gamba
-🍥|bolinho de peixe com redemoinho|croquete de peixe|peixe|restaurante|comida|espiral|pastel de peixe com espiral
+🍥|bolinho de peixe|croquete|peixe|redemoinho|restaurante|comida|espiral|pastel de peixe com espiral
 🥮|bolo da lua|bolo lunar|comida|confeitaria|festival chinês|outono|yuèbǐng
 🍡|bolinho de mochi no espetinho|bolinho japonês|comida|dango|doce|fome|japonês|mochiko|sobremesa|espetada|espeto|japonesa
 🥟|asiático|chinês|dumpling|empanada|gyōza|jiaozi|massa|pierogi|potsticker|bolinho asiático|guioza|ravioli
 🥠|biscoito chinês|biscoito da fortuna|biscoito da sorte|profecia|sorte|bolinho
 🥡|caixa para viagem|caixinha para levar|delivery|marmita|caixa de takeaway|comida pronta|pauzinhos|takeaway
-🦀|animal marinho|câncer|signo de câncer|zodíaco|caranguejo (animal)
-🦞|animal|bisque|caldo|fruto do mar|garras|lagosta|mariscada|marisco|pinças
-🦐|animal|camarão|comida|crustáceo|gamba|marisco
-🦑|animal|comida|lula|molusco
-🦪|frutos do mar|mar|mergulho|ostra|pérola
 🍦|doce|fome|sobremesa|sorvete de casquinha|sorvete de massa|sorvete italiano|sorvete na casquinha|cone de gelado|creme|cremoso|gelado|gelo
 🍧|gelo|raspadinha de gelo|restaurante|sobremesa|doce|granizado
 🍨|creme|gelo|restaurante|sobremesa|sorvete|comida|doce|gelado|natas
@@ -819,7 +823,7 @@
 🫖|alimento|bebida|bule|chá|chaleira|comida|infusão
 🍵|bebida|chá verde|xícara de chá sem alça|beber|chávena de chá sem asa
 🍶|bar|bebida|copo|garrafa e copo de saquê|japonês|restaurante|saquê|saqué|taça
-🍾|aniversário|bar|champagne|champanha|champanhe|cidra|comemorar|espumante estourando|estourar|festa|garrafa de champanhe|parabéns|beber|bebida|garrafa com rolha a saltar|rolha|saltar
+🍾|aniversário|bar|champagne|champanha|champanhe|cidra|comemorar|espumante|estourar|festa|parabéns|beber|bebida|garrafa com rolha a saltar|garrafa de champanhe|rolha|saltar
 🍷|bar|bebida|cálice de vinho|restaurante|taça|vinho|beber|copo de vinho
 🍸|bar|beber|bebida|cachaça|coquetel|happy hour|martini|restaurante|taça de coquetel|cocktail|copo de cocktail
 🍹|bar|bebida|coquetel de frutas|drink|happy hour|restaurante|tropical
@@ -827,7 +831,7 @@
 🍻|bar|caneca|cerveja|chope|chopp|restaurante|beber|bebida|brindar|brinde com canecas de cerveja
 🥂|brinde|champagne|champanhe|comemoração|taças brindando|tim-tim|bebida|celebrar|copo|flute
 🥃|bar|bebida|drink|whisky|baixo|copo de whisky|shot
-🫗|acabou|acidente|água|bebida|derramando líquido|derramar|derrubar|fim|ops|pingar|pingo|vazio|vidro|a derramar líquido|copo|entornar
+🫗|acabou|acidente|água|bebida|copo|derramar|derrubar|fim|líquido|ops|pingar|vazio|a derramar líquido|entornar|vidro
 🥤|água|canudo|copo com canudo|refrigerante|suco|copo com palhinha|sumo
 🧋|bebida|bolha|bubble tea|chá perolado|comida|leite|pérola|pobá|chá bubble|chá de bolhas
 🧃|caixa de suco|caixinha de suco|suco de caixa|suquinho|bebida|doce|pacote de sumo|palinha|sumo
@@ -907,7 +911,7 @@
 🎪|circo|entretenimento|lona de circo|tenda de circo
 🚂|locomotiva|trem|vapor|veículo|comboio|linha ferroviária|máquina
 🚃|bonde|elétrico|ferroviário|transporte|trem|trólebus|vagão|veículo|carro|carruagem|comboio|eléctrico|linha ferroviária|trólei|troleibus|troleicarro
-🚄|sistema de trens bala japonês|trem bala|trem de alta velocidade|veículo|comboio de alta velocidade|linha ferroviária|shinkansen|velocidade
+🚄|alta|bala|japonês|trem|trens|veículo|velocidade|veloz|comboio de alta velocidade|linha ferroviária|shinkansen
 🚅|bala|ferrovia|japão|trem|velocidade|veloz|viagem|comboio de alta velocidade|comboio-bala|linha ferroviária|shinkansen|veículo
 🚆|ferrovia|trem|veículo|comboio|linha férrea|linha ferroviária
 🚇|metrô|trem|túnel subterrâneo|veículo|metropolitano
@@ -951,30 +955,30 @@
 ⛽|abastecer|álcool|combustível|gasolina|abastecimento|bomba de gasolina|posto de gasolina
 🛞|carro|círculo|direção|girar|veículo|volante|pneumático|rodar|viatura
 🚨|carro da polícia|farol policial|luz de viatura policial|luz giratória|sirene|luz de carro da polícia|polícia
-🚥|luz|semáforo horizontal|sinais de trânsito|sinal de trânsito|sinaleira|sinaleiro|trânsito
-🚦|cruzamento|luz|semáforo vertical|sinais de trânsito|sinaleira|sinaleiro|trânsito
+🚥|cruzamento|horizontal|luz|sinaleira|trânsito|semáforo horizontal|sinais de trânsito
+🚦|cruzamento|luz|sinaleira|trânsito|vertical|semáforo vertical|sinais de trânsito
 🛑|pare|sinal de pare|octagonal|sinal de stop|stop
 🚧|construção|em construção|símbolo para em construção|barreira|obras
-🛟|colete salva-vidas|flutuar|guarda-vidas|nadar|resgate|salva-vidas|salvar|segurança|boia circular|salvamento
-⛵|barco a vela|iate|navegar|resort marítimo|barco à vela|estância|mar|veículo|veleiro
+🛟|flutuar|guarda-vidas|guardar|nadar|resgate|salva-vidas|segurança|vidas|boia circular|colete salva-vidas|salvamento
+⛵|iate|navegar|oceano|praia|resort|vela|barco à vela|estância|mar|veículo|veleiro
 🛶|barco|canoa
 🚤|barco|férias|lancha|praia|veículo|verão|milionário|viagem
 🛳️|barco|cruzeiro|embarcação|passageiros|veículo|navio de passageiros
 ⛴️|balsa|barco|ferry boat|ferry-boat|navegar|passageiro
 🛥️|lancha|motor|navio|veículo|barco a motor
-🚢|barco|cruzeiro|férias|navio|veículo aquático|viagem|passageiro|titanic
+🚢|aquático|barco|cruzeiro|férias|navio|veículo|viagem|passageiro|titanic
 🛩️|aéreo|jatinho|jato|pequeno|veículo|avião pequeno|avioneta
-🛫|avião decolando|decolando|decolar|férias|partindo|partiu|veículo|viagem|viajando|avião a levantar|check-in|levantar|partida
+🛫|decolar|férias|fui|partindo|partiu|viagem|viajando|avião a levantar|check-in|levantar|partida|veículo
 🛬|aterrissagem|aterrissando|chegando|pousando|veículo|voltando|aterragem|avião a aterrar|chegadas
 🪂|asa-delta|paraquedas|paraquedista|saltar de paraquedas|paraquedismo|parasailing
 💺|assento|cadeira|poltrona
 🚁|helicóptero|veículo|viagem|viajar|voo
 🚟|estrada de ferro suspensa|suspensão|trem|veículo|monocarril suspenso
 🚠|bonde|cabo suspenso usado em teleféricos nas montanhas|montanha|teleférico na montanha|veículo|teleférico de montanha
-🚡|aérea|gondola|gôndola|linha de bonde aérea|teleférico|veículo|aéreo|cabo|funicular
-🛰️|antena no espaço|satélite|veículo|espaço
+🚡|aérea|bonde|gôndola|linha|teleférico|veículo|aéreo|cabo|funicular
+🛰️|antena|espaço|satélite|veículo
 🚀|espaço|foguete|veículo|foguetão
-🛸|disco voador, ovni, alienígena, extra terrestre, et|ovni|extraterrestre
+🛸|alienígena|et|óvni|terrestre|voador|disco voador|extraterrestre|ovni
 🛎️|hotel|portaria|sineta|sino|campainha de receção|paquete|rececionista
 🧳|bagagem|mala|rodinhas|viagem|trólei
 ⌛|areia|ampulheta terminada|horas|temporizador
@@ -1023,14 +1027,14 @@
 🌡️|clima|temperatura|tempo|termômetro|meteorologia|termómetro
 🌝|cheia|lua cheia com rosto|lua com rosto|rosto da lua cheia|brilhante|cara|espaço|lua cheia com cara|meteorologia
 🌞|praia|rosto|brilhante|calor|cara|espaço|meteorologia|sol com cara
-🪐|planeta com anéis|saturnino|saturno|planeta anelado
-⭐|estrela branca média|astronomia|estrela amarela
+🪐|anéis|saturnino|saturno|planeta anelado|planeta com anéis
+⭐|amarela|astronomia|estrela amarela|estrela branca média
 🌟|brilhante|brilho|cintilante|estrela|luminosa|reluzente
 🌠|cadente|cai|estrela|espaço
 🌌|céu|espaço|estrelado|via láctea
-⛅|clima|nublado|nuvem|sol com nuvens|sol por trás das nuvens|encoberto|meteorologia|sol atrás de nuvem
+⛅|clima|nublado|nuvem|encoberto|meteorologia|sol atrás de nuvem
 ⛈️|chuva|clima|relâmpago|temporal|trovão|meteorologia|nuvem com relâmpago e chuva|trovoada
-🌤️|clima|nublado|nuvem|sol com nuvens|meteorologia|sol atrás de nuvem pequena
+🌤️|clima|ensolarado|nublado|nuvem|meteorologia|sol atrás de nuvem pequena
 🌥️|clima|nublado|nuvem|meteorologia|sol atrás de nuvem grande
 🌦️|chuva|clima|nuvem|sol com chuva|meteorologia|sol atrás de nuvem com chuva
 🌧️|chovendo|chuva|clima|meteorologia|nuvem com chuva
@@ -1047,26 +1051,26 @@
 ⛄|frio|inverno|neve|boneco de neve sem neve|meteorologia
 🔥|chama|fogo|incêndio
 💧|com suor|engraçado|gota de suor|suor|desenho|frio|lágrima|meteorologia
-🌊|onda de água|onda do oceano|tsunami|água|meteorologia|natureza|oceano|surfar
+🌊|água|mar|oceano|onda|praia|surfe|tsunami|meteorologia|natureza|surfar
 🎃|comemoração|dia das bruxas|halloween|jack|lanterna|abóbora de halloween|celebração
 🎄|comemoração|natal|pinheirinho|árvore de natal|celebração|pinheiro de natal
 🎆|ano novo|comemoração|fogos de artifício|celebração|fogo de artifício
 🎇|comemoração|fogo de artifício vela estrela|vela estrela|celebração|faísca|vela com faísca
-🧨|bomba chiando|bombinha|dinamite|estourando|estourar|explosivo|faísca|fogos de artifício|luz|pirotecnia|roubada|fogo de artifício|petardo
-🎈|aniversário|balão|celebração|comemoração|festa de aniversário|parabéns
-🎉|alegria|aniversário|celebrar|comemoração|cone de festa|festa|parabéns|celebração|confetti|lança-confetes|lança-confetti|surpresa
-🎊|bola de confetes|celebração|comemoração|confete|parabéns|bola de confetti|confetti
+🧨|artifício|bomba|bombinha|chiando|dinamite|estourar|explosivo|faísca|luz|pirotecnia|roubada|fogo de artifício|fogos de artifício|petardo
+🎈|aniversário|balão|celebração|comemoração|festa|parabéns
+🎉|alegria|aniversário|celebrar|comemoração|cone|eba|festa|oba|parabéns|celebração|confetti|lança-confetes|lança-confetti|surpresa
+🎊|celebração|comemoração|confete|eba|oba|parabéns|bola de confete|bola de confetti|confetti
 🎋|comemoração|estrelas|festival|japonesa|papel|tanabata|tiras|árvore do tanabata|celebração|faixa|japonês
 🎍|bambu|comemoração|decoração de pinhas|decoração de pinhos|japonês|pinha|celebração|decoração com bambu|planta
 🎎|comemoração|festival|japanesas|japonês|bonecas japonesas|bonecas japoneses|celebração
-🎏|bandeira de carpas|comemoração|koinobori|subida de carpas|bandeirola de carpas|carpas|celebração
+🎏|carpas|comemoração|koinobori|bandeira de carpas|bandeirola de carpas|celebração
 🎐|carrilhão de vento|sino|som|vento|campainha|celebração|espanta-espíritos
 🎑|cerimônia de contemplação da lua|comemoração|contemplação da lua|lua|celebração|cerimónia da lua
 🧧|boa sorte|dinheiro|envelope vermelho|hóngbāo|lai see|presente
 🎀|comemoração|fita|presente|celebração|festa|laço de fita
 🎁|comemoração|embrulhado|mimo|presente|caixa|celebração|natal
 🎗️|celebração|comemoração|fita de lembrete|lembrete|laço de solidariedade|solidariedade
-🎟️|entrada|ingresso de cinema|ticket|bilhetes
+🎟️|cinema|entrada|ingresso|ticket|bilhetes
 🎫|entretenimento|ingresso|bilhete|entrada
 🎖️|condecoração|medalha|militar|prêmio|celebração
 🏆|campeão|prêmio|troféu|prémio|taça|vitória
@@ -1079,7 +1083,7 @@
 🥎|bola|esporte|luva|softball|softbol|desporto|por baixo do braço
 🏀|bola|cesta|esporte|jogo|basquetebol|cesto|desporto
 🏐|bola|jogar|jogo|vôlei|voleibol
-🏈|americano|bola de futebol americano|esporte|futebol americano|super bowl|desporto
+🏈|americano|esporte|futebol|super bowl|bola de futebol americano|desporto
 🏉|americano|bola|esporte|futebol|rugby|desporto|râguebi
 🎾|bola|esporte|raquete|tênis|desporto|ténis
 🥏|disco|esporte|frisbee|ultimate|voador
@@ -1088,29 +1092,29 @@
 🏑|bola|campo|hóquei de campo|jogo|taco|hóquei em campo|stick
 🏒|disco|gelo|hóquei no gelo|jogo|taco|stick e disco de hóquei no gelo
 🥍|bastão|bola|esporte|lacrosse|raquete|taco|baliza|desporto|golo
-🏓|mesa|pingpong|pingue-pongue|raquete|tênis de mesa|bola|jogo|ténis de mesa
+🏓|mesa|pingpong|pingue-pongue|raquete|tênis|bola|jogo|ténis de mesa
 🏸|badminton|jogo|peteca|raquete|badmínton|pena|volante
-🥊|boxe|esporte|lutar boxe|luva de boxe|desporto|pugilismo|pugilista
-🥋|artes marciais|esporte|faixa preta|judô|karatê|quimono de artes marciais|taekwondo|uniforme|desporto|judo|karaté
+🥊|boxe|esporte|luta|desporto|luva de boxe|pugilismo|pugilista
+🥋|esporte|faixa|judô|karatê|marciais|preta|taekwondo|uniforme|artes marciais|desporto|judo|karaté|quimono de artes marciais
 🥅|esporte|futebol|goleira|goleiro|rede|baliza|desporto|golo|objetivo
 ⛳|buraco|esporte|golfe|bandeira no buraco|desporto
 ⛸️|gelo|patinação|patins|patim de gelo|patinagem no gelo
 🎣|entretenimento|peixe|pescador|pescaria|recreação|vara|cana de pesca|desporto
-🤿|esnórquel|máscara de mergulho|mergulhadora|mergulho|scuba|snorkeling
+🤿|esnórquel|mergulhador|mergulho|scuba|snorkeling|máscara de mergulho
 🎽|camiseta|corrida|esporte|faixa|atletismo|camisola de corrida|t-shirt de alças
 🎿|bota|esporte|esquiar|neve|esquis
-🛷|trenó, tobogã, neve|neve|tobogã
-🥌|pedra de curling, jogo|curling|jogo
-🎯|dardos|jogo|mira|na mosca|no alvo|tiro certeiro|alvo|centro|em cheio no alvo
+🛷|neve|tobogã|trenó
+🥌|curling|jogo|pedra de curling
+🎯|alvo|certeiro|dardos|jogo|mira|mosca|centro|em cheio no alvo|tiro certeiro
 🪀|brinquedo|ioiô|flutuar|ioió
 🪁|pipa|planar|voar|papagaio de papel
 🔫|água|arma|ferramenta|pistola d’água|revólver|pistola de água
 🎱|bilhar|bola oito|jogo|bola 8|oito|snooker
-🔮|adivinhação|bola de cristal|cristal|destino|prever o futuro|conto de fadas|fantasia|instrumento|magia|sorte
-🪄|bruxa|magia|mágica|mágico|mago|varinha de condão|feiticeiro|varinha mágica
+🔮|adivinhação|cristal|destino|futuro|prever|bola de cristal|conto de fadas|fantasia|instrumento|magia|sorte
+🪄|bruxa|condão|magia|mágica|mago|feiticeiro|mágico|varinha mágica
 🎮|controle|game|jogos|playstation|videogame|xbox|comando de consola|comando de jogos|videojogo
-🕹️|controle de atari|game|jogo|joystick|video game|videogame|videojogo
-🎰|aposta|caça-níquel|cassino|jogo de azar|máquina caça-níqueis|slot machine
+🕹️|atari|controle|game|jogo|joystick|videogame|videojogo
+🎰|aposta|azar|caça-níquel|cassino|máquina|jogo de azar|slot machine
 🎲|dados|sorte|entretenimento|jogo de dados|valor
 🧩|dica|encaixe|peça de puzzle|pista|puzzle|quebra-cabeças
 🧸|bichinho|brinquedo|enchimento|pelúcia|urso|peluche|ursinho de peluche
@@ -1121,51 +1125,51 @@
 🃏|baralho|carta|coringa|curinga|jogo|joker|jogar|jóquer
 🀄|jogo|mahjong|vermelho|dragão vermelho de mahjong|peça de mahjong
 🎴|carta de baralho|carta de flores|flores|hanafuda|jogo de baralho|baralho de cartas com flores|japonês|jogar
-🎭|arte dramática|ator|atriz|entretenimento|espetáculo|peça|performance|teatro|artes|máscaras|performativas
-🖼️|arte|museu|pintura|quadro emoldurado|imagem|moldura com imagem|quadro com moldura
-🎨|arte|artista|museu|paleta artística|paleta de tintas|pintor|pintura|tinta|paleta de artista
+🎭|ator|atriz|drama|dramática|entretenimento|espetáculo|peça|performance|teatro|arte dramática|artes|máscaras|performativas
+🖼️|arte|emoldurado|museu|pintura|imagem|moldura com imagem|quadro com moldura
+🎨|arte|artista|artística|museu|pintor|pintura|tinta|paleta de artista
 🧵|agulha|barbante|carretel|costura|linha|carrinho de linhas|fio
-🪡|agulha de costura|alfaiataria|bordados|costurar|linha|pontos|suturas|coser
+🪡|agulha|alfaiataria|bordados|costura|linha|pontos|suturas|vagonite|coser
 🧶|bola|crochê|lã|novelo|tricô|tricotar|croché
-🪢|amarrar|corda|cordel|emaranhado|fio|laço|nó de marinheiro
+🪢|amarrar|corda|cordel|emaranhado|fio|laço|marinheiro|nó
 👓|acessório|óculos|olhos
 🕶️|óculos de sol|óculos escuros|acessório|escuro|olhos
-🥽|mergulho|natação|óculos de proteção|proteção para os olhos|soldagem
+🥽|mergulho|natação|olhos|proteção|ski|soldagem|óculos de proteção
 🥼|cientista|dr.|experiência|experimento|jaleco|médico|roupa|bata branca|bata de laboratório
-🦺|colete refletivo|colete salva-vidas|emergência|segurança|colete de segurança
+🦺|emergência|refletivo|salva-vidas|segurança|colete de segurança
 👔|acessório|gravata|roupa|camisa com gravata|vestuário
 👕|camisa|camiseta|roupa|camisola|manga curta|t-shirt|vestuário
 👖|jeans|roupa|calças de ganga|vestuário
-🧣|cachecol, pescoço, frio,|inverno|pescoço|écharpe|frio|lenço
+🧣|cachecol|frio|inverno|pescoço|écharpe|lenço
 🧤|inverno|luvas|mãos
-🧥|blusa|casaco, jaqueta, frio, agasalho|jaqueta|frio
+🧥|agasalho|blusa|casaco|frio|jaqueta
 🧦|meião|meias|peúgas
 👗|peça única|roupa|vestido|elegante|moda|vestuário
 👘|quimono|roupa|vestir|confortável|vestuário
 🥻|índia|indiana|roupa|sari|vestido|vestuário
-🩱|maiô|nadar|roupa de banho|roupa de praia|fato de banho
-🩲|cueca|nadar|peça única|roupa de banho|roupa de praia|roupa íntima|sunga|calções|fato de banho|roupa interior|slip de banho
-🩳|bermuda|nadar|roupa de banho|roupa de praia|shorts|calções de banho|fato de banho|roupa interior|slip
-👙|biquíni|piscina|praia|roupa|traje de banho|nadar|vestuário
-👚|blusa rosa|camiseta|roupas femininas|camisa|roupa de senhora|roupas de senhora|senhora|vestuário
-🪭|abanar|arejar|balançar|calor|flertar|leque dobrável|quente|refrescante|refrescar|tímida|timidez|acessório|dançar|feminino|flamenco
-👛|acessório|bolsa rosa|bolsinha|moedas|niqueleira|porta moeda|carteira|dinheiro|porta-moedas|vestuário
-👜|acessório|bolsa de mão|fashion|carteira|mala de mão|saco|vestuário
-👝|acessório|bolsa pequena|carteira|fashion|mala de mão|pochete|saco|vestuário
-🛍️|compras|sacolas de compras|sacolas de shopping|shopping|hotel|sacos de compras
-🎒|bolsa escolar|escola|mochila escolar|viagem|viajar|mochila da escola|pasta|saco
+🩱|banho|maiô|nadar|praia|fato de banho|roupa de banho
+🩲|banho|cueca|íntima|nadar|praia|sunga|calções|fato de banho|peça única|roupa de banho|roupa interior|slip de banho
+🩳|banho|bermuda|nadar|praia|shorts|calções de banho|fato de banho|roupa de praia|roupa interior|slip
+👙|banho|biquíni|piscina|praia|roupa|nadar|vestuário
+👚|azul|blusa|camiseta|feminina|camisa|roupa de senhora|roupas de senhora|senhora|vestuário
+🪭|abanar|arejar|balançar|calor|flertar|quente|refrescar|timidez|acessório|dançar|feminino|flamenco|leque dobrável|refrescante
+👛|acessório|bolsa|bolsinha|niqueleira|rosa|carteira|dinheiro|moedas|porta-moedas|vestuário
+👜|acessório|bolsa|fashion|mão|carteira|mala de mão|saco|vestuário
+👝|acessório|carteira|fashion|pequena|bolsa pequena|mala de mão|pochete|saco|vestuário
+🛍️|compras|presente|sacolas|shopping|hotel|sacos de compras
+🎒|bolsa|escola|viagem|viajar|mochila da escola|pasta|saco
 🩴|alpargatas|chinelo|piscina|praia|rasteirinha|sandália|havaiana|sapato
 👞|acessório|sapato masculino|sapatos|calçado masculino|homem|sapato de homem|vestuário
 👟|acessório|correr|corrida|esportivo|sapato|tênis|calçado|desporto|sapatilha|ténis|vestuário
 🥾|acampamento|acampar|bota de trekking|caminhada|marrom|mochilão|natureza|trilha|bota de caminhada|mochila|sapato castanho
 🥿|confortável|sapatilha de balé|sem fivela|chinelo|sabrina|sapato raso|slip-on
-👠|acessório|chique|fashion|moda|mulher|salto alto|sapato de salto alto|calçado|saltos altos|senhora
-👡|acessório|feminino|sandália feminina|sandálias femininas|calçado|sandália de senhora|senhora|vestuário
-🩰|bailarina|bailarino|balé|dança|sapatilha de balé|ballet|sapatos de ballet
-👢|acessório|bota feminina|botas|feminino|sapato|bota de senhora|calçado|senhora|vestuário
+👠|acessório|alto|chique|fashion|moda|mulher|scarpin|calçado|saltos altos|sapato de salto alto|senhora
+👡|acessório|feminino|médio|salto|calçado|sandália de senhora|senhora|vestuário
+🩰|bailarina|balé|dança|ballet|sapatilha de balé|sapatos de ballet
+👢|acessório|calçado|feminina|médio|salto|bota de senhora|botas|senhora|vestuário
 🪮|afro|cabelo|crespo|pente garfo|pentear|retrô|pente de cabelo
 👑|acessório|coroa|família real|game of thrones|medieval|rainha|realeza|reinado|vestuário
-👒|acessório|chapéu feminino|fashion|chapéu de senhora|senhora|vestuário
+👒|acessório|fashion|feminino|chapéu de senhora|senhora|vestuário
 🎩|cartola|chique|entretenimento|roupa|acessório|chapéu alto|vestuário
 🎓|capelo|comemoração|formatura|acessório|celebração|chapéu de finalista|chapéu de graduação|educação|licenciatura
 🧢|boné de beisebol|chapéu de baseball
@@ -1175,15 +1179,15 @@
 💄|batom|cosméticos|makeup|maquiagem|vermelho|bâton|maquilhagem
 💍|anel|diamante|romance|casamento|noivado
 💎|diamante|joia|pedra preciosa|casamento|jóia|preciosa|romance
-🔇|alto-falante com sinal de cancelamento|alto-falante silenciado|mudo|mute|quieto|silenciar|silêncio|altifalante desligado|sem som|silencioso|som|volume
-🔈|alto-falante com volume baixo|música|volume baixo|altifalante baixo|som baixo
-🔉|alto-falante com som baixo|alto-falante com volume baixo|alto-falante com volume médio|baixo|diminuir o volume|volume baixo|volume médio|altifalante médio|onda sonora|som médio
-🔊|alto-falante com som alto|alto-falante com volume alto|música|volume alto|altifalante|elevado|som
-📢|alto-falante manual|buzina|comunicação|discurso público|megafone em uso|altifalante|comunicações públicas|público|som
+🔇|alto-falante|calar|mudo|mute|quieto|silenciar|silêncio|som|altifalante desligado|sem som|silencioso|volume
+🔈|alto-falante|baixo|mudo|música|silêncio|altifalante baixo|som baixo|volume baixo
+🔉|alto-falante|baixo|diminuir|médio|altifalante médio|onda sonora|som médio|volume médio
+🔊|alto-falante|gritar|música|som|volume|altifalante|elevado
+📢|alto-falante|aviso|buzina|comunicado|discurso|gritar|megafone|altifalante|comunicações públicas|público|som
 📣|aplausos|comunicação|megafone|apoiar|torcer
 📯|corneta|correios|postal|trompa dos correios
 🔔|capela|sino|igreja|som
-🔕|mudo|proibido|quieto|sem som|silencioso|símbolo de sino com sinal de cancelamento|sino silenciado|não|silêncio|sino com barra|sino riscado
+🔕|mudo|notificação|proibido|quieto|sem som|silêncio|silencioso|não|sino com barra|sino riscado|sino silenciado
 🎼|música|partitura musical|nota|pauta
 🎵|música|nota musical|som
 🎶|música|notas musicais
@@ -1191,7 +1195,7 @@
 🎚️|controle de volume|música|volume|controlo de nível|controlo do volume|nível|seletor
 🎛️|botões giratórios|controle|música|botões de controlo|comando
 🎤|cantar|entretenimento|karaokê|microfone|música|karaoke
-🎧|entretenimento|fone de ouvido|fones de ouvido|música|som|auscultador|intra-auricular
+🎧|entretenimento|fone|música|ouvido|som|auscultador|intra-auricular
 📻|rádio|radiola|som|vídeo|entertenimento|música
 🎷|instrumento musical|música|saxofone
 🪗|acordeão|concertina|instrumento|música|sanfona
@@ -1199,26 +1203,27 @@
 🎹|instrumento musical|música|piano|teclado musical
 🎺|instrumento musical|música|trompete
 🎻|instrumento musical|música|violino|stradivarius
-🪕|banjo|cordas|instrumento de cordas|música
+🪕|banjo|cordas|instrumento|música
 🥁|baquetas|música|percussão|tambor
-🪘|atabaque|batida|conga|instrumento|percurssão|ritmo|tambor comprido|tambor alto
+🪘|atabaque|batida|comprido|conga|instrumento|percussão|ritmo|tambor alto|tambor comprido
 🪇|chacoalhar|chocalho|dança|festa|maracas|maracás|mexer|música|percussão|abanar|instrumento musical|ritmo
-🪈|banda marcial|flautim|flautista|gravador|música|orquestra|pífano|pife|sopro|tubo|flauta de cana|instrumento musical|pífaro
+🪈|banda|flautim|marcial|música|orquestra|pífano|pife|sopro|tubo|flauta de cana|flautista|gravador|instrumento musical|pífaro
+🪉|amor|cupido|harpa|instrumento|música|orquestra
 📱|celular|telefone móvel|comunicação|telemóvel
-📲|celular com seta|fazer uma chamada|fazer uma ligação|receber|seta|telefone celular com seta|telefone móvel|chamada|comunicação|telemóvel com seta
+📲|celular|chamada|fazer|ligar|receber|seta|smartphone|telefone|comunicação|telemóvel com seta
 ☎️|gancho|telefone no gancho|telefone fixo
 📞|aparelho de telefone|comunicação|telefone|auscultador de telefone
 📟|comunicação|pager
 📠|comunicação|fax|máquina de fax
 🔋|bateria|pilha
-🪫|acabando a bateria|bateria fraca|descarregada|descarregado|eletrônico|fim da bateria|pilha fraca|pouca bateria|pouca energia|sem bateria|eletrónico
-🔌|cabo de energia|elétrica|eletricidade|plugue|tomada elétrica|ficha
+🪫|acabando|cansado|descarregada|eletrônico|energia|fim|fraca|sem|bateria fraca|eletrónico|pilha fraca|pouca bateria|pouca energia
+🔌|cabo|elétrica|eletricidade|energia|plugue|tomada|ficha
 💻|computador|laptop|notebook|pc|pessoal|trabalho|portátil
 🖥️|computador de mesa|desktop|mesa|monitor|computador de secretária|secretária
-🖨️|acessório|computador|impressão de documento|impressora|imprimir
+🖨️|acessório|computador|documento|impressão|impressora|imprimir
 🖱️|acessório|computador|mouse|rato de computador
-🖲️|acessório|computador|mouse de bolinha|trackball|informática|rato
-💽|computação|computador|disco de computador|md|mini disc|minidisk|minidisco|ótico
+🖲️|acessório|bolinha|computador|mouse|trackball|informática|rato
+💽|computação|disco|hd|md|rígido|computador|minidisco|ótico
 💾|computador|disco flexível|disquete|floppy
 💿|blu-ray|cd|computador|disco|dvd|óptico|ótico
 📀|blu-ray|cd|computador|disco|dvd|óptico|ótico
@@ -1227,30 +1232,30 @@
 🎞️|cinema|filme|rolo de filmes|fotogramas|película
 📽️|cinema|filme|projetor de filmes|vídeo|projetor de cinema
 🎬|cena|claquete|entretenimento|filme|tomada|cinema
-📺|canal de tv|televisão|tv|video|vídeo|televisor
+📺|canal|televisão|tv|vídeo|televisor
 📷|câmera|selfie|vídeo|câmara|fotografia|máquina fotográfica
 📸|câmera|flash|fotografia|vídeo|câmara|máquina fotográfica com flash
 📹|câmera|filmadora|vídeo|câmara de vídeo
-📼|cassete de vídeo|fita|vhs|vídeo|videocassete
-🔍|busca|ferramenta|lente de aumento|lupa apontado para a esquerda|lupa para a esquerda|procura|ampliar|investigar|lupa inclinada para a esquerda|pesquisar
-🔎|ferramenta|lente de aumento|lupa apontado para a direita|lupa para a direita|procura|investigação|lupa inclinada para a direita|pesquisar
+📼|cassete|fita|vhs|vídeo|videocassete
+🔍|aumento|busca|esquerda|ferramenta|lente|procura|ampliar|investigar|lupa inclinada para a esquerda|pesquisar
+🔎|aumento|busca|direita|ferramenta|lente|procura|investigação|lupa inclinada para a direita|pesquisar
 🕯️|acesa|luz|vela
 💡|elétrica|ideia|lâmpada|luz|quadrinhos|tenho uma ideia|desenho|eletricidade
 🔦|elétrica|ferramenta|lanterna|luz|eletricidade|utensílio
 🏮|bar|izakaya|papel|restaurante|vermelha|japonês|lanterna de papel vermelha|lanterna vermelha de papel|luz
 🪔|diya|lâmpada de óleo|óleo
-📔|caderno com decoração|capa|decorado|livro|bloco de notas com capa decorada|decorada
+📔|agenda|caderno|capa|decoração|escola|livro|bloco de notas com capa decorada|decorada
 📕|apostila|fechado|livro|educação
 📖|aberto|biblioteca|leitura|lendo|ler|livraria|livro|educação
 📗|biblioteca|caderno|colégio|escola|estudar|lendo|ler|livraria|livro|verde|educação|leitura
-📘|apostila azul|azul|estudo|leitura|livro
+📘|apostila|azul|escola|estudo|leitura|livro
 📙|apostila|cartilha|laranja|cor de laranja|educação|leitura|livro cor de laranja
 📚|biblioteca|estudando|estudar|leitura|lendo|ler|livraria|livros|escola
 📓|caderno|folhas|bloco de notas
 📒|caderno|livro contábil|bloco de notas|livro-razão
-📃|dobrado|documento|página com a parte inferior enrolada|página dobrada|página com dobra
+📃|dobrado|documento|papel|página com dobra|página dobrada
 📜|pergaminho|rolo de papel|papel
-📄|documento|folha|página com a parte da frente para cima|página voltada para cima|parte da frente para cima|página virada para cima
+📄|documento|oficial|papel|página virada para cima
 📰|jornal|notícias|comunicação|imprensa|papel
 🗞️|enrolado|jornal|notícias|imprensa|papel
 📑|marcar|página|marcador de página|marcadores de folhas
@@ -1334,6 +1339,7 @@
 🧰|ferramenta|mecânico|vermelha|caixa de ferramentas|caixa vermelha|mala de ferramentas
 🧲|atração|ferradura|ímã|magnético|positivo-negativo|íman
 🪜|degrau|escada|mão|subir|descer|trepar
+🪏|buraco|cavar|pá|pazinha
 🧪|ciência|ensaio|experiência|experimento|laboratório|química|químico|tubo de ensaio
 🧫|bactéria|biologia|biologista|biólogo|ciência|cultura|laboratório|petri|placa de petri
 🧬|biologista|biólogo|código|dna|evolução|gene|genética|genético|vida|adn
@@ -1380,7 +1386,7 @@
 🪬|amuleto|fátima|guia|hamsa|hamsá|maria|miriam|proteção|sorte|chamsá|cinco dedos da mão|islão|judaísmo|mão de deus|mão de fátima|mau-olhado|palma da mão com cinco dedos estendidos|talismã
 🗿|estátua|moai|moyai|rosto|cara|ilha de páscoa
 🪧|aviso|cartaz|demonstração|letreiro|piquete|protesto|sinal|manifestação|placard
-🪪|carteira|crachá|credenciais|documento|habilitação|identidade|identificação|licença|motorista|rg|segurança|carta de condução|cartão de identidade|cartão de identificação|passe
+🪪|carteira|crachá|credenciais|documento|habilitação|identidade|licença|motorista|rg|segurança|carta de condução|cartão de identidade|cartão de identificação|identificação|passe
 🏧|atm|automático|banco|caixa|dinheiro|eletrônico|grana|saque|símbolo|mb|multibanco|sinal de caixa automática|sinal de multibanco
 🚮|coloque o lixo no lixo|lata|lixeira|lixo|símbolo|cesto do lixo|sinal de lixo no caixote do lixo
 🚰|água|beber|potável|símbolo|torneira
@@ -1477,6 +1483,7 @@
 ➰|laço encaracolado|loop|onda|ondulado|volta|caracol
 ➿|duas vezes|duplo|encaradolado|loop encaracolado duas vezes|onda|ondulado|caracol|espiral|laço encaracolado duplo
 〽️|canto|japonês|símbolo japonês de canto|sinal japonês indicando início de música|entrada|marca de alternância parcial|música|parcial
+🫟|mancha|pingo|respingo|tinta
 🔠|abcd|caracteres latinos maiúsculos|digitação|inserir caracteres latinos maiúsculos|latinas|letras|maiúsculas|maiúsculos|introdução de maiúsculas latinas
 🔡|abcd|caracteres latinos minúsculos|digitação|latinas|latino|letras|minúsculas|minúsculos|introdução de minúsculas latinas
 🔢|1234|digitação|inserir números|números|introdução de números

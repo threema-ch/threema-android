@@ -66,13 +66,11 @@ import ch.threema.app.adapters.FilterableListAdapter;
 import ch.threema.app.fragments.MemberListFragment;
 import ch.threema.app.fragments.UserMemberListFragment;
 import ch.threema.app.fragments.WorkUserMemberListFragment;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.ThreemaSearchView;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ActivityExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.SnackbarUtil;
@@ -99,7 +97,6 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
     private MenuItem searchMenuItem;
     private ThreemaSearchView searchView;
 
-    protected ContactService contactService;
     protected ArrayList<String> excludedIdentities = new ArrayList<>();
     protected ArrayList<String> preselectedIdentities = new ArrayList<>();
 
@@ -201,13 +198,6 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
         }
 
         this.rootView = findViewById(R.id.coordinator);
-
-        try {
-            this.contactService = serviceManager.getContactService();
-        } catch (Exception e) {
-            LogUtil.exception(e, this);
-            return false;
-        }
         return true;
     }
 

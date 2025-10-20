@@ -23,7 +23,7 @@ package ch.threema.app.workers
 
 import android.content.Context
 import androidx.work.*
-import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitServiceManagerWithTimeout
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.notification.NotificationService
@@ -31,18 +31,18 @@ import ch.threema.app.threemasafe.ThreemaSafeService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.common.minus
-import ch.threema.common.now
-import java.util.*
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
+import org.koin.core.component.KoinComponent
 
 private val logger = LoggingUtil.getThreemaLogger("ThreemaSafeUploadWorker")
 
 class ThreemaSafeUploadWorker(
     context: Context,
     workerParameters: WorkerParameters,
-) : CoroutineWorker(context, workerParameters) {
+) : CoroutineWorker(context, workerParameters), KoinComponent {
 
     companion object {
         private const val EXTRA_FORCE_UPDATE = "FORCE_UPDATE"
@@ -106,10 +106,10 @@ class ThreemaSafeUploadWorker(
             threemaSafeService.createBackup(forceUpdate)
             // When the backup has been successfully uploaded or does not need to be uploaded, then
             // we ignore previous errors.
-            preferenceService.threemaSafeErrorDate = null
+            preferenceService.threemaSafeErrorTimestamp = null
         } catch (e: ThreemaSafeService.ThreemaSafeUploadException) {
-            if (preferenceService.threemaSafeErrorDate == null && e.isUploadNeeded) {
-                preferenceService.threemaSafeErrorDate = Date()
+            if (preferenceService.threemaSafeErrorTimestamp == null && e.isUploadNeeded) {
+                preferenceService.threemaSafeErrorTimestamp = Instant.now()
             }
             showWarningNotification(preferenceService, serviceManager.notificationService)
             logger.error("Threema Safe upload failed", e)
@@ -128,11 +128,11 @@ class ThreemaSafeUploadWorker(
     }
 
     private fun showWarningNotification(preferenceService: PreferenceService, notificationService: NotificationService) {
-        val errorDate = preferenceService.threemaSafeErrorDate ?: return
-        if (errorDate < now() - 7.days) {
-            val lastBackupDate = preferenceService.threemaSafeBackupDate
-            val fullDaysSinceLastBackup = (now() - lastBackupDate).inWholeDays.toInt()
-            if (fullDaysSinceLastBackup > 0 && preferenceService.getThreemaSafeEnabled()) {
+        val errorTimestamp = preferenceService.threemaSafeErrorTimestamp ?: return
+        if (errorTimestamp < Instant.now() - 7.days) {
+            val lastBackupDate = preferenceService.threemaSafeBackupTimestamp
+            val fullDaysSinceLastBackup = lastBackupDate?.let { (Instant.now() - lastBackupDate).inWholeDays.toInt() }
+            if (fullDaysSinceLastBackup != null && fullDaysSinceLastBackup > 0 && preferenceService.getThreemaSafeEnabled()) {
                 notificationService.showSafeBackupFailed(fullDaysSinceLastBackup)
             } else {
                 notificationService.cancelSafeBackupFailed()

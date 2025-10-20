@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="center"
-        app:tint="?attr/colorOnPrimaryContainer"
+        app:tint="?attr/colorOnPrimary"
         android:clickable="false"
         android:visibility="visible" />
 

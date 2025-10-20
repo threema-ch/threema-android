@@ -37,26 +37,9 @@ import androidx.annotation.UiThread;
 import ch.threema.app.BuildConfig;
 
 public class RuntimeUtil {
-    private static Boolean isInTestMode;
     public static Handler handler = new Handler(Looper.getMainLooper());
 
     private static final ExecutorService workerExecutor = Executors.newCachedThreadPool();
-
-    /**
-     * check if current running environment is a test suite
-     */
-    public static boolean isInTest() {
-        if (isInTestMode == null) {
-            try {
-                Class.forName("ch.threema.app.ThreemaTestRunner");
-                isInTestMode = true;
-            } catch (ClassNotFoundException e) {
-                isInTestMode = false;
-            }
-        }
-
-        return isInTestMode;
-    }
 
     /**
      * Return true if the calling thread is in the UI thread

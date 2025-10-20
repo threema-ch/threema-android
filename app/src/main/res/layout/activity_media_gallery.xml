@@ -20,9 +20,8 @@
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                tools:menu="@menu/activity_media_gallery"
-                tools:navigationIcon="@drawable/ic_arrow_left"
-                tools:title="Contact Name" />
+                tools:navigationIcon="?attr/homeAsUpIndicator"
+                tools:title="Conversation Name" />
 
             <include layout="@layout/connection_indicator" />
 
@@ -39,7 +38,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chip_group"
+            android:id="@+id/chip_group_content_types"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
@@ -47,7 +46,54 @@
             android:paddingVertical="@dimen/grid_unit_x1"
             app:chipSpacingHorizontal="@dimen/grid_unit_x0_5"
             app:chipSpacingVertical="0dp"
-            app:lineSpacing="4dp" />
+            app:lineSpacing="0dp">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/content_type_image"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/media_gallery_pictures"
+                tools:checked="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/content_type_gif"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/media_gallery_gifs"
+                tools:checked="true" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/content_type_video"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/media_gallery_videos" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/content_type_voice_message"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/media_gallery_audio" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/content_type_audio"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/audio_placeholder" />
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/content_type_file"
+                style="@style/Widget.Material3.Chip.Filter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/media_gallery_files"
+                tools:checked="true" />
+
+        </com.google.android.material.chip.ChipGroup>
 
         <ch.threema.app.ui.EmptyRecyclerView
             android:id="@+id/item_list"

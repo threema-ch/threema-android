@@ -21,32 +21,30 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import ch.threema.storage.models.WebClientSessionModel;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import androidx.annotation.NonNull;
+
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 /**
  * add "created" column to webclient sessions table
  */
 public class DatabaseUpdateToVersion51 implements DatabaseUpdate {
 
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion51(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion51(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 
     @Override
     public void run() throws SQLException {
-        if (!fieldExists(this.sqLiteDatabase, WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_CREATED)) {
-            this.sqLiteDatabase.rawExecSQL(
-                "ALTER TABLE " + WebClientSessionModel.TABLE
-                    + " ADD COLUMN " + WebClientSessionModel.COLUMN_CREATED + " BIGINT NULL"
-            );
+        if (!fieldExists(sqLiteDatabase, "wc_session", "created")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE wc_session ADD COLUMN created BIGINT NULL");
         }
     }
 

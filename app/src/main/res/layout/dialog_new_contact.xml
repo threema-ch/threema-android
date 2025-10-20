@@ -1,65 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scroll_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:background="@android:color/transparent"
+    android:clipToPadding="false"
+    android:paddingHorizontal="@dimen/grid_unit_x3"
     android:paddingTop="@dimen/dialog_margin_below_title">
 
-    <ScrollView
-        android:id="@+id/scroll_container"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@android:color/transparent">
+        android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/message"
+            style="@style/Threema.MaterialAlertDialog.Body.Style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/add_contact_enter_id_hint" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_input_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="@dimen/grid_unit_x2"
+            app:endIconMode="clear_text">
 
-            <TextView
-                style="@style/MaterialAlertDialog.Material3.Body.Text"
-                android:id="@+id/message"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
-                android:layout_marginRight="24dp"
-                android:text="@string/add_contact_enter_id_hint" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/text_input_layout"
+            <ch.threema.app.emojis.EmojiEditText
+                android:id="@+id/edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:paddingLeft="@dimen/edittext_padding"
-                android:paddingRight="@dimen/edittext_padding"
-                app:endIconMode="clear_text">
+                android:singleLine="true">
 
-                <ch.threema.app.emojis.EmojiEditText
-                    android:id="@+id/edit_text"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true">
+                <requestFocus />
+            </ch.threema.app.emojis.EmojiEditText>
 
-                    <requestFocus />
-                </ch.threema.app.emojis.EmojiEditText>
+        </com.google.android.material.textfield.TextInputLayout>
 
-            </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/scan_button"
+            style="@style/Threema.MaterialButton.Outlined.Primary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_unit_x1"
+            android:paddingHorizontal="@dimen/grid_unit_x2"
+            android:text="@string/scan_id"
+            app:icon="@drawable/ic_qr_code_scan"
+            app:iconPadding="@dimen/grid_unit_x1_5" />
 
-            <com.google.android.material.chip.Chip
-                style="@style/Threema.Chip.Outline.Action.WithIcon"
-                android:id="@+id/scan_button"
-                app:chipBackgroundColor="?attr/colorSurfaceContainerLowest"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="24dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginRight="24dp"
-                android:text="@string/scan_id"
-                app:chipIcon="@drawable/ic_qr_code_scan" />
+    </LinearLayout>
 
-        </LinearLayout>
-
-    </ScrollView>
-
-</LinearLayout>
+</ScrollView>

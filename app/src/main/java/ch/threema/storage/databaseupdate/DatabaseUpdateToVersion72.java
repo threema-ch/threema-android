@@ -21,9 +21,11 @@
 
 package ch.threema.storage.databaseupdate;
 
+import android.database.SQLException;
+
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import android.database.SQLException;
+import androidx.annotation.NonNull;
 
 /**
  * For ID colors we store the first byte of the SHA-256 hash of the contact identity.
@@ -31,9 +33,10 @@ import android.database.SQLException;
 public class DatabaseUpdateToVersion72 implements DatabaseUpdate {
     public static final int VERSION = 72;
 
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion72(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion72(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 

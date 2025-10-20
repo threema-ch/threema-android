@@ -26,7 +26,6 @@ import ch.threema.app.DangerousTest
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.groupflows.GroupCreateProperties
 import ch.threema.app.groupflows.GroupFlowResult
-import ch.threema.app.groupflows.ProfilePicture
 import ch.threema.app.tasks.GroupCreateTask
 import ch.threema.app.tasks.ReflectGroupSyncCreateTask
 import ch.threema.app.testutils.TestHelpers
@@ -112,7 +111,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
         testAndAssertSuccessfulGroupCreation(
             GroupCreateProperties(
                 name = "Test",
-                profilePicture = ProfilePicture(null as ByteArray?),
+                profilePicture = null,
                 members = setOf(memberIdentity),
             ),
             ReflectionExpectation.REFLECTION_SUCCESS,
@@ -129,7 +128,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
         testAndAssertSuccessfulGroupCreation(
             GroupCreateProperties(
                 name = "Test",
-                profilePicture = ProfilePicture(null as ByteArray?),
+                profilePicture = null,
                 members = setOf(memberIdentity),
             ),
             ReflectionExpectation.REFLECTION_SKIPPED,
@@ -141,7 +140,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
         testAndAssertSuccessfulGroupCreation(
             GroupCreateProperties(
                 name = "Test",
-                profilePicture = ProfilePicture(null as ByteArray?),
+                profilePicture = null,
                 members = emptySet(),
             ),
             ReflectionExpectation.REFLECTION_SUCCESS,
@@ -153,7 +152,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
         testAndAssertSuccessfulGroupCreation(
             GroupCreateProperties(
                 name = "Test",
-                profilePicture = ProfilePicture(null as ByteArray?),
+                profilePicture = null,
                 members = emptySet(),
             ),
             ReflectionExpectation.REFLECTION_SKIPPED,
@@ -170,7 +169,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
         val groupFlowResult: GroupFlowResult = testGroupCreation(
             GroupCreateProperties(
                 name = "Test",
-                profilePicture = ProfilePicture(null as ByteArray?),
+                profilePicture = null,
                 members = setOf(initialContactModelData.identity, unknownIdentity),
             ),
             ReflectionExpectation.REFLECTION_FAIL,
@@ -194,7 +193,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
             ThreemaApplication.getAppContext(),
             GroupCreateProperties(
                 name = "Test",
-                profilePicture = ProfilePicture(null as ByteArray?),
+                profilePicture = null,
                 members = setOf(initialContactModelData.identity),
             ),
         ).await()
@@ -262,7 +261,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
 
     private fun GroupModel?.assertCreatedFrom(groupCreateProperties: GroupCreateProperties) {
         assertNotNull(this)
-        data.value.assertCreatedFrom(groupCreateProperties)
+        data.assertCreatedFrom(groupCreateProperties)
     }
 
     private fun GroupModelData?.assertCreatedFrom(groupCreateProperties: GroupCreateProperties) {
@@ -273,7 +272,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
 
     private fun GroupModel?.assertNewGroup() {
         assertNotNull(this)
-        data.value.assertNewGroup()
+        data.assertNewGroup()
     }
 
     private fun GroupModelData?.assertNewGroup() {

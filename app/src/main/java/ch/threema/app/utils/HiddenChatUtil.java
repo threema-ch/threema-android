@@ -22,7 +22,6 @@
 package ch.threema.app.utils;
 
 import android.content.Intent;
-import android.os.Build;
 
 import androidx.fragment.app.Fragment;
 import ch.threema.app.AppConstants;
@@ -41,12 +40,11 @@ public class HiddenChatUtil {
     }
 
     public static void launchLockCheckDialog(ThreemaToolbarActivity activity, Fragment fragment, PreferenceService preferenceService, int id) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_SYSTEM) ||
-                preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_BIOMETRIC))) {
+        if (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_SYSTEM) ||
+                preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_BIOMETRIC)) {
             BiometricUtil.showUnlockDialog(activity, fragment, true, id, null);
         } else if (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_PIN)) {
-            Intent intent = new Intent(activity != null ? activity : fragment.getActivity(), PinLockActivity.class);
+            Intent intent = PinLockActivity.createIntent(activity != null ? activity : fragment.requireContext());
             intent.putExtra(AppConstants.INTENT_DATA_CHECK_ONLY, true);
             if (activity != null) {
                 activity.startActivityForResult(intent, id);

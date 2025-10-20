@@ -23,17 +23,20 @@ package ch.threema.app.services;
 
 import android.accounts.Account;
 import android.accounts.AccountManagerCallback;
+import android.os.Handler;
 
-import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.Date;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.services.license.LicenseService;
+import ch.threema.app.profilepicture.CheckedProfilePicture;
+import ch.threema.app.profilepicture.ProfilePicture;
+import ch.threema.domain.models.LicenseCredentials;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
 /**
@@ -63,7 +66,7 @@ public interface UserService {
     void removeAccount();
 
     /**
-     * Remove the Account for the Sync Adapter, see {@removeAccount}
+     * Remove the Account for the Sync Adapter, see {@link android.accounts.AccountManager#removeAccount(Account, AccountManagerCallback, Handler)}
      *
      * @param callback Callback after adding
      */
@@ -71,9 +74,10 @@ public interface UserService {
 
     boolean hasIdentity();
 
+    @Nullable
     String getIdentity();
 
-    boolean isMe(String identity);
+    boolean isMe(@Nullable String identity);
 
     byte[] getPublicKey();
 
@@ -148,20 +152,16 @@ public interface UserService {
     /**
      * Get the user profile picture. If no profile picture is set, then null is returned.
      */
+    @WorkerThread
     @Nullable
-    byte[] getUserProfilePicture();
+    ProfilePicture getUserProfilePicture();
 
     /**
      * Set the user profile picture. Note that this will trigger a user profile sync if multi device
      * is active.
      */
-    boolean setUserProfilePicture(@NonNull File userProfilePicture, @NonNull TriggerSource triggerSource);
-
-    /**
-     * Set the user profile picture. Note that this will trigger a user profile sync if multi device
-     * is active.
-     */
-    boolean setUserProfilePicture(@NonNull byte[] userProfilePicture, @NonNull TriggerSource triggerSource);
+    @WorkerThread
+    boolean setUserProfilePicture(@NonNull CheckedProfilePicture userProfilePicture, @NonNull TriggerSource triggerSource);
 
     /**
      * Set the user profile picture from a given blob.
@@ -169,6 +169,7 @@ public interface UserService {
      *
      * @throws IllegalArgumentException if the trigger source is not sync
      */
+    @WorkerThread
     void setUserProfilePictureFromSync(
         @NonNull ContactService.ProfilePictureUploadData uploadData,
         @NonNull TriggerSource triggerSource
@@ -192,14 +193,13 @@ public interface UserService {
     @WorkerThread
     ContactService.ProfilePictureUploadData uploadUserProfilePictureOrGetPreviousUploadData();
 
-
     boolean restoreIdentity(String backupString, String password) throws Exception;
 
-    boolean restoreIdentity(String identity, byte[] privateKey, byte[] publicKey) throws Exception;
+    boolean restoreIdentity(String identity, byte[] privateKey) throws Exception;
 
     void setPolicyResponse(String responseData, String signature, int policyErrorCode);
 
-    void setCredentials(LicenseService.Credentials credentials);
+    void setCredentials(LicenseCredentials credentials);
 
     /**
      * Sends the feature mask to the server if it has changed or the last time the feature mask has
@@ -225,12 +225,8 @@ public interface UserService {
 
     boolean setRevocationKey(String revocationKey);
 
-    Date getLastRevocationKeySet();
+    @Nullable
+    Instant getLastRevocationKeySet();
 
-    /**
-     * Check revocation key
-     *
-     * @param force
-     */
     void checkRevocationKey(boolean force);
 }

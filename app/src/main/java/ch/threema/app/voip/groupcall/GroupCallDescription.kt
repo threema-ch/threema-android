@@ -26,12 +26,13 @@ import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import ch.threema.app.voip.groupcall.sfu.CallId
 import ch.threema.app.voip.groupcall.sfu.GroupCallState
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.common.now
+import ch.threema.common.toHexString
 import ch.threema.storage.models.GroupCallModel
-import com.neilalexander.jnacl.NaCl
-import java.util.*
-import kotlin.math.max
+import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallDescription")
 
@@ -46,10 +47,9 @@ data class GroupCallDescription(
     val processedAt: ULong = startedAt,
     var maxParticipants: UInt? = null,
 ) {
-    private val gchk: ByteArray by lazy { gcBlake2b(NaCl.SYMMKEYBYTES, gck, SALT_GCHK) }
-    private val gcsk: ByteArray by lazy { gcBlake2b(NaCl.SYMMKEYBYTES, gck, SALT_GCSK) }
-
-    val gckh: ByteArray by lazy { gcBlake2b(NaCl.SYMMKEYBYTES, gck, SALT_GCKH) }
+    private val gchk: ByteArray by lazy { CryptoCallUtils.gcBlake2b256(key = gck, salt = CryptoCallUtils.SALT_GCHK) }
+    private val gcsk: ByteArray by lazy { CryptoCallUtils.gcBlake2b256(key = gck, salt = CryptoCallUtils.SALT_GCSK) }
+    val gckh: ByteArray by lazy { CryptoCallUtils.gcBlake2b256(key = gck, salt = CryptoCallUtils.SALT_GCKH) }
 
     var callState: GroupCallState? = null
 
@@ -81,12 +81,11 @@ data class GroupCallDescription(
      *
      * @return The time in milliseconds since this call has been started
      */
-    fun getRunningSince(): Long? = startedAt.let {
-        val currentTime = Date().time
-        val startedAtTime = it.toLong()
-        if (currentTime >= startedAtTime) {
-            val duration = currentTime - startedAtTime
-            SystemClock.elapsedRealtime() - duration
+    fun getRunningSinceStarted(): Long? {
+        val currentTime: Long = now().time
+        return if (currentTime >= startedAt.toLong()) {
+            val durationMs: Long = currentTime - startedAt.toLong()
+            SystemClock.elapsedRealtime() - durationMs
         } else {
             null
         }
@@ -99,13 +98,14 @@ data class GroupCallDescription(
      * If [processedAt] is dated in the future, [SystemClock.elapsedRealtime] will be returned.
      *
      * If the device's time is potentially wrong, this method can be used instead of
-     * [getRunningSince] as it is relative to this device's time.
+     * [getRunningSinceStarted] as it is relative to this device's time.
      *
      * @return The time in milliseconds since this call has been processed
      */
     fun getRunningSinceProcessed(): Long {
-        val duration = max(Date().time - processedAt.toLong(), 0)
-        return SystemClock.elapsedRealtime() - duration
+        val currentTime: Long = now().time
+        val durationMs: Long = (currentTime - processedAt.toLong()).coerceAtLeast(0L)
+        return SystemClock.elapsedRealtime() - durationMs
     }
 
     @AnyThread
@@ -115,10 +115,10 @@ data class GroupCallDescription(
     fun toGroupCallModel(): GroupCallModel {
         return GroupCallModel(
             protocolVersion.toInt(),
-            Utils.byteArrayToHexString(callId.bytes),
+            callId.bytes.toHexString(),
             groupId.id,
             sfuBaseUrl,
-            Utils.byteArrayToHexString(gck),
+            gck.toHexString(),
             startedAt.toLong(),
             processedAt.toLong(),
         )
@@ -160,16 +160,29 @@ data class GroupCallDescription(
 
     @WorkerThread
     private fun encrypt(data: ByteArray, key: ByteArray): ByteArray {
-        val nonce = getSecureRandomBytes(NaCl.NONCEBYTES)
-        val encrypted = NaCl.symmetricEncryptData(data, key, nonce)
+        val nonce = CryptoCallUtils.getSecureRandomBytes(NaCl.NONCE_BYTES)
+        val encrypted = NaCl.symmetricEncryptData(
+            data = data,
+            key = key,
+            nonce = nonce,
+        )
         return nonce + encrypted
     }
 
     @WorkerThread
     private fun decrypt(encryptedData: ByteArray, key: ByteArray): ByteArray? {
-        val nonce = encryptedData.copyOfRange(0, NaCl.NONCEBYTES)
-        val data = encryptedData.copyOfRange(NaCl.NONCEBYTES, encryptedData.size)
-        return NaCl.symmetricDecryptData(data, key, nonce)
+        val nonce = encryptedData.copyOfRange(0, NaCl.NONCE_BYTES)
+        val data = encryptedData.copyOfRange(NaCl.NONCE_BYTES, encryptedData.size)
+        return runCatching {
+            NaCl.symmetricDecryptData(
+                data = data,
+                key = key,
+                nonce = nonce,
+            )
+        }.getOrElse { throwable ->
+            logger.error("Failed to decrypt data", throwable)
+            null
+        }
     }
 
     override fun equals(other: Any?): Boolean {

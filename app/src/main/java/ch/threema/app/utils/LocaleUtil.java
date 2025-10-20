@@ -32,6 +32,7 @@ import androidx.core.os.ConfigurationCompat;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.text.Normalizer;
+import java.time.Instant;
 import java.util.Locale;
 
 import androidx.core.os.LocaleListCompat;
@@ -75,6 +76,14 @@ public class LocaleUtil {
 
     public static String formatTimeStampStringAbsolute(Context context, long when) {
         return DateUtils.formatDateTime(context, when, DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_ABBREV_ALL);
+    }
+
+    public static String formatTimeStampStringAbsolute(Context context, @NonNull Instant when) {
+        return formatTimeStampStringAbsolute(context, when.toEpochMilli());
+    }
+
+    public static String formatTimeStampString(Context context, @NonNull Instant when, boolean fullFormat) {
+        return formatTimeStampString(context, when.toEpochMilli(), fullFormat);
     }
 
     public static String formatTimeStampString(Context context, long when, boolean fullFormat) {

@@ -23,7 +23,6 @@ package ch.threema.app.protocol
 
 import androidx.annotation.WorkerThread
 import ch.threema.app.services.license.LicenseService
-import ch.threema.app.services.license.UserCredentials
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
@@ -37,6 +36,7 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.UserCredentials
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.api.APIConnector
@@ -45,10 +45,11 @@ import ch.threema.domain.protocol.api.work.WorkContact
 import ch.threema.domain.stores.ContactStore
 import ch.threema.domain.taskmanager.NetworkException
 import ch.threema.domain.taskmanager.ProtocolException
+import ch.threema.domain.types.Identity
 
 private val logger = LoggingUtil.getThreemaLogger("ValidContactsLookupSteps")
 
-sealed class ContactOrInit(val identity: String)
+sealed class ContactOrInit(val identity: Identity)
 
 data class Contact(val contactModel: ContactModel) : ContactOrInit(contactModel.identity)
 
@@ -56,20 +57,20 @@ data class SpecialContact(val cachedContact: BasicContact) : ContactOrInit(cache
 
 data class Init(val contactModelData: ContactModelData) : ContactOrInit(contactModelData.identity)
 
-class Invalid(identity: String) : ContactOrInit(identity)
+class Invalid(identity: Identity) : ContactOrInit(identity)
 
-class UserContact(identity: String) : ContactOrInit(identity)
+class UserContact(identity: Identity) : ContactOrInit(identity)
 
 @WorkerThread
 fun runValidContactsLookupSteps(
-    identities: Set<String>,
-    myIdentity: String,
+    identities: Set<Identity>,
+    myIdentity: Identity,
     contactStore: ContactStore,
     contactModelRepository: ContactModelRepository,
     licenseService: LicenseService<*>,
     apiConnector: APIConnector,
-): Map<String, ContactOrInit> {
-    val contactOrInitMap = mutableMapOf<String, ContactOrInit>()
+): Map<Identity, ContactOrInit> {
+    val contactOrInitMap = mutableMapOf<Identity, ContactOrInit>()
     val unknownIdentities = mutableSetOf<String>()
 
     for (identity in identities) {
@@ -116,8 +117,8 @@ fun runValidContactsLookupSteps(
 }
 
 private fun checkLocally(
-    identity: String,
-    myIdentity: String,
+    identity: Identity,
+    myIdentity: Identity,
     contactStore: ContactStore,
     contactModelRepository: ContactModelRepository,
 ): ContactOrInit? {
@@ -155,7 +156,7 @@ private fun checkLocally(
 
 @WorkerThread
 private fun checkWorkAPI(
-    unknownIdentities: Set<String>,
+    unknownIdentities: Set<Identity>,
     apiConnector: APIConnector,
     credentials: UserCredentials,
 ): Map<String, WorkContact> {
@@ -176,7 +177,7 @@ private fun checkWorkAPI(
 
 @WorkerThread
 private fun fetchIdentities(
-    unknownIdentities: Set<String>,
+    unknownIdentities: Set<Identity>,
     workContacts: Map<String, WorkContact>,
     apiConnector: APIConnector,
 ): Set<ContactOrInit> {

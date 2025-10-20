@@ -29,7 +29,6 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -50,6 +49,8 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import org.koin.android.compat.ViewModelCompat;
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -65,12 +66,10 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.FitWindowsFrameLayout;
 import androidx.appcompat.widget.PopupMenu;
-import androidx.appcompat.widget.PopupMenuWrapper;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager2.widget.ViewPager2;
@@ -78,10 +77,7 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.EnterSerialActivity;
 import ch.threema.app.activities.ThreemaActivity;
-import ch.threema.app.activities.UnlockMasterKeyActivity;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.GroupService;
-import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.ui.CheckableView;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
@@ -94,7 +90,6 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RecyclerViewUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.localcrypto.MasterKey;
 import me.zhanghai.android.fastscroll.FastScroller;
 import me.zhanghai.android.fastscroll.FastScrollerBuilder;
 
@@ -102,6 +97,7 @@ import static ch.threema.app.AppConstants.MAX_BLOB_SIZE;
 import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_BUCKET;
 import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_SELECTED;
 import static ch.threema.app.mediaattacher.MediaFilterQuery.FILTER_MEDIA_TYPE;
+import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_DRAGGING;
 import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_EXPANDED;
@@ -109,13 +105,10 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 
 abstract public class MediaSelectionBaseActivity extends ThreemaActivity implements View.OnClickListener,
     MediaAttachAdapter.ItemClickListener {
-    // Logging
     private static final Logger logger = LoggingUtil.getThreemaLogger("MediaSelectionBaseActivity");
 
-    // Threema services
-    protected ServiceManager serviceManager;
-    protected PreferenceService preferenceService;
-    protected GroupService groupService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     public static final String KEY_BOTTOM_SHEET_STATE = "bottom_sheet_state";
     public static final String KEY_PREVIEW_MODE = "preview_mode";
@@ -170,17 +163,19 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkMasterKey();
-        initServices();
-        // set font size according to user preferences
-        getTheme().applyStyle(preferenceService.getFontStyle(), true);
-        initActivity(savedInstanceState);
-    }
+        if (finishAndRestartLaterIfNotReady(this)) {
+            return;
+        }
 
-    @Override
-    protected void onDestroy() {
-        logger.debug("*** onDestroy");
-        super.onDestroy();
+        if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
+            startActivity(EnterSerialActivity.createIntent(this));
+            finish();
+            return;
+        }
+
+        // set font size according to user preferences
+        getTheme().applyStyle(dependencies.getPreferenceService().getFontStyle(), true);
+        initActivity(savedInstanceState);
     }
 
     @UiThread
@@ -218,7 +213,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
         this.displayMetrics = ThreemaApplication.getAppContext().getResources().getDisplayMetrics();
 
         // The view model handles data associated with this view
-        this.mediaAttachViewModel = new ViewModelProvider(this).get(MediaAttachViewModel.class);
+        this.mediaAttachViewModel = ViewModelCompat.getViewModel(this, MediaAttachViewModel.class);
 
         // Initialize UI
         this.setLayout();
@@ -233,19 +228,6 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
             return false;
         });
         this.toolbar.setNavigationOnClickListener(v -> collapseBottomSheet());
-    }
-
-    protected void initServices() {
-        this.serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager != null) {
-            try {
-                this.preferenceService = serviceManager.getPreferenceService();
-                this.groupService = serviceManager.getGroupService();
-            } catch (Exception e) {
-                logger.error("Exception", e);
-                finish();
-            }
-        }
     }
 
     protected void setLayout() {
@@ -377,7 +359,8 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
     protected abstract ActivityResultLauncher<Intent> getFileAttachedResultLauncher();
 
     protected void setDropdownMenu() {
-        this.bucketFilterMenu = new PopupMenuWrapper(this, menuTitle);
+        bucketFilterMenu = new PopupMenu(this, menuTitle);
+        bucketFilterMenu.setForceShowIcon(true);
 
         if (mediaAttachViewModel.getLastQuery() == null) {
             menuTitle.setText(R.string.attach_gallery);
@@ -552,7 +535,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
      * @return true if option has been enabled by user and permissions are available
      */
     protected boolean shouldShowMediaGrid() {
-        return preferenceService.isShowImageAttachPreviewsEnabled()
+        return dependencies.getPreferenceService().isShowImageAttachPreviewsEnabled()
             && ConfigUtils.isVideoImagePermissionGranted(this);
     }
 
@@ -652,9 +635,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
                     onItemChecked(mediaAttachViewModel.getSelectedMediaItemsHashMap().size());
                     isPreviewMode = false;
                     if (!ConfigUtils.isTheDarkSide(this)) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                        }
+                        getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                     }
                 }
             } else {
@@ -672,9 +653,7 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
                 gridContainer.setVisibility(View.GONE);
                 toolbar.postDelayed(() -> {
                     if (!ConfigUtils.isTheDarkSide(this)) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
-                        }
+                        getWindow().getDecorView().setSystemUiVisibility(getWindow().getDecorView().getSystemUiVisibility() & ~View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
                     }
                 }, delay);
 
@@ -944,27 +923,11 @@ abstract public class MediaSelectionBaseActivity extends ThreemaActivity impleme
         ConfigUtils.showPermissionRationale(this, rootView, stringResource);
     }
 
-    public void checkMasterKey() {
-        MasterKey masterKey = ThreemaApplication.getMasterKey();
-        if (masterKey.isLocked()) {
-            startActivityForResult(new Intent(this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY);
-        } else {
-            if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
-                startActivity(new Intent(this, EnterSerialActivity.class));
-                finish();
-            }
-        }
-    }
-
     /**
      * Return true if split screen / multi window mode is enabled.
      */
     protected boolean isInSplitScreenMode() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return isInMultiWindowMode();
-        } else {
-            return false;
-        }
+        return isInMultiWindowMode();
     }
 
     /**

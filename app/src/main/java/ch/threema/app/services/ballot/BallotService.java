@@ -160,9 +160,9 @@ public interface BallotService {
      */
     List<BallotChoiceModel> getChoices(Integer ballotModelId) throws NotAllowedException;
 
-	/*
-	voting stuff
-	 */
+    /*
+    voting stuff
+    */
 
     BallotVoteResult vote(Integer ballotModelId, Map<Integer, Integer> values, @NonNull TriggerSource triggerSource) throws NotAllowedException;
 

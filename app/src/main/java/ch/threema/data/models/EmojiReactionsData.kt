@@ -21,27 +21,22 @@
 
 package ch.threema.data.models
 
+import androidx.compose.runtime.Immutable
 import ch.threema.data.storage.DbEmojiReaction
-import java.util.Date
+import ch.threema.domain.types.Identity
+import java.time.Instant
 
+@Immutable
 data class EmojiReactionData(
     /** The id of the message this reaction refers to - see [ch.threema.storage.models.AbstractMessageModel.COLUMN_ID] */
     @JvmField val messageId: Int,
     /** The identity of the person who reacted. This may differ from the sender of the message **/
-    @JvmField val senderIdentity: String,
+    @JvmField val senderIdentity: Identity,
     /** The emoji codepoint sequence of the reaction. This can never be empty */
     @JvmField val emojiSequence: String,
     /** Timestamp when the reaction was locally created. */
-    @JvmField val reactedAt: Date,
+    @JvmField val reactedAt: Instant,
 ) {
-    fun messageId() = messageId
-
-    fun senderIdentity() = senderIdentity
-
-    fun emojiSequence() = emojiSequence
-
-    fun reactedAt() = reactedAt
-
     override fun equals(other: Any?): Boolean {
         if (other !is EmojiReactionData) return false
 
@@ -62,5 +57,5 @@ fun DbEmojiReaction.toDataType() = EmojiReactionData(
     messageId = this.messageId,
     senderIdentity = this.senderIdentity,
     emojiSequence = this.emojiSequence,
-    reactedAt = this.reactedAt,
+    reactedAt = this.reactedAt.toInstant(),
 )

@@ -68,7 +68,10 @@ internal interface GroupCall : GroupCallController {
     fun updateParticipants(update: ParticipantsUpdate)
 
     @WorkerThread
-    fun updateCaptureStates()
+    fun updateCaptureStates(
+        // TODO(ANDR-4127): Remove
+        screenShareActivated: Boolean,
+    )
 
     @WorkerThread
     fun updateState(state: GroupCallConnectionState)

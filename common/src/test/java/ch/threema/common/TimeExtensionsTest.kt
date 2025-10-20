@@ -24,8 +24,13 @@ package ch.threema.common
 import java.time.Instant
 import java.util.Date
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
 
 class TimeExtensionsTest {
     @Test
@@ -74,5 +79,38 @@ class TimeExtensionsTest {
         val instant2 = Instant.ofEpochMilli(9L * 60 * 60 * 1000)
 
         assertEquals(instant1, instant2 + 2.hours)
+    }
+
+    @Test
+    fun `duration string format`() {
+        // arrange
+        val input: List<Duration> = listOf(
+            Duration.ZERO,
+            1.milliseconds,
+            1.seconds,
+            1.minutes,
+            1.hours,
+            200.hours,
+            3.hours.plus(10.minutes).plus(3.seconds),
+            3.hours.plus(2.minutes).plus(30.seconds),
+        )
+
+        // act
+        val results: List<String> = input.map(Duration::toHMMSS)
+
+        // assert
+        assertContentEquals(
+            expected = listOf(
+                "00:00",
+                "00:00",
+                "00:01",
+                "01:00",
+                "1:00:00",
+                "200:00:00",
+                "3:10:03",
+                "3:02:30",
+            ),
+            actual = results,
+        )
     }
 }

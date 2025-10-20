@@ -31,7 +31,6 @@ import javax.net.ssl.SSLSocketFactory;
 
 /**
  * Wraps an SSLSocketFactory, ensuring that TLSv1.2 (and v1.3) are always enabled if they are supported.
- * This is necessary on Android 4.x, which supports TLSv1.2, but does not enable it by default.
  */
 public class TLSUpgradeSocketFactoryWrapper extends SSLSocketFactory {
     private SSLSocketFactory baseFactory;

@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 
 import java.util.Objects;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.ui.SimpleTextWatcher;
@@ -75,10 +76,10 @@ public class WizardFragment2 extends WizardFragment {
         } else {
             nicknameText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
-                public void afterTextChanged(Editable s) {
+                public void afterTextChanged(@NonNull Editable editable) {
                     Activity activity = requireActivity();
                     if (activity.getCurrentFocus() == nicknameText) {
-                        ((OnSettingsChangedListener) activity).onNicknameSet(s.toString());
+                        ((OnSettingsChangedListener) activity).onNicknameSet(editable.toString());
                     }
                 }
             });

@@ -174,7 +174,7 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
 
         serverUrlEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(@NonNull CharSequence text, int start, int before, int count) {
                 updatePositiveButtonEnabledState();
             }
         });
@@ -271,7 +271,7 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
                 DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_PROGRESS, true);
 
                 if (failureMessage != null) {
-                    Toast.makeText(getActivity(), getString(R.string.test_unsuccessful) + ": " + failureMessage, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), R.string.test_unsuccessful, Toast.LENGTH_LONG).show();
                 } else {
                     onYes();
                 }

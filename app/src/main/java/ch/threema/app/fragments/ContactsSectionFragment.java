@@ -53,7 +53,7 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -139,7 +139,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
 /**
@@ -183,7 +183,7 @@ public class ContactsSectionFragment
 
     private ResumePauseHandler resumePauseHandler;
     private ListView listView;
-    private MaterialButton contactsCounterButton;
+    private TextView contactsCounter;
     private LockingSwipeRefreshLayout swipeRefreshLayout;
     private ServiceManager serviceManager;
     private SearchView searchView;
@@ -706,7 +706,7 @@ public class ContactsSectionFragment
 
     private void updateContactsCounter(int numContacts, @Nullable FetchResults counts) {
         if (getActivity() != null && listView != null && isAdded()) {
-            if (contactsCounterButton != null) {
+            if (contactsCounter != null) {
                 if (counts != null) {
                     ListenerManager.contactCountListener.handle(listener -> listener.onNewContactsCountUpdated(counts.last24h));
                 }
@@ -716,10 +716,10 @@ public class ContactsSectionFragment
                     if (counts != null) {
                         builder.append(" (+").append(counts.last30d).append(" / ").append(getString(R.string.thirty_days_abbrev)).append(")");
                     }
-                    contactsCounterButton.setText(builder.toString());
-                    contactsCounterButton.setVisibility(View.VISIBLE);
+                    contactsCounter.setText(builder.toString());
+                    contactsCounter.setVisibility(View.VISIBLE);
                 } else {
-                    contactsCounterButton.setVisibility(View.GONE);
+                    contactsCounter.setVisibility(View.GONE);
                 }
             }
             if (ConfigUtils.isWorkBuild() && counts != null) {
@@ -897,14 +897,15 @@ public class ContactsSectionFragment
                     InsetSides.horizontal(),
                     new SpacingValues(R.dimen.grid_unit_x1, null, R.dimen.grid_unit_x1_5, null)
                 );
-                this.contactsCounterButton = footerView.findViewById(R.id.contact_counter_text);
+                this.contactsCounter = footerView.findViewById(R.id.contact_counter_text);
                 listView.addFooterView(footerView, null, false);
 
-                final RelativeLayout shareContainer = headerView.findViewById(R.id.share_container);
-                shareContainer.setOnClickListener(v -> shareInvite());
+                final View invitePeopleContainer = headerView.findViewById(R.id.invite_people_container);
+                final MaterialButton invitePeopleButton = headerView.findViewById(R.id.invite_people_button);
+                invitePeopleButton.setOnClickListener(view -> shareInvite());
 
                 ViewExtensionsKt.applyDeviceInsetsAsPadding(
-                    shareContainer,
+                    invitePeopleContainer,
                     InsetSides.horizontal(),
                     SpacingValues.symmetric(R.dimen.listitem_contacts_margin_top_bottom, R.dimen.listitem_contacts_margin_left_right)
                 );

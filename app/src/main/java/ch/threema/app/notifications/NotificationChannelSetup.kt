@@ -24,7 +24,9 @@ package ch.threema.app.notifications
 import android.content.Context
 import android.content.SharedPreferences
 import android.media.AudioAttributes
+import android.media.MediaScannerConnection
 import android.media.RingtoneManager
+import android.os.Environment
 import android.provider.Settings
 import androidx.annotation.StringRes
 import androidx.core.app.NotificationManagerCompat
@@ -56,13 +58,19 @@ import ch.threema.app.notifications.migrations.Version3Migration
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RingtoneUtil
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.common.DispatcherProvider
+import java.io.File
+import java.io.FileOutputStream
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("NotificationChannelMigrator")
+private val logger = LoggingUtil.getThreemaLogger("NotificationChannelSetup")
 
 class NotificationChannelSetup(
     private val appContext: Context,
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(appContext),
     private val sharedPreferences: SharedPreferences = PreferenceManager.getDefaultSharedPreferences(appContext),
+    private val dispatcherProvider: DispatcherProvider = DispatcherProvider.default,
 ) {
     fun createOrUpdateNotificationChannels() {
         when (val version = getNotificationChannelsVersion()) {
@@ -75,6 +83,7 @@ class NotificationChannelSetup(
                     // or the version number was lost because the app was reset
                     migrate(fromVersion = 0)
                 }
+                installThreemaRingtone()
                 storeNotificationChannelsVersion(NOTIFICATION_CHANNELS_VERSION)
             }
             in 0 until NOTIFICATION_CHANNELS_VERSION -> {
@@ -291,6 +300,47 @@ class NotificationChannelSetup(
 
     private fun getString(@StringRes resId: Int): String =
         appContext.getString(resId)
+
+    /**
+     * Copies the default Threema ringtone into the public directories, to allow users to switch back to the default ringtone manually.
+     */
+    private fun installThreemaRingtone() {
+        CoroutineScope(dispatcherProvider.io).launch {
+            try {
+                installThreemaRingtoneIntoDirectory(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_RINGTONES))
+
+                // On some devices (in particular Samsung) the notification channel settings only allow picking notification sounds but not ringtones.
+                // To account for that, we also install the ringtone into the Notifications directory.
+                installThreemaRingtoneIntoDirectory(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_NOTIFICATIONS))
+            } catch (e: Exception) {
+                logger.error("Failed to copy Threema ringtone", e)
+            }
+        }
+    }
+
+    private fun installThreemaRingtoneIntoDirectory(targetDirectory: File) {
+        val targetFile = File(targetDirectory, "Threema Call.ogg")
+        if (targetFile.exists()) {
+            return
+        }
+        try {
+            targetDirectory.mkdirs()
+            appContext.resources.openRawResource(R.raw.threema_call).use { inStream ->
+                FileOutputStream(targetFile).use { outStream ->
+                    inStream.copyTo(outStream)
+                }
+            }
+            MediaScannerConnection.scanFile(
+                appContext,
+                arrayOf(targetFile.absolutePath),
+                arrayOf("audio/ogg"),
+                null,
+            )
+        } catch (e: Exception) {
+            targetFile.delete()
+            throw e
+        }
+    }
 
     fun deleteAll() {
         with(notificationManager) {

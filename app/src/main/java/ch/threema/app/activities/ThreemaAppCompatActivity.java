@@ -42,8 +42,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.utils.ConfigUtils;
 
 public abstract class ThreemaAppCompatActivity extends AppCompatActivity {
-
-    protected int savedDayNightMode;
+    private int savedDayNightMode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,7 +66,7 @@ public abstract class ThreemaAppCompatActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         if (BackupService.isRunning() || RestoreService.isRunning()) {
-            Intent intent = new Intent(this, BackupRestoreProgressActivity.class);
+            Intent intent = BackupRestoreProgressActivity.createIntent(this);
             startActivity(intent);
             finish();
         }

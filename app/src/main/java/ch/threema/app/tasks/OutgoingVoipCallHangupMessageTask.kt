@@ -27,10 +27,11 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.types.Identity
 
 class OutgoingVoipCallHangupMessageTask(
     private val voipCallHangupData: VoipCallHangupData,
-    private val toIdentity: String,
+    private val toIdentity: Identity,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingVoipCallHangupMessageTask"

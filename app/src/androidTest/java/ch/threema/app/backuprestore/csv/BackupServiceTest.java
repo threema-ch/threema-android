@@ -74,7 +74,7 @@ import ch.threema.app.utils.CSVRow;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.base.ThreemaException;
 import ch.threema.data.repositories.ContactModelRepository;
-import ch.threema.domain.identitybackup.IdentityBackupDecoder;
+import ch.threema.domain.identitybackup.IdentityBackup;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
@@ -240,9 +240,7 @@ public class BackupServiceTest {
             .setBackupThumbnails(false)
             .setBackupNonces(false));
 
-        try {
-            final ZipFile zipFile = this.openBackupFile(backupFile, new String[]{"settings", "identity"});
-
+        try (final ZipFile zipFile = this.openBackupFile(backupFile, new String[]{"settings", "identity"})) {
             // Read identity backup
             final String identityBackup;
             try (final ZipInputStream stream = zipFile.getInputStream(zipFile.getFileHeader("identity"))) {
@@ -250,9 +248,11 @@ public class BackupServiceTest {
             }
 
             // Verify identity backup
-            final IdentityBackupDecoder identityBackupDecoder = new IdentityBackupDecoder(identityBackup);
-            Assert.assertTrue("Could not decode identity backup", identityBackupDecoder.decode(PASSWORD));
-            Assert.assertEquals(TEST_IDENTITY, identityBackupDecoder.getIdentity());
+            IdentityBackup.PlainBackupData decryptedBackupData = IdentityBackup.decryptIdentityBackup(
+                PASSWORD,
+                new IdentityBackup.EncryptedIdentityBackup(identityBackup)
+            );
+            Assert.assertEquals(TEST_IDENTITY, decryptedBackupData.getThreemaId());
         } finally {
             //noinspection ResultOfMethodCallIgnored
             backupFile.delete();
@@ -293,7 +293,7 @@ public class BackupServiceTest {
             .setBackupThumbnails(false)
             .setBackupNonces(false));
 
-        try {
+        try (
             final ZipFile zipFile = this.openBackupFile(backupFile, new String[]{
                 "settings",
                 "message_CDXVZ5E4.csv",
@@ -305,8 +305,8 @@ public class BackupServiceTest {
                 "ballot.csv",
                 "ballot_choice.csv",
                 "ballot_vote.csv",
-            });
-
+            })
+        ) {
             // Read contacts
             try (final ZipInputStream stream = zipFile.getInputStream(zipFile.getFileHeader("contacts.csv"))) {
                 final CSVReader csvReader = new CSVReader(new InputStreamReader(stream), true);

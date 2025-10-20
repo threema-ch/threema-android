@@ -84,7 +84,6 @@
     <color name="text_color_open_ballots">#656565</color>
     <color name="markup_marker_color">#FFD3D3D3</color>
     <color name="background_dim">#77ffffff</color>
-    <color name="messagelist_highlight_color">@color/material_red</color>
     <color name="qrscanner_masking_color">#50000000</color>
     <color name="mediaviewer_caption_background_color">#77000000</color>
     <color name="media_attach_button_background_default">#FFEEEEEE</color>
@@ -95,9 +94,6 @@
 
     <!-- wizard -->
     <color name="wizard_alpha_background">#33ffffff</color>
-    <!-- primary color of consumer build to use in work build -->
-    <color name="color_wizard_primary_fixed_consumer">#2CC47E</color>
-    <color name="color_wizard_on_primary_fixed_consumer">#FFFFFF</color>
 
     <!-- wizard step pager display -->
     <color name="step_pager_previous_tab_color">#4433b5e5</color>
@@ -107,9 +103,8 @@
     <!-- color for splash screen upon app startup -->
     <color name="splash_background">#FF303030</color>
 
-    <!-- voip -->
-    <color name="messagelist_pinned_color">@color/material_amber</color>
-    <color name="messagelist_archive_color">@color/material_blue</color>
+    <color name="message_list_pin_color">@color/material_amber</color>
+    <color name="message_list_archive_color">@color/material_blue</color>
 
     <!-- Location Picker -->
     <color name="lp_marker_icon">#ffffffff</color>
@@ -131,4 +126,7 @@
     <color name="emojireactions_popup_background_selected">
         @color/emojireactions_background_checked
     </color>
+
+    <!-- EmptyView -->
+    <color name="empty_view_icon_tint">@color/brand_grey_100</color>
 </resources>

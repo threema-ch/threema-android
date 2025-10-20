@@ -21,7 +21,9 @@
 
 package ch.threema.app.webviews
 
+import android.content.Context
 import ch.threema.app.R
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 
@@ -37,4 +39,8 @@ class LicenseActivity : SimpleWebViewActivity() {
     override fun getWebViewUrl() = "file:///android_asset/license.html"
 
     override fun requiresConnection() = false
+
+    companion object {
+        fun createIntent(context: Context) = buildActivityIntent<LicenseActivity>(context)
+    }
 }

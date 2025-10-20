@@ -25,7 +25,6 @@ import android.content.Context
 import ch.threema.app.R
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.TestUtil
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel.ForwardSecurityStatusType
 
@@ -73,7 +72,7 @@ class ForwardSecurityStatusChatAdapterDecorator(
 
             else -> null
         }
-        if (showHide(holder.bodyTextView, !TestUtil.isEmptyOrNull(body))) {
+        if (showHide(holder.bodyTextView, !body.isNullOrEmpty())) {
             holder.bodyTextView.text = body
         }
         setOnClickListener({

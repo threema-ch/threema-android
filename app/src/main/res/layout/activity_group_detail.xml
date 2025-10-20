@@ -18,8 +18,8 @@
 
         <com.google.android.material.appbar.CollapsingToolbarLayout
             android:id="@+id/collapsing_toolbar"
-            android:layout_width="match_parent"
             style="?attr/collapsingToolbarLayoutLargeStyle"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/contact_detail_avatar_height"
             android:fitsSystemWindows="true"
             android:importantForAccessibility="no"

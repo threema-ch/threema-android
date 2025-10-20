@@ -123,6 +123,7 @@
 😪|gesicht|gute|müde|nacht|schläfrig|smiley|traurig
 🤤|gesicht|sabbern|smiley
 😴|dösen|einschlafen|gähnen|gesicht|gute nacht|langweilig|mittagsschlaf|müde|nickerchen|schlafen|smiley|zzz
+🫩|augenringe|erschöpft|gesicht|müde|schläfrig|smiley|übermüdet
 😷|arzt|atemschutzmaske|bazillen|erkältet|gesicht|krankheit|mundschutz|schutzmaske|smiley|viren|virus
 🤒|fieber|gesicht|krank|messen|smiley|thermometer
 🤕|aua|autsch|gesicht|kopf|schmerzen|smiley|verband|verletzung
@@ -417,8 +418,8 @@
 🫄|aufgebläht|bauch|dicker bauch|person|schwangere person|schwangerschaft|überfressen|zu viel gegessen
 🤱|baby|brust|frau|person|stillen
 👩‍🍼|baby|eltern|flasche gebende frau|frau|füttern|mama|milch|mutter|neugeborenes|person|säugling|weiblich
-👨‍🍼|baby|der baby die flasche gibt|eltern|flasche gebender mann|füttern|kind|mann, der baby die flasche gibt|männlich|milch|neugeborenes|papa|person|säugling|vater
-🧑‍🍼|baby|die baby die flasche gibt|flasche gebende person|frau|füttern|mama|mann|neugeborenes|papa|person, die baby die flasche gibt|säugling|vater
+👨‍🍼|baby|flasche gebender mann|füttern|mann|männlich
+🧑‍🍼|baby|flasche gebende person|person
 👼|engel|gesicht|kind|märchen|putte
 🎅|weihnachten|weihnachtsmann|samichlaus
 🤶|weihnachten|weihnachtsfrau
@@ -453,7 +454,7 @@
 🧌|fantasy|gruslig|kobold|märchen|monster|ork|troll|ungeheuer
 💆|behandlung|die eine kopfmassage bekommt|entspannen|kopfmassage|kopfschmerzen|massage|migräne|person, die eine kopfmassage bekommt|salon|spa|therapie
 💆‍♂️|der eine kopfmassage bekommt|entspannen|kopfmassage|kopfschmerzen|mann, der eine kopfmassage bekommt|massage|salon|männlich
-💆‍♀️|die eine kopfmassage bekommt|frau, die eine kopfmassage bekommt|kopfmassage|weiblich
+💆‍♀️|behandlung|entspannend|frau|gesicht|kopfmassage|kopfschmerzen|kopfweh|lindern|massage|relaxen|salon|spa|therapie|verspannung|weiblich
 💇|friseurin|friseuse|frisörin|frisur|haare|haarschnitt|person beim haareschneiden|schere|coiffeur|friseur(in)|frisör(in)
 💇‍♂️|friseur|frisur|haarschnitt|mann beim haareschneiden|salon|schere|coiffeur|männlich
 💇‍♀️|frau beim haareschneiden|friseur|haarschnitt|schere|coiffeur|weiblich
@@ -478,11 +479,11 @@
 🏃|eilig|joggen|laufende person|läuferin|marathon|person|rennen|schnell|sport
 🏃‍♂️|joggen|jogger|laufender mann|marathon|rennen|männlich
 🏃‍♀️|athletin|frau|joggen|joggerin|laufende frau|läuferin|marathon|rennen|rennerin|rennt|schell|weiblich
-💃|frau|tanzende frau|tänzerin|weiblich
-🕺|mann|tanzender mann|männlich
+💃|elegant|festlich|flair|flamenco|frau|salsa|schwung|tango|tanzen|tänzerin|weiblich
+🕺|elegant|festlich|flair|flamenco|mann|salsa|schwung|tango|tanzen|tänzer|männlich
 🕴️|anzug|geschäftlich|mann|schwebender mann im anzug|männlich
 👯|bunnys|doppelt|hasenohren|leute|party|personen mit hasenohren|seelenverwandt|tanzen|tänzerinnen|zwillinge
-👯‍♂️|bunnys|hasenohren|männer mit hasenohren|party|tanzen|twillinge
+👯‍♂️|bunnys|hasenohren|männer mit hasenohren|party|tanzen|zwillinge
 👯‍♀️|bunnys|frauen mit hasenohren|hasenohren|party|weiblich
 🧖|abschalten|dampfbad|dampfsauna|entspannen|frau|luxuriös|person in dampfsauna|relaxen|sauna|spa
 🧖‍♂️|dampfsauna|mann in dampfsauna|sauna|männlich
@@ -549,11 +550,12 @@
 👥|büsten|personen|silhouette mehrerer büsten
 🫂|abschied|danke|drücken|drücker|freundschaft|hallo|liebe|sich umarmende personen|tschüss|umarmung
 👪|familie|junge|kind|mutter|vater
-🧑‍🧑‍🧒|1 kind|familie: 2 erwachsene, 1 kind
-🧑‍🧑‍🧒‍🧒|2 kinder|familie: 2 erwachsene, 2 kinder
-🧑‍🧒|1 kind|familie: 1 erwachsene(r), 1 kind
-🧑‍🧒‍🧒|2 kinder|familie: 1 erwachsene(r), 2 kinder
+🧑‍🧑‍🧒|erwachsener|familie|kind
+🧑‍🧑‍🧒‍🧒|erwachsener|familie|kind
+🧑‍🧒|erwachsener|familie|kind
+🧑‍🧒‍🧒|erwachsener|familie|kind
 👣|abdruck|auf dem weg|fußabdruck|fußabdrücke|fussabdruck|fussabdrücke
+🫆|fingerabdruck|forensik|identität|sicherheit|abdruck|polizei|täterin
 🐵|affengesicht|banane|dschungel|gesicht|tier|zoo
 🐒|affe|tier
 🦍|affe|gesicht|gorilla|tier
@@ -649,7 +651,7 @@
 🐍|schlangenträger|sternzeichen|tierkreis
 🐲|drachengesicht|gesicht|märchen|tier
 🐉|chinesisch neujahr|drache|märchen|tier
-🦕|brachiosaurus|brontosaurus|dinosaurier|diplodocus|saurier|sauropode|tier
+🦕|brachiosaurus|brontosaurus|dinosaurier|diplodocus|saurier|sauropode
 🦖|dinosaurier|saurier|t-rex|tree|tyrannosaurus rex
 🐳|blasender wal|meer|ozean|tier|wal
 🐋|ozean|tier|wal
@@ -663,6 +665,11 @@
 🐚|muschel|schneckenhaus|strand|tier
 🪸|great barrier reef|klimawandel|korallenriff|meer|ozean|riff|tier
 🪼|autsch|brennen|gallert|glibber|meeresbewohner|meerestier|nesseltier|ozean|qualle|tentakeln
+🦀|krabbe|krebs|meer|sternzeichen|strand|tierkreis
+🦞|hummer|lobster|meeresfrucht|meeresfrüchte|meerestier|scheren|tier
+🦐|garnele|gourmet|krustentier|meeresfrucht|shrimp
+🦑|kalmar|tier|tintenfisch
+🦪|auster|meer|muschel|perle|tauchen|tier
 🐌|langsam|schnecke|tier
 🦋|insekt|schmetterling|schön
 🐛|gefräßig|insekt|raupe|tier|gefrässig
@@ -706,6 +713,7 @@
 🪹|heim|leeres nest|nestbau|nisten|vogelnest|zuhause
 🪺|heim|nest mit blauen eiern|nest mit eiern|nestbau|nisten|vogelnest|zuhause
 🍄|fliegenpilz|giftig|pilz
+🪾|kahler baum|karg|trocken|winter|baum ohne blätter|blätterlos|dürre|herbst
 🍇|frucht|obst|trauben|wein
 🍈|cantaloupe|frucht|honigmelone|melone|obst
 🍉|frucht|melone|obst|wassermelone
@@ -744,6 +752,7 @@
 🫚|gesund|gewürz|ginger ale|ingwerbier|scharf|wurzel|würzig|ginger beer|ingwerwurzel
 🫛|bohne|edamame|erbsenschote|essen|gemüse|hülsenfrucht|hülsenfrüchte|schote
 🍄‍🟫|braun|essen|fungus|gemüse|lebensmittel|natur|pflanze|pilz|wald
+🫜|bete|garten|gemüse|rote bete|rübe|wurzel|beete|randen|radieschen
 🍞|brotlaib|essen|kohlenhydrate|laib brot|toast|weißbrot|weizen|weissbrot
 🥐|corissant|croissant|französisch|frühstückshörnchen|brot
 🥖|baguette|brot|französisch|frühstück
@@ -795,11 +804,6 @@
 🥟|chinesische teigtasche|dumpling|empanada|essen|gyōza|jiaozi|kloß|pierogi|potsticker|teigtasche|kloss
 🥠|essen|glückskeks|prophezeiung
 🥡|chinesisches essen|essen|stäbchen|takeaway-box|takeaway-schachtel
-🦀|krabbe|krebs|meer|sternzeichen|strand|tierkreis
-🦞|hummer|lobster|meeresfrucht|meeresfrüchte|meerestier|scheren|tier
-🦐|garnele|gourmet|krustentier|meeresfrucht|shrimp
-🦑|kalmar|tier|tintenfisch
-🦪|auster|meer|muschel|perle|tauchen|tier
 🍦|eis|softeis
 🍧|eis|sorbet|wassereis|zerstoßen|zerstossen
 🍨|eisbecher|eiscreme|eisdiele
@@ -1204,6 +1208,7 @@
 🪘|afrikanische trommel|conga|handtrommel|instrument|musikinstrument|rhythmus|trommeln
 🪇|cha-cha-cha|instrument|maracas|musikinstrument|musizieren|party|percussion|rasseln|tanzen|schütteln|trommel
 🪈|band|blaskapelle|flöte|holzblasinstrument|instrument|musikinstrument|musizieren|orchester|spielmannszug|blockflöte|pfeife
+🪉|amor|cupido|harfe|instrument|liebe|musik|orchester
 📱|handy|iphone|mobiltelefon|smartphone|telefonieren
 📲|anrufen|handy|iphone|kommunikation|mobiltelefon mit pfeil|pfeil|whatsapp
 ☎️|anrufen|festnetz|telefon
@@ -1334,6 +1339,7 @@
 🧰|box|handkasten|kasten|kiste|mechaniker|rote kiste|werkzeugkasten|werkzeugkiste|werkzeugkoffer
 🧲|anziehungskraft|hufeisen|magnetisch|pole|positiv negativ|u-form
 🪜|hochsteigen|holzleiter|klettern|leiter|sprosse|stufe
+🪏|graben|loch|schippe|spaten|ausgraben|schaufeln|vergraben
 🧪|chemie|chemikalie|chemiker|experiment|labor|reagenzglas|substanz|versuche|wissenschaft
 🧫|bakterienkultur|biologe|biologie|biologin|kultur|labor|petrischale|pipette|probe
 🧬|biologe|biologie|biologin|dna|dns|evolution|genetik|genmanipulation|leben
@@ -1477,6 +1483,7 @@
 ➰|schleife|looping
 ➿|blau|doppelschleife|rechteck|schleife
 〽️|japanisch|teilalternationszeichen|zeichensetzung
+🫟|farbe|fleck|holi|klecks|spritzer|tinte|farbklecks|kleckern|verschütten
 🔠|abcd|buchstaben|großbuchstaben|großschreiben|eingabesymbol lateinische grossbuchstaben|grossbuchstaben|lateinische grossbuchstaben
 🔡|eingabesymbol lateinische kleinbuchstaben|kleinbuchstaben|lateinische kleinbuchstaben
 🔢|1234|eingabesymbol|symbol|zahlen|ziffern
@@ -1513,7 +1520,7 @@
 🈳|chinesisches schriftzeichen|japanisches schriftzeichen|leer|schriftzeichen für leer|schriftzeichen für zimmer frei|zimmer frei
 🈺|betrieb|chinesisches schriftzeichen|geöffnet|japanisches schriftzeichen|schriftzeichen für betrieb|schriftzeichen für geöffnet
 🈵|belegt|besetzt|chinesisches schriftzeichen|fülle|japanisches schriftzeichen|kanji|kein zimmer frei|schriftzeichen für fülle|schriftzeichen für kein zimmer frei
-🔴|ball|großer roter kreis|kreis|punkt|roter punkt|grosser roter kreis
+🔴|ball|punkt|roter punkt|grosser roter kreis|kreis
 🟠|form|kreis|orange scheibe|oranger kreis|oranger punkt|punkt
 🟡|form|gelbe scheibe|gelber kreis|gelber punkt|kreis|punkt|scheibe
 🟢|form|grüne scheibe|grüner kreis|grüner punkt|kreis|punkt

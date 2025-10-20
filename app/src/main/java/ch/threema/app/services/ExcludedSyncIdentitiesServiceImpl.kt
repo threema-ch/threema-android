@@ -26,6 +26,7 @@ import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.domain.types.Identity
 import java.lang.ref.WeakReference
 
 private val logger = LoggingUtil.getThreemaLogger("ExcludedSyncIdentitiesServiceImpl")
@@ -35,10 +36,10 @@ class ExcludedSyncIdentitiesServiceImpl(
     private val multiDeviceManager: MultiDeviceManager,
     private val taskCreator: TaskCreator,
 ) : ExcludedSyncIdentitiesService {
-    private var excludedSyncIdentitiesCache: WeakReference<Set<String>> = WeakReference(null)
+    private var excludedSyncIdentitiesCache: WeakReference<Set<Identity>> = WeakReference(null)
 
     @Synchronized
-    override fun excludeFromSync(identity: String, triggerSource: TriggerSource) {
+    override fun excludeFromSync(identity: Identity, triggerSource: TriggerSource) {
         if (isExcluded(identity)) {
             logger.warn("Cannot exclude identity {} from address book sync as it is already excluded", identity)
             return
@@ -48,7 +49,7 @@ class ExcludedSyncIdentitiesServiceImpl(
     }
 
     @Synchronized
-    override fun removeExcludedIdentity(identity: String, triggerSource: TriggerSource) {
+    override fun removeExcludedIdentity(identity: Identity, triggerSource: TriggerSource) {
         if (!isExcluded(identity)) {
             logger.warn("Cannot remove excluded identity {} from address book sync as it hasn't been excluded", identity)
             return
@@ -58,7 +59,7 @@ class ExcludedSyncIdentitiesServiceImpl(
     }
 
     @Synchronized
-    override fun setExcludedIdentities(identities: Set<String>, triggerSource: TriggerSource) {
+    override fun setExcludedIdentities(identities: Set<Identity>, triggerSource: TriggerSource) {
         logger.info("Setting updated sync exclusion list")
         preferenceService.setList(UNIQUE_LIST_NAME, identities.toTypedArray())
         excludedSyncIdentitiesCache = WeakReference(identities)
@@ -68,7 +69,7 @@ class ExcludedSyncIdentitiesServiceImpl(
     }
 
     @Synchronized
-    override fun getExcludedIdentities(): Set<String> {
+    override fun getExcludedIdentities(): Set<Identity> {
         return excludedSyncIdentitiesCache.get() ?: run {
             val excludedIdentities = preferenceService.getList(UNIQUE_LIST_NAME).toMutableSet()
             excludedSyncIdentitiesCache = WeakReference(excludedIdentities)
@@ -77,7 +78,7 @@ class ExcludedSyncIdentitiesServiceImpl(
     }
 
     @Synchronized
-    override fun isExcluded(identity: String): Boolean {
+    override fun isExcluded(identity: Identity): Boolean {
         return getExcludedIdentities().contains(identity)
     }
 

@@ -21,12 +21,13 @@
 
 package ch.threema.storage.factories
 
-import android.content.ContentValues
 import android.database.sqlite.SQLiteException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.CursorHelper
 import ch.threema.storage.DatabaseService
+import ch.threema.storage.buildContentValues
 import ch.threema.storage.models.ServerMessageModel
+import ch.threema.storage.runDelete
 import ch.threema.storage.runQuery
 import java.sql.SQLException
 
@@ -35,9 +36,10 @@ private val logger = LoggingUtil.getThreemaLogger("ServerMessageModelFactory")
 class ServerMessageModelFactory(databaseService: DatabaseService) :
     ModelFactory(databaseService, ServerMessageModel.TABLE) {
     fun storeServerMessageModel(serverMessageModel: ServerMessageModel) {
-        val contentValues = ContentValues()
-        contentValues.put(ServerMessageModel.COLUMN_MESSAGE, serverMessageModel.message)
-        contentValues.put(ServerMessageModel.COLUMN_TYPE, serverMessageModel.type)
+        val contentValues = buildContentValues {
+            put(ServerMessageModel.COLUMN_MESSAGE, serverMessageModel.message)
+            put(ServerMessageModel.COLUMN_TYPE, serverMessageModel.type)
+        }
         try {
             writableDatabase.insertOrThrow(tableName, null, contentValues)
         } catch (e: SQLException) {
@@ -59,10 +61,10 @@ class ServerMessageModelFactory(databaseService: DatabaseService) :
     }
 
     fun delete(message: String) {
-        writableDatabase.delete(
-            ServerMessageModel.TABLE,
-            "${ServerMessageModel.COLUMN_MESSAGE}=?",
-            arrayOf(message),
+        writableDatabase.runDelete(
+            table = ServerMessageModel.TABLE,
+            whereClause = "${ServerMessageModel.COLUMN_MESSAGE}=?",
+            whereArgs = arrayOf(message),
         )
     }
 

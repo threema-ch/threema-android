@@ -98,7 +98,9 @@
             android:layout_height="20dp"
             android:layout_alignBaseline="@+id/ballot_creator"
             android:layout_alignParentRight="true"
-            app:backgroundTint="?attr/colorPrimary" />
+            android:textColor="?attr/colorOnPrimary"
+            app:backgroundTint="?attr/colorPrimary"
+            tools:text="10" />
 
     </RelativeLayout>
 </RelativeLayout>

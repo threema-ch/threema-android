@@ -59,6 +59,11 @@
             android:key="@string/preferences__onprem_server"
             android:title="@string/server_hint" />
 
+        <Preference
+            android:key="@string/preferences__remote_secret_activated"
+            android:title="@string/remote_secret"
+            android:summary="@string/about_screen_remote_secrets_activated"/>
+
     </PreferenceCategory>
 
     <PreferenceCategory

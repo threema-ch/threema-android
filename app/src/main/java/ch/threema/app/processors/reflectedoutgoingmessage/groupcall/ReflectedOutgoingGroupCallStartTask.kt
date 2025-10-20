@@ -34,7 +34,7 @@ internal class ReflectedOutgoingGroupCallStartTask(
     outgoingMessage = outgoingMessage,
     message = GroupCallStartMessage.fromReflected(
         message = outgoingMessage,
-        ownIdentity = serviceManager.identityStore.identity,
+        ownIdentity = serviceManager.identityStore.getIdentity()!!,
     ),
     type = Common.CspE2eMessageType.GROUP_CALL_START,
     serviceManager = serviceManager,

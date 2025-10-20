@@ -84,6 +84,7 @@
     <string name="voip_gc_waiting_for_participants">Waiting for participants</string>
     <string name="voip_gc_participant_avatar_description">Profile picture of participant</string>
     <string name="voip_gc_participant_mute_status_description">Participant mute status</string>
+    <string name="voip_gc_participant_screen_share_status_description">Participant is sharing a screen</string>
     <string name="voip_gc_notification_new_call_public">A new group call has been started</string>
     <string name="voip_gc_open_call">Open</string>
     <string name="voip_gc_call_started">Group call was started</string>
@@ -93,6 +94,7 @@
     <string name="voip_gc_call_error">Call stopped due to an error</string>
     <string name="voip_gc_call_start_error">Could not start group call</string>
     <string name="voip_gc_call_already_ended">Group call has already ended</string>
+    <string name="voip_gc_screen_sharing_not_supported">Screen sharing is currently limited to desktop devices.</string>
     <string name="voip_gc_call_full_generic">Maximum reached: No more participants can join this group call.</string>
     <string name="voip_gc_call_full_n">Maximum of %1$d participants reached, you cannot join this group call.</string>
     <plurals name="n_participants_in_call">

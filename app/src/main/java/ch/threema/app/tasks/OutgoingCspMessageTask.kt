@@ -44,6 +44,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.NetworkException
 import ch.threema.domain.taskmanager.catchAllExceptNetworkException
 import ch.threema.domain.taskmanager.catchExceptNetworkException
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.GroupModel
@@ -118,12 +119,12 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
     suspend fun sendContactMessage(
         message: AbstractMessage,
         messageModel: MessageModel?,
-        toIdentity: String,
+        toIdentity: Identity,
         messageId: MessageId,
         createdAt: Date,
         handle: ActiveTaskCodec,
     ) {
-        val contactModelData = contactModelRepository.getByIdentity(toIdentity)?.data?.value
+        val contactModelData = contactModelRepository.getByIdentity(toIdentity)?.data
         if (contactModelData == null) {
             logger.error(
                 "Could not send message to {} as the contact model data is null",
@@ -234,7 +235,7 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
         val finalRecipients = recipients
             .mapNotNull { contactModelRepository.getByIdentity(it) }
             .removeGroupCreatorIfRequired(group)
-            .mapNotNull { it.data.value }
+            .mapNotNull { it.data }
             .map { it.toBasicContact() }
             .toSet()
 

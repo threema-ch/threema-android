@@ -46,7 +46,7 @@ import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.stores.ContactStore
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.DatabaseService
 import kotlinx.coroutines.Deferred
@@ -66,7 +66,7 @@ class GroupFlowDispatcher(
     private val groupCallManager: GroupCallManager,
     private val userService: UserService,
     private val contactStore: ContactStore,
-    private val identityStore: IdentityStoreInterface,
+    private val identityStore: IdentityStore,
     private val forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor,
     private val nonceFactory: NonceFactory,
     private val blockedIdentitiesService: BlockedIdentitiesService,

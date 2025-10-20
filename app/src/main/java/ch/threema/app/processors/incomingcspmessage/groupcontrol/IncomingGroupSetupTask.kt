@@ -58,6 +58,7 @@ import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.domain.taskmanager.getEncryptedContactSyncCreate
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncCreate
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncUpdate
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.MdD2D.GroupSync.Update.MemberStateChange
 import ch.threema.protobuf.d2d.sync.MdD2DSync
@@ -92,7 +93,7 @@ class IncomingGroupSetupTask(
     private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
 
     // Properties
-    private val myIdentity by lazy { userService.identity }
+    private val myIdentity by lazy { userService.identity!! }
     private val groupIdentity by lazy {
         GroupIdentity(
             message.groupCreator,
@@ -144,7 +145,7 @@ class IncomingGroupSetupTask(
      * that there is a change despite there isn't any change.
      */
     private fun hasChange(members: Set<String>, group: GroupModel): Boolean {
-        val groupModelData = group.data.value
+        val groupModelData = group.data
         if (groupModelData == null || !groupModelData.isMember) {
             if (members.isEmpty()) {
                 return false
@@ -159,19 +160,20 @@ class IncomingGroupSetupTask(
     }
 
     private suspend fun handleSetupContainingUser(
-        senderIdentity: String,
+        senderIdentity: Identity,
         members: Set<String>,
         group: GroupModel?,
         handle: ActiveTaskCodec,
     ): ReceiveStepsResult {
         val detectedChanges = if (multiDeviceManager.isMultiDeviceActive) {
             handle.createTransaction(
-                multiDeviceManager.propertiesProvider.get().keys,
-                MdD2D.TransactionScope.Scope.GROUP_SYNC,
-                TRANSACTION_TTL_MAX,
-            ) {
-                contactModelRepository.getByIdentity(senderIdentity)?.data?.value != null
-            }.execute {
+                keys = multiDeviceManager.propertiesProvider.get().keys,
+                scope = MdD2D.TransactionScope.Scope.GROUP_SYNC,
+                ttl = TRANSACTION_TTL_MAX,
+                precondition = {
+                    contactModelRepository.getByIdentity(senderIdentity)?.data != null
+                },
+            ).execute {
                 detectAndReflectChangesIfMdEnabled(members, group, handle)
             }
         } else {
@@ -202,7 +204,7 @@ class IncomingGroupSetupTask(
                 // The user itself is not added to the member list
                 is UserContact -> false
                 // Do not include contacts that are present but not valid
-                is Contact -> contactOrInit.contactModel.data.value?.activityState != IdentityState.INVALID
+                is Contact -> contactOrInit.contactModel.data?.activityState != IdentityState.INVALID
                 is Init -> true
                 is SpecialContact -> true
             }
@@ -220,7 +222,7 @@ class IncomingGroupSetupTask(
 
         val validMembers = validMembersLookupResult.map { it.key }.toSet()
 
-        val groupModelData = group?.data?.value
+        val groupModelData = group?.data
 
         return if (group == null || groupModelData == null) {
             val now = now()

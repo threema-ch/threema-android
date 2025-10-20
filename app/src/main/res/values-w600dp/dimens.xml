@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- adaptive dimensions for margins and paddings depending on screen width -->
+    <dimen name="dynamic_grid_unit_x0_5">8dp</dimen>
+    <dimen name="dynamic_grid_unit_x1">16dp</dimen>
+    <dimen name="dynamic_grid_unit_x1_5">24dp</dimen>
+    <dimen name="dynamic_grid_unit_x2">32dp</dimen>
+    <dimen name="dynamic_grid_unit_x3">48dp</dimen>
+    <dimen name="dynamic_grid_unit_x4">64dp</dimen>
+    <dimen name="dynamic_grid_unit_x5">80dp</dimen>
+    <dimen name="dynamic_grid_unit_x6">96dp</dimen>
+    <dimen name="dynamic_grid_unit_x7">112dp</dimen>
+    <dimen name="dynamic_grid_unit_x8">128</dimen>
+    <dimen name="dynamic_grid_unit_x9">144dp</dimen>
+    <dimen name="dynamic_grid_unit_x10">160dp</dimen>
+
+</resources>

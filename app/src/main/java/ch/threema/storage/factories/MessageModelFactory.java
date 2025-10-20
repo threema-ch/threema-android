@@ -34,6 +34,7 @@ import java.util.List;
 
 import ch.threema.app.services.MessageService;
 import ch.threema.domain.models.MessageId;
+import ch.threema.storage.ChunkedSequence;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
@@ -42,6 +43,7 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
+import kotlin.ranges.LongProgression;
 
 public class MessageModelFactory extends AbstractMessageModelFactory {
     public MessageModelFactory(DatabaseService databaseService) {
@@ -427,16 +429,28 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
         return false;
     }
 
-    public List<MessageModel> getByIdentityUnsorted(String identity) {
-        return convertList(getReadableDatabase().query(this.getTableName(),
-            null,
-            MessageModel.COLUMN_IDENTITY + "=?",
-            new String[]{
-                identity
-            },
-            null,
-            null,
-            null));
+    public ChunkedSequence<MessageModel> getByIdentity(String identity) {
+        long count;
+        try (Cursor cursor = getReadableDatabase().query(
+            "SELECT COUNT(*) FROM `" + getTableName() + "` WHERE `" + MessageModel.COLUMN_IDENTITY + "` = ?",
+            new String[]{identity}
+        )) {
+            if (cursor.moveToNext()) {
+                count = cursor.getLong(0);
+            } else {
+                count = 0;
+            }
+        }
+
+        return new ChunkedSequence<>(
+            LongProgression.Companion.fromClosedRange(0, count, 10000),
+            (from, size) ->
+                getReadableDatabase().query(
+                    "SELECT * FROM `" + getTableName() + "` WHERE `" + MessageModel.COLUMN_IDENTITY + "` = ? LIMIT ? OFFSET ?",
+                    new String[]{identity, String.valueOf(size), String.valueOf(from)}
+                ),
+            this::convert
+        );
     }
 
     private MessageModel getFirst(String selection, String[] selectionArgs) {

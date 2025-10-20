@@ -55,7 +55,7 @@ import ch.threema.app.R;
 import ch.threema.base.utils.LoggingUtil;
 
 public class ListViewTouchSwipeListener implements View.OnTouchListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ListViewSwipeListener");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("ListViewTouchSwipeListener");
 
     // Cached ViewConfiguration and system-wide constant values
     private int mSlop;

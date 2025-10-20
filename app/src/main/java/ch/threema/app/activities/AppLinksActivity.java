@@ -26,27 +26,23 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
 import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
 import ch.threema.app.asynctasks.ContactAvailable;
 import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.contactdetails.ContactDetailActivity;
-import ch.threema.app.grouplinks.OutgoingGroupRequestActivity;
-import ch.threema.app.services.LockAppService;
-import ch.threema.app.services.UserService;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.data.repositories.ContactModelRepository;
-import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.models.ContactModel;
 
@@ -55,6 +51,9 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class AppLinksActivity extends ThreemaToolbarActivity {
     private final static Logger logger = LoggingUtil.getThreemaLogger("AppLinksActivity");
+
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     @NonNull
     private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
@@ -83,17 +82,8 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
     }
 
     private void checkLock() {
-        LockAppService lockAppService;
-        try {
-            lockAppService = ThreemaApplication.requireServiceManager().getLockAppService();
-        } catch (Exception e) {
-            logger.error("Exception while checking lock", e);
-            finish();
-            return;
-        }
-
-        if (lockAppService.isLocked()) {
-            HiddenChatUtil.launchLockCheckDialog(this, preferenceService);
+        if (dependencies.getLockAppService().isLocked()) {
+            HiddenChatUtil.launchLockCheckDialog(this, dependencies.getPreferenceService());
         } else {
             handleIntent();
         }
@@ -104,8 +94,6 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
         final Uri appLinkData = getIntent().getData();
         if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData.getHost().equals(BuildConfig.contactActionUrl)) {
             handleContactUrl(appLinkAction, appLinkData);
-        } else if (Intent.ACTION_VIEW.equals(appLinkAction) && appLinkData.getHost().equals(BuildConfig.groupLinkActionUrl)) {
-            handleGroupLinkUrl(appLinkData);
         }
         finish();
     }
@@ -128,13 +116,6 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
         }
     }
 
-    private void handleGroupLinkUrl(Uri appLinkData) {
-        logger.info("Handle group link url");
-        Intent intent = new Intent(this, OutgoingGroupRequestActivity.class);
-        intent.putExtra(AppConstants.INTENT_DATA_GROUP_LINK, appLinkData.getEncodedFragment());
-        startActivity(intent);
-    }
-
     @Override
     public void finish() {
         super.finish();
@@ -145,7 +126,7 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ThreemaActivity.ACTIVITY_ID_CHECK_LOCK) {
             if (resultCode == RESULT_OK) {
-                lockAppService.unlock(null);
+                dependencies.getLockAppService().unlock(null);
                 handleIntent();
             } else {
                 Toast.makeText(this, R.string.pin_locked_cannot_send, Toast.LENGTH_LONG).show();
@@ -157,17 +138,13 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
     }
 
     private void addNewContactAndOpenChat(@NonNull String identity, @NonNull Uri appLinkData) {
-        UserService userService = serviceManager.getUserService();
-        APIConnector apiConnector = serviceManager.getAPIConnector();
-        ContactModelRepository contactModelRepository = serviceManager.getModelRepositories().getContacts();
-
         backgroundExecutor.get().execute(
             new BasicAddOrUpdateContactBackgroundTask(
                 identity,
                 ContactModel.AcquaintanceLevel.DIRECT,
-                userService.getIdentity(),
-                apiConnector,
-                contactModelRepository,
+                dependencies.getUserService().getIdentity(),
+                dependencies.getApiConnector(),
+                dependencies.getContactModelRepository(),
                 AddContactRestrictionPolicy.CHECK,
                 AppLinksActivity.this,
                 null

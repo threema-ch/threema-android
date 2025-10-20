@@ -25,7 +25,6 @@ import android.content.Context
 import android.util.AttributeSet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.AbstractComposeView
@@ -41,8 +40,6 @@ class WizardButtonXml @JvmOverloads constructor(
     var style: WizardButtonStyle by mutableStateOf(defaultButtonStyle)
     var isButtonEnabled: Boolean by mutableStateOf(true)
     var trailingIconRes: Int? by mutableStateOf(null)
-    var primaryColorRes: Int by mutableIntStateOf(R.color.md_theme_dark_primary)
-    var onPrimaryColorRes: Int by mutableIntStateOf(R.color.md_theme_dark_onPrimary)
 
     init {
         val typedArray = context.theme.obtainStyledAttributes(
@@ -67,16 +64,6 @@ class WizardButtonXml @JvmOverloads constructor(
                     style = WizardButtonStyle.entries[initialStyle]
                 }
             }
-            getResourceId(R.styleable.WizardButtonXmlWrapper_wizardButton_colorPrimary, NO_RES_ID).let { initialColorPrimary ->
-                if (initialColorPrimary != NO_RES_ID) {
-                    primaryColorRes = initialColorPrimary
-                }
-            }
-            getResourceId(R.styleable.WizardButtonXmlWrapper_wizardButton_colorOnPrimary, NO_RES_ID).let { initialColorOnPrimary ->
-                if (initialColorOnPrimary != NO_RES_ID) {
-                    onPrimaryColorRes = initialColorOnPrimary
-                }
-            }
             recycle()
         }
     }
@@ -89,8 +76,6 @@ class WizardButtonXml @JvmOverloads constructor(
                 style = style,
                 trailingIconRes = trailingIconRes,
                 isEnabled = isButtonEnabled,
-                primaryColorRes = primaryColorRes,
-                onPrimaryColorRes = onPrimaryColorRes,
                 onClick = {
                     super.performClick()
                 },

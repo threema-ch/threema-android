@@ -31,6 +31,7 @@ import ch.threema.domain.protocol.csp.messages.ballot.GroupPollVoteMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ballot.BallotModel
 import java.util.Date
 import kotlinx.serialization.Serializable
@@ -39,7 +40,7 @@ private val logger = LoggingUtil.getThreemaLogger("OutgoingPollVoteGroupMessageT
 
 class OutgoingPollVoteGroupMessageTask(
     private val messageId: MessageId,
-    private val recipientIdentities: Set<String>,
+    private val recipientIdentities: Set<Identity>,
     private val ballotId: BallotId,
     private val ballotCreator: String,
     private val ballotVotes: Array<BallotVote>,
@@ -101,7 +102,7 @@ class OutgoingPollVoteGroupMessageTask(
     @Serializable
     class OutgoingPollVoteGroupMessageData(
         private val messageId: String,
-        private val recipientIdentities: Set<String>,
+        private val recipientIdentities: Set<Identity>,
         private val ballotId: ByteArray,
         private val ballotCreator: String,
         private val ballotVotes: List<Pair<Int, Int>>,

@@ -21,6 +21,7 @@
 
 package ch.threema.app.activities
 
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Bundle
 import android.os.Handler
@@ -35,7 +36,6 @@ import androidx.appcompat.view.ActionMode
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -47,8 +47,6 @@ import ch.threema.app.globalsearch.GlobalSearchAdapter
 import ch.threema.app.globalsearch.GlobalSearchViewModel
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.services.ContactService
-import ch.threema.app.services.GroupService
 import ch.threema.app.services.MessageService
 import ch.threema.app.services.MessageServiceImpl.FILTER_CHATS
 import ch.threema.app.services.MessageServiceImpl.FILTER_GROUPS
@@ -63,6 +61,7 @@ import ch.threema.app.ui.ThreemaSearchView
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.AbstractMessageModel
@@ -73,6 +72,8 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private val logger = LoggingUtil.getThreemaLogger("StarredMessagesActivity")
 
@@ -85,14 +86,14 @@ class StarredMessagesActivity :
         logScreenVisibility(logger)
     }
 
+    private val preferenceService: PreferenceService by inject()
+    private val messageService: MessageService by inject()
+    private val globalSearchViewModel: GlobalSearchViewModel by viewModel()
+
     private val starredMessagesSearchQueryTimeout = 500.milliseconds
     private var chatsAdapter: GlobalSearchAdapter? = null
-    private var globalSearchViewModel: GlobalSearchViewModel? = null
     private var searchView: ThreemaSearchView? = null
     private var searchBar: SearchBar? = null
-    private var contactService: ContactService? = null
-    private var messageService: MessageService? = null
-    private var groupService: GroupService? = null
     private var sortMenuItem: MenuItem? = null
     private var removeStarsMenuItem: MenuItem? = null
     private var actionMode: ActionMode? = null
@@ -100,7 +101,7 @@ class StarredMessagesActivity :
     private var queryText: String? = null
     private val queryHandler = Handler(Looper.getMainLooper())
     private val queryTask = Runnable {
-        globalSearchViewModel?.onQueryChanged(
+        globalSearchViewModel.onQueryChanged(
             queryText,
             FILTER_FLAGS,
             true,
@@ -111,7 +112,7 @@ class StarredMessagesActivity :
     private val showMessageLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _: ActivityResult ->
             // starred status may have changed when returning from ComposeMessageFragment
-            globalSearchViewModel?.onDataChanged()
+            globalSearchViewModel.onDataChanged()
         }
 
     override fun onQueryTextSubmit(query: String): Boolean {
@@ -124,7 +125,7 @@ class StarredMessagesActivity :
         if (queryText?.isNotEmpty() == true) {
             queryHandler.postDelayed(queryTask, starredMessagesSearchQueryTimeout.inWholeMilliseconds)
         } else {
-            globalSearchViewModel?.onQueryChanged(
+            globalSearchViewModel.onQueryChanged(
                 null,
                 FILTER_FLAGS,
                 true,
@@ -135,21 +136,7 @@ class StarredMessagesActivity :
         return true
     }
 
-    override fun getLayoutResource(): Int {
-        return R.layout.activity_starred_messages
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        try {
-            contactService = serviceManager.contactService
-            groupService = serviceManager.groupService
-            messageService = serviceManager.messageService
-        } catch (e: Exception) {
-            logger.error("Exception", e)
-            finish()
-        }
-    }
+    override fun getLayoutResource() = R.layout.activity_starred_messages
 
     override fun handleDeviceInsets() {
         super.handleDeviceInsets()
@@ -163,8 +150,7 @@ class StarredMessagesActivity :
             return false
         }
 
-        sortOrder = preferenceService?.starredMessagesSortOrder
-            ?: PreferenceService.StarredMessagesSortOrder_DATE_DESCENDING
+        sortOrder = preferenceService.starredMessagesSortOrder
 
         if (supportActionBar != null) {
             searchBar = toolbar as SearchBar
@@ -229,8 +215,7 @@ class StarredMessagesActivity :
         val emptyView = EmptyView(this, ConfigUtils.getActionBarSize(this))
         emptyView.setup(
             R.string.no_starred_messages,
-            R.drawable.ic_star_golden_24dp,
-            null,
+            R.drawable.ic_star_filled,
         )
         (recyclerView.parent.parent as ViewGroup).addView(emptyView)
         recyclerView.emptyView = emptyView
@@ -242,15 +227,12 @@ class StarredMessagesActivity :
             ownPadding = SpacingValues.all(R.dimen.grid_unit_x2),
         )
 
-        globalSearchViewModel =
-            ViewModelProvider(this)[GlobalSearchViewModel::class.java].also { globalSearchViewModel ->
-                globalSearchViewModel.messageModels.observe(this) { messages ->
-                    emptyView.setLoading(false)
-                    chatsAdapter?.setMessageModels(messages)
-                    removeStarsMenuItem?.isVisible =
-                        messages.isNotEmpty() && (searchView?.isIconified ?: false)
-                }
-            }
+        globalSearchViewModel.messageModels.observe(this) { messages ->
+            emptyView.setLoading(false)
+            chatsAdapter?.setMessageModels(messages)
+            removeStarsMenuItem?.isVisible =
+                messages.isNotEmpty() && (searchView?.isIconified ?: false)
+        }
 
         onQueryTextChange(null)
         return true
@@ -337,7 +319,7 @@ class StarredMessagesActivity :
             lifecycleScope.launch(Dispatchers.IO) {
                 checkedItems.forEach {
                     it.displayTags = DISPLAY_TAG_NONE
-                    messageService?.save(it)
+                    messageService.save(it)
                 }
 
                 ListenerManager.messageListeners.handle { listener ->
@@ -349,7 +331,7 @@ class StarredMessagesActivity :
 
                 withContext(Dispatchers.Main) {
                     actionMode?.finish()
-                    globalSearchViewModel?.onDataChanged()
+                    globalSearchViewModel.onDataChanged()
                 }
             }
         }
@@ -357,9 +339,9 @@ class StarredMessagesActivity :
 
     private fun removeAllStars() {
         lifecycleScope.launch(Dispatchers.IO) {
-            messageService?.unstarAllMessages()
+            messageService.unstarAllMessages()
             withContext(Dispatchers.Main) {
-                globalSearchViewModel?.onDataChanged()
+                globalSearchViewModel.onDataChanged()
             }
         }
     }
@@ -399,7 +381,7 @@ class StarredMessagesActivity :
         if (DIALOG_TAG_SORT_BY == tag) {
             logger.info("Sorting order for starred messages changed")
             sortOrder = which
-            preferenceService?.starredMessagesSortOrder = sortOrder
+            preferenceService.starredMessagesSortOrder = sortOrder
             onQueryTextChange(queryText)
         }
     }
@@ -423,5 +405,8 @@ class StarredMessagesActivity :
         private const val DIALOG_TAG_SORT_BY = "sortBy"
         private const val FILTER_FLAGS =
             FILTER_STARRED_ONLY or FILTER_GROUPS or FILTER_CHATS or FILTER_INCLUDE_ARCHIVED
+
+        @JvmStatic
+        fun createIntent(context: Context) = buildActivityIntent<StarredMessagesActivity>(context)
     }
 }

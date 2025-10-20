@@ -29,19 +29,16 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.widget.Toast;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.services.license.LicenseService;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactLookupUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ContactModel;
@@ -55,35 +52,9 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
  */
 public class CallActionIntentActivity extends ThreemaActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("CallActionIntentActivity");
-    private ServiceManager serviceManager;
-    private ContactService contactService;
-    private PreferenceService preferenceService;
-    private LicenseService licenseService;
 
-    @Override
-    protected boolean checkInstances() {
-        return TestUtil.required(
-            this.serviceManager,
-            this.contactService,
-            this.preferenceService,
-            this.licenseService
-        );
-    }
-
-    @Override
-    protected void instantiate() {
-        this.serviceManager = ThreemaApplication.getServiceManager();
-
-        if (this.serviceManager != null) {
-            try {
-                this.contactService = this.serviceManager.getContactService();
-                this.preferenceService = this.serviceManager.getPreferenceService();
-                this.licenseService = this.serviceManager.getLicenseService();
-            } catch (Exception e) {
-                logger.error("Could not instantiate services", e);
-            }
-        }
-    }
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -93,18 +64,12 @@ public class CallActionIntentActivity extends ThreemaActivity {
             return;
         }
 
-        if (!this.requiredInstances()) {
-            this.finish();
-            return;
-        }
-
-        if (!ConfigUtils.isCallsEnabled() || !licenseService.isLicensed()) {
+        if (!ConfigUtils.isCallsEnabled() || !dependencies.getLicenseService().isLicensed()) {
             Toast.makeText(getApplicationContext(), R.string.voip_disabled, Toast.LENGTH_LONG).show();
             this.finish();
             return;
         }
 
-        //	String contactIdentity = null;
         ContactModel contact = null;
 
         // Validate intent
@@ -116,7 +81,7 @@ public class CallActionIntentActivity extends ThreemaActivity {
                     try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
                         if (cursor != null && cursor.moveToNext()) {
                             String contactIdentity = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.RawContacts.Data.DATA1));
-                            contact = contactService.getByIdentity(contactIdentity);
+                            contact = dependencies.getContactService().getByIdentity(contactIdentity);
                         }
                     } catch (SecurityException e) {
                         logger.error("SecurityException", e);
@@ -127,7 +92,7 @@ public class CallActionIntentActivity extends ThreemaActivity {
             final Uri uri = intent.getData();
             if (uri != null && "tel".equals(uri.getScheme())) {
                 // Look up contact identity
-                contact = ContactLookupUtil.phoneNumberToContact(this, contactService, uri.getSchemeSpecificPart());
+                contact = ContactLookupUtil.phoneNumberToContact(this, dependencies.getContactService(), uri.getSchemeSpecificPart());
             }
         }
 

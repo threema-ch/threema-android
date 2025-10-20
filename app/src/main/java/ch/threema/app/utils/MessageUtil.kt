@@ -52,7 +52,6 @@ fun AbstractMessageModel.canBeEdited(
     type?.canBeEdited == true &&
         !isStatusMessage &&
         isOutbox &&
-        ConfigUtils.isEditMessagesEnabled() &&
         (belongsToNotesGroup || getMessageTime()?.let { messageTime -> editTime - messageTime <= EditMessage.EDIT_MESSAGES_MAX_AGE } == true) &&
         (this is MessageModel || this is GroupMessageModel) &&
         (postedAt != null || state == MessageState.SENDFAILED) &&

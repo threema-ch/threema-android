@@ -21,11 +21,13 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+
+import androidx.annotation.NonNull;
+
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 /**
  * Create forwardSecurityMode field in message model and forwardSecurityEnabled field in contact model
@@ -33,9 +35,10 @@ import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
 public class DatabaseUpdateToVersion73 implements DatabaseUpdate {
     public static final int VERSION = 73;
 
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion73(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion73(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 

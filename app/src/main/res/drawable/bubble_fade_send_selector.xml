@@ -2,17 +2,17 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
-            <gradient android:angle="90" android:endColor="#00000000" android:startColor="?attr/colorPrimaryContainer" />
+            <gradient android:angle="90" android:endColor="#00000000" android:startColor="?attr/colorPrimary" />
         </shape>
     </item>
     <item android:state_activated="true">
         <shape android:shape="rectangle">
-            <gradient android:angle="90" android:endColor="#00000000" android:startColor="?attr/colorPrimaryContainer" />
+            <gradient android:angle="90" android:endColor="#00000000" android:startColor="?attr/colorPrimary" />
         </shape>
     </item>
     <item>
         <shape android:shape="rectangle">
-            <gradient android:angle="90" android:endColor="#00000000" android:startColor="?attr/colorTertiaryContainer" />
+            <gradient android:angle="90" android:endColor="#00000000" android:startColor="?attr/colorPrimaryContainer" />
         </shape>
     </item>
 </selector>

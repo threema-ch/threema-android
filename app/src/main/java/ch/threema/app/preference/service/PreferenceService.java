@@ -27,10 +27,9 @@ import android.net.Uri;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import androidx.annotation.IntDef;
@@ -233,13 +232,9 @@ public interface PreferenceService {
 
     void setListQuietly(@NonNull String listName, @NonNull String[] elements, boolean encrypted);
 
-    HashMap<Integer, String> getHashMap(String listName, boolean encrypted);
+    Map<String, String> getStringMap(String listName);
 
-    void setHashMap(String listName, HashMap<Integer, String> hashMap);
-
-    HashMap<String, String> getStringHashMap(String listName, boolean encrypted);
-
-    void setStringHashMap(String listName, HashMap<String, String> hashMap);
+    void setStringMap(String listName, Map<String, String> map);
 
     /**
      * value in seconds!
@@ -252,9 +247,10 @@ public interface PreferenceService {
 
     void resetIDBackupCount();
 
-    Date getLastIDBackupReminderDate();
+    @Nullable
+    Instant getLastIDBackupReminderTimestamp();
 
-    void setLastIDBackupReminderDate(Date lastIDBackupReminderDate);
+    void setLastIDBackupReminderTimestamp(@Nullable Instant lastIDBackupReminderTimestamp);
 
     String getContactListSorting();
 
@@ -269,10 +265,6 @@ public interface PreferenceService {
     int getFontStyle();
 
     void clear();
-
-    List<String[]> write();
-
-    boolean read(List<String[]> values);
 
     boolean showInactiveContacts();
 
@@ -299,17 +291,12 @@ public interface PreferenceService {
 
     void setFileSendInfoShown(boolean shown);
 
-    int getAppThemeValue();
-
     int getEmojiStyle();
 
-    void setLockoutDeadline(long deadline);
+    void setLockoutDeadline(@Nullable Instant deadline);
 
-    void setLockoutTimeout(long timeout);
-
-    long getLockoutDeadline();
-
-    long getLockoutTimeout();
+    @Nullable
+    Instant getLockoutDeadline();
 
     void setLockoutAttempts(int numWrongConfirmAttempts);
 
@@ -319,9 +306,10 @@ public interface PreferenceService {
 
     boolean isUseProximitySensor();
 
-    void setAppLogoExpiresAt(Date expiresAt, @ConfigUtils.AppThemeSetting String theme);
+    void setAppLogoExpiresAt(@Nullable Instant expiresAt, @NonNull @ConfigUtils.AppThemeSetting String theme);
 
-    Date getAppLogoExpiresAt(@ConfigUtils.AppThemeSetting String theme);
+    @Nullable
+    Instant getAppLogoExpiresAt(@NonNull @ConfigUtils.AppThemeSetting String theme);
 
     boolean isPrivateChatsHidden();
 
@@ -338,23 +326,19 @@ public interface PreferenceService {
 
     void setAppLockEnabled(boolean enabled);
 
-    void setSaveToGallery(Boolean booleanPreset);
-
     void setLockMechanism(String lockingMech);
 
     boolean isShowImageAttachPreviewsEnabled();
 
-    void setImageAttachPreviewsEnabled(boolean enable);
-
     boolean isDirectShare();
 
-    void setMessageDrafts(HashMap<String, String> messageDrafts);
+    void setMessageDrafts(Map<String, String> messageDrafts);
 
-    HashMap<String, String> getMessageDrafts();
+    Map<String, String> getMessageDrafts();
 
-    void setQuoteDrafts(HashMap<String, String> quoteDrafts);
+    void setQuoteDrafts(Map<String, String> quoteDrafts);
 
-    HashMap<String, String> getQuoteDrafts();
+    Map<String, String> getQuoteDrafts();
 
     void setAppLogo(@NonNull String url, @ConfigUtils.AppThemeSetting String theme);
 
@@ -369,9 +353,9 @@ public interface PreferenceService {
 
     String getCustomSupportUrl();
 
-    HashMap<String, String> getDiverseEmojiPrefs();
+    Map<String, String> getDiverseEmojiPrefs();
 
-    void setDiverseEmojiPrefs(HashMap<String, String> diverseEmojis);
+    void setDiverseEmojiPrefs(Map<String, String> diverseEmojis);
 
     boolean isWebClientEnabled();
 
@@ -385,7 +369,8 @@ public interface PreferenceService {
 
     void setProfilePicRelease(int value);
 
-    long getProfilePicUploadDate();
+    @Nullable
+    Instant getProfilePicUploadTimestamp();
 
     void setProfilePicUploadData(@Nullable ContactService.ProfilePictureUploadData data);
 
@@ -441,11 +426,10 @@ public interface PreferenceService {
 
     void setRatingReviewText(String review);
 
-    void setPrivacyPolicyAccepted(Date date, int source);
+    void setPrivacyPolicyAccepted(@Nullable Instant timestamp, int source);
 
-    Date getPrivacyPolicyAccepted();
-
-    void clearPrivacyPolicyAccepted();
+    @Nullable
+    Instant getPrivacyPolicyAccepted();
 
     boolean getIsGroupCallsTooltipShown();
 
@@ -472,10 +456,10 @@ public interface PreferenceService {
     @NonNull
     ThreemaSafeServerInfo getThreemaSafeServerInfo();
 
-    void setThreemaSafeUploadDate(Date date);
+    void setThreemaSafeUploadTimestamp(@Nullable Instant timestamp);
 
     @Nullable
-    Date getThreemaSafeUploadDate();
+    Instant getThreemaSafeUploadTimestamp();
 
     boolean getShowUnreadBadge();
 
@@ -484,23 +468,23 @@ public interface PreferenceService {
     int getThreemaSafeErrorCode();
 
     /**
-     * Set the earliest date where the threema safe backup failed. Only set this if there are
-     * changes for the backup available. Don't update the date when there is already a date set as
-     * this is the first occurrence of a failed backup. Override this date with null, when a safe
+     * Set the earliest timestamp where the threema safe backup failed. Only set this if there are
+     * changes for the backup available. Don't update the timestamp when there is already a timestamp set as
+     * this is the first occurrence of a failed backup. Override this timestamp with null, when a safe
      * backup has been created successfully.
      *
-     * @param date the date when the safe backup first failed
+     * @param timestamp the timestamp when the safe backup first failed
      */
-    void setThreemaSafeErrorDate(@Nullable Date date);
+    void setThreemaSafeErrorTimestamp(@Nullable Instant timestamp);
 
     /**
-     * Get the first date where the safe backup failed. If this is null, then the last safe backup
+     * Get the first timestamp where the safe backup failed. If this is null, then the last safe backup
      * was successful.
      *
-     * @return the date of the first failed safe backup
+     * @return the timestamp of the first failed safe backup
      */
     @Nullable
-    Date getThreemaSafeErrorDate();
+    Instant getThreemaSafeErrorTimestamp();
 
     void setThreemaSafeServerMaxUploadSize(long maxBackupBytes);
 
@@ -518,9 +502,10 @@ public interface PreferenceService {
 
     String getThreemaSafeHashString();
 
-    void setThreemaSafeBackupDate(Date date);
+    void setThreemaSafeBackupTimestamp(@Nullable Instant timestamp);
 
-    Date getThreemaSafeBackupDate();
+    @Nullable
+    Instant getThreemaSafeBackupTimestamp();
 
     void setWorkSyncCheckInterval(int checkInterval);
 
@@ -568,9 +553,10 @@ public interface PreferenceService {
 
     void setDataBackupUri(Uri newUri);
 
-    Date getLastDataBackupDate();
+    @Nullable
+    Instant getLastDataBackupTimestamp();
 
-    void setLastDataBackupDate(Date date);
+    void setLastDataBackupTimestamp(@Nullable Instant timestamp);
 
     String getMatchToken();
 
@@ -595,13 +581,9 @@ public interface PreferenceService {
 
     boolean getBallotOverviewHidden();
 
-    void setGroupRequestsOverviewHidden(boolean hidden);
-
-    boolean getGroupRequestsOverviewHidden();
-
     int getVideoCallToggleTooltipCount();
 
-    void incremenetVideoCallToggleTooltipCount();
+    void incrementVideoCallToggleTooltipCount();
 
     boolean getCameraPermissionRequestShown();
 
@@ -655,11 +637,14 @@ public interface PreferenceService {
 
     long getTimeOfLastContactSync();
 
+    boolean showMessageDebugInfo();
+
     boolean showConversationLastUpdate();
 
-    Date getLastShortcutUpdateDate();
+    @Nullable
+    Instant getLastShortcutUpdateTimestamp();
 
-    void setLastShortcutUpdateDate(Date date);
+    void setLastShortcutUpdateTimestamp(@Nullable Instant timestamp);
 
     /**
      * Set the last timestamp when the notification permission has been requested.
@@ -693,10 +678,4 @@ public interface PreferenceService {
      *  refactored.
      */
     void reloadSynchronizedBooleanSettings();
-
-    // TODO(ANDR-3887): remove
-    boolean shouldShowUnsupportedAndroidVersionWarning();
-
-    // TODO(ANDR-3887): remove
-    void setUnsupportedAndroidVersionDismissedNow();
 }

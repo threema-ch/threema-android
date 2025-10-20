@@ -21,31 +21,27 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
-import org.slf4j.Logger;
-
 import android.database.SQLException;
 
-import ch.threema.base.utils.LoggingUtil;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import androidx.annotation.NonNull;
+
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 /**
  * add contact restore state field to contact models
  */
 public class DatabaseUpdateToVersion56 implements DatabaseUpdate {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion56");
-
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion56(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion56(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 
     @Override
     public void run() throws SQLException {
-        logger.info("runDirectly");
         if (!fieldExists(this.sqLiteDatabase, "contacts", "isArchived")) {
             sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN isArchived TINYINT DEFAULT 0");
         }

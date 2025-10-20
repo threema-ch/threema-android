@@ -40,7 +40,7 @@ import ch.threema.base.utils.Base64UrlSafe
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.SecureRandomUtil.generateRandomBytes
 import ch.threema.base.utils.SecureRandomUtil.generateRandomU64
-import ch.threema.base.utils.toHexString
+import ch.threema.common.toHexString
 import ch.threema.domain.protocol.D2mProtocolDefines
 import ch.threema.domain.protocol.connection.data.DeviceId
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor

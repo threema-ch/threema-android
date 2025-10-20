@@ -21,7 +21,7 @@
             android:layout_height="match_parent"
             android:duplicateParentState="true"
             android:scaleType="centerCrop"
-            tools:background="@drawable/ic_baseline_broken_image_24" />
+            tools:background="@tools:sample/avatars" />
 
         <com.google.android.material.progressindicator.CircularProgressIndicator
             android:id="@+id/progress_decoding"

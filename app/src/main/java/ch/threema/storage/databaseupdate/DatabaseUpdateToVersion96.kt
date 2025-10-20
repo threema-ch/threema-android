@@ -21,17 +21,11 @@
 
 package ch.threema.storage.databaseupdate
 
-import android.content.ContentValues
-import ch.threema.app.utils.ColorUtil
-import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
-import ch.threema.storage.fieldExists
-import java.nio.charset.StandardCharsets
+import ch.threema.domain.types.Identity
+import ch.threema.storage.buildContentValues
 import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import net.zetetic.database.sqlcipher.SQLiteDatabase
-
-private val logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion96")
 
 class DatabaseUpdateToVersion96(
     private val sqLiteDatabase: SQLiteDatabase,
@@ -75,8 +69,9 @@ class DatabaseUpdateToVersion96(
         // Write the calculated color indices to the database
         colorIndices.forEach {
             val (creatorIdentity, groupIdString, colorIndex) = it
-            val contentValues = ContentValues()
-            contentValues.put("colorIndex", colorIndex)
+            val contentValues = buildContentValues {
+                put("colorIndex", colorIndex)
+            }
             sqLiteDatabase.update(
                 "m_group",
                 contentValues,
@@ -86,27 +81,33 @@ class DatabaseUpdateToVersion96(
         }
     }
 
-    private fun computeColorIndex(creatorIdentity: String, groupIdString: String): Int {
-        val groupCreatorIdentity: ByteArray = creatorIdentity.toByteArray(StandardCharsets.UTF_8)
-        val groupId: ByteArray = Utils.hexStringToByteArray(groupIdString)
-
-        try {
-            val md = MessageDigest.getInstance("SHA-256")
-            md.update(groupCreatorIdentity)
-            md.update(groupId)
-            val firstByte = md.digest()[0]
-            return ColorUtil.getInstance().getIDColorIndex(firstByte)
-        } catch (e: NoSuchAlgorithmException) {
-            logger.error("Could not hash the identity to determine color", e)
-            return 0
-        }
-    }
-
     override fun getDescription() = "remove isActive from group member table"
 
     override fun getVersion() = VERSION
 
     companion object {
         const val VERSION = 96
+
+        private const val ID_COLORS_SIZE = 16
+
+        private fun computeColorIndex(creatorIdentity: Identity, groupIdString: String): Int {
+            val groupIdByteArray = Utils.hexStringToByteArray(groupIdString)
+            val groupCreatorIdentity = creatorIdentity.toByteArray()
+
+            return try {
+                (groupCreatorIdentity + groupIdByteArray).computeIdColor()
+            } catch (_: Exception) {
+                0
+            }
+        }
+
+        private fun ByteArray.computeIdColor(): Int {
+            val firstByte = MessageDigest.getInstance("SHA-256").digest(this).first()
+            return firstByte.getIdColorIndex()
+        }
+
+        private fun Byte.getIdColorIndex(): Int {
+            return (((toInt()) and 0xff) / ID_COLORS_SIZE)
+        }
     }
 }

@@ -49,8 +49,9 @@ import ch.threema.data.models.ModelDeletedException;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.storage.models.ContactModel;
+import okhttp3.OkHttpClient;
 
 public class SynchronizeContactsServiceImpl implements SynchronizeContactsService {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsServiceImpl");
@@ -61,7 +62,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
     private final @NonNull ContactModelRepository contactModelRepository;
     private final UserService userService;
     private final LocaleService localeService;
-    private final IdentityStoreInterface identityStore;
+    private final IdentityStore identityStore;
 
     private final List<SynchronizeContactsRoutine> pendingRoutines = new ArrayList<>();
     @NonNull
@@ -72,6 +73,8 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
     private final FileService fileService;
     private final BlockedIdentitiesService blockedIdentitiesService;
     private final ApiService apiService;
+    @NonNull
+    private final OkHttpClient okHttpClient;
 
     public SynchronizeContactsServiceImpl(
         Context context, APIConnector apiConnector,
@@ -83,9 +86,10 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
         PreferenceService preferenceService,
         DeviceService deviceService,
         FileService fileService,
-        IdentityStoreInterface identityStore,
+        IdentityStore identityStore,
         @NonNull BlockedIdentitiesService blockedIdentitiesService,
-        ApiService apiService
+        ApiService apiService,
+        @NonNull OkHttpClient okHttpClient
     ) {
         this.excludedSyncIdentityListService = excludedSyncIdentityListService;
         this.preferenceService = preferenceService;
@@ -101,6 +105,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
         this.identityStore = identityStore;
         this.blockedIdentitiesService = blockedIdentitiesService;
         this.apiService = apiService;
+        this.okHttpClient = okHttpClient;
     }
 
     @Override
@@ -137,7 +142,14 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
                                     logger.error("Could not get contact model with identity {}", contactModel.getIdentity());
                                     continue;
                                 }
-                                UpdateBusinessAvatarRoutine.start(model, fileService, contactService, apiService, true);
+                                UpdateBusinessAvatarRoutine.start(
+                                    okHttpClient,
+                                    model,
+                                    fileService,
+                                    contactService,
+                                    apiService,
+                                    true
+                                );
                             }
                         }
                         //fore update business account avatars

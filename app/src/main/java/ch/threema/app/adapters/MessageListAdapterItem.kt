@@ -31,7 +31,6 @@ import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.RingtoneService
 import ch.threema.app.utils.MessageUtil
 import ch.threema.app.utils.NameUtil
-import ch.threema.app.utils.TestUtil
 import ch.threema.data.models.GroupModel
 import ch.threema.storage.models.ConversationModel
 import ch.threema.storage.models.MessageType
@@ -43,7 +42,7 @@ import ch.threema.storage.models.MessageType
  */
 class MessageListAdapterItem(
     val conversationModel: ConversationModel,
-    contactService: ContactService,
+    private val contactService: ContactService,
     private val ringtoneService: RingtoneService,
     private val conversationCategoryService: ConversationCategoryService,
 ) {
@@ -52,7 +51,7 @@ class MessageListAdapterItem(
     val isContactConversation = conversationModel.isContactConversation
     val isGroupConversation = conversationModel.isGroupConversation
     fun isNotesGroup() = groupModel?.isNotesGroup() ?: false
-    fun isGroupMember() = groupModel?.data?.value?.isMember ?: false
+    fun isGroupMember() = groupModel?.data?.isMember ?: false
 
     private val uniqueId = conversationModel.messageReceiver.uniqueIdString
     val uid: String = conversationModel.uid
@@ -118,18 +117,21 @@ class MessageListAdapterItem(
         }
     }
 
-    val latestMessageGroupMemberName =
-        if (isGroupConversation && latestMessage != null && latestMessage.type != MessageType.GROUP_CALL_STATUS && TestUtil.isBlankOrNull(
-                getDraft(),
-            )
-        ) {
-            String.format(
-                "%s: ",
-                NameUtil.getShortName(conversationModel.context, latestMessage, contactService),
-            )
-        } else {
-            ""
-        }
+    val latestMessageGroupMemberName
+        get() =
+            if (
+                isGroupConversation &&
+                latestMessage != null &&
+                latestMessage.type != MessageType.GROUP_CALL_STATUS &&
+                getDraft().isNullOrBlank()
+            ) {
+                String.format(
+                    "%s: ",
+                    NameUtil.getShortName(conversationModel.context, latestMessage, contactService),
+                )
+            } else {
+                ""
+            }
 
     val muteStatusDrawableRes: Int?
         @DrawableRes

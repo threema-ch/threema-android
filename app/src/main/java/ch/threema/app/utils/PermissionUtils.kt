@@ -36,7 +36,6 @@ import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import ch.threema.app.R
 import ch.threema.app.activities.PermissionRequestActivity
-import ch.threema.app.activities.PermissionRequestActivity.Companion.INTENT_PERMISSION_REQUESTS
 
 /**
  * Launches the [PermissionRequestActivity] with three permissions:
@@ -132,8 +131,7 @@ fun requestGroupCallPermissions(
     requests.removeAll { !it.permission.isRequired() }
 
     if (runIfGranted == null || permissionRequestNeeded(activity, requests)) {
-        val intent = Intent(activity, PermissionRequestActivity::class.java)
-        intent.putExtra(INTENT_PERMISSION_REQUESTS, requests)
+        val intent = PermissionRequestActivity.createIntent(activity, requests)
         permissionLauncher.launch(intent)
     } else {
         runIfGranted()
@@ -150,8 +148,7 @@ private fun launchForRequests(
     requests.removeAll { !it.permission.isRequired() }
 
     if (runIfGranted == null || permissionRequestNeeded(activity, requests)) {
-        val intent = Intent(activity, PermissionRequestActivity::class.java)
-        intent.putExtra(INTENT_PERMISSION_REQUESTS, requests)
+        val intent = PermissionRequestActivity.createIntent(activity, requests)
         permissionLauncher.launch(intent)
     } else {
         runIfGranted()
@@ -172,16 +169,10 @@ enum class Permission {
     /**
      * Some permissions are not required on certain API levels.
      */
-    fun isRequired(): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return false
-        }
-
-        return when (this) {
-            PERMISSION_BLUETOOTH -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-            PERMISSION_READ_PHONE_STATE -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
-            else -> true
-        }
+    fun isRequired(): Boolean = when (this) {
+        PERMISSION_BLUETOOTH -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        PERMISSION_READ_PHONE_STATE -> Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        else -> true
     }
 
     /**

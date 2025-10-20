@@ -21,6 +21,8 @@
 
 package ch.threema.storage.models
 
+import ch.threema.domain.types.Identity
+
 /**
  * This model is used to track at what time a group sync request has been answered. This is required
  * to limit the number of answered group sync requests per group and sender of the request.
@@ -33,7 +35,7 @@ class IncomingGroupSyncRequestLogModel(
     /**
      * The identity of the sender of the group sync request.
      */
-    val senderIdentity: String,
+    val senderIdentity: Identity,
     /**
      * The time when the last group request from [senderIdentity] in group [groupId] has been
      * answered.

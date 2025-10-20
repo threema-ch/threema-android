@@ -22,16 +22,11 @@
 package ch.threema.app.managers;
 
 import android.content.Context;
-import android.os.Build;
 import android.os.PowerManager;
-
-import com.datatheorem.android.trustkit.pinning.OkHttp3Helper;
 
 import org.slf4j.Logger;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -48,6 +43,7 @@ import ch.threema.app.emojis.search.EmojiSearchIndex;
 import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.onprem.OnPremCertPinning;
+import ch.threema.app.onprem.OnPremServerAddressProvider;
 import ch.threema.app.processors.IncomingMessageProcessorImpl;
 import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.ApiService;
@@ -68,6 +64,7 @@ import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationServiceImpl;
 import ch.threema.app.services.ConversationTagService;
 import ch.threema.app.services.ConversationTagServiceImpl;
+import ch.threema.app.services.DefaultServerAddressProvider;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.DeviceServiceImpl;
 import ch.threema.app.services.DistributionListService;
@@ -105,7 +102,6 @@ import ch.threema.app.services.RingtoneServiceImpl;
 import ch.threema.app.services.SensorService;
 import ch.threema.app.services.SensorServiceImpl;
 import ch.threema.app.services.ServerAddressProviderService;
-import ch.threema.app.services.ServerAddressProviderServiceImpl;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.SynchronizeContactsServiceImpl;
 import ch.threema.app.services.SystemScreenLockService;
@@ -116,14 +112,6 @@ import ch.threema.app.services.WallpaperService;
 import ch.threema.app.services.WallpaperServiceImpl;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.ballot.BallotServiceImpl;
-import ch.threema.app.services.group.GroupInviteService;
-import ch.threema.app.services.group.GroupInviteServiceImpl;
-import ch.threema.app.services.group.GroupJoinResponseService;
-import ch.threema.app.services.group.GroupJoinResponseServiceImpl;
-import ch.threema.app.services.group.IncomingGroupJoinRequestService;
-import ch.threema.app.services.group.IncomingGroupJoinRequestServiceImpl;
-import ch.threema.app.services.group.OutgoingGroupJoinRequestService;
-import ch.threema.app.services.group.OutgoingGroupJoinRequestServiceImpl;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceSerial;
 import ch.threema.app.services.license.LicenseServiceUser;
@@ -131,8 +119,8 @@ import ch.threema.app.services.messageplayer.MessagePlayerService;
 import ch.threema.app.services.messageplayer.MessagePlayerServiceImpl;
 import ch.threema.app.stores.AuthTokenStore;
 import ch.threema.app.stores.DatabaseContactStore;
-import ch.threema.app.stores.IdentityStore;
-import ch.threema.app.stores.PreferenceStoreInterface;
+import ch.threema.app.stores.EncryptedPreferenceStore;
+import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.threemasafe.ThreemaSafeServiceImpl;
@@ -151,24 +139,27 @@ import ch.threema.app.webclient.services.ServicesContainer;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.SymmetricEncryptionService;
-import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.repositories.ModelRepositories;
+import ch.threema.domain.models.LicenseCredentials;
+import ch.threema.domain.models.UserCredentials;
+import ch.threema.domain.onprem.OnPremConfigStore;
+import ch.threema.domain.onprem.OnPremConfigParser;
+import ch.threema.domain.protocol.api.APIAuthenticator;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.connection.ConvertibleServerConnection;
 import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager;
-import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor;
 import ch.threema.domain.stores.DHSessionStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.taskmanager.IncomingMessageProcessor;
 import ch.threema.domain.taskmanager.TaskManager;
-import ch.threema.localcrypto.MasterKey;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
+import ch.threema.localcrypto.MasterKeyProvider;
 import ch.threema.storage.DatabaseService;
 import java8.util.function.Supplier;
 import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
 
 public class ServiceManager {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ServiceManager");
@@ -178,7 +169,7 @@ public class ServiceManager {
     @NonNull
     private final Supplier<Boolean> isIpv6Preferred;
     @NonNull
-    private final MasterKey masterKey;
+    private final MasterKeyProvider masterKeyProvider;
     @NonNull
     private final CacheService cacheService;
     @Nullable
@@ -211,14 +202,6 @@ public class ServiceManager {
     private LicenseService licenseService;
     @Nullable
     private GroupService groupService;
-    @Nullable
-    private GroupInviteService groupInviteService;
-    @Nullable
-    private GroupJoinResponseService groupJoinResponseService;
-    @Nullable
-    private IncomingGroupJoinRequestService incomingGroupJoinRequestService;
-    @Nullable
-    private OutgoingGroupJoinRequestService outgoingGroupJoinRequestService;
     @Nullable
     private LockAppService lockAppService;
     @Nullable
@@ -305,7 +288,10 @@ public class ServiceManager {
     private OnPremConfigFetcherProvider onPremConfigFetcherProvider = null;
 
     @NonNull
-    private final LazyProperty<OkHttpClient> baseOkHttpClient = new LazyProperty<>(this::createBaseOkHttpClient);
+    private final OkHttpClient baseOkHttpClient;
+
+    @Nullable
+    private final OnPremConfigStore onPremConfigStore;
 
     @NonNull
     private final LazyProperty<OkHttpClient> okHttpClient = new LazyProperty<>(this::createOkHttpClient);
@@ -313,16 +299,20 @@ public class ServiceManager {
     public ServiceManager(
         @NonNull ModelRepositories modelRepositories,
         @NonNull DHSessionStoreInterface dhSessionStore,
-        @NonNull MasterKey masterKey,
-        @NonNull CoreServiceManagerImpl coreServiceManager
+        @NonNull MasterKeyProvider masterKeyProvider,
+        @NonNull CoreServiceManagerImpl coreServiceManager,
+        @NonNull OkHttpClient baseOkHttpClient,
+        @Nullable OnPremConfigStore onPremConfigStore
     ) throws ThreemaException {
         this.cacheService = new CacheService();
         this.coreServiceManager = coreServiceManager;
         this.isIpv6Preferred = new LazyProperty<>(() -> getPreferenceService().isIpv6Preferred());
-        this.masterKey = masterKey;
+        this.masterKeyProvider = masterKeyProvider;
         this.databaseService = coreServiceManager.getDatabaseService();
         this.modelRepositories = modelRepositories;
         this.dhSessionStore = dhSessionStore;
+        this.baseOkHttpClient = baseOkHttpClient;
+        this.onPremConfigStore = onPremConfigStore;
         // Finalize initialization of task archiver and device cookie manager before the connection
         // is created.
         coreServiceManager.getTaskArchiver().setServiceManager(this);
@@ -347,25 +337,30 @@ public class ServiceManager {
     public APIConnector getAPIConnector() {
         if (this.apiConnector == null) {
             try {
+                APIAuthenticator authenticator = null;
+                if (BuildFlavor.getCurrent().getLicenseType() == BuildFlavor.LicenseType.ONPREM) {
+                    // On Premise always requires authentication
+                    PreferenceService preferenceService = this.getPreferenceService();
+                    authenticator = () -> {
+                        var username = preferenceService.getLicenseUsername();
+                        var password = preferenceService.getLicensePassword();
+                        if (username != null && password != null) {
+                            return new UserCredentials(username, password);
+                        }
+                        return null;
+                    };
+                }
+
                 this.apiConnector = new APIConnector(
                     isIpv6Preferred.get(),
                     this.getServerAddressProviderService().getServerAddressProvider(),
                     ConfigUtils.isWorkBuild(),
-                    ConfigUtils::getSSLSocketFactory,
+                    getOkHttpClient(),
                     AppVersionProvider.getAppVersion(),
-                    Locale.getDefault().getLanguage()
+                    Locale.getDefault().getLanguage(),
+                    authenticator
                 );
 
-                if (BuildFlavor.getCurrent().getLicenseType() == BuildFlavor.LicenseType.ONPREM) {
-                    // On Premise always requires Basic authentication
-                    PreferenceService preferenceService = this.getPreferenceService();
-                    this.apiConnector.setAuthenticator(urlConnection -> {
-                        if (preferenceService.getLicenseUsername() != null) {
-                            String auth = preferenceService.getLicenseUsername() + ":" + preferenceService.getLicensePassword();
-                            urlConnection.setRequestProperty("Authorization", "Basic " + Base64.encodeBytes(auth.getBytes(StandardCharsets.UTF_8)));
-                        }
-                    });
-                }
             } catch (Exception e) {
                 logger.error("Exception", e);
             }
@@ -385,8 +380,8 @@ public class ServiceManager {
             throw new NoIdentityException();
         }
 
-        if (this.masterKey.isLocked()) {
-            throw new MasterKeyLockedException("master key is locked");
+        if (masterKeyProvider.isLocked()) {
+            throw new MasterKeyLockedException();
         }
 
         logger.info("Starting connection");
@@ -394,8 +389,13 @@ public class ServiceManager {
     }
 
     @NonNull
-    public PreferenceStoreInterface getPreferenceStore() {
+    public PreferenceStore getPreferenceStore() {
         return coreServiceManager.getPreferenceStore();
+    }
+
+    @NonNull
+    public EncryptedPreferenceStore getEncryptedPreferenceStore() {
+        return coreServiceManager.getEncryptedPreferenceStore();
     }
 
     /**
@@ -452,8 +452,8 @@ public class ServiceManager {
 
     public @NonNull ContactService getContactService() throws MasterKeyLockedException {
         if (this.contactService == null) {
-            if (this.masterKey.isLocked()) {
-                throw new MasterKeyLockedException("master key is locked");
+            if (masterKeyProvider.isLocked()) {
+                throw new MasterKeyLockedException();
             }
             this.contactService = new ContactServiceImpl(
                 this.getContext(),
@@ -470,6 +470,7 @@ public class ServiceManager {
                 this.getApiService(),
                 this.getLicenseService(),
                 this.getAPIConnector(),
+                this.getOkHttpClient(),
                 this.getModelRepositories().getContacts(),
                 this.getTaskCreator(),
                 this.getMultiDeviceManager()
@@ -511,11 +512,12 @@ public class ServiceManager {
     public PreferenceService getPreferenceService() {
         if (this.preferencesService == null) {
             this.preferencesService = new PreferenceServiceImpl(
-                this.getContext(),
-                this.coreServiceManager.getPreferenceStore(),
-                this.getTaskManager(),
-                this.getMultiDeviceManager(),
-                this.getNonceFactory()
+                getContext(),
+                coreServiceManager.getPreferenceStore(),
+                coreServiceManager.getEncryptedPreferenceStore(),
+                getTaskManager(),
+                getMultiDeviceManager(),
+                getNonceFactory()
             );
         }
         return this.preferencesService;
@@ -546,7 +548,7 @@ public class ServiceManager {
             this.fileService = new FileServiceImpl(
                 this.getContext(),
                 new AppDirectoryProvider((getContext())),
-                this.masterKey,
+                masterKeyProvider,
                 this.getPreferenceService(),
                 this.getNotificationPreferenceService(),
                 this.getAvatarCacheService()
@@ -618,7 +620,7 @@ public class ServiceManager {
                 default:
                     this.licenseService = new LicenseService() {
                         @Override
-                        public String validate(Credentials credentials) {
+                        public String validate(LicenseCredentials credentials) {
                             return null;
                         }
 
@@ -638,7 +640,7 @@ public class ServiceManager {
                         }
 
                         @Override
-                        public Credentials loadCredentials() {
+                        public LicenseCredentials loadCredentials() {
                             return null;
                         }
                     };
@@ -668,7 +670,9 @@ public class ServiceManager {
             this.activityService = new ActivityService(
                 this.getContext(),
                 this.getLockAppService(),
-                this.getPreferenceService());
+                this.getPreferenceService(),
+                masterKeyProvider
+            );
         }
         return this.activityService;
     }
@@ -694,51 +698,6 @@ public class ServiceManager {
             );
         }
         return this.groupService;
-    }
-
-    @NonNull
-    public GroupInviteService getGroupInviteService() throws MasterKeyLockedException {
-        if (this.groupInviteService == null) {
-            this.groupInviteService = new GroupInviteServiceImpl(
-                this.getUserService(),
-                this.getGroupService(),
-                this.getDatabaseService()
-            );
-        }
-        return this.groupInviteService;
-    }
-
-    @NonNull
-    public GroupJoinResponseService getGroupJoinResponseService() {
-        if (this.groupJoinResponseService == null) {
-            this.groupJoinResponseService = new GroupJoinResponseServiceImpl(
-                this.getDatabaseService()
-            );
-        }
-        return this.groupJoinResponseService;
-    }
-
-    @NonNull
-    public IncomingGroupJoinRequestService getIncomingGroupJoinRequestService() throws MasterKeyLockedException {
-        if (this.incomingGroupJoinRequestService == null) {
-            this.incomingGroupJoinRequestService = new IncomingGroupJoinRequestServiceImpl(
-                this.getGroupJoinResponseService(),
-                this.getGroupService(),
-                this.getUserService(),
-                this.databaseService
-            );
-        }
-        return this.incomingGroupJoinRequestService;
-    }
-
-    @NonNull
-    public OutgoingGroupJoinRequestService getOutgoingGroupJoinRequestService() {
-        if (this.outgoingGroupJoinRequestService == null) {
-            this.outgoingGroupJoinRequestService = new OutgoingGroupJoinRequestServiceImpl(
-                this.getDatabaseService()
-            );
-        }
-        return this.outgoingGroupJoinRequestService;
     }
 
     @NonNull
@@ -807,10 +766,15 @@ public class ServiceManager {
 
     @NonNull
     public OnPremConfigFetcherProvider getOnPremConfigFetcherProvider() {
+        if (!ConfigUtils.isOnPremBuild()) {
+            throw new IllegalStateException("Cannot create OnPremConfigFetcherProvider outside of an OnPrem build");
+        }
         if (onPremConfigFetcherProvider == null) {
             onPremConfigFetcherProvider = new OnPremConfigFetcherProvider(
                 getPreferenceService(),
-                baseOkHttpClient.get(),
+                new OnPremConfigParser(),
+                onPremConfigStore,
+                baseOkHttpClient,
                 BuildConfig.ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS
             );
         }
@@ -820,9 +784,13 @@ public class ServiceManager {
     @NonNull
     public ServerAddressProviderService getServerAddressProviderService() {
         if (serverAddressProviderService == null) {
-            this.serverAddressProviderService = new ServerAddressProviderServiceImpl(
-                getOnPremConfigFetcherProvider()
-            );
+            this.serverAddressProviderService = () -> {
+                if (ConfigUtils.isOnPremBuild()) {
+                    return new OnPremServerAddressProvider(getOnPremConfigFetcherProvider()::getOnPremConfigFetcher);
+                } else {
+                    return new DefaultServerAddressProvider();
+                }
+            };
         }
 
         return this.serverAddressProviderService;
@@ -858,7 +826,8 @@ public class ServiceManager {
                 this.getFileService(),
                 this.getIdentityStore(),
                 this.getBlockedIdentitiesService(),
-                this.getApiService()
+                this.getApiService(),
+                this.getOkHttpClient()
             );
         }
 
@@ -947,10 +916,11 @@ public class ServiceManager {
     @NonNull
     public WallpaperService getWallpaperService() {
         if (this.wallpaperService == null) {
-            this.wallpaperService = new WallpaperServiceImpl(this.getContext(),
-                this.getFileService(),
-                this.getPreferenceService(),
-                this.masterKey
+            this.wallpaperService = new WallpaperServiceImpl(
+                getContext(),
+                getFileService(),
+                getPreferenceService(),
+                masterKeyProvider
             );
         }
 
@@ -977,8 +947,9 @@ public class ServiceManager {
                 this.getAPIConnector(),
                 this.getConversationCategoryService(),
                 this.getServerAddressProviderService().getServerAddressProvider(),
-                this.getPreferenceStore(),
-                this.getModelRepositories().getContacts()
+                this.getEncryptedPreferenceStore(),
+                this.getModelRepositories().getContacts(),
+                this.getOkHttpClient()
             );
         }
         return this.threemaSafeService;
@@ -1183,6 +1154,7 @@ public class ServiceManager {
             sfuConnection = new SfuConnectionImpl(
                 getAPIConnector(),
                 getIdentityStore(),
+                getOkHttpClient(),
                 AppVersionProvider.getAppVersion()
             );
         }
@@ -1273,41 +1245,18 @@ public class ServiceManager {
     }
 
     @NonNull
-    private OkHttpClient createBaseOkHttpClient() {
-        logger.debug("Create Base OkHttpClient");
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
-            .connectTimeout(ProtocolDefines.CONNECT_TIMEOUT, TimeUnit.SECONDS)
-            .writeTimeout(ProtocolDefines.WRITE_TIMEOUT, TimeUnit.SECONDS)
-            .readTimeout(ProtocolDefines.READ_TIMEOUT, TimeUnit.SECONDS);
-
-        if (ConfigUtils.isDevBuild()) {
-            var okHttpLogger = LoggingUtil.getThreemaLogger("OkHttp");
-            var interceptor = new HttpLoggingInterceptor(okHttpLogger::debug);
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC);
-            builder.addNetworkInterceptor(interceptor);
-        }
-
-        /*
-         * For android versions < 7.0 we have to explicitly configure the okhttp client
-         * to use certificate pinning via TrustKit.
-         */
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            builder.sslSocketFactory(OkHttp3Helper.getSSLSocketFactory(), OkHttp3Helper.getTrustManager());
-            builder.addInterceptor(OkHttp3Helper.getPinningInterceptor());
-        }
-
-        return builder.build();
-    }
-
-    @NonNull
     private OkHttpClient createOkHttpClient() {
         if (ConfigUtils.isOnPremBuild()) {
             return OnPremCertPinning.INSTANCE.createClientWithCertPinning(
-                baseOkHttpClient.get(),
+                baseOkHttpClient,
                 getOnPremConfigFetcherProvider()
             );
         } else {
-            return baseOkHttpClient.get();
+            return baseOkHttpClient;
         }
+    }
+
+    public boolean isIpv6Preferred() {
+        return isIpv6Preferred.get();
     }
 }

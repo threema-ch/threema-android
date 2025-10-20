@@ -54,13 +54,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import ch.threema.app.R
 import ch.threema.app.compose.preview.PreviewThreemaPhone
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.ElevationValues
 import ch.threema.app.compose.theme.dimens.GridUnit
 import kotlin.time.Duration
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -73,7 +73,7 @@ fun LoadingWithTimeoutDialogScreen(
     @StringRes messageTextTimeout: Int = messageText,
     @StringRes timeoutButtonText: Int,
 ) {
-    val viewModel: LoadingWithTimeoutDialogViewModel = viewModel()
+    val viewModel: LoadingWithTimeoutDialogViewModel = koinViewModel()
 
     LaunchedEffect(Unit) {
         viewModel.awaitTimeout(timeout)
@@ -123,7 +123,7 @@ fun LoadingWithTimeoutDialog(
     @StringRes messageTextTimeout: Int = messageText,
     @StringRes timeoutButtonText: Int,
 ) {
-    val viewModel: LoadingWithTimeoutDialogViewModel = viewModel(
+    val viewModel: LoadingWithTimeoutDialogViewModel = koinViewModel(
         viewModelStoreOwner = viewModelStoreOwner,
     )
 

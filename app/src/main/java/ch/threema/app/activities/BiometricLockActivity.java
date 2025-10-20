@@ -32,6 +32,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
@@ -39,11 +40,8 @@ import androidx.annotation.Nullable;
 import androidx.biometric.BiometricPrompt;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.LockAppService;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.services.SystemScreenLockService;
 import ch.threema.app.utils.BiometricUtil;
 import ch.threema.app.utils.NavigationUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -57,8 +55,9 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
     private static final int REQUEST_CODE_SYSTEM_SCREENLOCK_CHECK = 551;
     public static final String INTENT_DATA_AUTHENTICATION_TYPE = "auth_type";
 
-    private LockAppService lockAppService;
-    private SystemScreenLockService systemScreenLockService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     private boolean isCheckOnly = false;
     private String authenticationType = null;
 
@@ -69,14 +68,10 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager == null) {
+        if (!dependencies.isAvailable()) {
             finish();
             return;
         }
-
-        lockAppService = serviceManager.getLockAppService();
-        systemScreenLockService = serviceManager.getScreenLockService();
 
         setContentView(R.layout.activity_biometric_lock);
 
@@ -87,12 +82,11 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
             authenticationType = getIntent().getStringExtra(INTENT_DATA_AUTHENTICATION_TYPE);
         }
 
-        PreferenceService preferenceService = serviceManager.getPreferenceService();
         if (authenticationType == null) {
-            authenticationType = preferenceService.getLockMechanism();
+            authenticationType = dependencies.getPreferenceService().getLockMechanism();
         }
 
-        if (!lockAppService.isLocked() && !isCheckOnly) {
+        if (!dependencies.getLockAppService().isLocked() && !isCheckOnly) {
             finish();
         }
 
@@ -169,11 +163,11 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
     private void showSystemScreenLock() {
         logger.debug("showSystemScreenLock");
         if (isCheckOnly) {
-            if (systemScreenLockService.tryEncrypt(this, REQUEST_CODE_SYSTEM_SCREENLOCK_CHECK)) {
+            if (dependencies.getSystemScreenLockService().tryEncrypt(this, REQUEST_CODE_SYSTEM_SCREENLOCK_CHECK)) {
                 onAuthenticationSuccess();
             }
         } else {
-            if (systemScreenLockService.systemUnlock(this)) {
+            if (dependencies.getSystemScreenLockService().systemUnlock(this)) {
                 onAuthenticationSuccess();
             }
         }
@@ -215,7 +209,7 @@ public class BiometricLockActivity extends ThreemaAppCompatActivity {
     private void onAuthenticationSuccess() {
         logger.debug("Authentication successful");
         if (!isCheckOnly) {
-            lockAppService.unlock(null);
+            dependencies.getLockAppService().unlock(null);
         }
         this.setResult(RESULT_OK);
         this.finish();

@@ -22,6 +22,8 @@
 package ch.threema.domain.models
 
 import ch.threema.base.utils.Utils
+import ch.threema.common.toHexString
+import ch.threema.domain.types.Identity
 import java.util.Objects
 
 const val CONTACT_NAME_MAX_LENGTH_BYTES = 256
@@ -30,7 +32,7 @@ const val CONTACT_NAME_MAX_LENGTH_BYTES = 256
  * Base class for contacts.
  */
 open class Contact(
-    val identity: String,
+    val identity: Identity,
     val publicKey: ByteArray,
     @JvmField var verificationLevel: VerificationLevel = VerificationLevel.UNVERIFIED,
 ) {
@@ -46,25 +48,23 @@ open class Contact(
     val hasFirstOrLastName: Boolean
         get() = !firstName.isNullOrBlank() || !lastName.isNullOrBlank()
 
-    override fun toString(): String {
-        val sb = StringBuilder(identity)
-        sb.append(" (")
-        sb.append(Utils.byteArrayToHexString(publicKey))
-        sb.append(")")
+    override fun toString(): String = buildString {
+        append(identity)
+        append(" (")
+        append(publicKey.toHexString())
+        append(")")
         if (firstName != null || lastName != null) {
-            sb.append(": ")
-            sb.append(firstName)
-            sb.append(" ")
-            sb.append(lastName)
+            append(": ")
+            append(firstName)
+            append(" ")
+            append(lastName)
         }
-        return sb.toString()
     }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Contact) return false
-        val contact = other
-        return identity == contact.identity && publicKey.contentEquals(contact.publicKey)
+        return identity == other.identity && publicKey.contentEquals(other.publicKey)
     }
 
     override fun hashCode(): Int {
@@ -80,7 +80,7 @@ open class Contact(
  * [BasicContact] does therefore not mean that it is a known contact.
  */
 open class BasicContact(
-    identity: String,
+    identity: Identity,
     publicKey: ByteArray,
     val featureMask: ULong,
     val identityState: IdentityState,
@@ -89,7 +89,7 @@ open class BasicContact(
     companion object {
         @JvmStatic
         fun javaCreate(
-            identity: String,
+            identity: Identity,
             publicKey: ByteArray,
             featureMask: Long,
             identityState: IdentityState,

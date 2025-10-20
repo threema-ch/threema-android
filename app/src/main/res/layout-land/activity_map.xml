@@ -10,7 +10,7 @@
     android:layout_height="match_parent"
     android:visibility="invisible"
     tools:visibility="visible"
-    tools:context=".activities.MapActivity">
+    tools:context=".location.MapActivity">
 
     <org.maplibre.android.maps.MapView
         android:id="@+id/map"

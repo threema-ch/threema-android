@@ -27,3 +27,6 @@ import org.json.JSONObject
 fun JSONArray.toIntArray() = IntArray(length(), ::getInt)
 
 fun JSONArray.toJSONObjectList(): List<JSONObject> = List(length(), ::getJSONObject)
+
+fun JSONObject.getStringOrNull(name: String): String? =
+    if (has(name)) optString(name) else null

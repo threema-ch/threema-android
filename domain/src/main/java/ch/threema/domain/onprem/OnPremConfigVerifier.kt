@@ -24,6 +24,7 @@ package ch.threema.domain.onprem
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.Base64
 import ch.threema.common.lastLine
+import ch.threema.common.secureContentEquals
 import ch.threema.common.withoutLastLine
 import java.io.IOException
 import java.security.InvalidAlgorithmParameterException
@@ -74,7 +75,7 @@ class OnPremConfigVerifier(
 
             // Check that the signature key matches
             val signatureKey = Base64.decode(jsonObject.getString("signatureKey"))
-            if (!MessageDigest.isEqual(signatureKey, publicKey.a.toByteArray())) {
+            if (!signatureKey.secureContentEquals(publicKey.a.toByteArray())) {
                 // Signature key in JSON does not match supplied public key
                 throw ThreemaException("Signature key does not match supplied public key")
             }

@@ -32,10 +32,10 @@ import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.collection.SparseArrayCompat;
+import ch.threema.data.datatypes.IdColor;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListMessageModel;
-import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageModel;
@@ -49,15 +49,10 @@ public class CacheService {
     private final @NonNull SparseArrayCompat<String[]> groupIdentityCache = new SparseArrayCompat<>();
     private final @NonNull Collection<GroupMessageModel> groupMessageModelCache = new HashSet<>();
     private final @NonNull List<ConversationModel> conversationModelCache = new ArrayList<>();
-    private final @NonNull Map<String, int[]> colors = new HashMap<>();
-    private final @NonNull SparseArrayCompat<Map<String, Integer>> groupMemberColorCache = new SparseArrayCompat<>();
+    private final @NonNull SparseArrayCompat<Map<String, IdColor>> groupMemberColorCache = new SparseArrayCompat<>();
     private final @NonNull SparseArray<BallotModel> ballotModelCache = new SparseArray<>();
     private final @NonNull SparseArray<LinkBallotModel> linkBallotModelCache = new SparseArray<>();
     private final @NonNull Map<String, ContactModel> contactModelCache = new HashMap<>();
-
-    public interface CreateCachedColorList {
-        int[] create();
-    }
 
     public @NonNull List<ConversationModel> getConversationModelCache() {
         return this.conversationModelCache;
@@ -83,16 +78,12 @@ public class CacheService {
         return this.distributionListMessageCache;
     }
 
-    public @NonNull SparseArrayCompat<Map<String, Integer>> getGroupMemberColorCache() {
+    public @NonNull SparseArrayCompat<Map<String, IdColor>> getGroupMemberColorCache() {
         return this.groupMemberColorCache;
     }
 
     public @NonNull Map<String, ContactModel> getContactModelCache() {
         return this.contactModelCache;
-    }
-
-    public int[] getDistributionListColors(DistributionListModel distributionListModel, boolean forceRebuild, CreateCachedColorList createCachedColorList) {
-        return this.getColor("dl-" + String.valueOf(distributionListModel.getId()), forceRebuild, createCachedColorList);
     }
 
     public @NonNull SparseArray<BallotModel> getBallotModelCache() {
@@ -102,15 +93,4 @@ public class CacheService {
     public @NonNull SparseArray<LinkBallotModel> getLinkBallotModelCache() {
         return this.linkBallotModelCache;
     }
-
-    private int[] getColor(String key, boolean forceRebuild, CreateCachedColorList createCachedColorList) {
-        if (this.colors.containsKey(key) && !forceRebuild) {
-            return this.colors.get(key);
-        } else {
-            int[] r = createCachedColorList.create();
-            this.colors.put(key, r);
-            return r;
-        }
-    }
-
 }

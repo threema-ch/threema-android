@@ -27,13 +27,14 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
 class OutgoingGroupSetupTask(
     override val groupId: GroupId,
-    override val creatorIdentity: String,
-    private val memberIdentities: Set<String>,
-    override val recipientIdentities: Set<String>,
+    override val creatorIdentity: Identity,
+    private val memberIdentities: Set<Identity>,
+    override val recipientIdentities: Set<Identity>,
     messageId: MessageId?,
     serviceManager: ServiceManager,
 ) : OutgoingCspGroupControlMessageTask(serviceManager) {
@@ -57,9 +58,9 @@ class OutgoingGroupSetupTask(
     @Serializable
     class OutgoingGroupSetupData(
         private val groupId: ByteArray,
-        private val creatorIdentity: String,
-        private val memberIdentities: Set<String>,
-        private val receiverIdentities: Set<String>,
+        private val creatorIdentity: Identity,
+        private val memberIdentities: Set<Identity>,
+        private val receiverIdentities: Set<Identity>,
         private val messageId: ByteArray,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =

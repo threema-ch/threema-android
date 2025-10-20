@@ -21,6 +21,7 @@
 
 package ch.threema.app.voip.groupcall.sfu
 
+import android.annotation.SuppressLint
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
@@ -29,25 +30,27 @@ import ch.threema.app.asynctasks.AddContactRestrictionPolicy
 import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask
 import ch.threema.app.asynctasks.ContactAvailable
 import ch.threema.app.asynctasks.Failed
+import ch.threema.app.voip.groupcall.CryptoCallUtils
 import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
-import ch.threema.app.voip.groupcall.gcBlake2b
-import ch.threema.app.voip.groupcall.getSecureRandomBytes
 import ch.threema.app.voip.groupcall.sfu.messages.Handshake
 import ch.threema.app.voip.groupcall.sfu.messages.P2PMessageContent
 import ch.threema.app.voip.groupcall.sfu.messages.P2POuterEnvelope
 import ch.threema.app.voip.groupcall.sfu.messages.P2SMessage
 import ch.threema.app.voip.groupcall.sfu.webrtc.ConnectionCtx
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import com.neilalexander.jnacl.NaCl
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import org.webrtc.SurfaceViewRenderer
 
 private val logger = LoggingUtil.getThreemaLogger("P2PHandshake")
+
+@SuppressLint("LoggerName")
 private val participantLogger = LoggingUtil.getThreemaLogger("NormalRemoteParticipant")
 
 @WorkerThread
@@ -64,14 +67,18 @@ class P2PHandshake private constructor(
         }
 
     private val senderP2PContext: LocalP2PContext by lazy {
-        val pckPrivate = getSecureRandomBytes(NaCl.SECRETKEYBYTES)
-        val pcck = getSecureRandomBytes(ProtocolDefines.COOKIE_LEN)
+        val pckPrivate = CryptoCallUtils.getSecureRandomBytes(NaCl.SECRET_KEY_BYTES)
+        val pcck = CryptoCallUtils.getSecureRandomBytes(ProtocolDefines.COOKIE_LEN)
         LocalP2PContext(sender, pckPrivate, pcck)
     }
 
     private val gcnhak: ByteArray by lazy {
         val sharedKey = call.dependencies.identityStore.calcSharedSecret(receiverContact.publicKey)
-        gcBlake2b(NaCl.SECRETKEYBYTES, sharedKey, "nha", call.description.gckh)
+        CryptoCallUtils.gcBlake2b256(
+            key = sharedKey,
+            salt = "nha",
+            data = call.description.gckh,
+        )
     }
     private val pck: NaCl by lazy {
         NaCl(senderP2PContext.pckPrivate, receiverP2PContext.pckPublic)
@@ -178,9 +185,8 @@ class P2PHandshake private constructor(
 
         logger.info("Create Hello from {} to {}", sender.id, receiverId)
         val hello = Handshake.Hello(
-            call.dependencies.identityStore.identity,
-            call.dependencies.identityStore.publicNickname
-                ?: call.dependencies.identityStore.identity,
+            call.dependencies.identityStore.getIdentity()!!,
+            call.dependencies.identityStore.getPublicNickname(),
             senderP2PContext.pckPublic,
             senderP2PContext.pcck,
         )
@@ -193,17 +199,20 @@ class P2PHandshake private constructor(
         GroupCallThreadUtil.assertDispatcherThread()
 
         logger.info("Create Auth from {} to {}", sender.id, receiverId)
-        val innerNonce = getSecureRandomBytes(NaCl.NONCEBYTES)
+        val innerNonce = CryptoCallUtils.getSecureRandomBytes(NaCl.NONCE_BYTES)
         val auth = Handshake.Auth(
             receiverP2PContext.pckPublic,
             receiverP2PContext.pcck,
             call.context.connectionCtx.pcmk.all().map { P2PMessageContent.MediaKey.fromState(it) },
         )
-        val encryptedInnerData =
-            NaCl.symmetricEncryptData(auth.getEnvelopeBytes(), gcnhak, innerNonce)
+        val encryptedInnerData = NaCl.symmetricEncryptData(
+            data = auth.getEnvelopeBytes(),
+            key = gcnhak,
+            nonce = innerNonce,
+        )
         val encryptedAuthData = pck.encrypt(
-            innerNonce + encryptedInnerData,
-            senderP2PContext.nextPcckNonce(),
+            data = innerNonce + encryptedInnerData,
+            nonce = senderP2PContext.nextPcckNonce(),
         )
         return P2POuterEnvelope(sender.id, receiverId, encryptedAuthData)
     }
@@ -298,14 +307,14 @@ class P2PHandshake private constructor(
     @WorkerThread
     private fun isValidHello(hello: Handshake.Hello): Boolean {
         return isGroupMember(hello.identity) &&
-            hello.pck.size == NaCl.PUBLICKEYBYTES &&
+            hello.pck.size == NaCl.PUBLIC_KEY_BYTES &&
             hello.pcck.size == ProtocolDefines.COOKIE_LEN &&
             !hello.pck.contentEquals(senderP2PContext.pckPublic) &&
             !hello.pcck.contentEquals(senderP2PContext.pcck)
     }
 
     @WorkerThread
-    private fun isGroupMember(identity: String): Boolean {
+    private fun isGroupMember(identity: Identity): Boolean {
         val groupService = call.dependencies.groupService
         return groupService.getById(call.description.groupId.id)?.let {
             groupService.isGroupMember(it, identity)
@@ -351,7 +360,7 @@ class P2PHandshake private constructor(
     }
 
     @WorkerThread
-    private fun getOrCreateContact(identity: String): ContactModel {
+    private fun getOrCreateContact(identity: Identity): ContactModel {
         // Check if the contact already exists
         call.dependencies.contactService.getByIdentity(identity)?.let {
             return it
@@ -420,10 +429,10 @@ class P2PHandshake private constructor(
 
         return try {
             val decryptedOuterData = pck.decrypt(
-                encryptedData,
-                receiverP2PContext.nextPcckNonce(),
+                data = encryptedData,
+                nonce = receiverP2PContext.nextPcckNonce(),
             )
-            decryptedOuterData?.let { decryptAuthMessageInnerData(it) }
+            decryptAuthMessageInnerData(decryptedOuterData)
         } catch (e: Exception) {
             logger.error("Could not decrypt auth message", e)
             null
@@ -433,11 +442,18 @@ class P2PHandshake private constructor(
     @WorkerThread
     private fun decryptAuthMessageInnerData(decryptedOuterData: ByteArray): ByteArray? {
         GroupCallThreadUtil.assertDispatcherThread()
-
-        val nonce = decryptedOuterData.copyOfRange(0, NaCl.NONCEBYTES)
-        val encryptedInnerData =
-            decryptedOuterData.copyOfRange(NaCl.NONCEBYTES, decryptedOuterData.size)
-        return NaCl.symmetricDecryptData(encryptedInnerData, gcnhak, nonce)
+        val nonce = decryptedOuterData.copyOfRange(0, NaCl.NONCE_BYTES)
+        val encryptedInnerData = decryptedOuterData.copyOfRange(NaCl.NONCE_BYTES, decryptedOuterData.size)
+        return runCatching {
+            NaCl.symmetricDecryptData(
+                data = encryptedInnerData,
+                key = gcnhak,
+                nonce = nonce,
+            )
+        }.getOrElse { throwable ->
+            logger.error("Could not decrypt auth message inner data", throwable)
+            null
+        }
     }
 
     @WorkerThread

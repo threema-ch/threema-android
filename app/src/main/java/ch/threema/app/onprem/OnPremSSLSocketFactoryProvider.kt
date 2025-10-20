@@ -30,7 +30,9 @@ class OnPremSSLSocketFactoryProvider(
 ) {
     fun getSslSocketFactory(hostname: String): SSLSocketFactory {
         val trustManager = OnPremCertPinningTrustManager(
-            onPremConfigFetcherProvider,
+            getOnPremConfigDomains = {
+                onPremConfigFetcherProvider.getOnPremConfigFetcher().fetch().domains
+            },
             hostnameProvider = { hostname },
         )
         return OnPremCertPinning.createSocketFactory(trustManager)

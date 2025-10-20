@@ -34,7 +34,6 @@ import android.content.IntentFilter
 import android.media.AudioManager
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.net.Uri
-import android.os.Build
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.core.app.NotificationCompat
@@ -256,8 +255,7 @@ class VoiceMessagePlayerService :
             ?.setPackage(null)
             ?.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
 
-        val immutableFlag = if (Build.VERSION.SDK_INT >= 23) FLAG_IMMUTABLE else 0
-        return getActivity(this, 0, intent, immutableFlag or FLAG_UPDATE_CURRENT)
+        return getActivity(this, 0, intent, FLAG_IMMUTABLE or FLAG_UPDATE_CURRENT)
     }
 
     private inner class MediaSessionServiceListener : Listener {

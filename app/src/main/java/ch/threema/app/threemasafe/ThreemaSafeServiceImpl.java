@@ -32,25 +32,23 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.neilalexander.jnacl.NaCl;
+import ch.threema.app.stores.EncryptedPreferenceStore;
+import ch.threema.base.crypto.NaCl;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -62,8 +60,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.Deflater;
 import java.util.zip.GZIPInputStream;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -91,8 +87,6 @@ import ch.threema.app.services.IdListService;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
-import ch.threema.app.stores.IdentityStore;
-import ch.threema.app.stores.PreferenceStoreInterface;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -109,16 +103,18 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import ch.threema.common.Http;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
-import ch.threema.domain.protocol.ProtocolStrings;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.taskmanager.TriggerSource;
+import ch.threema.libthreema.CryptoException;
 import ch.threema.storage.DatabaseService;
 import ch.threema.domain.libthreema.LibthreemaJavaBridge;
 import ch.threema.storage.factories.ContactModelFactory;
@@ -131,6 +127,7 @@ import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupMemberModel;
 import ch.threema.storage.models.GroupModel;
+import okhttp3.OkHttpClient;
 
 import static android.view.Display.DEFAULT_DISPLAY;
 import static ch.threema.app.preference.service.PreferenceService.PROFILEPIC_RELEASE_EVERYONE;
@@ -138,9 +135,8 @@ import static ch.threema.app.preference.service.PreferenceService.PROFILEPIC_REL
 import static ch.threema.app.preference.service.PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST;
 import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_OPEN_HOME_ACTIVITY;
 import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_WORK_FORCE_PASSWORD;
-import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_MAX_BACKUP_BYTES;
-import static ch.threema.app.threemasafe.ThreemaSafeServerTestResponse.CONFIG_RETENTION_DAYS;
 import static ch.threema.libthreema.LibthreemaKt.scrypt;
+import static ch.threema.storage.models.GroupModel.UserState.KICKED;
 import static ch.threema.storage.models.GroupModel.UserState.LEFT;
 import static ch.threema.storage.models.GroupModel.UserState.MEMBER;
 
@@ -153,7 +149,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
     private static final String PROFILE_PIC_RELEASE_ALL_PLACEHOLDER = "*";
 
-    private static final int ENCRYPTION_KEY_LENGTH = NaCl.SYMMKEYBYTES;
+    private static final int ENCRYPTION_KEY_LENGTH = NaCl.SYMM_KEY_BYTES;
     private static final int PROTOCOL_VERSION = 1;
 
     public static final int MIN_PW_LENGTH = 8;
@@ -220,14 +216,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     private static final String TAG_SAFE_SETTINGS_INCOGNITO_KEYBOARD = "incognitoKeyboard";
     private static final String TAG_SAFE_SETTINGS_SYNC_EXCLUDED_IDS = "syncExcludedIds";
     private static final String TAG_SAFE_SETTINGS_RECENT_EMOJIS = "recentEmojis";
-    private static final String KEY_USER_AGENT = "User-Agent";
 
     private final Context context;
     private final PreferenceService preferenceService;
     private final UserService userService;
     private final IdentityStore identityStore;
-    @NonNull
-    private final ApiService apiService;
     @NonNull
     private final APIConnector apiConnector;
     private final LocaleService localeService;
@@ -245,9 +238,11 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     @NonNull
     private final ServerAddressProvider serverAddressProvider;
     @NonNull
-    private final PreferenceStoreInterface preferenceStore;
+    private final EncryptedPreferenceStore encryptedPreferenceStore;
     @NonNull
     private final ContactModelRepository contactModelRepository;
+    @NonNull
+    private final ThreemaSafeApiClient threemaSafeApiClient;
 
     public ThreemaSafeServiceImpl(
         Context context,
@@ -267,8 +262,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         @NonNull APIConnector apiConnector,
         @NonNull ConversationCategoryService conversationCategoryService,
         @NonNull ServerAddressProvider serverAddressProvider,
-        @NonNull PreferenceStoreInterface preferenceStore,
-        @NonNull ContactModelRepository contactModelRepository
+        @NonNull EncryptedPreferenceStore encryptedPreferenceStore,
+        @NonNull ContactModelRepository contactModelRepository,
+        @NonNull OkHttpClient okHttpClient
     ) {
         this.context = context;
         this.preferenceService = preferenceService;
@@ -277,7 +273,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         this.groupService = groupService;
         this.distributionListService = distributionListService;
         this.identityStore = identityStore;
-        this.apiService = apiService;
         this.apiConnector = apiConnector;
         this.localeService = localeService;
         this.databaseService = databaseService;
@@ -287,8 +282,29 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         this.profilePicRecipientsService = profilePicRecipientsService;
         this.conversationCategoryService = conversationCategoryService;
         this.serverAddressProvider = serverAddressProvider;
-        this.preferenceStore = preferenceStore;
+        this.encryptedPreferenceStore = encryptedPreferenceStore;
         this.contactModelRepository = contactModelRepository;
+
+        this.threemaSafeApiClient = new ThreemaSafeApiClient(
+            prepareOkHttpClient(okHttpClient, apiService)
+        );
+    }
+
+    private static OkHttpClient prepareOkHttpClient(OkHttpClient okHttpClient, ApiService apiService) {
+        if (ConfigUtils.isOnPremBuild()) {
+            // TODO(ANDR-4201): Handling auth errors should be done at app level, not at feature level
+            return okHttpClient.newBuilder()
+                .addInterceptor(chain -> {
+                    var response = chain.proceed(chain.request());
+                    if (response.code() == Http.StatusCode.UNAUTHORIZED) {
+                        logger.info("Invalidating auth token");
+                        apiService.invalidateAuthToken();
+                    }
+                    return response;
+                })
+                .build();
+        }
+        return okHttpClient;
     }
 
     @Override
@@ -347,79 +363,17 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
     @Override
     public ThreemaSafeServerTestResponse testServer(ThreemaSafeServerInfo serverInfo) throws ThreemaException {
-        URL configUrl = serverInfo.getConfigUrl(getThreemaSafeBackupId());
-
-        HttpsURLConnection urlConnection;
         try {
-            urlConnection = (HttpsURLConnection) configUrl.openConnection();
-        } catch (IOException e) {
-            logger.error("Exception", e);
-            throw new ThreemaException("Unable to connect to server");
-        }
-
-        try {
-            urlConnection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(configUrl.getHost()));
-            urlConnection.setConnectTimeout(15000);
-            urlConnection.setReadTimeout(30000);
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Accept", "application/json");
-            urlConnection.setRequestProperty(KEY_USER_AGENT, ProtocolStrings.USER_AGENT);
-            serverInfo.addAuthorization(urlConnection);
-            urlConnection.setDoOutput(false);
-
-            byte[] buf;
-            try (BufferedInputStream bis = new BufferedInputStream(urlConnection.getInputStream())) {
-                int bufLength = 4096;
-
-                buf = new byte[bufLength];
-                int bytesRead = bis.read(buf, 0, bufLength);
-
-                if (bytesRead <= 0) {
-                    throw new ThreemaException("Config file empty or not readable");
-                }
-            }
-
-            final int responseCode = urlConnection.getResponseCode();
-            if (responseCode != 200) {
-                throw new ThreemaException("Server error: " + responseCode);
-            }
-
-            String configJson = new String(buf, StandardCharsets.UTF_8);
-            ThreemaSafeServerTestResponse response = new ThreemaSafeServerTestResponse();
-
-            JSONObject jsonObject = new JSONObject(configJson);
-            response.maxBackupBytes = jsonObject.getLong(CONFIG_MAX_BACKUP_BYTES);
-            response.retentionDays = jsonObject.getInt(CONFIG_RETENTION_DAYS);
-
+            var response = threemaSafeApiClient.testServer(serverInfo, getThreemaSafeBackupId());
             preferenceService.setThreemaSafeServerMaxUploadSize(response.maxBackupBytes);
             preferenceService.setThreemaSafeServerRetention(response.retentionDays);
-
             return response;
         } catch (IOException e) {
-            try {
-                int responseCode = urlConnection.getResponseCode();
-
-                if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && ConfigUtils.isOnPremBuild()) {
-                    logger.info("Invalidating auth token because safe server test failed");
-                    apiService.invalidateAuthToken();
-                }
-
-                String responseMessage = urlConnection.getResponseMessage();
-                if (e instanceof FileNotFoundException && responseCode == 404) {
-                    throw new ThreemaException("Config file not found");
-                } else {
-                    throw new ThreemaException(responseCode + ": " + responseMessage);
-                }
-            } catch (IOException e1) {
-                logger.error("I/O Exception", e1);
-            }
-            throw new ThreemaException("Config file not found", e);
+            throw new ThreemaException("Threema Safe server test request failed", e);
         } catch (JSONException e) {
             throw new ThreemaException("Malformed server response");
         } catch (IllegalArgumentException e) {
             throw new ThreemaException(e.getMessage());
-        } finally {
-            urlConnection.disconnect();
         }
     }
 
@@ -464,8 +418,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
             preferenceService.setThreemaSafeEnabled(false);
             preferenceService.setThreemaSafeMasterKey(new byte[0]);
             preferenceService.setThreemaSafeServerInfo(null);
-            preferenceService.setThreemaSafeUploadDate(new Date(0));
-            preferenceService.setThreemaSafeBackupDate(new Date(0));
+            preferenceService.setThreemaSafeUploadTimestamp(null);
+            preferenceService.setThreemaSafeBackupTimestamp(null);
             preferenceService.setThreemaSafeHashString("");
             preferenceService.setThreemaSafeErrorCode(ERROR_CODE_OK);
         }
@@ -529,17 +483,20 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         if (!force) {
             if (hashString.equals(preferenceService.getThreemaSafeHashString())) {
                 long halfRetentionTimeMillis = (serverTestResponse.retentionDays == 0 ? 180 : serverTestResponse.retentionDays) * DateUtils.DAY_IN_MILLIS / 2;
-                Date reUploadThreshold = new Date(System.currentTimeMillis() - halfRetentionTimeMillis);
+                Instant reUploadThreshold = Instant.now().minusMillis(halfRetentionTimeMillis);
+                Instant threemaSafeUploadDate = preferenceService.getThreemaSafeUploadTimestamp();
                 if (preferenceService.getThreemaSafeErrorCode() == ERROR_CODE_OK &&
-                    reUploadThreshold.before(preferenceService.getThreemaSafeUploadDate())) {
+                    threemaSafeUploadDate != null &&
+                    reUploadThreshold.isBefore(threemaSafeUploadDate)) {
                     logger.info("Threema Safe contents unchanged. NOT uploaded");
                     return;
                 }
             } else {
-                Date reUploadThreshold = new Date(System.currentTimeMillis() - (DateUtils.HOUR_IN_MILLIS * 23));
+                Instant reUploadThreshold = Instant.now().minus(23, ChronoUnit.HOURS);
+                Instant threemaSafeUploadDate = preferenceService.getThreemaSafeUploadTimestamp();
                 if (preferenceService.getThreemaSafeErrorCode() == ERROR_CODE_OK &&
-                    preferenceService.getThreemaSafeUploadDate() != null &&
-                    reUploadThreshold.before(preferenceService.getThreemaSafeUploadDate())) {
+                    threemaSafeUploadDate != null &&
+                    reUploadThreshold.isBefore(threemaSafeUploadDate)) {
                     throw new ThreemaSafeUploadException("Grace time not yet reached. NOT uploaded", false);
                 }
             }
@@ -557,7 +514,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
         SecureRandom random = new SecureRandom();
 
-        byte[] nonce = new byte[NaCl.NONCEBYTES];
+        byte[] nonce = new byte[NaCl.NONCE_BYTES];
         random.nextBytes(nonce);
 
         try {
@@ -570,8 +527,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
             if (threemaSafeEncryptedBackup.length <= serverTestResponse.maxBackupBytes) {
                 uploadData(serverInfo, threemaSafeEncryptedBackup);
                 preferenceService.setThreemaSafeBackupSize(threemaSafeEncryptedBackup.length);
-                preferenceService.setThreemaSafeUploadDate(new Date());
-                preferenceService.setThreemaSafeBackupDate(new Date());
+                preferenceService.setThreemaSafeUploadTimestamp(Instant.now());
+                preferenceService.setThreemaSafeBackupTimestamp(Instant.now());
                 preferenceService.setThreemaSafeHashString(hashString);
                 preferenceService.setThreemaSafeErrorCode(ERROR_CODE_OK);
             } else {
@@ -618,43 +575,12 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     @Override
     public void deleteBackup() throws ThreemaException {
         ThreemaSafeServerInfo serverInfo = preferenceService.getThreemaSafeServerInfo();
-        if (serverInfo == null) {
-            throw new ThreemaException("No server info");
-        }
-
-        URL serverUrl = serverInfo.getBackupUrl(getThreemaSafeBackupId());
-
-        HttpsURLConnection urlConnection;
         try {
-            urlConnection = (HttpsURLConnection) serverUrl.openConnection();
-        } catch (IOException e) {
-            logger.error("Exception", e);
-            throw new ThreemaException("Unable to connect to server");
-        }
-
-        try {
-            urlConnection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(serverUrl.getHost()));
-            urlConnection.setConnectTimeout(15000);
-            urlConnection.setReadTimeout(30000);
-            urlConnection.setRequestMethod("DELETE");
-            urlConnection.setRequestProperty(KEY_USER_AGENT, ProtocolStrings.USER_AGENT);
-            serverInfo.addAuthorization(urlConnection);
-            urlConnection.setDoOutput(false);
-
-            final int responseCode = urlConnection.getResponseCode();
-            if (responseCode != 200 && responseCode != 201 && responseCode != 204) {
-                if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && ConfigUtils.isOnPremBuild()) {
-                    logger.info("Invalidating auth token because deleting safe backup failed");
-                    apiService.invalidateAuthToken();
-                }
-                throw new ThreemaException("Unable to delete backup. Response code: " + responseCode);
-            }
-        } catch (IOException e) {
-            throw new ThreemaException("IO Exception");
+            threemaSafeApiClient.deleteBackup(serverInfo, getThreemaSafeBackupId());
+        }  catch (IOException e) {
+            throw new ThreemaException("deleting backup failed", e);
         } catch (IllegalArgumentException e) {
             throw new ThreemaException(e.getMessage());
-        } finally {
-            urlConnection.disconnect();
         }
     }
 
@@ -672,58 +598,27 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         preferenceService.setThreemaSafeMasterKey(masterKey);
         preferenceService.setThreemaSafeServerInfo(serverInfo);
 
-        URL serverUrl = serverInfo.getBackupUrl(getThreemaSafeBackupId());
-
-        HttpsURLConnection urlConnection;
-        try {
-            urlConnection = (HttpsURLConnection) serverUrl.openConnection();
-        } catch (IOException e) {
-            throw new ThreemaException("Unable to connect to server");
-        }
-
         byte[] threemaSafeEncryptedBackup;
-
         try {
-            urlConnection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(serverUrl.getHost()));
-            urlConnection.setConnectTimeout(15000);
-            urlConnection.setReadTimeout(30000);
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Accept", "application/octet-stream");
-            urlConnection.setRequestProperty(KEY_USER_AGENT, ProtocolStrings.USER_AGENT);
-            serverInfo.addAuthorization(urlConnection);
-            urlConnection.setDoOutput(false);
-
-            try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); BufferedInputStream bis = new BufferedInputStream(urlConnection.getInputStream())) {
-                byte[] buf = new byte[16384];
-                int nread;
-                while ((nread = bis.read(buf)) > 0) {
-                    baos.write(buf, 0, nread);
-                }
-
-                threemaSafeEncryptedBackup = baos.toByteArray();
-
-                final int responseCode = urlConnection.getResponseCode();
-                if (responseCode != 200) {
-                    if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && ConfigUtils.isOnPremBuild()) {
-                        logger.info("Invalidating auth token because safe backup restore failed");
-                        apiService.invalidateAuthToken();
-                    }
-                    throw new ThreemaException("Server error: " + responseCode);
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            throw new ThreemaException(e.getMessage());
-        } finally {
-            urlConnection.disconnect();
+            threemaSafeEncryptedBackup = threemaSafeApiClient.downloadEncryptedBackup(serverInfo, getThreemaSafeBackupId());
+        } catch (IOException e) {
+            throw new ThreemaException("Failed to get backup", e);
         }
 
-        byte[] nonce = new byte[NaCl.NONCEBYTES];
-        byte[] gzippedData = new byte[threemaSafeEncryptedBackup.length - NaCl.NONCEBYTES];
-        System.arraycopy(threemaSafeEncryptedBackup, 0, nonce, 0, NaCl.NONCEBYTES);
-        System.arraycopy(threemaSafeEncryptedBackup, NaCl.NONCEBYTES, gzippedData, 0, threemaSafeEncryptedBackup.length - NaCl.NONCEBYTES);
+        byte[] nonce = new byte[NaCl.NONCE_BYTES];
+        byte[] gzippedData = new byte[threemaSafeEncryptedBackup.length - NaCl.NONCE_BYTES];
+        System.arraycopy(threemaSafeEncryptedBackup, 0, nonce, 0, NaCl.NONCE_BYTES);
+        System.arraycopy(threemaSafeEncryptedBackup, NaCl.NONCE_BYTES, gzippedData, 0, threemaSafeEncryptedBackup.length - NaCl.NONCE_BYTES);
 
-        if (!NaCl.symmetricDecryptDataInplace(gzippedData, getThreemaSafeEncryptionKey(), nonce)) {
-            throw new ThreemaException("Unable to decrypt");
+        final @Nullable byte[] threemaSafeEncryptionKey = getThreemaSafeEncryptionKey();
+        if (threemaSafeEncryptionKey == null) {
+            throw new ThreemaException("Threema Safe encryption key must not be null");
+        }
+
+        try {
+            NaCl.symmetricDecryptDataInPlace(gzippedData, threemaSafeEncryptionKey, nonce);
+        } catch (IllegalArgumentException | CryptoException exception) {
+            throw new ThreemaException("Unable to decrypt", exception);
         }
 
         byte[] uncompressedData = gZipUncompress(gzippedData);
@@ -803,22 +698,19 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         } catch (JSONException e) {
             // no distribution lists - ignore and continue
         }
-
-        // TODO(ANDR-2296): Restore group invites
     }
 
-    private void restoreUser(String identity, JSONObject user) throws ThreemaException, IOException, JSONException {
-        byte[] privateKey, publicKey;
+    private void restoreUser(String identity, @NonNull JSONObject user) throws ThreemaException, IOException, JSONException {
+        byte[] privateKey;
 
         String encodedPrivateKey = user.getString(TAG_SAFE_USER_PRIVATE_KEY);
         if (TestUtil.isEmptyOrNull(encodedPrivateKey)) {
             throw new ThreemaException("Invalid JSON");
         }
         privateKey = Base64.decode(encodedPrivateKey);
-        publicKey = NaCl.derivePublicKey(privateKey);
 
         try {
-            userService.restoreIdentity(identity, privateKey, publicKey);
+            userService.restoreIdentity(identity, privateKey);
         } catch (Exception e) {
             throw new ThreemaException(context.getString(R.string.unable_to_restore_identity_because, e.getMessage()));
         }
@@ -1065,7 +957,8 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
                         }
 
                         String myIdentity = userService.getIdentity();
-                        boolean isMember = false;
+                        boolean userIsMember = false;
+                        boolean creatorIsMember = false;
 
                         JSONArray members = group.getJSONArray(TAG_SAFE_GROUP_MEMBERS);
                         for (int j = 0; j < members.length(); j++) {
@@ -1092,7 +985,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
                                 }
 
                                 if (identity.equals(myIdentity)) {
-                                    isMember = true;
+                                    userIsMember = true;
                                 } else {
                                     // Only create a group member model if it is not the user itself
                                     GroupMemberModel groupMemberModel = new GroupMemberModel();
@@ -1100,11 +993,21 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
                                     groupMemberModel.setIdentity(identity);
 
                                     groupMemberModelFactory.create(groupMemberModel);
+
+                                    if (identity.equals(groupModel.getCreatorIdentity())) {
+                                        creatorIsMember = true;
+                                    }
                                 }
                             }
                         }
 
-                        groupModel.setUserState(isMember ? MEMBER : LEFT);
+                        if (userIsMember && !myIdentity.equals(groupModel.getCreatorIdentity()) && !creatorIsMember) {
+                            // If the creator is not a member, the group is considered to be 'orphaned'. This is not allowed, so instead we treat
+                            // the group as if we had been kicked from it.
+                            groupModel.setUserState(KICKED);
+                        } else {
+                            groupModel.setUserState(userIsMember ? MEMBER : LEFT);
+                        }
                         groupModelFactory.update(groupModel);
                     }
                 }
@@ -1251,52 +1154,12 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     }
 
     private void uploadData(ThreemaSafeServerInfo serverInfo, byte[] data) throws ThreemaException {
-        URL serverUrl = serverInfo.getBackupUrl(getThreemaSafeBackupId());
-
-        HttpsURLConnection urlConnection;
         try {
-            urlConnection = (HttpsURLConnection) serverUrl.openConnection();
+            threemaSafeApiClient.uploadEncryptedBackup(serverInfo, getThreemaSafeBackupId(), data);
         } catch (IOException e) {
-            throw new ThreemaException("Unable to connect to server");
-        }
-
-        try {
-            urlConnection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(serverUrl.getHost()));
-            urlConnection.setConnectTimeout(15000);
-            urlConnection.setReadTimeout(30000);
-            urlConnection.setRequestMethod("PUT");
-            urlConnection.setRequestProperty("Content-Type", "application/octet-stream");
-            urlConnection.setRequestProperty(KEY_USER_AGENT, ProtocolStrings.USER_AGENT);
-            serverInfo.addAuthorization(urlConnection);
-            urlConnection.setDoOutput(true);
-            urlConnection.setDoInput(true);
-            urlConnection.setFixedLengthStreamingMode(data.length);
-
-            try (
-                ByteArrayInputStream bis = new ByteArrayInputStream(data);
-                BufferedOutputStream bos = new BufferedOutputStream(urlConnection.getOutputStream())
-            ) {
-                byte[] buf = new byte[16384];
-                int nread;
-                while ((nread = bis.read(buf)) > 0) {
-                    bos.write(buf, 0, nread);
-                }
-            }
-
-            final int responseCode = urlConnection.getResponseCode();
-            if (responseCode != 200 && responseCode != 201 && responseCode != 204) {
-                if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED && ConfigUtils.isOnPremBuild()) {
-                    logger.info("Invalidating auth token because safe data upload failed");
-                    apiService.invalidateAuthToken();
-                }
-                throw new ThreemaException("Server error: " + responseCode);
-            }
-        } catch (IOException e) {
-            throw new ThreemaException("HTTPS IO Exception: " + e.getMessage());
+            throw new ThreemaException("Failed to upload backup", e);
         } catch (IllegalArgumentException e) {
             throw new ThreemaException(e.getMessage());
-        } finally {
-            urlConnection.disconnect();
         }
     }
 
@@ -1714,7 +1577,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
             jsonObject.put(TAG_SAFE_GROUPS, getGroups());
             jsonObject.put(TAG_SAFE_DISTRIBUTIONLISTS, getDistributionlists());
             jsonObject.put(TAG_SAFE_SETTINGS, getSettings());
-            // TODO(ANDR-2296): Store group invites in backup
             final int indentSpaces = BuildConfig.DEBUG ? 4 : 0;
             return jsonObject.toString(indentSpaces);
         } catch (JSONException e) {
@@ -1734,12 +1596,12 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
             String defaultServerName = serverAddressProvider.getSafeServerUrl(false);
             String legacyDefaultServerName = "safe-%h.threema.ch";
             String prefKey = context.getString(R.string.preferences__threema_safe_server_name);
-            String customServerName = preferenceStore.getString(prefKey, true);
+            String customServerName = encryptedPreferenceStore.getString(prefKey);
 
             if (defaultServerName.equals(customServerName) || legacyDefaultServerName.equals(customServerName)) {
                 // In case the custom server name is the same as the default server name, we should
                 // remove the server name from preferences.
-                this.preferenceStore.save(prefKey, (String) null, true);
+                encryptedPreferenceStore.save(prefKey, (String) null);
                 logger.info("Removed 'custom' server name: {}", customServerName);
             }
         } catch (ThreemaException e) {

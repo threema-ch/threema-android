@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/layout_wizard_intro"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:paddingTop="100dp">
+    android:fillViewport="true">
 
     <include layout="@layout/background_new_wizard" />
 
@@ -23,9 +23,11 @@
             style="@style/WizardSmallText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="@dimen/grid_unit_x4"
+            android:gravity="center"
             android:text="@string/privacy_policy_explain"
-            android:textSize="15dp" />
+            android:textSize="15dp"
+            tools:ignore="SpUsage" />
 
     </LinearLayout>
 
@@ -43,10 +45,11 @@
         <TextView
             android:id="@+id/new_to_threema_title"
             style="@style/WizardMediumText"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/wizard_contents_padding"
             android:layout_marginBottom="@dimen/wizard_edittext_hint_padding"
+            android:gravity="center_horizontal"
             android:text="@string/new_to_threema" />
 
         <ch.threema.app.activities.wizard.components.WizardButtonXml
@@ -58,10 +61,11 @@
         <TextView
             android:id="@+id/back_to_threema_title"
             style="@style/WizardMediumText"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/wizard_contents_padding"
             android:layout_marginBottom="@dimen/wizard_edittext_hint_padding"
+            android:gravity="center_horizontal"
             android:text="@string/back_to_threema" />
 
         <ch.threema.app.activities.wizard.components.WizardButtonXml

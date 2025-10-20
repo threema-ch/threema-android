@@ -38,7 +38,6 @@ import ch.threema.app.activities.DirectoryActivity
 import ch.threema.app.adapters.UserListAdapter
 import ch.threema.app.services.ContactService
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.TestUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.IdentityState
@@ -77,7 +76,7 @@ class WorkUserListFragment : RecipientListFragment() {
                 false,
             ) as RelativeLayout
             header.findViewById<TextView>(R.id.name).text =
-                if (TestUtil.isEmptyOrNull(workOrganizationName)) {
+                if (workOrganizationName.isNullOrEmpty()) {
                     getString(R.string.work_directory_title)
                 } else {
                     workOrganizationName

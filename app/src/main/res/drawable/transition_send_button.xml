@@ -3,7 +3,6 @@
   ~ All rights reserved.
   -->
 
-<!-- Note: Android 4 does not like vector drawables here -->
 <transition xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/ic_send_grey600_24dp" />
     <item android:drawable="@drawable/ic_keyboard_voice_grey600_24dp" />

@@ -94,7 +94,7 @@ public class ProfileUpdateHandler extends MessageUpdater {
         MsgpackObjectBuilder data;
         if (sendAvatar) {
             byte[] avatar = null;
-            final Bitmap avatarBitmap = this.contactService.getAvatar(this.contactService.getMe(), true);
+            final Bitmap avatarBitmap = this.contactService.getAvatar(userService.getIdentity(), true);
             if (avatarBitmap != null) {
                 avatar = BitmapUtil.bitmapToByteArray(avatarBitmap, Protocol.FORMAT_AVATAR, Protocol.QUALITY_AVATAR_HIRES);
             }

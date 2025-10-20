@@ -1,10 +1,4 @@
 //! Logging utility to forward logging.
-
-#![expect(
-    missing_docs,
-    reason = "False positive: https://github.com/mozilla/uniffi-rs/pull/2478"
-)]
-
 use std::{io, sync::Arc};
 
 use tracing::{Level, debug};
@@ -69,7 +63,7 @@ struct DispatchWriter {
 
 impl io::Write for DispatchWriter {
     fn write(&mut self, buffer: &[u8]) -> io::Result<usize> {
-        self.buffer.write(buffer)
+        self.buffer.write(buffer.trim_ascii_end())
     }
 
     fn flush(&mut self) -> io::Result<()> {

@@ -25,7 +25,6 @@ import ch.threema.app.ThreemaApplication
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.AbstractMessageModel
-import java.util.HashMap
 
 private val logger = LoggingUtil.getThreemaLogger("DraftManager")
 
@@ -61,8 +60,8 @@ object DraftManager {
 
         try {
             val preferenceService = ThreemaApplication.requireServiceManager().preferenceService
-            preferenceService.messageDrafts = HashMap(messageDrafts)
-            preferenceService.quoteDrafts = HashMap(quoteDrafts)
+            preferenceService.messageDrafts = messageDrafts
+            preferenceService.quoteDrafts = quoteDrafts
         } catch (e: Exception) {
             logger.error("Failed to store message drafts", e)
         }

@@ -96,8 +96,8 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
     private List<ContactModel> values, ovalues, recentlyAdded = new ArrayList<>();
     private ContactListFilter contactListFilter;
     private final AvatarListener avatarListener;
-    private final HashMap<String, Integer> alphaIndexer = new HashMap<String, Integer>();
-    private final HashMap<Integer, String> positionIndexer = new HashMap<Integer, String>();
+    private final HashMap<String, Integer> alphaIndexer = new HashMap<>();
+    private final HashMap<Integer, String> positionIndexer = new HashMap<>();
     private String[] sections;
     private Integer[] counts;
     private final LayoutInflater inflater;
@@ -234,7 +234,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         }
 
         // create a list from the set to sort
-        ArrayList<String> sectionList = new ArrayList<String>(alphaIndexer.keySet());
+        ArrayList<String> sectionList = new ArrayList<>(alphaIndexer.keySet());
         Collections.sort(sectionList, collator);
         if (sectionList.contains(PLACEHOLDER_CHANNELS)) {
             // replace channels placeholder by star sign AFTER sorting
@@ -248,7 +248,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         sectionList.toArray(sections);
 
         // create array for reverse lookup
-        ArrayList<Integer> countsList = new ArrayList<Integer>(positionIndexer.keySet());
+        ArrayList<Integer> countsList = new ArrayList<>(positionIndexer.keySet());
         Collections.sort(countsList);
         counts = new Integer[countsList.size()];
         countsList.toArray(counts);
@@ -261,7 +261,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         if (sortingValue.isEmpty()) {
             firstLetter = PLACEHOLDER_BLANK_HEADER;
         } else {
-            if (ContactUtil.isGatewayContact(c)) {
+            if (ContactUtil.isGatewayContact(c.getIdentity())) {
                 firstLetter = afterSorting ? CHANNEL_SIGN : PLACEHOLDER_CHANNELS;
             } else if (getItemViewType(position) == VIEW_TYPE_RECENTLY_ADDED) {
                 if (contactListFilter != null && contactListFilter.getFilterString() != null) {
@@ -413,7 +413,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
 
         if (viewType == VIEW_TYPE_RECENTLY_ADDED) {
             contactService.loadAvatarIntoImage(
-                contactModel,
+                contactModel.getIdentity(),
                 holder.shapeableAvatarView,
                 new AvatarOptions.Builder()
                     .setHighRes(true)
@@ -423,7 +423,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
             holder.viewType = VIEW_TYPE_RECENTLY_ADDED;
         } else {
             AvatarListItemUtil.loadAvatar(
-                contactModel,
+                contactModel.getIdentity(),
                 this.contactService,
                 holder,
                 requestManager

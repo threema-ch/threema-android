@@ -28,7 +28,6 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.ViewCompat
@@ -46,6 +45,7 @@ import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.emojis.EmojiTextView
+import ch.threema.app.services.UserService
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
@@ -57,14 +57,21 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_COLLAPSED
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
-private val logger = LoggingUtil.getThreemaLogger("EmojiReactionOverviewActivity")
+private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsOverviewActivity")
 
 class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
     init {
         logScreenVisibility(logger)
     }
+
+    private val userService: UserService by inject()
+    private val myIdentity by lazy { userService.identity }
 
     private lateinit var viewPager: ViewPager2
     private lateinit var parentLayout: CoordinatorLayout
@@ -84,13 +91,16 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
 
     @SuppressLint("ClickableViewAccessibility")
     override fun initActivity(savedInstanceState: Bundle?): Boolean {
+        if (!super.initActivity(savedInstanceState)) {
+            return false
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
         }
 
         val serviceManager = ThreemaApplication.requireServiceManager()
         val messageService = serviceManager.messageService
-        val emojiReactionsRepository = serviceManager.modelRepositories.emojiReaction
 
         messageModel = IntentDataUtil.getAbstractMessageModel(intent, messageService)
         messageModel?.let { message ->
@@ -106,17 +116,8 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
 
             initialItem = intent.getStringExtra(EXTRA_INITIAL_EMOJI)
 
-            val emojiReactionsViewModel: EmojiReactionsViewModel by viewModels {
-                EmojiReactionsViewModel.provideFactory(
-                    emojiReactionsRepository = emojiReactionsRepository,
-                    messageService = messageService,
-                    reactionMessageIdentifier = reactionMessageIdentifier,
-                )
-            }
-
-            if (!super.initActivity(savedInstanceState)) {
-                finish()
-                return false
+            val emojiReactionsViewModel: EmojiReactionsViewModel by viewModel {
+                parametersOf(reactionMessageIdentifier)
             }
 
             setupParentLayout()
@@ -124,10 +125,11 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
 
             lifecycleScope.launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    emojiReactionsViewModel.emojiReactionsUiState
-                        .collect { uiState ->
-                            onUiStateChanged(
-                                uiState,
+                    emojiReactionsViewModel.viewState
+                        .filterNotNull()
+                        .collect { viewState ->
+                            onViewStateChanged(
+                                viewState.emojiReactions,
                                 emojiReactionsViewModel,
                                 message,
                             )
@@ -154,15 +156,15 @@ class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
         }
     }
 
-    private fun onUiStateChanged(
-        uiState: EmojiReactionsViewModel.EmojiReactionsUiState,
+    private fun onViewStateChanged(
+        emojiReactions: List<EmojiReactionData>,
         emojiReactionsViewModel: EmojiReactionsViewModel,
         message: AbstractMessageModel,
     ) {
         val oldItems = items.toList()
 
         items.clear()
-        items.addAll(processReactions(uiState.emojiReactions))
+        items.addAll(processReactions(emojiReactions))
 
         // transition to zero items means we have no reactions left to show, so quit
         if (oldItems.isNotEmpty() && items.isEmpty()) {

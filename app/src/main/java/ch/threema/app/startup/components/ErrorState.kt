@@ -45,55 +45,119 @@ import ch.threema.app.compose.common.buttons.ButtonPrimary
 import ch.threema.app.compose.preview.PreviewThreemaAll
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.GridUnit
-import ch.threema.app.startup.AppStartupMonitor
+import ch.threema.app.startup.AppStartupError
 import ch.threema.app.utils.ConfigUtils
 
 @Composable
 fun ErrorState(
-    errorCodes: Set<AppStartupMonitor.AppStartupError>,
+    errors: Set<AppStartupError>,
+    onClickedExportLogs: () -> Unit,
+    onClickedRetryRemoteSecrets: () -> Unit,
+) {
+    val errorCodes = errors.mapNotNull { error -> (error as? AppStartupError.Unexpected)?.code }
+
+    if (errorCodes.isNotEmpty()) {
+        UnexpectedErrorState(
+            errorCodes = errorCodes,
+            onClickedExportLogs = onClickedExportLogs,
+        )
+    } else if (AppStartupError.BlockedByAdmin in errors) {
+        BlockedByAdminState()
+    } else if (AppStartupError.FailedToFetchRemoteSecret in errors) {
+        FailedToFetchRemoteSecretState(
+            onClickedRetry = onClickedRetryRemoteSecrets,
+        )
+    }
+}
+
+@Composable
+private fun UnexpectedErrorState(
+    errorCodes: Collection<String>,
     onClickedExportLogs: () -> Unit,
 ) {
-    val context = LocalContext.current
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
+    ErrorState(
+        message = stringResource(R.string.an_error_occurred),
+        details = errorCodes.joinToString(),
     ) {
-        Icon(
-            modifier = Modifier.size(120.dp),
-            painter = painterResource(R.drawable.ic_error_rounded),
-            contentDescription = null,
-            tint = Color(ConfigUtils.getColorFromAttribute(context, R.attr.colorError)),
-        )
-
-        Spacer(Modifier.height(GridUnit.x6))
-
-        ThemedText(
-            text = stringResource(R.string.an_error_occurred),
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.headlineSmall,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-
-        Spacer(modifier = Modifier.height(GridUnit.x2))
-
-        ThemedText(
-            text = errorCodes.joinToString { it.code },
-            maxLines = 2,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyLarge,
-            overflow = TextOverflow.Ellipsis,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-
-        Spacer(modifier = Modifier.height(GridUnit.x2))
-
         ButtonPrimary(
             modifier = Modifier.fillMaxWidth(),
             onClick = onClickedExportLogs,
             text = stringResource(R.string.prefs_exportlog),
             maxLines = 2,
         )
+    }
+}
+
+@Composable
+private fun BlockedByAdminState() {
+    ErrorState(
+        showIcon = false,
+        message = stringResource(R.string.remote_secrets_blocked_by_admin),
+    )
+}
+
+@Composable
+private fun FailedToFetchRemoteSecretState(
+    onClickedRetry: () -> Unit,
+) {
+    ErrorState(
+        message = stringResource(R.string.remote_secrets_failed_to_fetch),
+    ) {
+        ButtonPrimary(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onClickedRetry,
+            text = stringResource(R.string.retry),
+            maxLines = 2,
+        )
+    }
+}
+
+@Composable
+fun ErrorState(
+    message: String,
+    details: String? = null,
+    showIcon: Boolean = true,
+    content: (@Composable () -> Unit)? = null,
+) {
+    val context = LocalContext.current
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+        if (showIcon) {
+            Icon(
+                modifier = Modifier.size(120.dp),
+                painter = painterResource(R.drawable.ic_error_rounded),
+                contentDescription = null,
+                tint = Color(ConfigUtils.getColorFromAttribute(context, R.attr.colorError)),
+            )
+
+            Spacer(Modifier.height(GridUnit.x6))
+        }
+
+        ThemedText(
+            text = message,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.titleMedium,
+            overflow = TextOverflow.Ellipsis,
+            color = MaterialTheme.colorScheme.onBackground,
+        )
+
+        if (details != null) {
+            Spacer(modifier = Modifier.height(GridUnit.x2))
+            ThemedText(
+                text = details,
+                maxLines = 2,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+                overflow = TextOverflow.Ellipsis,
+                color = MaterialTheme.colorScheme.onBackground,
+            )
+        }
+
+        content?.let {
+            Spacer(modifier = Modifier.height(GridUnit.x2))
+            content()
+        }
 
         DynamicSpacerSize4()
     }
@@ -101,10 +165,38 @@ fun ErrorState(
 
 @PreviewThreemaAll
 @Composable
-private fun AppStartupScreenOneErrorPreview() = ThreemaThemePreview {
+private fun AppStartupScreen_Preview_BlockedByAdmin() = ThreemaThemePreview {
     AppStartupScreen {
         ErrorState(
-            errorCodes = setOf(AppStartupMonitor.AppStartupError("PW-123")),
+            errors = setOf(AppStartupError.BlockedByAdmin),
+            onClickedRetryRemoteSecrets = {},
+            onClickedExportLogs = {},
+        )
+    }
+}
+
+@PreviewThreemaAll
+@Composable
+private fun AppStartupScreen_Preview_FailedToFetchRemoteSecrets() = ThreemaThemePreview {
+    AppStartupScreen {
+        ErrorState(
+            errors = setOf(AppStartupError.FailedToFetchRemoteSecret),
+            onClickedRetryRemoteSecrets = {},
+            onClickedExportLogs = {},
+        )
+    }
+}
+
+@PreviewThreemaAll
+@Composable
+private fun AppStartupScreen_Preview_UnexpectedErrors() = ThreemaThemePreview {
+    AppStartupScreen {
+        ErrorState(
+            errors = setOf(
+                AppStartupError.Unexpected("PW-123"),
+                AppStartupError.Unexpected("ABC"),
+            ),
+            onClickedRetryRemoteSecrets = {},
             onClickedExportLogs = {},
         )
     }

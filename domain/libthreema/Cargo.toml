@@ -9,22 +9,22 @@ lto = true
 [patch.crates-io]
 blake2 = { path = "patches/blake2" }
 
-# Commented lints are currently unstable and we want to try them ASAP.
 [workspace.lints.rust]
 deprecated_safe = "warn"
 explicit_outlives_requirements = "warn"
-#fuzzy_provenance_casts = "warn"
-#impl_trait_overcaptures = "warn"
-#lossy_provenance_casts = "warn"
+# Wait for https://github.com/rust-lang/rust/issues/130351
+# fuzzy_provenance_casts = "warn"
+impl_trait_overcaptures = "warn"
+# Wait for https://github.com/rust-lang/rust/issues/130351
+# lossy_provenance_casts = "warn"
 macro_use_extern_crate = "warn"
 meta_variable_misuse = "warn"
 missing_abi = "warn"
 missing_docs = "warn"
 missing_unsafe_on_extern = "warn"
-#multiple_supertrait_upcastable = "warn"
-#must_not_suspend = "warn"
 non_ascii_idents = "warn"
-#non_exhaustive_omitted_patterns = "warn"
+# Wait for https://github.com/rust-lang/rust/issues/89554
+# non_exhaustive_omitted_patterns = "warn"
 non_local_definitions = "warn"
 redundant_lifetimes = "warn"
 single_use_lifetimes = "warn"
@@ -47,13 +47,8 @@ unescaped_backticks = "warn"
 # Commented lints are in a newer Clippy version or tied to unstable and we want
 # to try them ASAP.
 #
-# The following groups are enabled by default:
-#
-# - Correctness
-# - Suspicious
-# - Style
-# - Complexity
-# - Perf
+# We enable all groups by default except `Restriction` from which we explicitly
+# pick the rules we want to enable.
 [workspace.lints.clippy]
 # Pedantic
 pedantic = "warn"
@@ -82,7 +77,6 @@ filetype_is_file = { level = "warn", priority = 1 }
 float_arithmetic = { level = "warn", priority = 1 }
 float_cmp_const = { level = "warn", priority = 1 }
 fn_to_numeric_cast_any = { level = "warn", priority = 1 }
-format_push_string = { level = "warn", priority = 1 }
 host_endian_bytes = { level = "warn", priority = 1 }
 impl_trait_in_params = { level = "warn", priority = 1 }
 indexing_slicing = { level = "warn", priority = 1 }
@@ -95,30 +89,33 @@ min_ident_chars = { level = "warn", priority = 1 }
 missing_assert_message = { level = "warn", priority = 1 }
 mixed_read_write_in_expression = { level = "warn", priority = 1 }
 module_name_repetitions = { level = "allow", priority = 1 }
-multiple_inherent_impl = { level = "warn", priority = 1 }
 multiple_unsafe_ops_per_block = { level = "warn", priority = 1 }
 mutex_atomic = { level = "warn", priority = 1 }
+mutex_integer = { level = "warn", priority = 1 }
 needless_raw_strings = { level = "warn", priority = 1 }
 non_zero_suggestions = { level = "warn", priority = 1 }
 panic = { level = "warn", priority = 1 }
 partial_pub_fields = { level = "warn", priority = 1 }
 pathbuf_init_then_push = { level = "warn", priority = 1 }
+pointer_format = { level = "warn", priority = 1 }
+precedence_bits = { level = "warn", priority = 1 }
 print_stderr = { level = "warn", priority = 1 }
 print_stdout = { level = "warn", priority = 1 }
 pub_without_shorthand = { level = "warn", priority = 1 }
 rc_buffer = { level = "warn", priority = 1 }
 rc_mutex = { level = "warn", priority = 1 }
+redundant_test_prefix = { level = "warn", priority = 1 }
 redundant_type_annotations = { level = "warn", priority = 1 }
 ref_patterns = { level = "warn", priority = 1 }
 renamed_function_params = { level = "warn", priority = 1 }
 rest_pat_in_fully_bound_structs = { level = "warn", priority = 1 }
+return_and_then = { level = "warn", priority = 1 }
 semicolon_inside_block = { level = "warn", priority = 1 }
 single_char_lifetime_names = { level = "warn", priority = 1 }
 std_instead_of_core = { level = "warn", priority = 1 }
 str_to_string = { level = "warn", priority = 1 }
 string_add = { level = "warn", priority = 1 }
 string_slice = { level = "warn", priority = 1 }
-string_to_string = { level = "warn", priority = 1 }
 suspicious_xor_used_as_pow = { level = "warn", priority = 1 }
 tests_outside_test_module = { level = "warn", priority = 1 }
 todo = { level = "warn", priority = 1 }

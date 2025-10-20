@@ -22,8 +22,7 @@
 package ch.threema.app.groupflows
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import ch.threema.app.profilepicture.CheckedProfilePicture
 import ch.threema.app.protocol.PredefinedMessageIds
 import ch.threema.app.protocol.ProfilePictureChange
 import ch.threema.app.protocol.RemoveProfilePicture
@@ -36,7 +35,6 @@ import ch.threema.app.tasks.GroupCreateTask
 import ch.threema.app.tasks.ReflectGroupSyncCreateTask
 import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.tasks.tryUploadingGroupPhoto
-import ch.threema.app.utils.BitmapUtil
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.executor.BackgroundTask
@@ -51,34 +49,14 @@ import ch.threema.domain.protocol.connection.ConnectionState
 import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.runCatchingExceptNetworkException
-import java.io.File
 import java.security.SecureRandom
 import kotlinx.coroutines.runBlocking
 
 private val logger = LoggingUtil.getThreemaLogger("CreateGroupFlow")
 
-class ProfilePicture(val profilePicture: ByteArray?) {
-    constructor(profilePictureFile: File?) : this(
-        profilePictureFile?.let {
-            try {
-                BitmapFactory.decodeFile(profilePictureFile.path)
-            } catch (e: Error) {
-                logger.error("Could not decode avatar file", e)
-                null
-            }
-        },
-    )
-
-    constructor(profilePictureBitmap: Bitmap?) : this(
-        profilePictureBitmap?.let {
-            BitmapUtil.bitmapToJpegByteArray(profilePictureBitmap)
-        },
-    )
-}
-
 class GroupCreateProperties(
     val name: String,
-    val profilePicture: ProfilePicture,
+    val profilePicture: CheckedProfilePicture?,
     val members: Set<String>,
 )
 
@@ -102,7 +80,7 @@ class CreateGroupFlow(
     private val multiDeviceManager = outgoingCspMessageServices.multiDeviceManager
     private val nonceFactory = outgoingCspMessageServices.nonceFactory
 
-    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.identity }
+    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentity()!! }
 
     private val groupModelData by lazy {
         val now = now()
@@ -181,8 +159,8 @@ class CreateGroupFlow(
     }
 
     private fun uploadGroupPicture(): ProfilePictureChange? =
-        groupCreateProperties.profilePicture.profilePicture?.let { profilePicture ->
-            val uploadResult = tryUploadingGroupPhoto(profilePicture, apiService)
+        groupCreateProperties.profilePicture?.let { profilePicture ->
+            val uploadResult = tryUploadingGroupPhoto(profilePicture.profilePictureBytes, apiService)
             SetProfilePicture(profilePicture, uploadResult)
         }
 
@@ -197,7 +175,7 @@ class CreateGroupFlow(
         val groupModel = groupModelRepository.persistNewGroup(groupModelData)
 
         // Persist the group photo
-        groupCreateProperties.profilePicture.profilePicture?.let { profilePictureBytes ->
+        groupCreateProperties.profilePicture?.profilePictureBytes?.let { profilePictureBytes ->
             runCatchingExceptNetworkException {
                 fileService.writeGroupAvatar(groupModel, profilePictureBytes)
             }.onFailure { throwable ->
@@ -210,7 +188,7 @@ class CreateGroupFlow(
             return GroupFlowResult.Success(groupModel)
         }
 
-        val groupModelData = groupModel.data.value ?: run {
+        val groupModelData = groupModel.data ?: run {
             logger.error("Group model data expected to exist")
             return GroupFlowResult.Failure.Other
         }

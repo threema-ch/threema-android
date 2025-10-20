@@ -31,20 +31,17 @@ data class LocationMessageData(
     val accuracy: Double?,
     val poi: Poi?,
 ) {
-    fun toBodyString(): String {
-        val stringBuilder = StringBuilder().apply {
-            append(String.format(Locale.US, "%f,%f", latitude, longitude))
-            accuracy?.let { accuracyNotNull ->
-                append(String.format(Locale.US, ",%f", accuracyNotNull))
-            }
-            poi?.name?.let { poiNameNotNull ->
-                append("\n", poiNameNotNull)
-            }
-            poi?.address?.let { poiAddressNotNull ->
-                append("\n", poiAddressNotNull.replace("\n", "\\n"))
-            }
+    fun toBodyString(): String = buildString {
+        append(String.format(Locale.US, "%f,%f", latitude, longitude))
+        accuracy?.let { accuracyNotNull ->
+            append(String.format(Locale.US, ",%f", accuracyNotNull))
         }
-        return stringBuilder.toString()
+        poi?.name?.let { poiNameNotNull ->
+            append("\n", poiNameNotNull)
+        }
+        poi?.address?.let { poiAddressNotNull ->
+            append("\n", poiAddressNotNull.replace("\n", "\\n"))
+        }
     }
 
     companion object {
@@ -173,15 +170,15 @@ sealed interface Poi {
             val addressNotBlank = address.takeIf(String::isNotBlank)
             nameNotBlank ?: addressNotBlank ?: return null
 
-            val stringBuilderSnippet = StringBuilder()
-            nameNotBlank?.let(stringBuilderSnippet::append)
-            if (addressNotBlank != null) {
-                if (stringBuilderSnippet.isNotEmpty()) {
-                    stringBuilderSnippet.append(" - ")
+            return buildString {
+                nameNotBlank?.let(::append)
+                if (addressNotBlank != null) {
+                    if (isNotEmpty()) {
+                        append(" - ")
+                    }
+                    append(addressNotBlank)
                 }
-                stringBuilderSnippet.append(addressNotBlank)
             }
-            return stringBuilderSnippet.toString()
         }
     }
 

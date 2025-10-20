@@ -31,6 +31,7 @@ import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.messages.GroupNameMessage
+import ch.threema.domain.types.Identity
 import junit.framework.TestCase.*
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -172,7 +173,7 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
 
     private fun createEncryptedRenameMessage(
         newGroupName: String,
-        groupCreatorIdentity: String,
+        groupCreatorIdentity: Identity,
         apiGroupId: GroupId,
         fromContact: TestContact,
     ) = GroupNameMessage().apply {

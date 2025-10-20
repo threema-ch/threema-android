@@ -23,7 +23,6 @@ package ch.threema.app.restrictions;
 
 import android.content.Context;
 import android.content.RestrictionsManager;
-import android.os.Build;
 import android.os.Bundle;
 
 import org.json.JSONException;
@@ -40,14 +39,15 @@ import java.util.Set;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.UpdateWorkInfoRoutine;
 import ch.threema.app.services.license.LicenseServiceUser;
-import ch.threema.app.services.license.UserCredentials;
-import ch.threema.app.stores.PreferenceStoreInterface;
+import ch.threema.app.stores.EncryptedPreferenceStore;
+import ch.threema.domain.models.UserCredentials;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -103,8 +103,10 @@ public class AppRestrictionService {
         }
 
         logger.debug("Store work mdm settings");
-        serviceManager.getPreferenceStore()
-            .save(PREFERENCE_KEY, convertWorkMDMToJSON(settings), true);
+        var json = convertWorkMDMToJSON(settings);
+        if (json != null) {
+            serviceManager.getEncryptedPreferenceStore().save(PREFERENCE_KEY, json);
+        }
         this.workMDMSettings = filterWorkMdmSettings(settings);
         this.reload();
     }
@@ -116,9 +118,9 @@ public class AppRestrictionService {
         if (this.workMDMSettings == null) {
             // Load from preference store
             if (ThreemaApplication.getServiceManager() != null) {
-                PreferenceStoreInterface preferenceStore = ThreemaApplication.getServiceManager().getPreferenceStore();
-                if (preferenceStore.containsKey(PREFERENCE_KEY, true)) {
-                    JSONObject object = preferenceStore.getJSONObject(PREFERENCE_KEY, true);
+                EncryptedPreferenceStore encryptedPreferenceStore = ThreemaApplication.getServiceManager().getEncryptedPreferenceStore();
+                if (encryptedPreferenceStore.containsKey(PREFERENCE_KEY)) {
+                    JSONObject object = encryptedPreferenceStore.getJSONObject(PREFERENCE_KEY);
                     if (object != null) {
                         this.workMDMSettings = filterWorkMdmSettings(convertJSONToWorkMDM(object));
                     }
@@ -157,7 +159,8 @@ public class AppRestrictionService {
      * This is to prevent invalid parameters from a malicious threema mdm server.
      */
     @NonNull
-    private WorkMDMSettings filterWorkMdmSettings(@NonNull WorkMDMSettings unfilteredSettings) {
+    @VisibleForTesting()
+    public WorkMDMSettings filterWorkMdmSettings(@NonNull WorkMDMSettings unfilteredSettings) {
         Set<String> nonWorkMdmSettings = getExternalMdmOnlyRestrictions();
         WorkMDMSettings filteredSettings = new WorkMDMSettings();
         filteredSettings.override = unfilteredSettings.override;
@@ -234,11 +237,8 @@ public class AppRestrictionService {
      */
     public void reload() {
         Context context = ThreemaApplication.getAppContext();
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
-            RestrictionsManager restrictionsManager =
-                (RestrictionsManager) context.getSystemService(Context.RESTRICTIONS_SERVICE);
-            this.appRestrictions = restrictionsManager.getApplicationRestrictions();
-        }
+        RestrictionsManager restrictionsManager = (RestrictionsManager) context.getSystemService(Context.RESTRICTIONS_SERVICE);
+        this.appRestrictions = restrictionsManager.getApplicationRestrictions();
 
         if (this.appRestrictions == null) {
             this.appRestrictions = new Bundle();

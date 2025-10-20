@@ -112,7 +112,9 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
 
     @Override
     protected boolean initActivity(Bundle savedInstanceState) {
-        boolean result = super.initActivity(savedInstanceState);
+        if (!super.initActivity(savedInstanceState)) {
+            return false;
+        }
 
         if (getConnectionIndicator() != null) {
             getConnectionIndicator().setVisibility(View.INVISIBLE);
@@ -201,7 +203,7 @@ public class FilePickerActivity extends ThreemaToolbarActivity implements ListVi
             scanFiles(currentFolder);
         }
 
-        return result;
+        return true;
     }
 
     private int getRootPaths() {

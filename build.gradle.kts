@@ -21,6 +21,10 @@
 
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import utils.LocalProperties
+
+
+LocalProperties.init(project.rootProject)
 
 buildscript {
     repositories {

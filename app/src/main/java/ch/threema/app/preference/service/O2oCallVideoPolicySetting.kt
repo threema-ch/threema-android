@@ -24,7 +24,7 @@ package ch.threema.app.preference.service
 import android.content.Context
 import ch.threema.app.R
 import ch.threema.app.multidevice.MultiDeviceManager
-import ch.threema.app.stores.PreferenceStoreInterface
+import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.ReflectSettingsSyncTask
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.LoggingUtil
@@ -43,7 +43,7 @@ class O2oCallVideoPolicySetting internal constructor(
     private val multiDeviceManager: MultiDeviceManager,
     private val nonceFactory: NonceFactory,
     taskManager: TaskManager,
-    preferenceStore: PreferenceStoreInterface,
+    preferenceStore: PreferenceStore,
     context: Context,
 ) : SynchronizedBooleanSetting(
     preferenceKey = context.getString(preferenceKeyStringRes),

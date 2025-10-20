@@ -59,9 +59,9 @@
     <string name="prefs_sum_notification_sound">Systeemstandaard</string>
     <string name="prefs_vibrate">Trillen</string>
     <string name="prefs_sum_vibrate">Trillen bij ontvangst bericht</string>
-    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_notification_light">Berichtenlicht</string>
-    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_notification_light">Gebruik kleurenled (indien beschikbaar) voor inkomende berichten</string>
     <string name="prefs_sum_light">Wit</string>
     <string name="prefs_title_wallpaper">Achtergrond selecteren</string>
@@ -101,6 +101,7 @@
     <string name="next">Volgende</string>
     <string name="finish">Voltooien</string>
     <string name="please_wait">Even geduld…</string>
+    <!-- Text shown when a task which shows a loading spinner takes longer than expected (e.g. creating a group) -->
     <string name="please_wait_timeout">Dit duurt langer dan verwacht</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Uw ${app_name_short} ID aanmaken…</string>
@@ -216,7 +217,6 @@
     <string name="code_invalid">De ingevoerde code is niet geldig.</string>
     <string name="try_again">Opnieuw proberen</string>
     <string name="decoding_message">Bericht ontcijferen</string>
-    <string name="invalid_barcode">Ongeldig type streepjescode</string>
     <string name="expired_barcode">Deze code is verlopen. Scan hem opnieuw rechtstreeks in de app van de andere gebruiker.</string>
     <string name="pending">In afwachting</string>
     <string name="unlinking_email">E-mailadres loskoppelen</string>
@@ -295,7 +295,8 @@
     <string name="restore_data_password_msg">Voer het wachtwoord in dat u hebt gebruikt om deze back-up aan te maken.</string>
     <string name="backup_data_media">Grote mediabestanden opnemen (video, documenten, originele foto\'s)</string>
     <string name="backup_data_new">Gegevensback-up aanmaken</string>
-    <string name="pinentry_enter_pin">Voer uw %s PIN in om door te gaan</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinentry_enter_pin">Voer uw ${app_name} PIN in om door te gaan</string>
     <string name="pinentry_wrong_pin">PIN onjuist</string>
     <string name="prefs_sum_security_pin">Toegang tot ${app_name_short}\'s UI afsluiten</string>
     <string name="prefs_title_pin_switch">App-bescherming</string>
@@ -691,6 +692,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="message_details_message_id_copied">Bericht-ID gekopieerd naar klembord</string>
     <string name="contact_details_id_copied">ID gekopieerd naar klembord</string>
     <string name="contact_details_nickname_copied">Bijnaam gekopieerd naar klembord</string>
+    <string name="generic_copied_to_clipboard_hint">Gekopieerd naar klembord</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_use_id_as_nickname">Wilt u uw ${app_name_short} ID als nickname gebruiken?</string>
     <string name="new_wizard_phone_email_invalid">Het ingevulde mobiele nummer of e-mailadres is niet geldig. Corrigeer dit voordat u verder gaat.</string>
@@ -727,7 +729,6 @@ Voer een vraag in voor uw poll.</string>
     <string name="wait_one_minute">Wacht minstens 10 minuten voordat u een oproep aanvraagt.</string>
     <string name="backup_id">Geëxporteerd ID</string>
     <string name="backup_data">Gegevensback-up</string>
-    <string name="really_leave_group_admin_message">U bent administrator van deze groep. Als u de groep nu verlaat, krijgt deze de status \'orphaned\'. Andere leden kunnen nog steeds chatten, maar wijzigingen aanbrengen zijn dan niet langer mogelijk.</string>
     <string name="action_delete_group">Groep verwijderen</string>
     <string name="action_leave_and_delete_group">Vertrekken en groep verwijderen</string>
     <string name="action_dissolve_and_delete_group">Groep opheffen en verwijderen</string>
@@ -823,7 +824,6 @@ Voer een vraag in voor uw poll.</string>
     <string name="battery_optimizations_explain">Batterijbesparing voorkomt dat %1$s correct werkt wanneer de telefoon de slaapstand aanneemt. Schakel batterijbesparing uit voor %2$s.</string>
     <string name="battery_optimizations_disable_guide">Selecteer «All Apps» in het vervolgkeuzemenu</string>
     <string name="battery_optimizations_disable_guide_ctd">Zoek naar %s in de lijst en schakel de optimalisatie uit</string>
-    <string name="battery_optimizations_disable_confirm">Weet u zeker dat u de batterijbesparing voor %1$s ingeschakeld wilt houden? %2$s zal niet correct werken.</string>
     <string name="enter_text_hint">Tekst invoeren</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_explain_text">Als u van apparaat wisselt of het apparaat verliest en u geen back-up heeft, kan niemand uw ${app_name_short} ID of uw chats herstellen. Sla uw gegevens op met de relevante back-upopties.</string>
@@ -1105,6 +1105,8 @@ Voer een vraag in voor uw poll.</string>
     <string name="safe_configure_server_credentials_title">Authenticatie (optioneel)</string>
     <string name="username_hint">Gebruikersnaam</string>
     <string name="server_hint">Server</string>
+    <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
+    <string name="about_screen_remote_secrets_activated">Geactiveerd</string>
     <string name="lock_option_biometric">Biometrisch</string>
     <string name="biometric_enter_authentication">Verifieer om te ontgrendelen</string>
     <string name="biometric_authentication_failed">Niet geverifieerd</string>
@@ -1172,9 +1174,6 @@ Voer een vraag in voor uw poll.</string>
     <string name="backup_data_no_permission">Kan niet in deze map schrijven. Kies een andere map.</string>
     <string name="prefs_sum_show_unread_badge">Een badge weergeven met het aantal ongelezen berichten naast het berichtenpictogram</string>
     <string name="prefs_title_show_unread_badge">Badge ongelezen berichten</string>
-    <string name="pinning_not_trusted">Certificate pinning is mislukt. Controleer of het \"Entrust Root Certification Authority - G2\"-certificaat in de gegevensopslag van uw apparaat is geïnstalleerd en geactiveerd.</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="pinning_failed">Certificate pinning is mislukt. Mogelijk wordt er een \'man-in-the-middle\'-aanval uitgevoerd. Als u een adblocker, contentfilter of firewall-app zoals \"AdGuard\" hebt geïnstalleerd, schakel deze dan uit voor ${app_name}.</string>
     <string name="open_myid_popup">Pop-upvenster voor snelle toegang openen</string>
     <string name="logo">Logo/Naar boven scrollen</string>
     <string name="quote_subj_end">Einde citaat</string>
@@ -1322,60 +1321,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="set_backup_path">Back-uppad instellen</string>
     <string name="set_backup_path_intro">Selecteer in het volgende scherm de map waar de back-upbestanden moeten worden.</string>
     <string name="discard_changes_title">Wijzigingen ongedaan maken</string>
-    <string name="group_join_request_message_info"><![CDATA[Schrijf een kort bericht aan de groepsbeheerder <b>%1$s</b> over de reden dat je je wilt aansluiten bij <b>%2$s</b>.]]></string>
-    <string name="group_join_request">Aansluitingsverzoek</string>
-    <string name="group_join_request_for">Aansluitingsverzoek voor %s</string>
-    <string name="group_link_default_name">Anonieme link</string>
-    <string name="group_link_share">Groepslink delen</string>
-    <string name="group_request_incoming_dialog_title">Verzoek van %s</string>
     <string name="accept">Accepteren</string>
-    <string name="reject">Afwijzen</string>
-    <string name="group_request_already_sent"><![CDATA[Je hebt al een groepsverzoek verzonden voor <b>%s</b> via deze link. Klik om het verzoek opnieuw te verzenden.]]></string>
-    <string name="group_link_none">Nog geen link aangemaakt</string>
-    <string name="group_request_confirm_send"><![CDATA[Je staat op het punt een groepsverzoek te versturen voor <b>%1$s</b> aan beheerder <b>%2$s</b>. Tenzij deze link ongeldig is gemaakt, word je automatisch aan de groep toegevoegd zodra het apparaat van de beheerder het verzoek ontvangt.]]></string>
-    <string name="really_delete_group_request_title_singular">Groepsverzoek verwijderen</string>
-    <string name="really_delete_group_request_title_plural">Groepsverzoeken verwijderen</string>
-    <string name="sent_to">Verzonden naar: %s</string>
-    <string name="sent_on">Verzonden op: %s</string>
-    <string name="group_response">Reactie aansluitverzoek</string>
-    <string name="group_response_accepted">Je aansluitverzoek voor %s is geaccepteerd</string>
-    <string name="group_response_full">Je aansluitverzoek voor %s is afgewezen omdat de groep vol is</string>
-    <string name="group_response_rejected">Je aansluitverzoek voor %s is afgewezen</string>
-    <string name="group_link_expiration_none">Onbeperkt</string>
-    <string name="group_request_hint">Hé, ik ben het…</string>
-    <string name="group_request_send_title">Aansluitverzoek verzenden</string>
-    <string name="group_request_message_empty">Bericht in aansluitverzoek kan niet leeg zijn</string>
-    <string name="group_requests_all_title">Alle aansluitverzoeken</string>
-    <string name="group_requests_none_outgoing">Geen verzonden aansluitverzoeken. Verzoeken kunnen worden verzonden via de groepslinks aangemaakt door de groepsbeheerder.</string>
-    <string name="notification_channel_group_join_response">Meldingen voor reacties op aansluitverzoeken</string>
-    <string name="group_qr_code_title">Groeps-QR-code</string>
-    <string name="group_link_qr_desc"><![CDATA[Deel deze groepslink met mensen die zich bij de groep kunnen aansluiten: <b>%s</b>.]]></string>
-    <string name="new_group_link_success">Nieuwe link toegevoegd</string>
-    <string name="link_administration_off_explain">Deze link is al eerder geconfigureerd en gedeeld. Je kunt deze eigenschap niet meer wijzigen. Maak een nieuwe link aan met de gewenste eigenschap.</string>
-    <string name="group_link_update_success">Link bijgewerkt</string>
-    <string name="no_group_links">Geen groepslinks. Klik op de knop Toevoegen rechtsonder om een groepslink aan te maken of activeer de standaard link in het scherm Groepsgegevens.</string>
-    <string name="group_links_overview_title">Groepslinks voor %s</string>
-    <string name="group_link_invalid">Verlopen</string>
-    <string name="group_link_valid">Geldig</string>
-    <string name="open_group_requests_chips_title">Open aansluitverzoeken</string>
-    <string name="all_open_group_requests">Alle aansluitverzoeken</string>
-    <string name="no_incoming_group_requests">Geen inkomende aansluitverzoeken. Deze kunnen worden verzonden via groepslinks die je kunt beheren in het scherm Groepsgegevens als je de beheerder bent.</string>
-    <string name="received_on">Ontvangen op %s</string>
-    <string name="group_request_state_full">Groep vol</string>
-    <string name="group_request_state_rejected">Afgewezen</string>
-    <string name="group_request_state_expired">Verlopen</string>
-    <string name="group_request_state_pending">In afwachting</string>
-    <string name="group_request_state_accepted">Geaccepteerd</string>
-    <string name="open_group_requests_show">Aansluitverzoeken weergeven</string>
-    <string name="open_group_requests_hide">Aansluitverzoeken verbergen</string>
-    <string name="group_request_link_already_deleted">Groepslink is ondertussen verwijderd</string>
-    <string name="incoming_group_request_no_message">Verzonden via open link… geen bericht</string>
-    <string name="group_request_received_through">Via link: %s</string>
-    <string name="reaccept">Opnieuw accepteren</string>
-    <string name="group_link_edit_expiration_date">Verloopdatum bewerken</string>
-    <string name="group_link_show_qr">QR-code weergeven</string>
-    <string name="group_link_rename">Hernoemen</string>
-    <string name="group_link_rename_tag">Nieuwe naam</string>
     <string name="tap_here_for_more">Tik hier voor meer informatie</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="another_connection_instructions"><![CDATA[De server heeft twee of meer verbindingen gevonden van verschillende apparaten met dezelfde ${app_name_short}-ID.<br><br>U kunt niet dezelfde ${app_name_short}-ID op meerdere apparaten tegelijk gebruiken. Nieuwe berichten worden alleen verzonden naar het apparaat dat als laatste is ingelogd op de server.<br><br>Als u een nieuw apparaat wilt gebruiken, verwijdert u de installatie van %s op het oude apparaat of u schakelt het uit, en vervolgens herstart u het nieuwe apparaat.]]></string>
@@ -1393,20 +1339,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="download_failed">Niet gedownload. Foutcode: %d</string>
     <string name="edit_answer">Antwoord bewerken</string>
     <string name="share_media">Delen met andere app…</string>
-    <string name="group_link_administered">Beheerd</string>
-    <string name="group_link_open">Open</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="group_link_share_message">Sluit je met de volgende koppeling aan bij mijn ${app_name_short} groep: %s</string>
-    <string name="group_link_bottom_sheet_title">Groepslink</string>
-    <string name="group_link_bottom_sheet_desc">Deel deze link met mensen die zich kunnen aansluiten bij de groep. Overweeg de onderstaande opties.</string>
-    <string name="group_link_bottom_sheet_link_title">Link</string>
-    <string name="group_link_properties_title">Eigenschappen link</string>
-    <string name="group_link_property_administration_title">Handmatige bevestiging</string>
-    <string name="group_link_property_administration_desc">Indien actief, ontvang je verzoeken binnen de groepschat die je kunt accepteren of afwijzen</string>
-    <string name="group_link_property_expiration_title">Verloopdatum</string>
-    <string name="group_link_property_expiration_desc">Deze link verloopt na de ingestelde datum.</string>
     <string name="group_image">Groepsafbeelding</string>
-    <string name="add_group_link">Voeg leden toe via de groepslink</string>
     <string name="miui_battery_optimization">Schakel \"batterij-optimalisatie\" voor %s uit om deze taak uit te voeren. Xiaomi staat niet toe dat apps dit instellingenscherm rechtstreeks benaderen, dus u moet dit handmatig doen via de instellingen van uw telefoon. Neem contact op met de klantenondersteuning van Xiaomi als u hulp nodig hebt bij het uitschakelen van de batterij-optimalisatie.</string>
     <string name="forward_captions">Ondertitels opnemen</string>
     <string name="importing_files_failed">Het back-upbestand kan niet worden geïmporteerd. Zorg ervoor dat er voldoende beschikbare ruimte is in het interne geheugen.</string>
@@ -1422,31 +1355,14 @@ Voer een vraag in voor uw poll.</string>
     <string name="prefs_title_reset_receipts">Individuele instellingen wissen</string>
     <string name="prefs_sum_reset_receipts">Contactspecifieke instellingen voor leesbevestigingen en invoerindicator naar standaard herstellen</string>
     <string name="reset_successful">Hersteld naar standaard</string>
-    <string name="group_link_add">Groepslink toevoegen</string>
-    <string name="group_requests_show_menu_title">Actieve aansluitverzoeken weergeven</string>
-    <string name="group_request_show_all">Alle aansluitverzoeken weergeven</string>
-    <string name="group_links_manage_menu">Groepslinks beheren</string>
-    <string name="group_request_sent_menu">Verzonden aansluitverzoeken</string>
-    <string name="really_delete_group_link_title">Groepslink verwijderen</string>
-    <string name="really_delete_multiple_group_links_title">Groepslink verwijderen</string>
-    <string name="qr_scan_result_dialog_title">QR-scanresultaat</string>
-    <string name="scan_failure_dialog_title">Niet gescand</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="no_threema_qr_info">Dit is geen ${app_name_short}-specifieke QR-code. De gedecodeerde inhoud is:</string>
-    <string name="default_group_link">Standaard groepslink</string>
-    <string name="default_link_name">Standaard link</string>
-    <string name="reset_default_group_link">Standaard groepslink herstellen</string>
-    <string name="resend">Opnieuw verzenden</string>
-    <string name="group_request_already_sent_title">Verzoek is al verzonden</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Scan de contact-QR-code om de identiteit te verifiëren. Vraag de contactpersoon om op de profielafbeelding linksboven in het startscherm van ${app_name_short} te klikken om de code weer te geven.</string>
     <string name="enable_storage_access_for_media">Geef toegang tot de opslag om foto\'s en video\'s op je apparaat te bekijken</string>
     <string name="select_storage_access_for_media_is_granted">U hebt toegang gekregen tot een select aantal foto\'s en video\'s.</string>
     <string name="take_me_there">Breng me ernaartoe…</string>
     <string name="manage">Beheren</string>
-    <string name="notification_channel_group_join_request">Meldingskanaal voor ontvangen aansluitverzoeken</string>
-    <string name="reset_default_group_link_title">Standaard linkinformatie herstellen</string>
-    <string name="reset_default_group_link_desc">De eerder gedeelde link is ongeldig en alle verzoeken via de oude link worden automatisch afgewezen met de reactie Verlopen.</string>
     <string name="custom">anders</string>
     <string name="show_public_key">Openbare sleutel weergeven</string>
     <string name="public_key_for">Openbare sleutel van %s</string>
@@ -1673,7 +1589,6 @@ Voer een vraag in voor uw poll.</string>
     <string name="action_dissolve_group">Groep opheffen</string>
     <string name="really_dissolve_group">Als u de groep opheft, kan er niemand meer nieuwe berichten naar de groep sturen en kan deze niet langer worden beheerd. De opgeheven groep kan nog wel worden gekloond.</string>
     <string name="status_orphaned_group">*Deze groep is een orphan*\nDe maker heeft de groep verlaten en de groep wordt niet langer onderhouden. Een van de overgebleven leden kan de groep klonen (via de groepsdetails) en de nieuwe beheerder worden.</string>
-    <string name="group_orphaned_notice">Deze groep is een orphan omdat de maker de groep heeft verlaten. Kloon deze groep om de nieuwe beheerder te worden.</string>
     <string name="group_not_a_member_notice">U maakt geen deel meer uit van deze groep en kunt deze niet langer gebruiken.</string>
     <string name="group_dissolved_notice">Deze groep is opgeheven en kan niet langer worden gebruikt.</string>
     <string name="md_linked_devices">Gekoppelde apparaten</string>
@@ -1716,10 +1631,6 @@ Voer een vraag in voor uw poll.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Batterijgebruik van de app is ingesteld op \'geoptimaliseerd\'</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">De app kan geen permanente verbinding met de servers onderhouden en dit is nodig om ${app_name_short} Push te laten werken. U wordt niet op de hoogte gebracht van nieuwe berichten wanneer de app op de achtergrond is. Tik op \'Batterijgebruik van de app\' en selecteer \'Onbeperkt\' om dit probleem op te lossen.</string>
-    <!-- Title of warning message that informs the user that their app is no longer supported. -->
-    <string name="problemsolver_title_android_version_retired">De app wordt niet meer bijgewerkt</string>
-    <!-- Details of warning message that informs the user that their app is no longer supported. -->
-    <string name="problemsolver_explain_android_version_retired">U gebruikt een oudere versie van Android die om veiligheidsredenen niet langer door Threema wordt ondersteund. Dit betekent dat u geen updates voor de Threema-app meer zult ontvangen. Werk uw apparaat bij naar een nieuwere versie van het besturingssysteem om Threema met alle functies te kunnen blijven gebruiken.</string>
     <string name="problemsolver_to_settings">Naar de instellingen</string>
     <string name="prefs_advanced_options">Geavanceerde opties</string>
     <string name="push_service">Pushdienst</string>
@@ -1737,15 +1648,6 @@ Voer een vraag in voor uw poll.</string>
     <string name="new_group_messages">Nieuwe groepsberichten</string>
     <string name="individual_notification_settings">Individuele meldingsinstellingen</string>
     <string name="delete_message_not_supported_for_all_group_members">Het bericht wordt niet verwijderd voor de volgende groepsleden: %1$s</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="work_intro_more_link_text">Meer informatie over ${app_name}</string>
-    <string name="work_intro_subtitle">De veilige zakelijke messenger \nvoor bedrijven.</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="work_intro_login">Inloggen bij ${app_name}</string>
-    <string name="consumer_notice_description">Download de reguliere Threema-app als u een particuliere gebruiker bent.</string>
-    <string name="consumer_notice_playstore_link_description">Threema in de Play Store</string>
-    <string name="consumer_notice_appgallery_link_description">Threema in de AppGallery</string>
-    <string name="consumer_notice_subtitle">Voor privégebruik</string>
     <string name="individual_notification_settings_warn">Voor elke chat met individuele meldingsinstellingen wordt een meldingskanaal aangemaakt. Dit betekent dat de naam van de chat zichtbaar is in de apparaatinstellingen, zelfs als de app is vergrendeld. Toch doorgaan?</string>
     <string name="incoming_calls">Inkomende oproepen</string>
     <string name="group_chats">Groepschats</string>
@@ -1831,6 +1733,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="device_linking_error_unexpected_title">Onverwachte fout</string>
     <string name="device_linking_error_unexpected_body">Probeer het apparaat opnieuw te koppelen. Als dit probleem zich blijft voordoen, neem dan contact op met de ondersteuning (Hoofdmenu &gt; Help).</string>
     <string name="device_linking_error_invalid_contact_title">Ongeldige contactpersoon</string>
+    <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <string name="device_linking_error_invalid_contact_body">De contactpersoon met identiteit %1$s is onjuist op dit apparaat opgeslagen en belemmert het koppelen met het nieuwe apparaat. Neem contact op met de ondersteuning (\"Hoofdmenu &gt; Help\").</string>
     <string name="device_linking_error_screen_close">Sluiten</string>
     <string name="work_directory_title">Bedrijfscontacten</string>
@@ -1848,6 +1751,44 @@ Voer een vraag in voor uw poll.</string>
     <string name="error_preset_onprem_url_mismatch_mdm">De opgegeven server-URL is ongeldig. Neem contact op met uw beheerder.</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">De activatielink is ongeldig. Neem contact op met uw beheerder.</string>
+    <string name="work_intro_screen_work_title">HOOGBEVEILIGDE COMMUNICATIE VOOR BEDRIJVEN</string>
+    <string name="work_intro_screen_work_subtitle">Threema Work is de veilige communicatieoplossing voor bedrijven –End-to-end gecodeerd, AVG-conform en ontwikkeld in Zwitserland.</string>
+    <string name="work_intro_screen_work_sign_in_button_label">Nu aanmelden</string>
+    <string name="work_intro_screen_work_learn_more_hint">Gebruikt u Threema Work nog niet?</string>
+    <string name="work_intro_screen_work_learn_more_button_label">Meer informatie</string>
+    <string name="work_intro_screen_work_use_private_hint">Als u Threema voor privédoeleinden wilt gebruiken, raden we u de Threema Private-app aan.</string>
+    <string name="work_intro_screen_work_download_private_button_label">Nu downloaden</string>
+    <string name="work_intro_screen_onprem_title">COMMUNICATIE OP HET HOOGSTE VEILIGHEIDSNIVEAU</string>
+    <string name="work_intro_screen_onprem_subtitle">Threema OnPrem is de zelf-gehoste communicatieoplossing voor bedrijven, overheidsinstanties en militaire organisaties – voor volledige gegevenssoevereiniteit, versleutelde gegevensoverdracht en de hoge eisen van beveiligingsgevoelige omgevingen.</string>
+    <string name="work_intro_screen_onprem_sign_in_button_label">Nu aanmelden</string>
+    <string name="work_intro_screen_onprem_learn_more_hint">Gebruikt u Threema OnPrem nog niet?</string>
+    <string name="work_intro_screen_onprem_learn_more_button_label">Meer informatie</string>
+    <string name="work_intro_screen_onprem_use_private_hint">Als u Threema voor privédoeleinden wilt gebruiken, raden we u de Threema Private-app aan.</string>
+    <string name="work_intro_screen_onprem_download_private_button_label">Nu downloaden</string>
+    <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
+    <string name="remote_secrets_blocked_by_admin">De toegang tot deze app is geblokkeerd door uw beheerder.\n\nNeem contact op met uw beheerder voor meer informatie.</string>
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
+    <string name="remote_secrets_failed_to_fetch">Het ${remote_secret}-token kon niet worden opgehaald. Controleer uw internetverbinding en probeer het opnieuw.</string>
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
+    <string name="fetching_remote_secret">${remote_secret}-token wordt opgehaald</string>
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <string name="remote_secret_activated_notification_title">${remote_secret} is geactiveerd</string>
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <string name="remote_secret_activated_notification_content">Deze functie beschermt uw chats in het geval van een gestolen of verloren telefoon.</string>
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <string name="remote_secret_deactivated_notification_title">${remote_secret} is gedeactiveerd</string>
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <string name="remote_secret_deactivated_notification_content">Neem contact op met uw beheerder als u meer informatie nodig hebt.</string>
+    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
+    <string name="remote_secret_activated_learn_more">Meer informatie</string>
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
+    <string name="remote_secret_activating">${remote_secret} wordt geactiveerd</string>
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <string name="remote_secret_activating_failed">Het activeren van ${remote_secret} is niet gelukt. Controleer uw internetverbinding en probeer het opnieuw.</string>
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
+    <string name="remote_secret_deactivating">${remote_secret} wordt gedeactiveerd</string>
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <string name="remote_secret_deactivating_failed">Het deactiveren van ${remote_secret} is niet gelukt. Controleer uw internetverbinding en probeer het opnieuw.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>
         <item quantity="other">%d contactpersonen</item>
@@ -1923,28 +1864,6 @@ Voer een vraag in voor uw poll.</string>
     <plurals name="webclient_running_sessions">
         <item quantity="one">%d lopende sessie</item>
         <item quantity="other">%d lopende sessies</item>
-    </plurals>
-    <plurals name="really_delete_outgoing_request">
-        <item quantity="one">Weet u zeker dat u %d groepsverzoek wilt verwijderen?
-            Houd er rekening mee dat het verzoek niet wordt ingetrokken en dat u nog steeds kunt worden geaccepteerd of gevraagd
-            als het verzoek nog niet beantwoord is.</item>
-        <item quantity="other">Weet u zeker dat u %d groepsverzoeken wilt verwijderen?
-        Houd er rekening mee dat de verzoeken niet worden ingetrokken en dat u nog steeds kunt worden geaccepteerd of gevraagd
-            als de verzoeken nog niet beantwoord zijn.</item>
-    </plurals>
-    <plurals name="really_delete_incoming_request">
-        <item quantity="one">Weet u zeker dat u %d groepsverzoek wilt verwijderen?
-            U kunt niet reageren op de verzoeken als ze zijn verwijderd.</item>
-        <item quantity="other">Weet u zeker dat u %d groepsverzoeken wilt verwijderen?
-            U kunt niet reageren op de verzoeken als ze zijn verwijderd.</item>
-    </plurals>
-    <plurals name="really_delete_group_link">
-        <item quantity="one">Weet u zeker dat u %d groepskoppeling wilt verwijderen?
-            Mensen kunnen dan geen verzoeken meer sturen.
-            Eerder ontvangen verzoeken kunnen echter nog steeds worden geaccepteerd of afgewezen.</item>
-        <item quantity="other">Weet u zeker dat u %d groepskoppelingen wilt verwijderen?
-            Mensen kunnen dan geen verzoeken meer sturen.
-            Eerder ontvangen verzoeken kunnen echter nog steeds worden geaccepteerd of afgewezen.</item>
     </plurals>
     <plurals name="chat_deleted">
         <item quantity="one">%d chat verwijderd</item>

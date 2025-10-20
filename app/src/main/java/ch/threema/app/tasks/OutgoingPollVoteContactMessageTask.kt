@@ -29,6 +29,7 @@ import ch.threema.domain.protocol.csp.messages.ballot.PollVoteMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import java.util.Date
 import kotlinx.serialization.Serializable
 
@@ -37,7 +38,7 @@ class OutgoingPollVoteContactMessageTask(
     private val ballotId: BallotId,
     private val ballotCreator: String,
     private val ballotVotes: Array<BallotVote>,
-    private val toIdentity: String,
+    private val toIdentity: Identity,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingPollVoteContactMessageTask"
@@ -70,7 +71,7 @@ class OutgoingPollVoteContactMessageTask(
         private val ballotId: ByteArray,
         private val ballotCreator: String,
         private val ballotVotes: List<Pair<Int, Int>>,
-        private val toIdentity: String,
+        private val toIdentity: Identity,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingPollVoteContactMessageTask(

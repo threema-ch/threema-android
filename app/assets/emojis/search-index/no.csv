@@ -73,7 +73,7 @@
 😆|åpen munn|artig|fjes|flir|fornøyd|glad|gøy|haha|latter|ler|lol|lykkelig|morsomt|smil med sammenknepne øyne|smiler
 😅|åpen|glisende fjes som svetter|kaldsvette|munn|smil med svette|svett smil med åpen munn
 🤣|artig|fjes|flirer|gøyalt|gulv|hæhæ|haha|hoho|latter|ler så jeg griner|lol|lykkelig|morsomt|roflmao|ruller rundt på gulvet i latter
-😂|fjes med gledestårer|flire|gledestårer|glise|gøy|hæhæ|haha|hoho|latter|ler så jeg griner|lol|morsomt|roflmao|tårer
+😂|fjes|flire|gledestårer|gøy|haha|hoho|latter|le|lol|morsomt|tårer
 🙂|fjes|smiler litt
 🙃|fjes som er opp-ned|opp-ned
 🫠|fjes som smelter|flau|forsvinner|går i oppløsning|haha|lol|sarkasme|sarkastisk|smelter
@@ -97,8 +97,8 @@
 🤑|fjes|munn|pengegal|penger
 🤗|fjes som gir klem|klem
 🤭|flire|hand over munnen|hånd over munnen|handa over munnen|hånden over munnen|oi|oops|ops|ups
-🫢|fjes med åpne øyne og hånd over munnen|flau|forskrekkelse|gispe|omg|overraskelse|redd|sjokkert|stille
-🫣|engstelig|fjes som titter frem bak hendene|flau|gjemme seg|gjemmer seg|kikker|klarer ikke dy seg|må se|redd|sjenert|stirre|titte
+🫢|åpne|fjes|flau|forskrekkelse|gispe|hånd|munnen|omg|overraskelse|øyne|redd|sjokk|stille
+🫣|fascinert|fjes|flau|gjemme|kikke|øyne|redd|sjenert|skjule|smugkikke|stirre|titte
 🤫|hysj|stillhet|vær stille
 🤔|fjes|tankefull|tenkefjes|tenker
 🫡|fjes som viser honnør|honnør|ja|lykke til|militærhilsen|respekt|salutt|skal bli|yes ma’am|yes sir
@@ -115,7 +115,7 @@
 😬|fjes|grimase
 😮‍💨|fjes|gisper|hviske|lettet|plystre|pust|sliten|sukk|utpust|utslitt
 🤥|fjes|løgn|lyver|pinocchio
-🫨|ansikt|fjes|jordskjelv|omg|ør|overraskelse|panikk|rister|sjokk|skjelvende|sprøtt|vibrerer|wow
+🫨|ansikt|jordskjelv|omg|ør|overraskelse|panikk|riste|sjokk|skjelvende|sprøtt|vibrere|wow
 🙂‍↔️|nei|ristende hode|rister på hodet
 🙂‍↕️|ja|nikkende hode|nikker
 😌|fjes|lettet
@@ -123,6 +123,7 @@
 😪|fjes|søvnig
 🤤|fjes|sikler
 😴|fjes|gjesp|god natt|godnatt|natt|snork|sove|søvn|trett|trøtt
+🫩|fjes|kjedelig|øyne|poser|sliten|søvnig|trøtt|utslitt
 😷|bakteriemaske|fjes med munnbind|sykdom
 🤒|fjes med termometer|syk|termometer
 🤕|bandasjert hode|fjes|skadet
@@ -230,7 +231,7 @@
 🗯️|ballong|boble|sint snakkeboble mot høyre|sur
 💭|boble|tankeboble|tegneserie
 💤|følelse|god natt|snorker|sover|soving|søvnig|tegneserie|trett|trøtt|zzz
-👋|er du der?|ha det|hallo|hånd|hei|hilse|sees|ses|vi sees|vi ses|vinkende hånd|vinking
+👋|farvel|hallo|hand|hånd|hei|hilse|sees|senere|ses|vinke
 🤚|håndbak|løftet
 🖐️|finger|flat hånd med spredte fingre|hånd|spredt
 ✋|flat hånd|håndflate|hevet hånd
@@ -238,7 +239,7 @@
 🫱|håndhilse|håndtrykk|høyrevendt|rekke ut
 🫲|håndhilse|håndtrykk|rekke ut|venstrevendt
 🫳|avfeie|hand|hånd|husj|ned|opp|plukke|slapp|slippe
-🫴|fortell meg|gripe|håndflaten opp|holde|invitere|kalle på|kom|løfte|lokke|tilbud|tilby|vet ikke
+🫴|fortell|håndflate|holde|invitere|kalle|kom|løfte|på|tilbud|tilby|vinke
 🫷|håndflate hevet mot venstre|high five|high-five|holdt|mot venstre|nekte|skyv|stopp|venstre|vent
 🫸|håndflate hevet mot høyre|high five|high-five|holdt|høyre|mot høyre|nekte|skyv|stopp|vent
 👌|ålreit|bra|glimrende|greit|hand|hånd|klart|kult|okay|perfekt|supert
@@ -290,7 +291,7 @@
 👁️|kropp|øye
 👅|fjes|kropp|tunge
 👄|fjes|kropp|lepper|munn
-🫦|bekymre seg|bekymret|bite seg i leppa|bite seg i leppen|flørte|kyss|leppestift|nervøs|redd|sexy|ukomfortabel
+🫦|bekymret|bite|engstelig|flørte|kyss|lepper|leppestift|munn|nervøs|redd|sexy|utilpass
 👶|baby|menneske|ung
 🧒|barn|kjønnsnøytral|menneske|ung
 👦|gutt|menneske|ung
@@ -395,9 +396,9 @@
 💂‍♂️|gardist|mannlig gardist|vakt
 💂‍♀️|gardist|kvinnelig gardist|vakt
 🥷|hemmelig|kampkunst|kampsport|kriger|ninja|skjult|slåss|snikende
-👷|anleggsarbeider|arbeider|hjelm|ingeniør|menneske|person|refleksvest|vernehjelm
-👷‍♂️|anlegg|arbeider|bygg|hjelm|ingeniør|mannlig anleggsarbeider
-👷‍♀️|anlegg|arbeider|bygg|hjelm|ingeniør|kvinnelig anleggsarbeider
+👷|anleggsarbeider|arbeider|bygg|hjelm|ingeniør|menneske|person|refleksvest|vernehjelm
+👷‍♂️|anlegg|arbeider|bygg|hjelm|ingeniør|mannlig anleggsarbeider|refleksvest
+👷‍♀️|anlegg|arbeider|bygg|hjelm|ingeniør|kvinnelig anleggsarbeider|refleksvest
 🫅|adelig|høyhet|kongelig|krone|majestetisk|monark|person|royal
 🤴|prins
 👸|eventyr|fantasy|menneske|prinsesse
@@ -447,7 +448,7 @@
 🧞|aladdin|ånd i lampe|ånden i flasken|djinn|fantasy|flaskeånd|genie|gni på lampen|ønsker
 🧞‍♂️|aladdin|ånd i lampe|ånden i flasken|djinn|fantasy|flaskeånd|genie|gni på lampen|mann|ønsker
 🧞‍♀️|aladdin|ånd i lampe|ånden i flasken|djinn|fantasy|flaskeånd|genie|gni på lampen|kvinne|ønsker
-🧟|apocalypse|dead|halloween|skrekk|skummel|udød|vandød|walking|zombie
+🧟|apokalypse|død|halloween|skrekk|skummel|udød|vandød|zombie
 🧟‍♂️|mannlig zombie|udød|vandød
 🧟‍♀️|kvinnelig zombie|udød|vandød
 🧌|eventyr|fantasi|fantasy|monster|nettroll|troll
@@ -494,7 +495,7 @@
 🏇|galopp|hesteveddeløp|jockey|løp|sport|veddeløpshest
 ⛷️|skiløper|snø
 🏂|snøbrettkjøring|snowboarder|snowboarding|vintersport
-🏌️|ball|caddie|caddy|drive|driving range|golfball|golfer|golfslag|golfspiller|green|pga|putte|sport|tee
+🏌️|ball|birdie|caddy|driving|golfe|green|person|pga|putte|range|tee
 🏌️‍♂️|golfspiller|mannlig golfspiller
 🏌️‍♀️|golfspiller|kvinnelig golfspiller
 🏄|hav|sport|strand|surfebrett|surfer|surfing
@@ -539,9 +540,9 @@
 🛀|badekar|person i badekar
 🛌|god natt|hotell|overnatting|person i seng|sengetid|sove
 🧑‍🤝‍🧑|hånd|holde hender|par|personer som leier
-👭|bestevenner|bff|damer|dating|forelsket|hånd|hender|holde|homo|jenter|kjærester|kvinner|lesbisk|lhbt|par|skeiv|søstre|venner|vennskap
+👭|bestevenner|bff|damer|dating|hender|jenter|kvinner|par|søstre|tvillinger|venner|vennskap
 👫|bestevenner|bff|dating|forelsket|hånd|holder hender|kjærester|kvinne|mann|par|søsken
-👬|bestevenner|bff|brødre|dating|forelsket|gutter|hånd|hender|holde|homo|kjærester|lhbt|mann|menn|par|skeiv|venner|vennskap
+👬|bestevenner|bff|brødre|dating|gutter|hender|karer|menn|par|tvillinger|venner|vennskap
 💏|kyssing|mennesker|romantikk
 💑|hjerte|kjærlighet|mennesker|par med hjerte|romantikk
 🗣️|fjes|hode|silhuett|snakkende hode i profil|snakker
@@ -554,6 +555,7 @@
 🧑‍🧒|barn|familie|voksen
 🧑‍🧒‍🧒|barn|familie|voksen
 👣|avtrykk|fotavtrykk|fotspor|kropp|spor
+🫆|avtrykk|etterforskning|fingeravtrykk|identitet|innbrudd|krim|sikkerhet|spor|teknisk|tyveri
 🐵|apefjes|dyr|fjes
 🐒|ape|dyr
 🦍|ape|dyr|gorilla
@@ -653,7 +655,7 @@
 🦖|dinosaur|t-rex|tyrannosaurus rex
 🐳|dyr|hval|sprutende hval|spruter
 🐋|dyr|hval
-🐬|delfin|dyr
+🐬|delfin|dyr|flipper|hav|strand
 🦭|dyr|hav|sel|sjøløve
 🐟|dyr|fiskene|stjernebilde|stjernetegn
 🐠|dyr|fisk|tropisk
@@ -663,6 +665,11 @@
 🐚|dyr|skjell|spiralskjell
 🪸|dyr|hav|klimaendringer|korallrev|rev
 🪼|au|brennmanet|dyr|glassmanet|havdyr|manet|plankton|sjø|tentakler
+🦀|dyr|krabbe|krepsen|stjernebilde|stjernetegn
+🦞|bisque|hummer|klør|kreps|sjømat|skalldyr
+🦐|dyr|liten|mat|reke
+🦑|akkar|blekksprut|bløtdyr|dyr|sprut
+🦪|dykking|østers|perle
 🐌|dyr|snegle
 🦋|dyr|insekt|pen|sommerfugl
 🐛|åme|dyr|insekt|kryp|larve
@@ -706,12 +713,13 @@
 🪹|bygge|grein|gren|heim|hjem|rede|reir|tomt
 🪺|egg|fugl|grein|gren|heim|hjem|rede|reir|tomt
 🍄|fluesopp|sopp
+🪾|dødt|stamme|tørke|tørt|tre|ufruktbart|vinter
 🍇|drueklase|druer|frukt
 🍈|cantaloupe|frukt|honningmelon|melon
 🍉|frukt|melon|vannmelon
 🍊|appelsin|c|frukt|klementin|mandarin|sitrus|vitamin
 🍋|frukt|sitron|sitrus
-🍋‍🟩|cocktail|drink|frukt|grønn|juice|key lime pie|lime|margarita|mat|mojito|salsa|sitrus|sur|tequila|tropisk
+🍋‍🟩|cocktail|frukt|garnityr|lime|margarita|mojito|salsa|sitrus|syrlig|tequila|tropisk|zest
 🍌|banan|frukt
 🍍|ananas|frukt
 🥭|frukt|mango|tropisk
@@ -744,6 +752,7 @@
 🫚|helse|ingefærrot|krydder|naturlig|øl|rot|sunn|urt
 🫛|belg|bønner|ertebelg|erter|grønnsak|soyabønne|sukkerert
 🍄‍🟫|brun sopp|matsopp|natur|pizzafyll|portobello|sjampinjong|sopp|trøffel|vegetarianer
+🫜|bete|grønnsak|hage|kålrot|nepe|rotgrønnsak|turnips
 🍞|brød|loff
 🥐|brød|croissant|fransk|mat
 🥖|bagett|baguette|brød|fransk|mat
@@ -795,11 +804,6 @@
 🥟|dumpling|empanada|gyoza|jiaozi|melbolle|pirog
 🥠|fortune cookie|lykkekake|spådom
 🥡|bestille|boks|eske|hentemat|kinesisk|mat|spisepinner|takeaway
-🦀|dyr|krabbe|krepsen|stjernebilde|stjernetegn
-🦞|bisque|hummer|klør|kreps|sjømat|skalldyr
-🦐|dyr|liten|mat|reke
-🦑|akkar|blekksprut|bløtdyr|dyr|sprut
-🦪|dykking|østers|perle
 🍦|dessert|iskrem|restaurant|soft-is|softis
 🍧|dessert|is|restaurant|shave-ice|slush-is
 🍨|dessert|iskrem|restaurant
@@ -835,7 +839,7 @@
 🧊|chill|isbit|isterning|kald
 🥢|hashi|spisepinner
 🍽️|gaffel|kniv|matlaging|tallerken med kniv og gaffel
-🍴|bestikk|frokost|gaffel|kniv og gaffel|lunsj|matlaging|middag|namnam|restaurant|spise
+🍴|bestikk|frokost|gaffel|kniv|lunsj|matlaging|middag|nam|restaurant|spise|sulten
 🥄|bestikk|skje
 🔪|kniv|kokkekniv|matlaging|våpen|verktøy
 🫙|beholder|ingenting|krukke|mos|oppbevare|pålegg|syltetøy|tom
@@ -1204,6 +1208,7 @@
 🪘|beat|conga|langtromme|musikk|perkusjon|rytme|tromme
 🪇|cha|dans|fest|instrument|maracas|marakas|musikk|perkusjon|riste|rytme
 🪈|band|blokkfløyte|fløyte|instrument|korps|musikk|orkester|treblåseinstrument|treblåser
+🪉|amor|harpe|instrument|kjærlighet|musikk|orkester
 📱|mobiltelefon|telefon
 📲|anrop|mobiltelefon med pil|pil|ring|telefon
 ☎️|fasttelefon|ringe|telefon
@@ -1334,6 +1339,7 @@
 🧰|kasse|rød boks|skrin|verktøykasse
 🧲|hestesko|magnetisk|tiltrekning
 🪜|klatre|steg|stige|trinn
+🪏|grave|hull|skuffe|spade
 🧪|eksperiment|forskning|kjemiker|lab|prøverør|reagensrør
 🧫|bakterie|biologi|kultur|lab|petriskål
 🧬|biologi|dna|evolusjon|gener|genetikk|liv
@@ -1477,6 +1483,7 @@
 ➰|løkketegn
 ➿|dobbel løkke-tegn
 〽️|merke for nytt parti|nytt|parti
+🫟|farge|flekk|holi|maling|søl|sprut
 🔠|abcd|bokstaver|inndata|store bokstaver
 🔡|abcd|bokstaver|inndata|små bokstaver
 🔢|1234|inndata|numeriske data|tall
@@ -1805,3 +1812,4 @@
 🏴󠁧󠁢󠁥󠁮󠁧󠁿|england
 🏴󠁧󠁢󠁳󠁣󠁴󠁿|skottland
 🏴󠁧󠁢󠁷󠁬󠁳󠁿|wales
+🇨🇶|sark

@@ -58,6 +58,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.ui.SimpleTextWatcher;
@@ -122,17 +123,17 @@ public class WizardFragment3 extends WizardFragment {
         } else {
             emailEditText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
-                public void afterTextChanged(Editable s) {
+                public void afterTextChanged(@NonNull Editable editable) {
                     if (getActivity() != null) {
-                        ((OnSettingsChangedListener) getActivity()).onEmailSet(s.toString());
+                        ((OnSettingsChangedListener) getActivity()).onEmailSet(editable.toString());
                     }
                 }
             });
 
             prefixText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
-                public void afterTextChanged(Editable s) {
-                    String prefixString = s.toString();
+                public void afterTextChanged(@NonNull Editable editable) {
+                    String prefixString = editable.toString();
                     if (!prefixString.startsWith("+")) {
                         prefixText.setText("+");
                         Selection.setSelection(prefixText.getText(), prefixText.getText().length());
@@ -156,24 +157,24 @@ public class WizardFragment3 extends WizardFragment {
 
             phoneText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
-                public void afterTextChanged(Editable s) {
-                    if (!TextUtils.isEmpty(s) && phoneNumberFormatter != null) {
+                public void afterTextChanged(@NonNull Editable editable) {
+                    if (!TextUtils.isEmpty(editable) && phoneNumberFormatter != null) {
                         phoneNumberFormatter.clear();
 
-                        String number = s.toString().replaceAll("[^\\d.]", "");
+                        String number = editable.toString().replaceAll("[^\\d.]", "");
                         String formattedNumber = null;
 
                         for (int i = 0; i < number.length(); i++) {
                             formattedNumber = phoneNumberFormatter.inputDigit(number.charAt(i));
                         }
 
-                        if (formattedNumber != null && !s.toString().equals(formattedNumber)) {
-                            s.replace(0, s.length(), formattedNumber);
+                        if (formattedNumber != null && !editable.toString().equals(formattedNumber)) {
+                            editable.replace(0, editable.length(), formattedNumber);
                         }
                     }
                     Activity activity = getActivity();
                     if (activity != null) {
-                        ((OnSettingsChangedListener) activity).onPhoneSet(s.toString());
+                        ((OnSettingsChangedListener) activity).onPhoneSet(editable.toString());
                     }
                 }
             });

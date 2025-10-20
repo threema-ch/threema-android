@@ -26,17 +26,25 @@ import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver
+import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.DistributionListService
+import ch.threema.app.services.GroupService
 import ch.threema.common.minus
 import ch.threema.common.now
+import ch.threema.common.plus
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData.Companion.javaCreate
+import ch.threema.data.models.GroupIdentity
+import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.ContactModelRepository
+import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.data.storage.DatabaseBackend
 import ch.threema.domain.models.ContactSyncState
+import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
@@ -44,13 +52,17 @@ import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.protocol.csp.messages.DeleteMessage
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.FileData.RenderingType
 import ch.threema.domain.taskmanager.TaskManager
+import ch.threema.domain.types.Identity
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListMessageModel
 import ch.threema.storage.models.GroupMessageModel
+import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
@@ -69,7 +81,9 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.milliseconds
 
 class MessageUtilTest {
     private lateinit var contactMessageModelInbox: MessageModel
@@ -106,12 +120,12 @@ class MessageUtilTest {
 
     private val databaseBackendMock: DatabaseBackend = mockk<DatabaseBackend>()
     private val contactModelRepositoryMock: ContactModelRepository = mockk<ContactModelRepository>()
+    private val groupModelRepositoryMock: GroupModelRepository = mockk<GroupModelRepository>()
 
     @Suppress("DEPRECATION")
     @BeforeTest
     fun setUp() {
         mockkStatic(ConfigUtils::class)
-        every { ConfigUtils.isEditMessagesEnabled() } returns true
 
         val contactThreemaId = AppConstants.ECHO_USER_IDENTITY
         val businessContactThreemaId = "*THREEMA"
@@ -745,19 +759,6 @@ class MessageUtilTest {
     }
 
     @Test
-    fun `message can not be edited if editing is disabled`() {
-        every { ConfigUtils.isEditMessagesEnabled() } returns false
-        val message = createAbstractMessageModel(
-            type = MessageType.FILE,
-            isOutbox = true,
-            createdAt = now(),
-            postedAt = now(),
-        )
-
-        assertFalse(message.canBeEdited())
-    }
-
-    @Test
     fun `status message can not be edited`() {
         val message = createAbstractMessageModel(
             type = MessageType.TEXT,
@@ -860,8 +861,122 @@ class MessageUtilTest {
         assertFalse(message.canBeEdited())
     }
 
+    @Test
+    fun `canDeleteRemotely respects message age for contact receiver`() {
+        // arrange
+        val contactReceiver: ContactMessageReceiver = createContactMessageReceiver(
+            identity = randomIdentity(),
+        )
+        val messageCreatedAtTooOld: Date = Date()
+            .minus(duration = DeleteMessage.DELETE_MESSAGES_MAX_AGE.milliseconds)
+            .minus(duration = 1.days)
+        val message: AbstractMessageModel = createAbstractMessageModel(
+            type = MessageType.TEXT,
+            isStatusMessage = false,
+            isDeleted = false,
+            isOutbox = true,
+            createdAt = messageCreatedAtTooOld,
+            postedAt = messageCreatedAtTooOld.plus(100.milliseconds),
+            state = MessageState.SENT,
+        )
+
+        // act
+        val result: Boolean = MessageUtil.canDeleteRemotely(message, contactReceiver)
+
+        // assert
+        assertFalse(result)
+    }
+
+    @Test
+    fun `canDeleteRemotely respects old message age for group receiver`() {
+        // arrange
+        val ownIdentity: String = randomIdentity()
+        val creatorIdentity: String = randomIdentity()
+        val groupMessageReceiver: GroupMessageReceiver = createGroupMessageReceiver(
+            ownIdentity = ownIdentity,
+            creatorIdentity = creatorIdentity,
+            otherMembers = setOf(creatorIdentity),
+        )
+        val messageCreatedAtTooOld: Date = Date()
+            .minus(duration = DeleteMessage.DELETE_MESSAGES_MAX_AGE.milliseconds)
+            .minus(duration = 1.days)
+        val message: AbstractMessageModel = createAbstractMessageModel(
+            type = MessageType.TEXT,
+            isStatusMessage = false,
+            isDeleted = false,
+            isOutbox = true,
+            createdAt = messageCreatedAtTooOld,
+            postedAt = messageCreatedAtTooOld.plus(100.milliseconds),
+            state = MessageState.SENT,
+        )
+
+        // act
+        val result: Boolean = MessageUtil.canDeleteRemotely(message, groupMessageReceiver)
+
+        // assert
+        assertFalse(result)
+    }
+
+    @Test
+    fun `canDeleteRemotely returns true for young message age for group receiver`() {
+        // arrange
+        val ownIdentity: String = randomIdentity()
+        val creatorIdentity: String = randomIdentity()
+        val groupMessageReceiver: GroupMessageReceiver = createGroupMessageReceiver(
+            ownIdentity = ownIdentity,
+            creatorIdentity = creatorIdentity,
+            otherMembers = setOf(creatorIdentity),
+        )
+        val messageCreatedAtYoungEnough: Date = Date()
+            .minus(duration = (DeleteMessage.DELETE_MESSAGES_MAX_AGE / 2).milliseconds)
+        val message: AbstractMessageModel = createAbstractMessageModel(
+            type = MessageType.TEXT,
+            isStatusMessage = false,
+            isDeleted = false,
+            isOutbox = true,
+            createdAt = messageCreatedAtYoungEnough,
+            postedAt = messageCreatedAtYoungEnough.plus(100.milliseconds),
+            state = MessageState.SENT,
+        )
+
+        // act
+        val result: Boolean = MessageUtil.canDeleteRemotely(message, groupMessageReceiver)
+
+        // assert
+        assertTrue(result)
+    }
+
+    @Test
+    fun `canDeleteRemotely ignores message age for notes group`() {
+        // arrange
+        val ownIdentity: String = randomIdentity()
+        val groupMessageReceiver: GroupMessageReceiver = createGroupMessageReceiver(
+            ownIdentity = ownIdentity,
+            creatorIdentity = ownIdentity,
+            otherMembers = emptySet(),
+        )
+        val messageCreatedAtTooOld: Date = Date()
+            .minus(duration = DeleteMessage.DELETE_MESSAGES_MAX_AGE.milliseconds)
+            .minus(duration = 1.days)
+        val message: AbstractMessageModel = createAbstractMessageModel(
+            type = MessageType.TEXT,
+            isStatusMessage = false,
+            isDeleted = false,
+            isOutbox = true,
+            createdAt = messageCreatedAtTooOld,
+            postedAt = messageCreatedAtTooOld.plus(100.milliseconds),
+            state = MessageState.SENT,
+        )
+
+        // act
+        val result: Boolean = MessageUtil.canDeleteRemotely(message, groupMessageReceiver)
+
+        // assert
+        assertTrue(result)
+    }
+
     private fun createContactMessageReceiver(
-        identity: String = randomIdentity(),
+        identity: Identity = randomIdentity(),
         publicKey: ByteArray = nonSecureRandomArray(32),
     ): ContactMessageReceiver {
         val contactModel = ContactModel.create(identity, publicKey)
@@ -876,7 +991,7 @@ class MessageUtilTest {
                 "firstname",
                 "lastname",
                 "nickname",
-                0.toByte().toInt(),
+                IdColor(0),
                 VerificationLevel.FULLY_VERIFIED,
                 WorkVerificationLevel.NONE,
                 IdentityType.NORMAL,
@@ -918,6 +1033,101 @@ class MessageUtilTest {
         )
     }
 
+    /**
+     *  Create a GroupMessageReceiver and mock the [contactModelRepository] to return it.
+     *
+     *  @param otherMembers has to follow the rules defined in [GroupModelData.otherMembers].
+     */
+    private fun createGroupMessageReceiver(
+        ownIdentity: Identity,
+        creatorIdentity: Identity,
+        otherMembers: Set<Identity>,
+        groupService: GroupService = mockk(),
+        databaseService: DatabaseService = mockk(),
+        databaseBackend: DatabaseBackend = databaseBackendMock,
+        contactService: ContactService = mockk(),
+        contactModelRepository: ContactModelRepository = contactModelRepositoryMock,
+        serviceManager: ServiceManager = serviceManagerMock,
+        coreServiceManager: CoreServiceManager = coreServiceManagerMock,
+        groupModelRepository: GroupModelRepository = groupModelRepositoryMock,
+    ): GroupMessageReceiver {
+        val localGroupDbId = 0
+        val groupId = GroupId(nonSecureRandomArray(ProtocolDefines.GROUP_ID_LEN))
+        val groupIdentity = GroupIdentity(
+            creatorIdentity = creatorIdentity,
+            groupId = groupId.toLong(),
+        )
+
+        val groupModel: GroupModel = GroupModel().apply {
+            this.id = localGroupDbId
+            this.apiGroupId = groupId
+            this.creatorIdentity = creatorIdentity
+        }
+
+        val newGroupModel = ch.threema.data.models.GroupModel(
+            groupIdentity = groupIdentity,
+            data = GroupModelData(
+                groupIdentity = groupIdentity,
+                name = null,
+                createdAt = Date(),
+                synchronizedAt = null,
+                lastUpdate = null,
+                isArchived = false,
+                precomputedIdColor = IdColor.invalid(),
+                groupDescription = null,
+                groupDescriptionChangedAt = null,
+                otherMembers = otherMembers,
+                userState = GroupModel.UserState.MEMBER,
+                notificationTriggerPolicyOverride = null,
+            ),
+            databaseBackend = databaseBackend,
+            coreServiceManager = coreServiceManager,
+        )
+
+        every {
+            groupModelRepository.getByCreatorIdentityAndId(
+                creatorIdentity = creatorIdentity,
+                groupId = groupId,
+            )
+        } returns newGroupModel
+
+        every {
+            groupModelRepository.getByGroupIdentity(
+                groupIdentity = GroupIdentity(
+                    creatorIdentity = creatorIdentity,
+                    groupId = groupId.toLong(),
+                ),
+            )
+        } returns newGroupModel
+
+        every {
+            groupModelRepository.getByLocalGroupDbId(
+                localGroupDbId = localGroupDbId.toLong(),
+            )
+        } returns newGroupModel
+
+        every {
+            coreServiceManager.identityStore.getIdentity()
+        } returns ownIdentity
+
+        return GroupMessageReceiver(
+            /* group = */
+            groupModel,
+            /* groupService = */
+            groupService,
+            /* databaseService = */
+            databaseService,
+            /* contactService = */
+            contactService,
+            /* contactModelRepository = */
+            contactModelRepository,
+            /* groupModelRepository = */
+            groupModelRepository,
+            /* serviceManager = */
+            serviceManager,
+        )
+    }
+
     private fun createDistributionListMessageReceiver(
         identitiesWithPublicKey: List<Pair<String, ByteArray>>,
     ): MessageReceiver<*> {
@@ -941,7 +1151,7 @@ class MessageUtilTest {
                     "firstname",
                     "lastname",
                     "nickname",
-                    0.toByte().toInt(),
+                    IdColor(0),
                     VerificationLevel.FULLY_VERIFIED,
                     WorkVerificationLevel.NONE,
                     IdentityType.NORMAL,

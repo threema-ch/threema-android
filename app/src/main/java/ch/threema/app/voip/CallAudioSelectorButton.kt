@@ -28,7 +28,7 @@ import android.view.View
 import androidx.appcompat.widget.AppCompatImageView
 import ch.threema.app.R
 import ch.threema.app.utils.AudioDevice
-import ch.threema.app.utils.RuntimeUtil
+import ch.threema.app.utils.TestUtil
 import ch.threema.base.utils.LoggingUtil
 
 private val logger = LoggingUtil.getThreemaLogger("CallAudioSelectorButton")
@@ -84,7 +84,7 @@ class CallAudioSelectorButton : AppCompatImageView, View.OnClickListener {
             if (selectedAudioDevice == AudioDevice.WIRED_HEADSET) VISIBLE else HIDDEN
         layers.findDrawableByLayerId(R.id.speakerphoneItem).alpha =
             if (selectedAudioDevice == AudioDevice.SPEAKER_PHONE) VISIBLE else HIDDEN
-        if (!RuntimeUtil.isInTest()) {
+        if (!TestUtil.isInDeviceTest()) {
             isClickable = audioDevices.size > 1
             isEnabled = audioDevices.size > 1
         }

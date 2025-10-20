@@ -21,8 +21,10 @@
 
 package ch.threema.app.webviews
 
+import android.content.Context
 import ch.threema.app.R
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 
@@ -36,4 +38,8 @@ class EulaActivity : SimpleWebViewActivity() {
     override fun getWebViewTitle() = R.string.eula
 
     override fun getWebViewUrl() = ConfigUtils.getEulaURL(this)
+
+    companion object {
+        fun createIntent(context: Context) = buildActivityIntent<EulaActivity>(context)
+    }
 }

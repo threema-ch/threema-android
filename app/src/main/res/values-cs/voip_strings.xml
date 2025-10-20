@@ -83,6 +83,7 @@
     <string name="voip_gc_waiting_for_participants">Čeká se na účastníky</string>
     <string name="voip_gc_participant_avatar_description">Profilový obrázek účastníka</string>
     <string name="voip_gc_participant_mute_status_description">Stav ztlumení účastníka</string>
+    <string name="voip_gc_participant_screen_share_status_description">Účastník sdílí obrazovku</string>
     <string name="voip_gc_notification_new_call_public">Byl zahájen nový skupinový hovor</string>
     <string name="voip_gc_open_call">Otevřít</string>
     <string name="voip_gc_call_started">Skupinový hovor byl zahájen</string>
@@ -92,6 +93,7 @@
     <string name="voip_gc_call_error">Hovor ukončen kvůli chybě</string>
     <string name="voip_gc_call_start_error">Nezdařilo se zahájit skupinový hovor</string>
     <string name="voip_gc_call_already_ended">Skupinový hovor již skončil</string>
+    <string name="voip_gc_screen_sharing_not_supported">Sdílení obrazovky je v současnosti omezeno na desktopová zařízení.</string>
     <string name="voip_gc_call_full_generic">Bylo dosaženo maxima: Do tohoto skupinového hovoru se nemůže připojit více účastníků.</string>
     <string name="voip_gc_call_full_n">Bylo dosaženo maximálního počtu účastníků (%1$d). Do tohoto skupinového hovoru se už nemůžete připojit.</string>
     <plurals name="n_participants_in_call">

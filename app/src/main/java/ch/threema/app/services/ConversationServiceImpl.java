@@ -24,7 +24,6 @@ package ch.threema.app.services;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
 
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
@@ -41,8 +40,6 @@ import java.util.Set;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
-import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
@@ -51,6 +48,7 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.utils.TextUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.taskmanager.TriggerSource;
@@ -79,8 +77,7 @@ public class ConversationServiceImpl implements ConversationService {
     private final GroupService groupService;
     private final DistributionListService distributionListService;
     private final MessageService messageService;
-    @NonNull
-    private final ConversationCategoryService conversationCategoryService;
+    private final @NonNull ConversationCategoryService conversationCategoryService;
     private final BlockedIdentitiesService blockedIdentitiesService;
     private boolean initAllLoaded = false;
 
@@ -109,16 +106,20 @@ public class ConversationServiceImpl implements ConversationService {
          */
         public final @Nullable Integer latestMessageId;
 
+        public final boolean isArchived;
+
         ConversationResult(
             @NonNull String identifier,
             long messageCount,
             @NonNull Date lastUpdate,
-            @Nullable Integer latestMessageId
+            @Nullable Integer latestMessageId,
+            boolean isArchived
         ) {
             this.identifier = identifier;
             this.messageCount = messageCount;
             this.lastUpdate = lastUpdate;
             this.latestMessageId = latestMessageId;
+            this.isArchived = isArchived;
         }
     }
 
@@ -158,7 +159,7 @@ public class ConversationServiceImpl implements ConversationService {
         synchronized (this.conversationCache) {
             final List<ConversationModel> conversationModels = Functional.filter(
                 this.conversationCache,
-                (IPredicateNonNull<ConversationModel>) (c) -> c.getUid().equals(conversationModel.getUid())
+                (c) -> c.getUid().equals(conversationModel.getUid())
             );
             this.conversationCache.removeAll(conversationModels);
         }
@@ -184,7 +185,6 @@ public class ConversationServiceImpl implements ConversationService {
                 this.conversationCache.clear();
             }
             if (this.conversationCache.isEmpty()) {
-
                 logger.debug("start selecting");
                 for (ConversationModelParser<?, ?, ?> parser : new ConversationModelParser<?, ?, ?>[]{
                     new ContactConversationModelParser(),
@@ -202,89 +202,86 @@ public class ConversationServiceImpl implements ConversationService {
 
             this.sort();
 
-            //filter only if a filter object is set and one of the filter property contains a filter
-            if (filter != null
-                && (filter.onlyUnread()
-                || filter.noDistributionLists()
-                || filter.noHiddenChats()
-                || filter.noInvalid()
-                || !TestUtil.isEmptyOrNull(filter.filterQuery()))) {
-
+            if (filter != null) {
+                boolean filteringApplied = false;
                 List<ConversationModel> filtered = this.conversationCache;
                 if (filter.onlyUnread()) {
                     logger.debug("filter unread");
-                    filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
-                        @Override
-                        public boolean apply(@NonNull ConversationModel conversationModel) {
-                            return conversationModel.hasUnreadMessage();
-                        }
-                    });
+                    filteringApplied = true;
+                    filtered = Functional.filter(
+                        filtered,
+                        ConversationModel::hasUnreadMessage
+                    );
                 }
 
                 if (filter.noDistributionLists()) {
                     logger.debug("filter distribution lists");
-                    filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
-                        @Override
-                        public boolean apply(@NonNull ConversationModel conversationModel) {
-                            return !conversationModel.isDistributionListConversation();
-                        }
-                    });
+                    filteringApplied = true;
+                    filtered = Functional.filter(
+                        filtered,
+                        conversationModel -> !conversationModel.isDistributionListConversation()
+                    );
                 }
 
                 if (filter.noHiddenChats()) {
                     logger.debug("filter hidden lists");
-                    filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
-                        @Override
-                        public boolean apply(@NonNull ConversationModel conversationModel) {
-                            return !conversationCategoryService.isPrivateChat(conversationModel.messageReceiver.getUniqueIdString());
-                        }
-                    });
+                    filteringApplied = true;
+                    filtered = Functional.filter(
+                        filtered,
+                        conversationModel -> !conversationCategoryService.isPrivateChat(conversationModel.messageReceiver.getUniqueIdString())
+                    );
                 }
 
                 if (filter.noInvalid()) {
                     logger.debug("filter chats with revoked contacts / left group that cannot receive messages");
-                    filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
-                        @Override
-                        public boolean apply(@NonNull ConversationModel conversationModel) {
-                            if (conversationModel.isContactConversation()) {
-                                return conversationModel.getContact() != null && conversationModel.getContact().getState() != IdentityState.INVALID;
-                            } else if (conversationModel.isGroupConversation()) {
-                                return conversationModel.getGroup() != null && groupService.isGroupMember(conversationModel.getGroup());
-                            }
-                            return true;
+                    filteringApplied = true;
+                    filtered = Functional.filter(filtered, conversationModel -> {
+                        if (conversationModel.isContactConversation()) {
+                            return conversationModel.getContact() != null && conversationModel.getContact().getState() != IdentityState.INVALID;
+                        } else if (conversationModel.isGroupConversation()) {
+                            return conversationModel.getGroup() != null && groupService.isGroupMember(conversationModel.getGroup());
                         }
+                        return true;
                     });
                 }
 
                 if (filter.onlyPersonal()) {
                     logger.debug("filter non-personal chats such as channels/broadcasts or blocked chats");
-                    filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
-                        @Override
-                        public boolean apply(@NonNull ConversationModel conversationModel) {
-                            if (conversationModel.isContactConversation()) {
-                                return !ContactUtil.isEchoEchoOrGatewayContact(conversationModel.getContact()) &&
-                                    !blockedIdentitiesService.isBlocked(conversationModel.getContact().getIdentity());
-                            }
-                            return true;
+                    filteringApplied = true;
+                    filtered = Functional.filter(filtered, conversationModel -> {
+                        if (conversationModel.isContactConversation()) {
+                            return !ContactUtil.isEchoEchoOrGatewayContact(conversationModel.getContact()) &&
+                                !blockedIdentitiesService.isBlocked(conversationModel.getContact().getIdentity());
                         }
+                        return true;
                     });
                 }
 
                 if (!TestUtil.isEmptyOrNull(filter.filterQuery())) {
                     logger.debug("filter query");
-                    filtered = Functional.filter(filtered, new IPredicateNonNull<ConversationModel>() {
-                        @Override
-                        public boolean apply(@NonNull ConversationModel conversationModel) {
-                            return TestUtil.matchesConversationSearch(filter.filterQuery(), conversationModel.messageReceiver.getDisplayName());
-                        }
-                    });
+                    filteringApplied = true;
+                    filtered = Functional.filter(
+                        filtered,
+                        conversationModel -> TextUtil.matchesQueryDiacriticInsensitive(
+                            conversationModel.messageReceiver.getDisplayName(),
+                            filter.filterQuery()
+                        )
+                    );
                 }
 
-                return filtered;
+                if (filteringApplied) {
+                    // if any filtering was applied, we return here, but we must never leak conversationCache itself
+                    return filtered;
+                }
             }
-        }
 
-        return new ArrayList<>(this.conversationCache);
+            return new ArrayList<>(conversationCache);
+        }
+    }
+
+    @Override
+    public @NonNull List<ConversationModel> getArchived() {
+        return getArchived(null);
     }
 
     @Override
@@ -491,7 +488,7 @@ public class ConversationServiceImpl implements ConversationService {
             case MessageReceiver.Type_DISTRIBUTION_LIST:
                 return this.refresh(((DistributionListMessageReceiver) receiver).getDistributionList());
             default:
-                throw new IllegalStateException("Got ReceiverModel with invalid receiver type!");
+                throw new IllegalStateException("Got MessageReceiver with invalid receiver type!");
         }
     }
 
@@ -519,6 +516,7 @@ public class ConversationServiceImpl implements ConversationService {
         this.conversationTagService.removeAll(conversationModel, triggerSource);
 
         conversationModel.setUnreadCount(0);
+        conversationModel.isArchived = true;
 
         if (conversationModel.isContactConversation()) {
             ContactModel contactModel = conversationModel.getContact();
@@ -544,23 +542,24 @@ public class ConversationServiceImpl implements ConversationService {
             distributionListService.setIsArchived(conversationModel.getDistributionList(), true);
         }
 
+        // TODO(ANDR-4175):  Do not remove freshly archived conversation from cache
         this.removeFromCache(conversationModel);
     }
 
     @Override
-    public void unarchive(List<ConversationModel> conversationModels, @NonNull TriggerSource triggerSource) {
+    public void unarchive(@NonNull List<ConversationModel> conversationModels, @NonNull TriggerSource triggerSource) {
         for (ConversationModel conversationModel : conversationModels) {
             if (conversationModel.isContactConversation()) {
-                ContactModel contactModel = conversationModel.getContact();
+                final @Nullable ContactModel contactModel = conversationModel.getContact();
                 if (contactModel == null) {
-                    logger.error("Contact model cannot be null while un-archiving contact");
+                    logger.error("Contact model cannot be null while un-archiving contact conversation");
                     return;
                 }
                 contactService.setIsArchived(contactModel.getIdentity(), false, triggerSource);
             } else if (conversationModel.isGroupConversation()) {
-                GroupModel groupModel = conversationModel.getGroup();
+                final @Nullable GroupModel groupModel = conversationModel.getGroup();
                 if (groupModel == null) {
-                    logger.error("Group model cannot be null while un-archiving group");
+                    logger.error("Group model cannot be null while un-archiving group conversation");
                     return;
                 }
                 groupService.setIsArchived(
@@ -570,12 +569,43 @@ public class ConversationServiceImpl implements ConversationService {
                     triggerSource
                 );
             } else if (conversationModel.isDistributionListConversation()) {
+                final @Nullable DistributionListModel distributionListModel = conversationModel.getDistributionList();
+                if (distributionListModel == null) {
+                    logger.error("Distribution list model cannot be null while un-archiving distribution list conversation");
+                    return;
+                }
                 distributionListService.setIsArchived(conversationModel.getDistributionList(), false);
             }
 
+            // TODO(ANDR-4175): They should call onModified rather than onNew
             // Note: Don't call the conversation listener (onNew) here, that will be handled
             // already by the save() call in the contact/group/distributionlist-service.
         }
+    }
+
+    @Override
+    public void unarchiveByReceivers(@NonNull List<ReceiverModel> receivers, @NonNull TriggerSource triggerSource) {
+        for (ReceiverModel receiver : receivers) {
+            if (receiver instanceof ContactModel) {
+                final @NonNull ContactModel contactModel = (ContactModel) receiver;
+                contactService.setIsArchived(contactModel.getIdentity(), false, triggerSource);
+            } else if (receiver instanceof GroupModel) {
+                final @NonNull GroupModel groupModel = (GroupModel) receiver;
+                groupService.setIsArchived(
+                    groupModel.getCreatorIdentity(),
+                    groupModel.getApiGroupId(),
+                    false,
+                    triggerSource
+                );
+            } else if (receiver instanceof DistributionListModel) {
+                final @NonNull DistributionListModel distributionListModel = (DistributionListModel) receiver;
+                distributionListService.setIsArchived(distributionListModel, false);
+            }
+        }
+
+        // TODO(ANDR-4175): They should call onModified rather than onNew
+        // Note: Don't call the conversation listener (onNew) here, that will be handled
+        // already by the save() call in the contact/group/distributionlist-service.
     }
 
     @Override
@@ -615,8 +645,13 @@ public class ConversationServiceImpl implements ConversationService {
     }
 
     @Override
-    public int empty(@NonNull String identity) {
-        final ConversationModel conversationModel = new ContactConversationModelParser().getCached(identity);
+    public synchronized int empty(@NonNull String identity) {
+        var parser = new ContactConversationModelParser();
+        final ConversationModel cachedConversationModel = parser.getCached(identity);
+        if (cachedConversationModel != null) {
+            return this.empty(cachedConversationModel, true);
+        }
+        var conversationModel = parser.getSelected(identity);
         if (conversationModel != null) {
             return this.empty(conversationModel, true);
         }
@@ -625,18 +660,13 @@ public class ConversationServiceImpl implements ConversationService {
     }
 
     @Override
-    public synchronized int empty(@NonNull GroupModel groupModel) {
-        final ConversationModel conversationModel = new GroupConversationModelParser().getCached(groupModel.getId());
-        if (conversationModel != null) {
-            return this.empty(conversationModel, true);
-        }
-        logger.warn("Group conversation model is null, cannot empty");
-        return 0;
-    }
-
-    @Override
     public synchronized int empty(@NonNull DistributionListModel distributionListModel) {
-        final ConversationModel conversationModel = new DistributionListConversationModelParser().getCached(distributionListModel.getId());
+        var parser = new DistributionListConversationModelParser();
+        final ConversationModel cachedConversationModel = parser.getCached(distributionListModel.getId());
+        if (cachedConversationModel != null) {
+            return this.empty(cachedConversationModel, true);
+        }
+        var conversationModel = parser.getSelected(distributionListModel.getId());
         if (conversationModel != null) {
             return this.empty(conversationModel, true);
         }
@@ -813,7 +843,7 @@ public class ConversationServiceImpl implements ConversationService {
             if (!TestUtil.isEmptyOrNull(searchQuery)) {
                 for (ConversationResult r : res) {
                     ConversationModel conversationModel = this.parseResult(r, null, false);
-                    if (TestUtil.matchesConversationSearch(searchQuery, conversationModel.toString())) {
+                    if (TextUtil.matchesQueryDiacriticInsensitive(conversationModel.messageReceiver.getDisplayName(), searchQuery)) {
                         conversationModels.add(conversationModel);
                     }
                 }
@@ -825,6 +855,7 @@ public class ConversationServiceImpl implements ConversationService {
             return conversationModels;
         }
 
+        @Nullable
         public final ConversationModel getSelected(final I identifier) {
             final List<ConversationResult> results = this.select(identifier);
             if (!results.isEmpty()) {
@@ -858,23 +889,31 @@ public class ConversationServiceImpl implements ConversationService {
                 //resort
                 sort();
             } else {
-                // Refresh name if it's a distribution list
-                if (model.isDistributionListConversation() && receiverModel instanceof DistributionListModel) {
-                    model.getDistributionList().setName(((DistributionListModel) receiverModel).getName());
-                }
 
                 // Refresh lastUpdate
                 model.lastUpdate = getLastUpdate(receiverModel);
 
-                // Refresh notificationTriggerPolicyOverride
                 if (model.isGroupConversation() && receiverModel instanceof GroupModel && model.getGroup() != null) {
+                    // Refresh notificationTriggerPolicyOverride
                     model.getGroup().setNotificationTriggerPolicyOverride(
                         ((GroupModel) receiverModel).getNotificationTriggerPolicyOverride()
                     );
-                } else if (model.isContactConversation() && receiverModel instanceof ContactModel && model.getContact() != null) {
-                    model.getContact().setNotificationTriggerPolicyOverride(
-                        ((ContactModel) receiverModel).getNotificationTriggerPolicyOverride()
-                    );
+                    // Refresh isArchived
+                    model.isArchived = ((GroupModel) receiverModel).isArchived();
+                } else if (model.isContactConversation() && receiverModel instanceof ch.threema.data.models.ContactModel && model.getContact() != null) {
+                    // Refresh notificationTriggerPolicyOverride
+                    final @NonNull ch.threema.data.models.ContactModel contactModel = ((ch.threema.data.models.ContactModel) receiverModel);
+                    if (contactModel.getData() != null) {
+                        final @Nullable Long notificationTriggerPolicyOverrideValue = contactModel.getData().notificationTriggerPolicyOverride;
+                        model.getContact().setNotificationTriggerPolicyOverride(notificationTriggerPolicyOverrideValue);
+                    }
+                    // Refresh isArchived
+                    model.isArchived = model.getContact().isArchived();
+                } else if (model.isDistributionListConversation() && receiverModel instanceof DistributionListModel && model.getDistributionList() != null) {
+                    // Refresh distribution list name
+                    model.getDistributionList().setName(((DistributionListModel) receiverModel).getName());
+                    // Refresh isArchived
+                    model.isArchived = ((DistributionListModel) receiverModel).isArchived();
                 }
 
                 // Get the last position of the model. Note that this is required for the message
@@ -964,7 +1003,11 @@ public class ConversationServiceImpl implements ConversationService {
                     model.setUnreadCount(0);
                     // For the conversation tag marked-as-unread the trigger source does not matter as it isn't reflected
                     conversationTagService.removeTagAndNotify(model, ConversationTag.MARKED_AS_UNREAD, TriggerSource.LOCAL);
-                } else if (model.latestMessage.getId() == modifiedMessageModel.getId() && modifiedMessageModel.isRead()) {
+                } else if (
+                    model.latestMessage.getId() == modifiedMessageModel.getId() &&
+                        modifiedMessageModel.isRead() &&
+                        model.latestMessage.getType() != MessageType.GROUP_CALL_STATUS
+                ) {
                     // If the current message is the latest message in the conversation
                     // and if it's read, mark the entire conversation as read.
                     model.setUnreadCount(0);
@@ -1066,20 +1109,30 @@ public class ConversationServiceImpl implements ConversationService {
          * - Index 1: The message count (see {@link ConversationResult#messageCount}
          * - Index 2: The lastUpdate timestamp (see {@link ConversationResult#lastUpdate}
          * - Index 3: The nullable latest message ID (see {@link ConversationResult#latestMessageId}
+         * - Index 4: The isArchived boolean from either contact-, group-, or distribution list model
          */
         protected List<ConversationResult> parse(String query, String[] args) {
             final List<ConversationResult> results = new ArrayList<>();
 
-            try (Cursor c = databaseService.getReadableDatabase().rawQuery(query, args)) {
-                if (c == null) {
+            try (Cursor cursor = databaseService.getReadableDatabase().rawQuery(query, args)) {
+                if (cursor == null) {
                     return results;
                 }
-                while (c.moveToNext()) {
-                    final String identifier = c.getString(0);
-                    final long messageCount = c.getLong(1);
-                    final Date lastUpdate = new Date(c.getLong(2));
-                    final Integer latestMessageId = c.isNull(3) ? null : c.getInt(3);
-                    results.add(new ConversationResult(identifier, messageCount, lastUpdate, latestMessageId));
+                while (cursor.moveToNext()) {
+                    final String identifier = cursor.getString(0);
+                    final long messageCount = cursor.getLong(1);
+                    final Date lastUpdate = new Date(cursor.getLong(2));
+                    final Integer latestMessageId = cursor.isNull(3) ? null : cursor.getInt(3);
+                    final int isArchivedInt = cursor.getInt(4);
+                    results.add(
+                        new ConversationResult(
+                            identifier,
+                            messageCount,
+                            lastUpdate,
+                            latestMessageId,
+                            isArchivedInt == 1
+                        )
+                    );
                 }
             }
 
@@ -1142,7 +1195,7 @@ public class ConversationServiceImpl implements ConversationService {
                     "WHERE isSaved = 1 AND isStatusMessage = 0 " +
                     "GROUP BY identity" +
                     ") " +
-                    "SELECT c.identity, IFNULL(m.messageCount, 0) AS messageCount, c.lastUpdate, m.latestMessageId " +
+                    "SELECT c.identity, IFNULL(m.messageCount, 0) AS messageCount, c.lastUpdate, m.latestMessageId, c.isArchived " +
                     "FROM contacts c " +
                     "LEFT JOIN message_info m ON c.identity = m.identity " +
                     "WHERE c.lastUpdate IS NOT NULL AND c.identity = ?",
@@ -1159,7 +1212,7 @@ public class ConversationServiceImpl implements ConversationService {
                     "WHERE isSaved = 1 AND isStatusMessage = 0 " +
                     "GROUP BY identity" +
                     ") " +
-                    "SELECT c.identity, IFNULL(m.messageCount, 0) AS messageCount, c.lastUpdate, m.latestMessageId " +
+                    "SELECT c.identity, IFNULL(m.messageCount, 0) AS messageCount, c.lastUpdate, m.latestMessageId, c.isArchived " +
                     "FROM contacts c " +
                     "LEFT JOIN message_info m ON c.identity = m.identity " +
                     "WHERE c.lastUpdate IS NOT NULL AND c.acquaintanceLevel != 1 AND c.isArchived = " + (archived ? "1" : "0")
@@ -1202,6 +1255,7 @@ public class ConversationServiceImpl implements ConversationService {
                     conversationModel.setUnreadCount(receiver.getUnreadMessagesCount());
                 }
             }
+            conversationModel.isArchived = result.isArchived;
 
             return conversationModel;
         }
@@ -1269,6 +1323,7 @@ public class ConversationServiceImpl implements ConversationService {
                     conversationModel.setUnreadCount(receiver.getUnreadMessagesCount());
                 }
             }
+            conversationModel.isArchived = result.isArchived;
 
             return conversationModel;
         }
@@ -1283,7 +1338,7 @@ public class ConversationServiceImpl implements ConversationService {
                     "WHERE isSaved = 1 AND (isStatusMessage = 0 OR type = ?) " +
                     "GROUP BY groupId" +
                     ") " +
-                    "SELECT g.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(g.lastUpdate, 0), m.latestMessageId " +
+                    "SELECT g.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(g.lastUpdate, 0), m.latestMessageId, g.isArchived " +
                     "FROM m_group g " +
                     "LEFT JOIN message_info m ON g.id = m.groupId " +
                     "WHERE g.id = ?",
@@ -1301,7 +1356,7 @@ public class ConversationServiceImpl implements ConversationService {
                     "WHERE isSaved = 1 AND (isStatusMessage = 0 OR type = ?) " +
                     "GROUP BY groupId" +
                     ") " +
-                    "SELECT g.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(g.lastUpdate, 0), m.latestMessageId " +
+                    "SELECT g.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(g.lastUpdate, 0), m.latestMessageId, g.isArchived " +
                     "FROM m_group g " +
                     "LEFT JOIN message_info m ON g.id = m.groupId " +
                     "WHERE g.isArchived = " + (archived ? "1" : "0"),
@@ -1372,6 +1427,8 @@ public class ConversationServiceImpl implements ConversationService {
             // Distribution lists cannot have unread messages
             conversationModel.setUnreadCount(0);
 
+            conversationModel.isArchived = result.isArchived;
+
             return conversationModel;
         }
 
@@ -1385,7 +1442,7 @@ public class ConversationServiceImpl implements ConversationService {
                     "WHERE isSaved = 1 AND isStatusMessage = 0 " +
                     "GROUP BY distributionListId" +
                     ") " +
-                    "SELECT d.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(d.lastUpdate, 0), m.latestMessageId " +
+                    "SELECT d.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(d.lastUpdate, 0), m.latestMessageId, d.isArchived " +
                     "FROM distribution_list d " +
                     "LEFT JOIN message_info m ON d.id = m.distributionListId " +
                     "WHERE d.id = ?",
@@ -1403,7 +1460,7 @@ public class ConversationServiceImpl implements ConversationService {
                     "WHERE isSaved = 1 AND isStatusMessage = 0 " +
                     "GROUP BY distributionListId" +
                     ") " +
-                    "SELECT d.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(d.lastUpdate, 0), m.latestMessageId " +
+                    "SELECT d.id, IFNULL(m.messageCount, 0) AS messageCount, IFNULL(d.lastUpdate, 0), m.latestMessageId, d.isArchived " +
                     "FROM distribution_list d " +
                     "LEFT JOIN message_info m ON d.id = m.distributionListId " +
                     "WHERE d.isHidden != 1 AND d.isArchived = " + (archived ? "1" : "0")

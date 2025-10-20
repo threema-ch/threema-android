@@ -29,6 +29,7 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
 private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupProfilePictureTask")
@@ -40,13 +41,13 @@ private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupProfilePictureTa
  */
 class OutgoingGroupProfilePictureTask(
     private val groupId: GroupId,
-    private val creatorIdentity: String,
-    receiverIdentities: Set<String>,
+    private val creatorIdentity: Identity,
+    receiverIdentities: Set<Identity>,
     messageId: MessageId?,
     private val serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     private val messageId by lazy { messageId ?: MessageId.random() }
-    private val receiverIdentities by lazy { receiverIdentities - userService.identity }
+    private val receiverIdentities by lazy { receiverIdentities - userService.identity!! }
     private val fileService by lazy { serviceManager.fileService }
 
     override val type: String = "OutgoingGroupProfilePictureTask"
@@ -106,8 +107,8 @@ class OutgoingGroupProfilePictureTask(
     @Serializable
     class OutgoingGroupProfilePictureData(
         private val groupId: ByteArray,
-        private val creatorIdentity: String,
-        private val receiverIdentities: Set<String>,
+        private val creatorIdentity: Identity,
+        private val receiverIdentities: Set<Identity>,
         private val messageId: ByteArray,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =

@@ -1,14 +1,19 @@
+<!-- Centered README header hack -->
+<!-- Do not replace the obsolete align attribute with inline style, as GitHub may strip it. -->
 <div align="center">
-  <!-- Centered README header hack -->
-  <img width="500" src="logo.svg">
-  <br><br>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="logo_dark.svg">
+    <source media="(prefers-color-scheme: light)" srcset="logo_light.svg">
+    <img width="500" src="logo_light.svg" alt="Threema Logo">
+  </picture>
+  <br>
+  <br>
 </div>
 
 # Threema for Android
 
 This repository contains the complete source code of
 [Threema](https://threema.com/) for Android.
-
 
 ## Table of Contents
 
@@ -24,7 +29,6 @@ This repository contains the complete source code of
 - [Translating](#translating)
 - [License](#license)
 
-
 ## <a name="issues"></a>Bug Reports / Feature Requests / Security Issues
 
 To report bugs and request new features, please contact the Threema support
@@ -38,7 +42,6 @@ the bug bounty program, you can contact us via Threema or by email; for contact
 details, see [threema.com/contact](https://threema.com/en/contact) (section
 “Security”).
 
-
 ## <a name="release-policy"></a>Source Code Release Policy
 
 This source code repository will be updated for every public non-beta release.
@@ -46,7 +49,6 @@ There will be one commit per released version.
 
 Commits are signed using PGP. See [SECURITY.md](SECURITY.md) for more
 information.
-
 
 ## <a name="license-checks"></a>License Checks
 
@@ -103,7 +105,6 @@ The `none` build variant is used for development. It can only be used to create
 new Threema IDs if the random Device ID has been put on an “allow list” by a
 Threema employee.
 
-
 ## <a name="build-variants"></a>Build Variants
 
 **Private**
@@ -111,48 +112,46 @@ Threema employee.
 There are currently the following product flavors relevant for the private
 version of Threema:
 
-| Flavor                 | Description                                    | License Checks |
-| ---------------------- | ---------------------------------------------- | -------------- |
-| `store_google`         | Google Play Store version (regular, paid app)  | Google Play    |
-| `hms`                  | Huawei AppGallery version (regular, paid app)  | Huawei HMS     |
-| `store_threema`¹       | Threema Shop version (with play services)      | Threema Shop   |
-| `libre`¹               | Libre (F-Droid) version (no proprietary code)  | Threema Shop   |
+| Flavor           | Description                                   | License Checks |
+|------------------|-----------------------------------------------|----------------|
+| `store_google`   | Google Play Store version (regular, paid app) | Google Play    |
+| `hms`            | Huawei AppGallery version (regular, paid app) | Huawei HMS     |
+| `store_threema`¹ | Threema Shop version (with play services)     | Threema Shop   |
+| `libre`¹         | Libre (F-Droid) version (no proprietary code) | Threema Shop   |
 
 For local testing, we recommend building the `store_google` or `store_threema`
 build variants.
 
 ¹ The main difference between `store_threema` and `libre` is that the former
-  contains proprietary push services and a self-updater while the latter does
-  not. Additionally, the `libre` version will use your system emoji, instead
-  of bundling emoji graphics.
-
+contains proprietary push services and a self-updater while the latter does
+not. Additionally, the `libre` version will use your system emoji, instead
+of bundling emoji graphics.
 
 **Threema Work / OnPrem**
 
 Additionally, these build variants are only relevant for Threema Work or
 Threema OnPrem customers:
 
-| Flavor               | Description                                    | License Checks |
-| -------------------- | ---------------------------------------------- | -------------- |
-| `store_google_work`  | Google Play Store version (work, free app)     | Threema Work   |
-| `hms_work`           | Huawei AppGallery version (work, free app)     | Threema Work   |
-| `onprem`             | Threema OnPremises version                     | Threema Work   |
+| Flavor              | Description                                | License Checks |
+|---------------------|--------------------------------------------|----------------|
+| `store_google_work` | Google Play Store version (work, free app) | Threema Work   |
+| `hms_work`          | Huawei AppGallery version (work, free app) | Threema Work   |
+| `onprem`            | Threema OnPremises version                 | Threema Work   |
 
 **Internal Development**
 
 The following variants are only used for development and testing within Threema:
 
-| Flavor         | Description                                    | License Checks |
-|----------------| ---------------------------------------------- | -------------- |
-| `none`         | Used for development                           | Allowlist      |
-| `green`        | Uses sandbox test environment¹                 | Allowlist      |
-| `sandbox_work` | Uses sandbox test environment¹                 | Threema Work   |
-| `blue`         | Uses sandbox test environment¹                 | Threema Work   |
+| Flavor         | Description                    | License Checks |
+|----------------|--------------------------------|----------------|
+| `none`         | Used for development           | Allowlist      |
+| `green`        | Uses sandbox test environment¹ | Allowlist      |
+| `sandbox_work` | Uses sandbox test environment¹ | Threema Work   |
+| `blue`         | Uses sandbox test environment¹ | Threema Work   |
 
 ¹ *The “sandbox” is a backend test environment that is used for internal testing
-  at Threema. The sandbox backend can currently not be accessed from the public
-  Internet.*
-
+at Threema. The sandbox backend can currently not be accessed from the public
+Internet.*
 
 ## <a name="building"></a>Building
 
@@ -196,7 +195,6 @@ assistance for building on macOS, Windows, or other operating systems.
 The project can be imported into [Android Studio](https://developer.android.com/studio/).
 To build and deploy it to a device, click the green “Play” icon.
 
-
 ## <a name="testing"></a>Testing
 
 ### Via Command Line
@@ -220,13 +218,11 @@ emulator.
 
 You can also run tests through Android Studio.
 
-
 ## <a name="reproducible-builds"></a>Reproducible Builds
 
 Instructions on how to reproduce the build process used to publish the official
 Threema app can be found at
 [threema.com/open-source/reproducible-builds/](https://threema.com/open-source/reproducible-builds/).
-
 
 ## <a name="architecture"></a>Code Organization / Architecture
 
@@ -244,7 +240,6 @@ The code of the actual Android app is located in the
 Common code not specific to Threema is located in the
 `common/src/main/java/ch/threema/` directory.
 
-
 ## <a name="contributions"></a>Contributions
 
 We accept GitHub pull requests. Please refer to
@@ -254,13 +249,11 @@ for more information on how to contribute.
 Note that translation fixes should not be contributed through GitHub but
 on Crowdin, see next section.
 
-
 ## <a name="translating"></a>Translating
 
 We manage our app translations on Crowdin. If you’re interested in
 improving translations, or if you would like to translate Threema to a new
 language, please contact us at `support at threema dot ch`.
-
 
 ## <a name="license"></a>License
 

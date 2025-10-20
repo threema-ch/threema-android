@@ -7,16 +7,16 @@
     android:background="@android:color/transparent">
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/dialog_margin_below_title"
+        android:orientation="vertical"
         android:paddingLeft="@dimen/edittext_padding"
+        android:paddingTop="@dimen/dialog_margin_below_title"
         android:paddingRight="@dimen/edittext_padding">
 
         <TextView
-            style="@style/MaterialAlertDialog.Material3.Body.Text"
             android:id="@+id/message_text"
+            style="@style/Threema.MaterialAlertDialog.Body.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:paddingLeft="3dp"
@@ -25,19 +25,19 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lastname_layout"
-            android:hint="@string/enter_code_hint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dialog_margin_top"
+            android:hint="@string/enter_code_hint"
             app:endIconMode="clear_text">
 
             <ch.threema.app.emojis.EmojiEditText
                 android:id="@+id/code_edittext"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:singleLine="true"
                 android:inputType="numberDecimal"
                 android:maxLength="8"
+                android:singleLine="true"
                 android:textIsSelectable="false">
 
                 <requestFocus />
@@ -46,23 +46,23 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
-            style="@style/MaterialAlertDialog.Material3.Body.Text"
             android:id="@+id/no_code_text"
+            style="@style/Threema.TextAppearance.Dialog.Body"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             android:paddingLeft="3dp"
             android:paddingRight="3dp"
-            android:layout_marginTop="32dp"
             android:text="@string/no_sms_received" />
 
         <com.google.android.material.button.MaterialButton
-            style="@style/Threema.MaterialButton.Action"
             android:id="@+id/request_call"
+            style="@style/Threema.MaterialButton.Action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/dialog_margin_top"
-            app:icon="@drawable/ic_call_outline"
-            android:text="@string/verify_phonecall_text" />
+            android:text="@string/verify_phonecall_text"
+            app:icon="@drawable/ic_call_outline" />
 
     </LinearLayout>
 

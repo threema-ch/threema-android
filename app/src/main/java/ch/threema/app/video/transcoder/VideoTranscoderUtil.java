@@ -54,7 +54,7 @@ public class VideoTranscoderUtil {
     public static int getOrientationHint(Context context, MediaComponent mediaComponent, @NonNull Uri srcUri) {
         MediaFormat trackFormat = mediaComponent.getTrackFormat();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && trackFormat != null && trackFormat.containsKey(KEY_ROTATION)) {
+        if (trackFormat != null && trackFormat.containsKey(KEY_ROTATION)) {
             return trackFormat.getInteger(KEY_ROTATION);
         } else {
             // do not use automatic resource management on MediaMetadataRetriever

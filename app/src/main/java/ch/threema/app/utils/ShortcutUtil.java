@@ -34,7 +34,6 @@ import android.net.Uri;
 import android.os.BaseBundle;
 import android.os.PersistableBundle;
 import android.os.SystemClock;
-import android.text.format.DateUtils;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -49,11 +48,12 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.slf4j.Logger;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -356,16 +356,6 @@ public final class ShortcutUtil {
 
         final ConversationService.Filter filter = new ConversationService.Filter() {
             @Override
-            public boolean onlyUnread() {
-                return false;
-            }
-
-            @Override
-            public boolean noDistributionLists() {
-                return false;
-            }
-
-            @Override
             public boolean noHiddenChats() {
                 return true;
             }
@@ -402,18 +392,18 @@ public final class ShortcutUtil {
             }
 
             // update shortcuts at least once a day
-            Date lastShortcutUpdateDate = preferenceService.getLastShortcutUpdateDate();
-            Date cutoffDate = new Date((lastShortcutUpdateDate != null ? lastShortcutUpdateDate.getTime() : 0) + DateUtils.DAY_IN_MILLIS);
-            Date now = new Date();
+            Instant lastShortcutUpdateDate = preferenceService.getLastShortcutUpdateTimestamp();
+            Instant cutoffDate = (lastShortcutUpdateDate != null ? lastShortcutUpdateDate.plus(1, ChronoUnit.DAYS) : Instant.MIN);
+            Instant now = Instant.now();
 
             if (Arrays.equals(preferenceService.getList(KEY_RECENT_UIDS), publishedRecentChatsUids.toArray(new String[0])) &&
-                !now.after(cutoffDate)) {
+                !now.isAfter(cutoffDate)) {
                 logger.info("Recent chats unchanged. Not updating sharing targets");
                 return;
             }
 
             preferenceService.setListQuietly(KEY_RECENT_UIDS, publishedRecentChatsUids.toArray(new String[0]));
-            preferenceService.setLastShortcutUpdateDate(now);
+            preferenceService.setLastShortcutUpdateTimestamp(now);
 
             try {
                 logger.info("Set {} dynamic sharing target shortcuts", numPublishableConversations);
@@ -572,7 +562,7 @@ public final class ShortcutUtil {
                 persistableBundle.putString(AppConstants.INTENT_DATA_CONTACT, ((ContactMessageReceiver) messageReceiver).getContact().getIdentity());
                 break;
             case MessageReceiver.Type_GROUP:
-                persistableBundle.putInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageReceiver) messageReceiver).getGroup().getId());
+                persistableBundle.putLong(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageReceiver) messageReceiver).getGroup().getId());
                 break;
             case MessageReceiver.Type_DISTRIBUTION_LIST:
                 persistableBundle.putLong(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());

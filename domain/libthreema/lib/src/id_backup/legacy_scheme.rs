@@ -1,15 +1,21 @@
-#[cfg(test)]
+//! This scheme uses PBKDF2 for the key derivation and XSalsa20 unauthenticated encryption with a custom
+//! integrity check.
+//!
+//! The encrypted backup is a grouped base32 encoded value, such as:
+//!
+//! 4K4M-5Q6T-KFUH-KHL5-2VCJ-ZM57-NL7R-WJTA-V45L-NJAM-
+//! WLEU-5DS4-XF7S-OPH4-CTCL-N2CF-3C4C-HPB7-YZWW-U3S6
+//!
+//! (without line breaks)
 use libthreema_macros::concat_fixed_bytes;
+use subtle::ConstantTimeEq as _;
 
-use super::{BackupData, BackupKey, IdentityBackupError, IdentityBackupResult, Salt, decode_backup_data};
-use crate::{
-    common::{ClientKey, ThreemaId},
-    crypto::{
-        cipher::{KeyIvInit as _, StreamCipher as _},
-        deprecated::{pbkdf2::pbkdf2_hmac_array, salsa20::XSalsa20},
-        digest::Digest as _,
-        sha2::Sha256,
-    },
+use super::{BackupKey, IdentityBackupData, IdentityBackupError, Salt};
+use crate::crypto::{
+    cipher::{KeyIvInit as _, StreamCipher as _},
+    deprecated::{pbkdf2::pbkdf2_hmac_array, salsa20::XSalsa20},
+    digest::Digest as _,
+    sha2::Sha256,
 };
 
 const HASH_LENGTH: usize = 2;
@@ -19,15 +25,12 @@ const PBKDF_ITERATIONS: u32 = 100_000;
 // Fixed zero nonce
 const NONCE: [u8; 24] = [0; 24];
 
-// Threema ID || CK
-const DATA_LENGTH: usize = ThreemaId::LENGTH + ClientKey::LENGTH;
-
 /// Length of the encrypted ID backup after stripping extra characters and decoding Base32.
 ///
 /// ```text
 /// salt || Salsa20(Threema ID || CK || hash)
 /// ```
-pub(super) const ENCRYPTED_LENGTH: usize = Salt::LENGTH + DATA_LENGTH + HASH_LENGTH;
+pub(super) const ENCRYPTED_LENGTH: usize = Salt::LENGTH + IdentityBackupData::LENGTH + HASH_LENGTH;
 
 /// Derive the symmetric backup encryption key
 fn derive_key(password: &str, salt: Salt) -> BackupKey {
@@ -38,40 +41,37 @@ fn derive_key(password: &str, salt: Salt) -> BackupKey {
     ))
 }
 
-/// Return the first two bytes of the SHA256 hash of the concatenation of the Threema ID and the
-/// Client Key.
-fn get_digest(threema_id: ThreemaId, ck: &ClientKey) -> [u8; HASH_LENGTH] {
-    let hash = Sha256::new()
-        .chain_update(threema_id.to_bytes())
-        .chain_update(ck.as_bytes())
-        .finalize();
+/// Return the first two bytes of the SHA256 hash of the concatenation of the Threema ID and the client key.
+fn get_digest(data: &[u8]) -> [u8; HASH_LENGTH] {
+    let hash = Sha256::new().chain_update(data).finalize();
     hash.get(..HASH_LENGTH)
         .expect("SHA-256 hash should have at least 2 bytes")
         .try_into()
         .expect("SHA-256 hash should have at least 2 bytes")
 }
 
-#[cfg(test)]
-pub(super) fn encrypt(password: &str, backup_data: &BackupData) -> [u8; ENCRYPTED_LENGTH] {
+pub(super) fn encrypt(password: &str, backup_data: &IdentityBackupData) -> [u8; ENCRYPTED_LENGTH] {
     // Encode backup data
-    let mut data: [u8; DATA_LENGTH + HASH_LENGTH] = concat_fixed_bytes!(
-        backup_data.threema_id.to_bytes(),
-        *backup_data.ck.as_bytes(),
-        get_digest(backup_data.threema_id, &backup_data.ck),
-    );
+    let mut backup_data: [u8; IdentityBackupData::LENGTH + HASH_LENGTH] = {
+        let backup_data = backup_data.encode();
+        concat_fixed_bytes!(backup_data, get_digest(&backup_data))
+    };
 
     // Encrypt backup data
     let salt = Salt::random();
     let key = derive_key(password, salt);
 
     // XOR with keystream
-    XSalsa20::new(&key.0.into(), &NONCE.into()).apply_keystream(&mut data);
+    XSalsa20::new(&key.0.into(), &NONCE.into()).apply_keystream(&mut backup_data);
 
     // Prepend the salt to the ciphertext
-    concat_fixed_bytes!(salt.0, data)
+    concat_fixed_bytes!(salt.0, backup_data)
 }
 
-pub(super) fn decrypt(password: &str, encrypted_backup: &mut [u8]) -> IdentityBackupResult<BackupData> {
+pub(super) fn decrypt(
+    password: &str,
+    mut encrypted_backup: Vec<u8>,
+) -> Result<IdentityBackupData, IdentityBackupError> {
     // Extract salt and encrypted data
     let (salt, encrypted_data) = {
         if encrypted_backup.len() != ENCRYPTED_LENGTH {
@@ -86,7 +86,7 @@ pub(super) fn decrypt(password: &str, encrypted_backup: &mut [u8]) -> IdentityBa
                     .expect("Unable to extract salt from encrypted backup"),
             )?,
             encrypted_backup
-                .get_mut(Salt::LENGTH..Salt::LENGTH + DATA_LENGTH + HASH_LENGTH)
+                .get_mut(Salt::LENGTH..Salt::LENGTH + IdentityBackupData::LENGTH + HASH_LENGTH)
                 .expect("Unable to extract encrypted data from encrypted backup"),
         )
     };
@@ -99,77 +99,157 @@ pub(super) fn decrypt(password: &str, encrypted_backup: &mut [u8]) -> IdentityBa
     };
     let (backup_data, extracted_hash) = (
         decrypted_data
-            .get(..DATA_LENGTH)
+            .get(..IdentityBackupData::LENGTH)
             .expect("Unable to extract backup data"),
         decrypted_data
-            .get(DATA_LENGTH..)
+            .get(IdentityBackupData::LENGTH..)
             .expect("Unable to extract backup data integrity hash"),
     );
 
-    // Extract backup data
-    let backup_data = decode_backup_data(
-        backup_data
-            .try_into()
-            .map_err(|_| IdentityBackupError::DecodingFailed("Invalid length of backup data"))?,
-    )?;
-
     // Verify backup data integrity
-    let computed_hash = get_digest(backup_data.threema_id, &backup_data.ck);
-    if computed_hash != extracted_hash {
-        return Err(IdentityBackupError::IntegrityFailed);
+    let computed_hash = get_digest(backup_data);
+    if bool::from(computed_hash.ct_ne(extracted_hash)) {
+        return Err(IdentityBackupError::DecryptionFailed);
     }
+
+    // Decode backup data
+    let backup_data = IdentityBackupData::decode(backup_data)?;
 
     // Done
     Ok(backup_data)
 }
 
+#[cfg(feature = "slow_tests")]
 #[cfg(test)]
 mod tests {
+    use assert_matches::assert_matches;
+
     use super::*;
     use crate::{
-        common::PublicKey,
-        id_backup::{
-            decode_chunked_base32,
-            tests::{PASSWORD, backup_data},
-        },
+        common::{ThreemaId, keys::ClientKey},
+        id_backup::{decode_chunked_base32, tests::backup_data},
     };
 
+    const PASSWORD: &str = "testpassword";
+
     #[test]
-    fn test_constants() {
-        assert_eq!(DATA_LENGTH, 40);
+    fn constants() {
         assert_eq!(ENCRYPTED_LENGTH, 50);
     }
 
     #[test]
-    fn test_roundtrip() -> anyhow::Result<()> {
+    fn invalid_length() {
+        assert_matches!(
+            decrypt(
+                PASSWORD,
+                decode_chunked_base32(
+                    "4K4M-5Q6T-KFUH-KHL5-2VCJ-ZM57-NL7R-WJTA-V45L-NJAM-WLEU-5DS4-XF7S-OPH4-CTCL-N2CF"
+                )
+                .unwrap()
+            ),
+            Err(IdentityBackupError::DecodingFailed(_))
+        );
+    }
+
+    #[test]
+    fn invalid_salt() {
+        assert_matches!(
+            decrypt(
+                PASSWORD,
+                decode_chunked_base32(
+                    "764M-5Q6T-KFUH-KHL5-2VCJ-ZM57-NL7R-WJTA-V45L-NJAM-\
+                    WLEU-5DS4-XF7S-OPH4-CTCL-N2CF-3C4C-HPB7-YZWW-U3S6"
+                )
+                .unwrap()
+            ),
+            Err(IdentityBackupError::DecryptionFailed)
+        );
+    }
+
+    #[test]
+    fn invalid_hash() {
+        assert_matches!(
+            decrypt(
+                PASSWORD,
+                decode_chunked_base32(
+                    "4K4M-5Q6T-KFUH-KHL5-2VCJ-ZM57-NL7R-WJTA-V45L-NJAM-\
+                    WLEU-5DS4-XF7S-OPH4-CTCL-N2CF-3C4C-HPB7-YZWW-U3X7"
+                )
+                .unwrap()
+            ),
+            Err(IdentityBackupError::DecryptionFailed)
+        );
+    }
+
+    #[test]
+    fn invalid_content() {
+        assert_matches!(
+            decrypt(
+                PASSWORD,
+                decode_chunked_base32(
+                    "4K4M-5Q6T-KFUH-L735-2VCJ-ZM57-NL7R-WJTA-V45L-NJAM-\
+                    WLEU-5DS4-XF7S-OPH4-CTCL-N2CF-3C4C-HPB7-YZWW-U3S6"
+                )
+                .unwrap()
+            ),
+            Err(IdentityBackupError::DecryptionFailed)
+        );
+    }
+
+    #[test]
+    fn invalid_backup_data() {
+        let backup_data = IdentityBackupData {
+            threema_id: ThreemaId::predefined(*b"!$%&/()="),
+            client_key: ClientKey::from([0_u8; ClientKey::LENGTH]),
+        };
+
+        let encrypted_backup = encrypt(PASSWORD, &backup_data);
+        assert_matches!(
+            decrypt(PASSWORD, encrypted_backup.to_vec()),
+            Err(IdentityBackupError::DecodingFailed(_))
+        );
+    }
+
+    #[test]
+    fn invalid_password() {
         let backup_data = backup_data();
 
-        let mut encrypted_backup = encrypt(PASSWORD, &backup_data);
-        let decrypted_backup = decrypt(PASSWORD, &mut encrypted_backup)?;
+        let encrypted_backup = encrypt(PASSWORD, &backup_data);
+        assert_matches!(
+            decrypt("nopedinope", encrypted_backup.to_vec()),
+            Err(IdentityBackupError::DecryptionFailed)
+        );
+    }
+
+    #[test]
+    fn roundtrip() -> anyhow::Result<()> {
+        let backup_data = backup_data();
+
+        let encrypted_backup = encrypt(PASSWORD, &backup_data);
+        let decrypted_backup = decrypt(PASSWORD, encrypted_backup.to_vec())?;
 
         assert_eq!(backup_data.threema_id, decrypted_backup.threema_id);
-        assert_eq!(backup_data.ck.as_bytes(), decrypted_backup.ck.as_bytes());
+        assert_eq!(
+            backup_data.client_key.as_bytes(),
+            decrypted_backup.client_key.as_bytes()
+        );
 
         Ok(())
     }
 
-    /// Test that decryption of a backup manually generated with the Android client works.
     #[test]
-    fn test_generated_backup() -> anyhow::Result<()> {
-        let threema_id = ThreemaId::try_from("0ZAHXXHB").expect("Threema ID should be valid");
-        let public_key = PublicKey::from([
-            0xac, 0xfc, 0xc3, 0x93, 0xc8, 0x80, 0x0a, 0x25, 0xbc, 0x79, 0x2e, 0x52, 0x90, 0x53, 0xc4, 0xe9,
-            0x82, 0xb8, 0xad, 0x10, 0x43, 0xfb, 0xf0, 0x73, 0x3b, 0x8c, 0x8c, 0x74, 0x09, 0x0f, 0x4a, 0x56,
-        ]);
-        let password = "testpassword";
+    fn static_decrypt() -> anyhow::Result<()> {
+        let backup_data = backup_data();
+
         let encrypted_backup = "4K4M-5Q6T-KFUH-KHL5-2VCJ-ZM57-NL7R-WJTA-V45L-NJAM-\
             WLEU-5DS4-XF7S-OPH4-CTCL-N2CF-3C4C-HPB7-YZWW-U3S6";
+        let decrypted_backup = decrypt(PASSWORD, decode_chunked_base32(encrypted_backup)?)?;
 
-        let backup_data = decrypt(password, &mut decode_chunked_base32(encrypted_backup)?)?;
-        let public_key_derived = backup_data.ck.public_key();
-
-        assert_eq!(threema_id, backup_data.threema_id);
-        assert_eq!(public_key, public_key_derived);
+        assert_eq!(decrypted_backup.threema_id, backup_data.threema_id);
+        assert_eq!(
+            decrypted_backup.client_key.as_bytes(),
+            backup_data.client_key.as_bytes(),
+        );
 
         Ok(())
     }

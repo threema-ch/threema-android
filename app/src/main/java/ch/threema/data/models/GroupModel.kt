@@ -21,7 +21,6 @@
 
 package ch.threema.data.models
 
-import android.content.Context
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ListenerManager
@@ -29,22 +28,20 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.GroupService.GroupState
 import ch.threema.app.tasks.ReflectGroupSyncUpdateTask
-import ch.threema.app.utils.ColorUtil
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.runtimeAssert
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.common.toHexString
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.repositories.RepositoryToken
 import ch.threema.data.storage.DatabaseBackend
 import ch.threema.data.storage.DbGroup
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.Common
 import ch.threema.storage.models.GroupModel.UserState
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import java.nio.charset.StandardCharsets
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import java.util.Collections
 import java.util.Date
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,14 +56,14 @@ private val logger = LoggingUtil.getThreemaLogger("data.GroupModel")
 @Serializable
 data class GroupIdentity(
     /** The creator identity string. Must be 8 characters long. */
-    val creatorIdentity: String,
+    val creatorIdentity: Identity,
     /** The api group id of the group. */
     val groupId: Long,
 ) {
     /**
      * The hex representation of the group id.
      */
-    val groupIdHexString: String by lazy { Utils.byteArrayToHexString(groupIdByteArray) }
+    val groupIdHexString: String by lazy { groupIdByteArray.toHexString() }
 
     /**
      * The group id as little endian byte array.
@@ -99,17 +96,16 @@ data class GroupModelData(
      */
     @JvmField val isArchived: Boolean,
     /**
-     * The precomputed color index if it is already known. If null is passed the index will be
-     * computed lazily. Access the color index with [colorIndex].
+     * The precomputed id color if it is already known. If the id color is not set, it will be
+     * computed lazily. Access the id color with [idColor].
      */
-    private val precomputedColorIndex: UByte? = null,
+    private val precomputedIdColor: IdColor = IdColor.invalid(),
     /** The group description. */
     @JvmField val groupDescription: String?,
     /** The group description timestamp. */
     @JvmField val groupDescriptionChangedAt: Date?,
     /**
-     * The group members' identities. This does not include the user's identity. The creator identity is included except when the user is the creator
-     * or when the group is orphaned.
+     * The group members' identities. This does not include the user's identity. The creator identity is included except when the user is the creator.
      *
      * Note that this set must not be modified.
      *
@@ -130,7 +126,7 @@ data class GroupModelData(
          */
         @JvmStatic
         fun javaCreate(
-            creatorIdentity: String,
+            creatorIdentity: Identity,
             groupId: Long,
             name: String?,
             createdAt: Date,
@@ -154,33 +150,13 @@ data class GroupModelData(
                 synchronizedAt = synchronizedAt,
                 lastUpdate = lastUpdate,
                 isArchived = isArchived,
-                precomputedColorIndex = colorIndex.toUByte(),
+                precomputedIdColor = IdColor(colorIndex),
                 groupDescription = groupDescription,
                 groupDescriptionChangedAt = groupDescriptionChangedAt,
                 otherMembers = Collections.unmodifiableSet(members),
                 userState = userState,
                 notificationTriggerPolicyOverride = notificationTriggerPolicyOverride,
             )
-        }
-
-        /**
-         * Computes the color index of the given group identity.
-         */
-        fun computeColorIndex(groupIdentity: GroupIdentity): UByte {
-            val groupCreatorIdentity =
-                groupIdentity.creatorIdentity.toByteArray(StandardCharsets.UTF_8)
-            val apiGroupIdBin = groupIdentity.groupIdByteArray
-
-            try {
-                val md = MessageDigest.getInstance("SHA-256")
-                md.update(groupCreatorIdentity)
-                md.update(apiGroupIdBin)
-                val firstByte = md.digest()[0]
-                return ColorUtil.getInstance().getIDColorIndex(firstByte).toUByte()
-            } catch (e: NoSuchAlgorithmException) {
-                logger.error("Could not hash the identity to determine color", e)
-                return 0u
-            }
         }
     }
 
@@ -192,7 +168,7 @@ data class GroupModelData(
         get() = userState == UserState.MEMBER
 
     /**
-     * The group members' identities. This includes the user's identity. The creator identity is included except when the group is orphaned.
+     * The group members' identities. This includes the user's identity and the creator's identity.
      *
      * Note that this set must not be modified.
      *
@@ -200,7 +176,7 @@ data class GroupModelData(
      *
      * @throws UnsupportedOperationException if the set is being modified
      */
-    fun getAllMembers(myIdentity: String): Set<String> {
+    fun getAllMembers(myIdentity: Identity): Set<String> {
         return if (isMember) {
             Collections.unmodifiableSet(otherMembers + myIdentity)
         } else {
@@ -211,33 +187,13 @@ data class GroupModelData(
     /**
      * The color index.
      */
-    val colorIndex: UByte by lazy { precomputedColorIndex ?: computeColorIndex(groupIdentity) }
-
-    /**
-     * Return the [colorIndex] as [Int].
-     */
-    fun colorIndexInt(): Int = colorIndex.toInt()
-
-    /**
-     * Get the color of the group based on the current theme.
-     */
-    fun getThemedColor(context: Context): Int {
-        return if (ConfigUtils.isTheDarkSide(context)) {
-            getColorDark()
+    val idColor: IdColor by lazy {
+        if (precomputedIdColor.isValid) {
+            precomputedIdColor
         } else {
-            getColorLight()
+            IdColor.ofGroup(groupIdentity)
         }
     }
-
-    /**
-     * Get the light color.
-     */
-    private fun getColorLight() = ColorUtil.getInstance().getIDColorLight(colorIndex.toInt())
-
-    /**
-     * Get the dark color.
-     */
-    private fun getColorDark() = ColorUtil.getInstance().getIDColorDark(colorIndex.toInt())
 
     val currentNotificationTriggerPolicyOverride
         get() = NotificationTriggerPolicyOverride.fromDbValueGroup(notificationTriggerPolicyOverride)
@@ -259,7 +215,7 @@ class GroupModel(
 ) {
     private val databaseId: Long? by lazy { databaseBackend.getGroupDatabaseId(groupIdentity) }
 
-    private val myIdentity by lazy { coreServiceManager.identityStore.identity }
+    private val myIdentity by lazy { coreServiceManager.identityStore.getIdentity()!! }
 
     private val nonceFactory by lazy { coreServiceManager.nonceFactory }
 
@@ -294,7 +250,7 @@ class GroupModel(
      * is returned.
      */
     fun isNotesGroup(): Boolean? {
-        val groupModelData = data.value ?: return null
+        val groupModelData = data ?: return null
         return groupIdentity.creatorIdentity == myIdentity && groupModelData.otherMembers.isEmpty()
     }
 
@@ -306,10 +262,16 @@ class GroupModel(
     }
 
     /**
+     * Checks whether the user has been kicked from the group or not.
+     */
+    fun isKicked(): Boolean =
+        data?.userState == UserState.KICKED
+
+    /**
      * Checks whether the user is a member of the group or not. Note that a reason for not being a member may be that the group no longer exists.
      */
     fun isMember(): Boolean {
-        val groupModelData = data.value ?: return false
+        val groupModelData = data ?: return false
         return groupModelData.isMember
     }
 
@@ -418,7 +380,7 @@ class GroupModel(
      * listeners.
      */
     @Synchronized
-    fun removeLeftMemberFromRemote(memberIdentity: String) {
+    fun removeLeftMemberFromRemote(memberIdentity: Identity) {
         val data = ensureNotDeleted("removeLeftMemberFromRemote")
         val previousMembers = data.otherMembers
         val newMembers = previousMembers.filter { it != memberIdentity }.toSet()
@@ -589,14 +551,14 @@ class GroupModel(
     /**
      * Synchronously notify new group member listeners.
      */
-    private fun notifyDeprecatedOnNewMemberListeners(newIdentity: String) {
+    private fun notifyDeprecatedOnNewMemberListeners(newIdentity: Identity) {
         ListenerManager.groupListeners.handle { it.onNewMember(groupIdentity, newIdentity) }
     }
 
     /**
      * Synchronously notify group member left listeners.
      */
-    private fun notifyDeprecatedOnMemberLeaveListeners(leftIdentity: String) {
+    private fun notifyDeprecatedOnMemberLeaveListeners(leftIdentity: Identity) {
         ListenerManager.groupListeners.handle { it.onMemberLeave(groupIdentity, leftIdentity) }
     }
 
@@ -610,7 +572,7 @@ class GroupModel(
     /**
      * Synchronously notify group member kicked listeners.
      */
-    private fun notifyDeprecatedOnMemberKickedListeners(kickedIdentity: String) {
+    private fun notifyDeprecatedOnMemberKickedListeners(kickedIdentity: Identity) {
         ListenerManager.groupListeners.handle { it.onMemberKicked(groupIdentity, kickedIdentity) }
     }
 
@@ -640,7 +602,7 @@ internal object GroupModelDataFactory : ModelDataFactory<GroupModelData, DbGroup
         synchronizedAt = value.synchronizedAt,
         lastUpdate = value.lastUpdate,
         isArchived = value.isArchived,
-        colorIndex = value.colorIndex,
+        colorIndex = value.idColor.colorIndex,
         groupDescription = value.groupDescription,
         groupDescriptionChangedAt = value.groupDescriptionChangedAt,
         members = value.otherMembers,
@@ -655,7 +617,7 @@ internal object GroupModelDataFactory : ModelDataFactory<GroupModelData, DbGroup
         synchronizedAt = value.synchronizedAt,
         lastUpdate = value.lastUpdate,
         isArchived = value.isArchived,
-        precomputedColorIndex = value.colorIndex,
+        precomputedIdColor = IdColor(value.colorIndex),
         groupDescription = value.groupDescription,
         groupDescriptionChangedAt = value.groupDescriptionChangedAt,
         otherMembers = value.members,

@@ -7,14 +7,14 @@
     <!-- Primary -->
     <color name="md_theme_light_primary">@color/brand_800</color>
     <color name="md_theme_light_onPrimary">#FFFFFF</color>
-    <color name="md_theme_light_primaryContainer">@color/brand_800</color>
-    <color name="md_theme_light_onPrimaryContainer">#FFFFFF</color>
+    <color name="md_theme_light_primaryContainer">@color/brand_100</color>
+    <color name="md_theme_light_onPrimaryContainer">#1D1D1B</color> <!-- Brand Text -->
     <color name="md_theme_light_inversePrimary">@color/brand_600</color>
 
     <!-- Secondary -->
     <color name="md_theme_light_secondary">@color/brand_400</color>
     <color name="md_theme_light_onSecondary">@color/brand_900</color>
-    <color name="md_theme_light_secondaryContainer">@color/brand_400</color>
+    <color name="md_theme_light_secondaryContainer">@color/brand_200</color>
     <color name="md_theme_light_onSecondaryContainer">@color/brand_900</color>
 
     <!-- Tertiary -->
@@ -24,7 +24,7 @@
     <color name="md_theme_light_onTertiaryContainer">#1D1D1B</color> <!-- Brand Text -->
 
     <!-- Error -->
-    <color name="md_theme_light_error">#BA1A1A</color>
+    <color name="md_theme_light_error">#E11D24</color>
     <color name="md_theme_light_errorContainer">#FFDAD6</color>
     <color name="md_theme_light_onError">#FFFFFF</color>
     <color name="md_theme_light_onErrorContainer">#410002</color>
@@ -64,8 +64,8 @@
     <!-- Secondary -->
     <color name="md_theme_dark_secondary">@color/brand_400</color>
     <color name="md_theme_dark_onSecondary">#000000</color>
-    <color name="md_theme_dark_secondaryContainer">@color/brand_400</color>
-    <color name="md_theme_dark_onSecondaryContainer">#000000</color>
+    <color name="md_theme_dark_secondaryContainer">@color/brand_800</color>
+    <color name="md_theme_dark_onSecondaryContainer">#F3F4F6</color> <!-- Brand Text -->
 
     <!-- Tertiary -->
     <color name="md_theme_dark_tertiary">@color/brand_grey_800</color>
@@ -74,9 +74,9 @@
     <color name="md_theme_dark_onTertiaryContainer">#F3F4F6</color> <!-- Brand Text -->
 
     <!-- Error -->
-    <color name="md_theme_dark_error">#FFB4AB</color>
+    <color name="md_theme_dark_error">#EDA19D</color>
     <color name="md_theme_dark_errorContainer">#93000A</color>
-    <color name="md_theme_dark_onError">#690005</color>
+    <color name="md_theme_dark_onError">#000000</color>
     <color name="md_theme_dark_onErrorContainer">#FFDAD6</color>
 
     <!-- Background/Surface -->

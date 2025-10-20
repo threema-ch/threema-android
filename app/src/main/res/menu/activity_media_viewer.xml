@@ -7,7 +7,6 @@
         android:icon="@drawable/ic_outline_apps"
         android:orderInCategory="1"
         android:title="@string/media_gallery"
-        app:iconTint="@android:color/white"
         app:showAsAction="always" />
 
     <item
@@ -16,7 +15,6 @@
         android:orderInCategory="2"
         android:title="@string/share_image"
         android:visible="false"
-        app:iconTint="@android:color/white"
         app:showAsAction="always" />
 
     <item

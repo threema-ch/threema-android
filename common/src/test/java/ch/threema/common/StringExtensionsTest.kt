@@ -47,4 +47,13 @@ class StringExtensionsTest {
         assertEquals("test", "test".takeUnlessEmpty())
         assertNull("".takeUnlessEmpty())
     }
+
+    @Test
+    fun `take string unless blank`() {
+        assertEquals("test", "test".takeUnlessBlank())
+        assertEquals(" test ", " test ".takeUnlessBlank())
+        assertEquals(" te st ", " te st ".takeUnlessBlank())
+        assertNull("".takeUnlessBlank())
+        assertNull("  ".takeUnlessBlank())
+    }
 }

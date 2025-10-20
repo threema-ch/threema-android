@@ -23,6 +23,7 @@ package ch.threema.data.storage
 
 import android.database.sqlite.SQLiteException
 import ch.threema.app.utils.ThrowingConsumer
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.AbstractMessageModel
 
 interface EmojiReactionsDao {
@@ -76,18 +77,18 @@ interface EmojiReactionsDao {
     fun insertGroupReactionsInTransaction(block: TransactionalReactionInsertScope)
 
     data class BackupContactReaction(
-        val contactIdentity: String,
+        val contactIdentity: Identity,
         val apiMessageId: String,
-        val senderIdentity: String,
+        val senderIdentity: Identity,
         val emojiSequence: String,
         val reactedAt: Long,
     )
 
     data class BackupGroupReaction(
         val apiGroupId: String,
-        val groupCreatorIdentity: String,
+        val groupCreatorIdentity: Identity,
         val apiMessageId: String,
-        val senderIdentity: String,
+        val senderIdentity: Identity,
         val emojiSequence: String,
         val reactedAt: Long,
     )

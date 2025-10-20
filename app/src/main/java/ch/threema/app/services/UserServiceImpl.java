@@ -29,7 +29,12 @@ import android.content.Context;
 import android.provider.ContactsContract;
 import android.text.format.DateUtils;
 
-import com.neilalexander.jnacl.NaCl;
+import ch.threema.app.profilepicture.CheckedProfilePicture;
+import ch.threema.app.profilepicture.ProfilePicture;
+import ch.threema.app.profilepicture.RawProfilePicture;
+import ch.threema.app.stores.ReadonlyInMemoryIdentityStore;
+import ch.threema.app.utils.ExifInterface;
+import ch.threema.base.crypto.NaCl;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,6 +44,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.SecureRandom;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -50,19 +56,14 @@ import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.collections.Functional;
-import ch.threema.app.listeners.ProfileListener;
 import ch.threema.app.listeners.SMSVerificationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.routines.UpdateWorkInfoRoutine;
-import ch.threema.app.services.license.LicenseService;
-import ch.threema.app.services.license.SerialCredentials;
-import ch.threema.app.services.license.UserCredentials;
-import ch.threema.app.stores.IdentityStore;
+import ch.threema.domain.models.SerialCredentials;
+import ch.threema.domain.models.UserCredentials;
 import ch.threema.app.stores.PreferenceStore;
-import ch.threema.app.stores.PreferenceStoreInterface;
-import ch.threema.app.stores.PreferenceStoreInterfaceDevNullImpl;
 import ch.threema.app.tasks.ReflectUserProfileNicknameSyncTask;
 import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.utils.ConfigUtils;
@@ -74,17 +75,19 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
-import ch.threema.domain.identitybackup.IdentityBackupDecoder;
+import ch.threema.domain.identitybackup.IdentityBackup;
+import ch.threema.domain.models.LicenseCredentials;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.CreateIdentityRequestDataInterface;
 import ch.threema.domain.protocol.blob.BlobScope;
 import ch.threema.domain.protocol.blob.BlobUploader;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.taskmanager.TaskManager;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.libthreema.CryptoException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.AppConstants.PHONE_LINKED_PLACEHOLDER;
@@ -99,7 +102,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     @NonNull
     private final Context context;
     @NonNull
-    private final PreferenceStoreInterface preferenceStore;
+    private final PreferenceStore preferenceStore;
     @NonNull
     private final IdentityStore identityStore;
     @NonNull
@@ -121,7 +124,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     private String policyResponseData;
     private String policySignature;
     private int policyErrorCode;
-    private LicenseService.Credentials credentials;
+    private LicenseCredentials credentials;
     private Account account;
 
     // TODO(ANDR-2519): Remove when md allows fs
@@ -129,7 +132,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
     public UserServiceImpl(
         @NonNull Context context,
-        @NonNull PreferenceStoreInterface preferenceStore,
+        @NonNull PreferenceStore preferenceStore,
         @NonNull LocaleService localeService,
         @NonNull APIConnector apiConnector,
         @NonNull ApiService apiService,
@@ -269,6 +272,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
+    @Nullable
     public String getIdentity() {
         return this.identityStore.getIdentity();
     }
@@ -548,14 +552,14 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         // truncate string into a 32 byte length string
         // fix #ANDR-530
         final @Nullable String publicNicknameTruncated = publicNickname != null
-            ? Utils.truncateUTF8String(publicNickname, ProtocolDefines.PUSH_FROM_LEN)
+            ? Utils.truncateUTF8StringNonNull(publicNickname, ProtocolDefines.PUSH_FROM_LEN)
             : "";
-        this.identityStore.persistPublicNickname(publicNicknameTruncated);
+        this.identityStore.setPublicNickname(publicNicknameTruncated);
         // run update work info (only if the app is the work version)
         if (ConfigUtils.isWorkBuild()) {
             UpdateWorkInfoRoutine.start();
         }
-        if (publicNicknameTruncated != null && !publicNicknameTruncated.equals(oldNickname)
+        if (!publicNicknameTruncated.equals(oldNickname)
             && multiDeviceManager.isMultiDeviceActive()
             && triggerSource != TriggerSource.SYNC) {
             taskManager.schedule(
@@ -569,20 +573,39 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
+    @WorkerThread
     @Nullable
-    public byte[] getUserProfilePicture() {
+    public ProfilePicture getUserProfilePicture() {
+        String identity = getIdentity();
+        if (identity == null) {
+            logger.error("Cannot get user profile picture if there is no identity");
+            return null;
+        }
+
         try {
-            return toByteArray(fileService.getUserDefinedProfilePictureStream(getIdentity()));
+            byte[] profilePictureBytes = toByteArray(fileService.getUserDefinedProfilePictureStream(getIdentity()));
+            if (profilePictureBytes != null) {
+                return new RawProfilePicture(profilePictureBytes);
+            } else {
+                return null;
+            }
         } catch (Exception e) {
-            logger.error("Could not get user profile picture");
+            logger.error("Could not get user profile picture", e);
             return null;
         }
     }
 
     @Override
-    public boolean setUserProfilePicture(@NonNull File userProfilePicture, @NonNull TriggerSource triggerSource) {
+    @WorkerThread
+    public boolean setUserProfilePicture(@NonNull CheckedProfilePicture userProfilePicture, @NonNull TriggerSource triggerSource) {
+        String identity = getIdentity();
+        if (identity == null) {
+            logger.error("Cannot set user profile picture if there is no identity");
+            return false;
+        }
+
         try {
-            fileService.writeUserDefinedProfilePicture(getIdentity(), userProfilePicture);
+            fileService.writeUserDefinedProfilePicture(identity, userProfilePicture.getProfilePictureBytes());
             onUserProfilePictureChanged(triggerSource);
             if (multiDeviceManager.isMultiDeviceActive() && triggerSource != TriggerSource.SYNC) {
                 taskCreator.scheduleReflectUserProfilePictureTask();
@@ -595,21 +618,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
-    public boolean setUserProfilePicture(@NonNull byte[] userProfilePicture, @NonNull TriggerSource triggerSource) {
-        try {
-            fileService.writeUserDefinedProfilePicture(getIdentity(), userProfilePicture);
-            onUserProfilePictureChanged(triggerSource);
-            if (multiDeviceManager.isMultiDeviceActive() && triggerSource != TriggerSource.SYNC) {
-                taskCreator.scheduleReflectUserProfilePictureTask();
-            }
-            return true;
-        } catch (Exception e) {
-            logger.error("Could not set user profile picture", e);
-            return false;
-        }
-    }
-
-    @Override
+    @WorkerThread
     public void setUserProfilePictureFromSync(
         @NonNull ContactService.ProfilePictureUploadData uploadData,
         @NonNull TriggerSource triggerSource
@@ -617,8 +626,18 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         if (triggerSource != TriggerSource.SYNC) {
             throw new IllegalArgumentException("This method must only be used from sync");
         }
+        String identity = getIdentity();
+        if (identity == null) {
+            logger.error("Cannot set user profile picture from sync when there is no identity");
+            return;
+        }
+
+        if (!uploadData.profilePicture.isValid()) {
+            logger.warn("Received invalid user profile picture from sync");
+        }
+
         // Persist the profile picture itself
-        fileService.writeUserDefinedProfilePicture(getIdentity(), uploadData.bitmapArray);
+        fileService.writeUserDefinedProfilePicture(identity, uploadData.profilePicture.getProfilePictureBytes());
 
         // Persist the changes regarding blob id and upload date
         this.preferenceService.setProfilePicUploadData(uploadData);
@@ -629,6 +648,12 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
     @Override
     public void removeUserProfilePicture(@NonNull TriggerSource triggerSource) {
+        String identity = getIdentity();
+        if (identity == null) {
+            logger.error("Cannot remove profile picture when there is no identity");
+            return;
+        }
+
         fileService.removeUserDefinedProfilePicture(getIdentity());
         onUserProfilePictureChanged(triggerSource);
         if (multiDeviceManager.isMultiDeviceActive() && triggerSource != TriggerSource.SYNC) {
@@ -640,7 +665,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     @WorkerThread
     @NonNull
     public ContactService.ProfilePictureUploadData uploadUserProfilePictureOrGetPreviousUploadData() {
-        byte[] profilePicture = getUserProfilePicture();
+        ProfilePicture profilePicture = getUserProfilePicture();
         if (profilePicture == null) {
             // If there is no profile picture set, then return empty upload data with an empty byte
             // array as blob ID.
@@ -650,14 +675,15 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         }
 
         // Only upload blob every 7 days
-        long uploadedAt = preferenceService.getProfilePicUploadDate();
+        var uploadedAtInstant = preferenceService.getProfilePicUploadTimestamp();
+        long uploadedAt = uploadedAtInstant != null ? uploadedAtInstant.toEpochMilli() : 0;
         Date uploadDeadline = new Date(uploadedAt + ContactUtil.PROFILE_PICTURE_BLOB_CACHE_DURATION);
         Date now = new Date();
 
         if (now.after(uploadDeadline)) {
             logger.info("Uploading profile picture blob");
 
-            ContactService.ProfilePictureUploadData data = uploadContactPhoto(profilePicture);
+            @Nullable ContactService.ProfilePictureUploadData data = uploadContactPhoto(profilePicture);
 
             if (data == null) {
                 return new ContactService.ProfilePictureUploadData();
@@ -671,7 +697,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
             ContactService.ProfilePictureUploadData data = preferenceService.getProfilePicUploadData();
             if (data != null) {
                 data.uploadedAt = uploadedAt;
-                data.bitmapArray = profilePicture;
+                data.profilePicture = profilePicture;
                 return data;
             } else {
                 return new ContactService.ProfilePictureUploadData();
@@ -680,15 +706,25 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Nullable
-    private ContactService.ProfilePictureUploadData uploadContactPhoto(@NonNull byte[] contactPhoto) {
+    private ContactService.ProfilePictureUploadData uploadContactPhoto(@NonNull ProfilePicture contactPhoto) {
         ContactService.ProfilePictureUploadData data = new ContactService.ProfilePictureUploadData();
 
         SecureRandom rnd = new SecureRandom();
-        data.encryptionKey = new byte[NaCl.SYMMKEYBYTES];
+        data.encryptionKey = new byte[NaCl.SYMM_KEY_BYTES];
         rnd.nextBytes(data.encryptionKey);
 
-        data.bitmapArray = contactPhoto;
-        byte[] imageData = NaCl.symmetricEncryptData(data.bitmapArray, data.encryptionKey, ProtocolDefines.CONTACT_PHOTO_NONCE);
+        data.profilePicture = contactPhoto;
+        final byte[] imageData;
+        try {
+            imageData = NaCl.symmetricEncryptData(
+                data.profilePicture.getProfilePictureBytes(),
+                data.encryptionKey,
+                ProtocolDefines.CONTACT_PHOTO_NONCE
+            );
+        } catch (CryptoException cryptoException) {
+            logger.error("Failed to encrypt data", cryptoException);
+            return null;
+        }
         try {
             BlobUploader blobUploader = this.apiService.createUploader(
                 imageData,
@@ -724,27 +760,19 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
     @Override
     public boolean restoreIdentity(final String backupString, final String password) throws Exception {
-        final IdentityBackupDecoder identityBackupDecoder = new IdentityBackupDecoder(backupString);
-        if (!identityBackupDecoder.decode(password)) {
-            return false;
-        }
-
-        return restoreIdentity(identityBackupDecoder.getIdentity(), identityBackupDecoder.getPrivateKey(), identityBackupDecoder.getPublicKey());
+        IdentityBackup.PlainBackupData decryptedBackup = IdentityBackup.decryptIdentityBackup(
+            password,
+            new IdentityBackup.EncryptedIdentityBackup(backupString)
+        );
+        return restoreIdentity(decryptedBackup.getThreemaId(), decryptedBackup.getClientKey());
     }
 
     @Override
-    public boolean restoreIdentity(@NonNull String identity, @NonNull byte[] privateKey, @NonNull byte[] publicKey) throws Exception {
-        IdentityStoreInterface temporaryIdentityStore = new IdentityStore(new PreferenceStoreInterfaceDevNullImpl());
-        //store identity without server group
-        temporaryIdentityStore.storeIdentity(
-            identity,
-            "",
-            publicKey,
-            privateKey
-        );
+    public boolean restoreIdentity(@NonNull String identity, @NonNull byte[] privateKey) throws Exception {
+        // TODO(ANDR-4067): There should be no need to create a dummy identity store here
         //fetching identity group
+        var temporaryIdentityStore =  new ReadonlyInMemoryIdentityStore(identity, "", privateKey);
         APIConnector.FetchIdentityPrivateResult result = this.apiConnector.fetchIdentityPrivate(temporaryIdentityStore);
-
         if (result == null) {
             throw new ThreemaException("fetching private identity data failed");
         }
@@ -755,7 +783,6 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         this.identityStore.storeIdentity(
             identity,
             result.serverGroup,
-            publicKey,
             privateKey
         );
 
@@ -781,7 +808,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
 
     @Override
-    public void setCredentials(LicenseService.Credentials credentials) {
+    public void setCredentials(LicenseCredentials credentials) {
         this.credentials = credentials;
     }
 
@@ -864,14 +891,15 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
-    public Date getLastRevocationKeySet() {
-        return this.preferenceStore.getDate(PreferenceStore.PREFS_LAST_REVOCATION_KEY_SET);
+    @Nullable
+    public Instant getLastRevocationKeySet() {
+        return this.preferenceStore.getInstant(PreferenceStore.PREFS_LAST_REVOCATION_KEY_SET);
     }
 
     @Override
     public void checkRevocationKey(boolean force) {
         logger.debug("checkRevocationKey (force={})", force);
-        Date lastSet = null;
+        Instant lastSet = null;
         try {
             //check if force = true or PREFS_REVOCATION_KEY_CHECKED is false or not set
             boolean check = force
@@ -902,6 +930,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
+    @NonNull
     public JSONObject createIdentityRequestDataJSON() throws JSONException {
         JSONObject baseObject = new JSONObject();
 

@@ -22,12 +22,12 @@
 package ch.threema.app.preference.service
 
 import ch.threema.app.multidevice.MultiDeviceManager
-import ch.threema.app.stores.PreferenceStoreInterface
+import ch.threema.app.stores.PreferenceStore
 import ch.threema.domain.taskmanager.TaskManager
 
 sealed class SynchronizedBooleanSetting(
     preferenceKey: String,
-    preferenceStore: PreferenceStoreInterface,
+    preferenceStore: PreferenceStore,
     multiDeviceManager: MultiDeviceManager,
     taskManager: TaskManager,
 ) : SynchronizedSetting<Boolean>(

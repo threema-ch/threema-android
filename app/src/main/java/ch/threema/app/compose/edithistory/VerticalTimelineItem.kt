@@ -138,7 +138,7 @@ fun VerticalTimelineItem(
 
 @Preview
 @Composable
-private fun VerticalTimelineItemPreview() {
+private fun VerticalTimelineItem_Preview() {
     VerticalTimelineItem(
         color = MaterialTheme.colorScheme.secondaryContainer,
         dotSize = 12.dp,

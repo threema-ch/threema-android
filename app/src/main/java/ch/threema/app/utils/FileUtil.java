@@ -385,10 +385,9 @@ public class FileUtil {
         return null;
     }
 
-    /*
+    /**
      * Check if Storage Access Framework is really available
      */
-
     private static boolean isMediaProviderSupported(Context context) {
         final PackageManager pm = context.getPackageManager();
         // Pick up provider with action string
@@ -402,27 +401,6 @@ public class FileUtil {
             }
         }
         return false;
-    }
-
-    /*
-     * Some content uri returned by systemUI file picker create intermittent permission problems
-     * To fix this, we convert it in a file uri
-     */
-    public static Uri getFixedContentUri(Context context, Uri inUri) {
-        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
-            if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(inUri.getScheme()) && inUri.toString().toUpperCase().contains("%3A")) {
-                String path = getRealPathFromURI(context, inUri);
-
-                if (!TestUtil.isEmptyOrNull(path)) {
-                    File file = new File(path);
-
-                    if (file.exists()) {
-                        return Uri.fromFile(file);
-                    }
-                }
-            }
-        }
-        return inUri;
     }
 
     @Nullable
@@ -922,5 +900,44 @@ public class FileUtil {
         }
 
         return true;
+    }
+
+    /**
+     * Logs the external storage state. In case a file is provided, the state specifically for this
+     * file is additionally logged if the provided file is on the external storage.
+     */
+    public static void logExternalStorageState(@Nullable File file) {
+        String storageState = Environment.getExternalStorageState();
+        if (isExternalStorageStateMounted(storageState)) {
+            logger.info("External storage state: {}", storageState);
+        } else {
+            logger.error("Unexpected external storage state: {}", storageState);
+        }
+
+        if (file != null && isExternalStorageFile(file)) {
+            String fileStorageState = Environment.getExternalStorageState(file);
+
+            if (isExternalStorageStateMounted(fileStorageState)) {
+                logger.info(
+                    "External storage state at '{}': {}",
+                    file.getAbsolutePath(),
+                    fileStorageState
+                );
+            } else {
+                logger.error(
+                    "Unexpected external storage state at '{}': {}",
+                    file.getAbsolutePath(),
+                    fileStorageState
+                );
+            }
+        }
+    }
+
+    private static boolean isExternalStorageStateMounted(@Nullable String storageState) {
+        return Environment.MEDIA_MOUNTED.equals(storageState);
+    }
+
+    private static boolean isExternalStorageFile(@NonNull File file) {
+        return file.getAbsolutePath().startsWith(Environment.getExternalStorageDirectory().getAbsolutePath());
     }
 }

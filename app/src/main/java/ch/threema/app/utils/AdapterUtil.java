@@ -32,6 +32,8 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.GroupModel;
 
+import static ch.threema.app.compose.conversation.models.ConversationNameStyleKt.INACTIVE_CONTACT_ALPHA;
+
 public class AdapterUtil {
 
     /**
@@ -48,7 +50,7 @@ public class AdapterUtil {
             if (contactModel != null) {
                 switch (contactModel.getState()) {
                     case INACTIVE:
-                        alpha = 0.4f;
+                        alpha = INACTIVE_CONTACT_ALPHA;
                         break;
 
                     case INVALID:
@@ -82,7 +84,7 @@ public class AdapterUtil {
 
         boolean isMemberOrUnknownGroup = true;
         if (groupModel != null) {
-            GroupModelData groupModelData = groupModel.getData().getValue();
+            GroupModelData groupModelData = groupModel.getData();
             if (groupModelData != null) {
                 isMemberOrUnknownGroup = groupModelData.isMember();
             }

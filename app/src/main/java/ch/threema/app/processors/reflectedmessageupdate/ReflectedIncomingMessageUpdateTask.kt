@@ -27,6 +27,7 @@ import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.Common.GroupIdentity
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.CONTACT
@@ -83,7 +84,7 @@ class ReflectedIncomingMessageUpdateTask(
 
     private fun applyContactMessageReadUpdate(
         messageId: MessageId,
-        senderIdentity: String,
+        senderIdentity: Identity,
         readAt: Long,
     ) {
         val abstractMessageModel = messageService.getContactMessageModel(messageId, senderIdentity)

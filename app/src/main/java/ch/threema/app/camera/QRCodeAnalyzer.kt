@@ -22,7 +22,6 @@
 package ch.threema.app.camera
 
 import android.graphics.ImageFormat
-import android.os.Build
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import ch.threema.base.utils.LoggingUtil
@@ -35,11 +34,7 @@ private val logger = LoggingUtil.getThreemaLogger("QRCodeAnalyzer")
 class QRCodeAnalyzer(private val onDecodeQRCode: (decodeQRCodeState: DecodeQRCodeState) -> Unit) :
     ImageAnalysis.Analyzer {
 
-    private var formats: List<Int> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        listOf(ImageFormat.YUV_420_888, ImageFormat.YUV_422_888, ImageFormat.YUV_444_888)
-    } else {
-        listOf(ImageFormat.YUV_420_888)
-    }
+    private val formats = listOf(ImageFormat.YUV_420_888, ImageFormat.YUV_422_888, ImageFormat.YUV_444_888)
     private val reader = MultiFormatReader().apply {
         setHints(
             mapOf(

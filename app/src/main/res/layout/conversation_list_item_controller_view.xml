@@ -14,9 +14,10 @@
         android:maxHeight="@dimen/avatar_size_small"
         android:scaleType="centerCrop"
         android:visibility="gone"
-        tools:background="?attr/colorTertiaryContainer"
+        tools:background="?attr/colorSecondary"
         tools:src="@drawable/ic_play"
-        tools:visibility="visible" />
+        tools:tint="?attr/colorOnSecondary"
+        tools:visibility="gone" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress"
@@ -48,7 +49,8 @@
         app:indicatorInset="@dimen/conversation_controller_progress_stroke_width"
         app:indicatorSize="@dimen/conversation_controller_progress_size"
         app:showAnimationBehavior="inward"
-        app:trackColor="?attr/colorPrimaryContainer"
-        app:trackThickness="@dimen/conversation_controller_progress_stroke_width" />
+        app:trackColor="?attr/colorOnSecondary"
+        app:trackThickness="@dimen/conversation_controller_progress_stroke_width"
+        tools:visibility="visible" />
 
 </merge>

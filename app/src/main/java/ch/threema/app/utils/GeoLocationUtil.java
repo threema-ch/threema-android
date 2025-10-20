@@ -33,7 +33,6 @@ import android.os.Message;
 import android.widget.TextView;
 
 import org.maplibre.android.constants.GeometryConstants;
-import org.maplibre.android.geometry.LatLng;
 
 import org.slf4j.Logger;
 
@@ -50,12 +49,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
-import ch.threema.app.activities.MapActivity;
+import ch.threema.app.location.MapActivity;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.location.Poi;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.LocationDataModel;
+
+import static ch.threema.app.location.LocationExtensionsKt.toCoordinates;
 
 public class GeoLocationUtil {
     private static final Logger logger = LoggingUtil.getThreemaLogger("GeoLocationUtil");
@@ -292,7 +293,7 @@ public class GeoLocationUtil {
 
         Intent intent = new Intent(context, MapActivity.class);
         IntentDataUtil.append(
-            new LatLng(locationData.latitude, locationData.longitude),
+            toCoordinates(locationData),
             context.getString(R.string.app_name),
             locationData.poiNameOrNull,
             locationData.poiAddressOrNull,

@@ -33,13 +33,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import ch.threema.app.compose.common.extensions.spNoScale
+import ch.threema.app.compose.conversation.models.UnreadState
 import ch.threema.app.compose.theme.ThreemaThemePreview
 
 /**
@@ -80,7 +80,7 @@ internal fun UnreadCounter(
     Box(
         modifier
             .clip(RoundedCornerShape(100))
-            .background(Color.Red)
+            .background(MaterialTheme.colorScheme.error)
             .sizeIn(
                 minWidth = DIAMETER_PREFERRED.dp,
                 minHeight = DIAMETER_PREFERRED.dp,
@@ -100,7 +100,7 @@ internal fun UnreadCounter(
                     includeFontPadding = false,
                 ),
             ),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onError,
         )
     }
 }

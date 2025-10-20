@@ -32,16 +32,16 @@ import ch.threema.storage.models.AbstractMessageModel;
  */
 public interface MessageListener {
     @AnyThread
-    void onNew(AbstractMessageModel newMessage);
+    default void onNew(AbstractMessageModel newMessage) {}
 
     @AnyThread
-    void onModified(List<AbstractMessageModel> modifiedMessageModel);
+    default void onModified(List<AbstractMessageModel> modifiedMessageModel) {}
 
     @AnyThread
-    void onRemoved(AbstractMessageModel removedMessageModel);
+    default void onRemoved(AbstractMessageModel removedMessageModel) {}
 
     @AnyThread
-    void onRemoved(List<AbstractMessageModel> removedMessageModels);
+    default void onRemoved(List<AbstractMessageModel> removedMessageModels) {}
 
     @AnyThread
     default void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {}

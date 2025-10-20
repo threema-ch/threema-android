@@ -178,12 +178,12 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 
 
     public interface DialogClickListener {
-        void onYes(String tag, Object data);
+        void onYes(String tag, @Nullable Object data);
 
-        default void onNo(String tag, Object data) {
+        default void onNo(String tag, @Nullable Object data) {
         }
 
-        default void onNeutral(String tag, Object data) {
+        default void onNeutral(String tag, @Nullable Object data) {
             // optional interface
         }
     }
@@ -246,7 +246,7 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 
         final String tag = this.getTag();
 
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
 
         if (TestUtil.isEmptyOrNull(titleString)) {
             if (title != 0) {

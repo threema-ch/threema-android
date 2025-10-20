@@ -23,35 +23,71 @@ package ch.threema.storage.databaseupdate;
 
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import ch.threema.storage.DatabaseService;
-import ch.threema.storage.factories.ModelFactory;
+import java.util.stream.Stream;
 
 public class DatabaseUpdateToVersion69 implements DatabaseUpdate {
     public static final int VERSION = 69;
 
-    private final DatabaseService databaseService;
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion69(DatabaseService databaseService, SQLiteDatabase sqLiteDatabase) {
-        this.databaseService = databaseService;
+    public DatabaseUpdateToVersion69(SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 
     @Override
     public void run() {
-        final ModelFactory[] modelFactories = new ModelFactory[]{
-            this.databaseService.getGroupInviteModelFactory(),
-            this.databaseService.getOutgoingGroupJoinRequestModelFactory(),
-            this.databaseService.getIncomingGroupJoinRequestModelFactory()
-        };
+        // redo table init in case internal tester had different previous versions default flag, invalidated flag etc.
+        dropTables();
+        createGroupInviteTable();
+        createOutgoingGroupJoinRequestTable();
+        createIncomingGroupJoinRequestModelFactory();
+    }
 
-        for (ModelFactory factory : modelFactories) {
-            // redo table init in case internal tester had different previous versions default flag, invlaidated flag etc.
-            this.sqLiteDatabase.rawExecSQL("DROP TABLE IF EXISTS `" + factory.getTableName() + "`");
-            for (String statement : factory.getStatements()) {
-                this.sqLiteDatabase.rawExecSQL(statement);
-            }
-        }
+    private void dropTables() {
+        // dropping the tables also removes the indices: https://www.sqlite.org/lang_droptable.html
+        Stream.of(
+            "group_invite_model",
+            "incoming_group_join_request",
+            "group_join_request"
+        ).forEach(table -> sqLiteDatabase.rawExecSQL("DROP TABLE IF EXISTS `" + table + "`;"));
+    }
+
+    private void createGroupInviteTable() {
+        sqLiteDatabase.rawExecSQL("CREATE TABLE `group_invite_model` ( " +
+            "`group_invite_index_id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "`group_id` INTEGER, " +
+            "`default_flag` BOOLEAN, " +
+            "`token` VARCHAR, " +
+            "`invite_name` TEXT, " +
+            "`original_group_name` TEXT, " +
+            "`manual_confirmation` BOOLEAN, " +
+            "`expiration_date` DATETIME NULL, " +
+            "`is_invalidated` BOOLEAN FALSE " +
+            ")");
+    }
+
+    private void createOutgoingGroupJoinRequestTable() {
+        sqLiteDatabase.rawExecSQL("CREATE TABLE IF NOT EXISTS `group_join_request` ( " +
+            "`outgoing_request_index_id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "`token` VARCHAR, " +
+            "`group_name` TEXT, " +
+            "`message` TEXT, " +
+            "`admin_identity` VARCHAR, " +
+            "`request_time` DATETIME, " +
+            "`status` VARCHAR, " +
+            "`group_api_id` INTEGER NULL " +
+            ")");
+    }
+
+    private void createIncomingGroupJoinRequestModelFactory() {
+        sqLiteDatabase.rawExecSQL("CREATE TABLE IF NOT EXISTS`incoming_group_join_request` ( " +
+            "`incoming_request_index_id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+            "`group_invite` INTEGER, " +
+            "`message` TEXT, " +
+            "`requesting_identity` VARCHAR, " +
+            "`request_time` DATETIME, " +
+            "`response_status` VARCHAR " +
+            ")");
     }
 
     @Override

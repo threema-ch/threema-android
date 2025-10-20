@@ -21,13 +21,17 @@
 
 package ch.threema.app.startup
 
+import ch.threema.app.startup.models.AppSystem
+import ch.threema.app.startup.models.SystemStatus
 import ch.threema.app.systemupdates.SystemUpdateState
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.common.DelegateStateFlow
-import ch.threema.common.await
 import ch.threema.common.combineStates
+import ch.threema.common.mapState
 import ch.threema.common.stateFlowOf
 import ch.threema.storage.DatabaseState
+import kotlin.collections.component1
+import kotlin.collections.component2
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -36,48 +40,111 @@ import kotlinx.coroutines.flow.update
 private val logger = LoggingUtil.getThreemaLogger("AppStartupMonitorImpl")
 
 class AppStartupMonitorImpl : AppStartupMonitor {
-    private val databaseStateFlow = DelegateStateFlow(stateFlowOf(DatabaseState.INIT))
-    private val systemUpdateStateFlow = DelegateStateFlow(stateFlowOf(SystemUpdateState.INIT))
-    private val pendingSystems = DelegateStateFlow(stateFlowOf(allSystems()))
+    private val serviceManagerStateFlow = MutableStateFlow(SystemStatus.PENDING)
+    private val remoteSecretStateFlow = MutableStateFlow(SystemStatus.UNKNOWN)
+    private val databaseStateFlow = DelegateStateFlow(stateFlowOf(SystemStatus.UNKNOWN))
+    private val systemUpdateStateFlow = DelegateStateFlow(stateFlowOf(SystemStatus.UNKNOWN))
+    private val systemStatuses = DelegateStateFlow(createInitialPendingSystemsFlow())
 
-    private val errors = MutableStateFlow(emptySet<AppStartupMonitor.AppStartupError>())
+    private fun createInitialPendingSystemsFlow() =
+        remoteSecretStateFlow.mapState { remoteSecretState ->
+            mapOf(
+                AppSystem.REMOTE_SECRET to remoteSecretState,
+                AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
+                AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
+            )
+        }
 
-    fun init(databaseStateFlow: StateFlow<DatabaseState>, systemUpdateStateFlow: StateFlow<SystemUpdateState>) {
-        this.databaseStateFlow.delegate = databaseStateFlow
-        this.systemUpdateStateFlow.delegate = systemUpdateStateFlow
+    private val errors = MutableStateFlow(emptySet<AppStartupError>())
 
-        pendingSystems.delegate = combineStates(
+    suspend fun whileFetchingRemoteSecret(block: suspend () -> Unit) {
+        remoteSecretStateFlow.value = SystemStatus.PENDING
+        block()
+        remoteSecretStateFlow.value = SystemStatus.READY
+    }
+
+    fun onServiceManagerReady(
+        databaseStateFlow: StateFlow<DatabaseState>,
+        systemUpdateStateFlow: StateFlow<SystemUpdateState>,
+    ) {
+        this.serviceManagerStateFlow.value = SystemStatus.READY
+        this.databaseStateFlow.delegate = databaseStateFlow.mapState { databaseState ->
+            databaseState.toSystemStatus()
+        }
+        this.systemUpdateStateFlow.delegate = systemUpdateStateFlow.mapState { systemUpdateState ->
+            systemUpdateState.toSystemStatus()
+        }
+
+        systemStatuses.delegate = combineStates(
             databaseStateFlow,
             systemUpdateStateFlow,
         ) { databaseState, systemUpdateState ->
+            buildMap {
+                put(AppSystem.SERVICE_MANAGER, SystemStatus.READY)
+                put(AppSystem.REMOTE_SECRET, SystemStatus.READY)
+                put(AppSystem.DATABASE_UPDATES, databaseState.toSystemStatus())
+                put(AppSystem.SYSTEM_UPDATES, systemUpdateState.toSystemStatus())
+            }
+        }
+
+        // the ServiceManager becoming ready implies that the Remote Secret is also ready
+        this.remoteSecretStateFlow.value = SystemStatus.READY
+    }
+
+    private fun DatabaseState.toSystemStatus() =
+        when (this) {
+            DatabaseState.INIT,
+            DatabaseState.PREPARING,
+            -> SystemStatus.PENDING
+            DatabaseState.READY -> SystemStatus.READY
+        }
+
+    private fun SystemUpdateState.toSystemStatus() =
+        when (this) {
+            SystemUpdateState.INIT,
+            SystemUpdateState.PREPARING,
+            -> SystemStatus.PENDING
+            SystemUpdateState.READY -> SystemStatus.READY
+        }
+
+    fun onServiceManagerDestroyed() {
+        // Reset to a static state flow first so that the following updates appear atomic from the outside
+        systemStatuses.delegate = stateFlowOf(
+            mapOf(
+                AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                AppSystem.REMOTE_SECRET to SystemStatus.UNKNOWN,
+                AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
+                AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
+            ),
+        )
+
+        serviceManagerStateFlow.value = SystemStatus.PENDING
+        remoteSecretStateFlow.value = SystemStatus.UNKNOWN
+        databaseStateFlow.delegate = stateFlowOf(SystemStatus.UNKNOWN)
+        systemUpdateStateFlow.delegate = stateFlowOf(SystemStatus.UNKNOWN)
+        systemStatuses.delegate = createInitialPendingSystemsFlow()
+    }
+
+    override fun observeSystems() = systemStatuses
+
+    override fun observePendingSystems(): StateFlow<Set<AppSystem>> =
+        systemStatuses.mapState { statuses ->
             buildSet {
-                if (databaseState != DatabaseState.READY) {
-                    add(AppStartupMonitor.AppSystem.DATABASE_UPDATES)
-                }
-                if (systemUpdateState != SystemUpdateState.READY) {
-                    add(AppStartupMonitor.AppSystem.SYSTEM_UPDATES)
+                statuses.forEach { (system, status) ->
+                    if (status == SystemStatus.PENDING) {
+                        add(system)
+                    }
                 }
             }
         }
-    }
-
-    fun reset() {
-        pendingSystems.delegate = stateFlowOf(allSystems())
-        databaseStateFlow.delegate = stateFlowOf(DatabaseState.INIT)
-        systemUpdateStateFlow.delegate = stateFlowOf(SystemUpdateState.INIT)
-    }
-
-    override fun observePendingSystems() = pendingSystems
 
     override fun isReady(): Boolean =
-        databaseStateFlow.value == DatabaseState.READY &&
-            systemUpdateStateFlow.value == SystemUpdateState.READY &&
-            errors.value.isEmpty()
+        systemStatuses.value.all { (_, status) -> status == SystemStatus.READY } && errors.value.isEmpty()
 
-    override suspend fun awaitSystem(system: AppStartupMonitor.AppSystem) {
-        when (system) {
-            AppStartupMonitor.AppSystem.DATABASE_UPDATES -> databaseStateFlow.await(DatabaseState.READY)
-            AppStartupMonitor.AppSystem.SYSTEM_UPDATES -> systemUpdateStateFlow.await(SystemUpdateState.READY)
+    override suspend fun awaitSystem(system: AppSystem) {
+        systemStatuses.first { statuses ->
+            statuses[system] == SystemStatus.READY
         }
     }
 
@@ -86,25 +153,31 @@ class AppStartupMonitorImpl : AppStartupMonitor {
      * If an app startup error is reported, this will never return, as the app is never considered "ready" in that case.
      */
     override suspend fun awaitAll() {
-        AppStartupMonitor.AppSystem.entries.forEach { system ->
-            awaitSystem(system)
+        systemStatuses.first { statuses ->
+            statuses.all { (_, status) ->
+                status == SystemStatus.READY
+            }
         }
         errors.first { it.isEmpty() }
     }
 
-    override fun observeErrors(): StateFlow<Set<AppStartupMonitor.AppStartupError>> = errors
+    override fun observeErrors(): StateFlow<Set<AppStartupError>> = errors
 
     override fun hasErrors() = errors.value.isNotEmpty()
 
     /**
      * Report an error that occurred during the startup sequence of the app, which prevents the app from being used.
      */
-    fun reportAppStartupError(code: AppStartupMonitor.AppStartupError) {
-        logger.warn("Startup error reported, code {}", code)
-        errors.update { it + code }
+    fun reportAppStartupError(error: AppStartupError) {
+        logger.warn("Startup error reported, {}", error)
+        errors.update { it + error }
     }
 
-    companion object {
-        private fun allSystems() = AppStartupMonitor.AppSystem.entries.toSet()
+    fun reportUnexpectedAppStartupError(code: String) {
+        reportAppStartupError(AppStartupError.Unexpected(code))
+    }
+
+    fun clearTemporaryStartupErrors() {
+        errors.update { it.filterNot(AppStartupError::isTemporary).toSet() }
     }
 }

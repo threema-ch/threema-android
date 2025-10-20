@@ -35,12 +35,9 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.NamedFileProvider;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.services.AppDirectoryProvider;
 import ch.threema.app.services.UserService;
 import ch.threema.logging.backend.DebugLogFileBackend;
 import ch.threema.storage.models.ContactModel;
-
-import static androidx.core.content.ContextCompat.startActivity;
 
 public class ShareUtil {
     public static void shareContact(Context context, ContactModel contact) {
@@ -66,21 +63,12 @@ public class ShareUtil {
         }
     }
 
-    public static void shareTextString(Context context, String text) {
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("text/plain");
-        shareIntent.putExtra(Intent.EXTRA_TEXT, text);
-        startActivity(context, Intent.createChooser(shareIntent, context.getString(R.string.share_via)), null);
-    }
-
     /**
      * Share the logfile with another application
      * @return True on success, false if the debug log file could not be created
      */
     public static boolean shareLogfile(@NonNull Context context) {
-        var tempDirectory = new AppDirectoryProvider(context).getExternalTempDirectory();
-
-        File zipFile = DebugLogFileBackend.getZipFile(tempDirectory);
+        File zipFile = DebugLogFileBackend.createZipFile(context);
         if (zipFile == null) {
             return false;
         }

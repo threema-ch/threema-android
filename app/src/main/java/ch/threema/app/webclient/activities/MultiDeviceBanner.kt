@@ -124,7 +124,7 @@ fun MultiDeviceBanner(
 
 @PreviewThreemaAll
 @Composable
-private fun MultiDeviceBannerPreview() {
+private fun MultiDeviceBanner_Preview() {
     ThreemaThemePreview {
         MultiDeviceBanner(
             onClick = {},

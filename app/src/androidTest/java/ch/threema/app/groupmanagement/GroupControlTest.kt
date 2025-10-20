@@ -36,7 +36,7 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -208,7 +208,7 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
 
     private suspend fun setupAndProcessMessage(
         message: AbstractGroupMessage,
-        identityStore: IdentityStoreInterface,
+        identityStore: IdentityStore,
     ) {
         // Start home activity and navigate to chat section
         launchActivity<HomeActivity>()

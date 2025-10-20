@@ -26,19 +26,19 @@ import android.text.format.DateUtils
 import androidx.annotation.AttrRes
 import androidx.annotation.DimenRes
 import androidx.annotation.DrawableRes
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.ThreemaApplication.Companion.requireServiceManager
-import ch.threema.app.activities.StateFlowViewModel
+import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.unlinking.DropDeviceResult
 import ch.threema.app.multidevice.unlinking.DropDevicesIntent
 import ch.threema.app.stores.PreferenceStore
-import ch.threema.app.stores.PreferenceStoreInterface
 import ch.threema.app.tasks.DropDevicesStepsTask
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.common.combineStates
 import ch.threema.domain.protocol.connection.data.D2dMessage
 import ch.threema.domain.protocol.connection.data.DeviceId
 import ch.threema.domain.taskmanager.NetworkException
@@ -49,21 +49,19 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import okhttp3.internal.toImmutableList
 
 private val logger = LoggingUtil.getThreemaLogger("LinkedDevicesViewModel")
 
-class LinkedDevicesViewModel : StateFlowViewModel() {
-    private val serviceManager by lazy { requireServiceManager() }
-    private val mdManager: MultiDeviceManager by lazy { serviceManager.multiDeviceManager }
-    private val taskCreator: TaskCreator by lazy { serviceManager.taskCreator }
-    private val preferenceStore: PreferenceStoreInterface by lazy { serviceManager.preferenceStore }
-
-    private val _state = MutableStateFlow<LinkedDevicesUiState>(LinkedDevicesUiState.Initial)
-    val state: StateFlow<LinkedDevicesUiState> = _state.asStateFlow()
+class LinkedDevicesViewModel(
+    private val serviceManager: ServiceManager,
+    private val mdManager: MultiDeviceManager,
+    private val taskCreator: TaskCreator,
+    private val preferenceStore: PreferenceStore,
+) : ViewModel() {
+    private val _viewState = MutableStateFlow<LinkedDevicesUiState>(LinkedDevicesUiState.Initial)
+    val viewState: StateFlow<LinkedDevicesUiState> = _viewState.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -71,12 +69,11 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
     private val isMultiDeviceEnabled = MutableStateFlow(ConfigUtils.isMultiDeviceEnabled(ThreemaApplication.getAppContext()))
 
     val isLinkDeviceButtonEnabled: StateFlow<Boolean> =
-        combine(isMultiDeviceEnabled, state, isLoading) { isMultiDeviceEnabled, state, isLoading ->
+        combineStates(isMultiDeviceEnabled, viewState, isLoading) { isMultiDeviceEnabled, state, isLoading ->
             isMultiDeviceEnabled &&
                 !isLoading &&
                 (state is LinkedDevicesUiState.NoDevices || (state is LinkedDevicesUiState.Devices && state.hasFreeSlotsInDeviceGroup))
         }
-            .stateInViewModel(initialValue = false)
 
     private val _onDropDeviceFailed: MutableSharedFlow<Unit> = MutableSharedFlow()
     val onDropDeviceFailed: SharedFlow<Unit> = _onDropDeviceFailed.asSharedFlow()
@@ -92,7 +89,7 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
         if (mdManager.isMultiDeviceActive) {
             updateDeviceList()
         } else {
-            _state.update { LinkedDevicesUiState.NoDevices }
+            _viewState.update { LinkedDevicesUiState.NoDevices }
         }
     }
 
@@ -112,7 +109,7 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
             if (linkedDevices.isNotEmpty()) {
                 emitDeviceListState(linkedDevices)
             } else {
-                _state.update { LinkedDevicesUiState.NoDevices }
+                _viewState.update { LinkedDevicesUiState.NoDevices }
             }
         }.apply {
             invokeOnCompletion { throwable ->
@@ -129,15 +126,14 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
 
         val maxDeviceSlots: Long = preferenceStore.getLong(PreferenceStore.PREFS_MD_MEDIATOR_MAX_SLOTS)
         val hasFreeSlotsInDeviceGroup: Boolean = (linkedDevices.size + 1) < maxDeviceSlots // + 1 because we need to count ourselves too
-        val deviceListItems: List<LinkedDevicesAdapter.ListItem> =
-            mutableListOf<LinkedDevicesAdapter.ListItem>().apply {
-                if (!hasFreeSlotsInDeviceGroup) {
-                    add(LinkedDevicesAdapter.ListItem.DeviceAmountWarning(maxDeviceSlots.toInt()))
-                }
-                addAll(sortedDevices.map(LinkedDevicesAdapter.ListItem::Device))
-            }.toImmutableList()
+        val deviceListItems: List<LinkedDevicesAdapter.ListItem> = buildList {
+            if (!hasFreeSlotsInDeviceGroup) {
+                add(LinkedDevicesAdapter.ListItem.DeviceAmountWarning(maxDeviceSlots.toInt()))
+            }
+            addAll(sortedDevices.map(LinkedDevicesAdapter.ListItem::Device))
+        }
 
-        _state.value = LinkedDevicesUiState.Devices(
+        _viewState.value = LinkedDevicesUiState.Devices(
             maxDeviceSlots = maxDeviceSlots,
             hasFreeSlotsInDeviceGroup = hasFreeSlotsInDeviceGroup,
             deviceListItems = deviceListItems,
@@ -191,17 +187,17 @@ class LinkedDevicesViewModel : StateFlowViewModel() {
         if (remainingLinkedDevices.isNotEmpty()) {
             emitDeviceListState(remainingLinkedDevices)
         } else {
-            _state.emit(LinkedDevicesUiState.NoDevices)
+            _viewState.value = LinkedDevicesUiState.NoDevices
         }
     }
 
     fun onPreferenceChanged(key: String, value: Any?) {
-        val currentState = _state.value
+        val currentState = _viewState.value
         if (key != PreferenceStore.PREFS_MD_MEDIATOR_MAX_SLOTS || currentState !is LinkedDevicesUiState.Devices) {
             return
         }
         val updatedMaxSlots: Long = (value as? Long?) ?: 0L
-        _state.update {
+        _viewState.update {
             currentState.copy(maxDeviceSlots = updatedMaxSlots)
         }
     }

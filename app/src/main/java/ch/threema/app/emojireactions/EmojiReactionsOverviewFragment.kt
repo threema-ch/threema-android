@@ -34,7 +34,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
+import ch.threema.app.services.ContactService
+import ch.threema.app.services.MessageService
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
@@ -44,7 +45,9 @@ import ch.threema.data.models.EmojiReactionData
 import ch.threema.storage.models.AbstractMessageModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 private const val RECYCLER_VIEW_STATE = "recyclerViewState"
 
@@ -57,6 +60,9 @@ class EmojiReactionsOverviewFragment(
     init {
         logScreenVisibility(logger)
     }
+
+    private val messageService: MessageService by inject()
+    private val contactService: ContactService by inject()
 
     private val emojiReactionsViewModel: EmojiReactionsViewModel by activityViewModels()
     private lateinit var emojiReactionsOverviewListAdapter: EmojiReactionsOverviewListAdapter
@@ -83,6 +89,8 @@ class EmojiReactionsOverviewFragment(
         super.onViewCreated(view, savedInstanceState)
 
         emojiReactionsOverviewListAdapter = EmojiReactionsOverviewListAdapter(
+            messageService,
+            contactService,
             messageModel = messageModel,
             onItemClickListener = this,
         )
@@ -94,9 +102,9 @@ class EmojiReactionsOverviewFragment(
         val targetEmojiSequence = emojiSequence
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                emojiReactionsViewModel.emojiReactionsUiState.collect { uiState ->
+                emojiReactionsViewModel.viewState.filterNotNull().collect { viewState ->
                     val emojiReactionsForSequence =
-                        uiState.emojiReactions.filter { it.emojiSequence == targetEmojiSequence }
+                        viewState.emojiReactions.filter { it.emojiSequence == targetEmojiSequence }
                     emojiReactionsOverviewListAdapter.submitList(emojiReactionsForSequence)
                 }
             }
@@ -109,7 +117,6 @@ class EmojiReactionsOverviewFragment(
     }
 
     override fun onRemoveClick(data: EmojiReactionData, position: Int) {
-        val messageService = ThreemaApplication.requireServiceManager().messageService
         CoroutineScope(Dispatchers.Default).launch {
             messageService.sendEmojiReaction(
                 messageModel,

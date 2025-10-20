@@ -21,10 +21,7 @@
 
 package ch.threema.domain.helpers;
 
-import com.neilalexander.jnacl.NaCl;
-
-import java.util.Arrays;
-import java.util.Objects;
+import ch.threema.base.crypto.NaCl;
 
 import androidx.annotation.NonNull;
 import ch.threema.base.utils.Utils;
@@ -34,7 +31,8 @@ import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
+import ch.threema.libthreema.CryptoException;
 
 public class DummyUsers {
     public static final User ALICE = new User("000ALICE", Utils.hexStringToByteArray("6eda2ebb8527ff5bd0e8719602f710c13e162a3be612de0ad2a2ff66f5050630"));
@@ -53,22 +51,33 @@ public class DummyUsers {
         .deleteMessages(true)
         .build();
 
-    public static IdentityStoreInterface getIdentityStoreForUser(User user) {
+    @NonNull
+    public static IdentityStore getIdentityStoreForUser(@NonNull User user) {
         return new InMemoryIdentityStore(user.identity, null, user.privateKey, user.identity);
     }
 
+    @NonNull
     public static Contact getContactForUser(@NonNull User user) {
-        return new DummyContact(user.identity, NaCl.derivePublicKey(user.privateKey));
+        try {
+            return new DummyContact(user.identity, NaCl.derivePublicKey(user.privateKey));
+        } catch (CryptoException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    @NonNull
     public static BasicContact getBasicContactForUser(@NonNull User user) {
-        return BasicContact.javaCreate(
-            user.identity,
-            NaCl.derivePublicKey(user.privateKey),
-            featureMask,
-            IdentityState.ACTIVE,
-            IdentityType.NORMAL
-        );
+        try {
+            return BasicContact.javaCreate(
+                user.identity,
+                NaCl.derivePublicKey(user.privateKey),
+                featureMask,
+                IdentityState.ACTIVE,
+                IdentityType.NORMAL
+            );
+        } catch (CryptoException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static class User {

@@ -4,13 +4,13 @@
     android:id="@+id/qr_popup"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/qrcode_min_margin">
+    android:padding="@dimen/grid_unit_x2">
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/qr_popup_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="@dimen/qrcode_min_margin"
+        android:padding="@dimen/grid_unit_x2"
         app:cardCornerRadius="24dp"
         app:strokeColor="@android:color/white"
         app:strokeWidth="3dp"

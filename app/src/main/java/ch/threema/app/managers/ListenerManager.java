@@ -25,12 +25,8 @@ package ch.threema.app.managers;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import ch.threema.app.grouplinks.GroupJoinResponseListener;
-import ch.threema.app.grouplinks.IncomingGroupJoinRequestListener;
 import ch.threema.app.listeners.AppIconListener;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.listeners.BallotVoteListener;
@@ -66,23 +62,7 @@ public class ListenerManager {
 
     public static class TypedListenerManager<T> {
         private final List<T> listeners = new ArrayList<>();
-        private final Map<String, Integer> tags = new HashMap<>();
         private boolean enabled = true;
-
-        public void add(T l, String tag) {
-            synchronized (this.listeners) {
-                Integer pos = this.tags.get(tag);
-                if (pos != null && pos >= 0) {
-                    //remove listener first
-                    this.listeners.remove(this.listeners.get(pos));
-                }
-
-                addInternal(this.listeners, l, false);
-
-                //save tagged position
-                this.tags.put(tag, this.listeners.size() - 1);
-            }
-        }
 
         public void add(T l) {
             addInternal(this.listeners, l, false);
@@ -160,7 +140,7 @@ public class ListenerManager {
 
         public void enabled(boolean enabled) {
             if (this.enabled != enabled) {
-                logger.debug(this.getClass() + " " + (enabled ? "enabled" : "disabled"));
+                logger.debug("{} {}", this.getClass(), (enabled ? "enabled" : "disabled"));
                 this.enabled = enabled;
             }
         }
@@ -192,8 +172,6 @@ public class ListenerManager {
     public static final TypedListenerManager<MessagePlayerListener> messagePlayerListener = new TypedListenerManager<>();
     public static final TypedListenerManager<NewSyncedContactsListener> newSyncedContactListener = new TypedListenerManager<>();
     public static final TypedListenerManager<QRCodeScanListener> qrCodeScanListener = new TypedListenerManager<>();
-    public static final TypedListenerManager<GroupJoinResponseListener> groupJoinResponseListener = new TypedListenerManager<>();
-    public static final TypedListenerManager<IncomingGroupJoinRequestListener> incomingGroupJoinRequestListener = new TypedListenerManager<>();
     public static final TypedListenerManager<ContactCountListener> contactCountListener = new TypedListenerManager<>();
     public static final TypedListenerManager<EditMessageListener> editMessageListener = new TypedListenerManager<>();
 }

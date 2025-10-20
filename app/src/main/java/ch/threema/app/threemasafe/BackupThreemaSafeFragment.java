@@ -233,8 +233,9 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
             ((TextView) fragmentView.findViewById(R.id.server_retention)).setText(String.format(getString(R.string.number_of_days), preferenceService.getThreemaSafeServerRetention()));
 
             TextView backupResult = fragmentView.findViewById(R.id.backup_result);
-            if (preferenceService.getThreemaSafeBackupDate() != null) {
-                ((TextView) fragmentView.findViewById(R.id.backup_date)).setText(LocaleUtil.formatTimeStampString(getActivity(), preferenceService.getThreemaSafeBackupDate().getTime(), true));
+            var threemaSafeBackupTimestamp = preferenceService.getThreemaSafeBackupTimestamp();
+            if (threemaSafeBackupTimestamp != null) {
+                ((TextView) fragmentView.findViewById(R.id.backup_date)).setText(LocaleUtil.formatTimeStampString(getActivity(), threemaSafeBackupTimestamp, true));
                 ((TextView) fragmentView.findViewById(R.id.backup_size)).setText(Formatter.formatFileSize(getActivity(), preferenceService.getThreemaSafeBackupSize()));
                 backupResult.setText(getResources().getStringArray(R.array.threema_safe_error)[preferenceService.getThreemaSafeErrorCode()]);
                 if (preferenceService.getThreemaSafeErrorCode() == ThreemaSafeService.ERROR_CODE_OK) {

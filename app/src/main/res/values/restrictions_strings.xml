@@ -48,6 +48,7 @@
     <string name="restriction__keep_messages_days">th_keep_messages_days</string>
     <string name="restriction__job_title">th_job_title</string>
     <string name="restriction__department">th_department</string>
+    <string name="restriction__enable_remote_secret">th_enable_remote_secret</string>
 
     <!-- strings for policy controller -->
     <string name="restriction_license_username">Corporate License Username</string>
@@ -144,5 +145,7 @@
     <string name="restriction_job_title_desc">Job title of the user (visible in Work cockpit and API)</string>
     <string name="restriction_department">Department</string>
     <string name="restriction_department_desc">Department of the user (visible in Work cockpit and API)</string>
+    <string name="restriction_enable_remote_secret">DualLock</string>
+    <string name="restriction_enable_remote_secret_description">If set to true, DualLock is activated</string>
 
 </resources>

@@ -62,13 +62,6 @@ public abstract class ActionBroadcastReceiver extends BroadcastReceiver {
         this.instantiate();
     }
 
-    final protected boolean requiredInstances() {
-        if (!this.checkInstances()) {
-            this.instantiate();
-        }
-        return this.checkInstances();
-    }
-
     protected boolean checkInstances() {
         return TestUtil.required(
             this.messageService,

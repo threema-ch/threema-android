@@ -25,7 +25,7 @@ import ch.threema.app.utils.ContactUtil
 
 fun MessageReceiver<*>.isGatewayChat(): Boolean =
     if (this is ContactMessageReceiver) {
-        ContactUtil.isGatewayContact(contact)
+        contact?.identity?.let { ContactUtil.isGatewayContact(it) } ?: false
     } else {
         false
     }

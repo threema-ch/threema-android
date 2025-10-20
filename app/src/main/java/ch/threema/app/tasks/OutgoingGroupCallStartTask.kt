@@ -27,12 +27,13 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.types.Identity
 import java.util.Date
 
 class OutgoingGroupCallStartTask(
     override val groupId: GroupId,
-    override val creatorIdentity: String,
-    override val recipientIdentities: Set<String>,
+    override val creatorIdentity: Identity,
+    override val recipientIdentities: Set<Identity>,
     private val protocolVersion: UInt,
     private val gck: ByteArray,
     private val sfuBaseUrl: String,

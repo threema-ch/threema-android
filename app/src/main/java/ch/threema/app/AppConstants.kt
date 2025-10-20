@@ -28,35 +28,25 @@ object AppConstants {
     const val INTENT_DATA_TEXT = "text"
     const val INTENT_DATA_ID_BACKUP = "idbackup"
     const val INTENT_DATA_ID_BACKUP_PW = "idbackuppw"
-    const val INTENT_DATA_PASSPHRASE_CHECK = "check"
     const val INTENT_DATA_IS_FORWARD = "is_forward"
     const val INTENT_DATA_TIMESTAMP = "timestamp"
     const val INTENT_DATA_EDITFOCUS = "editfocus"
     const val INTENT_DATA_GROUP_DATABASE_ID = "group"
-    const val INTENT_DATA_GROUP_API = "group_api"
-    const val INTENT_DATA_GROUP_LINK = "group_link"
     const val INTENT_DATA_DISTRIBUTION_LIST_ID = "distribution_list"
     const val INTENT_DATA_ARCHIVE_FILTER = "archiveFilter"
     const val INTENT_DATA_QRCODE = "qrcodestring"
-    const val INTENT_DATA_QRCODE_TYPE_OK = "qrcodetypeok"
     const val INTENT_DATA_MESSAGE_ID = "messageid"
-    const val INTENT_DATA_INCOMING_GROUP_REQUEST = "groupRequest"
-    const val INTENT_DATA_GROUP_REQUEST_NOTIFICATION_ID = "groupRequestNotificationId"
     const val EXTRA_VOICE_REPLY = "voicereply"
     const val EXTRA_OUTPUT_FILE = "output"
-    const val EXTRA_ORIENTATION = "rotate"
-    const val EXTRA_FLIP = "flip"
     const val INTENT_DATA_CHECK_ONLY = "check"
     const val INTENT_DATA_ANIM_CENTER = "itemPos"
     const val INTENT_DATA_PICK_FROM_CAMERA = "useCam"
     const val INTENT_PUSH_REGISTRATION_COMPLETE = "registrationComplete"
-    const val INTENT_DATA_PIN = "ppin"
     const val INTENT_DATA_HIDE_RECENTS = "hiderec"
     const val INTENT_ACTION_FORWARD = "ch.threema.app.intent.FORWARD"
     const val INTENT_ACTION_SHORTCUT_ADDED = BuildConfig.APPLICATION_ID + ".intent.SHORTCUT_ADDED"
 
     const val CONFIRM_TAG_CLOSE_BALLOT = "cb"
-    const val AES_KEY_FILE = "key.dat"
     const val ECHO_USER_IDENTITY = "ECHOECHO"
     const val PHONE_LINKED_PLACEHOLDER = "***"
     const val EMAIL_LINKED_PLACEHOLDER = "***@***"
@@ -68,4 +58,6 @@ object AppConstants {
     const val MAX_PIN_LENGTH = 8
     const val MIN_PW_LENGTH_BACKUP = 8
     const val MAX_PW_LENGTH_BACKUP = 256
+
+    const val ACTIVITY_CONNECTION_LIFETIME = 60_000L
 }

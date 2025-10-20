@@ -35,7 +35,7 @@ import ch.threema.app.utils.AppVersionProvider
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.toHexString
+import ch.threema.common.toHexString
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
@@ -105,7 +105,7 @@ class IncomingReflectedMessageTask(
 ) : ActiveComposableTask<Unit> {
     private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
-    private val myIdentity by lazy { serviceManager.userService.identity }
+    private val myIdentity by lazy { serviceManager.userService.identity!! }
 
     override suspend fun run(handle: ActiveTaskCodec) {
         val multiDeviceProperties = multiDeviceManager.propertiesProvider.get()

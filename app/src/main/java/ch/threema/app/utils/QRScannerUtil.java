@@ -35,11 +35,8 @@ import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.camera.QRScannerActivity;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
-import ch.threema.app.qrscanner.activity.BaseQrScannerActivity;
 import ch.threema.app.services.QRCodeService;
 import ch.threema.base.utils.LoggingUtil;
-
-import static ch.threema.app.services.QRCodeServiceImpl.*;
 
 public class QRScannerUtil {
     private static final Logger logger = LoggingUtil.getThreemaLogger("QRScannerUtil");
@@ -55,42 +52,26 @@ public class QRScannerUtil {
         return sInstance;
     }
 
-    public void initiateScan(@NonNull AppCompatActivity activity, String hint, @QRCodeColor int qrType) {
+    public void initiateScan(@NonNull AppCompatActivity activity, String hint) {
         logger.info("initiateScan");
 
-        Intent intent = getInitiateScanIntent(activity, hint, qrType);
+        Intent intent = getInitiateScanIntent(activity, hint);
         activity.startActivityForResult(intent, REQUEST_CODE_QR_SCANNER);
     }
 
     @NonNull
-    private static Intent getInitiateScanIntent(
-        @NonNull Context context,
-        @Nullable String hint,
-        @QRCodeColor int qrType
-    ) {
+    private static Intent getInitiateScanIntent(@NonNull Context context, @Nullable String hint) {
         Intent intent = new Intent(context, QRScannerActivity.class);
         if (!TestUtil.isEmptyOrNull(hint)) {
             intent.putExtra(QRScannerActivity.KEY_HINT_TEXT, hint);
         }
-        intent.putExtra(QRScannerActivity.KEY_QR_TYPE, qrType);
-
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
         return intent;
     }
 
-    public void initiateGeneralThreemaQrScanner(Activity activity, String hint) {
-        Intent intent = new Intent(activity, BaseQrScannerActivity.class);
-        if (!TestUtil.isEmptyOrNull(hint)) {
-            intent.putExtra(QRScannerActivity.KEY_HINT_TEXT, hint);
-        }
-        if (activity != null) {
-            activity.startActivity(intent);
-        }
-    }
-
     private void invalidCodeDialog(@NonNull AppCompatActivity activity) {
-        SimpleStringAlertDialog.newInstance(R.string.scan_id, R.string.invalid_barcode).show(activity.getSupportFragmentManager(), "");
+        SimpleStringAlertDialog.newInstance(R.string.scan_id, R.string.invalid_threema_qr_code).show(activity.getSupportFragmentManager(), "");
     }
 
     public String parseActivityResult(AppCompatActivity activity, int requestCode, int resultCode, Intent intent) {

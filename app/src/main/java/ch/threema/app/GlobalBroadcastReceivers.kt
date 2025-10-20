@@ -21,7 +21,6 @@
 
 package ch.threema.app
 
-import android.annotation.TargetApi
 import android.app.NotificationManager
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -32,15 +31,13 @@ import android.os.Build
 import android.os.PowerManager
 import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ch.threema.app.backuprestore.csv.BackupService
 import ch.threema.app.receivers.ConnectivityChangeReceiver
-import ch.threema.app.receivers.PinningFailureReportBroadcastReceiver
 import ch.threema.app.receivers.ShortcutAddedReceiver
 import ch.threema.app.restrictions.AppRestrictionService
+import ch.threema.app.services.LifetimeService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.utils.LoggingUtil
-import com.datatheorem.android.trustkit.reporting.BackgroundReporter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,12 +46,15 @@ private val logger = LoggingUtil.getThreemaLogger("GlobalBroadcastReceivers")
 
 object GlobalBroadcastReceivers {
 
+    private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val lifetimeService: LifetimeService?
+        get() = ThreemaApplication.getServiceManager()?.lifetimeService
+
     @JvmStatic
     fun registerBroadcastReceivers(context: Context) {
         registerConnectivityChangeReceiver(context)
         registerDeviceIdleModeChangedReceiver(context)
         registerNotificationChannelGroupBlockStateChangedReceiver(context)
-        registerPinningFailureReportReceiver(context)
         registerAppRestrictionsChangeReceiver(context)
         registerShortcutAddedReceiver(context)
     }
@@ -69,50 +69,38 @@ object GlobalBroadcastReceivers {
     }
 
     private fun registerDeviceIdleModeChangedReceiver(context: Context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return
-        }
         // This is called when the state of isDeviceIdleMode() changes.
         context.registerReceiver(
             object : BroadcastReceiver() {
-                @TargetApi(Build.VERSION_CODES.M)
                 override fun onReceive(context: Context, intent: Intent) {
-                    val serviceManager = ThreemaApplication.getServiceManager()
-
-                    val powerManager = context.getSystemService<PowerManager>()
-                    if (powerManager != null && powerManager.isDeviceIdleMode) {
+                    val powerManager = context.getSystemService<PowerManager>() ?: return
+                    if (powerManager.isDeviceIdleMode) {
                         logger.info("*** Device going to deep sleep")
 
                         GlobalAppState.isDeviceIdle = true
 
-                        try {
-                            // Pause connection
-                            serviceManager?.lifetimeService?.pause()
-                        } catch (e: Exception) {
-                            logger.error("Exception while pausing connection", e)
-                        }
+                        coroutineScope.launch {
+                            try {
+                                // Pause connection
+                                lifetimeService?.pause()
+                            } catch (e: Exception) {
+                                logger.error("Exception while pausing connection", e)
+                            }
 
-                        if (BackupService.isRunning()) {
-                            context.stopService(Intent(context, BackupService::class.java))
+                            if (BackupService.isRunning()) {
+                                context.stopService(Intent(context, BackupService::class.java))
+                            }
                         }
                     } else {
                         logger.info("*** Device waking up")
-                        if (serviceManager != null) {
-                            CoroutineScope(Dispatchers.Default).launch {
-                                try {
-                                    serviceManager.lifetimeService.unpause()
-                                } catch (e: Exception) {
-                                    logger.error("Exception while unpausing connection", e)
-                                }
-                            }
-                            GlobalAppState.isDeviceIdle = false
-                        } else {
-                            logger.info("Service manager unavailable")
-                            val masterKey = ThreemaApplication.getMasterKey()
-                            if (!masterKey.isLocked) {
-                                ThreemaApplication.onMasterKeyUnlocked(masterKey)
+                        coroutineScope.launch {
+                            try {
+                                lifetimeService?.unpause()
+                            } catch (e: Exception) {
+                                logger.error("Exception while unpausing connection", e)
                             }
                         }
+                        GlobalAppState.isDeviceIdle = false
                     }
                 }
             },
@@ -144,11 +132,6 @@ object GlobalBroadcastReceivers {
             },
             IntentFilter(NotificationManager.ACTION_NOTIFICATION_CHANNEL_GROUP_BLOCK_STATE_CHANGED),
         )
-    }
-
-    private fun registerPinningFailureReportReceiver(context: Context) {
-        val receiver = PinningFailureReportBroadcastReceiver()
-        LocalBroadcastManager.getInstance(context).registerReceiver(receiver, IntentFilter(BackgroundReporter.REPORT_VALIDATION_EVENT))
     }
 
     private fun registerAppRestrictionsChangeReceiver(context: Context) {

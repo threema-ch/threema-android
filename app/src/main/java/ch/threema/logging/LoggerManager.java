@@ -33,6 +33,7 @@ import java.util.WeakHashMap;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.logging.backend.DebugLogFileBackend;
 import ch.threema.logging.backend.DebugToasterBackend;
 import ch.threema.logging.backend.LogBackend;
@@ -93,11 +94,11 @@ public class LoggerManager {
 
         // Initialize backends
         final List<LogBackend> backends = new ArrayList<>();
-        if ((BuildConfig.DEBUG || BuildFlavor.getCurrent().isSandbox()) && (!isInTest() || isInDeviceTest())) {
+        if ((BuildConfig.DEBUG || BuildFlavor.getCurrent().isSandbox()) && (!TestUtil.isInTest() || TestUtil.isInDeviceTest())) {
             // Enable logging to logcat only for debug and sandbox builds, but not for unit tests
             backends.add(new LogcatBackend(Log.VERBOSE));
         }
-        if (BuildConfig.DEBUG && !isInTest()) {
+        if (BuildConfig.DEBUG && !TestUtil.isInTest()) {
             backends.add(new DebugToasterBackend(ThreemaApplication::getAppContext, Log.ERROR));
         }
         backends.add(new DebugLogFileBackend(minLogLevel));
@@ -109,23 +110,5 @@ public class LoggerManager {
         }
 
         return logger;
-    }
-
-    /** @noinspection BooleanMethodIsAlwaysInverted*/
-    private static boolean isInTest() {
-        return isClassAvailable("org.junit.Test");
-    }
-
-    private static boolean isInDeviceTest() {
-        return isClassAvailable("ch.threema.app.ThreemaTestRunner");
-    }
-
-    private static boolean isClassAvailable(String className) {
-        try {
-            Class.forName(className);
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 }

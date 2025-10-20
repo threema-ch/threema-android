@@ -25,6 +25,7 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayOutputStream
@@ -39,7 +40,7 @@ private val logger = LoggingUtil.getThreemaLogger("PollVoteMessage")
  */
 open class PollVoteMessage : AbstractMessage(), BallotVoteInterface {
     override var ballotId: BallotId? = null
-    override var ballotCreatorIdentity: String? = null
+    override var ballotCreatorIdentity: Identity? = null
     override val votes: MutableList<BallotVote> = mutableListOf()
 
     override fun getMinimumRequiredForwardSecurityVersion(): Version = Version.V1_0

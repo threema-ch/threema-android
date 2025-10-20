@@ -42,6 +42,7 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.createTransaction
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.storage.models.GroupModel
 import java.util.Date
@@ -57,7 +58,7 @@ private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupLeaveTask")
 class OutgoingGroupLeaveTask(
     private val groupIdentity: GroupIdentity,
     private val messageId: MessageId,
-    private val memberIdentities: Set<String>,
+    private val memberIdentities: Set<Identity>,
     private val groupModelRepository: GroupModelRepository,
     private val apiConnector: APIConnector,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
@@ -82,19 +83,20 @@ class OutgoingGroupLeaveTask(
         val multiDeviceProperties = multiDeviceManager.propertiesProvider.get()
 
         handle.createTransaction(
-            multiDeviceProperties.keys,
-            MdD2D.TransactionScope.Scope.GROUP_SYNC,
-            TRANSACTION_TTL_MAX,
-        ) {
-            val groupModelData = groupModelRepository.getByGroupIdentity(groupIdentity)?.data?.value
-            if (groupModelData != null) {
-                // If the group exists, then the user state must be left
-                groupModelData.userState == GroupModel.UserState.LEFT
-            } else {
-                // It is fine if the group does not exist
-                true
-            }
-        }.execute {
+            keys = multiDeviceProperties.keys,
+            scope = MdD2D.TransactionScope.Scope.GROUP_SYNC,
+            ttl = TRANSACTION_TTL_MAX,
+            precondition = {
+                val groupModelData = groupModelRepository.getByGroupIdentity(groupIdentity)?.data
+                if (groupModelData != null) {
+                    // If the group exists, then the user state must be left
+                    groupModelData.userState == GroupModel.UserState.LEFT
+                } else {
+                    // It is fine if the group does not exist
+                    true
+                }
+            },
+        ).execute {
             sendLeaveMessages(handle)
         }
     }
@@ -131,7 +133,7 @@ class OutgoingGroupLeaveTask(
     class OutgoingGroupLeaveTaskData(
         private val groupIdentity: GroupIdentity,
         private val messageId: ByteArray,
-        private val memberIdentities: Set<String>,
+        private val memberIdentities: Set<Identity>,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingGroupLeaveTask(

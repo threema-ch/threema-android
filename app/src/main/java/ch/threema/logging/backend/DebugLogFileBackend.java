@@ -21,6 +21,7 @@
 
 package ch.threema.logging.backend;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.Looper;
@@ -334,23 +335,12 @@ public class DebugLogFileBackend implements LogBackend {
     }
 
     @Nullable
-    public static File getZipFile(@NonNull File tempDirectory) {
-        // Delete old debug log archive
-        final File tempDebugLogArchive = new File(tempDirectory, "debug_log.zip");
+    public static File createZipFile(@NonNull Context context) {
+        final File tempDebugLogArchive = new File(context.getCacheDir(), "debug_log.zip");
         deleteIfExists(tempDebugLogArchive);
-
-        // Create and return ZIP
         if (createZipFile(tempDebugLogArchive)) {
             return tempDebugLogArchive;
         }
-
-        // Try to create a fallback ZIP file if the default one could not be created
-        final File fallbackDebugLogArchive = new File(ThreemaApplication.getAppContext().getCacheDir(), "debug_log.zip");
-        deleteIfExists(fallbackDebugLogArchive);
-        if (createZipFile(fallbackDebugLogArchive)) {
-            return fallbackDebugLogArchive;
-        }
-
         return null;
     }
 

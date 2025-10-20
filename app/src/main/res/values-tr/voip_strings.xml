@@ -83,6 +83,7 @@
     <string name="voip_gc_waiting_for_participants">Katılımcılar bekleniyor</string>
     <string name="voip_gc_participant_avatar_description">Katılımcının profil resmi</string>
     <string name="voip_gc_participant_mute_status_description">Katılımcı sessiz durumu</string>
+    <string name="voip_gc_participant_screen_share_status_description">Katılımcı bir ekranı paylaşıyor</string>
     <string name="voip_gc_notification_new_call_public">Yeni bir grup araması başlatıldı</string>
     <string name="voip_gc_open_call">Açık</string>
     <string name="voip_gc_call_started">Grup araması başlatıldı</string>
@@ -92,6 +93,7 @@
     <string name="voip_gc_call_error">Arama bir hata nedeniyle durduruldu</string>
     <string name="voip_gc_call_start_error">Grup araması başlatılamadı</string>
     <string name="voip_gc_call_already_ended">Grup görüşmesi zaten sona erdi</string>
+    <string name="voip_gc_screen_sharing_not_supported">Ekran paylaşımı şu anda yalnızca masaüstü cihazlarla sınırlı.</string>
     <string name="voip_gc_call_full_generic">Maksimuma sayıya ulaşıldı: Bu grup aramasına başka katılımcı katılamaz.</string>
     <string name="voip_gc_call_full_n">Maksimum %1$d katılımcıya ulaşıldı, bu grup aramasına katılamazsınız.</string>
     <plurals name="n_participants_in_call">

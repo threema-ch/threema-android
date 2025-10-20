@@ -21,7 +21,6 @@
 
 package ch.threema.app.activities;
 
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -60,22 +59,18 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 
     private static final int REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS = 778;
     private static final String DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS = "des";
-    private static final String DIALOG_TAG_BATTERY_OPTIMIZATIONS_REMINDER = "esr";
     private static final String DIALOG_TAG_MIUI_WARNING = "miui";
 
     /**
      * The name of the affected system (e.g. "Threema Web").
      */
     public static final String EXTRA_NAME = "name";
-    /**
-     * If set to true, then a "do you really want to keep battery optimizations enabled"
-     * confirmation dialog will be shown. Default false.
-     */
-    public static final String EXTRA_CONFIRM = "confirm";
+
     /**
      * Set this to a string resource ID in order to override the "continue anyways" text.
      */
     public static final String EXTRA_CANCEL_LABEL = "cancel";
+
     /**
      * Set this to true if the activity is called from the wizard. Default false.
      */
@@ -90,12 +85,11 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
     private String name;
     @StringRes
     private int cancelLabel;
-    private boolean confirm, disableRationale;
+    private boolean disableRationale;
     private int actionBarSize = 0;
     private Handler dropDownHandler, listSelectHandler;
 
     @Override
-    @TargetApi(Build.VERSION_CODES.M)
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
@@ -111,8 +105,6 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
         final boolean usedInWizard = intent.getBooleanExtra(EXTRA_WIZARD, false);
         if (usedInWizard) {
             setTheme(R.style.Theme_Threema_Wizard_Translucent);
-        } else if (ConfigUtils.isTheDarkSide(this)) {
-            setTheme(R.style.Theme_Threema_Translucent_Dark);
         }
 
         if (ConfigUtils.getMIUIVersion() >= 11) {
@@ -123,7 +115,6 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 
         // Get extras
         this.name = intent.getStringExtra(EXTRA_NAME);
-        this.confirm = intent.getBooleanExtra(EXTRA_CONFIRM, false);
         this.cancelLabel = intent.getIntExtra(EXTRA_CANCEL_LABEL, R.string.continue_anyway);
         this.disableRationale = intent.getBooleanExtra(EXTRA_DISABLE_RATIONALE, false);
 
@@ -158,11 +149,6 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
             case DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS:
                 launchDisableFlow();
                 break;
-            case DIALOG_TAG_BATTERY_OPTIMIZATIONS_REMINDER:
-                // user wants to continue at his own risk
-                setResult(RESULT_OK);
-                finish();
-                break;
             case DIALOG_TAG_MIUI_WARNING:
                 setResult(RESULT_CANCELED);
                 finish();
@@ -170,7 +156,6 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private void launchDisableFlow() {
         // If the REQUEST_IGNORE_BATTERY_OPTIMIZATIONS permission is granted (versions that
         // aren't distributed through Google Play), then a permission can be requested directly.
@@ -224,19 +209,10 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
 
     @Override
     public void onNo(String tag, Object data) {
-        switch (tag) {
-            case DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS:
-                if (confirm) {
-                    final GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.battery_optimizations_title, String.format(getString(R.string.battery_optimizations_disable_confirm), getString(R.string.app_name), name), R.string.yes, R.string.no);
-                    dialog.show(getSupportFragmentManager(), DIALOG_TAG_BATTERY_OPTIMIZATIONS_REMINDER);
-                } else {
-                    setResult(RESULT_CANCELED);
-                    finish();
-                }
-                break;
-            case DIALOG_TAG_BATTERY_OPTIMIZATIONS_REMINDER:
-                showRationaleDialog();
-                break;
+        if (tag.equals(DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS)) {
+            // The user wants to continue without disabling battery optimizations
+            setResult(RESULT_OK);
+            finish();
         }
     }
 

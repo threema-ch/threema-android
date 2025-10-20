@@ -24,7 +24,9 @@ package ch.threema.app.multidevice.linking
 import android.graphics.Bitmap
 import androidx.annotation.WorkerThread
 import ch.threema.app.BuildConfig
+import ch.threema.app.R
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.license.LicenseServiceUser
 import ch.threema.app.tasks.ReflectUserProfileIdentityLinksTask
@@ -34,6 +36,7 @@ import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.ConversationUtil
 import ch.threema.app.utils.ConversationUtil.getConversationUid
 import ch.threema.app.utils.GroupUtil
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride.*
@@ -78,10 +81,12 @@ import ch.threema.protobuf.d2d.sync.MdD2DSync.Group.UserState
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
 import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile.IdentityLinks
 import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile.ProfilePictureShareWith
+import ch.threema.protobuf.d2d.sync.MdmParametersKt.parameter
 import ch.threema.protobuf.d2d.sync.UserProfileKt.profilePictureShareWith
 import ch.threema.protobuf.d2d.sync.contact
 import ch.threema.protobuf.d2d.sync.distributionList
 import ch.threema.protobuf.d2d.sync.group
+import ch.threema.protobuf.d2d.sync.mdmParameters
 import ch.threema.protobuf.d2d.sync.settings
 import ch.threema.protobuf.d2d.sync.threemaWorkCredentials
 import ch.threema.protobuf.d2d.sync.userProfile
@@ -93,7 +98,7 @@ import ch.threema.protobuf.unit
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.DistributionListModel
 import com.google.protobuf.ByteString
-import com.neilalexander.jnacl.NaCl
+import com.google.protobuf.kotlin.toByteString
 import java.nio.ByteBuffer
 
 private val logger = LoggingUtil.getThreemaLogger("DeviceLinkingDataCollector")
@@ -249,6 +254,7 @@ class DeviceLinkingDataCollector(
     private val ringtoneService by lazy { serviceManager.ringtoneService }
     private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val licenseService by lazy { serviceManager.licenseService }
+    private val context by lazy { serviceManager.context }
 
     @WorkerThread
     fun collectData(dgk: ByteArray): DeviceLinkingData {
@@ -313,8 +319,9 @@ class DeviceLinkingDataCollector(
                 collectWorkCredentials()
                     ?: throw IllegalStateException("No work credentials available in work build"),
             )
-            // mdm parameters TODO(ANDR-2670)
-            // essentialDataBuilder.setMdmParameters(collectMdmParameters())
+            collectMdmParameters()?.let { mdmParameters ->
+                essentialDataBuilder.setMdmParameters(mdmParameters)
+            }
         }
 
         logger.debug("Number of blobDataProviders: {}", blobDataProviders.size)
@@ -333,17 +340,17 @@ class DeviceLinkingDataCollector(
 
     private fun collectIdentityData(): IdentityData {
         return identityData {
-            identity = identityStore.identity
-            ck = identityStore.privateKey.toByteString()
+            identity = identityStore.getIdentity()!!
+            ck = identityStore.getPrivateKey()!!.toByteString()
             cspDeviceCookie = deviceCookieManager.obtainDeviceCookie().toByteString()
-            cspServerGroup = identityStore.serverGroup
+            cspServerGroup = identityStore.getServerGroup()!!
         }
     }
 
     private fun collectUserProfile(): Pair<BlobDataProvider?, MdD2DSync.UserProfile> {
         return collectUserProfilePicture().let { profilePictureData ->
             profilePictureData?.first to userProfile {
-                nickname = identityStore.publicNickname
+                nickname = identityStore.getPublicNickname()
                 profilePictureData?.second?.let {
                     profilePicture = it
                 }
@@ -364,6 +371,7 @@ class DeviceLinkingDataCollector(
                 id = profilePictureData.blobId.toByteString()
                 nonce = ProtocolDefines.CONTACT_PHOTO_NONCE.toByteString()
                 key = profilePictureData.encryptionKey.toByteString()
+                logInvalidTimestamp(profilePictureData.uploadedAt, "User profile picture uploadedAt")
                 uploadedAt = profilePictureData.uploadedAt
             }
 
@@ -375,7 +383,7 @@ class DeviceLinkingDataCollector(
             }
 
             val blobDataProvider = BlobDataProvider(profilePictureData.blobId) {
-                profilePictureData.bitmapArray
+                profilePictureData.profilePicture.profilePictureBytes
             }
 
             blobDataProvider to profilePicture
@@ -480,7 +488,7 @@ class DeviceLinkingDataCollector(
         val notArchived = conversationService.getAll(true).associate {
             it.uid to ConversationStats(false, it.isPinTagged)
         }
-        val archived = conversationService.getArchived(null).associate {
+        val archived = conversationService.getArchived().associate {
             it.uid to ConversationStats(
                 isArchived = true,
                 isPinned = false,
@@ -510,6 +518,7 @@ class DeviceLinkingDataCollector(
         val contact = contact {
             identity = contactModelData.identity
             publicKey = contactModelData.publicKey.toByteString()
+            logInvalidTimestamp(contactModelData.createdAt.time, "Contact createdAt (${contactModelData.identity})")
             createdAt = contactModelData.createdAt.time
             firstName = contactModelData.firstName
             lastName = contactModelData.lastName
@@ -553,7 +562,10 @@ class DeviceLinkingDataCollector(
 
         val augmentedContact = augmentedContact {
             this.contact = contact
-            contactService.getLastUpdate(contactModelData.identity)?.let { this.lastUpdateAt = it.time }
+            contactService.getLastUpdate(contactModelData.identity)?.let {
+                logInvalidTimestamp(it.time, "Contact lastUpdateAt (${contactModelData.identity})")
+                this.lastUpdateAt = it.time
+            }
         }
 
         val augmentedContactProvider = AugmentedContactProvider(
@@ -611,6 +623,7 @@ class DeviceLinkingDataCollector(
 
                 is MutedUntil -> policy = ContactKt.NotificationTriggerPolicyOverrideKt.policy {
                     policy = NotificationTriggerPolicy.NEVER
+                    logInvalidTimestamp(modelPolicy.utcMillis, "Contact.notificationTriggerPolicyOverride expiresAt (${contactModelData.identity})")
                     expiresAt = modelPolicy.utcMillis
                 }
             }
@@ -680,7 +693,6 @@ class DeviceLinkingDataCollector(
         return when (contactModelData.identityType) {
             IdentityType.NORMAL -> Contact.IdentityType.REGULAR
             IdentityType.WORK -> Contact.IdentityType.WORK
-            else -> Contact.IdentityType.UNRECOGNIZED
         }
     }
 
@@ -700,9 +712,9 @@ class DeviceLinkingDataCollector(
     }
 
     private fun getAndValidateData(contactModel: ContactModel): ContactModelData? {
-        val contactModelData = contactModel.data.value ?: return null
+        val contactModelData = contactModel.data ?: return null
 
-        if (contactModelData.publicKey.size != NaCl.PUBLICKEYBYTES) {
+        if (contactModelData.publicKey.size != NaCl.PUBLIC_KEY_BYTES) {
             logger.error("Public key of contact {} has an invalid length: {}", contactModelData.identity, contactModelData.publicKey.size)
             throw DeviceLinkingInvalidContact(contactModel.identity)
         }
@@ -724,7 +736,7 @@ class DeviceLinkingDataCollector(
 
         val conversationStats = conversationsStats[groupModel.getConversationUid()]
 
-        val data = groupModel.data.value!!
+        val data = groupModel.data!!
 
         val groupAvatarInfo = collectGroupAvatar(groupModel)
 
@@ -734,6 +746,7 @@ class DeviceLinkingDataCollector(
                 creatorIdentity = groupModel.groupIdentity.creatorIdentity
             }
             name = data.name ?: ""
+            logInvalidTimestamp(data.createdAt.time, "Group createdAt (${groupModel.groupIdentity})")
             createdAt = data.createdAt.time
             userState = collectUserState(data)
             notificationTriggerPolicyOverride =
@@ -762,6 +775,7 @@ class DeviceLinkingDataCollector(
         val augmentedGroup = augmentedGroup {
             this.group = group
             data.lastUpdate?.let {
+                logInvalidTimestamp(it.time, "Group lastUpdateAt (${data.groupIdentity})")
                 this.lastUpdateAt = it.time
             }
         }
@@ -801,7 +815,7 @@ class DeviceLinkingDataCollector(
 
     private fun collectGroupNotificationTriggerPolicyOverride(groupModel: GroupModel): MdD2DSync.Group.NotificationTriggerPolicyOverride {
         return GroupKt.notificationTriggerPolicyOverride {
-            when (val modelPolicy = groupModel.data.value?.currentNotificationTriggerPolicyOverride) {
+            when (val modelPolicy = groupModel.data?.currentNotificationTriggerPolicyOverride) {
                 NotMuted -> default = unit {}
 
                 MutedIndefinite -> policy = GroupKt.NotificationTriggerPolicyOverrideKt.policy {
@@ -814,6 +828,7 @@ class DeviceLinkingDataCollector(
 
                 is MutedUntil -> policy = GroupKt.NotificationTriggerPolicyOverrideKt.policy {
                     policy = MdD2DSync.Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
+                    logInvalidTimestamp(modelPolicy.utcMillis, "Group.notificationTriggerPolicyOverride expiresAt (${groupModel.groupIdentity})")
                     expiresAt = modelPolicy.utcMillis
                 }
 
@@ -858,6 +873,7 @@ class DeviceLinkingDataCollector(
             distributionList {
                 distributionListId = distributionListModel.id
                 name = distributionListModel.name ?: ""
+                logInvalidTimestamp(distributionListModel.createdAt.time, "DistributionList createdAt (${distributionListModel.id})")
                 createdAt = distributionListModel.createdAt.time
                 memberIdentities = identities
                 conversationCategory =
@@ -878,6 +894,7 @@ class DeviceLinkingDataCollector(
             augmentedDistributionList {
                 this.distributionList = it
                 distributionListModel.lastUpdate?.let {
+                    logInvalidTimestamp(it.time, "DistributionList lastUpdateAt (${distributionListModel.id})")
                     this.lastUpdateAt = it.time
                 }
             }
@@ -928,14 +945,42 @@ class DeviceLinkingDataCollector(
         }
     }
 
-    //    TODO(ANDR-2670)
-//    private fun collectMdmParameters(): MdmParameters {
-//        return mdmParameters {
-//            externalParameters = ...
-//            threemaParameters = ...
-//            parameterPrecedence = ...
-//        }
-//    }
+    // TODO(ANDR-2670): Collect all mdm parameters
+    private fun collectMdmParameters(): MdD2DSync.MdmParameters? {
+        // Currently we only send the remote secret mdm parameter
+        val remoteSecretMdmParam = context.getString(R.string.restriction__enable_remote_secret)
+        val remoteSecretMdmParamValue = AppRestrictionUtil.getBooleanRestriction(remoteSecretMdmParam)
+        if (remoteSecretMdmParamValue != null) {
+            logger.info("Including remote secret mdm parameter")
+            return mdmParameters {
+                // Note that we currently set it as a threema parameter as we can't distinguish it easily here.
+                threemaParameters.put(
+                    remoteSecretMdmParam,
+                    parameter {
+                        booleanValue = remoteSecretMdmParamValue
+                    },
+                )
+            }
+        }
+
+        // In case the remote secret mdm parameter is not set, we don't include any mdm parameters
+        return null
+    }
+
+    /**
+     * If the provided [timestamp] is null or invalid, it will be logged with the provided [message].
+     * Otherwise this method has no effect.
+     */
+    private fun logInvalidTimestamp(timestamp: Long?, message: String) {
+        if (timestamp == null) {
+            logger.warn("Null timestamp: {}", message)
+            return
+        }
+        // 8_640_000_000_000_000L is the maximum timestamp that is supported by threema desktop
+        if (timestamp < 0L || timestamp > 8_640_000_000_000_000L) {
+            logger.error("Invalid timestamp {}: {}", timestamp, message)
+        }
+    }
 
     private companion object {
         private var nextBlobId = 1L
@@ -948,8 +993,4 @@ class DeviceLinkingDataCollector(
                 }
         }
     }
-}
-
-private fun ByteArray.toByteString(): ByteString {
-    return ByteString.copyFrom(this)
 }

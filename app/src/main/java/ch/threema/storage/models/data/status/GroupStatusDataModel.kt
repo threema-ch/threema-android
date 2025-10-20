@@ -22,6 +22,7 @@
 package ch.threema.storage.models.data.status
 
 import android.util.JsonWriter
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.data.status.StatusDataModel.StatusType
 
 class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
@@ -75,7 +76,7 @@ class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
         /** Group description changed */
         GROUP_DESCRIPTION_CHANGED(12),
 
-        /** The creator just left the group */
+        /** The creator left the group */
         ORPHANED(13),
         ;
 
@@ -86,7 +87,7 @@ class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
 
     var statusType: GroupStatusType = GroupStatusType.CREATED
         private set
-    var identity: String? = null
+    var identity: Identity? = null
         private set
     var ballotName: String? = null
         private set
@@ -140,7 +141,7 @@ class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
         @JvmStatic
         fun create(
             type: GroupStatusType,
-            identity: String?,
+            identity: Identity?,
             ballotName: String?,
             newGroupName: String?,
         ): GroupStatusDataModel {

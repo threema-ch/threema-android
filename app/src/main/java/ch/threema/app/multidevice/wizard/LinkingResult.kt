@@ -33,6 +33,7 @@ import ch.threema.app.BuildFlavor
 import ch.threema.app.R
 import ch.threema.app.compose.common.linkifyWeb
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.domain.types.Identity
 
 /**
  * @param iconTintAttrRes If `null` the original colors from the passed icon are used. This can lead to a loss of contrast.
@@ -123,7 +124,7 @@ sealed class LinkingResult(
             bodyTextRes = R.string.device_linking_error_unexpected_body,
         )
 
-        data class InvalidContact(private val invalidIdentity: String) : Failure(
+        data class InvalidContact(private val invalidIdentity: Identity) : Failure(
             titleTextRes = R.string.device_linking_error_invalid_contact_title,
             bodyTextRes = R.string.device_linking_error_invalid_contact_body,
         ) {

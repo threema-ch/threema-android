@@ -65,6 +65,9 @@ internal class GroupCallControllerImpl(
     private var remoteCtxs: MutableMap<ParticipantId, RemoteCtx> = mutableMapOf()
     private var remoteParticipants: MutableSet<NormalRemoteParticipant> = mutableSetOf()
 
+    // TODO(ANDR-4127): Remove
+    private val mutableScreenShareActivated = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+
     private val teardownLock = ReentrantLock()
     private val teardownRoutines: MutableList<suspend () -> Unit> = mutableListOf()
 
@@ -128,6 +131,11 @@ internal class GroupCallControllerImpl(
             mutableUpdateCaptureState.asSharedFlow()
         }
 
+    override val screenShareActivated: Flow<Unit>
+        get() = ifCallIsRunning {
+            mutableScreenShareActivated.asSharedFlow()
+        }
+
     override var microphoneActive: Boolean
         get() = ifCallIsRunning { localParticipant.microphoneActive }
         set(value) = ifCallIsRunning {
@@ -144,6 +152,8 @@ internal class GroupCallControllerImpl(
             val stateUpdate = P2PMessageContent.CaptureState.Camera(localParticipant.cameraActive)
             context.sendBroadcast(stateUpdate)
         }
+
+    // TODO(ANDR-4127): provide screen share state and send broadcast if state is updated
 
     private var foreverAloneTimeoutFired: Boolean = false
 
@@ -255,10 +265,14 @@ internal class GroupCallControllerImpl(
     }
 
     @WorkerThread
-    override fun updateCaptureStates() {
+    override fun updateCaptureStates(screenShareActivated: Boolean) {
         GroupCallThreadUtil.assertDispatcherThread()
 
         mutableUpdateCaptureState.tryEmit(Unit)
+
+        if (screenShareActivated) {
+            mutableScreenShareActivated.tryEmit(Unit)
+        }
     }
 
     @WorkerThread

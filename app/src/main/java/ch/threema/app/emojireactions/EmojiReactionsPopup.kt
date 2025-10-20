@@ -35,9 +35,9 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.FragmentManager
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.dialogs.SimpleStringAlertDialog
 import ch.threema.app.emojis.EmojiItemView
+import ch.threema.app.emojis.EmojiService
 import ch.threema.app.emojis.EmojiUtil
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
@@ -48,6 +48,8 @@ import ch.threema.data.models.EmojiReactionsModel
 import ch.threema.data.repositories.EmojiReactionsRepository
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private const val FAKE_DISABLE_ALPHA = 0.2f
 
@@ -58,7 +60,12 @@ class EmojiReactionsPopup(
     private val isSendingReactionsAllowed: Boolean,
     private val shouldHideUnsupportedReactions: Boolean,
 ) :
-    PopupWindow(context), View.OnClickListener {
+    PopupWindow(context), View.OnClickListener, KoinComponent {
+    private val emojiReactionsRepository: EmojiReactionsRepository by inject()
+    private val userService: UserService by inject()
+    private val emojiService: EmojiService by inject()
+    private val contactService: ContactService by inject()
+
     private val addReactionButton: ImageView
     private var emojiReactionsPopupListener: EmojiReactionsPopupListener? = null
     private val popupHeight =
@@ -68,10 +75,6 @@ class EmojiReactionsPopup(
     private val popupHorizontalOffset =
         context.resources.getDimensionPixelSize(R.dimen.reaction_popup_content_margin_horizontal)
     private var messageModel: AbstractMessageModel? = null
-    private val emojiReactionsRepository: EmojiReactionsRepository =
-        ThreemaApplication.requireServiceManager().modelRepositories.emojiReaction
-    private val userService: UserService = ThreemaApplication.requireServiceManager().userService
-    private val emojiService = ThreemaApplication.requireServiceManager().emojiService
     private val selectedBackgroundColor = ResourcesCompat.getDrawable(
         context.resources,
         R.drawable.shape_emoji_popup_selected_background,
@@ -87,8 +90,6 @@ class EmojiReactionsPopup(
         ReactionEntry(R.id.top_4, EmojiUtil.CRYING_SEQUENCE),
         ReactionEntry(R.id.top_5, EmojiUtil.FOLDED_HANDS_SEQUENCE),
     )
-
-    private val contactService: ContactService by lazy { ThreemaApplication.requireServiceManager().contactService }
 
     init {
         val layoutInflater =
@@ -213,7 +214,7 @@ class EmojiReactionsPopup(
         topReaction: ReactionEntry,
         emojiReactionsModel: EmojiReactionsModel?,
     ): Boolean {
-        val reactionList = emojiReactionsModel?.data?.value
+        val reactionList = emojiReactionsModel?.data
         return reactionList?.any { reaction ->
             reaction.emojiSequence == topReaction.emojiSequence && reaction.senderIdentity == userService.identity
         } ?: false

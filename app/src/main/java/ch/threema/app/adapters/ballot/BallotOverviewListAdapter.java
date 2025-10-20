@@ -44,7 +44,6 @@ import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ViewUtil;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ballot.BallotModel;
 
 /**
@@ -106,8 +105,12 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
         final BallotModel ballotModel = values.get(position);
 
         if (ballotModel != null) {
-            final ContactModel contactModel = this.contactService.getByIdentity(ballotModel.getCreatorIdentity());
-            AvatarListItemUtil.loadAvatar(contactModel, contactService, holder, requestManager);
+            AvatarListItemUtil.loadAvatar(
+                ballotModel.getCreatorIdentity(),
+                contactService,
+                holder,
+                requestManager
+            );
 
             if (holder.name != null) {
                 holder.name.setText(ballotModel.getName());

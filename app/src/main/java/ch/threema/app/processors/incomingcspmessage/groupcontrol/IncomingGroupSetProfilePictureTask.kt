@@ -27,8 +27,10 @@ import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
 import ch.threema.app.tasks.ReflectionResult
+import ch.threema.app.utils.ExifInterface
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.app.utils.contentEquals
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.protocol.blob.BlobScope
@@ -36,7 +38,6 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
-import com.neilalexander.jnacl.NaCl
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingGroupSetProfilePictureTask")
 
@@ -70,11 +71,15 @@ class IncomingGroupSetProfilePictureTask(
             // since its an incoming message, always use the public scope
             BlobScope.Public,
         ) ?: throw IllegalStateException("Profile picture blob is null")
-        NaCl.symmetricDecryptDataInplace(
+        NaCl.symmetricDecryptDataInPlace(
             blob,
             message.encryptionKey,
             ProtocolDefines.GROUP_PHOTO_NONCE,
         )
+
+        if (!ExifInterface.isJpegFormat(blob)) {
+            logger.warn("Received a group profile picture that is not a jpeg")
+        }
 
         // If the received picture is already the current profile picture, discard the message and
         // abort these steps.

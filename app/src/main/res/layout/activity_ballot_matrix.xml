@@ -46,7 +46,7 @@
         android:gravity="center"
         android:text="@string/no_votes_yet"
         android:textAlignment="center"
-        android:textAppearance="@style/Threema.TextAppearance.Emptyview"
+        android:textAppearance="@style/Threema.TextAppearance.EmptyView"
         android:visibility="gone"
         tools:visibility="visible" />
 

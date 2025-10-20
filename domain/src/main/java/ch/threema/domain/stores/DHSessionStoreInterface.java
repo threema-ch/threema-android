@@ -125,4 +125,6 @@ public interface DHSessionStoreInterface {
      * also forces the database upgrades to run.
      */
     void executeNull();
+
+    void close();
 }

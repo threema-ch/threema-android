@@ -27,18 +27,17 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.ContactsContract;
 import android.text.format.DateUtils;
 import android.widget.ImageView;
 
 import com.bumptech.glide.RequestManager;
+import com.google.common.collect.ImmutableSet;
 
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -76,10 +75,8 @@ import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.stores.DatabaseContactStore;
-import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.utils.AndroidContactUtil;
-import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -87,6 +84,7 @@ import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.common.Http;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.ModelDeletedException;
 import ch.threema.data.repositories.ContactModelRepository;
@@ -101,9 +99,10 @@ import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
@@ -112,16 +111,17 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 import ch.threema.storage.models.GroupMemberModel;
 import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.ValidationMessage;
 import ch.threema.storage.models.access.AccessModel;
+import ch.threema.data.datatypes.IdColor;
 import java8.util.function.Consumer;
+import okhttp3.OkHttpClient;
 
 import static ch.threema.app.glide.AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR;
 
 public class ContactServiceImpl implements ContactService {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ContactServiceImpl");
 
-    private static final int TYPING_RECEIVE_TIMEOUT = (int) DateUtils.MINUTE_IN_MILLIS;
+    private static final int TYPING_RECEIVE_TIMEOUT = (int) DateUtils.SECOND_IN_MILLIS * 15;
 
     private final Context context;
     private final AvatarCacheService avatarCacheService;
@@ -141,6 +141,8 @@ public class ContactServiceImpl implements ContactService {
     private final ApiService apiService;
     private final LicenseService licenseService;
     private final APIConnector apiConnector;
+    @NonNull
+    private final OkHttpClient okHttpClient;
     @NonNull
     private final TaskCreator taskCreator;
     @NonNull
@@ -192,6 +194,7 @@ public class ContactServiceImpl implements ContactService {
         ApiService apiService,
         LicenseService licenseService,
         APIConnector apiConnector,
+        @NonNull OkHttpClient okHttpClient,
         @NonNull ContactModelRepository contactModelRepository,
         @NonNull TaskCreator taskCreator,
         @NonNull MultiDeviceManager multiDeviceManager
@@ -210,6 +213,7 @@ public class ContactServiceImpl implements ContactService {
         this.apiService = apiService;
         this.licenseService = licenseService;
         this.apiConnector = apiConnector;
+        this.okHttpClient = okHttpClient;
         this.contactModelRepository = contactModelRepository;
         this.taskCreator = taskCreator;
         this.multiDeviceManager = multiDeviceManager;
@@ -573,8 +577,8 @@ public class ContactServiceImpl implements ContactService {
             }
         }
 
-        //get the cached model
-        final ContactModel contact = this.getByIdentity(identity);
+        // get the cached model
+        final @Nullable ContactModel contact = this.getByIdentity(identity);
         synchronized (this.typingIdentities) {
             boolean contains = this.typingIdentities.contains(identity);
             if (isTyping) {
@@ -588,7 +592,9 @@ public class ContactServiceImpl implements ContactService {
             }
         }
 
-        ListenerManager.contactTypingListeners.handle(listener -> listener.onContactIsTyping(contact, isTyping));
+        if (contact != null) {
+            ListenerManager.contactTypingListeners.handle(listener -> listener.onContactIsTyping(contact, isTyping));
+        }
 
         // schedule a new timer task to reset typing state after timeout if necessary
         if (isTyping) {
@@ -600,7 +606,9 @@ public class ContactServiceImpl implements ContactService {
                             typingIdentities.remove(identity);
                         }
 
-                        ListenerManager.contactTypingListeners.handle(listener -> listener.onContactIsTyping(contact, false));
+                        if (contact != null) {
+                            ListenerManager.contactTypingListeners.handle(listener -> listener.onContactIsTyping(contact, false));
+                        }
 
                         synchronized (typingTimerTasks) {
                             typingTimerTasks.remove(identity);
@@ -676,8 +684,7 @@ public class ContactServiceImpl implements ContactService {
         boolean isArchived,
         @NonNull TriggerSource triggerSource
     ) {
-        final ch.threema.data.models.ContactModel contactModel =
-            contactModelRepository.getByIdentity(identity);
+        final ch.threema.data.models.ContactModel contactModel = contactModelRepository.getByIdentity(identity);
         if (contactModel == null) {
             logger.warn(
                 "Cannot set isArchived={} for identity '{}' because contact model is null",
@@ -754,22 +761,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public AccessModel getAccess(@Nullable String identity) {
         if (identity == null) {
-            return new AccessModel() {
-                @Override
-                public boolean canDelete() {
-                    return false;
-                }
-
-                @Override
-                public ValidationMessage[] canNotDeleteReasons() {
-                    return new ValidationMessage[]{
-                        new ValidationMessage(
-                            context.getString(R.string.can_not_delete_contact),
-                            context.getString(R.string.can_not_delete_not_valid)
-                        )
-                    };
-                }
-            };
+            return () -> false;
         } else {
             boolean isInGroup = false;
             Cursor c = this.databaseService.getReadableDatabase().rawQuery(
@@ -790,53 +782,33 @@ public class ContactServiceImpl implements ContactService {
                     public boolean canDelete() {
                         return false;
                     }
-
-                    @Override
-                    public ValidationMessage[] canNotDeleteReasons() {
-                        return new ValidationMessage[]{
-                            new ValidationMessage(
-                                context.getString(R.string.can_not_delete_contact),
-                                context.getString(R.string.can_not_delete_contact_until_in_group)
-                            )
-                        };
-                    }
                 };
             }
         }
 
-        return new AccessModel() {
-            @Override
-            public boolean canDelete() {
-                return true;
-            }
-
-            @Override
-            public ValidationMessage[] canNotDeleteReasons() {
-                return new ValidationMessage[0];
-            }
-        };
+        return () -> true;
     }
 
     @AnyThread
     @Override
-    public Bitmap getAvatar(@Nullable ContactModel contact, @NonNull AvatarOptions options) {
-        if (contact == null) {
+    public Bitmap getAvatar(@Nullable String identity, @NonNull AvatarOptions options) {
+        if (identity == null) {
             return null;
         }
 
         // Check whether we should update the business avatar
-        ch.threema.data.models.ContactModel contactModel = contactModelRepository.getByIdentity(contact.getIdentity());
+        ch.threema.data.models.ContactModel contactModel = contactModelRepository.getByIdentity(identity);
         if (contactModel != null) {
-            ContactModelData data = contactModel.getData().getValue();
+            ContactModelData data = contactModel.getData();
             //check if a business avatar update is necessary
             if (data != null && data.isGatewayContact() && data.isAvatarExpired()) {
-                //simple start
-                UpdateBusinessAvatarRoutine.startUpdate(
+                RuntimeUtil.runOnWorkerThread(() -> UpdateBusinessAvatarRoutine.start(
+                    okHttpClient,
                     contactModel,
-                    this.fileService,
+                    fileService,
                     this,
                     apiService
-                );
+                ));
             }
         }
         // Note that we should not abort if no new contact model can be found as the new model does
@@ -846,47 +818,51 @@ public class ContactServiceImpl implements ContactService {
         // If the custom avatar is requested without default fallback and there is no avatar for
         // this contact, we can return null directly. Important: This is necessary to prevent glide
         // from logging an unnecessary error stack trace.
-        if (options.defaultAvatarPolicy == CUSTOM_AVATAR && !hasAvatarOrContactPhoto(contact)) {
+        if (options.defaultAvatarPolicy == CUSTOM_AVATAR && !hasAvatarOrContactPhoto(identity)) {
             return null;
         }
 
-        return this.avatarCacheService.getContactAvatar(contact, options);
+        return this.avatarCacheService.getIdentityAvatar(identity, options);
     }
 
-    private boolean hasAvatarOrContactPhoto(@Nullable ContactModel contact) {
-        if (contact == null) {
+    private boolean hasAvatarOrContactPhoto(@Nullable String identity) {
+        if (identity == null) {
             return false;
         }
 
-        return fileService.hasUserDefinedProfilePicture(contact.getIdentity()) || fileService.hasContactDefinedProfilePicture(contact.getIdentity());
+        return fileService.hasUserDefinedProfilePicture(identity) || fileService.hasContactDefinedProfilePicture(identity);
     }
 
+    /**
+     * See {@link AvatarService#getAvatarColor(Object)}
+     * <p>
+     * This respects the "isDefaultContactPictureColored" setting. If the setting is
+     * set to `false`, the default (grey) color will be returned.
+     */
     @Override
-    public @ColorInt int getAvatarColor(@Nullable ContactModel contact) {
-        if (this.preferenceService.isDefaultContactPictureColored() && contact != null) {
-            return contact.getThemedColor(context);
+    public @ColorInt int getAvatarColor(@Nullable String identity) {
+        if (this.preferenceService.isDefaultContactPictureColored() && identity != null) {
+            return getIdentityColor(identity);
         }
-        return ColorUtil.getInstance().getCurrentThemeGray(this.context);
+        return IdColor.invalid().getThemedColor(this.context);
     }
 
-    @Override
-    public @ColorInt int getAvatarColor(@Nullable ch.threema.data.models.ContactModel contactModel) {
-        ContactModelData contactModelData = contactModel != null ? contactModel.getData().getValue() : null;
-        if (this.preferenceService.isDefaultContactPictureColored() && contactModelData != null) {
-            return contactModelData.getThemedColor(context);
-        }
-        return ColorUtil.getInstance().getCurrentThemeGray(this.context);
+    private @ColorInt int getIdentityColor(@NonNull String identity) {
+        ContactModel contact = getByIdentity(identity);
+        return contact != null
+            ? contact.getIdColor().getThemedColor(context)
+            : IdColor.ofIdentity(identity).getThemedColor(context);
     }
 
     @AnyThread
     @Override
     public void loadAvatarIntoImage(
-        @NonNull ContactModel model,
+        @NonNull String identity,
         @NonNull ImageView imageView,
         @NonNull AvatarOptions options,
         @NonNull RequestManager requestManager
     ) {
-        avatarCacheService.loadContactAvatarIntoImage(model, imageView, options, requestManager);
+        avatarCacheService.loadIdentityAvatarIntoImage(identity, imageView, options, requestManager);
     }
 
     @Override
@@ -927,8 +903,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @WorkerThread
     public boolean updateAllContactNamesFromAndroidContacts() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             return false;
         }
 
@@ -937,7 +912,7 @@ public class ContactServiceImpl implements ContactService {
         this.contactModelRepository.getAll()
             .stream()
             .filter(contactModel -> {
-                ContactModelData contactModelData = contactModel.getData().getValue();
+                ContactModelData contactModelData = contactModel.getData();
                 return contactModelData != null && contactModelData.isLinkedToAndroidContact();
             })
             .forEach(contactModel -> {
@@ -958,7 +933,7 @@ public class ContactServiceImpl implements ContactService {
         this.contactModelRepository.getAll()
             .stream()
             .filter(contactModel -> {
-                ContactModelData contactModelData = contactModel.getData().getValue();
+                ContactModelData contactModelData = contactModel.getData();
                 return contactModelData != null && contactModelData.isLinkedToAndroidContact();
             })
             .forEach(ch.threema.data.models.ContactModel::removeAndroidContactLink);
@@ -1108,6 +1083,11 @@ public class ContactServiceImpl implements ContactService {
         }
     }
 
+    @Override
+    public boolean showBadge(@Nullable String identity) {
+        return showBadge(getByIdentity(identity));
+    }
+
     /**
      * Get Android contact lookup key Uri in String representation to be used for Notification.Builder.addPerson()
      *
@@ -1117,15 +1097,13 @@ public class ContactServiceImpl implements ContactService {
     @Override
     public @Nullable String getAndroidContactLookupUriString(ContactModel contactModel) {
         String contactLookupUri = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                if (contactModel != null) {
-                    final String androidContactLookupKey = contactModel.getAndroidContactLookupKey();
-                    if (androidContactLookupKey != null) {
-                        Uri lookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, androidContactLookupKey);
-                        if (lookupUri != null) {
-                            contactLookupUri = lookupUri.toString();
-                        }
+        if (ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            if (contactModel != null) {
+                final String androidContactLookupKey = contactModel.getAndroidContactLookupKey();
+                if (androidContactLookupKey != null) {
+                    Uri lookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, androidContactLookupKey);
+                    if (lookupUri != null) {
+                        contactLookupUri = lookupUri.toString();
                     }
                 }
             }
@@ -1180,7 +1158,7 @@ public class ContactServiceImpl implements ContactService {
                 contactStore.addCachedContact(contactModel);
             }
         } catch (APIConnector.HttpConnectionException e) {
-            if (e.getErrorCode() == HttpURLConnection.HTTP_NOT_FOUND) {
+            if (e.getErrorCode() == Http.StatusCode.NOT_FOUND) {
                 logger.warn("Identity fetch for identity '{}' returned 404", identity);
                 throw new MissingPublicKeyException("No public key found");
             } else {
@@ -1263,7 +1241,7 @@ public class ContactServiceImpl implements ContactService {
                     logger.warn("No contact with identity {} found", identity);
                     return;
                 }
-                ContactModelData contactModelData = spammerContactModel.getData().getValue();
+                ContactModelData contactModelData = spammerContactModel.getData();
                 if (contactModelData == null) {
                     logger.warn("Contact model data for identity {} is null", identity);
                     return;
@@ -1271,8 +1249,6 @@ public class ContactServiceImpl implements ContactService {
 
                 apiConnector.reportJunk(identityStore, identity, contactModelData.nickname);
 
-                // Note: This is semantically wrong. Once we support multi-device, we probably
-                //       need to adapt the logic. Protocol discussions are ongoing.
                 spammerContactModel.setAcquaintanceLevelFromLocal(AcquaintanceLevel.GROUP);
 
                 if (onSuccess != null) {
@@ -1421,5 +1397,11 @@ public class ContactServiceImpl implements ContactService {
             logger.error("Failed to query for deleted contacts", exception);
             return new HashSet<>();
         }
+    }
+
+    @Override
+    @NonNull
+    public final ImmutableSet<String> getTypingIdentities() {
+        return ImmutableSet.copyOf(typingIdentities);
     }
 }

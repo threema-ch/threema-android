@@ -22,7 +22,6 @@
 package ch.threema.app.backuprestore.csv;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
@@ -59,6 +58,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -102,7 +102,8 @@ import ch.threema.base.crypto.NonceScope;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.data.repositories.EmojiReactionsRepository;
-import ch.threema.domain.identitybackup.IdentityBackupGenerator;
+import ch.threema.domain.identitybackup.IdentityBackup;
+import ch.threema.storage.ChunkedSequence;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -209,11 +210,6 @@ public class BackupService extends Service {
                 PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
                 if (powerManager != null) {
                     String tag = BuildConfig.APPLICATION_ID + ":backup";
-                    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M && Build.MANUFACTURER.equals("Huawei")) {
-                        // Huawei will not kill your app if your Wakelock has a well known tag
-                        // see https://dontkillmyapp.com/huawei
-                        tag = "LocationManagerService";
-                    }
                     wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, tag);
                     if (wakeLock != null) {
                         wakeLock.acquire(DateUtils.DAY_IN_MILLIS);
@@ -504,10 +500,15 @@ public class BackupService extends Service {
         }
 
         byte[] privateKey = this.userService.getPrivateKey();
-        IdentityBackupGenerator identityBackupGenerator = new IdentityBackupGenerator(identity, privateKey);
-        String backupData = identityBackupGenerator.generateBackup(this.config.getPassword());
+        IdentityBackup.EncryptedIdentityBackup backup = IdentityBackup.encryptIdentityBackup(
+            this.config.getPassword(),
+            new IdentityBackup.PlainBackupData(
+                identity,
+                privateKey
+            )
+        );
 
-        zipOutputStream.addFileFromInputStream(IOUtils.toInputStream(backupData), Tags.IDENTITY_FILE_NAME, false);
+        zipOutputStream.addFileFromInputStream(IOUtils.toInputStream(backup.getData()), Tags.IDENTITY_FILE_NAME, false);
         return true;
     }
 
@@ -692,56 +693,52 @@ public class BackupService extends Service {
                     logger.info("Back up messages for contact #{}", contactCounter);
                     try (final ByteArrayOutputStream messageBuffer = new ByteArrayOutputStream()) {
                         try (final CSVWriter messageCsv = new CSVWriter(new OutputStreamWriter(messageBuffer), messageCsvHeader)) {
+                            try (final ChunkedSequence<MessageModel> messageModels =
+                                     databaseService.getMessageModelFactory().getByIdentity(contactModel.getIdentity())) {
+                                long messageCounter = 0;
+                                for (MessageModel messageModel : messageModels) {
+                                    if (!this.next("backup message " + messageModel.getId())) {
+                                        return false;
+                                    }
 
-                            List<MessageModel> messageModels = this.databaseService
-                                .getMessageModelFactory()
-                                .getByIdentityUnsorted(contactModel.getIdentity());
+                                    String apiMessageId = messageModel.getApiMessageId();
+                                    messageCounter++;
 
-                            logger.info("Found {} messages for contact #{}", messageModels.size(), contactCounter);
+                                    if ((apiMessageId != null && !apiMessageId.isEmpty()) || messageModel.getType() == MessageType.VOIP_STATUS) {
+                                        messageCsv.createRow()
+                                            .write(Tags.TAG_MESSAGE_API_MESSAGE_ID, messageModel.getApiMessageId())
+                                            .write(Tags.TAG_MESSAGE_UID, messageModel.getUid())
+                                            .write(Tags.TAG_MESSAGE_IS_OUTBOX, messageModel.isOutbox())
+                                            .write(Tags.TAG_MESSAGE_IS_READ, messageModel.isRead())
+                                            .write(Tags.TAG_MESSAGE_IS_SAVED, messageModel.isSaved())
+                                            .write(Tags.TAG_MESSAGE_MESSAGE_STATE, messageModel.getState())
+                                            .write(Tags.TAG_MESSAGE_POSTED_AT, messageModel.getPostedAt())
+                                            .write(Tags.TAG_MESSAGE_CREATED_AT, messageModel.getCreatedAt())
+                                            .write(Tags.TAG_MESSAGE_MODIFIED_AT, messageModel.getModifiedAt())
+                                            .write(Tags.TAG_MESSAGE_TYPE, messageModel.getType().toString())
+                                            .write(Tags.TAG_MESSAGE_BODY, messageModel.getBody())
+                                            .write(Tags.TAG_MESSAGE_IS_STATUS_MESSAGE, messageModel.isStatusMessage())
+                                            .write(Tags.TAG_MESSAGE_CAPTION, messageModel.getCaption())
+                                            .write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, messageModel.getQuotedMessageId())
+                                            .write(Tags.TAG_MESSAGE_DELIVERED_AT, messageModel.getDeliveredAt())
+                                            .write(Tags.TAG_MESSAGE_READ_AT, messageModel.getReadAt())
+                                            .write(Tags.TAG_MESSAGE_DISPLAY_TAGS, messageModel.getDisplayTags())
+                                            .write(Tags.TAG_MESSAGE_EDITED_AT, messageModel.getEditedAt())
+                                            .write(Tags.TAG_MESSAGE_DELETED_AT, messageModel.getDeletedAt())
+                                            .write();
+                                    }
 
-                            long messageCounter = 0;
-                            for (MessageModel messageModel : messageModels) {
-                                if (!this.next("backup message " + messageModel.getId())) {
-                                    return false;
-                                }
+                                    this.backupMediaFile(
+                                        config,
+                                        zipOutputStream,
+                                        Tags.MESSAGE_MEDIA_FILE_PREFIX,
+                                        Tags.MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
+                                        messageModel
+                                    );
 
-                                String apiMessageId = messageModel.getApiMessageId();
-                                messageCounter++;
-
-                                if ((apiMessageId != null && !apiMessageId.isEmpty()) || messageModel.getType() == MessageType.VOIP_STATUS) {
-                                    messageCsv.createRow()
-                                        .write(Tags.TAG_MESSAGE_API_MESSAGE_ID, messageModel.getApiMessageId())
-                                        .write(Tags.TAG_MESSAGE_UID, messageModel.getUid())
-                                        .write(Tags.TAG_MESSAGE_IS_OUTBOX, messageModel.isOutbox())
-                                        .write(Tags.TAG_MESSAGE_IS_READ, messageModel.isRead())
-                                        .write(Tags.TAG_MESSAGE_IS_SAVED, messageModel.isSaved())
-                                        .write(Tags.TAG_MESSAGE_MESSAGE_STATE, messageModel.getState())
-                                        .write(Tags.TAG_MESSAGE_POSTED_AT, messageModel.getPostedAt())
-                                        .write(Tags.TAG_MESSAGE_CREATED_AT, messageModel.getCreatedAt())
-                                        .write(Tags.TAG_MESSAGE_MODIFIED_AT, messageModel.getModifiedAt())
-                                        .write(Tags.TAG_MESSAGE_TYPE, messageModel.getType().toString())
-                                        .write(Tags.TAG_MESSAGE_BODY, messageModel.getBody())
-                                        .write(Tags.TAG_MESSAGE_IS_STATUS_MESSAGE, messageModel.isStatusMessage())
-                                        .write(Tags.TAG_MESSAGE_CAPTION, messageModel.getCaption())
-                                        .write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, messageModel.getQuotedMessageId())
-                                        .write(Tags.TAG_MESSAGE_DELIVERED_AT, messageModel.getDeliveredAt())
-                                        .write(Tags.TAG_MESSAGE_READ_AT, messageModel.getReadAt())
-                                        .write(Tags.TAG_MESSAGE_DISPLAY_TAGS, messageModel.getDisplayTags())
-                                        .write(Tags.TAG_MESSAGE_EDITED_AT, messageModel.getEditedAt())
-                                        .write(Tags.TAG_MESSAGE_DELETED_AT, messageModel.getDeletedAt())
-                                        .write();
-                                }
-
-                                this.backupMediaFile(
-                                    config,
-                                    zipOutputStream,
-                                    Tags.MESSAGE_MEDIA_FILE_PREFIX,
-                                    Tags.MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
-                                    messageModel
-                                );
-
-                                if ((messageCounter < 1000 && messageCounter % 100 == 0) || (messageCounter < 50000 && messageCounter % 1000 == 0)) {
-                                    logger.info("Backed up {} messages for contact #{}", messageCounter, contactCounter);
+                                    if ((messageCounter < 1000 && messageCounter % 100 == 0) || (messageCounter < 50000 && messageCounter % 1000 == 0)) {
+                                        logger.info("Backed up {} messages for contact #{}", messageCounter, contactCounter);
+                                    }
                                 }
                             }
                         }
@@ -874,51 +871,50 @@ public class BackupService extends Service {
                     // Back up group messages
                     try (final ByteArrayOutputStream groupMessageBuffer = new ByteArrayOutputStream()) {
                         try (final CSVWriter groupMessageCsv = new CSVWriter(new OutputStreamWriter(groupMessageBuffer), groupMessageCsvHeader)) {
-                            List<GroupMessageModel> groupMessageModels = this.databaseService
-                                .getGroupMessageModelFactory()
-                                .getByGroupIdUnsorted(groupModel.getId());
+                            try (final ChunkedSequence<GroupMessageModel> groupMessageModels =
+                                     databaseService.getGroupMessageModelFactory().getByGroupId(groupModel.getId())) {
+                                for (GroupMessageModel groupMessageModel : groupMessageModels) {
+                                    if (!this.next("backup group message " + groupMessageModel.getUid())) {
+                                        return false;
+                                    }
 
-                            for (GroupMessageModel groupMessageModel : groupMessageModels) {
-                                if (!this.next("backup group message " + groupMessageModel.getUid())) {
-                                    return false;
+                                    String groupMessageStates = "";
+                                    if (groupMessageModel.getGroupMessageStates() != null) {
+                                        groupMessageStates = new JSONObject(groupMessageModel.getGroupMessageStates()).toString();
+                                    }
+
+                                    groupMessageCsv.createRow()
+                                        .write(Tags.TAG_MESSAGE_API_MESSAGE_ID, groupMessageModel.getApiMessageId())
+                                        .write(Tags.TAG_MESSAGE_UID, groupMessageModel.getUid())
+                                        .write(Tags.TAG_MESSAGE_IDENTITY, groupMessageModel.getIdentity())
+                                        .write(Tags.TAG_MESSAGE_IS_OUTBOX, groupMessageModel.isOutbox())
+                                        .write(Tags.TAG_MESSAGE_IS_READ, groupMessageModel.isRead())
+                                        .write(Tags.TAG_MESSAGE_IS_SAVED, groupMessageModel.isSaved())
+                                        .write(Tags.TAG_MESSAGE_MESSAGE_STATE, groupMessageModel.getState())
+                                        .write(Tags.TAG_MESSAGE_POSTED_AT, groupMessageModel.getPostedAt())
+                                        .write(Tags.TAG_MESSAGE_CREATED_AT, groupMessageModel.getCreatedAt())
+                                        .write(Tags.TAG_MESSAGE_MODIFIED_AT, groupMessageModel.getModifiedAt())
+                                        .write(Tags.TAG_MESSAGE_TYPE, groupMessageModel.getType())
+                                        .write(Tags.TAG_MESSAGE_BODY, groupMessageModel.getBody())
+                                        .write(Tags.TAG_MESSAGE_IS_STATUS_MESSAGE, groupMessageModel.isStatusMessage())
+                                        .write(Tags.TAG_MESSAGE_CAPTION, groupMessageModel.getCaption())
+                                        .write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, groupMessageModel.getQuotedMessageId())
+                                        .write(Tags.TAG_MESSAGE_DELIVERED_AT, groupMessageModel.getDeliveredAt())
+                                        .write(Tags.TAG_MESSAGE_READ_AT, groupMessageModel.getReadAt())
+                                        .write(Tags.TAG_GROUP_MESSAGE_STATES, groupMessageStates)
+                                        .write(Tags.TAG_MESSAGE_DISPLAY_TAGS, groupMessageModel.getDisplayTags())
+                                        .write(Tags.TAG_MESSAGE_EDITED_AT, groupMessageModel.getEditedAt())
+                                        .write(Tags.TAG_MESSAGE_DELETED_AT, groupMessageModel.getDeletedAt())
+                                        .write();
+
+                                    this.backupMediaFile(
+                                        config,
+                                        zipOutputStream,
+                                        Tags.GROUP_MESSAGE_MEDIA_FILE_PREFIX,
+                                        Tags.GROUP_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
+                                        groupMessageModel
+                                    );
                                 }
-
-                                String groupMessageStates = "";
-                                if (groupMessageModel.getGroupMessageStates() != null) {
-                                    groupMessageStates = new JSONObject(groupMessageModel.getGroupMessageStates()).toString();
-                                }
-
-                                groupMessageCsv.createRow()
-                                    .write(Tags.TAG_MESSAGE_API_MESSAGE_ID, groupMessageModel.getApiMessageId())
-                                    .write(Tags.TAG_MESSAGE_UID, groupMessageModel.getUid())
-                                    .write(Tags.TAG_MESSAGE_IDENTITY, groupMessageModel.getIdentity())
-                                    .write(Tags.TAG_MESSAGE_IS_OUTBOX, groupMessageModel.isOutbox())
-                                    .write(Tags.TAG_MESSAGE_IS_READ, groupMessageModel.isRead())
-                                    .write(Tags.TAG_MESSAGE_IS_SAVED, groupMessageModel.isSaved())
-                                    .write(Tags.TAG_MESSAGE_MESSAGE_STATE, groupMessageModel.getState())
-                                    .write(Tags.TAG_MESSAGE_POSTED_AT, groupMessageModel.getPostedAt())
-                                    .write(Tags.TAG_MESSAGE_CREATED_AT, groupMessageModel.getCreatedAt())
-                                    .write(Tags.TAG_MESSAGE_MODIFIED_AT, groupMessageModel.getModifiedAt())
-                                    .write(Tags.TAG_MESSAGE_TYPE, groupMessageModel.getType())
-                                    .write(Tags.TAG_MESSAGE_BODY, groupMessageModel.getBody())
-                                    .write(Tags.TAG_MESSAGE_IS_STATUS_MESSAGE, groupMessageModel.isStatusMessage())
-                                    .write(Tags.TAG_MESSAGE_CAPTION, groupMessageModel.getCaption())
-                                    .write(Tags.TAG_MESSAGE_QUOTED_MESSAGE_ID, groupMessageModel.getQuotedMessageId())
-                                    .write(Tags.TAG_MESSAGE_DELIVERED_AT, groupMessageModel.getDeliveredAt())
-                                    .write(Tags.TAG_MESSAGE_READ_AT, groupMessageModel.getReadAt())
-                                    .write(Tags.TAG_GROUP_MESSAGE_STATES, groupMessageStates)
-                                    .write(Tags.TAG_MESSAGE_DISPLAY_TAGS, groupMessageModel.getDisplayTags())
-                                    .write(Tags.TAG_MESSAGE_EDITED_AT, groupMessageModel.getEditedAt())
-                                    .write(Tags.TAG_MESSAGE_DELETED_AT, groupMessageModel.getDeletedAt())
-                                    .write();
-
-                                this.backupMediaFile(
-                                    config,
-                                    zipOutputStream,
-                                    Tags.GROUP_MESSAGE_MEDIA_FILE_PREFIX,
-                                    Tags.GROUP_MESSAGE_MEDIA_THUMBNAIL_FILE_PREFIX,
-                                    groupMessageModel
-                                );
                             }
                         }
 
@@ -1596,7 +1592,7 @@ public class BackupService extends Service {
                     sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, backupFile.getUri()));
 
                     // Completed successfully!
-                    preferenceService.setLastDataBackupDate(new Date());
+                    preferenceService.setLastDataBackupTimestamp(Instant.now());
                     showBackupSuccessNotification();
                     logger.info("Backup completed");
                 } else {
@@ -1653,9 +1649,9 @@ public class BackupService extends Service {
         cancelIntent.putExtra(EXTRA_ID_CANCEL, true);
         PendingIntent cancelPendingIntent;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            cancelPendingIntent = PendingIntent.getForegroundService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+            cancelPendingIntent = PendingIntent.getForegroundService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         } else {
-            cancelPendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+            cancelPendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         }
 
         notificationBuilder = new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS)
@@ -1718,7 +1714,7 @@ public class BackupService extends Service {
         }
 
         Intent backupIntent = new Intent(this, HomeActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder =
             new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
@@ -1748,7 +1744,7 @@ public class BackupService extends Service {
         String text;
 
         Intent backupIntent = new Intent(this, HomeActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder =
             new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)

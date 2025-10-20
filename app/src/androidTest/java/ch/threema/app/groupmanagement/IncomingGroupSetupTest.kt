@@ -28,6 +28,7 @@ import ch.threema.app.listeners.GroupListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
+import ch.threema.base.crypto.NaCl
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.ContactSyncState
@@ -38,9 +39,9 @@ import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.GroupModel
-import com.neilalexander.jnacl.NaCl
 import java.util.Date
 import junit.framework.TestCase
 import kotlin.test.AfterTest
@@ -211,7 +212,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
             GroupIdentity(groupAB.groupCreator.identity, groupAB.apiGroupId.toLong()),
         )
         assertNotNull(afterKicked)
-        assertEquals(GroupModel.UserState.KICKED, afterKicked.data.value?.userState)
+        assertEquals(GroupModel.UserState.KICKED, afterKicked.data?.userState)
 
         // Assert that group conversations did not appear, disappear, or change their name
         assertGroupConversations(scenario, initialGroups, "no changes")
@@ -437,7 +438,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         // Get the group model of the group and check that it exists and the revoked identity is not listed as a member
         val newGroupModel = groupModelRepository.getByCreatorIdentityAndId(newGroup.groupCreator.identity, newGroup.apiGroupId)
         assertNotNull(newGroupModel)
-        val data = newGroupModel.data.value
+        val data = newGroupModel.data
         assertNotNull(data)
         assertFalse(data.otherMembers.contains(revokedContactModelData.identity))
     }
@@ -447,7 +448,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
             groupModelRepository.getByCreatorIdentityAndId(
                 newGroup.groupCreator.identity,
                 newGroup.apiGroupId,
-            )?.data?.value,
+            )?.data,
         )
 
         val scenario = startScenario()
@@ -530,7 +531,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
 
     private class GroupSetupTracker(
         private val group: TestGroup?,
-        private val myIdentity: String,
+        private val myIdentity: Identity,
         private val expectCreate: Boolean,
         private val expectKick: Boolean,
         private val newMembers: List<String>,
@@ -646,7 +647,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
 
     private val revokedContactModelData = ContactModelData(
         identity = "01238765",
-        publicKey = ByteArray(NaCl.PUBLICKEYBYTES),
+        publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES),
         createdAt = Date(),
         firstName = "1234",
         lastName = "8765",

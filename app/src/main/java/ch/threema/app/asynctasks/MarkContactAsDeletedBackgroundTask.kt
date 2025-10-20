@@ -55,13 +55,14 @@ import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.stores.DHSessionStoreException
 import ch.threema.domain.stores.DHSessionStoreInterface
 import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.domain.types.Identity
 import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.ContactModel
 import java.lang.ref.WeakReference
 
 private const val DIALOG_TAG_DELETE_CONTACT = "dc"
 
-private val logger = LoggingUtil.getThreemaLogger("DeleteContactBackgroundTask")
+private val logger = LoggingUtil.getThreemaLogger("MarkContactAsDeletedBackgroundTask")
 
 /**
  * The collection of required services to delete a contact.
@@ -200,7 +201,7 @@ open class MarkContactAsDeletedBackgroundTask(
         cancelled = true
     }
 
-    private fun markContactAsDeleted(identity: String): Boolean {
+    private fun markContactAsDeleted(identity: Identity): Boolean {
         val contactModel = contactModelRepository.getByIdentity(identity) ?: return false
 
         // Note that the conversation needs to be deleted before the downgrade due to the old model
@@ -277,7 +278,7 @@ open class DeleteAllContactsBackgroundTask(
      *
      * This should only be called after the contact was successfully removed from the database.
      */
-    private fun cleanContactLeftovers(identity: String) {
+    private fun cleanContactLeftovers(identity: Identity) {
         deleteContactServices.contactService.invalidateCache(identity)
         deleteContactServices.conversationService.delete(identity)
 

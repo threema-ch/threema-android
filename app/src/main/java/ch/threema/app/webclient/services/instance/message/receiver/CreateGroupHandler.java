@@ -41,7 +41,7 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.groupflows.GroupCreateProperties;
-import ch.threema.app.groupflows.ProfilePicture;
+import ch.threema.app.profilepicture.CheckedProfilePicture;
 import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.utils.RuntimeUtil;
@@ -133,7 +133,7 @@ public class CreateGroupHandler extends MessageReceiver {
                 ThreemaApplication.getAppContext(),
                 new GroupCreateProperties(
                     name != null ? name : "",
-                    new ProfilePicture(avatar),
+                    CheckedProfilePicture.getOrConvertFromBytes(avatar),
                     identities
                 )
             );

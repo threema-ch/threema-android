@@ -23,6 +23,7 @@ package ch.threema.app.services
 
 import android.content.Context
 import ch.threema.app.tasks.ReflectSettingsSyncTask
+import ch.threema.domain.types.Identity
 
 /**
  * Manage blocked identities.
@@ -38,7 +39,7 @@ interface BlockedIdentitiesService {
      * @param identity the identity to block
      * @param context if provided, a toast is shown
      */
-    fun blockIdentity(identity: String, context: Context? = null)
+    fun blockIdentity(identity: Identity, context: Context? = null)
 
     /**
      * Unblock an identity. If a [context] is provided, a toast is shown.
@@ -49,12 +50,12 @@ interface BlockedIdentitiesService {
      * @param identity the identity to unblock
      * @param context if provided, a toast is shown
      */
-    fun unblockIdentity(identity: String, context: Context? = null)
+    fun unblockIdentity(identity: Identity, context: Context? = null)
 
     /**
      * Checks whether the [identity] is blocked or not.
      */
-    fun isBlocked(identity: String): Boolean
+    fun isBlocked(identity: Identity): Boolean
 
     /**
      * Blocks the identity if currently not blocked or vice versa. If a [context] is provided, this
@@ -63,16 +64,16 @@ interface BlockedIdentitiesService {
      * @param identity the identity that will change from blocked to unblocked or vice versa
      * @param context if provided, a toast is shown
      */
-    fun toggleBlocked(identity: String, context: Context? = null)
+    fun toggleBlocked(identity: Identity, context: Context? = null)
 
     /**
      * Get all blocked identities.
      */
-    fun getAllBlockedIdentities(): Set<String>
+    fun getAllBlockedIdentities(): Set<Identity>
 
     /**
      * Persist the blocked identities. This replaces all currently blocked identities with
      * [blockedIdentities]. Note that there is no reflection done.
      */
-    fun persistBlockedIdentities(blockedIdentities: Set<String>)
+    fun persistBlockedIdentities(blockedIdentities: Set<Identity>)
 }

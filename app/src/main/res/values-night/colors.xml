@@ -26,4 +26,7 @@
     <color name="emojireactions_background_checked">@color/material_grey_500</color>
     <color name="emojireactions_background_pressed">@color/material_grey_400</color>
     <color name="emojireactions_popup_background_selected">@color/material_grey_500</color>
+
+    <!-- EmptyView -->
+    <color name="empty_view_icon_tint">@color/brand_grey_800</color>
 </resources>

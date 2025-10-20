@@ -301,14 +301,14 @@ public class TextEntryDialog extends ThreemaDialogFragment {
 
         editText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(@NonNull CharSequence text, int start, int before, int count) {
                 ActivityService.activityUserInteract(activity);
             }
 
             @Override
-            public void afterTextChanged(Editable s) {
+            public void afterTextChanged(@NonNull Editable editable) {
                 if (minLength > 0) {
-                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(s != null && s.length() >= minLength);
+                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(editable.length() >= minLength);
                 }
             }
         });
@@ -319,8 +319,8 @@ public class TextEntryDialog extends ThreemaDialogFragment {
             editText.addTextChangedListener(new PhoneNumberFormattingTextWatcher(localeService.getCountryIsoCode()));
             editText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
-                public void afterTextChanged(Editable s) {
-                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(localeService.validatePhoneNumber(s.toString()));
+                public void afterTextChanged(@NonNull Editable editable) {
+                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(localeService.validatePhoneNumber(editable.toString()));
                 }
             });
         }

@@ -21,7 +21,7 @@
 
 package ch.threema.data
 
-import android.text.format.DateUtils
+import ch.threema.app.ThreemaApplication
 import ch.threema.app.listeners.ContactListener
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ListenerManager
@@ -30,6 +30,8 @@ import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceStore
 import ch.threema.common.now
+import ch.threema.common.plus
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
@@ -45,10 +47,13 @@ import ch.threema.domain.taskmanager.QueueSendCompleteListener
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import io.mockk.every
 import io.mockk.mockk
-import java.util.Date
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
+import java.time.Instant
 import kotlin.random.Random
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -60,6 +65,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
+import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 
@@ -67,25 +73,25 @@ import kotlinx.coroutines.Deferred
  * Track calls to the contact listener.
  */
 private class ContactListenerTracker {
-    val onNew = mutableListOf<String>()
-    val onModified = mutableListOf<String>()
-    val onAvatarChanged = mutableListOf<String>()
-    val onRemoved = mutableListOf<String>()
+    val onNew = mutableListOf<Identity>()
+    val onModified = mutableListOf<Identity>()
+    val onAvatarChanged = mutableListOf<Identity>()
+    val onRemoved = mutableListOf<Identity>()
 
     val listener = object : ContactListener {
-        override fun onNew(identity: String) {
+        override fun onNew(identity: Identity) {
             onNew.add(identity)
         }
 
-        override fun onModified(identity: String) {
+        override fun onModified(identity: Identity) {
             onModified.add(identity)
         }
 
-        override fun onAvatarChanged(identity: String) {
+        override fun onAvatarChanged(identity: Identity) {
             onAvatarChanged.add(identity)
         }
 
-        override fun onRemoved(identity: String) {
+        override fun onRemoved(identity: Identity) {
             onRemoved.add(identity)
         }
     }
@@ -148,7 +154,7 @@ class ContactModelTest {
                 firstName = "Test",
                 lastName = "Contact",
                 nickname = null,
-                colorIndex = 13u,
+                idColor = IdColor(13),
                 verificationLevel = VerificationLevel.FULLY_VERIFIED,
                 workVerificationLevel = WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
                 identityType = IdentityType.NORMAL,
@@ -177,11 +183,16 @@ class ContactModelTest {
     fun beforeEach() {
         this.contactListenerTracker = ContactListenerTracker()
         this.contactListenerTracker.subscribe()
+
+        // TODO(ANDR-4219): We have to mock ServiceManager, as it is sneakily referenced somewhere deep down the stack. This needs to be cleaned up.
+        mockkObject(ThreemaApplication)
+        every { ThreemaApplication.getServiceManager() } returns null
     }
 
     @AfterTest
     fun afterEach() {
         this.contactListenerTracker.unsubscribe()
+        unmockkObject(ThreemaApplication)
     }
 
     /**
@@ -205,7 +216,7 @@ class ContactModelTest {
                 firstName = "Test",
                 lastName = "Contact",
                 nickname = null,
-                colorIndex = 13u,
+                idColor = IdColor(13),
                 verificationLevel = VerificationLevel.FULLY_VERIFIED,
                 workVerificationLevel = WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
                 identityType = IdentityType.NORMAL,
@@ -229,14 +240,14 @@ class ContactModelTest {
             coreServiceManagerMock,
         )
 
-        val value = contact.data.value!!
+        val value = contact.data!!
         assertEquals("TESTTEST", value.identity)
         assertEquals(publicKey, value.publicKey)
         assertEquals(createdAt, value.createdAt)
         assertEquals("Test", value.firstName)
         assertEquals("Contact", value.lastName)
         assertNull(value.nickname)
-        assertEquals(13u, value.colorIndex)
+        assertEquals(IdColor(13), value.idColor)
         assertEquals(VerificationLevel.FULLY_VERIFIED, value.verificationLevel)
         assertEquals(WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED, value.workVerificationLevel)
         assertEquals(IdentityType.NORMAL, value.identityType)
@@ -255,22 +266,22 @@ class ContactModelTest {
     @Test
     fun testSetNickname() {
         val contact = createTestContact()
-        assertEquals(null, contact.data.value!!.nickname)
+        assertEquals(null, contact.data!!.nickname)
         assertEquals(0, contactListenerTracker.onModified.size)
 
         // Setting nickname should update data and notify modification listeners
         contact.setNicknameFromSync("nicky")
-        assertEquals("nicky", contact.data.value!!.nickname)
+        assertEquals("nicky", contact.data!!.nickname)
         assertEquals(1, contactListenerTracker.onModified.size)
 
         // Setting nickname again to the same value should not notify listeners
         contact.setNicknameFromSync("nicky")
-        assertEquals("nicky", contact.data.value!!.nickname)
+        assertEquals("nicky", contact.data!!.nickname)
         assertEquals(1, contactListenerTracker.onModified.size)
 
         // Removing nickname should notify listeners
         contact.setNicknameFromSync(null)
-        assertEquals(null, contact.data.value!!.nickname)
+        assertEquals(null, contact.data!!.nickname)
         assertEquals(2, contactListenerTracker.onModified.size)
 
         // All listeners should have been notified for our test contact
@@ -284,7 +295,7 @@ class ContactModelTest {
         assertChangeFromLocal(
             createTestContact(),
             { c -> c.setNameFromLocal("First", "Last") },
-            { c -> "First" == c.data.value!!.firstName && "Last" == c.data.value!!.lastName },
+            { c -> "First" == c.data!!.firstName && "Last" == c.data!!.lastName },
             ReflectContactSyncUpdateTask.ReflectNameUpdate::class.java,
         )
     }
@@ -294,13 +305,13 @@ class ContactModelTest {
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setFirstNameFromSync("First") },
-            { c -> "First" == c.data.value!!.firstName },
+            { c -> "First" == c.data!!.firstName },
         )
         contactListenerTracker.onModified.clear()
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setLastNameFromSync("Last") },
-            { c -> "Last" == c.data.value!!.lastName },
+            { c -> "Last" == c.data!!.lastName },
         )
     }
 
@@ -309,7 +320,7 @@ class ContactModelTest {
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setNicknameFromSync("NewNickname") },
-            { c -> "NewNickname" == c.data.value!!.nickname },
+            { c -> "NewNickname" == c.data!!.nickname },
         )
     }
 
@@ -318,7 +329,7 @@ class ContactModelTest {
         assertChangeFromLocal(
             createTestContact(),
             { c -> c.setVerificationLevelFromLocal(VerificationLevel.SERVER_VERIFIED) },
-            { c -> VerificationLevel.SERVER_VERIFIED == c.data.value!!.verificationLevel },
+            { c -> VerificationLevel.SERVER_VERIFIED == c.data!!.verificationLevel },
             ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class.java,
         )
     }
@@ -328,7 +339,7 @@ class ContactModelTest {
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setVerificationLevelFromSync(VerificationLevel.SERVER_VERIFIED) },
-            { c -> VerificationLevel.SERVER_VERIFIED == c.data.value!!.verificationLevel },
+            { c -> VerificationLevel.SERVER_VERIFIED == c.data!!.verificationLevel },
         )
     }
 
@@ -337,7 +348,7 @@ class ContactModelTest {
         assertChangeFromLocal(
             createTestContact(),
             { c -> c.setWorkVerificationLevelFromLocal(WorkVerificationLevel.NONE) },
-            { c -> WorkVerificationLevel.NONE == c.data.value!!.workVerificationLevel },
+            { c -> WorkVerificationLevel.NONE == c.data!!.workVerificationLevel },
             ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate::class.java,
         )
     }
@@ -347,7 +358,7 @@ class ContactModelTest {
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setWorkVerificationLevelFromSync(WorkVerificationLevel.NONE) },
-            { c -> WorkVerificationLevel.NONE == c.data.value!!.workVerificationLevel },
+            { c -> WorkVerificationLevel.NONE == c.data!!.workVerificationLevel },
         )
     }
 
@@ -356,7 +367,7 @@ class ContactModelTest {
         assertChangeFromLocal(
             createTestContact(),
             { c -> c.setIdentityTypeFromLocal(IdentityType.WORK) },
-            { c -> IdentityType.WORK == c.data.value!!.identityType },
+            { c -> IdentityType.WORK == c.data!!.identityType },
             ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate::class.java,
         )
     }
@@ -366,7 +377,7 @@ class ContactModelTest {
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setIdentityTypeFromSync(IdentityType.WORK) },
-            { c -> IdentityType.WORK == c.data.value!!.identityType },
+            { c -> IdentityType.WORK == c.data!!.identityType },
         )
     }
 
@@ -375,7 +386,7 @@ class ContactModelTest {
         assertChangeFromLocal(
             createTestContact(),
             { c -> c.setAcquaintanceLevelFromLocal(AcquaintanceLevel.GROUP) },
-            { c -> AcquaintanceLevel.GROUP == c.data.value!!.acquaintanceLevel },
+            { c -> AcquaintanceLevel.GROUP == c.data!!.acquaintanceLevel },
             ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate::class.java,
             shouldTriggerModifyListener = false,
         )
@@ -386,7 +397,7 @@ class ContactModelTest {
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setAcquaintanceLevelFromSync(AcquaintanceLevel.GROUP) },
-            { c -> AcquaintanceLevel.GROUP == c.data.value!!.acquaintanceLevel },
+            { c -> AcquaintanceLevel.GROUP == c.data!!.acquaintanceLevel },
             shouldTriggerModifyListener = false,
         )
     }
@@ -396,7 +407,7 @@ class ContactModelTest {
         assertChangeFromLocal(
             createTestContact(),
             { c -> c.setActivityStateFromLocal(IdentityState.INVALID) },
-            { c -> IdentityState.INVALID == c.data.value!!.activityState },
+            { c -> IdentityState.INVALID == c.data!!.activityState },
             ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class.java,
         )
     }
@@ -406,7 +417,7 @@ class ContactModelTest {
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setActivityStateFromSync(IdentityState.INVALID) },
-            { c -> IdentityState.INVALID == c.data.value!!.activityState },
+            { c -> IdentityState.INVALID == c.data!!.activityState },
         )
     }
 
@@ -415,7 +426,7 @@ class ContactModelTest {
         assertChangeFromLocal(
             createTestContact(),
             { c -> c.setFeatureMaskFromLocal(12) },
-            { c -> 12 == c.data.value!!.featureMask.toInt() },
+            { c -> 12 == c.data!!.featureMask.toInt() },
             ReflectContactSyncUpdateTask.ReflectFeatureMaskUpdate::class.java,
         )
     }
@@ -425,7 +436,7 @@ class ContactModelTest {
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setFeatureMaskFromSync(12u) },
-            { c -> 12 == c.data.value!!.featureMask.toInt() },
+            { c -> 12 == c.data!!.featureMask.toInt() },
         )
     }
 
@@ -434,7 +445,7 @@ class ContactModelTest {
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setSyncStateFromSync(ContactSyncState.CUSTOM) },
-            { c -> ContactSyncState.CUSTOM == c.data.value!!.syncState },
+            { c -> ContactSyncState.CUSTOM == c.data!!.syncState },
             shouldTriggerModifyListener = false,
         )
     }
@@ -444,7 +455,7 @@ class ContactModelTest {
         assertChangeFromLocal(
             createTestContact(),
             { c -> c.setReadReceiptPolicyFromLocal(ReadReceiptPolicy.DEFAULT) },
-            { c -> ReadReceiptPolicy.DEFAULT == c.data.value!!.readReceiptPolicy },
+            { c -> ReadReceiptPolicy.DEFAULT == c.data!!.readReceiptPolicy },
             ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class.java,
         )
     }
@@ -454,7 +465,7 @@ class ContactModelTest {
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setReadReceiptPolicyFromSync(ReadReceiptPolicy.DEFAULT) },
-            { c -> ReadReceiptPolicy.DEFAULT == c.data.value!!.readReceiptPolicy },
+            { c -> ReadReceiptPolicy.DEFAULT == c.data!!.readReceiptPolicy },
         )
     }
 
@@ -463,7 +474,7 @@ class ContactModelTest {
         assertChangeFromLocal(
             createTestContact(),
             { c -> c.setTypingIndicatorPolicyFromLocal(TypingIndicatorPolicy.DONT_SEND) },
-            { c -> TypingIndicatorPolicy.DONT_SEND == c.data.value!!.typingIndicatorPolicy },
+            { c -> TypingIndicatorPolicy.DONT_SEND == c.data!!.typingIndicatorPolicy },
             ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class.java,
         )
     }
@@ -473,7 +484,7 @@ class ContactModelTest {
         assertChangeFromSync(
             createTestContact(),
             { c -> c.setTypingIndicatorPolicyFromSync(TypingIndicatorPolicy.DONT_SEND) },
-            { c -> TypingIndicatorPolicy.DONT_SEND == c.data.value!!.typingIndicatorPolicy },
+            { c -> TypingIndicatorPolicy.DONT_SEND == c.data!!.typingIndicatorPolicy },
         )
     }
 
@@ -483,24 +494,24 @@ class ContactModelTest {
         contact.setNicknameFromSync("nicky")
 
         contact.setNameFromLocal("Test", "Contact")
-        assertEquals("Test Contact", contact.data.value!!.getDisplayName())
+        assertEquals("Test Contact", contact.data!!.getDisplayName())
 
         contact.setNameFromLocal("", "Lastname")
-        assertEquals("Lastname", contact.data.value!!.getDisplayName())
+        assertEquals("Lastname", contact.data!!.getDisplayName())
 
         contact.setNameFromLocal("", "")
-        assertEquals("~nicky", contact.data.value!!.getDisplayName())
+        assertEquals("~nicky", contact.data!!.getDisplayName())
 
         contact.setNicknameFromSync(null)
-        assertEquals(contact.data.value!!.identity, contact.data.value!!.getDisplayName())
+        assertEquals(contact.data!!.identity, contact.data!!.getDisplayName())
 
-        contact.setNicknameFromSync(contact.data.value!!.identity)
-        assertEquals(contact.data.value!!.identity, contact.data.value!!.getDisplayName())
+        contact.setNicknameFromSync(contact.data!!.identity)
+        assertEquals(contact.data!!.identity, contact.data!!.getDisplayName())
     }
 
     @Test
     fun testConstructorValidateIdentity() {
-        val data = createTestContact().data.value!!.copy(identity = "AAAAAAAA")
+        val data = createTestContact().data!!.copy(identity = "AAAAAAAA")
         assertFailsWith<AssertionError> {
             ContactModel(
                 identity = "BBBBBBBB",
@@ -518,13 +529,13 @@ class ContactModelTest {
 
         assertEquals(0, contactListenerTracker.onModified.size)
 
-        contact.data.value!!.let {
+        contact.data!!.let {
             assertNull(it.androidContactLookupKey)
             assertFalse { it.isLinkedToAndroidContact() }
         }
 
         contact.setAndroidLookupKey("foo/bar")
-        contact.data.value!!.let {
+        contact.data!!.let {
             assertEquals("foo/bar", it.androidContactLookupKey)
             assertTrue { it.isLinkedToAndroidContact() }
         }
@@ -539,18 +550,18 @@ class ContactModelTest {
         val contact = createTestContact()
 
         // Initially null
-        assertNull(contact.data.value!!.androidContactLookupKey)
+        assertNull(contact.data!!.androidContactLookupKey)
 
         // Set date
-        val inOneDay = Date(System.currentTimeMillis() + DateUtils.DAY_IN_MILLIS)
+        val inOneDay = Instant.now() + 1.days
         contact.setLocalAvatarExpires(inOneDay)
-        assertEquals(inOneDay.time, contact.data.value!!.localAvatarExpires?.time)
-        assertFalse(contact.data.value?.isAvatarExpired() ?: fail("No data"))
+        assertEquals(inOneDay, contact.data!!.localAvatarExpires?.toInstant())
+        assertFalse(contact.data?.isAvatarExpired() ?: fail("No data"))
 
         // Reset to null
         contact.setLocalAvatarExpires(null)
-        assertNull(contact.data.value!!.androidContactLookupKey)
-        assertTrue(contact.data.value?.isAvatarExpired() ?: fail("No data"))
+        assertNull(contact.data!!.androidContactLookupKey)
+        assertTrue(contact.data?.isAvatarExpired() ?: fail("No data"))
 
         // Change listener not called
         assertEquals(0, contactListenerTracker.onModified.size)
@@ -564,11 +575,11 @@ class ContactModelTest {
         val contact = createTestContact(isRestored = true)
 
         // Initially true
-        assertTrue { contact.data.value!!.isRestored }
+        assertTrue { contact.data!!.isRestored }
 
         // Clear
         contact.clearIsRestored()
-        assertFalse { contact.data.value!!.isRestored }
+        assertFalse { contact.data!!.isRestored }
 
         // Change listener not called
         assertEquals(0, contactListenerTracker.onModified.size)
@@ -580,14 +591,14 @@ class ContactModelTest {
     @Test
     fun testSetProfilePictureBlobId() {
         val contact = createTestContact()
-        assertEquals(null, contact.data.value!!.profilePictureBlobId)
+        assertEquals(null, contact.data!!.profilePictureBlobId)
         assertEquals(0, contactListenerTracker.onModified.size)
 
         // Setting blob ID should update data and notify modification listeners
         contact.setProfilePictureBlobId(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8))
         assertContentEquals(
             byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
-            contact.data.value!!.profilePictureBlobId,
+            contact.data!!.profilePictureBlobId,
         )
         assertEquals(1, contactListenerTracker.onModified.size)
 
@@ -595,16 +606,16 @@ class ContactModelTest {
         contact.setProfilePictureBlobId(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8))
         assertContentEquals(
             byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
-            contact.data.value!!.profilePictureBlobId,
+            contact.data!!.profilePictureBlobId,
         )
         assertEquals(1, contactListenerTracker.onModified.size)
 
         // Blob ID can be set to an empty array or to null
         contact.setProfilePictureBlobId(byteArrayOf())
-        assertContentEquals(byteArrayOf(), contact.data.value!!.profilePictureBlobId)
+        assertContentEquals(byteArrayOf(), contact.data!!.profilePictureBlobId)
         assertEquals(2, contactListenerTracker.onModified.size)
         contact.setProfilePictureBlobId(null)
-        assertNull(contact.data.value!!.profilePictureBlobId)
+        assertNull(contact.data!!.profilePictureBlobId)
         assertEquals(3, contactListenerTracker.onModified.size)
 
         // All listeners should have been notified for our test contact

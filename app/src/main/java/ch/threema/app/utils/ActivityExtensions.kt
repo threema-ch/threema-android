@@ -22,6 +22,10 @@
 package ch.threema.app.utils
 
 import android.app.Activity
+import android.app.Activity.OVERRIDE_TRANSITION_CLOSE
+import android.app.Activity.OVERRIDE_TRANSITION_OPEN
+import android.content.Context
+import android.graphics.Color
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
@@ -38,7 +42,7 @@ fun Activity.findRootView(): View? {
             if (decorView.childCount == 1) {
                 rootView = decorView.getChildAt(0)
             }
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             rootView = null
         }
     }
@@ -52,4 +56,23 @@ fun Activity.getCurrentInsets(@InsetsType types: Int): Insets {
     val rootView: View = findRootView() ?: return Insets.NONE
     val windowInsetsCompat: WindowInsetsCompat = ViewCompat.getRootWindowInsets(rootView) ?: return Insets.NONE
     return windowInsetsCompat.getInsets(types)
+}
+
+val Activity.context: Context
+    get() = this
+
+fun Activity.disableEnterTransition() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0, Color.TRANSPARENT)
+    } else {
+        overridePendingTransition(0, 0)
+    }
+}
+
+fun Activity.disableExitTransition() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0, Color.TRANSPARENT)
+    } else {
+        overridePendingTransition(0, 0)
+    }
 }

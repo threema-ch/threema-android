@@ -39,7 +39,6 @@ import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.services.WidgetService;
 import ch.threema.base.utils.LoggingUtil;
 
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 public class WidgetProvider extends AppWidgetProvider {
@@ -54,10 +53,10 @@ public class WidgetProvider extends AppWidgetProvider {
             logger.info("Updating widget with id {}", appWidgetId);
 
             Intent intent = new Intent(context, RecipientListBaseActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PENDING_INTENT_FLAG_IMMUTABLE);
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
             Intent titleIntent = new Intent(context, HomeActivity.class);
-            PendingIntent titlePendingIntent = PendingIntent.getActivity(context, 0, titleIntent, PENDING_INTENT_FLAG_IMMUTABLE);
+            PendingIntent titlePendingIntent = PendingIntent.getActivity(context, 0, titleIntent, PendingIntent.FLAG_IMMUTABLE);
 
             // Get the layout for the App Widget and attach an on-click listener
             // to the button

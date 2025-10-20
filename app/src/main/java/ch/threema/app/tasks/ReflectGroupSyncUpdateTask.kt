@@ -48,6 +48,7 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncUpdate
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.blob
 import ch.threema.protobuf.d2d.MdD2D.GroupSync.Update.MemberStateChange
@@ -98,7 +99,7 @@ abstract class ReflectGroupSyncUpdateBaseTask<TransactionResult, TaskResult>(
      */
     final override val runPrecondition: () -> Boolean = {
         // The group must exist and the task specific check must be successful
-        groupModel.data.value?.let {
+        groupModel.data?.let {
             checkInPrecondition(it)
         } ?: false
     }
@@ -156,7 +157,7 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
     }
 
     override val runInsideTransaction: suspend (handle: ActiveTaskCodec) -> Unit = { handle ->
-        val groupModelData = groupModel.data.value
+        val groupModelData = groupModel.data
         check(groupModelData != null) { "Group model data cannot be null at this point" }
         checkForDataRaces(groupModelData)
 
@@ -194,7 +195,7 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
     }
 
     class ReflectMemberLeft(
-        private val leftMemberIdentity: String,
+        private val leftMemberIdentity: Identity,
         groupModel: GroupModel,
         nonceFactory: NonceFactory,
         multiDeviceManager: MultiDeviceManager,
@@ -212,7 +213,7 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
         }
 
         override fun getGroupSync(): Group {
-            val groupModelData = groupModel.data.value
+            val groupModelData = groupModel.data
                 ?: throw IllegalStateException("Group model data is null")
 
             val updatedMembers = groupModelData.otherMembers.filter { it != leftMemberIdentity }
@@ -661,7 +662,7 @@ class ReflectLocalGroupUpdate(
     }
 
     override fun getGroupSync(): Group {
-        val groupModelData = groupModel.data.value ?: run {
+        val groupModelData = groupModel.data ?: run {
             throw IllegalStateException("Group model data cannot be null at this point")
         }
 

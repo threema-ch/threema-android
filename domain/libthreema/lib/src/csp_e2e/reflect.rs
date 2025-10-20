@@ -1,25 +1,32 @@
 //! Task for reflecting messages.
 use const_format::formatcp;
 use libthreema_macros::Name;
-use prost::{Message as _, Name as _};
+use prost::Name as _;
 use tracing::{error, warn};
 
-use super::message::{MessageLifetime, MessageProperties};
 use crate::{
     common::Nonce,
     crypto::aead::AeadRandomNonceAhead as _,
     csp_e2e::{CspE2eProtocolError, D2xContext, ReflectId},
+    model::message::{MessageLifetime, MessageProperties},
     protobuf::{self},
+    utils::bytes::ProtobufPaddedMessage as _,
 };
 
 /// 1. Let `reflect-ids` be the list of all reflect IDs of `reflect_messages` that do not have the _ephemeral_
 ///    flag.
 /// 2. Reflect each message of `reflect_messages` with the provided flags and ID as a `reflect` message.
-/// 3. Wait until all `reflect-ids` have been acknowledged by a corresponding `reflect-ack` message, call the
-///    associated task with the result (subtask: [`ReflectSubtask::reflect_ack`]) and poll again.
+/// 3. Wait until all `reflect-ids` have been acknowledged by a corresponding `reflect-ack` message, provide
+///    the associated task with the `reflect-ids` as a [`ReflectResponse`] and poll again.
 pub struct ReflectInstruction {
     /// Messages that need to be reflected.
     pub reflect_messages: Vec<ReflectPayload>,
+}
+
+/// Possible response for an [`ReflectInstruction`].
+pub struct ReflectResponse {
+    /// Acknowledgements for reflected messages.
+    pub acknowledged_reflect_ids: Vec<ReflectId>,
 }
 
 /// Flags applied when reflecting/reflected
@@ -62,13 +69,13 @@ impl ReflectPayload {
         content: protobuf::d2d::envelope::Content,
     ) -> Result<(Self, Nonce), CspE2eProtocolError> {
         let mut envelope = protobuf::d2d::Envelope {
-            // TODO(LIB-16): Add random padding the good way™
+            #[expect(deprecated, reason = "Will be filled by encode_to_vec_padded")]
             padding: vec![],
             device_id: d2x_context.device_id.0,
             protocol_version: protobuf::d2d::ProtocolVersion::V03 as u32,
             content: Some(content),
         }
-        .encode_to_vec();
+        .encode_to_vec_padded();
         let nonce = d2x_context
             .device_group_key
             .reflect_key()
@@ -89,7 +96,7 @@ impl ReflectPayload {
 }
 
 /// Subtask for reflecting a bundled list of messages and awaiting acknowledgement.
-#[derive(Name)]
+#[derive(Debug, Name)]
 pub(crate) struct ReflectSubtask {
     reflect_ids: Vec<ReflectId>,
     acknowledged_reflect_ids: Option<Vec<ReflectId>>,
@@ -115,6 +122,7 @@ impl ReflectSubtask {
         )
     }
 
+    #[tracing::instrument(skip_all, fields(?self))]
     pub(crate) fn poll(mut self) -> Result<(), CspE2eProtocolError> {
         // Ensure the caller provided the acknowledged reflect IDs
         let Some(mut acknowledged_reflect_ids) = self.acknowledged_reflect_ids else {
@@ -164,7 +172,10 @@ impl ReflectSubtask {
     }
 
     // TODO(LIB-16): Add the `reflect-ack` timestamps here and forward them to the result!
-    pub(crate) fn reflect_ack(&mut self, acknowledged_reflect_ids: Vec<ReflectId>) {
-        let _ = self.acknowledged_reflect_ids.insert(acknowledged_reflect_ids);
+    #[tracing::instrument(skip_all, fields(?self))]
+    pub(crate) fn response(&mut self, response: ReflectResponse) {
+        let _ = self
+            .acknowledged_reflect_ids
+            .insert(response.acknowledged_reflect_ids);
     }
 }

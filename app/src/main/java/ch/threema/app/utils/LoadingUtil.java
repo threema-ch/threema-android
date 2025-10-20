@@ -28,7 +28,7 @@ import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.base.utils.LoggingUtil;
 
 public class LoadingUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LocaleUtil");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("LoadingUtil");
 
     private static String DIALOG_TAG_PROGRESS_LOADINGUTIL = "lou";
 

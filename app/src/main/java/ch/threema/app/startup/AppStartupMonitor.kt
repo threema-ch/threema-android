@@ -21,33 +21,43 @@
 
 package ch.threema.app.startup
 
+import ch.threema.app.startup.models.AppSystem
+import ch.threema.app.startup.models.SystemStatus
 import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Allows to check and wait for the app to be ready for normal operation.
  */
 interface AppStartupMonitor {
+    /**
+     * Check whether the app is considered ready, i.e., all systems are considered ready (as opposed to unknown or pending) and there are no errors.
+     */
     fun isReady(): Boolean
 
+    /**
+     * Returns a flow that indicates all the systems and what status they are currently in.
+     */
+    fun observeSystems(): StateFlow<Map<AppSystem, SystemStatus>>
+
+    /**
+     * Returns a flow that indicates which system are currently pending.
+     *
+     * A system may initially not be considered pending and then become pending later, e.g., when it depends on another system.
+     *
+     * If an empty set is emitted, it is guaranteed that the app has reached a full ready state and can be used normally. At this point,
+     * systems will only enter the pending status again if the master key is locked.
+     */
     fun observePendingSystems(): StateFlow<Set<AppSystem>>
 
     suspend fun awaitSystem(system: AppSystem)
 
+    /**
+     * Wait for the app to become ready.
+     * This will suspend forever if there are errors.
+     */
     suspend fun awaitAll()
 
     fun hasErrors(): Boolean
 
     fun observeErrors(): StateFlow<Set<AppStartupError>>
-
-    enum class AppSystem {
-        DATABASE_UPDATES,
-        SYSTEM_UPDATES,
-    }
-
-    /**
-     * A short error code, which will be shown on the error screen.
-     * Meaningless to the user but can be useful for support and devs to identify the cause of the error.
-     */
-    @JvmInline
-    value class AppStartupError(val code: String)
 }

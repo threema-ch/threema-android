@@ -24,6 +24,7 @@ package ch.threema.app.ui
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.Gravity
@@ -34,7 +35,6 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import android.view.WindowManager.BadTokenException
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.ColorInt
 import androidx.core.view.ViewCompat
 import ch.threema.app.R
 import ch.threema.app.cache.ThumbnailCache
@@ -47,6 +47,7 @@ import ch.threema.app.utils.MessageUtil
 import ch.threema.app.utils.NameUtil
 import ch.threema.app.utils.QuoteUtil
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.AbstractMessageModel
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
@@ -71,7 +72,7 @@ class QuotePopup(
 
     class QuoteInfo {
         var quoteText: String? = null
-        var quoteIdentity: String? = null
+        var quoteIdentity: Identity? = null
         var messageModel: AbstractMessageModel? = null
     }
 
@@ -105,8 +106,8 @@ class QuotePopup(
         editText: ComposeEditText,
         textInputLayout: TextInputLayout,
         messageModel: AbstractMessageModel?,
-        identity: String?,
-        @ColorInt color: Int,
+        identity: Identity?,
+        barColor: ColorStateList,
         listener: QuotePopupListener?,
     ) {
         this.quotePopupListener = listener
@@ -125,12 +126,14 @@ class QuotePopup(
         try {
             showAtLocation(editText, Gravity.LEFT or Gravity.BOTTOM, popupX, popupY)
             adjustCornersToOpenState(textInputLayout, 20)
-            contentView.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    contentView?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
-                    listener?.onHeightSet(popupLayout.measuredHeight)
-                }
-            })
+            contentView.viewTreeObserver.addOnGlobalLayoutListener(
+                object : OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        contentView?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
+                        listener?.onHeightSet(popupLayout.measuredHeight)
+                    }
+                },
+            )
             anchorView?.let {
                 ViewCompat.setWindowInsetsAnimationCallback(it, windowInsetsAnimationCallback)
                 it.addOnLayoutChangeListener(onLayoutChangeListener)
@@ -144,7 +147,7 @@ class QuotePopup(
         quoteInfo.quoteIdentity = identity
         quoteIdentityView.text =
             NameUtil.getQuoteName(quoteInfo.quoteIdentity, contactService, userService)
-        quoteBar.setBackgroundColor(color)
+        quoteBar.backgroundTintList = barColor
         quoteTextView.text = EmojiMarkupUtil.getInstance()
             .addTextSpans(activity, quoteInfo.quoteText, quoteTextView, false, false)
         quoteThumbnail.visibility = View.GONE
@@ -172,26 +175,32 @@ class QuotePopup(
     }
 
     fun adjustCornersToOpenState(layout: TextInputLayout, delayMs: Long) {
-        layout.postDelayed({
-            layout.setBoxCornerRadiiResources(
-                R.dimen.compose_textinputlayout_radius_expanded,
-                R.dimen.compose_textinputlayout_radius_expanded,
-                R.dimen.compose_textinputlayout_radius,
-                R.dimen.compose_textinputlayout_radius,
-            )
-        }, delayMs)
+        layout.postDelayed(
+            {
+                layout.setBoxCornerRadiiResources(
+                    R.dimen.compose_textinputlayout_radius_expanded,
+                    R.dimen.compose_textinputlayout_radius_expanded,
+                    R.dimen.compose_textinputlayout_radius,
+                    R.dimen.compose_textinputlayout_radius,
+                )
+            },
+            delayMs,
+        )
     }
 
     override fun dismiss() {
         anchorView?.let {
-            it.postDelayed({
-                it.setBoxCornerRadiiResources(
-                    R.dimen.compose_textinputlayout_radius,
-                    R.dimen.compose_textinputlayout_radius,
-                    R.dimen.compose_textinputlayout_radius,
-                    R.dimen.compose_textinputlayout_radius,
-                )
-            }, 200)
+            it.postDelayed(
+                {
+                    it.setBoxCornerRadiiResources(
+                        R.dimen.compose_textinputlayout_radius,
+                        R.dimen.compose_textinputlayout_radius,
+                        R.dimen.compose_textinputlayout_radius,
+                        R.dimen.compose_textinputlayout_radius,
+                    )
+                },
+                200,
+            )
             it.removeOnLayoutChangeListener(onLayoutChangeListener)
             ViewCompat.setWindowInsetsAnimationCallback(it, null)
         }

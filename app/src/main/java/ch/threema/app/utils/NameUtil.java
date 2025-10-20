@@ -88,7 +88,7 @@ public class NameUtil {
             .collect(java.util.stream.Collectors.joining(", "));
 
         if (groupModelData.isMember()) {
-            String userName = getDisplayName(contactService.getMe());
+            @NonNull String userName = getDisplayName(contactService.getMe());
             if (!memberList.isBlank()) {
                 return userName + ", " + memberList;
             } else {
@@ -244,7 +244,7 @@ public class NameUtil {
             return "invalid contact";
         }
 
-        ContactModelData data = contactModel.getData().getValue();
+        ContactModelData data = contactModel.getData();
         if (data == null) {
             return "undefined";
         }

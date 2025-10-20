@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.urls
 
-import ch.threema.base.utils.toHexString
+import ch.threema.common.toHexString
 
 class BlobUrl(template: String) : ParameterizedUrl(template, requiredPlaceholders = arrayOf("blobId")) {
     /**

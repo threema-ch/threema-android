@@ -21,7 +21,7 @@
 
 package ch.threema.app.voip.viewmodel
 
-import android.app.Application
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
@@ -29,27 +29,32 @@ import androidx.annotation.WorkerThread
 import androidx.lifecycle.*
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.ThreemaApplication.Companion.requireServiceManager
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.utils.AudioDevice
 import ch.threema.app.utils.BitmapUtil
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.getRunningSince
+import ch.threema.app.utils.GroupCallUtil
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.groupcall.*
 import ch.threema.app.voip.groupcall.sfu.*
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.models.GroupModel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.take
 import org.webrtc.EglBase
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallViewModel")
 
 @UiThread
-class GroupCallViewModel(application: Application) :
-    AndroidViewModel(application),
+class GroupCallViewModel(
+    private val appContext: Context,
+    private val groupService: GroupService,
+    private val groupCallManager: GroupCallManager,
+    private val notificationService: NotificationService,
+) : ViewModel(),
     GroupCallObserver {
+
     enum class ConnectingState {
         IDLE,
         INITIATED,
@@ -68,10 +73,6 @@ class GroupCallViewModel(application: Application) :
             UNSUPPORTED_PROTOCOL_VERSION,
         }
     }
-
-    private val groupService: GroupService by lazy { requireServiceManager().groupService }
-    private val groupCallManager: GroupCallManager by lazy { requireServiceManager().groupCallManager }
-    private val notificationService: NotificationService by lazy { requireServiceManager().notificationService }
 
     private val groupId = MutableLiveData<LocalGroupId?>()
     private val startTime = MutableLiveData<Long?>()
@@ -106,6 +107,16 @@ class GroupCallViewModel(application: Application) :
 
     private val captureStateUpdates = MutableLiveData<Unit>()
     fun getCaptureStateUpdates(): LiveData<Unit> = captureStateUpdates
+
+    // TODO(ANDR-4127): Remove
+    private var screenShareHintShown = false
+    private val showScreenShareHint = MutableLiveData<Unit>()
+    fun showScreenShareHint(): LiveData<Unit> = showScreenShareHint
+    fun confirmShowScreenShareHint(): Boolean {
+        val shouldShowHint = !screenShareHintShown
+        screenShareHintShown = true
+        return shouldShowHint
+    }
 
     private val microphoneActive = MutableLiveData(false)
     fun isMicrophoneActive(): LiveData<Boolean> = microphoneActive.distinctUntilChanged()
@@ -145,7 +156,14 @@ class GroupCallViewModel(application: Application) :
     @AnyThread
     override fun onGroupCallUpdate(call: GroupCallDescription?) {
         logger.trace("Group call update")
-        startTime.postValue(call?.let { getRunningSince(it, ThreemaApplication.getAppContext()) })
+        startTime.postValue(
+            call?.let {
+                GroupCallUtil.getRunningSince(
+                    call = call,
+                    context = ThreemaApplication.getAppContext(),
+                )
+            },
+        )
     }
 
     @UiThread
@@ -229,7 +247,10 @@ class GroupCallViewModel(application: Application) :
     @WorkerThread
     private suspend fun joinOrCreateCall(groupModel: GroupModel, intention: GroupCallIntention) =
         when (intention) {
-            GroupCallIntention.JOIN -> groupCallManager.joinCall(groupModel)
+            GroupCallIntention.JOIN -> groupCallManager.joinCall(
+                localGroupId = groupModel.localGroupId,
+            )
+
             GroupCallIntention.JOIN_OR_CREATE -> groupCallManager.createCall(groupModel)
         }
 
@@ -383,10 +404,20 @@ class GroupCallViewModel(application: Application) :
     @UiThread
     private fun observeCaptureStateUpdates() {
         viewModelScope.launch {
-            callController.captureStateUpdates
-                .collect {
-                    triggerCaptureStateUpdate()
-                }
+            launch {
+                callController.captureStateUpdates
+                    .collect {
+                        triggerCaptureStateUpdate()
+                    }
+            }
+            launch {
+                callController.screenShareActivated
+                    // Only emit for first activation
+                    .take(1)
+                    .collect {
+                        showScreenShareHint.postValue(Unit)
+                    }
+            }
         }
     }
 
@@ -439,7 +470,7 @@ class GroupCallViewModel(application: Application) :
     @UiThread
     private fun mapStatusMessage(): LiveData<String?> {
         val connectingStateText = MutableLiveData(
-            getApplication<ThreemaApplication>().getString(R.string.voip_status_connecting),
+            appContext.getString(R.string.voip_status_connecting),
         )
         return connectingState.distinctUntilChanged().switchMap {
             when (it) {
@@ -451,7 +482,7 @@ class GroupCallViewModel(application: Application) :
 
     @UiThread
     private fun getStatusMessage(numberOfParticipants: Int) = when (numberOfParticipants) {
-        1 -> getApplication<ThreemaApplication>().getString(R.string.voip_gc_waiting_for_participants)
+        1 -> appContext.getString(R.string.voip_gc_waiting_for_participants)
         else -> null
     }
 

@@ -41,6 +41,7 @@ import ch.threema.app.adapters.decorators.GroupStatusAdapterDecorator;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UserService;
@@ -49,7 +50,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.DeleteMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -442,16 +443,6 @@ public class MessageUtil {
         }
 
         return null;
-    }
-
-    public static ArrayList<String> getCaptionList(String captionText) {
-        ArrayList<String> captions = null;
-
-        if (!TestUtil.isEmptyOrNull(captionText)) {
-            captions = new ArrayList<>();
-            captions.add(captionText);
-        }
-        return captions;
     }
 
     public static String getCaptionText(AbstractMessageModel messageModel) {
@@ -871,9 +862,9 @@ public class MessageUtil {
     /**
      * Check whether the given message type allows remote deletion of messages. Note that only the
      * message type is considered. To check whether the user should be able to delete a message for
-     * everyone, {@link #canDeleteRemotely(AbstractMessageModel)} should be used.
+     * everyone, {@link #canDeleteRemotely(AbstractMessageModel, MessageReceiver)} should be used.
      */
-    public static boolean canDeleteRemotely(@Nullable MessageType messageType) {
+    public static boolean doesMessageTypeAllowRemoteDeletion(@Nullable MessageType messageType) {
         if (messageType == null) {
             return false;
         }
@@ -893,18 +884,45 @@ public class MessageUtil {
     }
 
     /**
-     * Check whether the user should be able to delete the given message remotely.
+     * Check whether the user should be able to delete the given message remotely at this point in time.
      */
-    public static boolean canDeleteRemotely(@NonNull AbstractMessageModel message) {
-        long deltaTime = new Date().getTime() - message.getCreatedAt().getTime();
-        return canDeleteRemotely(message.getType())
+    // TODO(ANDR-4222): Refactor this method
+    public static boolean canDeleteRemotely(
+        @NonNull AbstractMessageModel message,
+        @NonNull MessageReceiver receiver
+    ) {
+        return doesMessageTypeAllowRemoteDeletion(message.getType())
             && !message.isStatusMessage()
             && message.isOutbox()
-            && ConfigUtils.isDeleteMessagesEnabled()
-            && deltaTime <= DeleteMessage.DELETE_MESSAGES_MAX_AGE
+            && isStillInValidTimeFrameToDeleteRemotely(message, receiver)
             && (message instanceof MessageModel || message instanceof GroupMessageModel)
             && (message.getPostedAt() != null && message.getState() != MessageState.SENDFAILED)
             && !message.isDeleted();
+    }
+
+    /**
+     * @return true if the message is not older then a defined age. Messages in notes groups can be deleted indefinitely.
+     */
+    private static boolean isStillInValidTimeFrameToDeleteRemotely(
+        @NonNull AbstractMessageModel message,
+        @NonNull MessageReceiver receiver
+    ) {
+        final @Nullable ch.threema.data.models.GroupModel groupModel;
+        if (receiver instanceof GroupMessageReceiver) {
+            groupModel = ((GroupMessageReceiver) receiver).getGroupModel();
+        } else {
+            groupModel = null;
+        }
+        final boolean isNotesGroup = groupModel != null && Boolean.TRUE.equals(groupModel.isNotesGroup());
+        if (isNotesGroup) {
+            return true;
+        }
+        final @Nullable Date createdAt = message.getCreatedAt();
+        if (createdAt == null) {
+            return false;
+        }
+        final long deltaTime = new Date().getTime() - createdAt.getTime();
+        return deltaTime <= DeleteMessage.DELETE_MESSAGES_MAX_AGE;
     }
 
     @Nullable

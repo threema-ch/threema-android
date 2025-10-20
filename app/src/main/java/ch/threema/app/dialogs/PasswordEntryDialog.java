@@ -279,7 +279,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
             }
         }
 
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
 
         if (title != 0) {
             builder.setTitle(title);
@@ -322,7 +322,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
         }
 
         @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(@NonNull Editable editable) {
             String password1Text = password1.getText().toString();
             String password2Text = password2.getText().toString();
 

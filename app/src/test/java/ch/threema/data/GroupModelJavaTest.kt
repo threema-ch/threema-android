@@ -24,6 +24,7 @@ package ch.threema.data
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.common.now
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData.Companion.javaCreate
@@ -61,7 +62,7 @@ class GroupModelJavaTest {
         val synchronizedAt = now()
         val lastUpdate: Date? = null
         val isArchived = false
-        val colorIndex = 0
+        val idColor = IdColor(0)
         val groupDesc = "Description"
         val groupDescChangedAt = now()
         val members = setOf("AAAAAAAA", "BBBBBBBB")
@@ -78,7 +79,7 @@ class GroupModelJavaTest {
                 synchronizedAt = synchronizedAt,
                 lastUpdate = lastUpdate,
                 isArchived = isArchived,
-                colorIndex = colorIndex,
+                colorIndex = idColor.colorIndex,
                 groupDescription = groupDesc,
                 groupDescriptionChangedAt = groupDescChangedAt,
                 members = members,
@@ -89,7 +90,7 @@ class GroupModelJavaTest {
             coreServiceManager = coreServiceManagerMock,
         )
 
-        val value = groupModel.data.value!!
+        val value = groupModel.data!!
         assertEquals("TESTTEST", value.groupIdentity.creatorIdentity)
         assertEquals(groupId, GroupId(value.groupIdentity.groupId))
         assertEquals(name, value.name)
@@ -97,7 +98,7 @@ class GroupModelJavaTest {
         assertEquals(synchronizedAt, value.synchronizedAt)
         assertEquals(lastUpdate, value.lastUpdate)
         assertEquals(isArchived, value.isArchived)
-        assertEquals(colorIndex.toLong(), value.colorIndexInt().toLong())
+        assertEquals(idColor, value.idColor)
         assertEquals(groupDesc, value.groupDescription)
         assertEquals(groupDescChangedAt, value.groupDescriptionChangedAt)
         assertEquals(members, value.otherMembers)

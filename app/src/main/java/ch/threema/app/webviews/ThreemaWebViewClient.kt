@@ -22,7 +22,6 @@
 package ch.threema.app.webviews
 
 import android.net.Uri
-import android.os.Build
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -32,10 +31,7 @@ class ThreemaWebViewClient(
     private val onNavigationRequestListener: OnNavigationRequestListener,
 ) : WebViewClient() {
     override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-        if (!request.isForMainFrame) {
-            return false
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && request.isRedirect) {
+        if (!request.isForMainFrame || request.isRedirect) {
             return false
         }
         return onNavigationRequestListener.onNavigationRequested(request.url)

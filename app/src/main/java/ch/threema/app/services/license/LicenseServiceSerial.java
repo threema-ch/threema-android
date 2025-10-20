@@ -21,8 +21,10 @@
 
 package ch.threema.app.services.license;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.domain.models.SerialCredentials;
 import ch.threema.domain.protocol.api.APIConnector;
 
 public class LicenseServiceSerial extends LicenseServiceThreema<SerialCredentials> {
@@ -47,6 +49,7 @@ public class LicenseServiceSerial extends LicenseServiceThreema<SerialCredential
     }
 
     @Override
+    @Nullable
     public SerialCredentials loadCredentials() {
         String licenseKey = this.preferenceService.getSerialNumber();
 

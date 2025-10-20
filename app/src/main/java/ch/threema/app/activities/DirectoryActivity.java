@@ -41,6 +41,7 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.search.SearchBar;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Retention;
@@ -62,9 +63,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import ch.threema.app.R;
 import ch.threema.app.adapters.DirectoryAdapter;
 import ch.threema.app.asynctasks.AddOrUpdateWorkContactBackgroundTask;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.MultiChoiceSelectorDialog;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.UserService;
 import ch.threema.app.ui.DirectoryDataSourceFactory;
 import ch.threema.app.ui.DirectoryHeaderItemDecoration;
 import ch.threema.app.ui.EmptyRecyclerView;
@@ -78,7 +78,6 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.ContactModel;
-import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
@@ -103,9 +102,9 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
     private static final int EMPTY_STATE_SEARCHING = 1;
     private static final int EMPTY_STATE_RESULTS = 2;
 
-    private ContactService contactService;
-    private UserService userService;
-    private ContactModelRepository contactModelRepository;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     @NonNull
     private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
 
@@ -146,6 +145,9 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (!dependencies.isAvailable()) {
+            finish();
+        }
     }
 
     @Override
@@ -183,10 +185,6 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
             findViewById(R.id.progress_bar),
             InsetSides.horizontal()
         );
-        ViewExtensionsKt.applyDeviceInsetsAsMargin(
-            findViewById(R.id.chip_group_scroll_container),
-            InsetSides.horizontal()
-        );
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -218,31 +216,18 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
             updateToolbarTitle(getString(R.string.work_directory_title));
         }
 
-        try {
-            this.contactService = serviceManager.getContactService();
-        } catch (Exception e) {
-            logger.error("Could not get contact service", e);
-            return false;
-        }
-        this.userService = serviceManager.getUserService();
-        this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
-
-        if (preferenceService == null) {
-            return false;
-        }
-
         if (!ConfigUtils.isWorkDirectoryEnabled()) {
             Toast.makeText(this, getString(R.string.disabled_by_policy_short), Toast.LENGTH_LONG).show();
             return false;
         }
 
-        WorkOrganization workOrganization = preferenceService.getWorkOrganization();
+        WorkOrganization workOrganization = dependencies.getPreferenceService().getWorkOrganization();
         if (workOrganization != null && !TestUtil.isEmptyOrNull(workOrganization.getName())) {
             logger.info("Organization: {}", workOrganization.getName());
             updateToolbarTitle(workOrganization.getName());
         }
 
-        sortByFirstName = preferenceService.isContactListSortingFirstName();
+        sortByFirstName = dependencies.getPreferenceService().isContactListSortingFirstName();
 
         chipGroup = findViewById(R.id.chip_group);
         chipGroup.getLayoutTransition().enableTransitionType(LayoutTransition.CHANGE_DISAPPEARING | LayoutTransition.CHANGE_APPEARING);
@@ -263,9 +248,9 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         DirectoryHeaderItemDecoration headerItemDecoration = new DirectoryHeaderItemDecoration(getResources().getDimensionPixelSize(R.dimen.directory_header_height), true, getSectionCallback());
         recyclerView.addItemDecoration(headerItemDecoration);
 
-        categoryList = preferenceService.getWorkDirectoryCategories();
+        categoryList = dependencies.getPreferenceService().getWorkDirectoryCategories();
 
-        directoryAdapter = new DirectoryAdapter(this, preferenceService, contactService, categoryList);
+        directoryAdapter = new DirectoryAdapter(this, dependencies.getPreferenceService(), dependencies.getContactService(), categoryList);
         directoryAdapter.setOnClickItemListener(new DirectoryAdapter.OnClickItemListener() {
             @Override
             public void onClick(WorkDirectoryContact workDirectoryContact, int position) {
@@ -367,8 +352,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
             }
         }
 
-        categoryList = preferenceService.getWorkDirectoryCategories();
-        categoryList.add(new WorkDirectoryCategory("1", "Name"));
+        categoryList = dependencies.getPreferenceService().getWorkDirectoryCategories();
         menu.findItem(R.id.menu_category).setVisible(!categoryList.isEmpty());
 
         return true;
@@ -395,12 +379,12 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
     private void launchContact(@NonNull final WorkDirectoryContact workDirectoryContact, final int position) {
         if (workDirectoryContact.threemaId != null) {
-            if (contactService.getByIdentity(workDirectoryContact.threemaId) == null) {
+            if (dependencies.getContactService().getByIdentity(workDirectoryContact.threemaId) == null) {
                 addContact(workDirectoryContact, () -> {
                     openContact(workDirectoryContact.threemaId);
                     directoryAdapter.notifyItemChanged(position);
                 });
-            } else if (workDirectoryContact.threemaId.equalsIgnoreCase(contactService.getMe().getIdentity())) {
+            } else if (workDirectoryContact.threemaId.equalsIgnoreCase(dependencies.getContactService().getMe().getIdentity())) {
                 Toast.makeText(this, R.string.me_myself_and_i, Toast.LENGTH_LONG).show();
             } else {
                 openContact(workDirectoryContact.threemaId);
@@ -415,8 +399,8 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         backgroundExecutor.get().execute(
             new AddOrUpdateWorkContactBackgroundTask(
                 workDirectoryContact,
-                userService.getIdentity(),
-                contactModelRepository
+                dependencies.getUserService().getIdentity(),
+                dependencies.getContactModelRepository()
             ) {
                 @Override
                 public void runAfter(ContactModel contactModel) {
@@ -485,9 +469,6 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         int activeCategories = 0;
 
         chipGroup.removeAllViews();
-
-        checkedCategories.add(new WorkDirectoryCategory("1", "Name"));
-
         for (WorkDirectoryCategory checkedCategory : checkedCategories) {
             if (!TextUtils.isEmpty(checkedCategory.name)) {
                 activeCategories++;

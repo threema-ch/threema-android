@@ -16,13 +16,11 @@
 
         <TextView
             android:id="@+id/safe_enable_explain"
-            style="@style/Threema.TextAppearance.Dialog"
+            style="@style/Threema.MaterialAlertDialog.Body.Style"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="@string/flavored__safe_configure_server_explain"
-            android:textColor="?attr/colorOnBackground"
-            android:textSize="16sp" />
+            android:text="@string/flavored__safe_configure_server_explain" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/safe_switch_server"
@@ -32,8 +30,7 @@
             android:checked="true"
             android:enabled="true"
             android:text="@string/safe_use_default_server"
-            android:textAppearance="@style/Threema.TextAppearance.Dialog"
-            android:textSize="16sp" />
+            android:textAppearance="@style/Threema.TextAppearance.Dialog.Body" />
 
         <LinearLayout
             android:id="@+id/safe_server_container"
@@ -68,13 +65,12 @@
 
             <TextView
                 android:id="@+id/safe_credentials_title"
-                style="@style/Threema.TextAppearance.Dialog"
+                style="@style/Threema.MaterialAlertDialog.Body.Style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="@string/safe_configure_server_credentials_title"
-                android:textColor="?attr/colorOnBackground"
-                android:textSize="16sp" />
+                android:textColor="?attr/colorOnSurface" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/safe_username"

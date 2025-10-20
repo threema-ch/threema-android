@@ -186,7 +186,7 @@ public class BallotVoteDialog extends ThreemaDialogFragment {
         this.listView = dialogView.findViewById(R.id.ballot_list);
         this.titleTextView = dialogView.findViewById(R.id.title);
 
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity(), getTheme());
         builder.setView(dialogView);
         builder.setPositiveButton(getString(R.string.ballot_vote), (dialog, whichButton) -> vote());
         builder.setNegativeButton(R.string.cancel, (dialog, whichButton) -> dismiss());
@@ -265,9 +265,10 @@ public class BallotVoteDialog extends ThreemaDialogFragment {
                 selected,
                 this.ballotModel.getState() != BallotModel.State.OPEN,
                 this.ballotModel.getAssessment() == BallotModel.Assessment.MULTIPLE_CHOICE,
-                showVoting);
+                showVoting
+            );
             this.listView.setAdapter(this.listAdapter);
-//			this.alertDialog.setTitle(EmojiMarkupUtil.getInstance().addTextSpans(ballotModel.getName()));
+            // this.alertDialog.setTitle(EmojiMarkupUtil.getInstance().addTextSpans(ballotModel.getName()));
         } catch (NotAllowedException e) {
             logger.error("cannot reload choices", e);
         }

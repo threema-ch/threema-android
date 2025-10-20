@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:minHeight="@dimen/web_sessions_switch_frame_height"
             android:outlineProvider="none"
-            app:cardBackgroundColor="?attr/colorTertiaryContainer"
+            app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
             app:cardCornerRadius="0dp"
             app:cardElevation="4dp"
             app:contentPaddingBottom="8dp"
@@ -47,7 +47,7 @@
                     android:layout_weight="1"
                     android:ellipsize="end"
                     android:maxLines="1"
-                    android:textColor="?attr/colorOnTertiaryContainer"
+                    android:textColor="?attr/colorOnSurface"
                     tools:text="An" />
 
                 <ch.threema.app.ui.SilentSwitchCompat
@@ -97,7 +97,7 @@
 
                     <TextView
                         android:id="@+id/no_sessions_text"
-                        style="@style/Threema.TextAppearance.Emptyview"
+                        style="@style/Threema.TextAppearance.EmptyView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"

@@ -48,8 +48,6 @@ import ch.threema.app.notifications.NotificationGroups
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
-import ch.threema.app.stores.IdentityStore
-import ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.activities.GroupCallActivity
@@ -68,11 +66,11 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.common.takeUnlessEmpty
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.protocol.api.APIConnector
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.storage.models.GroupModel
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.launch
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallService")
@@ -305,8 +303,8 @@ class GroupCallService : Service() {
         return PendingIntent.getActivity(
             applicationContext,
             REQUEST_CODE_JOIN_CALL,
-            GroupCallActivity.getJoinCallIntent(applicationContext, groupId.id),
-            flags or PENDING_INTENT_FLAG_IMMUTABLE,
+            GroupCallActivity.createJoinCallIntent(applicationContext, groupId.id),
+            flags or PendingIntent.FLAG_IMMUTABLE,
         )
     }
 
@@ -315,7 +313,7 @@ class GroupCallService : Service() {
             applicationContext,
             REQUEST_CODE_LEAVE_CALL,
             getLeaveCallIntent(applicationContext, callId, groupId.localGroupId),
-            flags or PENDING_INTENT_FLAG_IMMUTABLE,
+            flags or PendingIntent.FLAG_IMMUTABLE,
         )
     }
 

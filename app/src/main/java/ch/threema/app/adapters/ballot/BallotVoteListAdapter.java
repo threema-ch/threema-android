@@ -55,12 +55,14 @@ public class BallotVoteListAdapter extends ArrayAdapter<BallotChoiceModel> {
     private final boolean multipleChoice;
     private final boolean showVoting;
 
-    public BallotVoteListAdapter(Context context,
-                                 List<BallotChoiceModel> values,
-                                 Map<Integer, Integer> selected,
-                                 boolean readonly,
-                                 boolean multipleChoice,
-                                 boolean showVoting) {
+    public BallotVoteListAdapter(
+        Context context,
+        List<BallotChoiceModel> values,
+        Map<Integer, Integer> selected,
+        boolean readonly,
+        boolean multipleChoice,
+        boolean showVoting
+    ) {
         super(context, R.layout.item_ballot_choice_vote, values);
 
         this.context = context;

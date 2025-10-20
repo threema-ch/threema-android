@@ -22,11 +22,9 @@
 package ch.threema.app.multidevice
 
 import android.Manifest
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -36,8 +34,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
@@ -48,11 +44,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import ch.threema.app.BuildFlavor
 import ch.threema.app.R
-import ch.threema.app.activities.ThreemaActivity
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.listeners.PreferenceListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.multidevice.wizard.LinkNewDeviceWizardActivity
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.ui.DebouncedOnClickListener
 import ch.threema.app.ui.EmptyRecyclerView
 import ch.threema.app.ui.InsetSides
@@ -68,6 +64,8 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private val logger = LoggingUtil.getThreemaLogger("LinkedDevicesActivity")
 
@@ -76,11 +74,10 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
         logScreenVisibility(logger)
     }
 
-    private companion object {
-        const val PERMISSION_REQUEST_CAMERA = 1
-    }
+    private val preferenceService: PreferenceService by inject()
+    private val multiDeviceManager: MultiDeviceManager by inject()
 
-    private val viewModel: LinkedDevicesViewModel by viewModels()
+    private val viewModel: LinkedDevicesViewModel by viewModel()
 
     private val devicesAdapter: LinkedDevicesAdapter by lazy {
         LinkedDevicesAdapter(viewModel::onClickedDevice)
@@ -106,7 +103,7 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (!ConfigUtils.isMultiDeviceEnabled(this) && !serviceManager.multiDeviceManager.isMultiDeviceActive) {
+        if (!ConfigUtils.isMultiDeviceEnabled(this) && !multiDeviceManager.isMultiDeviceActive) {
             logger.warn("Leave activity: MD is restricted by mdm and not active")
             finish()
             return
@@ -182,12 +179,11 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
     @Suppress("OVERRIDE_DEPRECATION")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == ThreemaActivity.ACTIVITY_ID_CHECK_LOCK && resultCode == RESULT_OK) {
+        if (requestCode == ACTIVITY_ID_CHECK_LOCK && resultCode == RESULT_OK) {
             initiateLinking()
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -247,13 +243,13 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
             return
         }
         logger.info("Start linking wizard")
-        linkingWizardLauncher.launch(Intent(this, LinkNewDeviceWizardActivity::class.java))
+        linkingWizardLauncher.launch(LinkNewDeviceWizardActivity.createIntent(this))
     }
 
     private fun startObservers() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                launch { viewModel.state.collect(::setState) }
+                launch { viewModel.viewState.collect(::setState) }
                 launch { viewModel.isLoading.collect(::setIsLoading) }
                 launch { viewModel.isLinkDeviceButtonEnabled.collect(::setIsLinkDeviceButtonEnabled) }
                 launch { viewModel.onDropDeviceFailed.collect { showDropDeviceFailedDialog() } }
@@ -285,7 +281,7 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
     }
 
     private fun onLinkingWizardResult(result: ActivityResult) {
-        if (result.resultCode == Activity.RESULT_OK) {
+        if (result.resultCode == RESULT_OK) {
             logger.debug("Device linking success")
             viewModel.updateDeviceList()
         }
@@ -337,5 +333,9 @@ class LinkedDevicesActivity : ThreemaToolbarActivity() {
     override fun onDestroy() {
         super.onDestroy()
         ListenerManager.preferenceListeners.remove(onPreferenceChangedListener)
+    }
+
+    private companion object {
+        const val PERMISSION_REQUEST_CAMERA = 1
     }
 }

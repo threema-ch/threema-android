@@ -71,10 +71,11 @@ public class ThumbnailCache<T> {
                  * but the cache is too small to hold it. instead, we rely on the garbage collector.
                  */
 
-/*				if (evicted) {
-					BitmapUtil.recycle(oldValue);
-				}
-*/
+                /*
+                if (evicted) {
+                    BitmapUtil.recycle(oldValue);
+                }
+                */
             }
         };
     }

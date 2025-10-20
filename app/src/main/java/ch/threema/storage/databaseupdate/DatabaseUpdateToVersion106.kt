@@ -22,7 +22,6 @@
 package ch.threema.storage.databaseupdate
 
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.storage.tableExists
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 private val logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion106")

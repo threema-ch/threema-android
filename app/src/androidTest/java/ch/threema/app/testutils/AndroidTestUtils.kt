@@ -54,7 +54,7 @@ fun clearDatabaseAndCaches(serviceManager: ServiceManager) {
 
     // Clear caches in services and trigger listeners to refresh the new models from database
     val contactService = serviceManager.contactService
-    val myIdentity = serviceManager.identityStore.identity
+    val myIdentity = serviceManager.identityStore.getIdentity()
     contactIdentities.forEach { identity ->
         contactService.invalidateCache(identity)
         ListenerManager.contactListeners.handle { it.onRemoved(identity) }

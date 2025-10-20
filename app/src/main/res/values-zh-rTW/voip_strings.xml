@@ -83,6 +83,7 @@
     <string name="voip_gc_waiting_for_participants">正在等待參與者</string>
     <string name="voip_gc_participant_avatar_description">參與者大頭貼</string>
     <string name="voip_gc_participant_mute_status_description">參與者靜音狀態</string>
+    <string name="voip_gc_participant_screen_share_status_description">參與者正在共享螢幕畫面</string>
     <string name="voip_gc_notification_new_call_public">新的群組通話已開始</string>
     <string name="voip_gc_open_call">開啟</string>
     <string name="voip_gc_call_started">群組通話已開始</string>
@@ -92,6 +93,7 @@
     <string name="voip_gc_call_error">因為發生錯誤，群組通話被中止</string>
     <string name="voip_gc_call_start_error">無法發起群組通話</string>
     <string name="voip_gc_call_already_ended">群組通話已經結束</string>
+    <string name="voip_gc_screen_sharing_not_supported">螢幕共享功能目前僅限於桌面裝置使用。</string>
     <string name="voip_gc_call_full_generic">已達到人數上限：其他參與者無法加入此群組通話。</string>
     <string name="voip_gc_call_full_n">已達到%1$d位參與者的上限，您無法加入此群組通話。</string>
     <plurals name="n_participants_in_call">

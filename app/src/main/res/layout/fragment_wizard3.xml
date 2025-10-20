@@ -1,145 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center_horizontal"
-    android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/scooter"
-        style="@style/WizardSubTitleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="@dimen/wizard_paragraph_height"
-        android:layout_marginBottom="@dimen/wizard_paragraph_height"
-        android:gravity="center_horizontal"
-        android:text="@string/new_wizard_link_mobile" />
-
-    <Spinner
-        android:id="@+id/country_spinner"
-        style="@style/WizardSpinner"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/wizard_default_view_height"
-        android:layout_below="@id/scooter"
-        android:layout_marginBottom="8dp"
-        android:focusable="true"
-        android:spinnerMode="dropdown" />
+    android:layout_height="match_parent">
 
     <LinearLayout
-        android:id="@+id/wizard_phone_layout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/wizard_default_view_height"
-        android:layout_below="@id/country_spinner"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
-        <ImageView
-            style="@style/WizardEditTextIcon"
-            android:layout_width="@dimen/wizard_default_view_height"
-            android:layout_height="@dimen/wizard_default_view_height"
-            app:srcCompat="@drawable/ic_call_outline" />
-
-        <FrameLayout
+        <TextView
+            android:id="@+id/scooter"
+            style="@style/WizardSubTitleText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/wizard_paragraph_height"
+            android:gravity="center_horizontal"
+            android:text="@string/new_wizard_link_mobile" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/wizard_default_view_height"
-                android:orientation="horizontal">
+        <Spinner
+            android:id="@+id/country_spinner"
+            style="@style/WizardSpinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_unit_x2"
+            android:focusable="true"
+            android:minHeight="@dimen/wizard_default_view_height"
+            android:spinnerMode="dropdown" />
 
-                <EditText
-                    android:id="@+id/wizard_prefix"
-                    style="@style/WizardEditText"
-                    android:layout_width="64dp"
-                    android:layout_height="@dimen/wizard_default_view_height"
-                    android:hint="+"
-                    android:inputType="phone"
-                    android:maxLength="6"
-                    android:nextFocusForward="@+id/wizard_phone" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/wizard_phone_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_unit_x1">
+
+            <ImageView
+                android:id="@+id/icon_phone"
+                style="@style/WizardEditTextIcon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/phone_input_container"
+                app:layout_constraintDimensionRatio="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/phone_input_container"
+                app:srcCompat="@drawable/ic_call_outline" />
+
+            <FrameLayout
+                android:id="@+id/phone_input_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/icon_phone"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <EditText
+                        android:id="@+id/wizard_prefix"
+                        style="@style/WizardEditText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="+"
+                        android:importantForAutofill="no"
+                        android:inputType="phone"
+                        android:maxLength="6"
+                        android:minWidth="64dp"
+                        android:minHeight="@dimen/wizard_default_view_height"
+                        android:nextFocusForward="@+id/wizard_phone"
+                        tools:ignore="HardcodedText" />
+
+                    <ch.threema.app.emojis.EmojiEditText
+                        android:id="@+id/wizard_phone"
+                        style="@style/WizardEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="1dp"
+                        android:hint="@string/new_wizard_hint_mobile_number"
+                        android:inputType="phone"
+                        android:minHeight="@dimen/wizard_default_view_height"
+                        android:nextFocusForward="@+id/wizard_email" />
+
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/preset_phone_text"
+                    style="@style/WizardSmallText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_edittext_icon"
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/wizard_default_view_height"
+                    android:paddingHorizontal="@dimen/grid_unit_x1"
+                    android:singleLine="true"
+                    android:visibility="gone" />
+
+            </FrameLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/wizard_email_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_unit_x2"
+            android:minHeight="@dimen/wizard_default_view_height">
+
+            <ImageView
+                android:id="@+id/icon_email"
+                style="@style/WizardEditTextIcon"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@+id/email_input_container"
+                app:layout_constraintDimensionRatio="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/email_input_container"
+                app:srcCompat="@drawable/ic_email_outline" />
+
+            <FrameLayout
+                android:id="@+id/email_input_container"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/icon_email"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <TextView
+                    android:id="@+id/preset_email_text"
+                    style="@style/WizardSmallText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/shape_edittext_icon"
+                    android:gravity="center_vertical"
+                    android:minHeight="@dimen/wizard_default_view_height"
+                    android:paddingHorizontal="@dimen/grid_unit_x1"
+                    android:singleLine="true"
+                    android:visibility="gone" />
 
                 <ch.threema.app.emojis.EmojiEditText
-                    android:id="@+id/wizard_phone"
+                    android:id="@+id/wizard_email"
                     style="@style/WizardEditText"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="1dp"
-                    android:hint="@string/new_wizard_hint_mobile_number"
-                    android:inputType="phone"
-                    android:nextFocusForward="@+id/wizard_email" />
+                    android:layout_height="wrap_content"
+                    android:hint="@string/new_wizard_hint_email"
+                    android:imeOptions="actionDone"
+                    android:inputType="textEmailAddress"
+                    android:minHeight="@dimen/wizard_default_view_height" />
 
-            </LinearLayout>
+            </FrameLayout>
 
-            <TextView
-                android:id="@+id/preset_phone_text"
-                style="@style/WizardSmallText"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/wizard_default_view_height"
-                android:background="@drawable/shape_edittext_icon"
-                android:gravity="center_vertical"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:singleLine="true"
-                android:visibility="gone" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </FrameLayout>
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:id="@+id/wizard_email_layout"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/wizard_default_view_height"
-        android:layout_below="@id/wizard_phone_layout"
-        android:layout_marginTop="24dp"
-        android:orientation="horizontal">
-
-        <ImageView
-            style="@style/WizardEditTextIcon"
-            android:layout_width="@dimen/wizard_default_view_height"
-            android:layout_height="@dimen/wizard_default_view_height"
-            app:srcCompat="@drawable/ic_email_outline" />
-
-        <FrameLayout
+        <TextView
+            android:id="@+id/disabled_by_policy"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:id="@+id/preset_email_text"
-                style="@style/WizardSmallText"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/wizard_default_view_height"
-                android:background="@drawable/shape_edittext_icon"
-                android:gravity="center_vertical"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:singleLine="true"
-                android:visibility="gone" />
-
-            <ch.threema.app.emojis.EmojiEditText
-                android:id="@+id/wizard_email"
-                style="@style/WizardEditText"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/wizard_default_view_height"
-                android:hint="@string/new_wizard_hint_email"
-                android:imeOptions="actionDone"
-                android:inputType="textEmailAddress" />
-
-        </FrameLayout>
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_unit_x2"
+            android:gravity="center_horizontal"
+            android:text="@string/disabled_by_policy"
+            android:textSize="14sp"
+            android:visibility="gone"
+            tools:visibility="visible" />
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/disabled_by_policy"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/wizard_email_layout"
-        android:layout_marginTop="4dp"
-        android:text="@string/disabled_by_policy"
-        android:textSize="14sp"
-        android:visibility="gone" />
-
-</RelativeLayout>
+</ScrollView>

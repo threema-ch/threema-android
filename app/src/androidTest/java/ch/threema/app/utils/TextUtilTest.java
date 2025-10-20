@@ -23,6 +23,7 @@ package ch.threema.app.utils;
 
 import android.content.Context;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -67,5 +68,25 @@ public class TextUtilTest {
         assertTrue(TextUtil.checkBadPassword(context, "1Rainbow"));
         assertTrue(TextUtil.checkBadPassword(context, "apples123"));
         assertFalse(TextUtil.checkBadPassword(context, "kajsdlfkjalskdjflkajsdfl"));
+    }
+
+    @Test
+    public void testMatchesQueryDiacriticInsensitive() {
+        Assert.assertTrue(TextUtil.matchesQueryDiacriticInsensitive("aàáâãäå", "aaaaaaa"));
+        Assert.assertTrue(TextUtil.matchesQueryDiacriticInsensitive("eèéêë", "eeeee"));
+        Assert.assertTrue(TextUtil.matchesQueryDiacriticInsensitive("iíìîï", "iiiii"));
+        Assert.assertTrue(TextUtil.matchesQueryDiacriticInsensitive("oóòôöõ", "oooooo"));
+        Assert.assertTrue(TextUtil.matchesQueryDiacriticInsensitive("uüúùû", "uuuuu"));
+        Assert.assertTrue(TextUtil.matchesQueryDiacriticInsensitive("ñ", "n"));
+        Assert.assertTrue(TextUtil.matchesQueryDiacriticInsensitive("ç", "c"));
+
+        Assert.assertTrue(TextUtil.matchesQueryDiacriticInsensitive("ä", "A"));
+        Assert.assertTrue(TextUtil.matchesQueryDiacriticInsensitive("ä", "a"));
+        Assert.assertTrue(TextUtil.matchesQueryDiacriticInsensitive("Ä", "a"));
+        Assert.assertTrue(TextUtil.matchesQueryDiacriticInsensitive("Ä", "A"));
+        Assert.assertFalse(TextUtil.matchesQueryDiacriticInsensitive("a", "Ä"));
+
+        Assert.assertFalse(TextUtil.matchesQueryDiacriticInsensitive("a", null));
+        Assert.assertFalse(TextUtil.matchesQueryDiacriticInsensitive(null, "a"));
     }
 }

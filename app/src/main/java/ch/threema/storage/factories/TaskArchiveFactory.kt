@@ -21,9 +21,10 @@
 
 package ch.threema.storage.factories
 
-import android.content.ContentValues
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.DatabaseService
+import ch.threema.storage.buildContentValues
+import ch.threema.storage.runDelete
 import ch.threema.storage.runQuery
 
 private val logger = LoggingUtil.getThreemaLogger("TaskArchiveFactory")
@@ -39,7 +40,7 @@ class TaskArchiveFactory(databaseService: DatabaseService) :
      * Insert a new task. Note that leading and trailing whitespaces are ignored.
      */
     fun insert(task: String) {
-        val contentValues = ContentValues().apply { put(COLUMN_TASK, task.trim()) }
+        val contentValues = buildContentValues { put(COLUMN_TASK, task.trim()) }
         writableDatabase.insert(tableName, null, contentValues)
     }
 
@@ -51,7 +52,11 @@ class TaskArchiveFactory(databaseService: DatabaseService) :
      */
     fun removeOne(task: String) {
         val taskId = getOldestIdForTask(task) ?: return
-        writableDatabase.delete(tableName, "$COLUMN_ID=?", arrayOf(taskId))
+        writableDatabase.runDelete(
+            table = tableName,
+            whereClause = "$COLUMN_ID=?",
+            whereArgs = arrayOf(taskId),
+        )
     }
 
     /**
@@ -61,7 +66,11 @@ class TaskArchiveFactory(databaseService: DatabaseService) :
      */
     fun remove(task: String) {
         val taskId = getOldestIdForTask(task) ?: return
-        val numDeleted = writableDatabase.delete(tableName, "$COLUMN_ID<=?", arrayOf(taskId))
+        val numDeleted = writableDatabase.runDelete(
+            table = tableName,
+            whereClause = "$COLUMN_ID<=?",
+            whereArgs = arrayOf(taskId),
+        )
 
         // If several tasks have been deleted, then the just finished task was not the oldest one.
         // This means that we skipped some tasks or have a task reordering!

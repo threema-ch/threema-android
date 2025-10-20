@@ -1,59 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/content"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="@dimen/wizard_contents_padding">
+    android:layout_height="match_parent"
+    android:background="@android:color/transparent"
+    android:clipToPadding="false">
 
-    <TextView
-        android:id="@+id/backup_restore_title"
-        style="@style/WizardTitleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
-        android:gravity="center_horizontal"
-        android:text="@string/menu_restore" />
-
-    <TextView
-        android:id="@+id/backup_restore_subtitle"
-        style="@style/WizardSubTitleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_margin="@dimen/wizard_contents_padding"
-        android:gravity="center_horizontal"
-        android:text="@string/backup_restore_type" />
-
-    <ch.threema.app.activities.wizard.components.WizardButtonXml
-        android:id="@+id/safe_backup_compose"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/wizard_contents_padding"
-        app:wizardButton_text="@string/threema_safe_backup" />
+        android:orientation="vertical">
 
-    <ch.threema.app.activities.wizard.components.WizardButtonXml
-        android:id="@+id/data_backup_compose"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/wizard_contents_padding"
-        app:wizardButton_text="@string/backup_data_title" />
+        <TextView
+            android:id="@+id/backup_restore_title"
+            style="@style/WizardTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/grid_unit_x1"
+            android:gravity="center_horizontal"
+            android:text="@string/menu_restore" />
 
-    <ch.threema.app.activities.wizard.components.WizardButtonXml
-        android:id="@+id/id_backup_compose"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/wizard_contents_padding"
-        app:wizardButton_text="@string/backup_id" />
+        <TextView
+            android:id="@+id/backup_restore_subtitle"
+            style="@style/WizardSubTitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginVertical="@dimen/wizard_contents_padding"
+            android:gravity="center_horizontal"
+            android:text="@string/backup_restore_type" />
 
-    <ch.threema.app.activities.wizard.components.WizardButtonXml
-        android:id="@+id/cancel_compose"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        app:wizardButton_style="wizardButton_inverse"
-        app:wizardButton_text="@string/cancel" />
+        <ch.threema.app.activities.wizard.components.WizardButtonXml
+            android:id="@+id/safe_backup_compose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/wizard_contents_padding"
+            app:wizardButton_text="@string/threema_safe_backup" />
 
-</LinearLayout>
+        <ch.threema.app.activities.wizard.components.WizardButtonXml
+            android:id="@+id/data_backup_compose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/wizard_contents_padding"
+            app:wizardButton_text="@string/backup_data_title" />
+
+        <ch.threema.app.activities.wizard.components.WizardButtonXml
+            android:id="@+id/id_backup_compose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/wizard_contents_padding"
+            app:wizardButton_text="@string/backup_id" />
+
+        <ch.threema.app.activities.wizard.components.WizardButtonXml
+            android:id="@+id/cancel_compose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_unit_x4"
+            app:wizardButton_style="wizardButton_inverse"
+            app:wizardButton_text="@string/cancel" />
+
+    </LinearLayout>
+
+</ScrollView>

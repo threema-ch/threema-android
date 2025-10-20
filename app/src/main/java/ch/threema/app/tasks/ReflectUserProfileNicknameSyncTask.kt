@@ -61,7 +61,7 @@ class ReflectUserProfileNicknameSyncTask(
         ).execute {
             encryptAndReflectUserProfileUpdate(handle)
         }
-        identityStore.persistPublicNickname(newNickname)
+        identityStore.setPublicNickname(newNickname)
     }
 
     private suspend fun encryptAndReflectUserProfileUpdate(handle: ActiveTaskCodec) {

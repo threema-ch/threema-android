@@ -21,11 +21,13 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+
+import androidx.annotation.NonNull;
+
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 /**
  * Create column for user-specific message states in group models.
@@ -33,9 +35,10 @@ import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
 public class DatabaseUpdateToVersion76 implements DatabaseUpdate {
     public static final int VERSION = 76;
 
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion76(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion76(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 

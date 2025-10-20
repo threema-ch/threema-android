@@ -66,7 +66,7 @@ fun UnlockRetryDialog(
 
 @PreviewThreemaAll
 @Composable
-private fun UnlockRetryDialogPreview() = ThreemaThemePreview {
+private fun UnlockRetryDialog_Preview() = ThreemaThemePreview {
     AppStartupScreen {
         UnlockRetryDialog(
             onDismissRequest = {},

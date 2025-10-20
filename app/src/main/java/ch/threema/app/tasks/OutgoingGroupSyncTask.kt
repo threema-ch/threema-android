@@ -27,6 +27,7 @@ import ch.threema.domain.models.GroupId
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
 private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupSyncTask")
@@ -39,8 +40,8 @@ private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupSyncTask")
  */
 class OutgoingGroupSyncTask(
     private val groupId: GroupId,
-    private val creatorIdentity: String,
-    private val receiverIdentities: Set<String>,
+    private val creatorIdentity: Identity,
+    private val receiverIdentities: Set<Identity>,
     private val serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingGroupSyncTask"
@@ -101,8 +102,8 @@ class OutgoingGroupSyncTask(
     @Serializable
     private class OutgoingGroupSyncData(
         private val groupId: ByteArray,
-        private val creatorIdentity: String,
-        private val receiverIdentities: Set<String>,
+        private val creatorIdentity: Identity,
+        private val receiverIdentities: Set<Identity>,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingGroupSyncTask(

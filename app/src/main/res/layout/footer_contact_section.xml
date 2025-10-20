@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:clickable="false"
-    android:orientation="vertical"
-    android:paddingTop="@dimen/grid_unit_x1"
-    android:paddingBottom="@dimen/grid_unit_x1_5">
+    android:paddingVertical="@dimen/grid_unit_x2">
 
-    <com.google.android.material.button.MaterialButton
+    <TextView
         android:id="@+id/contact_counter_text"
-        style="@style/Threema.MaterialButton.Action.Outline.Info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:alpha="0.8"
+        android:textAppearance="@style/Threema.TextAppearance.BodyMedium"
+        android:textColor="?attr/colorOnBackground"
+        tools:text="5 contacts (+2 / 30d)" />
 
-</LinearLayout>
+</FrameLayout>

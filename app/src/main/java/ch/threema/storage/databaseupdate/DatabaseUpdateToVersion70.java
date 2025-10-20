@@ -25,7 +25,7 @@ import android.database.SQLException;
 
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 public class DatabaseUpdateToVersion70 implements DatabaseUpdate {
     public static final int VERSION = 70;

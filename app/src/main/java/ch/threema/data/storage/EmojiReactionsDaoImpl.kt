@@ -21,18 +21,19 @@
 
 package ch.threema.data.storage
 
-import android.content.ContentValues
 import android.database.Cursor
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import ch.threema.app.utils.ThrowingConsumer
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.repositories.EmojiReactionEntryCreateException
+import ch.threema.storage.buildContentValues
 import ch.threema.storage.factories.ContactEmojiReactionModelFactory
 import ch.threema.storage.factories.GroupEmojiReactionModelFactory
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.MessageModel
+import ch.threema.storage.runTransaction
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsDaoImpl")
@@ -41,14 +42,14 @@ class EmojiReactionsDaoImpl(
     private val sqlite: SupportSQLiteOpenHelper,
 ) : EmojiReactionsDao {
     override fun create(entry: DbEmojiReaction, messageModel: AbstractMessageModel) {
-        val table =
-            getReactionTableForMessage(messageModel) ?: throw EmojiReactionEntryCreateException(
+        val table = getReactionTableForMessage(messageModel)
+            ?: throw EmojiReactionEntryCreateException(
                 IllegalArgumentException("Cannot create reaction entry for message of class ${messageModel.javaClass.name}"),
             )
         sqlite.writableDatabase.insert(
-            table,
-            SQLiteDatabase.CONFLICT_ROLLBACK,
-            entry.getContentValues(),
+            table = table,
+            conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
+            values = entry.getContentValues(),
         )
     }
 
@@ -96,14 +97,9 @@ class EmojiReactionsDaoImpl(
     }
 
     override fun deleteAll() {
-        val db = sqlite.writableDatabase
-        db.beginTransaction()
-        try {
-            db.execSQL("DELETE FROM ${ContactEmojiReactionModelFactory.TABLE}")
-            db.execSQL("DELETE FROM ${GroupEmojiReactionModelFactory.TABLE}")
-            db.setTransactionSuccessful()
-        } finally {
-            db.endTransaction()
+        sqlite.writableDatabase.runTransaction {
+            execSQL("DELETE FROM ${ContactEmojiReactionModelFactory.TABLE}")
+            execSQL("DELETE FROM ${GroupEmojiReactionModelFactory.TABLE}")
         }
     }
 
@@ -299,26 +295,21 @@ class EmojiReactionsDaoImpl(
         table: String,
         block: EmojiReactionsDao.TransactionalReactionInsertScope,
     ) {
-        val database = sqlite.writableDatabase
-        database.beginTransaction()
-        try {
+        sqlite.writableDatabase.runTransaction {
             block.runInserts { entry ->
-                val success = database.insert(
-                    table,
-                    SQLiteDatabase.CONFLICT_IGNORE,
-                    entry.getContentValues(),
+                val success = insert(
+                    table = table,
+                    conflictAlgorithm = SQLiteDatabase.CONFLICT_IGNORE,
+                    values = entry.getContentValues(),
                 ) >= 0
                 if (logger.isDebugEnabled) {
                     logger.debug("Insert reaction {}, success={}", entry, success)
                 }
             }
-            database.setTransactionSuccessful()
-        } finally {
-            database.endTransaction()
         }
     }
 
-    private fun DbEmojiReaction.getContentValues() = ContentValues().apply {
+    private fun DbEmojiReaction.getContentValues() = buildContentValues {
         put(DbEmojiReaction.COLUMN_MESSAGE_ID, messageId)
         put(DbEmojiReaction.COLUMN_SENDER_IDENTITY, senderIdentity)
         put(DbEmojiReaction.COLUMN_EMOJI_SEQUENCE, emojiSequence)

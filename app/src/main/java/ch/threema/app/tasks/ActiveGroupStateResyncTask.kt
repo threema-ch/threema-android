@@ -66,12 +66,13 @@ class ActiveGroupStateResyncTask(
             val multiDeviceProperties = multiDeviceManager.propertiesProvider.get()
 
             handle.createTransaction(
-                multiDeviceProperties.keys,
-                MdD2D.TransactionScope.Scope.GROUP_SYNC,
-                TRANSACTION_TTL_MAX,
-            ) {
-                getGroupModelData()?.isMember == true
-            }.execute {
+                keys = multiDeviceProperties.keys,
+                scope = MdD2D.TransactionScope.Scope.GROUP_SYNC,
+                ttl = TRANSACTION_TTL_MAX,
+                precondition = {
+                    getGroupModelData()?.isMember == true
+                },
+            ).execute {
                 runActiveGroupStateResyncSteps(handle)
             }
         } else {
@@ -80,7 +81,7 @@ class ActiveGroupStateResyncTask(
     }
 
     private fun getGroupModelData(): GroupModelData? {
-        val groupModelData = groupModel.data.value ?: run {
+        val groupModelData = groupModel.data ?: run {
             logger.warn("Group model data is null: cannot resync group")
             null
         }

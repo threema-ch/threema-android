@@ -36,29 +36,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.widget.AppCompatImageButton;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
-import com.google.android.material.materialswitch.MaterialSwitch;
 
-import org.slf4j.Logger;
-
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.activities.GroupDetailActivity;
-import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.group.GroupInviteService;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.GroupDetailViewModel;
 import ch.threema.app.ui.SectionHeaderView;
@@ -67,18 +56,12 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.csp.messages.group.GroupInviteToken;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.group.GroupInviteModel;
-import java8.util.Optional;
 
 public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public enum GroupDescState {NONE, COLLAPSED, EXPANDED}
-
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupDetailAdapter");
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
@@ -88,15 +71,11 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private final Context context;
     private final ContactService contactService;
     private final GroupService groupService;
-    private final GroupInviteService groupInviteService;
     private final GroupModel groupModel;
-    private GroupInviteModel defaultGroupInviteModel;
-    private final @Nullable Runnable onCloneGroupRunnable;
     private List<ContactModel> contactModels; // Cached copy of group members
     private OnGroupDetailsClickListener onClickListener;
     private final GroupDetailViewModel groupDetailViewModel;
     HeaderHolder headerHolder;
-    private boolean warningShown = false;
 
     public static class ItemHolder extends RecyclerView.ViewHolder {
         public final View view;
@@ -117,12 +96,6 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public class HeaderHolder extends RecyclerView.ViewHolder {
         private final SectionHeaderView groupMembersTitleView;
         private final View addMembersView;
-        private final ConstraintLayout linkContainerView;
-        private final SectionHeaderView groupLinkTitle;
-        private final MaterialSwitch linkEnableSwitch;
-        private final TextView linkString;
-        private final AppCompatImageButton linkResetButton;
-        private final AppCompatImageButton linkShareButton;
         public final ImageView changeGroupDescButton;
         public final SectionHeaderView groupDescTitle;
         private final TextView expandButton;
@@ -130,7 +103,6 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public final SectionHeaderView groupDescChangedDate;
         public final View groupNoticeView;
         public final TextView groupNoticeTextView;
-        public final MaterialButton groupNoticeCloneButton;
 
         public HeaderHolder(View view) {
             super(view);
@@ -138,12 +110,6 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             // items in object
             this.groupMembersTitleView = itemView.findViewById(R.id.group_members_title);
             this.addMembersView = itemView.findViewById(R.id.add_member);
-            this.linkContainerView = itemView.findViewById(R.id.group_link_container);
-            this.groupLinkTitle = itemView.findViewById(R.id.group_link_header);
-            this.linkEnableSwitch = itemView.findViewById(R.id.group_link_switch);
-            this.linkString = itemView.findViewById(R.id.group_link_string);
-            this.linkResetButton = itemView.findViewById(R.id.reset_button);
-            this.linkShareButton = itemView.findViewById(R.id.share_button);
             this.changeGroupDescButton = itemView.findViewById(R.id.change_group_desc_btn);
             this.groupDescTitle = itemView.findViewById(R.id.group_desc_title);
             this.groupDescText = itemView.findViewById(R.id.group_desc_text);
@@ -159,35 +125,18 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             });
             this.groupNoticeView = itemView.findViewById(R.id.group_notice_view);
             this.groupNoticeTextView = itemView.findViewById(R.id.group_notice);
-            this.groupNoticeCloneButton = itemView.findViewById(R.id.clone_button);
 
-            boolean isOrphanedGroup = groupService.isOrphanedGroup(groupModel);
             boolean isCreator = groupService.isGroupCreator(groupModel);
             boolean isMember = groupService.isGroupMember(groupModel);
-            boolean hasOtherMembers = groupService.countMembersWithoutUser(groupModel) > 0;
 
-            if (isOrphanedGroup) {
-                // Show orphaned group notice
-                this.groupNoticeView.setVisibility(View.VISIBLE);
-                this.groupNoticeTextView.setText(R.string.group_orphaned_notice);
-
-                // If we have a clone runnable and other members in the group, we also show the
-                // clone button.
-                if (hasOtherMembers && onCloneGroupRunnable != null) {
-                    this.groupNoticeCloneButton.setOnClickListener(v -> onCloneGroupRunnable.run());
-                } else {
-                    this.groupNoticeCloneButton.setVisibility(View.GONE);
-                }
-            } else if (!isCreator && !isMember) {
-                // Show empty group notice without the clone button
+            if (!isCreator && !isMember) {
+                // Show empty group notice
                 this.groupNoticeView.setVisibility(View.VISIBLE);
                 this.groupNoticeTextView.setText(R.string.group_not_a_member_notice);
-                this.groupNoticeCloneButton.setVisibility(View.GONE);
             } else if (isCreator && !isMember) {
                 // Show notice that this group has been dissolved
                 this.groupNoticeView.setVisibility(View.VISIBLE);
                 this.groupNoticeTextView.setText(R.string.group_dissolved_notice);
-                this.groupNoticeCloneButton.setVisibility(View.GONE);
             } else {
                 // Don't show any notice
                 this.groupNoticeView.setVisibility(View.GONE);
@@ -220,26 +169,19 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * @param groupModel           the group model of the group
      * @param groupDetailViewModel the group detail view model
      * @param serviceManager       the service manager
-     * @param onCloneGroupRunnable the runnable that is called when the group is cloned. Note that
-     *                             this runnable should be set for orphaned groups as it is needed
-     *                             to display the clone button. For non-orphaned groups this has no
-     *                             effect and is not needed.
      * @throws MasterKeyLockedException      when the master key is locked
      */
     public GroupDetailAdapter(
         Context context,
         GroupModel groupModel,
         GroupDetailViewModel groupDetailViewModel,
-        @NonNull ServiceManager serviceManager,
-        @Nullable Runnable onCloneGroupRunnable
+        @NonNull ServiceManager serviceManager
     ) throws MasterKeyLockedException {
         this.context = context;
         this.groupModel = groupModel;
         this.groupDetailViewModel = groupDetailViewModel;
-        this.onCloneGroupRunnable = onCloneGroupRunnable;
         this.contactService = serviceManager.getContactService();
         this.groupService = serviceManager.getGroupService();
-        this.groupInviteService = serviceManager.getGroupInviteService();
     }
 
     @SuppressLint("NotifyDataSetChanged")
@@ -271,7 +213,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (holder instanceof ItemHolder) {
             ItemHolder itemHolder = (ItemHolder) holder;
             final ContactModel contactModel = getItem(position);
-            Bitmap avatar = this.contactService.getAvatar(contactModel, false);
+            Bitmap avatar = this.contactService.getAvatar(contactModel.getIdentity(), false);
 
             itemHolder.nameView.setText(NameUtil.getDisplayNameOrNickname(contactModel, true));
             itemHolder.idView.setText(contactModel.getIdentity());
@@ -287,24 +229,12 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             this.headerHolder = (HeaderHolder) holder;
             headerHolder.addMembersView.setOnClickListener(v -> onClickListener.onAddMembersClick(v));
 
-            ContactModel ownerContactModel = contactService.getByIdentity(groupModel.getCreatorIdentity());
-
             isGroupEditable = groupService.isGroupCreator(groupModel) && groupService.isGroupMember(groupModel);
 
             if (ConfigUtils.supportGroupDescription()) {
                 initGroupDescriptionSection();
             } else {
                 disableGroupDescription();
-            }
-
-            if (ownerContactModel != null) {
-                if (!ConfigUtils.supportsGroupLinks() || ownerContactModel != contactService.getMe()) {
-                    headerHolder.linkContainerView.setVisibility(View.GONE);
-                } else {
-                    initGroupLinkSection();
-                }
-            } else {
-                headerHolder.linkContainerView.setVisibility(View.GONE);
             }
 
             boolean addMembersViewVisibility = isGroupEditable
@@ -320,61 +250,6 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             headerHolder.addMembersView.setVisibility(addMembersViewVisibility ? View.VISIBLE : View.GONE);
         }
     }
-
-    private void initGroupLinkSection() {
-        Optional<GroupInviteModel> groupInviteModelOptional = groupInviteService.getDefaultGroupInvite(groupModel);
-        if (groupInviteModelOptional.isPresent()) {
-            this.defaultGroupInviteModel = groupInviteModelOptional.get();
-        }
-        boolean enableGroupLinkSwitch = defaultGroupInviteModel != null && !defaultGroupInviteModel.isInvalidated();
-        headerHolder.linkEnableSwitch.setChecked(enableGroupLinkSwitch);
-        setGroupLinkViewsEnabled(enableGroupLinkSwitch);
-        if (defaultGroupInviteModel != null) {
-            encodeAndDisplayDefaultLink();
-        } else {
-            headerHolder.linkString.setText(R.string.group_link_none);
-            headerHolder.linkResetButton.setVisibility(View.INVISIBLE);
-            headerHolder.linkShareButton.setVisibility(View.INVISIBLE);
-        }
-
-        headerHolder.linkEnableSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            GroupDetailAdapter.this.setGroupLinkViewsEnabled(isChecked);
-            if (isChecked) {
-                try {
-                    GroupDetailAdapter.this.defaultGroupInviteModel = groupInviteService.createOrEnableDefaultLink(groupModel);
-                    encodeAndDisplayDefaultLink();
-                    headerHolder.linkResetButton.setVisibility(View.VISIBLE);
-                    headerHolder.linkShareButton.setVisibility(View.VISIBLE);
-                } catch (GroupInviteToken.InvalidGroupInviteTokenException | IOException |
-                         GroupInviteModel.MissingRequiredArgumentsException e) {
-                    logger.error("Exception, failed to create or get default group link", e);
-                }
-            } else {
-                groupInviteService.deleteDefaultLink(groupModel);
-                GroupDetailAdapter.this.defaultGroupInviteModel = null;
-            }
-        });
-        headerHolder.linkShareButton.setOnClickListener(v -> onClickListener.onShareLinkClick());
-        headerHolder.linkResetButton.setOnClickListener(v -> {
-            if (!warningShown && !ShowOnceDialog.shouldNotShowAnymore(GroupDetailActivity.DIALOG_SHOW_ONCE_RESET_LINK_INFO)) {
-                // show only once dialog
-                onClickListener.onResetLinkClick();
-                warningShown = true;
-                return;
-            }
-            try {
-                this.defaultGroupInviteModel = groupInviteService.resetDefaultGroupInvite(groupModel);
-                encodeAndDisplayDefaultLink();
-            } catch (IOException | GroupInviteToken.InvalidGroupInviteTokenException |
-                     GroupInviteModel.MissingRequiredArgumentsException e) {
-                logger.error("Exception, failed to reset default group link", e);
-            }
-        });
-
-        headerHolder.groupLinkTitle.setText(context.getString(R.string.default_group_link) +
-            " (" + groupInviteService.getCustomLinksCount(groupModel.getApiGroupId()) + " " + context.getString(R.string.custom) + ")");
-    }
-
 
     private void initGroupDescriptionSection() {
         updateGroupDescriptionLayout();
@@ -396,28 +271,6 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         });
 
         headerHolder.changeGroupDescButton.setOnClickListener(s -> onClickListener.onGroupDescriptionEditClick());
-    }
-
-
-    private void encodeAndDisplayDefaultLink() {
-        headerHolder.linkString.setText(
-            groupInviteService.encodeGroupInviteLink(GroupDetailAdapter.this.defaultGroupInviteModel).toString()
-        );
-    }
-
-    private void setGroupLinkViewsEnabled(boolean enabled) {
-        headerHolder.linkContainerView.setEnabled(enabled);
-        headerHolder.linkResetButton.setEnabled(enabled);
-        headerHolder.linkShareButton.setEnabled(enabled);
-        if (enabled) {
-            headerHolder.linkString.setAlpha(1F);
-            headerHolder.linkResetButton.setAlpha(1F);
-            headerHolder.linkShareButton.setAlpha(1F);
-        } else {
-            headerHolder.linkString.setAlpha(0.5F);
-            headerHolder.linkResetButton.setAlpha(0.5F);
-            headerHolder.linkShareButton.setAlpha(0.5F);
-        }
     }
 
     @Override
@@ -567,10 +420,6 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public interface OnGroupDetailsClickListener {
         void onGroupMemberClick(View v, @NonNull ContactModel contactModel);
-
-        void onResetLinkClick();
-
-        void onShareLinkClick();
 
         void onGroupDescriptionEditClick();
 

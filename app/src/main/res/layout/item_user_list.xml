@@ -2,11 +2,12 @@
 
 <ch.threema.app.ui.CheckableConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/listitem_background_selector"
-    android:paddingVertical="@dimen/listitem_standard_margin_top_bottom"
-    android:paddingHorizontal="@dimen/listitem_standard_margin_left_right">
+    android:paddingHorizontal="@dimen/listitem_standard_margin_left_right"
+    android:paddingVertical="@dimen/listitem_standard_margin_top_bottom">
 
     <!-- avatar -->
 
@@ -18,18 +19,18 @@
         android:id="@+id/name"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/listitem_min_height_first_line"
         android:layout_marginLeft="@dimen/messagelist_avatar_padding"
         android:ellipsize="end"
+        android:minHeight="@dimen/listitem_min_height_first_line"
         android:singleLine="true"
         android:text="Name"
         android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/avatar_view"
-        app:layout_constraintRight_toLeftOf="@+id/verification_level"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toTopOf="@+id/subject"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constrainedWidth="true"
+        app:layout_constraintLeft_toRightOf="@id/avatar_view"
+        app:layout_constraintRight_toLeftOf="@+id/verification_level"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed" />
 
     <ch.threema.app.ui.VerificationLevelImageView
@@ -37,13 +38,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/messagelist_avatar_padding"
+        android:adjustViewBounds="true"
         android:baselineAlignBottom="true"
+        android:maxHeight="@dimen/grid_unit_x1"
         android:visibility="visible"
-        app:srcCompat="@drawable/ic_verification_full"
-        app:layout_constraintTop_toTopOf="@id/name"
         app:layout_constraintBottom_toBottomOf="@id/name"
+        app:layout_constraintLeft_toRightOf="@id/name"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintLeft_toRightOf="@id/name" />
+        app:layout_constraintTop_toTopOf="@id/name"
+        app:srcCompat="@drawable/ic_verification_full" />
 
     <!-- second line -->
 
@@ -51,31 +54,31 @@
         android:id="@+id/subject"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:minHeight="@dimen/listitem_min_height_second_line"
         android:layout_marginLeft="@dimen/messagelist_avatar_padding"
         android:ellipsize="end"
+        android:minHeight="@dimen/listitem_min_height_second_line"
         android:singleLine="true"
-        android:text="Subject"
         android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
-        app:layout_constraintTop_toBottomOf="@id/name"
-        app:layout_constraintLeft_toRightOf="@id/avatar_view"
-        app:layout_constraintRight_toLeftOf="@+id/last_message_icon"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintHorizontal_bias="0"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintLeft_toRightOf="@id/avatar_view"
+        app:layout_constraintRight_toLeftOf="@+id/last_message_icon"
+        app:layout_constraintTop_toBottomOf="@id/name"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="Subject" />
 
     <ImageView
         android:id="@+id/last_message_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="5dp"
-        android:tint="?attr/colorOnSurface"
-        app:srcCompat="@drawable/ic_chat_filled"
-        app:layout_constraintTop_toTopOf="@id/subject"
         app:layout_constraintBottom_toBottomOf="@id/subject"
         app:layout_constraintLeft_toRightOf="@id/subject"
-        app:layout_constraintRight_toLeftOf="@+id/date" />
+        app:layout_constraintRight_toLeftOf="@+id/date"
+        app:layout_constraintTop_toTopOf="@id/subject"
+        app:srcCompat="@drawable/ic_chat_filled"
+        app:tint="?attr/colorOnSurface" />
 
     <TextView
         android:id="@+id/date"
@@ -94,11 +97,11 @@
         android:layout_height="18dp"
         android:layout_marginLeft="5dip"
         android:visibility="visible"
-        app:srcCompat="@drawable/ic_block"
-        app:layout_constraintTop_toTopOf="@id/subject"
         app:layout_constraintBottom_toBottomOf="@id/subject"
-        app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintLeft_toRightOf="@id/date"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/subject"
+        app:srcCompat="@drawable/ic_block"
         app:tint="@color/material_red" />
 
 </ch.threema.app.ui.CheckableConstraintLayout>

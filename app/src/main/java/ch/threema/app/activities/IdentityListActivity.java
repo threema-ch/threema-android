@@ -30,6 +30,8 @@ import android.view.ViewGroup;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
+import org.koin.java.KoinJavaComponent;
+
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -44,18 +46,16 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.IdentityListAdapter;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.localcrypto.MasterKeyLockedException;
 
 abstract public class IdentityListActivity extends ThreemaToolbarActivity implements TextEntryDialog.TextEntryDialogClickListener {
     private static final String BUNDLE_RECYCLER_LAYOUT = "recycler";
@@ -65,7 +65,9 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     private ActionMode actionMode = null;
     private Bundle savedInstanceState;
     private EmptyRecyclerView recyclerView;
-    private ContactService contactService;
+
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     public interface IdentityList {
         /**
@@ -90,10 +92,9 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        try {
-            contactService = ThreemaApplication.requireServiceManager().getContactService();
-        } catch (MasterKeyLockedException e) {
+        if (!dependencies.isAvailable()) {
             finish();
+            return;
         }
 
         this.savedInstanceState = savedInstanceState;
@@ -321,7 +322,7 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     }
 
     private void fireOnModifiedContact(final String identity) {
-        if (contactService != null) {
+        if (dependencies.isAvailable()) {
             ListenerManager.contactListeners.handle(listener -> listener.onModified(identity));
         }
     }

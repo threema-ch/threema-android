@@ -137,23 +137,20 @@ public class PowermanagerUtil {
 
     /**
      * Try to find out whether battery optimizations are already disabled for our app.
-     * If this fails (e.g. on devices older than Android M), `true` will be returned.
+     * If this fails, `true` will be returned.
      */
     public static boolean isIgnoringBatteryOptimizations(@NonNull Context context) {
-        // App is always whitelisted in unit tests
-        if (RuntimeUtil.isInTest()) {
+        // App is always whitelisted in device tests
+        if (TestUtil.isInDeviceTest()) {
             return true;
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            final PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(POWER_SERVICE);
-            try {
-                return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
-            } catch (Exception e) {
-                logger.error("Exception while checking if battery optimization is disabled", e);
-                // don't care about buggy phones not implementing this API
-                return true;
-            }
+        final PowerManager powerManager = (PowerManager) context.getApplicationContext().getSystemService(POWER_SERVICE);
+        try {
+            return powerManager.isIgnoringBatteryOptimizations(context.getPackageName());
+        } catch (Exception e) {
+            logger.error("Exception while checking if battery optimization is disabled", e);
+            // don't care about buggy phones not implementing this API
+            return true;
         }
-        return true;
     }
 }

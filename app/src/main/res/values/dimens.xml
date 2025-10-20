@@ -12,8 +12,23 @@
     <dimen name="grid_unit_x6">48dp</dimen>
     <dimen name="grid_unit_x7">56dp</dimen>
     <dimen name="grid_unit_x8">64dp</dimen>
+    <dimen name="grid_unit_x9">72dp</dimen>
     <dimen name="grid_unit_x10">80dp</dimen>
     <dimen name="grid_unit_x15">120dp</dimen>
+
+    <!-- adaptive dimensions for margins and paddings depending on screen width -->
+    <dimen name="dynamic_grid_unit_x0_5">4dp</dimen>
+    <dimen name="dynamic_grid_unit_x1">8dp</dimen>
+    <dimen name="dynamic_grid_unit_x1_5">12dp</dimen>
+    <dimen name="dynamic_grid_unit_x2">16dp</dimen>
+    <dimen name="dynamic_grid_unit_x3">24dp</dimen>
+    <dimen name="dynamic_grid_unit_x4">32dp</dimen>
+    <dimen name="dynamic_grid_unit_x5">40dp</dimen>
+    <dimen name="dynamic_grid_unit_x6">48dp</dimen>
+    <dimen name="dynamic_grid_unit_x7">56dp</dimen>
+    <dimen name="dynamic_grid_unit_x8">64dp</dimen>
+    <dimen name="dynamic_grid_unit_x9">72dp</dimen>
+    <dimen name="dynamic_grid_unit_x10">80dp</dimen>
 
     <!-- message/contacts listviews -->
     <dimen name="avatar_size_small">40dp</dimen>
@@ -144,7 +159,6 @@
     <dimen name="control_panel_height">100dp</dimen> <!-- media_attach_button_size + 8 -->
     <dimen name="image_attach_popup_action_icon_size">48dp</dimen>
     <dimen name="image_popup_screen_border_width">32dp</dimen>
-    <dimen name="qrcode_min_margin">8dp</dimen>
     <dimen name="grid_spacing">2dp</dimen>
     <dimen name="drag_handle_height">24dp</dimen>
     <dimen name="broken_image_icon_size">32dp</dimen>
@@ -301,7 +315,7 @@
 
     <!-- Group calls -->
     <dimen name="group_call_participants_item_gutter">4dp</dimen>
-    <dimen name="group_call_participant_mute_icon_size">20dp</dimen>
+    <dimen name="group_call_participant_state_icons_size">20dp</dimen>
     <dimen name="group_call_participant_margin">10dp</dimen>
     <dimen name="group_call_participant_text_size">16sp</dimen>
     <dimen name="group_call_title_text_size">26sp</dimen>
@@ -375,5 +389,9 @@
 
     <!-- Device Linking Wizard -->
     <dimen name="verification_emoji_size">56dp</dimen>
+
+    <!-- Dialog -->
+    <dimen name="text_size_material_alert_dialog_title">18sp</dimen>
+    <dimen name="text_size_material_alert_dialog_body">14sp</dimen>
 
 </resources>

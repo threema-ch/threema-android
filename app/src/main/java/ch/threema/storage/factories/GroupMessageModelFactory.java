@@ -37,6 +37,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.JsonUtil;
 import ch.threema.domain.models.MessageId;
+import ch.threema.storage.ChunkedSequence;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
@@ -46,6 +47,7 @@ import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.data.models.GroupModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
+import kotlin.ranges.LongProgression;
 
 import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
 
@@ -390,16 +392,28 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
         return messageModels;
     }
 
-    public List<GroupMessageModel> getByGroupIdUnsorted(long groupId) {
-        return convertList(getReadableDatabase().query(this.getTableName(),
-            null,
-            GroupMessageModel.COLUMN_GROUP_ID + "=?",
-            new String[]{
-                String.valueOf(groupId)
-            },
-            null,
-            null,
-            null));
+    public ChunkedSequence<GroupMessageModel> getByGroupId(long groupId) {
+        long count;
+        try (Cursor cursor = getReadableDatabase().query(
+            "SELECT COUNT(*) FROM `" + getTableName() + "` WHERE `" + GroupMessageModel.COLUMN_GROUP_ID + "` = ?",
+            new String[]{String.valueOf(groupId)}
+        )) {
+            if (cursor.moveToNext()) {
+                count = cursor.getLong(0);
+            } else {
+                count = 0;
+            }
+        }
+
+        return new ChunkedSequence<>(
+            LongProgression.Companion.fromClosedRange(0, count, 10000),
+            (from, size) ->
+                getReadableDatabase().query(
+                    "SELECT * FROM `" + getTableName() + "` WHERE `" + GroupMessageModel.COLUMN_GROUP_ID + "` = ? LIMIT ? OFFSET ?",
+                    new String[]{String.valueOf(groupId), String.valueOf(size), String.valueOf(from)}
+                ),
+            this::convert
+        );
     }
 
     public int delete(GroupMessageModel groupMessageModel) {

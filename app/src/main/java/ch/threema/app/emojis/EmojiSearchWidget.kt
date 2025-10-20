@@ -131,12 +131,12 @@ class EmojiSearchWidget : ConstraintLayout {
         searchInput.addTextChangedListener(
             object : SimpleTextWatcher() {
                 private var ongoingJob: Job? = null
-                override fun afterTextChanged(s: Editable) {
+                override fun afterTextChanged(editable: Editable) {
                     ongoingJob?.cancel()
                     ongoingJob = MainScope().launch {
-                        setSearchResults(emojiService.search(s.toString()))
+                        setSearchResults(emojiService.search(editable.toString()))
                     }
-                    clearSearchButton.isVisible = s.toString().isNotEmpty()
+                    clearSearchButton.isVisible = editable.toString().isNotEmpty()
                 }
             },
         )

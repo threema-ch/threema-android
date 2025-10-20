@@ -107,7 +107,7 @@ public class MentionSelectorAdapter extends AbstractRecyclerAdapter<ContactModel
             }
             itemHolder.avatarView.setBadgeVisible(false);
         } else {
-            avatar = this.contactService.getAvatar(contactModel, false);
+            avatar = this.contactService.getAvatar(contactModel.getIdentity(), false);
 
             itemHolder.idView.setText(contactModel.getIdentity());
             itemHolder.avatarView.setImageBitmap(avatar);

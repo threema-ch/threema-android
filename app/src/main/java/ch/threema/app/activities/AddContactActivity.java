@@ -23,11 +23,9 @@ package ch.threema.app.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.Toast;
@@ -35,6 +33,7 @@ import android.widget.Toast;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -47,7 +46,6 @@ import androidx.fragment.app.DialogFragment;
 import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
 import ch.threema.app.asynctasks.AlreadyVerified;
 import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
@@ -58,11 +56,10 @@ import ch.threema.app.asynctasks.ContactModified;
 import ch.threema.app.asynctasks.Failed;
 import ch.threema.app.asynctasks.PolicyViolation;
 import ch.threema.app.contactdetails.ContactDetailActivity;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.NewContactDialog;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.QRCodeService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
@@ -74,11 +71,8 @@ import ch.threema.app.webclient.services.WebSessionQRCodeParser;
 import ch.threema.app.webclient.services.WebSessionQRCodeParserImpl;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.data.repositories.ContactModelRepository;
-import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.storage.models.ContactModel;
 
-import static ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ID;
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.domain.protocol.csp.ProtocolDefines.IDENTITY_LEN;
@@ -95,28 +89,16 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 
     private static final int PERMISSION_REQUEST_CAMERA = 1;
 
-    private QRCodeService qrCodeService;
-    private LockAppService lockAppService;
-    private ContactModelRepository contactModelRepository;
-    private APIConnector apiConnector;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
         if (finishAndRestartLaterIfNotReady(this)) {
-            return;
-        }
-
-        ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
-        try {
-            this.qrCodeService = serviceManager.getQRCodeService();
-            this.lockAppService = serviceManager.getLockAppService();
-            this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
-            this.apiConnector = serviceManager.getAPIConnector();
-        } catch (Exception e) {
-            logger.error("Could not instantiate services", e);
-            finish();
             return;
         }
 
@@ -135,7 +117,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
                 if (action.equals(Intent.ACTION_VIEW)) {
                     Uri dataUri = intent.getData();
 
-                    if (TestUtil.required(dataUri)) {
+                    if (dataUri != null) {
                         String scheme = dataUri.getScheme();
                         String host = dataUri.getHost();
 
@@ -148,7 +130,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 
                                 String id = dataUri.getQueryParameter("id");
 
-                                if (TestUtil.required(id)) {
+                                if (id != null) {
                                     addContactByIdentity(id);
                                 }
                             }
@@ -172,7 +154,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 
     private void parseQrResult(String payload) {
         // first: try to parse as contact result (contact scan)
-        QRCodeService.QRCodeContentResult contactQRCode = this.qrCodeService.getResult(payload);
+        QRCodeService.QRCodeContentResult contactQRCode = dependencies.getQrCodeService().getResult(payload);
 
         if (contactQRCode != null) {
             addContactByQRResult(contactQRCode);
@@ -225,7 +207,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
     }
 
     @SuppressLint("StaticFieldLeak")
-    private void addContactByQRResult(final QRCodeService.QRCodeContentResult qrResult) {
+    private void addContactByQRResult(@NonNull final QRCodeService.QRCodeContentResult qrResult) {
         logger.info("Adding contact from QR code");
         if (qrResult.getExpirationDate() != null
             && qrResult.getExpirationDate().before(new Date())) {
@@ -237,7 +219,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
     }
 
     private void addContactByIdentity(@NonNull String identity, @Nullable byte[] publicKey) {
-        if (lockAppService.isLocked()) {
+        if (dependencies.getLockAppService().isLocked()) {
             finish();
             return;
         }
@@ -245,9 +227,9 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
         backgroundExecutor.execute(new BasicAddOrUpdateContactBackgroundTask(
             identity,
             ContactModel.AcquaintanceLevel.DIRECT,
-            getMyIdentity(),
-            apiConnector,
-            contactModelRepository,
+            dependencies.getUserService().getIdentity(),
+            dependencies.getApiConnector(),
+            dependencies.getContactModelRepository(),
             AddContactRestrictionPolicy.CHECK,
             this,
             publicKey
@@ -309,11 +291,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 
     private void scanQR() {
         if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_CAMERA)) {
-            if (ConfigUtils.supportsGroupLinks()) {
-                QRScannerUtil.getInstance().initiateGeneralThreemaQrScanner(this, getString(R.string.qr_scanner_id_hint));
-            } else {
-                QRScannerUtil.getInstance().initiateScan(this, getString(R.string.qr_scanner_id_hint), QR_TYPE_ID);
-            }
+            QRScannerUtil.getInstance().initiateScan(this, getString(R.string.qr_scanner_id_hint));
         }
     }
 
@@ -336,7 +314,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
             if (!TestUtil.isEmptyOrNull(payload)) {
 
                 // first: try to parse as content result (contact scan)
-                QRCodeService.QRCodeContentResult contactQRCode = this.qrCodeService.getResult(payload);
+                QRCodeService.QRCodeContentResult contactQRCode = dependencies.getQrCodeService().getResult(payload);
 
                 if (contactQRCode != null) {
                     // ok, try to add contact
@@ -384,7 +362,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
                     // ignore and continue
                 }
             }
-            Toast.makeText(this, R.string.invalid_barcode, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.invalid_threema_qr_code, Toast.LENGTH_SHORT).show();
         }
 
         finish();
@@ -400,7 +378,6 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
         finish();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
@@ -427,7 +404,7 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 
     @Override
     public void onContactEnter(String tag, String text) {
-        if (TestUtil.required(text)) {
+        if (text != null) {
             addContactByIdentity(text);
         }
     }

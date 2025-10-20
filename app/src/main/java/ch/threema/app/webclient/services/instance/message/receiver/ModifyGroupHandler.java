@@ -39,6 +39,7 @@ import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.groupflows.GroupChanges;
 import ch.threema.app.groupflows.GroupFlowResult;
+import ch.threema.app.profilepicture.CheckedProfilePicture;
 import ch.threema.app.protocol.ProfilePictureChange;
 import ch.threema.app.protocol.SetProfilePicture;
 import ch.threema.app.services.GroupFlowDispatcher;
@@ -82,11 +83,6 @@ public class ModifyGroupHandler extends MessageReceiver {
     private @interface ErrorCode {
     }
 
-    @WorkerThread
-    public interface Listener {
-        void onReceive();
-    }
-
     @AnyThread
     public ModifyGroupHandler(
         @NonNull MessageDispatcher dispatcher,
@@ -125,7 +121,7 @@ public class ModifyGroupHandler extends MessageReceiver {
             this.failed(temporaryId, Protocol.ERROR_INVALID_GROUP);
             return;
         }
-        final GroupModelData groupModelData = groupModel.getData().getValue();
+        final GroupModelData groupModelData = groupModel.getData();
         if (groupModelData == null) {
             logger.error("Group model data is null");
             this.failed("Group model data is null", Protocol.ERROR_INVALID_GROUP);
@@ -168,8 +164,13 @@ public class ModifyGroupHandler extends MessageReceiver {
                 final Value avatarValue = data.get(Protocol.ARGUMENT_AVATAR);
                 if (avatarValue != null && !avatarValue.isNilValue()) {
                     // Set avatar
-                    byte[] avatar = avatarValue.asBinaryValue().asByteArray();
-                    profilePictureChange = new SetProfilePicture(avatar, null);
+                    byte[] rawProfilePictureBytes = avatarValue.asBinaryValue().asByteArray();
+                    CheckedProfilePicture profilePicture = CheckedProfilePicture.getOrConvertFromBytes(rawProfilePictureBytes);
+                    if (profilePicture != null) {
+                        profilePictureChange = new SetProfilePicture(profilePicture, null);
+                    } else {
+                        logger.warn("The provided byte array cannot be converted to a valid profile picture");
+                    }
                 }
             } catch (Exception e) {
                 logger.error("Failed to save avatar", e);

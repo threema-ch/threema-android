@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO(ANDR-3888) Replace with dynamically colored version from colors-v22 folder -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/brand_800" android:state_pressed="true" />
-    <item android:color="@color/brand_800" android:state_activated="true" />
-    <item android:color="@color/brand_100" />
+    <!-- When changing sth. here, also make the changes to compose equivalent in CustomColors.kt -->
+    <item android:color="?attr/colorPrimary" android:state_pressed="true" />
+    <item android:color="?attr/colorPrimary" android:state_activated="true" />
+    <item android:color="?attr/colorPrimaryContainer" />
 </selector>
+

@@ -27,6 +27,7 @@ import ch.threema.app.voip.groupcall.sfu.webrtc.LocalCtx
 import ch.threema.app.voip.groupcall.sfu.webrtc.RemoteCtx
 import ch.threema.app.webrtc.Camera
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,13 +52,13 @@ interface ParticipantDescription {
 }
 
 interface NormalParticipantDescription : ParticipantDescription {
-    val identity: String
+    val identity: Identity
     val nickname: String
 }
 
 data class SimpleNormalParticipantDescription(
     override val id: ParticipantId,
-    override val identity: String,
+    override val identity: Identity,
     override val nickname: String,
 ) : NormalParticipantDescription {
     override fun toString(): String {
@@ -84,6 +85,8 @@ abstract class Participant(override val id: ParticipantId) : ParticipantDescript
     open var microphoneActive: Boolean = false
 
     open var cameraActive: Boolean = false
+
+    open var screenShareActive: Boolean = false
 
     @UiThread
     abstract fun subscribeCamera(
@@ -116,9 +119,9 @@ private interface RemoteParticipant {
 
 abstract class NormalParticipant(
     id: ParticipantId,
-    val contactModel: ContactModel,
+    protected val contactModel: ContactModel,
 ) : Participant(id), NormalParticipantDescription {
-    override val identity: String = contactModel.identity
+    override val identity: Identity = contactModel.identity
     override val nickname: String = contactModel.publicNickName ?: contactModel.identity
 
     override val name: String by lazy {
@@ -162,6 +165,9 @@ class LocalParticipant internal constructor(
                 }
             }
         }
+
+    // TODO(ANDR-4127): Implement screensharing on android
+    override var screenShareActive: Boolean = false
 
     @UiThread
     override fun subscribeCamera(

@@ -28,10 +28,11 @@ import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.processors.reflectedd2dsync.ReflectedContactSyncTask
 import ch.threema.app.utils.AppVersionProvider
+import ch.threema.base.crypto.NaCl
 import ch.threema.data.TestDatabaseService
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
-import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.repositories.ModelRepositories
 import ch.threema.domain.helpers.TransactionAckTaskCodec
@@ -56,7 +57,6 @@ import ch.threema.protobuf.d2d.sync.contact
 import ch.threema.protobuf.unit
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import com.google.protobuf.kotlin.toByteString
-import com.neilalexander.jnacl.NaCl
 import java.util.Date
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -82,7 +82,7 @@ class ReflectedContactSyncTaskTest {
         firstName = "",
         lastName = "",
         nickname = "Nick",
-        colorIndex = getIdColorIndex("01234567"),
+        idColor = IdColor.ofIdentity("01234567"),
         verificationLevel = VerificationLevel.UNVERIFIED,
         workVerificationLevel = WorkVerificationLevel.NONE,
         identityType = IdentityType.NORMAL,
@@ -106,10 +106,12 @@ class ReflectedContactSyncTaskTest {
     fun before() {
         databaseService = TestDatabaseService()
         taskCodec = TransactionAckTaskCodec()
+        val serviceManager = ThreemaApplication.requireServiceManager()
         coreServiceManager = TestCoreServiceManager(
             version = AppVersionProvider.appVersion,
             databaseService = databaseService,
-            preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
+            preferenceStore = serviceManager.preferenceStore,
+            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
             multiDeviceManager = TestMultiDeviceManager(
                 isMultiDeviceActive = true,
                 isMdDisabledOrSupportsFs = false,
@@ -123,7 +125,7 @@ class ReflectedContactSyncTaskTest {
     fun testNewReflectedContact() {
         val contact = contact {
             identity = "01234567"
-            publicKey = ByteArray(NaCl.PUBLICKEYBYTES) { it.toByte() }.toByteString()
+            publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES) { it.toByte() }.toByteString()
             createdAt = Date().time
             firstName = "0123"
             // No last name provided
@@ -151,9 +153,9 @@ class ReflectedContactSyncTaskTest {
         }
 
         testReflectedContactCreate(contact) { contactModel ->
-            val data = contactModel.data.value!!
+            val data = contactModel.data!!
             assertEquals(contact.identity, data.identity)
-            assertContentEquals(ByteArray(NaCl.PUBLICKEYBYTES) { it.toByte() }, data.publicKey)
+            assertContentEquals(ByteArray(NaCl.PUBLIC_KEY_BYTES) { it.toByte() }, data.publicKey)
             assertEquals(contact.createdAt, data.createdAt.time)
             assertEquals(contact.firstName, data.firstName)
             assertEquals("", data.lastName)
@@ -182,7 +184,7 @@ class ReflectedContactSyncTaskTest {
                 nickname = newNickname
             },
         ) { contactModel ->
-            assertEquals(newNickname, contactModel.data.value?.nickname)
+            assertEquals(newNickname, contactModel.data?.nickname)
         }
     }
 

@@ -21,6 +21,7 @@
 
 package ch.threema.app.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.MainThread
@@ -33,10 +34,13 @@ import ch.threema.app.services.DistributionListService
 import ch.threema.app.ui.SingleToast
 import ch.threema.app.utils.LogUtil
 import ch.threema.app.utils.RuntimeUtil
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
+import org.koin.android.ext.android.inject
 
 private val logger = LoggingUtil.getThreemaLogger("DistributionListAddActivity")
 
@@ -45,7 +49,8 @@ class DistributionListAddActivity : MemberChooseActivity(), TextEntryDialogClick
         logScreenVisibility(logger)
     }
 
-    private lateinit var distributionListService: DistributionListService
+    private val distributionListService: DistributionListService by inject()
+
     private var distributionListModel: DistributionListModel? = null
     private var selectedContacts: List<ContactModel> = emptyList()
 
@@ -55,14 +60,6 @@ class DistributionListAddActivity : MemberChooseActivity(), TextEntryDialogClick
         if (!super.initActivity(savedInstanceState)) {
             return false
         }
-
-        try {
-            this.distributionListService = serviceManager.distributionListService
-        } catch (e: Exception) {
-            LogUtil.exception(e, this)
-            return false
-        }
-
         initData(savedInstanceState)
 
         return true
@@ -137,7 +134,7 @@ class DistributionListAddActivity : MemberChooseActivity(), TextEntryDialogClick
     // Callback from dialog "Edit distribution list - Choose a name for this list"
     override fun onYes(tag: String, text: String) {
         try {
-            val selectedContactIdentities: Array<String> = selectedContacts.map(ContactModel::identity).toTypedArray()
+            val selectedContactIdentities: Array<Identity> = selectedContacts.map(ContactModel::identity).toTypedArray()
 
             if (isEdit) {
                 if (selectedContactIdentities.isNotEmpty()) {
@@ -162,6 +159,14 @@ class DistributionListAddActivity : MemberChooseActivity(), TextEntryDialogClick
     }
 
     companion object {
+        @JvmStatic
+        @JvmOverloads
+        fun createIntent(context: Context, distributionListId: Long? = null) = buildActivityIntent<DistributionListAddActivity>(context) {
+            if (distributionListId != null) {
+                putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, distributionListId)
+            }
+        }
+
         private const val DIALOG_TAG_ENTER_NAME = "enterName"
     }
 }

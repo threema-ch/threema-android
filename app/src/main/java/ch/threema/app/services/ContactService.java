@@ -21,18 +21,20 @@
 
 package ch.threema.app.services;
 
+import com.google.common.collect.ImmutableSet;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.profilepicture.ProfilePicture;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.IdentityState;
@@ -41,17 +43,17 @@ import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.access.AccessModel;
 import java8.util.function.Consumer;
 
-public interface ContactService extends AvatarService<ContactModel> {
+public interface ContactService extends AvatarService<String> {
 
     String ALL_USERS_PLACEHOLDER_ID = "@@@@@@@@";
 
     class ProfilePictureUploadData {
-        public byte[] bitmapArray;
+        public ProfilePicture profilePicture;
         public byte[] blobId;
         public byte[] encryptionKey;
         public int size;
@@ -334,8 +336,8 @@ public interface ContactService extends AvatarService<ContactModel> {
      *  database column as the archived state. This method must only be called with isArchived=true
      *  when the conversation of this contact is *not* pinned.
      *
-     * @param identity the identity of the contact
-     * @param isArchived whether the contact should be archived or not
+     * @param identity      the identity of the contact
+     * @param isArchived    whether the contact should be archived or not
      * @param triggerSource the source that triggered this action
      */
     void setIsArchived(
@@ -377,13 +379,6 @@ public interface ContactService extends AvatarService<ContactModel> {
     void save(@NonNull ContactModel model);
 
     AccessModel getAccess(@Nullable String identity);
-
-    /**
-     * Get the color for the contact's default avatar. This not only depends on the contact itself
-     * but also on the preferences.
-     * @return the color that should be used for the default avatar of the contact
-     */
-    @ColorInt int getAvatarColor(@Nullable ch.threema.data.models.ContactModel contactModel);
 
     void setIsTyping(String identity, boolean isTyping);
 
@@ -488,6 +483,8 @@ public interface ContactService extends AvatarService<ContactModel> {
      */
     boolean isContactAllowedToReceiveProfilePicture(@NonNull String identity);
 
+    boolean showBadge(@Nullable String string);
+
     boolean showBadge(@Nullable ContactModel contactModel);
 
     boolean showBadge(@NonNull ContactModelData contactModelData);
@@ -555,4 +552,10 @@ public interface ContactService extends AvatarService<ContactModel> {
      */
     @NonNull
     Set<String> getRemovedContacts();
+
+    /**
+     * @return An immutable snapshot of the currently typing contacts
+     */
+    @NonNull
+    ImmutableSet<String> getTypingIdentities();
 }

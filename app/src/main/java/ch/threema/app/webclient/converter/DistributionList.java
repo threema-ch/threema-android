@@ -96,8 +96,9 @@ public class DistributionList extends Converter {
 
     public static String getColor(DistributionListModel distributionList) throws ConversionException {
         try {
-            return String.format("#%06X", (0xFFFFFF & distributionList.getColorLight()));
-        } catch (NullPointerException e) {
+            int idColor = distributionList.getIdColor().getColorLight();
+            return String.format("#%06X", (0xFFFFFF & idColor));
+        } catch (IllegalStateException | NullPointerException e) {
             throw new ConversionException(e);
         }
     }

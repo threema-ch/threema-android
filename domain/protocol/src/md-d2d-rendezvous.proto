@@ -262,7 +262,7 @@ message RendezvousInit {
     NetworkCost network_cost = 2;
 
     // Full URL to the WebSocket server with a random 32 byte hex-encoded
-    // rendezvous path. Must begin with `wss://``.
+    // rendezvous path. Must begin with `wss://`.
     string url = 3;
   }
   RelayedWebSocket relayed_web_socket = 3;

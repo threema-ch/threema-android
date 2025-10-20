@@ -76,7 +76,7 @@ import kotlinx.coroutines.Deferred;
  * - Distribution lists: Delete distribution list
  */
 public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, Void> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("EmptyOrDeleteConversationAsyncTask");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("EmptyOrDeleteConversationsAsyncTask");
 
     private static final String DIALOG_TAG_EMPTYING_OR_DELETING_CHAT = "edc";
 
@@ -208,7 +208,7 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
             return;
         }
 
-        GroupModelData groupModelData = group.getData().getValue();
+        GroupModelData groupModelData = group.getData();
         if (groupModelData == null) {
             logger.error("Group is already deleted as the group model data is null");
             return;
@@ -263,7 +263,8 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
 
     private void deleteDistributionList(@NonNull DistributionListModel distributionListModel) {
         // Note: Distribution list conversations are removed along with the distribution list model
-        this.distributionListService.remove(distributionListModel);
+        conversationService.empty(distributionListModel);
+        distributionListService.remove(distributionListModel);
     }
 
     @Override

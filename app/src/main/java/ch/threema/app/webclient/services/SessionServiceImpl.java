@@ -43,7 +43,7 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
-import ch.threema.app.webclient.crypto.NativeJnaclCryptoProvider;
+import ch.threema.app.webclient.crypto.LibthreemaNaClCryptoProvider;
 import ch.threema.app.webclient.listeners.WebClientServiceListener;
 import ch.threema.app.webclient.listeners.WebClientSessionListener;
 import ch.threema.app.webclient.manager.WebClientListenerManager;
@@ -103,7 +103,7 @@ public class SessionServiceImpl implements SessionService {
         this.services = services;
 
         // Create NaCl crypto provider
-        this.cryptoProvider = new NativeJnaclCryptoProvider();
+        this.cryptoProvider = new LibthreemaNaClCryptoProvider();
     }
 
     @Override
@@ -184,6 +184,16 @@ public class SessionServiceImpl implements SessionService {
         return this.services.preference.isWebClientEnabled()
             && !AppRestrictionUtil.isWebDisabled(this.services.appContext)
             && this.services.license.isLicensed();
+    }
+
+    @Override
+    public boolean hasRunningSessions() {
+        for (WebClientSessionModel sessionModel : getAllSessionModels()) {
+            if (isRunning(sessionModel)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

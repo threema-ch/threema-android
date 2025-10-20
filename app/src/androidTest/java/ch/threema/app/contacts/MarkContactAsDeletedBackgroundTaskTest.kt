@@ -41,6 +41,7 @@ import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.AppVersionProvider
 import ch.threema.app.utils.executor.BackgroundExecutor
+import ch.threema.base.crypto.NaCl
 import ch.threema.data.TestDatabaseService
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
@@ -64,7 +65,6 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
-import com.neilalexander.jnacl.NaCl
 import java.util.Date
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -161,7 +161,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
     private lateinit var deleteContactServices: DeleteContactServices
     private val testContactModelData = ContactModelData(
         identity = "12345678",
-        publicKey = ByteArray(NaCl.PUBLICKEYBYTES),
+        publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES),
         createdAt = Date(),
         firstName = "1234",
         lastName = "5678",
@@ -194,6 +194,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
             version = AppVersionProvider.appVersion,
             databaseService = databaseService,
             preferenceStore = serviceManager.preferenceStore,
+            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
             multiDeviceManager = multiDeviceManager,
             taskManager = testTaskManager,
         )
@@ -222,7 +223,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
         val contactModel = contactModelRepository.getByIdentity(testContactModelData.identity)
         // Assert that the contact exists as "direct" contact
         assertNotNull(contactModel)
-        assertEquals(AcquaintanceLevel.DIRECT, contactModel.data.value?.acquaintanceLevel)
+        assertEquals(AcquaintanceLevel.DIRECT, contactModel.data?.acquaintanceLevel)
 
         // Remove the contact
         backgroundExecutor.executeDeferred(
@@ -236,7 +237,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
         ).await()
 
         // Assert that the contact's acquaintance level is "group" now
-        assertEquals(AcquaintanceLevel.GROUP, contactModel.data.value?.acquaintanceLevel)
+        assertEquals(AcquaintanceLevel.GROUP, contactModel.data?.acquaintanceLevel)
     }
 
     @Test
@@ -247,7 +248,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
         val contactModel = contactModelRepository.getByIdentity(testContactModelData.identity)
         // Assert that the contact exists as "direct" contact
         assertNotNull(contactModel)
-        assertEquals(AcquaintanceLevel.DIRECT, contactModel.data.value?.acquaintanceLevel)
+        assertEquals(AcquaintanceLevel.DIRECT, contactModel.data?.acquaintanceLevel)
 
         // Remove the contact
         backgroundExecutor.executeDeferred(
@@ -272,7 +273,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
         val contactModel = contactModelRepository.getByIdentity(testContactModelData.identity)
         // Assert that the contact exists as "direct" contact
         assertNotNull(contactModel)
-        assertEquals(AcquaintanceLevel.DIRECT, contactModel.data.value?.acquaintanceLevel)
+        assertEquals(AcquaintanceLevel.DIRECT, contactModel.data?.acquaintanceLevel)
 
         // Mark the contact as deleted
         backgroundExecutor.executeDeferred(

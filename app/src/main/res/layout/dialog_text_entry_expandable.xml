@@ -2,12 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/text_input_layout"
-    android:paddingTop="@dimen/dialog_margin_below_title"
-    android:paddingLeft="@dimen/edittext_padding"
-    android:paddingRight="@dimen/edittext_padding"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingLeft="@dimen/edittext_padding"
+    android:paddingTop="@dimen/dialog_margin_below_title"
+    android:paddingRight="@dimen/edittext_padding">
 
     <TextView
         android:id="@+id/subtitle_text"
@@ -16,22 +16,22 @@
         android:layout_marginLeft="2dp"
         android:layout_marginRight="2dp"
         android:layout_marginBottom="8dp"
-        android:textColor="?attr/colorOnBackground"
-        android:textSize="16sp"
         android:clickable="false"
-        android:text="@string/add_caption_hint" />
+        android:text="@string/add_caption_hint"
+        android:textColor="?attr/colorOnBackground"
+        android:textSize="16sp" />
 
     <LinearLayout
         android:id="@+id/add_caption_intro"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
         android:foreground="?attr/selectableItemBackground"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="2dp"
+        android:paddingTop="4dp"
+        android:paddingRight="2dp"
+        android:paddingBottom="4dp">
 
         <ImageView
             android:id="@+id/expand_button"
@@ -40,17 +40,17 @@
             android:layout_marginRight="8dp"
             android:clickable="false"
             android:contentDescription="@string/switched_on"
-            app:tint="?attr/colorOnBackground"
-            android:src="@drawable/ic_arrow_right_dark" />
+            android:src="@drawable/ic_arrow_right_dark"
+            app:tint="?attr/colorOnBackground" />
 
         <TextView
             android:id="@+id/add_caption_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="?attr/colorOnBackground"
-            android:textSize="16sp"
             android:clickable="false"
-            android:text="@string/add_caption_hint" />
+            android:text="@string/add_caption_hint"
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="16sp" />
 
     </LinearLayout>
 
@@ -58,18 +58,18 @@
         android:id="@+id/edittext_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:endIconMode="clear_text"
         android:paddingLeft="@dimen/edittext_padding"
-        android:visibility="gone">
+        android:visibility="gone"
+        app:endIconMode="clear_text">
 
         <ch.threema.app.ui.ComposeEditText
             android:id="@+id/caption_edittext"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:minHeight="@dimen/input_text_height"
             android:maxLength="1000"
-            android:scrollHorizontally="false" />
+            android:minHeight="@dimen/input_text_height"
+            android:scrollHorizontally="false"
+            android:textSize="16sp" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

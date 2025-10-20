@@ -2,37 +2,23 @@
   ~ Copyright (c) 2019-2025 Threema GmbH
   ~ All rights reserved.
   -->
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/share_container"
+    android:id="@+id/invite_people_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/listitem_background_selector"
-    android:clickable="true"
-    android:focusable="true"
-    android:gravity="center_vertical"
     android:paddingHorizontal="@dimen/listitem_contacts_margin_left_right"
     android:paddingVertical="@dimen/listitem_contacts_margin_top_bottom">
 
-    <ImageView
-        android:id="@+id/avatar_view"
-        android:layout_width="@dimen/avatar_size_small"
-        android:layout_height="@dimen/avatar_size_small"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="34dp"
-        android:contentDescription="@string/title_invite_friend"
-        android:scaleType="center"
-        app:srcCompat="@drawable/ic_share_outline"
-        app:tint="?attr/colorOnSurface" />
-
-    <TextView
+    <com.google.android.material.button.MaterialButton
+        style="@style/Threema.MaterialButton.Outlined.Secondary"
+        android:id="@+id/invite_people_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="@dimen/messagelist_avatar_padding"
-        android:layout_toRightOf="@id/avatar_view"
+        android:layout_gravity="center_horizontal"
+        android:contentDescription="@string/title_invite_friend"
         android:text="@string/title_invite_friend"
-        android:textAppearance="@style/Threema.TextAppearance.List.FirstLine" />
+        app:icon="@drawable/ic_person_add_outline"
+        app:iconPadding="@dimen/grid_unit_x1_5"/>
 
-</RelativeLayout>
+</FrameLayout>

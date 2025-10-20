@@ -26,6 +26,7 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE
 import ch.threema.app.utils.AppVersionProvider
 import ch.threema.app.utils.ContactUtil
+import ch.threema.app.utils.ExifInterface
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.app.utils.contentEquals
 import ch.threema.base.ThreemaException
@@ -46,6 +47,7 @@ import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.Common.Blob
 import ch.threema.protobuf.d2d.MdD2D.ContactSync
@@ -318,6 +320,11 @@ class ReflectedContactSyncTask(
             Common.DeltaImage.ImageCase.UPDATED -> {
                 contact.contactDefinedProfilePicture.updated.blob.loadAndMarkAsDone { blob ->
                     logger.info("Applying updated contact defined profile picture from sync")
+
+                    if (!ExifInterface.isJpegFormat(blob)) {
+                        logger.warn("Received contact defined profile picture that is not a jpeg")
+                    }
+
                     if (!fileService.getContactDefinedProfilePictureStream(contact.identity).contentEquals(blob)) {
                         fileService.writeContactDefinedProfilePicture(contact.identity, blob)
                         onAvatarChanged(contact.identity)
@@ -363,7 +370,7 @@ class ReflectedContactSyncTask(
         }
     }
 
-    private fun onAvatarChanged(identity: String) {
+    private fun onAvatarChanged(identity: Identity) {
         ListenerManager.contactListeners.handle { it.onAvatarChanged(identity) }
         ShortcutUtil.updateShareTargetShortcut(contactService.createReceiver(identity))
     }
@@ -445,7 +452,7 @@ class ReflectedContactSyncTask(
         }
     }
 
-    private fun pinConversation(identity: String) {
+    private fun pinConversation(identity: Identity) {
         // TODO(ANDR-3010): Use new conversation model
         val conversationModel = getConversationModel(identity) ?: run {
             logger.error("Could not pin conversation with {} as it couldn't be found", identity)
@@ -455,7 +462,7 @@ class ReflectedContactSyncTask(
         conversationModel.isPinTagged = true
     }
 
-    private fun unPinConversation(identity: String) {
+    private fun unPinConversation(identity: Identity) {
         // TODO(ANDR-3010): Use new conversation model
         val conversationModel = getConversationModel(identity) ?: run {
             logger.error("Could not unpin conversation with {} as it couldn't be found", identity)
@@ -465,7 +472,7 @@ class ReflectedContactSyncTask(
         conversationModel.isPinTagged = false
     }
 
-    private fun getConversationModel(identity: String): ConversationModel? {
+    private fun getConversationModel(identity: Identity): ConversationModel? {
         // We need load the conversations from the database. This is due to a race condition in the conversation service when the user pins an
         // archived contact.
         return conversationService.getAll(true)
@@ -476,8 +483,8 @@ class ReflectedContactSyncTask(
             }
     }
 
-    private fun getArchivedConversationModel(identity: String): ConversationModel? {
-        return conversationService.getArchived("")
+    private fun getArchivedConversationModel(identity: Identity): ConversationModel? {
+        return conversationService.getArchived()
             .find { it.contact?.identity == identity }.also {
                 if (it == null) {
                     logger.warn(

@@ -24,7 +24,7 @@ package ch.threema.app.services;
 import android.content.Context;
 import android.os.PowerManager;
 
-import com.neilalexander.jnacl.NaCl;
+import ch.threema.base.crypto.NaCl;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -157,7 +157,7 @@ public class DownloadServiceImpl implements DownloadService {
             try {
                 //check if a temporary file exist
                 if (downloadFile.exists()) {
-                    if (downloadFile.length() >= NaCl.BOXOVERHEAD) {
+                    if (downloadFile.length() >= NaCl.BOX_OVERHEAD_BYTES) {
                         logger.warn("Blob {} download file already exists", blobIdHex);
                         try (FileInputStream fileInputStream = new FileInputStream(downloadFile)) {
                             return IOUtils.toByteArray(fileInputStream);
@@ -237,8 +237,8 @@ public class DownloadServiceImpl implements DownloadService {
                         }
                     }
                 }
-            } catch (Exception x) {
-                logger.error("Exception during blob download", x);
+            } catch (Exception e) {
+                logger.error("Exception during blob download", e);
             }
 
             if (downloadSuccess) {

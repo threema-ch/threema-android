@@ -21,18 +21,21 @@
 
 package ch.threema.app.activities
 
+import android.content.Context
 import android.os.Bundle
 import androidx.annotation.StringRes
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.IdListService
 import ch.threema.app.tasks.ReflectUserProfileShareWithAllowListSyncTask
-import ch.threema.app.utils.LogUtil
-import ch.threema.app.utils.equalsIgnoreOrder
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.common.equalsIgnoreOrder
 import ch.threema.domain.taskmanager.TaskManager
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
+import org.koin.android.ext.android.inject
 
 private val logger = LoggingUtil.getThreemaLogger("ProfilePicRecipientsActivity")
 
@@ -41,23 +44,11 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
         logScreenVisibility(logger)
     }
 
-    private lateinit var profilePicRecipientsService: IdListService
-    private lateinit var taskManager: TaskManager
-
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private val profilePicRecipientsService: IdListService by inject()
+    private val taskManager: TaskManager by inject()
 
     override fun initActivity(savedInstanceState: Bundle?): Boolean {
         if (!super.initActivity(savedInstanceState)) {
-            return false
-        }
-
-        try {
-            this.profilePicRecipientsService = serviceManager.profilePicRecipientsService
-            this.taskManager = serviceManager.taskManager
-        } catch (exception: Exception) {
-            LogUtil.exception(exception, this)
             return false
         }
 
@@ -68,7 +59,7 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
 
     override fun initData(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
-            val selectedIdentities: Array<String>? = profilePicRecipientsService.all
+            val selectedIdentities: Array<Identity>? = profilePicRecipientsService.all
             if (!selectedIdentities.isNullOrEmpty()) {
                 preselectedIdentities = ArrayList(listOf(*selectedIdentities))
             }
@@ -78,8 +69,8 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
     }
 
     override fun menuNext(selectedContacts: List<ContactModel?>) {
-        val oldAllowedIdentities: Array<String> = profilePicRecipientsService.all
-        val newAllowedIdentities: Array<String> = selectedContacts
+        val oldAllowedIdentities: Array<Identity> = profilePicRecipientsService.all
+        val newAllowedIdentities: Array<Identity> = selectedContacts
             .mapNotNull { contactModel -> contactModel?.identity }
             .toTypedArray<String>()
         profilePicRecipientsService.replaceAll(newAllowedIdentities)
@@ -106,5 +97,10 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
 
     override fun handleOnBackPressed() {
         this.menuNext(selectedContacts)
+    }
+
+    companion object {
+        @JvmStatic
+        fun createIntent(context: Context) = buildActivityIntent<ProfilePicRecipientsActivity>(context)
     }
 }

@@ -34,10 +34,6 @@ public class Access {
         this.notAllowedTestResourceId = notAllowedTestResourceId;
     }
 
-    protected void setAllowed(boolean allowed) {
-        this.allowed = allowed;
-    }
-
     public boolean isAllowed() {
         return this.allowed;
     }

@@ -27,6 +27,7 @@ import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import java.util.Date
 import kotlinx.serialization.Serializable
 
@@ -34,7 +35,7 @@ class OutgoingContactDeliveryReceiptMessageTask(
     private val receiptType: Int,
     private val messageIds: Array<MessageId>,
     private val date: Long,
-    private val toIdentity: String,
+    private val toIdentity: Identity,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingContactDeliveryReceiptMessageTask"
@@ -60,7 +61,7 @@ class OutgoingContactDeliveryReceiptMessageTask(
         private val receiptType: Int,
         private val messageIds: List<String>,
         private val date: Long,
-        private val toIdentity: String,
+        private val toIdentity: Identity,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingContactDeliveryReceiptMessageTask(

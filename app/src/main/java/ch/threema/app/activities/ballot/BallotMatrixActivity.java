@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.google.android.material.card.MaterialCardView;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -39,19 +40,15 @@ import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.exceptions.NoIdentityException;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.listeners.BallotVoteListener;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.services.ballot.BallotMatrixData;
 import ch.threema.app.services.ballot.BallotMatrixService;
-import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.HintedImageView;
 import ch.threema.app.ui.HintedTextView;
 import ch.threema.app.ui.InsetSides;
@@ -65,7 +62,6 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
@@ -75,10 +71,9 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 public class BallotMatrixActivity extends BallotDetailActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("BallotMatrixActivity");
 
-    private BallotService ballotService;
-    private ContactService contactService;
-    private GroupService groupService;
-    private String identity;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     private View scrollParent, noVotesView;
 
     private final BallotVoteListener ballotVoteListener = new BallotVoteListener() {
@@ -137,19 +132,26 @@ public class BallotMatrixActivity extends BallotDetailActivity {
         }
     };
 
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (!dependencies.isAvailable()) {
+            finish();
+        }
+    }
 
-        if (!this.requireInstancesOrExit()) {
-            return;
+    @Override
+    protected boolean initActivity(@Nullable Bundle savedInstanceState) {
+        if (!super.initActivity(savedInstanceState)) {
+            return false;
         }
 
         int ballotId = IntentDataUtil.getBallotId(this.getIntent());
 
         if (ballotId != 0) {
             try {
-                BallotModel ballotModel = this.ballotService.get(ballotId);
+                BallotModel ballotModel = dependencies.getBallotService().get(ballotId);
                 if (ballotModel == null) {
                     throw new ThreemaException("invalid ballot");
                 }
@@ -158,7 +160,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
             } catch (ThreemaException e) {
                 LogUtil.exception(e, this);
                 finish();
-                return;
+                return false;
             }
         }
 
@@ -184,6 +186,8 @@ public class BallotMatrixActivity extends BallotDetailActivity {
         ListenerManager.ballotListeners.add(this.ballotListener);
         ListenerManager.ballotVoteListeners.add(this.ballotVoteListener);
         this.updateView();
+
+        return true;
     }
 
     @Override
@@ -221,12 +225,12 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 
         BallotModel.DisplayType displayType = BallotModel.DisplayType.LIST_MODE;
 
-        final BallotModel ballotModel = ballotService.get(this.getBallotModelId());
+        final BallotModel ballotModel = dependencies.getBallotService().get(this.getBallotModelId());
         if (ballotModel != null) {
             displayType = ballotModel.getDisplayType();
         }
 
-        final BallotMatrixData matrixData = this.ballotService.getMatrixData(this.getBallotModelId());
+        final BallotMatrixData matrixData = dependencies.getBallotService().getMatrixData(this.getBallotModelId());
 
         if (matrixData == null) {
             //wrong data! exit now
@@ -291,7 +295,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
         TextView notVotedTextView = findViewById(R.id.not_voted);
         MaterialCardView notVotedContainer = findViewById(R.id.not_voted_container);
 
-        if (contactService != null && !notVotedParticipants.isEmpty()) {
+        if (!notVotedParticipants.isEmpty()) {
             notVotedContainer.setVisibility(View.VISIBLE);
             String userList = "";
 
@@ -299,7 +303,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
                 if (!userList.isEmpty()) {
                     userList += ", ";
                 }
-                userList += NameUtil.getDisplayNameOrNickname(p.getIdentity(), contactService);
+                userList += NameUtil.getDisplayNameOrNickname(p.getIdentity(), dependencies.getContactService());
             }
             notVotedTextView.setText(getString(R.string.not_voted_user_list, userList));
         } else {
@@ -313,7 +317,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 
         if (displayType == BallotModel.DisplayType.SUMMARY_MODE) {
             for (BallotMatrixService.Participant p : allParticipants) {
-                if (p.getIdentity().equals(getMyIdentity())) {
+                if (dependencies.getUserService().isMe(p.getIdentity())) {
                     return Collections.singletonList(p);
                 }
             }
@@ -332,7 +336,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
         getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_empty, nameHeaderRow);
 
         for (BallotMatrixService.Participant p : votedParticipants) {
-            final ContactModel contactModel = this.contactService.getByIdentity(p.getIdentity());
+            final ContactModel contactModel = dependencies.getContactService().getByIdentity(p.getIdentity());
 
             View nameCell = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_name, null);
             String name = NameUtil.getDisplayNameOrNickname(contactModel, true);
@@ -341,7 +345,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
             if (hintedImageView != null) {
                 hintedImageView.setContentDescription(name);
 
-                Bitmap avatar = contactService.getAvatar(contactModel, false);
+                Bitmap avatar = dependencies.getContactService().getAvatar(p.getIdentity(), false);
                 hintedImageView.setImageBitmap(avatar);
             }
 
@@ -394,41 +398,6 @@ public class BallotMatrixActivity extends BallotDetailActivity {
     }
 
     @Override
-    protected boolean checkInstances() {
-        return TestUtil.required(
-            this.ballotService,
-            this.contactService,
-            this.groupService,
-            this.identity);
-    }
-
-    @Override
-    protected void instantiate() {
-        super.instantiate();
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-
-        if (serviceManager != null) {
-            try {
-                this.ballotService = serviceManager.getBallotService();
-                this.identity = serviceManager.getUserService().getIdentity();
-                this.contactService = serviceManager.getContactService();
-                this.groupService = serviceManager.getGroupService();
-            } catch (NoIdentityException | MasterKeyLockedException e) {
-                logger.error("Exception", e);
-            }
-        }
-    }
-
-    private boolean requireInstancesOrExit() {
-        if (!this.requiredInstances()) {
-            logger.error("Required instances failed");
-            this.finish();
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     protected boolean enableOnBackPressedCallback() {
         return true;
     }
@@ -437,13 +406,5 @@ public class BallotMatrixActivity extends BallotDetailActivity {
     protected void handleOnBackPressed() {
         setResult(RESULT_OK);
         finish();
-    }
-
-    @Override
-    BallotService getBallotService() {
-        if (this.requiredInstances()) {
-            return this.ballotService;
-        }
-        return null;
     }
 }

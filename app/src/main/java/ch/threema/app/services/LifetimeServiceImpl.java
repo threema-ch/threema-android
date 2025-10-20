@@ -30,7 +30,6 @@ import android.os.SystemClock;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -323,8 +322,7 @@ public class LifetimeServiceImpl implements LifetimeService {
             alarmManager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAtMillis,
                 makePendingIntentForRequestCode(requestCode));
         } catch (Exception e) {
-            // KD Interactive C15100m (Pixi3-7_KD), 1024MB RAM, Android 5.0 throws SecurityException here
-            logger.error("Exception", e);
+            logger.error("Failed to schedule alarm", e);
         }
     }
 

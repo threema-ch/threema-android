@@ -28,11 +28,13 @@ import androidx.preference.MultiSelectListPreference
 import androidx.preference.Preference
 import ch.threema.app.R
 import ch.threema.app.activities.StorageManagementActivity
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.services.MessageServiceImpl
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
+import org.koin.android.ext.android.inject
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsMediaFragment")
 
@@ -43,7 +45,7 @@ class SettingsMediaFragment : ThreemaPreferenceFragment() {
 
     private var saveMediaPreference: Preference? = null
 
-    private val preferenceService = requirePreferenceService()
+    private val preferenceService: PreferenceService by inject()
 
     override fun initializePreferences() {
         super.initializePreferences()

@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.csp;
 
-import com.neilalexander.jnacl.NaCl;
+import ch.threema.base.crypto.NaCl;
 
 public class ProtocolDefines {
 
@@ -53,16 +53,14 @@ public class ProtocolDefines {
     public static final int BLOB_ID_LEN = 16;
     public static final int BLOB_KEY_LEN = 32;
     public static final int GROUP_ID_LEN = 8;
-    public static final int GROUP_INVITE_TOKEN_LEN = 16;
     public static final int BALLOT_ID_LEN = 8;
-    public static final int GROUP_JOIN_MESSAGE_LEN = 100;
 
     public static final int BALLOT_STATE_LEN = 1;
     public static final int BALLOT_ASSESSMENT_TYPE_LEN = 1;
     public static final int BALLOT_VISIBILITY_LEN = 1;
 
     /* server handshake */
-    public static final int SERVER_HELLO_BOXLEN = NaCl.PUBLICKEYBYTES + COOKIE_LEN + NaCl.BOXOVERHEAD;
+    public static final int SERVER_HELLO_BOXLEN = NaCl.PUBLIC_KEY_BYTES + COOKIE_LEN + NaCl.BOX_OVERHEAD_BYTES;
     public static final int SERVER_HELLO_LEN = COOKIE_LEN + SERVER_HELLO_BOXLEN;
     public static final int SERVER_LOGIN_ACK_LEN = 32;
     public static final int EXTENSION_INDICATOR_LEN = 32;
@@ -108,8 +106,6 @@ public class ProtocolDefines {
     public static final int MSGTYPE_GROUP_CREATE = 0x4a;
     public static final int MSGTYPE_GROUP_RENAME = 0x4b;
     public static final int MSGTYPE_GROUP_LEAVE = 0x4c;
-    public static final int MSGTYPE_GROUP_JOIN_REQUEST = 0x4d;
-    public static final int MSGTYPE_GROUP_JOIN_RESPONSE = 0x4e;
     public static final int MSGTYPE_GROUP_CALL_START = 0x4f;
     public static final int MSGTYPE_GROUP_SET_PHOTO = 0x50;
     public static final int MSGTYPE_GROUP_REQUEST_SYNC = 0x51;
@@ -189,7 +185,6 @@ public class ProtocolDefines {
     /* Group Calls */
     // TODO(ANDR-1974) Move gc-constants to other location
     public static final int GC_PROTOCOL_VERSION = 1;
-    public static final int GC_CALL_ID_LENGTH = 32;
     public static final int GC_PCMK_LENGTH = 32;
     public static final int GC_PEEK_TIMEOUT_MILLIS = 5000;
     public static final int GC_JOIN_TIMEOUT_MILLIS = 20000;
@@ -206,4 +201,8 @@ public class ProtocolDefines {
 
     /* Special Contacts */
     public static final String SPECIAL_CONTACT_PUSH = "*3MAPUSH";
+
+    /* Profile pictures */
+    public static final int PROFILE_PICTURE_WIDTH_PX = 512;
+    public static final int PROFILE_PICTURE_HEIGHT_PX = 512;
 }

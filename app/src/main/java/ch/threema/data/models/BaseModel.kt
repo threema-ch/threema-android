@@ -57,13 +57,15 @@ abstract class BaseModel<TData, TReflectionTask : Task<*, TaskCodec>?>(
     /**
      * Mutable state flow that holds the model data.
      *
-     * The field is protected, and is only exposed through the [data] property.
+     * The field is protected, and is only exposed through the [dataFlow] property.
      *
      * Initially, the data is present. If the model is deleted, the data is set to `null`.
      * From that point on, the model must not be modified anymore, and all methods that mutate
      * model state must throw [ModelDeletedException].
      *
      * NOTE: Access to [mutableData] should always be protected by a synchronized(this) block!
+     *
+     * TODO(ANDR-4042): Do not expose this field as mutable to subclasses
      */
     protected val mutableData: MutableStateFlow<TData?>,
     /**
@@ -82,18 +84,24 @@ abstract class BaseModel<TData, TReflectionTask : Task<*, TaskCodec>?>(
     /**
      * State flow that holds
      */
-    val data: StateFlow<TData?> = mutableData
+    val dataFlow: StateFlow<TData?> = mutableData
+
+    /**
+     * The current data value. If the model has been deleted, this value is null.
+     */
+    val data: TData?
+        get() = dataFlow.value
 
     /**
      * Get a [LiveData] for the internal data state flow.
      */
-    fun liveData(): LiveData<TData?> = data.asLiveData()
+    fun liveData(): LiveData<TData?> = dataFlow.asLiveData()
 
     /**
      * This is true if the model has been deleted.
      */
     val isDeleted
-        get() = mutableData.value == null
+        get() = data == null
 
     /**
      * @return the non null [data]
@@ -101,7 +109,7 @@ abstract class BaseModel<TData, TReflectionTask : Task<*, TaskCodec>?>(
      * @throws ModelDeletedException if data is null
      */
     protected fun ensureNotDeleted(methodName: String): TData {
-        return data.value ?: throw ModelDeletedException(modelName, methodName)
+        return data ?: throw ModelDeletedException(modelName, methodName)
     }
 
     /**

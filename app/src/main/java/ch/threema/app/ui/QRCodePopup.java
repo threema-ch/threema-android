@@ -37,8 +37,6 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 
-import com.google.android.material.card.MaterialCardView;
-
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
@@ -46,7 +44,6 @@ import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.base.utils.LoggingUtil;
 
@@ -56,7 +53,6 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
     private ImageView imageView;
     private View topLayout;
     private View parentView;
-    private MaterialCardView containerView;
 
     private final int[] location = new int[2];
 
@@ -70,13 +66,12 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
         init(context, parentView);
     }
 
-    private void init(Context context, View parentView) {
+    private void init(@NonNull Context context, View parentView) {
         this.parentView = parentView;
 
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         topLayout = layoutInflater.inflate(R.layout.popup_qrcode, null, true);
 
-        this.containerView = topLayout.findViewById(R.id.qr_popup_container);
         this.imageView = topLayout.findViewById(R.id.thumbnail_view);
 
         setContentView(topLayout);
@@ -95,13 +90,12 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
      *
      * @param sourceView  starting point for animation
      * @param text        text to display as QR code
-     * @param borderColor color to draw around the QR code (depending on type)
      */
-    public void show(@NonNull final View sourceView, String text, @QRCodeServiceImpl.QRCodeColor int borderColor) {
+    public void show(@NonNull final View sourceView, String text) {
         Bitmap bitmap;
 
         if (text != null) {
-            bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getRawQR(text, true, borderColor);
+            bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getRawQR(text, true);
         } else {
             bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getUserQRCode();
         }
@@ -115,7 +109,6 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
         bitmapDrawable.setFilterBitmap(false);
 
         this.imageView.setImageDrawable(bitmapDrawable);
-        this.containerView.setStrokeColor(borderColor);
         showAtLocation(parentView, Gravity.CENTER, 0, 0);
         dimBackground();
 

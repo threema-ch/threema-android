@@ -32,7 +32,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -54,12 +53,12 @@ import android.widget.Toast;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
-import androidx.core.view.WindowCompat;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
 import com.google.android.material.button.MaterialButton;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -68,15 +67,11 @@ import java.util.Collections;
 import java.util.Locale;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaAppCompatActivity;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ActivityService;
-import ch.threema.app.services.FileService;
-import ch.threema.app.services.MessageService;
-import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
@@ -124,9 +119,8 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
     private static int scoAudioState;
     private MessageReceiver<?> messageReceiver;
 
-    private PreferenceService preferenceService;
-    private MessageService messageService;
-    private FileService fileService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private static final int KEEP_ALIVE_DELAY = 20000;
     private final static Handler keepAliveHandler = new Handler();
@@ -138,38 +132,21 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
         }
     };
 
-    private boolean supportsPauseResume() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getLifecycle().addObserver(this);
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
+        if (!dependencies.isAvailable()) {
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_voice_recorder);
 
         // keep screen on during recording
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        try {
-            ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-            if (serviceManager != null) {
-                preferenceService = serviceManager.getPreferenceService();
-                messageService = serviceManager.getMessageService();
-                fileService = serviceManager.getFileService();
-            }
-        } catch (Exception e) {
-            logger.error("Exception", e);
-            this.finish();
-            return;
-        }
-
-        if (preferenceService == null || messageService == null || fileService == null) {
-            logger.info("Services missing.");
-            this.finish();
-            return;
-        }
 
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
@@ -194,7 +171,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
             }
 
             try {
-                File file = File.createTempFile("voice-", VOICEMESSAGE_FILE_EXTENSION, fileService.getIntTmpPath());
+                File file = File.createTempFile("voice-", VOICEMESSAGE_FILE_EXTENSION, dependencies.getFileService().getIntTmpPath());
                 uri = Uri.fromFile(file);
             } catch (IOException e) {
                 logger.error("Failed to open temp file");
@@ -220,11 +197,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
             playButton.setOnClickListener(this);
 
             pauseButton = findViewById(R.id.pause_button);
-            if (supportsPauseResume()) {
-                pauseButton.setOnClickListener(this);
-            } else {
-                pauseButton.setVisibility(View.INVISIBLE);
-            }
+            pauseButton.setOnClickListener(this);
 
             this.seekBar = findViewById(R.id.seekbar);
             seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -303,7 +276,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
             };
             registerReceiver(audioStateChangedReceiver, new IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED));
 
-            if (!preferenceService.getVoiceRecorderBluetoothDisabled()) {
+            if (!dependencies.getPreferenceService().getVoiceRecorderBluetoothDisabled()) {
                 try {
                     audioManager.startBluetoothSco();
                 } catch (Exception ignored) {
@@ -404,12 +377,12 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
             switch (scoAudioState) {
                 case AudioManager.SCO_AUDIO_STATE_CONNECTED:
                     stateRes = R.drawable.ic_bluetooth_connected;
-                    preferenceService.setVoiceRecorderBluetoothDisabled(false);
+                    dependencies.getPreferenceService().setVoiceRecorderBluetoothDisabled(false);
                     break;
                 case AudioManager.SCO_AUDIO_STATE_DISCONNECTED:
                 case AudioManager.SCO_AUDIO_STATE_ERROR:
                     stateRes = R.drawable.ic_bluetooth_disabled;
-                    preferenceService.setVoiceRecorderBluetoothDisabled(true);
+                    dependencies.getPreferenceService().setVoiceRecorderBluetoothDisabled(true);
                     break;
                 case AudioManager.SCO_AUDIO_STATE_CONNECTING:
                 default:
@@ -544,57 +517,51 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
     }
 
     private void pauseMedia() {
-        if (supportsPauseResume()) {
-            logger.info("Pause media recording");
-            if (status == MediaState.STATE_RECORDING) {
-                if (mediaRecorder != null) {
-                    try {
-                        mediaRecorder.pause();  // pause the recording
-                    } catch (Exception e) {
-                        logger.error(
-                            "Unexpected MediaRecorder Exception while pausing recording audio",
-                            e
-                        );
-                    }
-                    pauseTimestamp = System.nanoTime();
-                    updateMediaState(MediaState.STATE_PAUSED);
+        logger.info("Pause media recording");
+        if (status == MediaState.STATE_RECORDING) {
+            if (mediaRecorder != null) {
+                try {
+                    mediaRecorder.pause();  // pause the recording
+                } catch (Exception e) {
+                    logger.error(
+                        "Unexpected MediaRecorder Exception while pausing recording audio",
+                        e
+                    );
                 }
+                pauseTimestamp = System.nanoTime();
+                updateMediaState(MediaState.STATE_PAUSED);
             }
-            if (status == MediaState.STATE_PLAYING) {
-                if (mediaPlayer != null) {
-                    try {
-                        mediaPlayer.pause();  // pause the recording
-                    } catch (Exception e) {
-                        logger.error(
-                            "Unexpected MediaRecorder Exception while pausing playing audio",
-                            e
-                        );
-                    }
-                    pauseTimestamp = System.nanoTime();
-                    updateMediaState(MediaState.STATE_PLAYING_PAUSED);
+        }
+        if (status == MediaState.STATE_PLAYING) {
+            if (mediaPlayer != null) {
+                try {
+                    mediaPlayer.pause();
+                } catch (Exception e) {
+                    logger.error(
+                        "Unexpected MediaRecorder Exception while pausing playing audio",
+                        e
+                    );
                 }
+                pauseTimestamp = System.nanoTime();
+                updateMediaState(MediaState.STATE_PLAYING_PAUSED);
             }
-        } else {
-            stopRecording();
         }
     }
 
     private void resumeRecording() {
-        if (supportsPauseResume()) {
-            logger.info("Resume media recording");
-            if (status == MediaState.STATE_PAUSED) {
-                if (mediaRecorder != null) {
-                    try {
-                        mediaRecorder.resume();  // pause the recording
-                    } catch (Exception e) {
-                        logger.warn(
-                            "Unexpected MediaRecorder Exception while resuming playing audio",
-                            e
-                        );
-                    }
-                    pauseDuration += System.nanoTime() - pauseTimestamp;
-                    updateMediaState(MediaState.STATE_RECORDING);
+        logger.info("Resume media recording");
+        if (status == MediaState.STATE_PAUSED) {
+            if (mediaRecorder != null) {
+                try {
+                    mediaRecorder.resume();
+                } catch (Exception e) {
+                    logger.warn(
+                        "Unexpected MediaRecorder Exception while resuming playing audio",
+                        e
+                    );
                 }
+                pauseDuration += System.nanoTime() - pauseTimestamp;
+                updateMediaState(MediaState.STATE_RECORDING);
             }
         }
     }
@@ -636,7 +603,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
             }
             MediaItem mediaItem = new MediaItem(uri, MimeUtil.MIME_TYPE_AUDIO_AAC, null);
             mediaItem.setDurationMs(fileDurationSeconds);
-            messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
+            dependencies.getMessageService().sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver));
             this.finish();
         } else {
             Toast.makeText(this, R.string.unable_to_determine_recording_length, Toast.LENGTH_LONG).show();
@@ -827,7 +794,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
             case STATE_RECORDING:
                 pauseButton.setImageResource(R.drawable.ic_pause);
                 pauseButton.clearColorFilter();
-                pauseButton.setVisibility(supportsPauseResume() ? View.VISIBLE : View.INVISIBLE);
+                pauseButton.setVisibility(View.VISIBLE);
                 pauseButton.setContentDescription(getString(R.string.pause));
                 playButton.setImageResource(R.drawable.ic_stop);
                 playButton.setContentDescription(getString(R.string.stop));
@@ -841,7 +808,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
             case STATE_PAUSED:
                 pauseButton.setImageResource(R.drawable.ic_record);
                 pauseButton.setColorFilter(getResources().getColor(R.color.material_red), PorterDuff.Mode.SRC_IN);
-                pauseButton.setVisibility(supportsPauseResume() ? View.VISIBLE : View.INVISIBLE);
+                pauseButton.setVisibility(View.VISIBLE);
                 pauseButton.setContentDescription(getString(R.string.continue_recording));
                 playButton.setImageResource(R.drawable.ic_stop);
                 playButton.setContentDescription(getString(R.string.stop));

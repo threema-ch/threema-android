@@ -21,6 +21,7 @@
 
 package ch.threema.storage.models
 
+import ch.threema.domain.types.Identity
 import java.util.Date
 
 /**
@@ -30,7 +31,7 @@ import java.util.Date
 data class OutgoingGroupSyncRequestLogModel(
     val id: Int,
     val apiGroupId: String,
-    val creatorIdentity: String,
+    val creatorIdentity: Identity,
     val lastRequest: Date?,
 ) {
 

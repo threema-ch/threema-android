@@ -38,7 +38,7 @@ import ch.threema.storage.models.DistributionListMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageType
-import java.util.Date
+import java.time.Instant
 import java.util.UUID
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -57,11 +57,13 @@ class EmojiReactionsRepositoryTest {
 
     @BeforeTest
     fun before() {
+        val serviceManager = ThreemaApplication.requireServiceManager()
         databaseService = TestDatabaseService()
         testCoreServiceManager = TestCoreServiceManager(
             version = AppVersionProvider.appVersion,
             databaseService = databaseService,
-            preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
+            preferenceStore = serviceManager.preferenceStore,
+            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
             taskManager = TestTaskManager(UnusedTaskCodec()),
         )
 
@@ -139,7 +141,7 @@ class EmojiReactionsRepositoryTest {
         val reactions = emojiReactionsRepository.getReactionsByMessage(message)
         Assert.assertNotNull(reactions)
 
-        val reaction = reactions!!.data.value!![0]
+        val reaction = reactions!!.data!![0]
         Assert.assertEquals("⚽", reaction.emojiSequence)
 
         databaseService.messageModelFactory.delete(message)
@@ -170,9 +172,9 @@ class EmojiReactionsRepositoryTest {
         groupMessage.assertEmojiReactionSize(1)
 
         val contactReaction =
-            emojiReactionsRepository.getReactionsByMessage(contactMessage)!!.data.value!![0]
+            emojiReactionsRepository.getReactionsByMessage(contactMessage)!!.data!![0]
         val groupReaction =
-            emojiReactionsRepository.getReactionsByMessage(groupMessage)!!.data.value!![0]
+            emojiReactionsRepository.getReactionsByMessage(groupMessage)!!.data!![0]
 
         Assert.assertEquals("⚾", contactReaction.emojiSequence)
         Assert.assertEquals("⛵", groupReaction.emojiSequence)
@@ -241,14 +243,14 @@ class EmojiReactionsRepositoryTest {
             contactMessage.id,
             senderIdentity = "ABCD1234",
             emojiSequence = "⛵",
-            reactedAt = Date(),
+            reactedAt = Instant.now(),
         )
         val emojiReactionsModel = EmojiReactionsModel(
             data = listOf(emojiReactionData),
             coreServiceManager = testCoreServiceManager,
         )
         cachedEntry = testEmojiCache.getOrCreate(reactionMessageIdentifier) { emojiReactionsModel }
-        assertContentEquals(listOf(emojiReactionData), cachedEntry!!.data.value)
+        assertContentEquals(listOf(emojiReactionData), cachedEntry!!.data)
 
         // Test should read the cached value
         testEmojiCache.getOrCreate(reactionMessageIdentifier) {
@@ -258,7 +260,7 @@ class EmojiReactionsRepositoryTest {
 
         // Test removing from cache
         val removedEmojiReactionsModel = testEmojiCache.remove(reactionMessageIdentifier)
-        assertContentEquals(listOf(emojiReactionData), removedEmojiReactionsModel!!.data.value)
+        assertContentEquals(listOf(emojiReactionData), removedEmojiReactionsModel!!.data)
         assertNull(testEmojiCache.get(reactionMessageIdentifier))
     }
 
@@ -281,7 +283,7 @@ class EmojiReactionsRepositoryTest {
             messageId = contactMessageId,
             senderIdentity = "ABCD1234",
             emojiSequence = "⛵",
-            reactedAt = Date(),
+            reactedAt = Instant.now(),
         )
         val emojiReactionsModelContact = EmojiReactionsModel(
             data = listOf(emojiReactionDataForContactMessage),
@@ -293,7 +295,7 @@ class EmojiReactionsRepositoryTest {
 
         assertContentEquals(
             listOf(emojiReactionDataForContactMessage),
-            cachedEntryContact!!.data.value,
+            cachedEntryContact!!.data,
         )
         assertNull(testEmojiCache.get(reactionMessageIdentifierGroup))
 

@@ -22,7 +22,6 @@
 package ch.threema.app.preference
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -48,7 +47,7 @@ import ch.threema.app.services.SynchronizeContactsService
 import ch.threema.app.utils.*
 import ch.threema.app.workers.ShareTargetUpdateWorker
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.localcrypto.MasterKeyLockedException
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException
 import com.google.android.material.snackbar.BaseTransientBottomBar.BaseCallback
 import com.google.android.material.snackbar.Snackbar
 
@@ -240,13 +239,13 @@ class SettingsPrivacyFragment :
 
     private fun initExcludedSyncIdentitiesPref() {
         getPref<Preference>("pref_excluded_sync_identities").onClick {
-            startActivity(Intent(activity, ExcludedSyncIdentitiesActivity::class.java))
+            startActivity(ExcludedSyncIdentitiesActivity.createIntent(requireContext()))
         }
     }
 
     private fun initBlockedContactsPref() {
         getPref<Preference>("pref_blocked_contacts").onClick {
-            startActivity(Intent(activity, BlockedIdentitiesActivity::class.java))
+            startActivity(BlockedIdentitiesActivity.createIntent(requireContext()))
         }
     }
 
@@ -276,9 +275,6 @@ class SettingsPrivacyFragment :
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             val preferenceCategory = getPref<PreferenceCategory>("pref_key_other")
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-                preferenceCategory.removePreference(getPref(resources.getString(R.string.preferences__direct_share)))
-            }
             preferenceCategory.removePreference(getPref(resources.getString(R.string.preferences__disable_smart_replies)))
         }
     }

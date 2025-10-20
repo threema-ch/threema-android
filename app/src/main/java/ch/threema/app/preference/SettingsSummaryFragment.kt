@@ -21,7 +21,6 @@
 
 package ch.threema.app.preference
 
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -32,11 +31,13 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.utils.ConfigUtils.*
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.app.webviews.WorkExplainActivity
 import ch.threema.base.utils.LoggingUtil
+import org.koin.android.ext.android.inject
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsSummaryFragment")
 
@@ -47,7 +48,7 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
 
     private var preferencePairs: List<Pair<Preference, String>> = emptyList()
     private var selectedPrefView: View? = null
-    private val preferenceService = requirePreferenceService()
+    private val preferenceService: PreferenceService by inject()
 
     override fun initializePreferences() {
         val preferenceScreen = getPrefOrNull<PreferenceScreen>("pref_screen_header") ?: return
@@ -78,7 +79,7 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
         val workPref = getPref<Preference>("pref_key_work")
         if (!isWorkBuild()) {
             workPref.onPreferenceClickListener = Preference.OnPreferenceClickListener {
-                startActivity(Intent(requireActivity(), WorkExplainActivity::class.java))
+                startActivity(WorkExplainActivity.createIntent(requireContext()))
                 true
             }
         } else {

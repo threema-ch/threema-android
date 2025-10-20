@@ -21,20 +21,23 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+
+import androidx.annotation.NonNull;
+
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 /**
  * add contact visibility field to contact models
  */
 public class DatabaseUpdateToVersion49 implements DatabaseUpdate {
 
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion49(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion49(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 

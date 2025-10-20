@@ -1,18 +1,12 @@
-<!--
-  ~ Copyright (c) 2018-2025 Threema GmbH
-  ~ All rights reserved.
-  -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="24dp"
-    android:height="24dp"
-    android:viewportWidth="252"
-    android:viewportHeight="252">
-    <path
-        android:fillColor="#ffffc107"
-        android:fillType="nonZero"
-        android:pathData="M126,252c-69.588,0 -126,-56.412 -126,-126v0c0,-69.588 56.412,-126 126,-126v0c69.588,0 126,56.412 126,126v0c0,69.588 -56.412,126 -126,126z" />
-    <path
-        android:fillColor="#ffffff"
-        android:fillType="nonZero"
-        android:pathData="M149.481,43.719l-11.878,11.878l9.204,9.204l-52.073,41.77l-12.452,-12.452l-11.878,11.878l31.927,31.927l-51.188,51.171v11.763h11.763l51.171,-51.188l31.927,31.927l11.878,-11.878l-11.73,-11.73l41.196,-52.648l9.056,9.056l11.878,-11.878z" />
+	android:width="24dp"
+	android:height="24dp"
+	android:viewportWidth="960"
+	android:viewportHeight="960">
+	<path
+		android:fillColor="@color/material_amber"
+		android:pathData="M480,480m-480,0a480,480 0,1 1,960 0a480,480 0,1 1,-960 0" />
+	<path
+		android:fillColor="@android:color/white"
+		android:pathData="m593.33,313.13v185.97l48.17,45.16q4.25,3.99 6.38,8.97 2.13,4.98 2.13,10.29v15.28q0,11.29 -8.15,18.93 -8.15,7.64 -20.19,7.64L508.33,605.37v155.42q0,11.29 -8.15,18.93 -8.15,7.64 -20.19,7.64 -12.04,0 -20.19,-7.64 -8.15,-7.64 -8.15,-18.93L451.67,605.37L338.33,605.37q-12.04,0 -20.19,-7.64Q310,590.09 310,578.8v-15.28q0,-5.31 2.13,-10.29 2.13,-4.98 6.38,-8.97l48.17,-45.16v-185.97q-12.04,0 -20.19,-7.64 -8.15,-7.64 -8.15,-18.93 0,-11.29 8.15,-18.93Q354.63,260 366.67,260h226.67q12.04,0 20.19,7.64 8.15,7.64 8.15,18.93 0,11.29 -8.15,18.93 -8.15,7.64 -20.19,7.64z" />
 </vector>

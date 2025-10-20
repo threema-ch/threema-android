@@ -37,7 +37,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.Collator;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -105,7 +104,7 @@ public class ContactUtil {
     public static boolean canChangeLastName(@Nullable ContactModel contact) {
         return contact != null
             && !contact.isLinkedToAndroidContact()
-            && !isGatewayContact(contact);
+            && !isGatewayContact(contact.getIdentity());
     }
 
     public static boolean canChangeAvatar(
@@ -196,18 +195,7 @@ public class ContactUtil {
     public static boolean canHaveCustomAvatar(@Nullable ContactModel contact) {
         return contact != null
             && !contact.isLinkedToAndroidContact()
-            && !isGatewayContact(contact);
-    }
-
-    /**
-     * check if the avatar is expired (or no date set)
-     */
-    public static boolean isAvatarExpired(ContactModel contactModel) {
-        return contactModel != null
-            && (
-            contactModel.getLocalAvatarExpires() == null
-                || contactModel.getLocalAvatarExpires().before(new Date())
-        );
+            && !isGatewayContact(contact.getIdentity());
     }
 
     /**
@@ -304,20 +292,19 @@ public class ContactUtil {
 
     public static String getIdentityFromViewIntent(Context context, Intent intent) {
         if (Intent.ACTION_VIEW.equals(intent.getAction()) && context.getString(R.string.contacts_mime_type).equals(intent.getType())) {
-            Cursor cursor = null;
-            try {
-                cursor = context.getContentResolver().query(intent.getData(), null, null, null, null);
+            try (Cursor cursor = context.getContentResolver().query(intent.getData(), null, null, null, null)) {
                 if (cursor != null) {
                     if (cursor.moveToNext()) {
-                        return cursor.getString(cursor.getColumnIndex(ContactsContract.Data.DATA1));
+                        int columnIndex = cursor.getColumnIndex(ContactsContract.Data.DATA1);
+                        if (columnIndex >= 0) {
+                            return cursor.getString(columnIndex);
+                        } else {
+                            logger.warn("Invalid column index; column '{}' does not exist.", ContactsContract.Data.DATA1);
+                        }
                     }
                 }
             } catch (Exception e) {
-                logger.error("Exception", e);
-            } finally {
-                if (cursor != null) {
-                    cursor.close();
-                }
+                logger.error("Could not get identity from view intent.", e);
             }
         }
         return null;

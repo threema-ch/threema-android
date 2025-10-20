@@ -31,7 +31,7 @@ internal class ReflectedOutgoingPollSetupMessageTask(
     serviceManager: ServiceManager,
 ) : ReflectedOutgoingContactMessageTask<PollSetupMessage>(
     outgoingMessage = outgoingMessage,
-    message = PollSetupMessage.fromReflected(outgoingMessage, serviceManager.identityStore.identity),
+    message = PollSetupMessage.fromReflected(outgoingMessage, serviceManager.identityStore.getIdentity()!!),
     type = Common.CspE2eMessageType.POLL_SETUP,
     serviceManager = serviceManager,
 ) {

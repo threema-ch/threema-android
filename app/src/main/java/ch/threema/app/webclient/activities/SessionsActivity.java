@@ -22,13 +22,11 @@
 package ch.threema.app.webclient.activities;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.Menu;
@@ -45,7 +43,6 @@ import androidx.annotation.UiThread;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.compose.ui.platform.ComposeView;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -53,6 +50,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
+import org.koin.android.compat.ViewModelCompat;
+import org.koin.java.KoinJavaComponent;
 import org.saltyrtc.client.crypto.CryptoException;
 import org.saltyrtc.client.exceptions.InvalidKeyException;
 import org.slf4j.Logger;
@@ -63,10 +62,10 @@ import java.util.List;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.compose.common.interop.ComposeJavaBridge;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
@@ -74,8 +73,6 @@ import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.multidevice.LinkedDevicesActivity;
 import ch.threema.app.multidevice.MultiDeviceManager;
-import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SelectorDialogItem;
@@ -97,18 +94,14 @@ import ch.threema.app.webclient.exceptions.HandshakeException;
 import ch.threema.app.webclient.listeners.WebClientServiceListener;
 import ch.threema.app.webclient.listeners.WebClientSessionListener;
 import ch.threema.app.webclient.manager.WebClientListenerManager;
-import ch.threema.app.webclient.manager.WebClientServiceManager;
 import ch.threema.app.webclient.services.WebSessionQRCodeParser;
 import ch.threema.app.webclient.services.WebSessionQRCodeParserImpl;
-import ch.threema.app.webclient.services.SessionService;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.app.webclient.state.WebClientSessionState;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.ServerAddressProvider;
-import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.WebClientSessionModel;
 import kotlin.Unit;
 
@@ -151,11 +144,8 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
 
     private @Nullable SessionsViewModel viewModel = null;
 
-    // Threema services
-    private WebClientServiceManager webClientServiceManager;
-    private SessionService sessionService;
-    private DatabaseService databaseService;
-    private PreferenceService preferenceService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private EmptyRecyclerView listView;
     private SessionListAdapter listAdapter;
@@ -301,49 +291,11 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
         DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_EDIT_LABEL, true);
     }
 
-    private boolean requireInstances() {
-        if (TestUtil.required(
-            this.webClientServiceManager,
-            this.sessionService,
-            this.databaseService,
-            this.preferenceService
-        )) {
-            return true;
-        }
-
-        try {
-            if (this.serviceManager == null) {
-                logger.error("Service manager is null");
-                return false;
-            }
-            this.webClientServiceManager = this.serviceManager.getWebClientServiceManager();
-            this.sessionService = this.webClientServiceManager.getSessionService();
-            this.databaseService = this.serviceManager.getDatabaseService();
-            this.preferenceService = this.serviceManager.getPreferenceService();
-        } catch (ThreemaException e) {
-            logger.error("Exception", e);
-            return false;
-        }
-
-        return TestUtil.required(
-            this.webClientServiceManager,
-            this.sessionService,
-            this.databaseService,
-            this.preferenceService
-        );
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
         if (finishAndRestartLaterIfNotReady(this)) {
-            return;
-        }
-
-        // Make sure that all necessary services are initialized
-        if (!this.requireInstances()) {
-            this.finish();
             return;
         }
 
@@ -369,26 +321,27 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
         this.enableSwitch = findViewById(R.id.switch_button);
         TextView enableSwitchText = findViewById(R.id.switch_text);
         this.enableSwitch.setOnOffLabel(enableSwitchText);
+        var sessionService = dependencies.getSessionService();
         this.enableSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             @UiThread
             public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (compoundButton.isShown()) {
                     if (isChecked) {
-                        if (SessionsActivity.this.sessionService.getAllSessionModels().isEmpty()) {
+                        if (sessionService.getAllSessionModels().isEmpty()) {
                             //if there are no active sessions, start the qr code scanner
                             //when the enable switch is enabled.
                             SessionsActivity.this.initiateSession();
                         } else {
-                            SessionsActivity.this.sessionService.setEnabled(true);
+                            sessionService.setEnabled(true);
                         }
                     } else {
-                        SessionsActivity.this.sessionService.setEnabled(false);
+                        sessionService.setEnabled(false);
                     }
                 }
             }
         });
-        this.enableSwitch.setCheckedSilent(this.sessionService.isEnabled());
+        this.enableSwitch.setCheckedSilent(sessionService.isEnabled());
 
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         this.listView = this.findViewById(R.id.sessions_list);
@@ -422,7 +375,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
         final TextView noSessionsTextView = findViewById(R.id.no_sessions_text);
         String emptyText;
         try {
-            emptyText = serviceManager.getServerAddressProviderService().getServerAddressProvider().getWebServerUrl();
+            emptyText = dependencies.getServerAddressProviderService().getServerAddressProvider().getWebServerUrl();
         } catch (ThreemaException e) {
             emptyText = BuildConfig.WEB_SERVER_URL;
         }
@@ -433,7 +386,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
 
         if (savedInstanceState == null) {
             final boolean welcomeScreenShown = sharedPreferences.getBoolean(getString(R.string.preferences__web_client_welcome_shown), false);
-            final boolean sessionsAvailable = !this.sessionService.getAllSessionModels().isEmpty();
+            final boolean sessionsAvailable = !sessionService.getAllSessionModels().isEmpty();
             if (!welcomeScreenShown && !sessionsAvailable) {
                 // Show wizard
                 this.startActivityForResult(new Intent(this, SessionsIntroActivity.class), REQUEST_ID_INTRO_WIZARD);
@@ -446,7 +399,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
             }
         }
 
-        viewModel = new ViewModelProvider(this).get(SessionsViewModel.class);
+        viewModel = ViewModelCompat.getViewModel(this, SessionsViewModel.class);
 
         multiDeviceBannerComposeView = this.findViewById(R.id.multi_device_banner_compose);
         if (ConfigUtils.isMultiDeviceEnabled(this)) {
@@ -505,10 +458,9 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
      * Make sure that battery optimizations are disabled for Threema.
      */
     private void startBatteryOptimizationFlow() {
-        // start battery optimization flow. activity will return RESULT_OK is app is already whitelisted
+        // start battery optimization flow. activity will return RESULT_OK if app is already whitelisted
         Intent intent = new Intent(this, DisableBatteryOptimizationsActivity.class);
         intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_NAME, getString(R.string.webclient));
-        intent.putExtra(DisableBatteryOptimizationsActivity.EXTRA_CONFIRM, true);
         this.startActivityForResult(intent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
     }
 
@@ -522,7 +474,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
             byte[] intentPayload = IntentDataUtil.getPayload(this.getIntent());
             if (intentPayload != null) {
                 // Ask first
-                if (RuntimeUtil.isInTest()) {
+                if (TestUtil.isInDeviceTest()) {
                     // Add directly
                     this.processPayload(intentPayload);
                 } else {
@@ -557,8 +509,9 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
 
     private void updateView() {
         if (this.enableSwitch != null) {
-            if (this.enableSwitch.isChecked() != this.sessionService.isEnabled()) {
-                this.enableSwitch.setCheckedSilent(this.sessionService.isEnabled());
+            var isEnabled = dependencies.getSessionService().isEnabled();
+            if (this.enableSwitch.isChecked() != isEnabled) {
+                this.enableSwitch.setCheckedSilent(isEnabled);
             }
         }
     }
@@ -567,8 +520,9 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
      * Create or refresh list adapter with sessions.
      */
     private void reloadSessionList() {
+        var sessionService = dependencies.getSessionService();
         if (this.listAdapter == null) {
-            this.listAdapter = new SessionListAdapter(this, this.sessionService, this.preferenceService);
+            this.listAdapter = new SessionListAdapter(this, sessionService, dependencies.getPreferenceService());
             this.listAdapter.setOnClickItemListener(new SessionListAdapter.OnClickItemListener() {
                 @Override
                 @UiThread
@@ -579,7 +533,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
             this.listView.setAdapter(this.listAdapter);
         }
 
-        this.listAdapter.setData(this.sessionService.getAllSessionModels());
+        this.listAdapter.setData(sessionService.getAllSessionModels());
     }
 
     /**
@@ -594,7 +548,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
             values.add(MENU_POS_RENAME);
 
             if (model.getState() != WebClientSessionModel.State.INITIALIZING) {
-                items.add(!this.sessionService.isRunning(model)
+                items.add(!dependencies.getSessionService().isRunning(model)
                     ? new SelectorDialogItem(getString(R.string.webclient_session_start), R.drawable.ic_play)
                     : new SelectorDialogItem(getString(R.string.webclient_session_stop), R.drawable.ic_stop));
                 values.add(MENU_POS_START_STOP);
@@ -643,19 +597,20 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
     }
 
     private void startStopSession(@NonNull final WebClientSessionModel sessionModel) {
-        if (!this.sessionService.isRunning(sessionModel)) {
-            final SessionInstanceService service = this.sessionService.getInstanceService(sessionModel, true);
+        var sessionService = dependencies.getSessionService();
+        if (!sessionService.isRunning(sessionModel)) {
+            final SessionInstanceService service = sessionService.getInstanceService(sessionModel, true);
             if (service == null) {
                 logger.error("cannot start service, cannot instantiate session instance service");
                 return;
             }
 
             // enable webclient session if disabled
-            if (!this.sessionService.isEnabled()) {
-                this.sessionService.setEnabled(true);
+            if (!sessionService.isEnabled()) {
+                sessionService.setEnabled(true);
             }
 
-            this.webClientServiceManager.getHandler().post(new Runnable() {
+            dependencies.getWebClientServiceManager().getHandler().post(new Runnable() {
                 @Override
                 @WorkerThread
                 public void run() {
@@ -667,14 +622,14 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
                 }
             });
         } else {
-            final SessionInstanceService service = this.sessionService.getInstanceService(sessionModel, false);
+            final SessionInstanceService service = sessionService.getInstanceService(sessionModel, false);
 
             if (service == null) {
                 logger.error("cannot stop service, no running service");
                 return;
             }
 
-            this.webClientServiceManager.getHandler().post(new Runnable() {
+            dependencies.getWebClientServiceManager().getHandler().post(new Runnable() {
                 @Override
                 @WorkerThread
                 public void run() {
@@ -707,12 +662,12 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
         switch (tag) {
             case DIALOG_TAG_REALLY_DELETE_SESSION:
                 if (data instanceof WebClientSessionModel) {
-                    this.sessionService.stop(
+                    dependencies.getSessionService().stop(
                         (WebClientSessionModel) data, DisconnectContext.byUs(DisconnectContext.REASON_SESSION_DELETED));
                 }
                 break;
             case DIALOG_TAG_REALLY_DELETE_ALL_SESSIONS:
-                this.sessionService.stopAll(DisconnectContext.byUs(DisconnectContext.REASON_SESSION_DELETED));
+                dependencies.getSessionService().stopAll(DisconnectContext.byUs(DisconnectContext.REASON_SESSION_DELETED));
                 break;
             case DIALOG_TAG_REALLY_START_SESSION_BY_PAYLOAD:
                 if (data != null) {
@@ -737,7 +692,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
                 if (model.getId() == modelId) {
                     model.setLabel(text);
                     // UGH!
-                    if (this.databaseService.getWebClientSessionModelFactory().createOrUpdate(model)) {
+                    if (dependencies.getDatabaseService().getWebClientSessionModelFactory().createOrUpdate(model)) {
                         WebClientListenerManager.sessionListener.handle(new ListenerManager.HandleListener<>() {
                             @Override
                             @UiThread
@@ -759,14 +714,14 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
         //start the qr scanner
         if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_CAMERA)) {
             this.scanQR();
-        } else if (sessionService.getAllSessionModels().isEmpty()) {
+        } else if (dependencies.getSessionService().getAllSessionModels().isEmpty()) {
             enableSwitch.setCheckedSilent(false);
         }
     }
 
     private void scanQR() {
         logger.info("Initiate QR scan");
-        QRScannerUtil.getInstance().initiateScan(this, getString(R.string.webclient_qr_scan_message), QRCodeServiceImpl.QR_TYPE_WEB);
+        QRScannerUtil.getInstance().initiateScan(this, getString(R.string.webclient_qr_scan_message));
     }
 
     @Override
@@ -850,7 +805,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
         }
 
         // Check internet connection
-        if (!ThreemaApplication.getServiceManager().getDeviceService().isOnline()) {
+        if (!dependencies.getDeviceService().isOnline()) {
             logger.error("No internet connection");
             GenericAlertDialog.newInstance(
                 R.string.internet_connection_required,
@@ -863,7 +818,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
 
         // Ensure that session does not already exist
         final WebClientSessionModel sessionModel =
-            this.databaseService.getWebClientSessionModelFactory().getByKey(qrCodeResult.key);
+            dependencies.getDatabaseService().getWebClientSessionModelFactory().getByKey(qrCodeResult.key);
         if (sessionModel != null) {
             // We scanned the QR code of a session that already exists! Something's wrong.
             logger.error("Session already exists");
@@ -932,7 +887,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
             // Override saltyRtcHost/Port from OPPF?
             String saltyRtcHost = qrCodeResult.saltyRtcHost;
             int saltyRtcPort = qrCodeResult.saltyRtcPort;
-            ServerAddressProvider serverAddressProvider = serviceManager.getServerAddressProviderService().getServerAddressProvider();
+            var serverAddressProvider = dependencies.getServerAddressProviderService().getServerAddressProvider();
             if (!TestUtil.isEmptyOrNull(serverAddressProvider.getWebOverrideSaltyRtcHost())) {
                 saltyRtcHost = serverAddressProvider.getWebOverrideSaltyRtcHost();
             }
@@ -952,7 +907,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
             }
 
             // Create new session
-            this.sessionService.create(
+            dependencies.getSessionService().create(
                 qrCodeResult.key,
                 qrCodeResult.authToken,
                 saltyRtcHost,
@@ -1032,7 +987,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
      */
     private void cleanupWebclientSessions() {
         final List<WebClientSessionModel> models =
-            this.databaseService.getWebClientSessionModelFactory().getAll();
+            dependencies.getDatabaseService().getWebClientSessionModelFactory().getAll();
         final long now = System.currentTimeMillis() / 1000;
         for (WebClientSessionModel model : models) {
             // Ignore persistent sessions
@@ -1060,12 +1015,11 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
             }
 
             if (remove) {
-                this.databaseService.getWebClientSessionModelFactory().delete(model);
+                dependencies.getDatabaseService().getWebClientSessionModelFactory().delete(model);
             }
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -1074,7 +1028,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
                 this.scanQR();
             } else if (!this.shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
                 ConfigUtils.showPermissionRationale(this, findViewById(R.id.parent_layout), R.string.permission_camera_qr_required);
-                if (this.sessionService.getAllSessionModels().isEmpty()) {
+                if (dependencies.getSessionService().getAllSessionModels().isEmpty()) {
                     this.enableSwitch.setCheckedSilent(false);
                 }
             }

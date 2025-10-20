@@ -33,8 +33,8 @@ import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
 import ch.threema.common.now
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData
-import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
 import ch.threema.data.models.ModelDeletedException
 import ch.threema.domain.models.ContactSyncState
 import ch.threema.domain.models.IdentityState
@@ -62,6 +62,7 @@ import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.taskmanager.catchAllExceptNetworkException
 import ch.threema.domain.taskmanager.catchExceptNetworkException
 import ch.threema.domain.taskmanager.getEncryptedIncomingMessageEnvelope
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import java.util.Date
 
@@ -189,7 +190,7 @@ class IncomingMessageTask(
                 // Create contact if message allows it and contact does not exists yet
                 if (message.createImplicitlyDirectContact() &&
                     contactModelRepository.getByIdentity(message.fromIdentity)
-                        ?.data?.value?.acquaintanceLevel != AcquaintanceLevel.DIRECT
+                        ?.data?.acquaintanceLevel != AcquaintanceLevel.DIRECT
                 ) {
                     createDirectContactIfNotExists(message.fromIdentity, nickname, handle)
                 }
@@ -356,7 +357,7 @@ class IncomingMessageTask(
         }
     }
 
-    private suspend fun sendAck(messageId: MessageId, identity: String, handle: ActiveTaskCodec) {
+    private suspend fun sendAck(messageId: MessageId, identity: Identity, handle: ActiveTaskCodec) {
         logger.debug("Sending ack for message ID {} from {}", messageId, identity)
 
         val data = identity.encodeToByteArray() + messageId.messageId
@@ -389,7 +390,7 @@ class IncomingMessageTask(
         )
     }
 
-    private fun setIdentityStateToActive(identity: String) {
+    private fun setIdentityStateToActive(identity: Identity) {
         val contactModel = contactModelRepository.getByIdentity(identity)
         try {
             // Note: Actually, this change is triggered by remote and not by local. However, this is
@@ -403,7 +404,7 @@ class IncomingMessageTask(
     }
 
     private suspend fun updateNicknameIfChanged(
-        fromIdentity: String,
+        fromIdentity: Identity,
         nickname: String,
         handle: ActiveTaskCodec,
     ) {
@@ -417,12 +418,12 @@ class IncomingMessageTask(
     }
 
     private suspend fun createDirectContactIfNotExists(
-        identity: String,
+        identity: Identity,
         nickname: String?,
         handle: ActiveTaskCodec,
     ) {
         val contactModel = contactModelRepository.getByIdentity(identity)
-        val data = contactModel?.data?.value
+        val data = contactModel?.data
         if (data != null && data.acquaintanceLevel == AcquaintanceLevel.GROUP) {
             // Update acquaintance level from local
             contactModel.setAcquaintanceLevelFromLocal(AcquaintanceLevel.DIRECT)
@@ -449,7 +450,7 @@ class IncomingMessageTask(
                     firstName = "",
                     lastName = "",
                     nickname = nickname,
-                    colorIndex = getIdColorIndex(fetchedContact.identity),
+                    idColor = IdColor.ofIdentity(fetchedContact.identity),
                     verificationLevel = verificationLevel,
                     workVerificationLevel = WorkVerificationLevel.NONE,
                     identityType = fetchedContact.identityType,

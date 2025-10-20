@@ -25,7 +25,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Editable;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -168,7 +167,7 @@ public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
 
         editText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(@NonNull CharSequence text, int start, int before, int count) {
                 ActivityService.activityUserInteract(activity);
             }
         });

@@ -21,6 +21,7 @@
 
 package ch.threema.app.protocol
 
+import ch.threema.app.profilepicture.ProfilePicture
 import ch.threema.app.services.ApiService
 import ch.threema.app.services.FileService
 import ch.threema.app.tasks.GroupPhotoUploadResult
@@ -54,7 +55,7 @@ sealed interface ProfilePictureChange
 
 @Serializable
 class SetProfilePicture(
-    val profilePicture: ByteArray,
+    val profilePicture: ProfilePicture,
     val profilePictureUploadResult: GroupPhotoUploadResult?,
 ) : ProfilePictureChange
 
@@ -102,7 +103,7 @@ suspend fun runActiveGroupUpdateSteps(
 ) {
     // This is the current snapshot that represents the truth. All changes are validated based on
     // this data before they are communicated (sent out as csp messages).
-    val groupModelData = groupModel.data.value ?: run {
+    val groupModelData = groupModel.data ?: run {
         logger.warn("Group model data not available")
         return
     }
@@ -246,7 +247,7 @@ private fun getFinalGroupPhotoUploadResult(
     apiService: ApiService,
 ): GroupPhotoUploadResult? {
     if (profilePictureChange is SetProfilePicture &&
-        profilePictureChange.profilePicture.contentEquals(currentGroupProfilePicture)
+        profilePictureChange.profilePicture.profilePictureBytes.contentEquals(currentGroupProfilePicture)
     ) {
         return profilePictureChange.profilePictureUploadResult
     }
@@ -254,7 +255,7 @@ private fun getFinalGroupPhotoUploadResult(
     try {
         return tryUploadingGroupPhoto(currentGroupProfilePicture, apiService)
     } catch (e: FileNotFoundException) {
-        logger.error("Could not upload group photo")
+        logger.error("Could not upload group photo", e)
         return null
     }
 }
@@ -320,6 +321,6 @@ private suspend fun createGroupCallStartMessage(
 
 private fun Iterable<String>.toBasicContacts(contactModelRepository: ContactModelRepository) =
     this.map { contactModelRepository.getByIdentity(it) }
-        .mapNotNull { it?.data?.value }
+        .mapNotNull { it?.data }
         .map { it.toBasicContact() }
         .toSet()

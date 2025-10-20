@@ -21,8 +21,7 @@
 
 package ch.threema.app.voip.groupcall.sfu.webrtc
 
-import ch.threema.app.voip.groupcall.gcBlake2b
-import ch.threema.app.voip.groupcall.getSecureRandomBytes
+import ch.threema.app.voip.groupcall.CryptoCallUtils
 import ch.threema.domain.protocol.csp.ProtocolDefines.GC_PCMK_LENGTH
 
 /**
@@ -35,8 +34,26 @@ data class ParticipantCallMediaKeyState(
     val ratchetCounter: UInt,
     val pcmk: ByteArray,
 ) {
-    override fun toString(): String {
-        return "ParticipantCallMediaKeyState(epoch=$epoch, ratchetCounter=$ratchetCounter)"
+    override fun toString(): String = "ParticipantCallMediaKeyState(epoch=$epoch, ratchetCounter=$ratchetCounter)"
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ParticipantCallMediaKeyState
+
+        if (epoch != other.epoch) return false
+        if (ratchetCounter != other.ratchetCounter) return false
+        if (!pcmk.contentEquals(other.pcmk)) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = epoch.hashCode()
+        result = 31 * result + ratchetCounter.hashCode()
+        result = 31 * result + pcmk.contentHashCode()
+        return result
     }
 }
 
@@ -57,8 +74,11 @@ class PendingParticipantCallMediaKeyState(
 }
 
 class LocalParticipantCallMediaKey {
-    private var _current: ParticipantCallMediaKeyState =
-        ParticipantCallMediaKeyState(0u, 0u, getSecureRandomBytes(GC_PCMK_LENGTH))
+    private var _current: ParticipantCallMediaKeyState = ParticipantCallMediaKeyState(
+        epoch = 0u,
+        ratchetCounter = 0u,
+        pcmk = CryptoCallUtils.getSecureRandomBytes(GC_PCMK_LENGTH),
+    )
     private var _pending: PendingParticipantCallMediaKeyState? = null
 
     val current: ParticipantCallMediaKeyState
@@ -82,7 +102,7 @@ class LocalParticipantCallMediaKey {
             val state = ParticipantCallMediaKeyState(
                 epoch = if (currentKeyState.epoch == 255u) 0u else currentKeyState.epoch + 1u,
                 ratchetCounter = 0u,
-                pcmk = getSecureRandomBytes(GC_PCMK_LENGTH),
+                pcmk = CryptoCallUtils.getSecureRandomBytes(GC_PCMK_LENGTH),
             )
             PendingParticipantCallMediaKeyState(
                 state = state,
@@ -106,7 +126,10 @@ class LocalParticipantCallMediaKey {
             // Ratchet once
             //
             // PCMK' = BLAKE2b(key=PCMK, salt="m'", personal='3ma-call')
-            val pcmk = gcBlake2b(GC_PCMK_LENGTH, it.pcmk, "m'")
+            val pcmk = CryptoCallUtils.gcBlake2b256(
+                key = it.pcmk,
+                salt = CryptoCallUtils.SALT_CURRENT_PCMK,
+            )
             ParticipantCallMediaKeyState(
                 epoch = it.epoch,
                 ratchetCounter = it.ratchetCounter + 1u,

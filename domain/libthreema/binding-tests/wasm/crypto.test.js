@@ -5,6 +5,7 @@ import tweetNaCl from 'tweetnacl';
 import {
     argon2id,
     blake2bMac256,
+    blake2bMac512,
     hmacSha256,
     scrypt,
     sha256,
@@ -145,22 +146,78 @@ function testScrypt() {
 
 // Test BLake2b against test vectors
 function testBlake2b() {
-    const outputLength = 32;
+    const outputLengths = [
+        [32, blake2bMac256],
+        [64, blake2bMac512],
+    ];
 
     const testVectors = [
-        {key: undefined, salt: undefined, personal: undefined},
-        {key: undefined, salt: '01'.repeat(16), personal: undefined},
-        {key: undefined, salt: '02'.repeat(16), personal: 'cd'.repeat(16)},
-        {key: 'hello my fancy key', salt: undefined, personal: undefined},
+        {key: undefined, salt: undefined, personal: undefined, data: undefined},
+        {
+            key: undefined,
+            salt: undefined,
+            personal: undefined,
+            data: 'no data with privacy',
+        },
+        {
+            key: undefined,
+            salt: '01'.repeat(16),
+            personal: undefined,
+            data: undefined,
+        },
+        {
+            key: undefined,
+            salt: '01'.repeat(16),
+            personal: undefined,
+            data: 'datagram',
+        },
+        {
+            key: undefined,
+            salt: '02'.repeat(16),
+            personal: 'cd'.repeat(16),
+            data: undefined,
+        },
+        {
+            key: undefined,
+            salt: '02'.repeat(16),
+            personal: 'cd'.repeat(16),
+            data: 'data done right',
+        },
+        {
+            key: 'hello my fancy key',
+            salt: undefined,
+            personal: undefined,
+            data: undefined,
+        },
+        {
+            key: 'hello my fancy key',
+            salt: undefined,
+            personal: undefined,
+            data: 'have you seen my data?',
+        },
         {
             key: 'hello dear personal',
             salt: '03'.repeat(16),
             personal: 'ab'.repeat(16),
+            data: undefined,
+        },
+        {
+            key: 'hello dear personal',
+            salt: '03'.repeat(16),
+            personal: 'ab'.repeat(16),
+            data: 'good luck',
         },
         {
             key: 'hello my dear salt',
             salt: '04'.repeat(16),
             personal: 'ef'.repeat(16),
+            data: undefined,
+        },
+        {
+            key: 'hello my dear salt',
+            salt: '04'.repeat(16),
+            personal: 'ef'.repeat(16),
+            data: 'no joke, it is real',
         },
     ];
 
@@ -177,29 +234,38 @@ function testBlake2b() {
             testVector.personal === undefined
                 ? undefined
                 : Buffer.from(testVector.personal, 'hex');
+        const data =
+            testVector.data === undefined
+                ? new Uint8Array(0)
+                : Buffer.from(testVector.data, 'utf8');
 
-        const computed = Buffer.from(
-            blake2bMac256(
+        for (const [outputLength, blake2b] of outputLengths) {
+            const computed = Buffer.from(
+                blake2b(
+                    key,
+                    personal ?? new Uint8Array(0),
+                    salt ?? new Uint8Array(0),
+                    data,
+                ),
+            ).toString('hex');
+
+            // Dispatch to the correct function call depending on the existance of
+            // salt and personal
+            const expected = blake2bReference(
+                outputLength,
                 key,
-                personal ?? new Uint8Array(0),
-                salt ?? new Uint8Array(0),
-            ),
-        ).toString('hex');
+                salt,
+                personal,
+                true,
+            )
+                .update(data)
+                .digest('hex');
 
-        // Dispatch to the correct function call depending on the existance of
-        // salt and personal
-        const expected = blake2bReference(
-            outputLength,
-            key,
-            salt,
-            personal,
-            true,
-        ).digest('hex');
-
-        assert(
-            expected === computed,
-            `Computed Blake2b should match expected one. Key: ${testVector.key}, Salt: ${testVector.salt}, Personal: ${testVector.personal}`,
-        );
+            assert(
+                expected === computed,
+                `Computed Blake2b with output length ${outputLength} should match expected one. Key: ${testVector.key}, Salt: ${testVector.salt}, Personal: ${testVector.personal}, Data: ${testVector.data}`,
+            );
+        }
     }
 }
 

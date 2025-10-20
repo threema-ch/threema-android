@@ -23,11 +23,9 @@ package ch.threema.app.systemupdates.updates;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.SynchronizeContactsUtil;
-import ch.threema.localcrypto.MasterKeyLockedException;
 
 public class SystemUpdateToVersion12 implements SystemUpdate {
     private final @NonNull ServiceManager serviceManager;

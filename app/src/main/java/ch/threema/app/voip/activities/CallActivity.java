@@ -99,6 +99,7 @@ import androidx.transition.TransitionManager;
 import com.getkeepsafe.taptargetview.TapTarget;
 import com.getkeepsafe.taptargetview.TapTargetView;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 import org.webrtc.RendererCommon;
 import org.webrtc.SurfaceViewRenderer;
@@ -110,8 +111,8 @@ import java.util.concurrent.ExecutionException;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.BottomSheetAbstractDialog;
 import ch.threema.app.dialogs.BottomSheetListDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -120,15 +121,8 @@ import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.SensorListener;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ActivityService;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.LifetimeService;
-import ch.threema.app.services.LockAppService;
-import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.services.SensorService;
-import ch.threema.app.services.UserService;
 import ch.threema.app.ui.AnimatedEllipsisTextView;
 import ch.threema.app.ui.BottomSheetItem;
 import ch.threema.app.ui.DebouncedOnClickListener;
@@ -151,13 +145,10 @@ import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.services.CallRejectService;
 import ch.threema.app.voip.services.VideoContext;
 import ch.threema.app.voip.services.VoipCallService;
-import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
-import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.ThreemaFeature;
-import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
@@ -303,17 +294,8 @@ public class CallActivity extends ThreemaActivity implements
     private NotificationManagerCompat notificationManagerCompat;
     private AudioManager audioManager;
 
-    @Nullable
-    private ContactModelRepository contactModelRepository;
-    @Nullable
-    private UserService userService;
-    private ContactService contactService;
-    private SensorService sensorService;
-    private PreferenceService preferenceService;
-    private VoipStateService voipStateService;
-    private LifetimeService lifetimeService;
-    private LockAppService lockAppService;
-    private APIConnector apiConnector;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private ContactModel contact;
 
@@ -431,6 +413,7 @@ public class CallActivity extends ThreemaActivity implements
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
+            var voipStateService = dependencies.getVoipStateService();
 
             if (action != null) {
                 switch (action) {
@@ -503,7 +486,7 @@ public class CallActivity extends ThreemaActivity implements
                         }
 
                         // Vibrate phone quickly to indicate that the remote video stream was enabled
-                        if (preferenceService.isInAppVibrate()) {
+                        if (dependencies.getPreferenceService().isInAppVibrate()) {
                             try {
                                 final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                                 if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -659,16 +642,15 @@ public class CallActivity extends ThreemaActivity implements
             if (selectedAudioDevice != null) {
                 currentAudioDevice = selectedAudioDevice;
                 logger.debug("Audio device changed. New device = " + selectedAudioDevice.name());
-                if (sensorService != null) {
-                    if (selectedAudioDevice == AudioDevice.EARPIECE) {
-                        if (!sensorService.isSensorRegistered(SENSOR_TAG_CALL)) {
-                            sensorService.registerSensors(SENSOR_TAG_CALL, CallActivity.this, false);
-                        }
-                        sensorEnabled = true;
-                    } else {
-                        sensorService.unregisterSensors(SENSOR_TAG_CALL);
-                        sensorEnabled = false;
+                var sensorService = dependencies.getSensorService();
+                if (selectedAudioDevice == AudioDevice.EARPIECE) {
+                    if (!sensorService.isSensorRegistered(SENSOR_TAG_CALL)) {
+                        sensorService.registerSensors(SENSOR_TAG_CALL, CallActivity.this, false);
                     }
+                    sensorEnabled = true;
+                } else {
+                    sensorService.unregisterSensors(SENSOR_TAG_CALL);
+                    sensorEnabled = false;
                 }
                 if (currentAudioDevice == AudioDevice.SPEAKER_PHONE) {
                     setVolumeControlStream(AudioManager.STREAM_MUSIC);
@@ -735,30 +717,12 @@ public class CallActivity extends ThreemaActivity implements
             return;
         }
 
-        // Threema services
-        try {
-            ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
-            this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
-            this.contactService = serviceManager.getContactService();
-            this.userService = serviceManager.getUserService();
-            this.sensorService = serviceManager.getSensorService();
-            this.preferenceService = serviceManager.getPreferenceService();
-            this.voipStateService = serviceManager.getVoipStateService();
-            this.lifetimeService = serviceManager.getLifetimeService();
-            this.apiConnector = serviceManager.getAPIConnector();
-            this.lockAppService = serviceManager.getLockAppService();
-        } catch (Exception e) {
-            logger.error("Could not instantiate services", e);
-            finish();
-            return;
-        }
-
         if (getIntent().getBooleanExtra(EXTRA_ACCEPT_INCOMING_CALL, false)) {
             // Don't reject call automatically after timeout
-            voipStateService.disableTimeoutReject();
+            dependencies.getVoipStateService().disableTimeoutReject();
             // In case of an incoming call we cancel the incoming call notification. Otherwise the
             // notification would stay visible until for example the microphone permission is granted
-            voipStateService.cancelCallNotificationsForNewCall();
+            dependencies.getVoipStateService().cancelCallNotificationsForNewCall();
         }
 
         // Get audio manager
@@ -775,7 +739,7 @@ public class CallActivity extends ThreemaActivity implements
             | LayoutParams.FLAG_IGNORE_CHEEK_PRESSES);
 
         // disable screenshots if necessary
-        ConfigUtils.setScreenshotsAllowed(this, this.preferenceService, this.lockAppService);
+        ConfigUtils.setScreenshotsAllowed(this, dependencies.getPreferenceService(), dependencies.getLockAppService());
 
         getWindow().getDecorView().setSystemUiVisibility(getSystemUiVisibility(getWindow()));
 
@@ -795,7 +759,7 @@ public class CallActivity extends ThreemaActivity implements
         }
 
         // Acquire a Threema server connection
-        this.lifetimeService.acquireUnpauseableConnection(LIFETIME_SERVICE_TAG);
+        dependencies.getLifetimeService().acquireUnpauseableConnection(LIFETIME_SERVICE_TAG);
 
         // Register broadcast receiver
         IntentFilter filter = new IntentFilter();
@@ -822,7 +786,7 @@ public class CallActivity extends ThreemaActivity implements
         VoipListenerManager.audioManagerListener.add(this.audioManagerListener);
 
         // Restore PIP position from preferences
-        pipPosition = preferenceService.getPipPosition();
+        pipPosition = dependencies.getPreferenceService().getPipPosition();
         if (pipPosition == 0x00) {
             pipPosition = PIP_BOTTOM | PIP_LEFT;
         }
@@ -842,10 +806,9 @@ public class CallActivity extends ThreemaActivity implements
         });
 
         // Check reject preferences and fix them if necessary
-        if (this.preferenceService.isRejectMobileCalls()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M
-                && this.checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-                this.preferenceService.setRejectMobileCalls(false);
+        if (dependencies.getPreferenceService().isRejectMobileCalls()) {
+            if (checkSelfPermission(Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+                dependencies.getPreferenceService().setRejectMobileCalls(false);
             }
         }
 
@@ -864,7 +827,7 @@ public class CallActivity extends ThreemaActivity implements
             return false;
         }
 
-        final CallStateSnapshot callState = voipStateService.getCallState();
+        final CallStateSnapshot callState = dependencies.getVoipStateService().getCallState();
 
         // restore a previously saved activity state in case the activity was killed by the system
         // note: the activity mode should override conflicting settings of a re-delivered intent (which reflects the state when the activity was first set up)
@@ -873,7 +836,7 @@ public class CallActivity extends ThreemaActivity implements
             // the activity was killed and restarted by the system - restore previous configuration
             this.activityMode = savedInstanceState.getByte(BUNDLE_ACTIVITY_MODE, this.activityMode);
             this.isSwappedFeeds = savedInstanceState.getBoolean(BUNDLE_SWAPPED_FEEDS, false);
-            this.voipStateService.setVideoRenderMode(savedInstanceState.getInt(BUNDLE_VIDEO_RENDER_MODE, VIDEO_RENDER_FLAG_NONE));
+            dependencies.getVoipStateService().setVideoRenderMode(savedInstanceState.getInt(BUNDLE_VIDEO_RENDER_MODE, VIDEO_RENDER_FLAG_NONE));
         }
 
         // Determine activity mode
@@ -898,11 +861,11 @@ public class CallActivity extends ThreemaActivity implements
         }
 
         logger.info("Restored activity mode: {}", activityMode);
-        logger.info("Restored call state: " + voipStateService.getCallState());
-        logger.info("Restored Video flags: {}", Utils.byteToHex((byte) voipStateService.getVideoRenderMode(), true, true));
+        logger.info("Restored call state: " + dependencies.getVoipStateService().getCallState());
+        logger.info("Restored Video flags: {}", Utils.byteToHex((byte) dependencies.getVoipStateService().getVideoRenderMode(), true, true));
 
         // Fetch contact
-        this.contact = contactService.getByIdentity(contactIdentity);
+        this.contact = dependencies.getContactService().getByIdentity(contactIdentity);
         if (this.contact == null) {
             logger.info("Contact is null");
             return false;
@@ -931,7 +894,7 @@ public class CallActivity extends ThreemaActivity implements
 
         outState.putByte(BUNDLE_ACTIVITY_MODE, activityMode);
         outState.putBoolean(BUNDLE_SWAPPED_FEEDS, isSwappedFeeds);
-        outState.putInt(BUNDLE_VIDEO_RENDER_MODE, voipStateService.getVideoRenderMode());
+        outState.putInt(BUNDLE_VIDEO_RENDER_MODE, dependencies.getVoipStateService().getVideoRenderMode());
 
         super.onSaveInstanceState(outState);
     }
@@ -950,7 +913,8 @@ public class CallActivity extends ThreemaActivity implements
             }
         }
 
-        if (this.voipStateService != null) {
+        if (dependencies.isAvailable()) {
+            var voipStateService = dependencies.getVoipStateService();
             // stop capturing
             if ((voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING) {
                 // disable outgoing video
@@ -961,23 +925,23 @@ public class CallActivity extends ThreemaActivity implements
             }
 
             // Unset video target
-            if (this.voipStateService.getVideoContext() != null) {
-                this.voipStateService.getVideoContext().setLocalVideoSinkTarget(null);
-                this.voipStateService.getVideoContext().setRemoteVideoSinkTarget(null);
+            if (voipStateService.getVideoContext() != null) {
+                voipStateService.getVideoContext().setLocalVideoSinkTarget(null);
+                voipStateService.getVideoContext().setRemoteVideoSinkTarget(null);
             }
         }
 
         // Release connection
-        if (this.lifetimeService != null) {
-            this.lifetimeService.releaseConnection(LIFETIME_SERVICE_TAG);
+        if (dependencies.isAvailable()) {
+            dependencies.getLifetimeService().releaseConnection(LIFETIME_SERVICE_TAG);
         }
 
         // Unregister receivers
         LocalBroadcastManager.getInstance(this).unregisterReceiver(this.localBroadcastReceiver);
 
         // Unregister sensor listeners
-        if (sensorService != null) {
-            sensorService.unregisterSensors(SENSOR_TAG_CALL);
+        if (dependencies.isAvailable()) {
+            dependencies.getSensorService().unregisterSensors(SENSOR_TAG_CALL);
             sensorEnabled = false;
         }
 
@@ -992,8 +956,8 @@ public class CallActivity extends ThreemaActivity implements
             this.videoViews = null;
         }
 
-        if (this.preferenceService != null) {
-            this.preferenceService.setPipPosition(pipPosition);
+        if (dependencies.isAvailable()) {
+            dependencies.getPreferenceService().setPipPosition(pipPosition);
         }
 
         // remove lockscreen keepalive
@@ -1060,7 +1024,7 @@ public class CallActivity extends ThreemaActivity implements
      * Will launch video rendering if necessary and video is enabled
      */
     private void updateVideoViews() {
-        int videoMode = voipStateService.getVideoRenderMode();
+        int videoMode = dependencies.getVoipStateService().getVideoRenderMode();
 
         if (videoMode != VIDEO_RENDER_FLAG_NONE) {
             setupVideoRendering();
@@ -1083,10 +1047,12 @@ public class CallActivity extends ThreemaActivity implements
                     this.commonViews.backgroundView.setVisibility(View.INVISIBLE);
                 }
 
-                this.videoViews.switchCamButton.setVisibility(outgoingVideo &&
-                    (voipStateService.getVideoContext() != null && voipStateService.getVideoContext().hasMultipleCameras()) ?
-                    View.VISIBLE :
-                    View.GONE);
+                this.videoViews.switchCamButton.setVisibility(
+                    outgoingVideo &&
+                    (dependencies.getVoipStateService().getVideoContext() != null && dependencies.getVoipStateService().getVideoContext().hasMultipleCameras())
+                        ? View.VISIBLE
+                        : View.GONE
+                );
                 this.videoViews.pipButton.setVisibility(ConfigUtils.supportsPictureInPicture(this) ? View.VISIBLE : View.GONE);
 
                 if (incomingVideo && !outgoingVideo) {
@@ -1115,7 +1081,7 @@ public class CallActivity extends ThreemaActivity implements
      * Set correct video orientation depending on current video configuration and active camera
      */
     private void updateVideoViewsMirror() {
-        VideoContext videoContext = this.voipStateService.getVideoContext();
+        VideoContext videoContext = dependencies.getVoipStateService().getVideoContext();
         if (videoContext != null) {
             @VideoContext.CameraOrientation int orientation = videoContext.getCameraOrientation();
             if (this.videoViews != null) {
@@ -1174,7 +1140,7 @@ public class CallActivity extends ThreemaActivity implements
                 @Override
                 protected Bitmap doInBackground(Void... voids) {
                     return BitmapUtil.blurBitmap(
-                        contactService.getAvatar(contact, true),
+                        dependencies.getContactService().getAvatar(contact.getIdentity(), true),
                         CallActivity.this
                     );
                 }
@@ -1228,8 +1194,8 @@ public class CallActivity extends ThreemaActivity implements
             return;
         }
 
-        final long callId = this.voipStateService.getCallState().getCallId();
-        final Boolean isInitiator = this.voipStateService.isInitiator();
+        final long callId = dependencies.getVoipStateService().getCallState().getCallId();
+        final Boolean isInitiator = dependencies.getVoipStateService().isInitiator();
 
         // Start service if it is an incoming call
         if (intent.getBooleanExtra(EXTRA_ACCEPT_INCOMING_CALL, false)) {
@@ -1244,7 +1210,7 @@ public class CallActivity extends ThreemaActivity implements
         // Check feature mask and enable video button if peer supports and requests video calls
         setEnabled(this.commonViews.toggleOutgoingVideoButton, false);
         if (ConfigUtils.isVideoCallsEnabled()) {
-            final VoipCallOfferData offerData = this.voipStateService.getCallOffer(callId);
+            final VoipCallOfferData offerData = dependencies.getVoipStateService().getCallOffer(callId);
             if (offerData != null && isInitiator == Boolean.FALSE) {
                 // Incoming call. In this case we don't need to check the feature level, only the
                 // call feature list in the offer.
@@ -1256,16 +1222,11 @@ public class CallActivity extends ThreemaActivity implements
                     setEnabled(this.commonViews.toggleOutgoingVideoButton, true);
                 } else {
                     try {
-                        if (contactModelRepository == null || userService == null) {
-                            logger.warn("Could not refresh feature mask due to unavailable services");
-                            return;
-                        }
-
                         CompletableFuture
                             .runAsync(new UpdateFeatureLevelRoutine(
-                                contactModelRepository,
-                                userService,
-                                apiConnector,
+                                dependencies.getContactModelRepository(),
+                                dependencies.getUserService(),
+                                dependencies.getApiConnector(),
                                 Collections.singletonList(contact.getIdentity())
                             ))
                             .thenRun(() -> RuntimeUtil.runOnUiThread(() -> {
@@ -1394,7 +1355,7 @@ public class CallActivity extends ThreemaActivity implements
                     return;
                 }
 
-                if ((voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING) {
+                if ((dependencies.getVoipStateService().getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING) {
                     // disable outgoing video
                     VoipUtil.sendVoipBroadcast(getApplicationContext(), VoipCallService.ACTION_STOP_CAPTURING);
                 } else {
@@ -1471,7 +1432,7 @@ public class CallActivity extends ThreemaActivity implements
             case MODE_ACTIVE_CALL:
                 logger.info("Activity mode: Active call");
                 this.commonViews.toggleOutgoingVideoButton.setVisibility(ConfigUtils.isVideoCallsEnabled() ? View.VISIBLE : View.GONE);
-                if (this.voipStateService.getCallState().isCalling()) {
+                if (dependencies.getVoipStateService().getCallState().isCalling()) {
                     // Call is already connected
                     this.commonViews.callDuration.setVisibility(View.VISIBLE);
                     this.commonViews.callStatus.setVisibility(View.GONE);
@@ -1481,7 +1442,7 @@ public class CallActivity extends ThreemaActivity implements
                     // Call is not yet connected
                     this.commonViews.callDuration.setVisibility(View.GONE);
                     this.commonViews.callStatus.setVisibility(View.VISIBLE);
-                    if (this.voipStateService.isPeerRinging()) {
+                    if (dependencies.getVoipStateService().isPeerRinging()) {
                         this.commonViews.callStatus.setText(getString(R.string.voip_status_ringing));
                     } else {
                         // If it is not ringing, show initialization text. The connecting state is
@@ -1514,7 +1475,7 @@ public class CallActivity extends ThreemaActivity implements
                 ContextCompat.startForegroundService(this, serviceIntent);
 
                 if (ConfigUtils.isVideoCallsEnabled()) {
-                    if (preferenceService.getVideoCallToggleTooltipCount() < 1) {
+                    if (dependencies.getPreferenceService().getVideoCallToggleTooltipCount() < 1) {
                         final @ColorInt int textColor = ConfigUtils.getColorFromAttribute(this, R.attr.colorOnPrimary);
 
                         try {
@@ -1545,7 +1506,7 @@ public class CallActivity extends ThreemaActivity implements
                         } catch (Exception ignore) {
                             // catch null typeface exception on CROSSCALL Action-X3
                         }
-                        preferenceService.incremenetVideoCallToggleTooltipCount();
+                        dependencies.getPreferenceService().incrementVideoCallToggleTooltipCount();
                     }
                 }
                 break;
@@ -1559,7 +1520,7 @@ public class CallActivity extends ThreemaActivity implements
         }
 
         // update UI depending on video configuration
-        updateVideoButton((voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING);
+        updateVideoButton((dependencies.getVoipStateService().getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING);
     }
 
     /**
@@ -1581,7 +1542,7 @@ public class CallActivity extends ThreemaActivity implements
 
         // Initialize video views as soon as video context was created.
         // If the video context already exists, this will execute immediately.
-        this.voipStateService.getVideoContextFuture().thenAccept(videoContext -> {
+        dependencies.getVoipStateService().getVideoContextFuture().thenAccept(videoContext -> {
             // Initialize renderers
             logger.info("Initializing video renderers");
             this.videoViews.fullscreenVideoRenderer.init(videoContext.getEglBaseContext(), new RendererCommon.RendererEvents() {
@@ -1803,7 +1764,7 @@ public class CallActivity extends ThreemaActivity implements
      */
     @UiThread
     private void rejectOrCancelCall(byte reason) {
-        final long callId = this.voipStateService.getCallState().getCallId();
+        final long callId = dependencies.getVoipStateService().getCallState().getCallId();
         logger.info("{}: rejectOrCancelCall", callId);
         if (this.activityMode == MODE_INCOMING_CALL && contact != null) {
             final Intent rejectIntent = new Intent(this, CallRejectService.class);
@@ -1848,11 +1809,6 @@ public class CallActivity extends ThreemaActivity implements
 
             view.setPadding(insets.left, insets.top, insets.right, 0);
 
-            // Uncomment the following line for running screenshot tests. The notch of the
-            // device frame is 97 pixels high and therefore we need to add this padding to
-            // the top.
-            // view.setPadding(0, 97, 0, 0);
-
             return windowInsets;
         });
     }
@@ -1867,11 +1823,11 @@ public class CallActivity extends ThreemaActivity implements
 
         getWindow().getDecorView().setSystemUiVisibility(getSystemUiVisibility(getWindow()));
 
-        if (sensorEnabled && sensorService != null) {
+        if (sensorEnabled) {
             if (hasFocus) {
-                sensorService.registerSensors(SENSOR_TAG_CALL, this, false);
+                dependencies.getSensorService().registerSensors(SENSOR_TAG_CALL, this, false);
             } else {
-                sensorService.unregisterSensors(SENSOR_TAG_CALL);
+                dependencies.getSensorService().unregisterSensors(SENSOR_TAG_CALL);
             }
         }
     }
@@ -2015,7 +1971,7 @@ public class CallActivity extends ThreemaActivity implements
      * Only call this method in video mode!
      */
     private void setVideoSinkTargets(@NonNull VideoContext videoContext) {
-        logger.debug("Setting video sink targets with video mode " + voipStateService.getVideoRenderMode());
+        logger.debug("Setting video sink targets with video mode " + dependencies.getVoipStateService().getVideoRenderMode());
         if (this.videoViews != null) {
             videoContext.setLocalVideoSinkTarget(this.isSwappedFeeds ? this.videoViews.fullscreenVideoRenderer : this.videoViews.pipVideoRenderer);
             videoContext.setRemoteVideoSinkTarget(this.isSwappedFeeds ? this.videoViews.pipVideoRenderer : this.videoViews.fullscreenVideoRenderer);
@@ -2034,7 +1990,7 @@ public class CallActivity extends ThreemaActivity implements
     private void setSwappedFeeds(boolean isSwappedFeeds) {
         logger.debug("setSwappedFeeds: " + isSwappedFeeds);
         this.isSwappedFeeds = isSwappedFeeds;
-        final VideoContext videoContext = this.voipStateService.getVideoContext();
+        final VideoContext videoContext = dependencies.getVoipStateService().getVideoContext();
         if (videoContext != null && this.videoViews != null) {
             this.setVideoSinkTargets(videoContext);
             updateVideoViewsMirror();
@@ -2075,7 +2031,7 @@ public class CallActivity extends ThreemaActivity implements
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private PictureInPictureParams createPictureInPictureParams() {
-        final VideoContext videoContext = this.voipStateService.getVideoContext();
+        final VideoContext videoContext = dependencies.getVoipStateService().getVideoContext();
         final CommonViews common = this.commonViews;
 
         if (videoContext == null || common == null) {
@@ -2107,7 +2063,7 @@ public class CallActivity extends ThreemaActivity implements
     }
 
     private void enterPictureInPictureMode(boolean launchedByUser) {
-        if (voipStateService == null || voipStateService.getVideoRenderMode() == VIDEO_RENDER_FLAG_NONE || this.videoViews == null) {
+        if (dependencies.getVoipStateService().getVideoRenderMode() == VIDEO_RENDER_FLAG_NONE || this.videoViews == null) {
             return;
         }
 
@@ -2125,7 +2081,7 @@ public class CallActivity extends ThreemaActivity implements
 
         hideNavigation(false);
 
-        if (this.commonViews != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (this.commonViews != null) {
             try {
                 enterPictureInPictureMode();
             } catch (IllegalArgumentException e) {

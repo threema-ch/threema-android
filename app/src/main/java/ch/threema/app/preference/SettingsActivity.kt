@@ -30,11 +30,14 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import ch.threema.app.R
 import ch.threema.app.activities.ThreemaToolbarActivity
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.services.LockAppService
 import ch.threema.app.startup.finishAndRestartLaterIfNotReady
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ConfigUtils.isTabletLayout
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
+import org.koin.android.ext.android.inject
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsActivity")
 
@@ -42,6 +45,9 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
     init {
         logScreenVisibility(logger)
     }
+
+    private val lockAppService: LockAppService by inject()
+    private val preferenceService: PreferenceService by inject()
 
     private val settingsSummaryFragment = SettingsSummaryFragment()
 

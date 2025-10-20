@@ -25,6 +25,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
@@ -38,9 +39,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.ShowOnceDialog;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
@@ -57,7 +58,9 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
     private static final String DIALOG_TAG_NO_MEMBERS = "NoMem";
     private static final String DIALOG_TAG_NOTE_GROUP_HOWTO = "note_group_hint";
 
-    private GroupService groupService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     private GroupModel groupModel;
     private boolean appendMembers;
 
@@ -65,6 +68,9 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (!dependencies.isAvailable()) {
+            finish();
+        }
     }
 
     @Override
@@ -75,13 +81,6 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
 
         if (AppRestrictionUtil.isCreateGroupDisabled(this)) {
             Toast.makeText(this, R.string.disabled_by_policy_short, Toast.LENGTH_LONG).show();
-            return false;
-        }
-
-        try {
-            this.groupService = serviceManager.getGroupService();
-        } catch (Exception e) {
-            LogUtil.exception(e, this);
             return false;
         }
 
@@ -106,10 +105,10 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
         this.appendMembers = false;
         this.excludedIdentities = new ArrayList<>();
         try {
-            int groupId = IntentDataUtil.getGroupId(this.getIntent());
-            if (this.groupService != null && groupId > 0) {
-                this.groupModel = this.groupService.getById(groupId);
-                this.appendMembers = (this.groupModel != null && this.groupService.isGroupCreator(this.groupModel));
+            long groupId = IntentDataUtil.getGroupId(this.getIntent());
+            if (groupId > 0) {
+                this.groupModel = dependencies.getGroupService().getById(groupId);
+                this.appendMembers = (this.groupModel != null && dependencies.getGroupService().isGroupCreator(this.groupModel));
                 String[] excluded = IntentDataUtil.getContactIdentities(this.getIntent());
                 if (excluded != null && excluded.length > 0) {
                     this.excludedIdentities = new ArrayList<>(Arrays.asList(excluded));

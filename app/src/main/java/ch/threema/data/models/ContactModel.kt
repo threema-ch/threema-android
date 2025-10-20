@@ -21,7 +21,6 @@
 
 package ch.threema.data.models
 
-import android.content.Context
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ListenerManager
@@ -30,12 +29,13 @@ import ch.threema.app.services.ContactService
 import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE_EXCEPT_MENTIONS
 import ch.threema.app.tasks.ReflectContactSyncUpdateImmediateTask
 import ch.threema.app.tasks.ReflectContactSyncUpdateTask
-import ch.threema.app.utils.ColorUtil
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.runtimeAssert
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.UnsignedHelper
+import ch.threema.common.toDate
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.repositories.RepositoryToken
@@ -51,12 +51,10 @@ import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import com.neilalexander.jnacl.NaCl
 import java.math.BigInteger
-import java.nio.charset.StandardCharsets
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
+import java.time.Instant
 import java.util.Date
 import kotlinx.coroutines.flow.MutableStateFlow
 
@@ -69,7 +67,7 @@ private val logger = LoggingUtil.getThreemaLogger("data.ContactModel")
  */
 data class ContactModelData(
     /** The contact identity string. Must be 8 characters long. */
-    @JvmField val identity: String,
+    @JvmField val identity: Identity,
     /** The 32-byte public key of the contact. */
     @JvmField val publicKey: ByteArray,
     /** Timestamp when this contact was added to the contact list. */
@@ -80,8 +78,8 @@ data class ContactModelData(
     @JvmField val lastName: String,
     /** Public nickname. */
     @JvmField val nickname: String?,
-    /** Color index (0-255). */
-    val colorIndex: UByte = getIdColorIndex(identity),
+    /** Id color. */
+    val idColor: IdColor = IdColor.ofIdentity(identity),
     /** Verification level. */
     @JvmField val verificationLevel: VerificationLevel,
     /** Threema Work verification level. */
@@ -138,18 +136,18 @@ data class ContactModelData(
         /**
          * Factory function using only Java-compatible types.
          *
-         * @throws IllegalArgumentException when the color index is negative or greater than 255, the feature mask is negative or more than 64 bits,
-         * or the public key is not [NaCl.PUBLICKEYBYTES] long.
+         * @throws IllegalArgumentException the feature mask is negative or more than 64 bits,
+         * or the public key is not [NaCl.PUBLIC_KEY_BYTES] long.
          */
         @JvmStatic
         fun javaCreate(
-            identity: String,
+            identity: Identity,
             publicKey: ByteArray,
             createdAt: Date,
             firstName: String,
             lastName: String,
             nickname: String?,
-            colorIndex: Int,
+            idColor: IdColor,
             verificationLevel: VerificationLevel,
             workVerificationLevel: WorkVerificationLevel,
             identityType: IdentityType,
@@ -168,9 +166,8 @@ data class ContactModelData(
             department: String?,
             notificationTriggerPolicyOverride: Long?,
         ): ContactModelData {
-            require(colorIndex in 0..255) { "colorIndex must be between 0 and 255" }
             require(featureMask.signum() >= 0 && featureMask.bitLength() <= 64) { "featureMask must be between 0 and 2^64" }
-            require(publicKey.size == NaCl.PUBLICKEYBYTES) { "public key must be ${NaCl.PUBLICKEYBYTES} long" }
+            require(publicKey.size == NaCl.PUBLIC_KEY_BYTES) { "public key must be ${NaCl.PUBLIC_KEY_BYTES} long" }
             return ContactModelData(
                 identity = identity,
                 publicKey = publicKey,
@@ -178,7 +175,7 @@ data class ContactModelData(
                 firstName = firstName,
                 lastName = lastName,
                 nickname = nickname,
-                colorIndex = colorIndex.toUByte(),
+                idColor = idColor,
                 verificationLevel = verificationLevel,
                 workVerificationLevel = workVerificationLevel,
                 identityType = identityType,
@@ -198,39 +195,7 @@ data class ContactModelData(
                 notificationTriggerPolicyOverride = notificationTriggerPolicyOverride,
             )
         }
-
-        /**
-         * Compute the id color index based on the identity.
-         */
-        fun getIdColorIndex(identity: String): UByte = try {
-            val firstByte = MessageDigest.getInstance("SHA-256")
-                .digest(identity.toByteArray(StandardCharsets.UTF_8)).first()
-            ColorUtil.getInstance().getIDColorIndex(firstByte).toUByte()
-        } catch (e: NoSuchAlgorithmException) {
-            throw IllegalStateException("Could not find hashing algorithm for id color", e)
-        }
-
-        /**
-         * Compute the id color index based on the identity.
-         */
-        @JvmStatic
-        fun getIdColorIndexInt(identity: String): Int = getIdColorIndex(identity).toInt()
     }
-
-    /**
-     * Return the [colorIndex] as [Int].
-     */
-    fun colorIndexInt(): Int = colorIndex.toInt()
-
-    fun getThemedColor(context: Context): Int = if (ConfigUtils.isTheDarkSide(context)) {
-        getColorDark()
-    } else {
-        getColorLight()
-    }
-
-    private fun getColorDark(): Int = ColorUtil.getInstance().getIDColorDark(colorIndex.toInt())
-
-    private fun getColorLight(): Int = ColorUtil.getInstance().getIDColorLight(colorIndex.toInt())
 
     /**
      * Return the [featureMask] as [BigInteger].
@@ -287,7 +252,9 @@ data class ContactModelData(
      * Check if the avatar is expired. If no [localAvatarExpires] is set, the avatar is also
      * considered as expired.
      */
-    fun isAvatarExpired(): Boolean = localAvatarExpires?.before(Date()) ?: true
+    @JvmOverloads
+    fun isAvatarExpired(now: Instant = Instant.now()): Boolean =
+        localAvatarExpires?.before(now.toDate()) ?: true
 
     /**
      * Check if the contact is a gateway contact.
@@ -320,7 +287,7 @@ data class ContactModelData(
         if (firstName != other.firstName) return false
         if (lastName != other.lastName) return false
         if (nickname != other.nickname) return false
-        if (colorIndex != other.colorIndex) return false
+        if (idColor != other.idColor) return false
         if (verificationLevel != other.verificationLevel) return false
         if (workVerificationLevel != other.workVerificationLevel) return false
         if (identityType != other.identityType) return false
@@ -354,7 +321,7 @@ data class ContactModelData(
         result = 31 * result + firstName.hashCode()
         result = 31 * result + lastName.hashCode()
         result = 31 * result + (nickname?.hashCode() ?: 0)
-        result = 31 * result + colorIndex.hashCode()
+        result = 31 * result + idColor.hashCode()
         result = 31 * result + verificationLevel.hashCode()
         result = 31 * result + workVerificationLevel.hashCode()
         result = 31 * result + identityType.hashCode()
@@ -377,7 +344,7 @@ data class ContactModelData(
  * A contact.
  */
 class ContactModel(
-    val identity: String,
+    val identity: Identity,
     data: ContactModelData,
     private val databaseBackend: DatabaseBackend,
     private val contactModelRepository: ContactModelRepository,
@@ -571,7 +538,7 @@ class ContactModel(
     ) {
         // Warn the user in case there is no forward security support anymore (indicated by a
         // feature mask change).
-        data.value?.let {
+        data?.let {
             val previousFSSupport = ThreemaFeature.canForwardSecurity(it.featureMaskLong())
             val newFSSupport = ThreemaFeature.canForwardSecurity(featureMask)
             if (previousFSSupport && !newFSSupport) {
@@ -929,7 +896,11 @@ class ContactModel(
      *
      * @throws [ModelDeletedException] if model is deleted.
      */
-    fun setLocalAvatarExpires(expiresAt: Date?) {
+    fun setLocalAvatarExpires(expiresAt: Instant?) {
+        setLocalAvatarExpires(expiresAt?.toDate())
+    }
+
+    private fun setLocalAvatarExpires(expiresAt: Date?) {
         this.updateFields(
             methodName = "setLocalAvatarExpires",
             detectChanges = { originalData -> originalData.localAvatarExpires != expiresAt },
@@ -1133,7 +1104,7 @@ class ContactModel(
     /**
      * Synchronously notify contact change listeners.
      */
-    private fun notifyDeprecatedOnRemovedListeners(identity: String) {
+    private fun notifyDeprecatedOnRemovedListeners(identity: Identity) {
         ListenerManager.contactListeners.handle { it.onRemoved(identity) }
     }
 
@@ -1151,7 +1122,7 @@ internal object ContactModelDataFactory : ModelDataFactory<ContactModelData, DbC
         firstName = value.firstName,
         lastName = value.lastName,
         nickname = value.nickname,
-        colorIndex = value.colorIndex,
+        colorIndex = value.idColor.colorIndex,
         verificationLevel = value.verificationLevel,
         workVerificationLevel = value.workVerificationLevel,
         identityType = value.identityType,
@@ -1178,7 +1149,7 @@ internal object ContactModelDataFactory : ModelDataFactory<ContactModelData, DbC
         firstName = value.firstName,
         lastName = value.lastName,
         nickname = value.nickname,
-        colorIndex = value.colorIndex,
+        idColor = IdColor(value.colorIndex),
         verificationLevel = value.verificationLevel,
         workVerificationLevel = value.workVerificationLevel,
         identityType = value.identityType,

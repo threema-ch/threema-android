@@ -48,10 +48,10 @@ class ReflectGroupSyncDeleteTask(
     override val runPrecondition: () -> Boolean = {
         when (precondition) {
             ReflectGroupSyncDeletePrecondition.USER_IS_NO_MEMBER ->
-                groupModel.data.value?.userState != UserState.MEMBER
+                groupModel.data?.userState != UserState.MEMBER
 
             ReflectGroupSyncDeletePrecondition.USER_IS_MEMBER ->
-                groupModel.data.value?.userState == UserState.MEMBER
+                groupModel.data?.userState == UserState.MEMBER
         }
     }
 

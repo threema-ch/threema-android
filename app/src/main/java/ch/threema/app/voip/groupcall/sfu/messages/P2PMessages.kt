@@ -25,18 +25,23 @@ import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.app.voip.groupcall.sfu.ParticipantId
 import ch.threema.app.voip.groupcall.sfu.SfuException
 import ch.threema.app.voip.groupcall.sfu.webrtc.ParticipantCallMediaKeyState
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.SecureRandomUtil.generateRandomProtobufPadding
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.groupcall.ParticipantToParticipant
 import ch.threema.protobuf.groupcall.ParticipantToSfu
 import com.google.protobuf.ByteString
 import com.google.protobuf.InvalidProtocolBufferException
+import java.util.Date
+
+private val logger = LoggingUtil.getThreemaLogger("P2PMessages")
 
 sealed interface Handshake {
     fun getEnvelopeBytes(): ByteArray
 
     data class Hello(
-        val identity: String,
+        val identity: Identity,
         val nickname: String,
         val pck: ByteArray,
         val pcck: ByteArray,
@@ -168,10 +173,19 @@ sealed class P2PMessageContent {
     sealed class CaptureState : P2PMessageContent() {
         companion object {
             fun fromProtobuf(captureState: ParticipantToParticipant.CaptureState): CaptureState? {
-                return when {
-                    captureState.hasCamera() -> Camera(captureState.camera.hasOn())
-                    captureState.hasMicrophone() -> Microphone(captureState.microphone.hasOn())
-                    else -> null
+                return when (captureState.stateCase) {
+                    ParticipantToParticipant.CaptureState.StateCase.MICROPHONE -> Microphone(captureState.microphone.hasOn())
+                    ParticipantToParticipant.CaptureState.StateCase.CAMERA -> Camera(captureState.camera.hasOn())
+                    ParticipantToParticipant.CaptureState.StateCase.SCREEN -> if (captureState.screen.hasOn()) {
+                        Screen.on(Date(captureState.screen.on.startedAt))
+                    } else {
+                        Screen.off()
+                    }
+                    ParticipantToParticipant.CaptureState.StateCase.STATE_NOT_SET -> null
+                    null -> {
+                        logger.warn("Capture state is not set")
+                        return null
+                    }
                 }
             }
         }
@@ -215,6 +229,35 @@ sealed class P2PMessageContent {
                 return ParticipantToParticipant.CaptureState.newBuilder()
                     .setCamera(builder.build())
                     .build()
+            }
+        }
+
+        /**
+         * Capture state for screensharing. If [startedAt] is provided, this means that screen sharing is active.
+         */
+        data class Screen(val startedAt: Date?) : CaptureState() {
+            override val type = "CaptureState.Screen"
+
+            override val active: Boolean
+                get() = startedAt != null
+
+            override fun toProtobuf(): ParticipantToParticipant.CaptureState {
+                val builder = ParticipantToParticipant.CaptureState.Screen.newBuilder()
+                if (startedAt != null) {
+                    builder.on = ParticipantToParticipant.CaptureState.Screen.On.newBuilder()
+                        .setStartedAt(startedAt.time)
+                        .build()
+                } else {
+                    builder.off = Common.Unit.newBuilder().build()
+                }
+                return ParticipantToParticipant.CaptureState.newBuilder()
+                    .setScreen(builder.build())
+                    .build()
+            }
+
+            companion object {
+                fun on(startedAt: Date) = Screen(startedAt)
+                fun off() = Screen(null)
             }
         }
     }

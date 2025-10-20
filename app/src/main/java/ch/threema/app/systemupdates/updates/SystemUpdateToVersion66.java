@@ -33,7 +33,7 @@ import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
 public class SystemUpdateToVersion66 implements SystemUpdate {
     public static final int VERSION = 66;

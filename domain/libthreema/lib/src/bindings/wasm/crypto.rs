@@ -1,12 +1,13 @@
 //! High-level crypto bindings.
+use duplicate::duplicate_item;
 use js_sys::Error;
 use serde::{Deserialize, Serialize};
-use tsify_next::Tsify;
+use tsify::Tsify;
 use wasm_bindgen::prelude::*;
 
 use crate::{
     common::Nonce,
-    crypto::{argon2, blake2b, chacha20, salsa20, sha2, x25519},
+    crypto::{argon2, blake2b, chacha20, chunked, salsa20, sha2, x25519},
 };
 
 /// Compute the SHA-256 hash of the provided data.
@@ -32,29 +33,69 @@ pub fn hmac_sha256(key: &[u8], data: &[u8]) -> Vec<u8> {
         .to_vec()
 }
 
-/// Derive a Blake2b MAC from the provided key, personal and salt.
+/// Derive a Blake2b MAC of length 256 bits (32 bytes) of the data from the provided key, personal and salt.
 ///
 /// # Errors
 ///
-/// Returns an error if `key` is present and less than 1 or more than 64
-/// bytes and when `personal` or `salt` is more than 8 bytes.
+/// Returns an error if `key` is present and less than 1 or more than 128
+/// bytes and when `personal` or `salt` is more than 32 bytes.
 #[allow(
     clippy::needless_pass_by_value,
-    reason = "`&Option<T>` is not supported by wasm-bindgen"
+    reason = "Bindings don't allow to use Option<&Vec<u8>>"
 )]
 #[wasm_bindgen(js_name = blake2bMac256)]
-pub fn blake2b_mac_256(key: Option<Vec<u8>>, personal: &[u8], salt: &[u8]) -> Result<Vec<u8>, Error> {
-    use crate::crypto::digest::FixedOutput as _;
+pub fn blake2b_mac_256(
+    key: Option<Vec<u8>>,
+    personal: &[u8],
+    salt: &[u8],
+    data: &[u8],
+) -> Result<Vec<u8>, Error> {
+    use crate::crypto::digest::{FixedOutput as _, Mac as _};
 
-    let mac = blake2b::Blake2bMac256::new_with_salt_and_personal(key.as_deref(), salt, personal)
-        .map_err(|_| {
-            Error::new(
-                "'key' if provided must be between 1 and 64 bytes, 'personal' and 'salt' must be up to 8 \
-                 bytes",
-            )
-        })?
-        .finalize_fixed();
-    Ok(mac.to_vec())
+    Ok(
+        blake2b::Blake2bMac256::new_with_salt_and_personal(key.as_deref(), salt, personal)
+            .map_err(|_| {
+                Error::new(
+                    "'key' if provided must be between 1 and 128 bytes, 'personal' and 'salt' must be up to \
+                     32 bytes",
+                )
+            })?
+            .chain_update(data)
+            .finalize_fixed()
+            .to_vec(),
+    )
+}
+
+/// Derive a Blake2b MAC of length 512 bits (64 bytes) of the data from the provided key, personal and salt.
+///
+/// # Errors
+///
+/// Returns an error if `key` is present and less than 1 or more than 128
+/// bytes and when `personal` or `salt` is more than 32 bytes.
+#[allow(
+    clippy::needless_pass_by_value,
+    reason = "Bindings don't allow to use Option<&Vec<u8>>"
+)]
+#[wasm_bindgen(js_name = blake2bMac512)]
+pub fn blake2b_mac_512(
+    key: Option<Vec<u8>>,
+    personal: &[u8],
+    salt: &[u8],
+    data: &[u8],
+) -> Result<Vec<u8>, Error> {
+    use crate::crypto::digest::{FixedOutput as _, Mac as _};
+    Ok(
+        blake2b::Blake2bMac512::new_with_salt_and_personal(key.as_deref(), salt, personal)
+            .map_err(|_| {
+                Error::new(
+                    "'key' if provided must be between 1 and 128 bytes, 'personal' and 'salt' must be up to \
+                     32 bytes",
+                )
+            })?
+            .chain_update(data)
+            .finalize_fixed()
+            .to_vec(),
+    )
 }
 
 /// Parameters for [`argon2id`]
@@ -98,7 +139,7 @@ impl TryFrom<Argon2idParameters> for argon2::Params {
 /// [`Argon2idParameters`] for the requirements).
 #[allow(
     clippy::needless_pass_by_value,
-    reason = "&Argon2idParameters is not supported by wasm-bindgen"
+    reason = "Bindings don't allow to use &Argon2idParameters"
 )]
 #[wasm_bindgen(js_name = argon2id)]
 pub fn argon2id(password: &[u8], salt: &[u8], parameters: Argon2idParameters) -> Result<Vec<u8>, Error> {
@@ -111,7 +152,7 @@ pub fn argon2id(password: &[u8], salt: &[u8], parameters: Argon2idParameters) ->
     Ok(output)
 }
 
-/// Parameters for [`scrypt`]
+/// Parameters for [`scrypt()`]
 #[derive(Clone, Tsify, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[tsify(from_wasm_abi, into_wasm_abi)]
@@ -120,7 +161,7 @@ pub struct ScryptParameters {
     /// memory cost will be `2 ^ log_memory_cost` in KiB. For example, `log_memory_cost = 17` would
     /// be 128 MiB.
     pub log_memory_cost: u8,
-    /// Block size in KiB (aka `r`). Between 1 and (2^32)-1.
+    /// Block size as multiplicator of 128 bytes (aka `r`). Between 1 and (2^32)-1.
     pub block_size: u32,
     /// Degree of parallelism / amount of threads (aka `p`). Between 1 and (2^32)-1.
     pub parallelism: u32,
@@ -149,7 +190,7 @@ impl TryFrom<ScryptParameters> for scrypt::Params {
 /// requirements).
 #[allow(
     clippy::needless_pass_by_value,
-    reason = "&ScryptParameters is not supported by wasm-bindgen"
+    reason = "Bindings don't allow to use &ScryptParameters"
 )]
 #[wasm_bindgen()]
 pub fn scrypt(password: &[u8], salt: &[u8], parameters: ScryptParameters) -> Result<Vec<u8>, Error> {
@@ -286,4 +327,123 @@ pub fn xsalsa20_poly1305_decrypt(key: &[u8], nonce: &[u8], mut data: Vec<u8>) ->
         .decrypt_in_place((&nonce).into(), &[], &mut data)
         .map_err(|_| Error::new("Decryption failed"))?;
     Ok(data)
+}
+
+fn ensure_xdance_key_and_nonce<'data>(
+    key: &'data [u8],
+    nonce: &'data [u8],
+) -> Result<(&'data [u8; 32], &'data [u8; Nonce::LENGTH]), Error> {
+    let key: &[u8; 32] = key.try_into().map_err(|_| Error::new("'key' must be 32 bytes"))?;
+    let nonce: &[u8; Nonce::LENGTH] = nonce
+        .try_into()
+        .map_err(|_| Error::new("'nonce' must be 24 bytes"))?;
+    Ok((key, nonce))
+}
+
+/// Binding version of [`chunked::ChunkedXChaCha20Poly1305Encryptor`].
+#[wasm_bindgen]
+pub struct ChunkedXChaCha20Poly1305Encryptor(chunked::ChunkedXChaCha20Poly1305Encryptor);
+
+/// Binding version of [`chunked::ChunkedXChaCha20Poly1305Decryptor`].
+#[wasm_bindgen]
+pub struct ChunkedXChaCha20Poly1305Decryptor(chunked::ChunkedXChaCha20Poly1305Decryptor);
+
+#[duplicate_item(
+    cipher_name;
+    [ ChunkedXChaCha20Poly1305Encryptor ];
+    [ ChunkedXChaCha20Poly1305Decryptor ];
+)]
+impl cipher_name {
+    /// Binding version of [`chunked::ChunkedXChaCha20Poly1305Encryptor::new`] /
+    /// [`chunked::ChunkedXChaCha20Poly1305Decryptor::new`].
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if `key` is not exactly 32 bytes or `nonce` is not exactly 24 bytes.
+    pub fn new(key: &[u8], nonce: &[u8], associated_data: &[u8]) -> Result<Self, Error> {
+        let (key, nonce) = ensure_xdance_key_and_nonce(key, nonce)?;
+        Ok(Self(chunked::cipher_name::new(key, nonce, associated_data)))
+    }
+}
+
+/// Binding version of [`chunked::ChunkedXSalsa20Poly1305Encryptor`].
+#[wasm_bindgen]
+pub struct ChunkedXSalsa20Poly1305Encryptor(chunked::ChunkedXSalsa20Poly1305Encryptor);
+
+/// Binding version of [`chunked::ChunkedXSalsa20Poly1305Decryptor`].
+#[wasm_bindgen]
+pub struct ChunkedXSalsa20Poly1305Decryptor(chunked::ChunkedXSalsa20Poly1305Decryptor);
+
+#[duplicate_item(
+    cipher_name;
+    [ ChunkedXSalsa20Poly1305Encryptor ];
+    [ ChunkedXSalsa20Poly1305Decryptor ];
+)]
+impl cipher_name {
+    /// Binding version of [`chunked::ChunkedXSalsa20Poly1305Encryptor::new`] /
+    /// [`chunked::ChunkedXSalsa20Poly1305Decryptor::new`].
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if `key` is not exactly 32 bytes or `nonce` is not exactly 24 bytes.
+    pub fn new(key: &[u8], nonce: &[u8]) -> Result<Self, Error> {
+        let (key, nonce) = ensure_xdance_key_and_nonce(key, nonce)?;
+        Ok(Self(chunked::cipher_name::new(key, nonce)))
+    }
+}
+
+#[duplicate_item(
+    cipher_name;
+    [ ChunkedXChaCha20Poly1305Encryptor ];
+    [ ChunkedXSalsa20Poly1305Encryptor ];
+)]
+#[wasm_bindgen]
+impl cipher_name {
+    /// Binding version of [`chunked::ChunkedXChaCha20Poly1305Encryptor::encrypt`] /
+    /// [`chunked::ChunkedXSalsa20Poly1305Encryptor::encrypt`].
+    #[must_use]
+    #[wasm_bindgen]
+    pub fn encrypt(&mut self, mut chunk: Vec<u8>) -> Vec<u8> {
+        self.0.encrypt(&mut chunk);
+        chunk
+    }
+
+    /// Binding version of [`chunked::ChunkedXChaCha20Poly1305Encryptor::finalize`] /
+    /// [`chunked::ChunkedXSalsa20Poly1305Encryptor::finalize`].
+    #[must_use]
+    pub fn finalize(self) -> Vec<u8> {
+        self.0.finalize().into()
+    }
+}
+
+#[duplicate_item(
+    cipher_name;
+    [ ChunkedXChaCha20Poly1305Decryptor ];
+    [ ChunkedXSalsa20Poly1305Decryptor ];
+)]
+#[wasm_bindgen]
+impl cipher_name {
+    /// Binding version of [`chunked::ChunkedXChaCha20Poly1305Decryptor::decrypt`] /
+    /// [`chunked::ChunkedXSalsa20Poly1305Decryptor::decrypt`].
+    #[must_use]
+    #[wasm_bindgen]
+    pub fn decrypt(&mut self, mut chunk: Vec<u8>) -> Vec<u8> {
+        self.0.decrypt(&mut chunk);
+        chunk
+    }
+
+    /// Binding version of [`chunked::ChunkedXChaCha20Poly1305Decryptor::finalize_verify`] /
+    /// [`chunked::ChunkedXSalsa20Poly1305Decryptor::finalize_verify`].
+    ///
+    /// # Errors
+    ///
+    /// Returns an error in case the tag does not match.
+    pub fn finalize_verify(self, expected_tag: &[u8]) -> Result<(), Error> {
+        let expected_tag = expected_tag
+            .try_into()
+            .map_err(|_| Error::new("'tag' must be 16 bytes"))?;
+        self.0
+            .finalize_verify(expected_tag)
+            .map_err(|error| Error::new(&error.to_string()))
+    }
 }

@@ -32,7 +32,6 @@ import androidx.preference.PreferenceManager;
 
 import com.google.android.material.textfield.TextInputEditText;
 
-import ch.threema.app.R;
 import ch.threema.app.preference.service.KeyboardDataCollectionPolicySetting;
 
 public class ThreemaEditText extends TextInputEditText {
@@ -81,10 +80,8 @@ public class ThreemaEditText extends TextInputEditText {
     @Override
     public boolean onTextContextMenuItem(int id) {
         if (id == android.R.id.paste) {
-            /* Hack to prevent rich text pasting */
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                id = android.R.id.pasteAsPlainText;
-            }
+            // Hack to prevent rich text pasting
+            id = android.R.id.pasteAsPlainText;
         }
         return super.onTextContextMenuItem(id);
     }

@@ -28,11 +28,12 @@
 
                 <com.google.android.material.search.SearchBar
                     android:id="@+id/toolbar"
+                    style="@style/Threema.SearchBar.Style"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/title_select_contacts"
                     android:outlineProvider="none"
-                    app:navigationIcon="@drawable/ic_arrow_left" />
+                    app:navigationIcon="?attr/homeAsUpIndicator" />
 
                 <include layout="@layout/connection_indicator" />
 

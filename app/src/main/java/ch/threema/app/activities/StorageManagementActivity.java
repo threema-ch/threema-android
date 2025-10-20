@@ -35,6 +35,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
@@ -42,6 +43,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -53,15 +55,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.DeleteIdentityAsyncTask;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.services.ConversationService;
-import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.UserService;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.LongToast;
 import ch.threema.app.restrictions.AppRestrictionUtil;
@@ -90,9 +90,9 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
     private static final String DIALOG_TAG_REALLY_DELETE = "rlydelete";
     private static final String DIALOG_TAG_SET_AUTO_DELETE = "autodelete";
 
-    private FileService fileService;
-    private MessageService messageService;
-    private ConversationService conversationService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     private TextView totalView, usageView, freeView, messageView, inuseView;
     private CircularProgressIndicator progressBar;
     private boolean isCancelled, isMessageDeleteCancelled;
@@ -106,10 +106,6 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (serviceManager == null) {
-            finish();
-            return;
-        }
         logScreenVisibility(this, logger);
         if (finishAndRestartLaterIfNotReady(this)) {
             return;
@@ -121,19 +117,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
             actionBar.setTitle(R.string.storage_management);
         }
 
-        UserService userService;
-        try {
-            this.fileService = serviceManager.getFileService();
-            this.messageService = serviceManager.getMessageService();
-            this.conversationService = serviceManager.getConversationService();
-            userService = serviceManager.getUserService();
-        } catch (Exception e) {
-            logger.error("Exception", e);
-            finish();
-            return;
-        }
-
-        if (!userService.hasIdentity()) {
+        if (!dependencies.getUserService().hasIdentity()) {
             GenericAlertDialog.newInstance(
                 R.string.delete_data,
                 R.string.delete_all_data_prompt,
@@ -227,7 +211,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
             }
         } else {
             selectedKeepMessageSpinnerItem = 0;
-            days = preferenceService.getAutoDeleteDays();
+            days = dependencies.getPreferenceService().getAutoDeleteDays();
             for (int i = keepMessagesValues.length - 1; i > 0; i--) {
                 if (keepMessagesValues[i] <= days) {
                     selectedKeepMessageSpinnerItem = i;
@@ -252,7 +236,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
                         dialog.show(getSupportFragmentManager(), DIALOG_TAG_SET_AUTO_DELETE);
                     } else {
                         selectedKeepMessageSpinnerItem = position;
-                        preferenceService.setAutoDeleteDays(selectedDays);
+                        dependencies.getPreferenceService().setAutoDeleteDays(selectedDays);
                         LongToast.makeText(StorageManagementActivity.this, R.string.autodelete_disabled, Toast.LENGTH_LONG).show();
                         AutoDeleteWorker.Companion.cancelAutoDelete(ThreemaApplication.getAppContext());
                     }
@@ -284,10 +268,11 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 
             @Override
             protected Void doInBackground(Void... params) {
+                var fileService = dependencies.getFileService();
                 total = fileService.getInternalStorageSize();
                 usage = fileService.getInternalStorageUsage();
                 free = fileService.getInternalStorageFree();
-                messages = messageService.getTotalMessageCount();
+                messages = dependencies.getMessageService().getTotalMessageCount();
 
                 return null;
             }
@@ -322,8 +307,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 
     @Override
     public int getLayoutResource() {
-        var serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager == null || !serviceManager.getUserService().hasIdentity()) {
+        if (!dependencies.isAvailable() || !dependencies.getUserService().hasIdentity()) {
             return R.layout.activity_storagemanagement_empty;
         }
         return R.layout.activity_storagemanagement;
@@ -358,7 +342,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 
             @Override
             protected Void doInBackground(Void... params) {
-                final List<ConversationModel> conversations = new CopyOnWriteArrayList<>(conversationService.getAll(true));
+                final List<ConversationModel> conversations = new CopyOnWriteArrayList<>(dependencies.getConversationService().getAll(true));
                 final int numConversations = conversations.size();
                 int i = 0;
 
@@ -371,7 +355,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
                     }
                     publishProgress(i++ * 100 / numConversations);
 
-                    final List<AbstractMessageModel> messageModels = messageService.getMessagesForReceiver(conversationModel.messageReceiver, null);
+                    final List<AbstractMessageModel> messageModels = dependencies.getMessageService().getMessagesForReceiver(conversationModel.messageReceiver, null);
 
                     for (AbstractMessageModel messageModel : messageModels) {
                         if (isMessageDeleteCancelled) {
@@ -385,7 +369,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
                         }
 
                         if (days == 0 || (postedDate != null && AutoDeleteUtil.getDifferenceDays(postedDate, today) > days)) {
-                            messageService.remove(messageModel, true);
+                            dependencies.getMessageService().remove(messageModel, true);
                             delCount++;
                         }
                     }
@@ -401,7 +385,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 
                 updateStorageDisplay();
 
-                conversationService.reset();
+                dependencies.getConversationService().reset();
 
                 ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
                     @Override
@@ -480,7 +464,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 
             @Override
             protected Void doInBackground(Void... params) {
-                final List<ConversationModel> conversations = new ArrayList<>(conversationService.getAll(true));
+                final List<ConversationModel> conversations = new ArrayList<>(dependencies.getConversationService().getAll(true));
                 final int numConversations = conversations.size();
                 int i = 0;
 
@@ -491,7 +475,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
                     }
                     publishProgress(i++ * 100 / numConversations);
 
-                    final List<AbstractMessageModel> messageModels = messageService.getMessagesForReceiver(conversationModel.messageReceiver, messageFilter);
+                    final List<AbstractMessageModel> messageModels = dependencies.getMessageService().getMessagesForReceiver(conversationModel.messageReceiver, messageFilter);
 
                     for (AbstractMessageModel messageModel : messageModels) {
                         if (isCancelled) {
@@ -505,7 +489,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
                         }
 
                         if (days == 0 || (postedDate != null && AutoDeleteUtil.getDifferenceDays(postedDate, today) > days)) {
-                            if (fileService.removeMessageFiles(messageModel, false)) {
+                            if (dependencies.getFileService().removeMessageFiles(messageModel, false)) {
                                 delCount++;
                             }
                         }
@@ -522,7 +506,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 
                 updateStorageDisplay();
 
-                conversationService.reset();
+                dependencies.getConversationService().reset();
 
                 ListenerManager.conversationListeners.handle(new ListenerManager.HandleListener<ConversationListener>() {
                     @Override
@@ -561,7 +545,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
                 int selectedDays = keepMessagesValues[spinnerItemPosition];
                 selectedKeepMessageSpinnerItem = spinnerItemPosition;
                 LongToast.makeText(StorageManagementActivity.this, R.string.autodelete_activated, Toast.LENGTH_LONG).show();
-                preferenceService.setAutoDeleteDays(selectedDays);
+                dependencies.getPreferenceService().setAutoDeleteDays(selectedDays);
                 AutoDeleteWorker.Companion.scheduleAutoDelete(ThreemaApplication.getAppContext());
             }
         } else if (DELETE_ALL_APP_DATA_TAG.equals(tag)) {

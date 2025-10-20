@@ -21,10 +21,11 @@
 
 package ch.threema.storage.factories
 
-import android.content.ContentValues
 import android.database.Cursor
 import android.database.SQLException
+import ch.threema.domain.types.Identity
 import ch.threema.storage.DatabaseService
+import ch.threema.storage.buildContentValues
 import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.IncomingGroupSyncRequestLogModel
 import ch.threema.storage.runQuery
@@ -54,7 +55,7 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseService) 
     @Synchronized
     fun getByGroupIdAndSenderIdentity(
         localDbGroupId: Long,
-        senderIdentity: String,
+        senderIdentity: Identity,
     ): IncomingGroupSyncRequestLogModel {
         readableDatabase.runQuery(
             table = tableName,
@@ -99,9 +100,9 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseService) 
         )
     }
 
-    private fun IncomingGroupSyncRequestLogModel.toContentValues() = ContentValues().also {
-        it.put(IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID, groupId)
-        it.put(IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY, senderIdentity)
-        it.put(IncomingGroupSyncRequestLogModel.COLUMN_LAST_HANDLED_REQUEST, lastHandledRequest)
+    private fun IncomingGroupSyncRequestLogModel.toContentValues() = buildContentValues {
+        put(IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID, groupId)
+        put(IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY, senderIdentity)
+        put(IncomingGroupSyncRequestLogModel.COLUMN_LAST_HANDLED_REQUEST, lastHandledRequest)
     }
 }

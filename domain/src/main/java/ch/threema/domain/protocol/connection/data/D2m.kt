@@ -22,7 +22,7 @@
 package ch.threema.domain.protocol.connection.data
 
 import ch.threema.base.utils.Utils
-import ch.threema.base.utils.toHexString
+import ch.threema.common.toHexString
 import ch.threema.domain.protocol.D2mPayloadType
 import ch.threema.domain.protocol.connection.ServerConnectionException
 import ch.threema.protobuf.d2m.MdD2M

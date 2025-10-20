@@ -59,9 +59,9 @@
     <string name="prefs_sum_notification_sound">Padrão do sistema</string>
     <string name="prefs_vibrate">Vibrar</string>
     <string name="prefs_sum_vibrate">Vibrar com mensagem recebida</string>
-    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_notification_light">Luz de notificação</string>
-    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_notification_light">Use LED colorido (se disponível) para mensagens recebidas</string>
     <string name="prefs_sum_light">Branco</string>
     <string name="prefs_title_wallpaper">Selecionar papel de parede</string>
@@ -101,6 +101,7 @@
     <string name="next">Avançar</string>
     <string name="finish">Encerrar</string>
     <string name="please_wait">Aguarde…</string>
+    <!-- Text shown when a task which shows a loading spinner takes longer than expected (e.g. creating a group) -->
     <string name="please_wait_timeout">Está levando mais tempo do que o esperado</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Criando o seu ID do ${app_name_short}…</string>
@@ -216,7 +217,6 @@
     <string name="code_invalid">O código digitado não é válido.</string>
     <string name="try_again">Tentar novamente</string>
     <string name="decoding_message">Decodificando mensagem</string>
-    <string name="invalid_barcode">Tipo de código de barras inválido</string>
     <string name="expired_barcode">Seu código expirou. Leia o código novamente diretamente do aplicativo de outro usuário.</string>
     <string name="pending">Pendente</string>
     <string name="unlinking_email">Desvinculando e-mail</string>
@@ -294,7 +294,8 @@
     <string name="restore_data_password_msg">Digite a senha que você usou para criar este backup.</string>
     <string name="backup_data_media">Incluir arquivos de mídia grandes (vídeos, documentos, fotos originais)</string>
     <string name="backup_data_new">Criar backup de dados</string>
-    <string name="pinentry_enter_pin">Digite o seu %s PIN para continuar</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinentry_enter_pin">Digite o seu ${app_name} PIN para continuar</string>
     <string name="pinentry_wrong_pin">PIN incorreto</string>
     <string name="prefs_sum_security_pin">Bloquear o acesso à Interface do Usuário do ${app_name_short}</string>
     <string name="prefs_title_pin_switch">Bloquear app</string>
@@ -691,6 +692,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="message_details_message_id_copied">ID da mensagem copiada para a área de transferência</string>
     <string name="contact_details_id_copied">ID copiada à área de transferência</string>
     <string name="contact_details_nickname_copied">Apelido copiado à área de transferência</string>
+    <string name="generic_copied_to_clipboard_hint">Copiado para a área de transferência</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_use_id_as_nickname">Deseja usar sua ID do ${app_name_short} como apelido?</string>
     <string name="new_wizard_phone_email_invalid">O telefone ou o endereço de e-mail digitado não é válido. Por favor, corrija antes de continuar.</string>
@@ -727,7 +729,6 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="wait_one_minute">Por favor, aguarde pelo menos 10 minutos para o SMS chegar antes de fazer uma chamada.</string>
     <string name="backup_id">ID exportada</string>
     <string name="backup_data">Backup de dados</string>
-    <string name="really_leave_group_admin_message">Você é o administrador deste grupo. Se você sair agora, o grupo ficará órfão. Os outros membros ainda poderão conversar, mas não serão mais possíveis alterações no grupo.</string>
     <string name="action_delete_group">Excluir grupo</string>
     <string name="action_leave_and_delete_group">Sair e excluir o grupo</string>
     <string name="action_dissolve_and_delete_group">Dissolver e excluir grupo</string>
@@ -823,7 +824,6 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="battery_optimizations_explain">A otimização da bateria evita que %1$s funcione corretamente quando o seu telefone entra em modo de suspensão. Desative a otimização da bateria para %2$s.</string>
     <string name="battery_optimizations_disable_guide">Selecione \"Todos aplicativos\" no menu suspenso</string>
     <string name="battery_optimizations_disable_guide_ctd">Procure por %s na lista e desative a otimização</string>
-    <string name="battery_optimizations_disable_confirm">Tem certeza de que deseja manter a otimização da bateria ligada para %1$s? %2$s não funcionará corretamente.</string>
     <string name="enter_text_hint">Inserir texto</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_explain_text">Se você trocar ou perder seu aparelho, não poderá restaurar a sua ID do ${app_name_short} ou as suas conversas se não tiver um backup. Salve seus dados usando as opções de backup adequadas.</string>
@@ -1106,6 +1106,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="safe_configure_server_credentials_title">Autenticação (opcional)</string>
     <string name="username_hint">Usuário</string>
     <string name="server_hint">Servidor</string>
+    <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
+    <string name="about_screen_remote_secrets_activated">Ativado</string>
     <string name="lock_option_biometric">Biométrico</string>
     <string name="biometric_enter_authentication">Para desbloquear, faça a autenticação</string>
     <string name="biometric_authentication_failed">A autenticação falhou</string>
@@ -1173,9 +1175,6 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="backup_data_no_permission">Não é possível gravar nesse diretório. Escolha outro.</string>
     <string name="prefs_sum_show_unread_badge">Mostre um emblema indicando o número de mensagens não lidas ao lado do ícone de mensagens</string>
     <string name="prefs_title_show_unread_badge">Emblema de mensagens não lidas</string>
-    <string name="pinning_not_trusted">Fala na Anexação de Certificado. Verifique se o certificado \"Entrust Root Certification Authority - G2\" está instalado e ativado no armazenamento de credenciais do seu dispositivo.</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="pinning_failed">Falha na Anexação de Certidicado. Possível ataque \"man-in-the-middle\". Se você tiver um bloqueador de anúncios ou aplicativo firewall instalado, como \"AdGuard\", desative-o para o ${app_name}.</string>
     <string name="open_myid_popup">Abra a janela pop-up de acesso rápido</string>
     <string name="logo">Logo / Role para cima</string>
     <string name="quote_subj_end">Fim de citação</string>
@@ -1323,60 +1322,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="set_backup_path">Definir caminho de backup</string>
     <string name="set_backup_path_intro">Na próxima tela, selecione a pasta onde os backups de dados devem ser salvos.</string>
     <string name="discard_changes_title">Descartar alterações</string>
-    <string name="group_join_request_message_info"><![CDATA[Escreva uma mensagem curta ao administrador do grupo <b>%1$s</b> por que você quer participar <b>%2$s</b>.]]></string>
-    <string name="group_join_request">Pedido para entrar no grupo</string>
-    <string name="group_join_request_for">Pedido para entrar no grupo %s</string>
-    <string name="group_link_default_name">Link sem nome</string>
-    <string name="group_link_share">Compartilhar link do grupo</string>
-    <string name="group_request_incoming_dialog_title">Pedido de %s</string>
     <string name="accept">Aceitar</string>
-    <string name="reject">Rejeitar</string>
-    <string name="group_request_already_sent"><![CDATA[Você já enviou um pedido de grupo para <b>%s</b> por este link. Clique no pedido para reenviar.]]></string>
-    <string name="group_link_none">Nenhum link gerado ainda</string>
-    <string name="group_request_confirm_send"><![CDATA[Você está prestes a enviar um pedido de grupo para <b>%1$s</b> para o(a) administrador(a) <b>%2$s</b>. Se este link não foi invalidado, você será adicionado automaticamente ao grupo assim que o dispositivo do(a) administrador(a) receber seu pedido.]]></string>
-    <string name="really_delete_group_request_title_singular">Excluir solicitação de grupo</string>
-    <string name="really_delete_group_request_title_plural">Excluir solicitações de grupo</string>
-    <string name="sent_to">Enviado para: %s</string>
-    <string name="sent_on">Enviado em: %s</string>
-    <string name="group_response">Resposta para participar do grupo</string>
-    <string name="group_response_accepted">Seu pedido para entrar no grupo %s foi aceito</string>
-    <string name="group_response_full">Seu pedido para entrar no grupo %s foi rejeitado porque o grupo está cheio</string>
-    <string name="group_response_rejected">Seu pedido para entrar no grupo %s foi rejeitado</string>
-    <string name="group_link_expiration_none">Irrestrito</string>
-    <string name="group_request_hint">Olá! Sou eu…</string>
-    <string name="group_request_send_title">Enviar pedido para entrar no grupo</string>
-    <string name="group_request_message_empty">A mensagem do pedido não pode estar vazia</string>
-    <string name="group_requests_all_title">Todos pedidos para grupos</string>
-    <string name="group_requests_none_outgoing">Nenhum pedido para grupo enviado. Os pedidos podem ser enviados por meio de links de grupo criados pelo administrador do grupo.</string>
-    <string name="notification_channel_group_join_response">Notificação para resposta para entrar em grupo</string>
-    <string name="group_qr_code_title">Código QR do grupo</string>
-    <string name="group_link_qr_desc"><![CDATA[Compartilhe este link do grupo com as pessoas que você deseja que participem do grupo: <b>%s</b>.]]></string>
-    <string name="new_group_link_success">Novo link adicionado</string>
-    <string name="link_administration_off_explain">Este link já foi configurado e compartilhado anteriormente – alterar esta propriedade é impossível agora. Gere um novo link com a propriedade que precisa.</string>
-    <string name="group_link_update_success">Link atualizado com sucesso</string>
-    <string name="no_group_links">Nenhum link do grupo. Para criar um link do grupo, clique no botão adicionar na parte inferior direita ou ative o link padrão na exibição detalhada do grupo.</string>
-    <string name="group_links_overview_title">Links do grupo para %s</string>
-    <string name="group_link_invalid">Expirou</string>
-    <string name="group_link_valid">Válido</string>
-    <string name="open_group_requests_chips_title">Pedidos para grupo abertos</string>
-    <string name="all_open_group_requests">Todos os pedidos para grupo</string>
-    <string name="no_incoming_group_requests">Nenhum novo pedido para grupo. Eles podem ser enviados para você através de links de grupo que você pode administrar na exibição detalhada do grupo se for um administrador.</string>
-    <string name="received_on">Recebido em %s</string>
-    <string name="group_request_state_full">Grupo cheio</string>
-    <string name="group_request_state_rejected">Rejeitado</string>
-    <string name="group_request_state_expired">Expirou</string>
-    <string name="group_request_state_pending">Pendente</string>
-    <string name="group_request_state_accepted">Aceito</string>
-    <string name="open_group_requests_show">Mostrar pedidos para entrar</string>
-    <string name="open_group_requests_hide">Ocultar pedidos para entrar</string>
-    <string name="group_request_link_already_deleted">Link do grupo enquanto excluído</string>
-    <string name="incoming_group_request_no_message">Enviado através do link aberto… nenhuma mensagem</string>
-    <string name="group_request_received_through">Através do link: %s</string>
-    <string name="reaccept">Reaceitar</string>
-    <string name="group_link_edit_expiration_date">Editar data de validade</string>
-    <string name="group_link_show_qr">Mostrar código QR</string>
-    <string name="group_link_rename">Renomear</string>
-    <string name="group_link_rename_tag">Novo nome</string>
     <string name="tap_here_for_more">Toque aqui para mais informações</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="another_connection_instructions"><![CDATA[O servidor detectou duas ou mais conexões de dispositivos diferentes com a mesma ID do ${app_name_short}.<br><br>Não é possível usar a mesma ID do ${app_name_short} em diversos dispositivos simultaneamente. Novas mensagens são transmitidas somente para o dispositivo que fez login pela última vez no servidor.<br><br>Se você está trocando para um novo dispositivo, desinstale ou desative %s no antigo dispositivo e, depois, reinicie o novo.]]></string>
@@ -1394,20 +1340,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="download_failed">Falha no download. Código de erro: %d</string>
     <string name="edit_answer">Editar resposta</string>
     <string name="share_media">Compartilhe com outro aplicativo…</string>
-    <string name="group_link_administered">Administrado</string>
-    <string name="group_link_open">Aberto</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="group_link_share_message">Entre no grupo do ${app_name_short} através do link a seguir: %s</string>
-    <string name="group_link_bottom_sheet_title">Link do grupo</string>
-    <string name="group_link_bottom_sheet_desc">Compartilhe este link com pessoas que você gostaria que entrassem no grupo. Considere as opções abaixo.</string>
-    <string name="group_link_bottom_sheet_link_title">Link</string>
-    <string name="group_link_properties_title">Propriedades do link</string>
-    <string name="group_link_property_administration_title">Confirmação manual</string>
-    <string name="group_link_property_administration_desc">Quando ativado, você receberá solicitações dentro da conversa do grupo, que você poderá aceitar ou recusar</string>
-    <string name="group_link_property_expiration_title">Data de validade</string>
-    <string name="group_link_property_expiration_desc">O link expira depois da data definida.</string>
     <string name="group_image">Imagem em grupo</string>
-    <string name="add_group_link">Adicionar membros através do link de grupo</string>
     <string name="miui_battery_optimization">Desative a \"otimização da bateria\" para %s para realizar essa tarefa. Como a Xiaomi não permite que aplicativos chamem esta tela de configurações diretamente, você terá de fazer isso manualmente nas configurações do seu telefone. Entre em contato com o suporte da Xiaomi se precisar de ajudar para desativar a otimização da bateria.</string>
     <string name="forward_captions">Incluir legendas</string>
     <string name="importing_files_failed">Não foi possível importar o arquivo de backup. Certifique-se de que há espaço disponível suficiente na memória interna.</string>
@@ -1423,31 +1356,14 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="prefs_title_reset_receipts">Limpar configurações individuais</string>
     <string name="prefs_sum_reset_receipts">Restaurar configurações específicas do contato para confirmações de leitura e indicador de digitação para padrão</string>
     <string name="reset_successful">Restauração para padrão bem-sucedida</string>
-    <string name="group_link_add">Adicionar link de grupo</string>
-    <string name="group_requests_show_menu_title">Mostrar pedidos para entrar abertos</string>
-    <string name="group_request_show_all">Mostrar todos pedidos de grupo</string>
-    <string name="group_links_manage_menu">Gerenciar links de grupo</string>
-    <string name="group_request_sent_menu">Pedidos para grupo enviados</string>
-    <string name="really_delete_group_link_title">Excluir link em grupo</string>
-    <string name="really_delete_multiple_group_links_title">Excluir links do grupo</string>
-    <string name="qr_scan_result_dialog_title">Res. da leitura de QR</string>
-    <string name="scan_failure_dialog_title">Falha na leitura</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="no_threema_qr_info">Este não é um código QR específico do ${app_name_short}. O conteúdo decodificado é:</string>
-    <string name="default_group_link">Link de grupo padrão</string>
-    <string name="default_link_name">Link padrão</string>
-    <string name="reset_default_group_link">Restaurar link de grupo padrão</string>
-    <string name="resend">Reenviar</string>
-    <string name="group_request_already_sent_title">Pedido já enviado</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Leia o código QR de um contato para verificar sua identidade. Para exibir o código, peça para o seu contato tocar na foto de perfil no canto superior esquerdo na tela inicial do ${app_name_short}.</string>
     <string name="enable_storage_access_for_media">Habilite o acesso ao armazenamento para ver fotos e vídeos no seu dispositivo</string>
     <string name="select_storage_access_for_media_is_granted">Você concedeu acesso para um número selecionado de fotos e vídeos.</string>
     <string name="take_me_there">Leve-me lá…</string>
     <string name="manage">Gerenciar</string>
-    <string name="notification_channel_group_join_request">Canal de notificação para pedidos recebidos para entrar em grupos</string>
-    <string name="reset_default_group_link_title">Restaurar info de link padrão</string>
-    <string name="reset_default_group_link_desc">O link compartilhado anteriormente será inválido e os pedidos através do link antigo serão rejeitados automaticamente com uma responsa de \"expirou\".</string>
     <string name="custom">outra personalização</string>
     <string name="show_public_key">Mostrar chave pública</string>
     <string name="public_key_for">Chave pública de %s</string>
@@ -1674,7 +1590,6 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="action_dissolve_group">Dissolver grupo</string>
     <string name="really_dissolve_group">Se você simplesmente dissolver o grupo, ninguém poderá enviar novas mensagens para o grupo e ele não poderá mais ser gerenciado. O grupo dissolvido ainda poderá ser clonado.</string>
     <string name="status_orphaned_group">*Este grupo está órfão*\nO(a) criador(a) do grupo saiu e ele não poderá ser mantido. Um dos membros restantes pode clonar o grupo (via detalhes do grupo) para tornar-se o novo administrador.</string>
-    <string name="group_orphaned_notice">Este grupo está órfão porque o(a) criador(a) do grupo saiu. Clone este grupo para tornar-se o novo administrador.</string>
     <string name="group_not_a_member_notice">Você não faz mais parte deste grupo e não pode mais usá-lo.</string>
     <string name="group_dissolved_notice">Este grupo foi dissolvido e não pode mais ser usado.</string>
     <string name="md_linked_devices">Dispositivos vinculados</string>
@@ -1717,10 +1632,6 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Uso de bateria do app definido como \"otimizado\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">O app não tem permissão para manter uma conexão permanente com os servidores necessários para o funcionamento do ${app_name_short} Push. Você não receberá alertas de novas mensagens com o app em segundo plano. Para corrigir isso, toque em \"Uso de bateria do app\" e selecione \"Não restrito\".</string>
-    <!-- Title of warning message that informs the user that their app is no longer supported. -->
-    <string name="problemsolver_title_android_version_retired">Este aplicativo não é mais atualizado</string>
-    <!-- Details of warning message that informs the user that their app is no longer supported. -->
-    <string name="problemsolver_explain_android_version_retired">Você está usando uma versão desatualizada do Android que não é mais compatível com o Threema por motivo de segurança. Isso significa que você não receberá mais atualizações para o aplicativo do Threema. Para continuar usando o Threema com todos os seus recursos, atualize para uma versão mais atual do sistema operacional.</string>
     <string name="problemsolver_to_settings">Ir a Configurações</string>
     <string name="prefs_advanced_options">Opções avançadas</string>
     <string name="push_service">Serviço de push</string>
@@ -1738,15 +1649,6 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="new_group_messages">Novas mensagens de grupo</string>
     <string name="individual_notification_settings">Configurações de notificação individual</string>
     <string name="delete_message_not_supported_for_all_group_members">A mensagem não será excluída para os seguintes membros do grupo: %1$s</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="work_intro_more_link_text">Saiba mais sobre ${app_name}</string>
-    <string name="work_intro_subtitle">O messenger comercial seguro \npara empresas.</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="work_intro_login">Fazer login ${app_name}</string>
-    <string name="consumer_notice_description">Baixe o aplicativo comum do Threema se você é um usuário privado.</string>
-    <string name="consumer_notice_playstore_link_description">Threema na Play Store</string>
-    <string name="consumer_notice_appgallery_link_description">Threema na AppGallery</string>
-    <string name="consumer_notice_subtitle">Para uso privado</string>
     <string name="individual_notification_settings_warn">Para cada bate-papo com configurações de notificação individuais, um canal de notificação é criado, o que significa que o nome do bate-papo fica visível nas configurações do dispositivo, mesmo que o aplicativo esteja bloqueado. Continuar mesmo assim?</string>
     <string name="incoming_calls">Chamadas recebidas</string>
     <string name="group_chats">Conversas em grupo</string>
@@ -1832,6 +1734,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="device_linking_error_unexpected_title">Erro inesperado</string>
     <string name="device_linking_error_unexpected_body">Tente vincular o dispositivo novamente. Se o problema persistir, entre em contato com o suporte (“Menu principal > Ajuda”).</string>
     <string name="device_linking_error_invalid_contact_title">Contato inválido</string>
+    <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <string name="device_linking_error_invalid_contact_body">O contato com a identidade %1$s está armazenado incorretamente neste dispositivo e impede a vinculação do novo dispositivo. Entre em contato com o suporte (“Menu principal &gt; Ajuda”).</string>
     <string name="device_linking_error_screen_close">Fechar</string>
     <string name="work_directory_title">Diretório da empresa</string>
@@ -1849,6 +1752,44 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="error_preset_onprem_url_mismatch_mdm">O URL do servidor fornecido é inválido. Entre em contato com o seu administrador.</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">O link de ativação é inválido. Entre em contato com o seu administrador.</string>
+    <string name="work_intro_screen_work_title">COMUNICAÇÃO ALTAMENTE SEGURA PARA EMPRESAS</string>
+    <string name="work_intro_screen_work_subtitle">Threema Work é a solução de comunicação segura para empresas – criptografada de ponta a ponta, compatível com GDPR e desenvolvida na Suíça.</string>
+    <string name="work_intro_screen_work_sign_in_button_label">Cadastre-se já</string>
+    <string name="work_intro_screen_work_learn_more_hint">Ainda não usa o Threema Work?</string>
+    <string name="work_intro_screen_work_learn_more_button_label">Saiba mais</string>
+    <string name="work_intro_screen_work_use_private_hint">Deseja usar o Threema para fins privados? Recomendamos o aplicativo Threema Private.</string>
+    <string name="work_intro_screen_work_download_private_button_label">Baixe agora</string>
+    <string name="work_intro_screen_onprem_title">COMUNICAÇÃO NO MAIS ALTO NÍVEL DE SEGURANÇA</string>
+    <string name="work_intro_screen_onprem_subtitle">Threema OnPrem é a solução de comunicação auto-hospedada para empresas, órgãos governamentais e organizações militares, oferecendo total soberania de dados, transmissão de dados criptografados e atendendo aos altos padrões de ambientes com altos requisitos de segurança.</string>
+    <string name="work_intro_screen_onprem_sign_in_button_label">Cadastre-se já</string>
+    <string name="work_intro_screen_onprem_learn_more_hint">Ainda não usa o Threema OnPrem?</string>
+    <string name="work_intro_screen_onprem_learn_more_button_label">Saiba mais</string>
+    <string name="work_intro_screen_onprem_use_private_hint">Deseja usar o Threema para fins privados? Recomendamos o aplicativo Threema Private.</string>
+    <string name="work_intro_screen_onprem_download_private_button_label">Baixe agora</string>
+    <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
+    <string name="remote_secrets_blocked_by_admin">O acesso a este aplicativo foi bloqueado pelo seu administrador.\n\nEntre em contato com seu administrador para obter mais informações.</string>
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
+    <string name="remote_secrets_failed_to_fetch">Não foi possível obter o token ${remote_secret}. Verifique sua conexão com a internet e tente novamente.</string>
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
+    <string name="fetching_remote_secret">Buscando token ${remote_secret}</string>
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <string name="remote_secret_activated_notification_title">O ${remote_secret} foi ativado</string>
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <string name="remote_secret_activated_notification_content">Este recurso mantém seus chats seguros em caso de perda ou roubo do seu telefone.</string>
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <string name="remote_secret_deactivated_notification_title">O ${remote_secret} foi desativado</string>
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <string name="remote_secret_deactivated_notification_content">Se precisar de mais informações, entre em contato com o seu administrador.</string>
+    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
+    <string name="remote_secret_activated_learn_more">Saiba mais</string>
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
+    <string name="remote_secret_activating">Ativando o ${remote_secret}</string>
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <string name="remote_secret_activating_failed">Falha ao ativar o ${remote_secret}. Verifique sua conexão com a internet e tente novamente.</string>
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
+    <string name="remote_secret_deactivating">Desativando o ${remote_secret}</string>
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <string name="remote_secret_deactivating_failed">Falha ao desativar o ${remote_secret}. Verifique sua conexão com a internet e tente novamente.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contato</item>
         <item quantity="other">%d contatos</item>
@@ -1924,28 +1865,6 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <plurals name="webclient_running_sessions">
         <item quantity="one">%d sessão em andamento</item>
         <item quantity="other">%d sessões em andamento</item>
-    </plurals>
-    <plurals name="really_delete_outgoing_request">
-        <item quantity="one">Deseja realmente excluir %d solicitação de grupo?
-            Esteja ciente de que a solicitação não será revogada e você ainda poderá ser aceito ou requisitado
-            caso a solicitação ainda não tenha sido respondida.</item>
-        <item quantity="other">Deseja realmente excluir %d solicitações de grupo?
-        Esteja ciente de que a solicitação não será revogada e você ainda poderá ser aceito ou requisitado
-            caso as solicitações ainda não tenham sido respondidas.</item>
-    </plurals>
-    <plurals name="really_delete_incoming_request">
-        <item quantity="one">Deseja realmente excluir %d solicitação de grupo?
-            Não é possível responder às solicitações depois de excluídas.</item>
-        <item quantity="other">Deseja realmente excluir %d solicitações de grupo?
-            Não é possível responder às solicitações depois de excluídas.</item>
-    </plurals>
-    <plurals name="really_delete_group_link">
-        <item quantity="one">Deseja realmente excluir %d link do grupo?
-            Pessoas não poderão mais enviar solicitações por meio dele.
-            Contudo, solicitações recebidas anteriormente ainda podem ser aceitas ou rejeitadas.</item>
-        <item quantity="other">Deseja realmente excluir %d links de grupos?
-            Pessoas não poderão mais enviar solicitações por meio deles.
-            Contudo, solicitações recebidas anteriormente ainda podem ser aceitas ou rejeitadas.</item>
     </plurals>
     <plurals name="chat_deleted">
         <item quantity="one">%d conversa excluída.</item>

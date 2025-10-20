@@ -30,5 +30,5 @@ import ch.threema.storage.DatabaseService
 class TestDatabaseService : DatabaseService(
     context = ApplicationProvider.getApplicationContext(),
     databaseName = null,
-    databaseKey = "test-database-key",
+    password = "test-database-key".toByteArray(),
 )

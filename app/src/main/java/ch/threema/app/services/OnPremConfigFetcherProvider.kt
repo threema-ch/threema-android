@@ -25,12 +25,15 @@ import ch.threema.app.preference.service.PreferenceService
 import ch.threema.base.ThreemaException
 import ch.threema.domain.onprem.OnPremConfigFetcher
 import ch.threema.domain.onprem.OnPremConfigParser
+import ch.threema.domain.onprem.OnPremConfigStore
 import ch.threema.domain.onprem.OnPremConfigVerifier
 import ch.threema.domain.onprem.OnPremServerConfigParameters
 import okhttp3.OkHttpClient
 
 class OnPremConfigFetcherProvider(
     private val preferenceService: PreferenceService,
+    private val onPremConfigParser: OnPremConfigParser = OnPremConfigParser(),
+    private val onPremConfigStore: OnPremConfigStore,
     private val okHttpClient: OkHttpClient,
     private val trustedPublicKeys: Array<String>,
 ) {
@@ -53,7 +56,8 @@ class OnPremConfigFetcherProvider(
         val configFetcher = OnPremConfigFetcher(
             okHttpClient = okHttpClient,
             onPremConfigVerifier = OnPremConfigVerifier(trustedPublicKeys),
-            onPremConfigParser = OnPremConfigParser(),
+            onPremConfigParser = onPremConfigParser,
+            onPremConfigStore = onPremConfigStore,
             serverParameters = serverConfigParameters,
         )
         this.configFetcher = configFetcher

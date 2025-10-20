@@ -45,7 +45,7 @@ import ch.threema.storage.models.WebClientSessionModel;
  */
 @AnyThread
 public class WakeLockServiceImpl implements WakeLockService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WakeLockService");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("WakeLockServiceImpl");
 
     private static final String WAKELOCK_TAG = BuildConfig.APPLICATION_ID + ":webClientWakeLock";
     private static final String LIFETIME_SERVICE_TAG = "wcWakeLockService";

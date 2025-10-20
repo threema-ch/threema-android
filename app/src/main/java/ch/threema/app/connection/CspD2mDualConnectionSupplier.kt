@@ -39,7 +39,7 @@ import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.csp.socket.ProxyAwareSocketFactory
 import ch.threema.domain.protocol.connection.d2m.D2mConnectionConfiguration
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
 import java.util.Locale
@@ -95,7 +95,7 @@ class CspD2mDualConnectionSupplier(
     private val taskManager: TaskManager,
     private val deviceCookieManager: DeviceCookieManager,
     private val serverAddressProviderService: ServerAddressProviderService,
-    private val identityStore: IdentityStoreInterface,
+    private val identityStore: IdentityStore,
     private val version: Version,
     private val isIpv6Preferred: Boolean,
     private val okHttpClientSupplier: Supplier<OkHttpClient>,

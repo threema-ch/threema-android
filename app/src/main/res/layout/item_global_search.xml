@@ -74,11 +74,12 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="8dp"
             android:layout_toLeftOf="@+id/next_view"
-            android:background="?attr/colorSecondaryContainer"
+            android:background="?attr/colorSecondary"
             android:clickable="false"
             android:contentDescription="@string/attach_picture"
             android:visibility="gone"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Small" />
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Small"
+            tools:visibility="visible" />
 
         <ImageView
             android:id="@+id/next_view"

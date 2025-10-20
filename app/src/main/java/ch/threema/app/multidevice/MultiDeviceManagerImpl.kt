@@ -31,14 +31,14 @@ import ch.threema.app.multidevice.linking.DeviceLinkingStatus
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.ServerMessageService
 import ch.threema.app.services.UserService
+import ch.threema.app.stores.EncryptedPreferenceStore
 import ch.threema.app.stores.PreferenceStore
-import ch.threema.app.stores.PreferenceStoreInterface
 import ch.threema.app.tasks.DeleteAndTerminateFSSessionsTask
 import ch.threema.app.tasks.DeviceLinkingController
 import ch.threema.app.tasks.FSRefreshStepsTask
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.toHexString
+import ch.threema.common.toHexString
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.protocol.D2mProtocolDefines
 import ch.threema.domain.protocol.Version
@@ -84,7 +84,8 @@ private val logger = LoggingUtil.getThreemaLogger("MultiDeviceManagerImpl")
 const val IS_FS_SUPPORTED_WITH_MD = false // TODO(ANDR-2519): Remove when md supports fs
 
 class MultiDeviceManagerImpl(
-    private val preferenceStore: PreferenceStoreInterface,
+    private val preferenceStore: PreferenceStore,
+    private val encryptedPreferenceStore: EncryptedPreferenceStore,
     private val serverMessageService: ServerMessageService,
     private val version: Version,
 ) : MultiDeviceManager {
@@ -427,8 +428,8 @@ class MultiDeviceManagerImpl(
 
     private suspend fun loadProperties(): PersistedMultiDeviceProperties? {
         return withContext(Dispatchers.IO) {
-            if (preferenceStore.containsKey(PreferenceStore.PREFS_MD_PROPERTIES, true)) {
-                val bytes = preferenceStore.getBytes(PreferenceStore.PREFS_MD_PROPERTIES, true)
+            if (encryptedPreferenceStore.containsKey(EncryptedPreferenceStore.PREFS_MD_PROPERTIES)) {
+                val bytes = encryptedPreferenceStore.getBytes(EncryptedPreferenceStore.PREFS_MD_PROPERTIES)
                 logger.trace("Properties size={}", bytes.size)
                 try {
                     // return:
@@ -441,7 +442,7 @@ class MultiDeviceManagerImpl(
                     }
                 } catch (e: PersistedMultiDeviceProperties.DeserializeException) {
                     logger.error("Persisted properties are invalid. Remove properties.", e)
-                    preferenceStore.remove(PreferenceStore.PREFS_MD_PROPERTIES, true)
+                    encryptedPreferenceStore.remove(EncryptedPreferenceStore.PREFS_MD_PROPERTIES)
                     // return:
                     null
                 }
@@ -461,15 +462,11 @@ class MultiDeviceManagerImpl(
         CoroutineScope(Dispatchers.IO).launch {
             if (properties == null) {
                 logger.info("Delete md properties")
-                preferenceStore.remove(PreferenceStore.PREFS_MD_PROPERTIES, true)
+                encryptedPreferenceStore.remove(EncryptedPreferenceStore.PREFS_MD_PROPERTIES)
             } else {
                 val bytes = properties.serialize()
                 logger.trace("Serialize md properties: {} -> {}", properties, bytes.toHexString(5))
-                preferenceStore.save(
-                    PreferenceStore.PREFS_MD_PROPERTIES,
-                    properties.serialize(),
-                    true,
-                )
+                encryptedPreferenceStore.save(EncryptedPreferenceStore.PREFS_MD_PROPERTIES, properties.serialize())
             }
         }
     }

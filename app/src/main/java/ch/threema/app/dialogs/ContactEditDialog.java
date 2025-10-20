@@ -51,7 +51,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.ContactModelData;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.domain.models.ContactKt.CONTACT_NAME_MAX_LENGTH_BYTES;
@@ -68,9 +68,6 @@ public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEd
     private static final String ARG_GROUP_ID = "groupId";
 
     private static final String BUNDLE_CROPPED_AVATAR_FILE = "cropped_avatar_file";
-
-    public static int CONTACT_AVATAR_HEIGHT_PX = 512;
-    public static int CONTACT_AVATAR_WIDTH_PX = 512;
 
     private WeakReference<ContactEditDialogClickListener> callbackRef = new WeakReference<>(null);
     private Activity activity;

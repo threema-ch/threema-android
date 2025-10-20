@@ -22,8 +22,6 @@
 package ch.threema.storage.databaseupdate
 
 import android.content.Context
-import androidx.preference.PreferenceManager
-import ch.threema.app.stores.PreferenceStore
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class DatabaseUpdateToVersion108(
@@ -31,8 +29,7 @@ internal class DatabaseUpdateToVersion108(
     private val context: Context,
 ) : DatabaseUpdate {
     override fun run() {
-        val myIdentity = PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(PreferenceStore.PREFS_IDENTITY, null)
+        val myIdentity = getMyIdentity(context)
             ?: // In case there is no identity, there is also no need to remove the user's identity
             return
 

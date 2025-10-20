@@ -53,9 +53,4 @@ abstract class ModelFactory internal constructor(
     @VisibleForTesting(otherwise = PROTECTED)
     val writableDatabase: SQLiteDatabase
         get() = databaseService.writableDatabase
-
-    companion object {
-        @JvmStatic
-        fun noRecordsMessage(id: Any) = "Update of model failed, no records matched for id=$id"
-    }
 }

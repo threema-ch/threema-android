@@ -106,11 +106,11 @@ class UpdateGroupFlow(
 ) : BackgroundTask<GroupFlowResult> {
     private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
 
-    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.identity }
+    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentity() }
 
     override fun runInBackground(): GroupFlowResult {
         logger.info("Running update group flow")
-        val groupModelData = groupModel.data.value ?: run {
+        val groupModelData = groupModel.data ?: run {
             logger.warn("Cannot edit group where data is null")
             return GroupFlowResult.Failure.Other
         }
@@ -182,7 +182,7 @@ class UpdateGroupFlow(
 
     private fun uploadGroupPicture(profilePictureChange: ProfilePictureChange?): GroupPhotoUploadResult? =
         if (profilePictureChange is SetProfilePicture) {
-            tryUploadingGroupPhoto(profilePictureChange.profilePicture, apiService)
+            tryUploadingGroupPhoto(profilePictureChange.profilePicture.profilePictureBytes, apiService)
         } else {
             null
         }
@@ -212,7 +212,7 @@ class UpdateGroupFlow(
                 else -> RemoveProfilePicture
             }
 
-        val members = groupModel.data.value?.otherMembers ?: run {
+        val members = groupModel.data?.otherMembers ?: run {
             logger.error("Group model data expected to exist")
             return GroupFlowResult.Failure.Other
         }
@@ -246,9 +246,9 @@ class UpdateGroupFlow(
                 val oldGroupAvatar = fileService.getGroupAvatarBytes(groupModel)
                 fileService.writeGroupAvatar(
                     groupModel,
-                    groupChanges.profilePictureChange.profilePicture,
+                    groupChanges.profilePictureChange.profilePicture.profilePictureBytes,
                 )
-                !groupChanges.profilePictureChange.profilePicture.contentEquals(oldGroupAvatar)
+                !groupChanges.profilePictureChange.profilePicture.profilePictureBytes.contentEquals(oldGroupAvatar)
             }
 
             is RemoveProfilePicture -> {

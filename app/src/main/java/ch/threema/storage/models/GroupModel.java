@@ -21,30 +21,20 @@
 
 package ch.threema.storage.models;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.slf4j.Logger;
 
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Objects;
 
+import ch.threema.data.datatypes.IdColor;
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
-import ch.threema.app.utils.ColorUtil;
-import ch.threema.app.utils.ConfigUtils;
-import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.domain.models.GroupId;
 
 public class GroupModel implements ReceiverModel {
-
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupModel");
 
     public static final int GROUP_NAME_MAX_LENGTH_BYTES = 256;
 
@@ -74,7 +64,7 @@ public class GroupModel implements ReceiverModel {
     private Date synchronizedAt;
     private @Nullable Date lastUpdate;
     private boolean isArchived;
-    private int colorIndex = -1;
+    private @NonNull IdColor idColor = IdColor.invalid();
     private @Nullable UserState userState;
     private @Nullable Long notificationTriggerPolicyOverride;
 
@@ -192,15 +182,15 @@ public class GroupModel implements ReceiverModel {
         return false;
     }
 
-    public int getColorIndex() {
-        if (colorIndex < 0) {
-            computeColorIndex();
+    public IdColor getIdColor() {
+        if (!idColor.isValid()) {
+            idColor = IdColor.ofGroup(getGroupIdentity());
         }
-        return colorIndex;
+        return idColor;
     }
 
     public GroupModel setColorIndex(int colorIndex) {
-        this.colorIndex = colorIndex;
+        this.idColor = new IdColor(colorIndex);
         return this;
     }
 
@@ -220,28 +210,6 @@ public class GroupModel implements ReceiverModel {
 
     public Date getGroupDescTimestamp() {
         return this.changedGroupDescTimestamp;
-    }
-
-    public int getThemedColor(@NonNull Context context) {
-        if (ConfigUtils.isTheDarkSide(context)) {
-            return getColorDark();
-        } else {
-            return getColorLight();
-        }
-    }
-
-    public int getColorLight() {
-        if (colorIndex < 0) {
-            computeColorIndex();
-        }
-        return ColorUtil.getInstance().getIDColorLight(colorIndex);
-    }
-
-    public int getColorDark() {
-        if (colorIndex < 0) {
-            computeColorIndex();
-        }
-        return ColorUtil.getInstance().getIDColorDark(colorIndex);
     }
 
     @NonNull
@@ -276,21 +244,6 @@ public class GroupModel implements ReceiverModel {
             creatorIdentity,
             apiGroupId.toLong()
         );
-    }
-
-    private void computeColorIndex() {
-        byte[] groupCreatorIdentity = creatorIdentity.getBytes(StandardCharsets.UTF_8);
-        byte[] apiGroupIdBin = apiGroupId.getGroupId();
-
-        try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update(groupCreatorIdentity);
-            md.update(apiGroupIdBin);
-            byte firstByte = md.digest()[0];
-            colorIndex = ColorUtil.getInstance().getIDColorIndex(firstByte);
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("Could not hash the identity to determine color", e);
-        }
     }
 
     @Override

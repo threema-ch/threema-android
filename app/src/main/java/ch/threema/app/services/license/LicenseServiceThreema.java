@@ -29,10 +29,11 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.LicenseCredentials;
 import ch.threema.domain.onprem.UnauthorizedFetchException;
 import ch.threema.domain.protocol.api.APIConnector;
 
-abstract public class LicenseServiceThreema<T extends LicenseService.Credentials> implements LicenseService<T> {
+abstract public class LicenseServiceThreema<T extends LicenseCredentials> implements LicenseService<T> {
     private static final Logger logger = LoggingUtil.getThreemaLogger("LicenseServiceThreema");
 
     protected final APIConnector apiConnector;

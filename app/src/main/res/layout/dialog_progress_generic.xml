@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="@dimen/dialog_margin_below_title"
     android:paddingLeft="22dp"
+    android:paddingTop="@dimen/dialog_margin_below_title"
     android:paddingRight="22dp"
     android:paddingBottom="24dp">
 
@@ -11,18 +12,19 @@
         android:id="@+id/progress"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:indeterminate="true"
         android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true" />
+        android:layout_centerVertical="true"
+        android:indeterminate="true" />
 
     <TextView
-        style="@style/MaterialAlertDialog.Material3.Body.Text"
         android:id="@+id/text"
+        style="@style/Threema.MaterialAlertDialog.Body.Style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginLeft="16dp"
         android:layout_toRightOf="@id/progress"
-        android:text="" />
+        android:text=""
+        tools:text="Loading ..." />
 
 </RelativeLayout>

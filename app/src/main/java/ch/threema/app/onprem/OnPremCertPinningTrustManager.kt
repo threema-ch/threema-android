@@ -22,10 +22,11 @@
 package ch.threema.app.onprem
 
 import android.annotation.SuppressLint
-import ch.threema.app.services.OnPremConfigFetcherProvider
 import ch.threema.base.utils.Base64
+import ch.threema.common.secureContentEquals
 import ch.threema.domain.onprem.OnPremConfigDomainRuleMatchMode
 import ch.threema.domain.onprem.OnPremConfigDomainRuleSpkiAlgorithm
+import ch.threema.domain.onprem.OnPremConfigDomains
 import java.security.MessageDigest
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
@@ -33,7 +34,7 @@ import javax.net.ssl.X509TrustManager
 
 @SuppressLint("CustomX509TrustManager")
 class OnPremCertPinningTrustManager(
-    private val onPremConfigFetcherProvider: OnPremConfigFetcherProvider,
+    private val getOnPremConfigDomains: () -> OnPremConfigDomains?,
     private val hostnameProvider: HostnameProvider,
     private val delegate: TrustManagerDelegate = TrustManagerDelegate(),
 ) : X509TrustManager {
@@ -49,7 +50,7 @@ class OnPremCertPinningTrustManager(
         }
         delegate.checkServerTrusted(chain, authType, hostname)
 
-        val rules = onPremConfigFetcherProvider.getOnPremConfigFetcher().fetch().domains?.rules ?: return
+        val rules = getOnPremConfigDomains()?.rules ?: return
         val certificate = chain?.firstOrNull()
             ?: throw CertificateException("No certificate found in trust chain")
 
@@ -62,10 +63,7 @@ class OnPremCertPinningTrustManager(
             }
             if (matchesHostname) {
                 val matchesCertificate = rule.spkis?.any { spki ->
-                    MessageDigest.isEqual(
-                        certificate.getPublicKeyFingerprintFor(spki.algorithm),
-                        Base64.decode(spki.value),
-                    )
+                    certificate.getPublicKeyFingerprintFor(spki.algorithm).secureContentEquals(Base64.decode(spki.value))
                 }
                 if (matchesCertificate == false) {
                     throw CertificateException("Certificate did not match any cert pinning rules for $hostname")

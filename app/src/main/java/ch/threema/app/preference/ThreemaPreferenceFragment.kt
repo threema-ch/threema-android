@@ -21,7 +21,6 @@
 
 package ch.threema.app.preference
 
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -258,7 +257,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
             }
             initialized = false
             toolbarTitle?.alpha = 0f
-            if (Build.VERSION.SDK_INT >= 24 && !ConfigUtils.isTabletLayout()) {
+            if (!ConfigUtils.isTabletLayout()) {
                 nestedScrollView.setOnScrollChangeListener { _, _, _, _, _ ->
                     setToolbarColor()
                 }

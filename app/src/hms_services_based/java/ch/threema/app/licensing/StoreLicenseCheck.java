@@ -33,7 +33,7 @@ import ch.threema.app.routines.CheckLicenseRoutine;
 import ch.threema.app.services.UserService;
 import ch.threema.base.utils.LoggingUtil;
 
-public class StoreLicenseCheck implements CheckLicenseRoutine.StoreLicenseChecker {
+public class StoreLicenseCheck {
     private static final Logger logger = LoggingUtil.getThreemaLogger("StoreLicenseCheck");
 
     private static final String HMS_ID = "5190041000024384032";

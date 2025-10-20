@@ -23,10 +23,13 @@ package ch.threema.app.webviews
 
 import androidx.core.net.toUri
 import ch.threema.app.R
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.services.UserService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
+import org.koin.android.ext.android.inject
 
 private val logger = LoggingUtil.getThreemaLogger("SupportActivity")
 
@@ -34,6 +37,9 @@ class SupportActivity : SimpleWebViewActivity() {
     init {
         logScreenVisibility(logger)
     }
+
+    private val preferenceService: PreferenceService by inject()
+    private val userService: UserService by inject()
 
     override fun requiresConnection() = true
 
@@ -46,7 +52,7 @@ class SupportActivity : SimpleWebViewActivity() {
             .buildUpon()
             .appendQueryParameter("lang", LocaleUtil.getAppLanguage())
             .appendQueryParameter("version", ConfigUtils.getDeviceInfo(true))
-            .appendQueryParameter("identity", serviceManager.userService.identity)
+            .appendQueryParameter("identity", userService.identity)
             .build()
             .toString()
 

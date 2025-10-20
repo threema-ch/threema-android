@@ -51,8 +51,8 @@ import com.google.android.material.textfield.MaterialAutoCompleteTextView;
 
 import org.slf4j.Logger;
 
+import java.time.Instant;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 
 import ch.threema.app.R;
@@ -74,7 +74,6 @@ import ch.threema.app.listeners.SMSVerificationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.CheckIdentityRoutine;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.IdListService;
@@ -100,7 +99,6 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.localcrypto.MasterKeyLockedException;
 
 /**
  * This is one of the tabs in the home screen. It shows the user's profile.
@@ -122,7 +120,6 @@ public class MyIDFragment extends MainFragment
     private UserService userService;
     private PreferenceService preferenceService;
     private LocaleService localeService;
-    private ContactService contactService;
     private FileService fileService;
     private IdListService profilePicRecipientsService;
     private TaskCreator taskCreator;
@@ -147,22 +144,12 @@ public class MyIDFragment extends MainFragment
     private final SMSVerificationListener smsVerificationListener = new SMSVerificationListener() {
         @Override
         public void onVerified() {
-            RuntimeUtil.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updatePendingState(getView(), false);
-                }
-            });
+            RuntimeUtil.runOnUiThread(() -> updatePendingState(getView(), false));
         }
 
         @Override
         public void onVerificationStarted() {
-            RuntimeUtil.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    updatePendingState(getView(), false);
-                }
-            });
+            RuntimeUtil.runOnUiThread(() -> updatePendingState(getView(), false));
         }
     };
 
@@ -180,14 +167,11 @@ public class MyIDFragment extends MainFragment
                 if (serviceManager.getMultiDeviceManager().isMultiDeviceActive()) {
                     taskCreator.scheduleReflectUserProfileShareWithPolicySyncTask(ProfilePictureSharePolicy.Policy.EVERYONE);
                 }
-                RuntimeUtil.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (isAdded() && !isDetached() && fragmentView != null) {
-                            MaterialAutoCompleteTextView spinner = fragmentView.findViewById(R.id.picrelease_spinner);
-                            if (spinner != null) {
-                                spinner.setText((CharSequence) spinner.getAdapter().getItem(preferenceService.getProfilePicRelease()), false);
-                            }
+                RuntimeUtil.runOnUiThread(() -> {
+                    if (isAdded() && !isDetached() && fragmentView != null) {
+                        MaterialAutoCompleteTextView spinner = fragmentView.findViewById(R.id.picrelease_spinner);
+                        if (spinner != null) {
+                            spinner.setText((CharSequence) spinner.getAdapter().getItem(preferenceService.getProfilePicRelease()), false);
                         }
                     }
                 });
@@ -293,7 +277,12 @@ public class MyIDFragment extends MainFragment
             this.avatarView = fragmentView.findViewById(R.id.avatar_edit_view);
             this.avatarView.setFragment(this);
             this.avatarView.setIsMyProfilePicture(true);
-            this.avatarView.setContactModel(contactService.getMe());
+            String identity = userService.getIdentity();
+            if (identity == null) {
+                logger.error("Identity is null. Not updating avatar view");
+            } else {
+                this.avatarView.setContactIdentity(identity);
+            }
 
             this.nicknameTextView = fragmentView.findViewById(R.id.nickname);
 
@@ -401,12 +390,7 @@ public class MyIDFragment extends MainFragment
                     userService,
                     success -> {
                         //update after routine
-                        RuntimeUtil.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                updatePendingStateTexts(fragmentView);
-                            }
-                        });
+                        RuntimeUtil.runOnUiThread(() -> updatePendingStateTexts(fragmentView));
                     },
                     TriggerSource.LOCAL
                 )
@@ -524,10 +508,10 @@ public class MyIDFragment extends MainFragment
                 protected String doInBackground(TextView... params) {
                     if (isAdded()) {
                         textView = params[0];
-                        Date revocationKeyLastSet = userService.getLastRevocationKeySet();
+                        Instant revocationKeyLastSet = userService.getLastRevocationKeySet();
                         if (!isDetached() && !isRemoving() && getContext() != null) {
                             if (revocationKeyLastSet != null) {
-                                return getContext().getString(R.string.revocation_key_set_at, LocaleUtil.formatTimeStampString(getContext(), revocationKeyLastSet.getTime(), true));
+                                return getContext().getString(R.string.revocation_key_set_at, LocaleUtil.formatTimeStampString(getContext(), revocationKeyLastSet, true));
                             } else {
                                 return getContext().getString(R.string.revocation_key_not_set);
                             }
@@ -560,12 +544,9 @@ public class MyIDFragment extends MainFragment
             return;
         }
 
-        new DeleteIdentityAsyncTask(getFragmentManager(), new Runnable() {
-            @Override
-            public void run() {
-                ConfigUtils.clearAppData(ThreemaApplication.getAppContext());
-                System.exit(0);
-            }
+        new DeleteIdentityAsyncTask(getFragmentManager(), () -> {
+            ConfigUtils.clearAppData(ThreemaApplication.getAppContext());
+            System.exit(0);
         }).execute();
     }
 
@@ -650,7 +631,7 @@ public class MyIDFragment extends MainFragment
                 HiddenChatUtil.launchLockCheckDialog(null, this, preferenceService, LOCK_CHECK_EXPORT_ID);
             } else {
                 logger.info("Export ID clicked");
-                startActivity(new Intent(getContext(), ExportIDActivity.class));
+                startActivity(ExportIDActivity.createIntent(requireContext()));
             }
         } else if (id == R.id.picrelease_config) {
             launchProfilePictureRecipientsSelector(v);
@@ -668,7 +649,7 @@ public class MyIDFragment extends MainFragment
             nicknameEditDialog.show(getFragmentManager(), DIALOG_TAG_EDIT_NICKNAME);
         } else if (id == R.id.my_id_qr) {
             logger.info("My ID clicked, showing QR code");
-            new QRCodePopup(getContext(), getActivity().getWindow().getDecorView(), getActivity()).show(v, null, QRCodeServiceImpl.QR_TYPE_ID);
+            new QRCodePopup(getContext(), getActivity().getWindow().getDecorView(), getActivity()).show(v, null);
         } else if (id == R.id.my_id_share) {
             logger.info("Share clicked");
             ShareUtil.shareContact(getContext(), null);
@@ -676,7 +657,7 @@ public class MyIDFragment extends MainFragment
     }
 
     private void launchProfilePictureRecipientsSelector(View v) {
-        getActivity().startActivityForResult(new Intent(getContext(), ProfilePicRecipientsActivity.class), 55);
+        getActivity().startActivityForResult(ProfilePicRecipientsActivity.createIntent(requireContext()), 55);
     }
 
     private void confirmIdDelete() {
@@ -871,17 +852,12 @@ public class MyIDFragment extends MainFragment
         this.serviceManager = ThreemaApplication.getServiceManager();
 
         if (this.serviceManager != null) {
-            try {
-                this.contactService = this.serviceManager.getContactService();
-                this.userService = this.serviceManager.getUserService();
-                this.fileService = this.serviceManager.getFileService();
-                this.preferenceService = this.serviceManager.getPreferenceService();
-                this.localeService = this.serviceManager.getLocaleService();
-                this.taskCreator = this.serviceManager.getTaskCreator();
-                this.profilePicRecipientsService = this.serviceManager.getProfilePicRecipientsService();
-            } catch (MasterKeyLockedException e) {
-                logger.debug("Master Key locked!");
-            }
+            this.userService = this.serviceManager.getUserService();
+            this.fileService = this.serviceManager.getFileService();
+            this.preferenceService = this.serviceManager.getPreferenceService();
+            this.localeService = this.serviceManager.getLocaleService();
+            this.taskCreator = this.serviceManager.getTaskCreator();
+            this.profilePicRecipientsService = this.serviceManager.getProfilePicRecipientsService();
         }
     }
 
@@ -938,7 +914,7 @@ public class MyIDFragment extends MainFragment
                 break;
             case LOCK_CHECK_EXPORT_ID:
                 if (resultCode == Activity.RESULT_OK) {
-                    startActivity(new Intent(getContext(), ExportIDActivity.class));
+                    startActivity(ExportIDActivity.createIntent(requireContext()));
                 }
                 break;
             case LOCK_CHECK_REVOCATION:

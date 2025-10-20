@@ -21,12 +21,12 @@
 
 package ch.threema.app.systemupdates.updates;
 
-import android.content.Context;
 import android.database.Cursor;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.drafts.DraftManager;
@@ -35,24 +35,20 @@ import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DeadlineListServiceImpl;
 import ch.threema.app.services.RingtoneService;
+import ch.threema.app.stores.EncryptedPreferenceStore;
 import ch.threema.app.stores.PreferenceStore;
-import ch.threema.app.stores.PreferenceStoreInterface;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Base32;
-import ch.threema.localcrypto.MasterKey;
 
 /**
  * add profile pic field to normal, group and distribution list message models
  */
 public class SystemUpdateToVersion43 implements SystemUpdate {
-    private @NonNull final Context context;
     private @NonNull final ServiceManager serviceManager;
 
     public SystemUpdateToVersion43(
-        @NonNull Context context,
         @NonNull ServiceManager serviceManager
     ) {
-        this.context = context;
         this.serviceManager = serviceManager;
     }
 
@@ -67,12 +63,13 @@ public class SystemUpdateToVersion43 implements SystemUpdate {
         String ringtonePrefs = "pref_individual_ringtones";
         String messageDraftPrefs = "pref_message_drafts";
 
-        PreferenceStoreInterface preferenceStore = serviceManager.getPreferenceStore();
+        PreferenceStore preferenceStore = serviceManager.getPreferenceStore();
+        EncryptedPreferenceStore encryptedPreferenceStoreInterface = serviceManager.getEncryptedPreferenceStore();
 
-        HashMap<Integer, String> oldMutedChatsMap = preferenceStore.getHashMap(mutedChatsPrefs, false);
-        HashMap<Integer, String> oldHiddenChatsMap = preferenceStore.getHashMap(hiddenChatsPrefs, false);
-        HashMap<Integer, String> oldRingtoneMap = preferenceStore.getHashMap(ringtonePrefs, false);
-        HashMap<Integer, String> oldMessageDraftsMap = preferenceStore.getHashMap(messageDraftPrefs, true);
+        Map<Integer, String> oldMutedChatsMap = preferenceStore.getIntMap(mutedChatsPrefs);
+        Map<Integer, String> oldHiddenChatsMap = preferenceStore.getIntMap(hiddenChatsPrefs);
+        Map<Integer, String> oldRingtoneMap = preferenceStore.getIntMap(ringtonePrefs);
+        Map<Integer, String> oldMessageDraftsMap = encryptedPreferenceStoreInterface.getIntMap(messageDraftPrefs);
         preferenceStore.remove(messageDraftPrefs);
 
         HashMap<String, String> newMutedChatsMap = new HashMap<>();
@@ -139,15 +136,15 @@ public class SystemUpdateToVersion43 implements SystemUpdate {
         }
 
         preferenceStore.remove(mutedChatsPrefs);
-        preferenceStore.saveStringHashMap(mutedChatsPrefs, newMutedChatsMap, false);
+        preferenceStore.save(mutedChatsPrefs, newMutedChatsMap);
         mutedChatsService.init();
 
         preferenceStore.remove(hiddenChatsPrefs);
-        preferenceStore.saveStringHashMap(hiddenChatsPrefs, newHiddenChatsMap, false);
+        preferenceStore.save(hiddenChatsPrefs, newHiddenChatsMap);
         conversationCategoryService.invalidateCache();
 
         preferenceStore.remove(ringtonePrefs);
-        preferenceStore.saveStringHashMap(ringtonePrefs, newRingtoneMap, false);
+        preferenceStore.save(ringtonePrefs, newRingtoneMap);
         ringtoneService.init();
     }
 

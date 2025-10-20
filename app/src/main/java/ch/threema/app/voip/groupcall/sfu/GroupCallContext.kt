@@ -30,11 +30,11 @@ import ch.threema.app.voip.groupcall.sfu.messages.P2POuterEnvelope
 import ch.threema.app.voip.groupcall.sfu.messages.P2SMessage
 import ch.threema.app.voip.groupcall.sfu.webrtc.ConnectionCtx
 import ch.threema.app.voip.groupcall.sfu.webrtc.ParticipantCallMediaKeyState
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
 import ch.threema.protobuf.groupcall.CallState
 import ch.threema.protobuf.groupcall.ParticipantToParticipant
-import com.neilalexander.jnacl.NaCl
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
@@ -183,14 +183,24 @@ data class P2PContexts(
     val local: LocalP2PContext,
     val remote: RemoteP2PContext,
 ) {
-    private val naCl: NaCl by lazy { NaCl(local.pckPrivate, remote.pckPublic) }
+    private val naCl: NaCl by lazy {
+        NaCl(
+            local.pckPrivate,
+            remote.pckPublic,
+        )
+    }
 
     @WorkerThread
     fun decryptMessage(messageContent: ByteArray): P2PMessageContent? {
         GroupCallThreadUtil.assertDispatcherThread()
-
-        val envelope = naCl.decrypt(messageContent, remote.nextPcckNonce())?.let { decrypted ->
-            ParticipantToParticipant.Envelope.parseFrom(decrypted)
+        val envelope = runCatching {
+            naCl.decrypt(
+                data = messageContent,
+                nonce = remote.nextPcckNonce(),
+            ).let(ParticipantToParticipant.Envelope::parseFrom)
+        }.getOrElse { throwable ->
+            logger.error("Failed to decrypt data", throwable)
+            null
         }
         return when {
             envelope == null -> null

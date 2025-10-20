@@ -112,8 +112,9 @@ public class Group extends Converter {
         return NameUtil.getDisplayName(group, getGroupService());
     }
 
-    private static String getColor(GroupModel group) throws ConversionException {
-        return String.format("#%06X", (0xFFFFFF & group.getColorLight()));
+    private static String getColor(@NonNull GroupModel group) {
+        int idColor = group.getIdColor().getColorLight();
+        return String.format("#%06X", (0xFFFFFF & idColor));
     }
 
     /**

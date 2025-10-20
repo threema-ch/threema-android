@@ -263,7 +263,7 @@ public class RateDialog extends ThreemaDialogFragment {
     private void updateStarDisplay(View dialogView) {
         for (int i = 0; i < starMap.length; i++) {
             ImageView v = dialogView.findViewById(starMap[i]);
-            v.setImageResource(i < rating ? R.drawable.ic_star_golden_24dp : R.drawable.ic_star_outline_24dp);
+            v.setImageResource(i < rating ? R.drawable.ic_star_filled : R.drawable.ic_star_outlined);
         }
         if (alertDialog != null) {
             alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(true);

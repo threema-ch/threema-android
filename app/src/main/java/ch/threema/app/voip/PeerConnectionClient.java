@@ -31,6 +31,7 @@
 
 package ch.threema.app.voip;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.widget.Toast;
@@ -385,6 +386,7 @@ public class PeerConnectionClient {
         VoipUtil.setLoggerPrefix(logger, callId);
 
         // Create logger for SdpPatcher
+        @SuppressLint("LoggerName")
         final Logger sdpPatcherLogger = LoggingUtil.getThreemaLogger("PeerConnectionClient:SdpPatcher");
         VoipUtil.setLoggerPrefix(sdpPatcherLogger, callId);
 
@@ -1616,6 +1618,7 @@ public class PeerConnectionClient {
     }
 
     private class DCObserver extends DataChannelObserver {
+        @SuppressLint("LoggerName")
         private final @NonNull Logger logger = LoggingUtil.getThreemaLogger("SignalingDataChannel");
         final @NonNull CompletableFuture<?> openFuture = new CompletableFuture<>();
 

@@ -43,12 +43,7 @@ public abstract class DimmingPopupWindow extends PopupWindow {
         if (getContext() == null) {
             return;
         }
-        View container;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            container = (View) getContentView().getParent().getParent();
-        } else {
-            container = (View) getContentView().getParent();
-        }
+        View container = (View) getContentView().getParent().getParent();
         if (container != null) {
             WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
             WindowManager.LayoutParams p = (WindowManager.LayoutParams) container.getLayoutParams();

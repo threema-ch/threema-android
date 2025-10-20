@@ -45,15 +45,12 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.group.IncomingGroupJoinRequestService;
 import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
 
 public class NotificationActionService extends IntentService {
 
@@ -64,15 +61,12 @@ public class NotificationActionService extends IntentService {
     public static final String ACTION_MARK_AS_READ = BuildConfig.APPLICATION_ID + ".MARK_AS_READ";
     public static final String ACTION_ACK = BuildConfig.APPLICATION_ID + ".ACK";
     public static final String ACTION_DEC = BuildConfig.APPLICATION_ID + ".DEC";
-    public static final String ACTION_GROUP_REQUEST_ACCEPT = BuildConfig.APPLICATION_ID + ".ACCEPT";
-    public static final String ACTION_GROUP_REQUEST_REJECT = BuildConfig.APPLICATION_ID + ".REJECT";
 
     private static final int NOTIFICATION_ACTION_CONNECTION_LINGER = 1000 * 5;
 
     private MessageService messageService;
     private LifetimeService lifetimeService;
     private NotificationService notificationService;
-    private IncomingGroupJoinRequestService incomingGroupJoinRequestService;
 
     public NotificationActionService() {
         super(TAG);
@@ -83,7 +77,6 @@ public class NotificationActionService extends IntentService {
                 this.messageService = serviceManager.getMessageService();
                 this.lifetimeService = serviceManager.getLifetimeService();
                 this.notificationService = serviceManager.getNotificationService();
-                this.incomingGroupJoinRequestService = serviceManager.getIncomingGroupJoinRequestService();
             } catch (Exception e) {
                 logger.error("Exception", e);
             }
@@ -95,7 +88,7 @@ public class NotificationActionService extends IntentService {
         if (intent != null) {
             String action = intent.getAction();
             if (action != null) {
-                MessageReceiver messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(this, intent);
+                MessageReceiver<?> messageReceiver = IntentDataUtil.getMessageReceiverFromIntent(this, intent);
                 if (messageReceiver != null) {
                     AbstractMessageModel messageModel = IntentDataUtil.getMessageModelFromReceiver(intent, messageReceiver);
 
@@ -124,24 +117,6 @@ public class NotificationActionService extends IntentService {
                             logger.info("Unknown action {}", action);
                     }
                 }
-                IncomingGroupJoinRequestModel incomingGroupJoinRequestModel = (IncomingGroupJoinRequestModel) intent.getSerializableExtra(AppConstants.INTENT_DATA_INCOMING_GROUP_REQUEST);
-                if (incomingGroupJoinRequestModel != null) {
-                    int notificationId = intent.getIntExtra(AppConstants.INTENT_DATA_GROUP_REQUEST_NOTIFICATION_ID, 0);
-                    logger.info("action {}", action);
-                    switch (action) {
-                        case ACTION_GROUP_REQUEST_ACCEPT:
-                            acceptGroupRequest(incomingGroupJoinRequestModel);
-                            notificationService.cancel(notificationId);
-                            return;
-                        case ACTION_GROUP_REQUEST_REJECT:
-                            rejectGroupRequest(incomingGroupJoinRequestModel);
-                            notificationService.cancel(notificationId);
-                            return;
-                        default:
-                            logger.info("Unknown action {}", action);
-                            break;
-                    }
-                }
             }
         }
         showToast(R.string.verify_failed);
@@ -149,10 +124,11 @@ public class NotificationActionService extends IntentService {
     }
 
     @WorkerThread
-    private void ack(@NonNull MessageReceiver messageReceiver, @NonNull AbstractMessageModel messageModel) {
+    private void ack(@NonNull MessageReceiver<?> messageReceiver, @NonNull AbstractMessageModel messageModel) {
         lifetimeService.acquireConnection(TAG);
         try {
-            messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_UP_SEQUENCE, messageReceiver, true);
+            messageService.markConversationAsRead(messageReceiver, notificationService);
+            messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_UP_SEQUENCE, messageReceiver, false);
             notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
             showToast(R.string.message_acknowledged);
         } catch (Exception e) {
@@ -162,10 +138,11 @@ public class NotificationActionService extends IntentService {
     }
 
     @WorkerThread
-    private void dec(@NonNull MessageReceiver messageReceiver, @NonNull AbstractMessageModel messageModel) {
+    private void dec(@NonNull MessageReceiver<?> messageReceiver, @NonNull AbstractMessageModel messageModel) {
         lifetimeService.acquireConnection(TAG);
         try {
-            messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_DOWN_SEQUENCE, messageReceiver, true);
+            messageService.markConversationAsRead(messageReceiver, notificationService);
+            messageService.sendEmojiReaction(messageModel, EmojiUtil.THUMBS_DOWN_SEQUENCE, messageReceiver, false);
             notificationService.cancelConversationNotification(ConversationNotificationUtil.getUid(messageModel));
             showToast(R.string.message_declined);
         } catch (Exception e) {
@@ -174,7 +151,7 @@ public class NotificationActionService extends IntentService {
         lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
     }
 
-    private boolean reply(@NonNull MessageReceiver messageReceiver, @NonNull Intent intent) {
+    private boolean reply(@NonNull MessageReceiver<?> messageReceiver, @NonNull Intent intent) {
         Bundle results = RemoteInput.getResultsFromIntent(intent);
         if (results != null) {
             String message = null;
@@ -203,31 +180,11 @@ public class NotificationActionService extends IntentService {
         return false;
     }
 
-    private void markAsRead(@NonNull MessageReceiver messageReceiver) {
+    private void markAsRead(@NonNull MessageReceiver<?> messageReceiver) {
         lifetimeService.acquireConnection(TAG);
         messageService.markConversationAsRead(messageReceiver, notificationService);
         lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
         notificationService.cancel(messageReceiver);
-    }
-
-    private void acceptGroupRequest(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel) {
-        lifetimeService.acquireConnection(TAG);
-        try {
-            incomingGroupJoinRequestService.accept(incomingGroupJoinRequestModel);
-        } catch (Exception e) {
-            logger.error("Exception, failed to accept group request ", e);
-        }
-        lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
-    }
-
-    private void rejectGroupRequest(IncomingGroupJoinRequestModel incomingGroupJoinRequestModel) {
-        lifetimeService.acquireConnection(TAG);
-        try {
-            incomingGroupJoinRequestService.reject(incomingGroupJoinRequestModel);
-        } catch (ThreemaException e) {
-            logger.error("Exception, failed to reject group request ", e);
-        }
-        lifetimeService.releaseConnectionLinger(TAG, NOTIFICATION_ACTION_CONNECTION_LINGER);
     }
 
     private void showToast(final @StringRes int stringRes) {

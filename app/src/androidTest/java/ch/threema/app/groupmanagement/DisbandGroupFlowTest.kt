@@ -224,7 +224,7 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         val groupModel =
             groupModelRepository.getByGroupIdentity(myInitialLeftGroupModelData.groupIdentity)
         assertNotNull(groupModel)
-        assertEquals(UserState.LEFT, groupModel.data.value?.userState)
+        assertEquals(UserState.LEFT, groupModel.data?.userState)
         assertUnsuccessfulDisband(
             groupModel,
             GroupDisbandIntent.DISBAND,
@@ -237,7 +237,7 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         val groupModel =
             groupModelRepository.getByGroupIdentity(myInitialLeftGroupModelData.groupIdentity)
         assertNotNull(groupModel)
-        assertEquals(UserState.LEFT, groupModel.data.value?.userState)
+        assertEquals(UserState.LEFT, groupModel.data?.userState)
         assertUnsuccessfulDisband(
             groupModel,
             GroupDisbandIntent.DISBAND,
@@ -252,7 +252,7 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
 
         groupModelRepository.persistRemovedGroup(groupModel.groupIdentity)
-        assertNull(groupModel.data.value)
+        assertNull(groupModel.data)
 
         assertUnsuccessfulDisband(
             groupModel,
@@ -268,7 +268,7 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
 
         groupModelRepository.persistRemovedGroup(groupModel.groupIdentity)
-        assertNull(groupModel.data.value)
+        assertNull(groupModel.data)
 
         assertUnsuccessfulDisband(
             groupModel,
@@ -283,8 +283,8 @@ class DisbandGroupFlowTest : GroupFlowTest() {
             groupModelRepository.getByGroupIdentity(myInitialNotesGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         assertEquals(myContact.identity, groupModel.groupIdentity.creatorIdentity)
-        assertEquals(emptySet(), groupModel.data.value?.otherMembers)
-        assertEquals(UserState.MEMBER, groupModel.data.value?.userState)
+        assertEquals(emptySet(), groupModel.data?.otherMembers)
+        assertEquals(UserState.MEMBER, groupModel.data?.userState)
 
         assertSuccessfulDisband(
             groupModel,
@@ -299,8 +299,8 @@ class DisbandGroupFlowTest : GroupFlowTest() {
             groupModelRepository.getByGroupIdentity(myInitialNotesGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         assertEquals(myContact.identity, groupModel.groupIdentity.creatorIdentity)
-        assertEquals(emptySet(), groupModel.data.value?.otherMembers)
-        assertEquals(UserState.MEMBER, groupModel.data.value?.userState)
+        assertEquals(emptySet(), groupModel.data?.otherMembers)
+        assertEquals(UserState.MEMBER, groupModel.data?.userState)
 
         assertSuccessfulDisband(
             groupModel,
@@ -315,8 +315,8 @@ class DisbandGroupFlowTest : GroupFlowTest() {
             groupModelRepository.getByGroupIdentity(myInitialNotesGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         assertEquals(myContact.identity, groupModel.groupIdentity.creatorIdentity)
-        assertEquals(emptySet(), groupModel.data.value?.otherMembers)
-        assertEquals(UserState.MEMBER, groupModel.data.value?.userState)
+        assertEquals(emptySet(), groupModel.data?.otherMembers)
+        assertEquals(UserState.MEMBER, groupModel.data?.userState)
 
         assertSuccessfulDisband(
             groupModel,
@@ -331,8 +331,8 @@ class DisbandGroupFlowTest : GroupFlowTest() {
             groupModelRepository.getByGroupIdentity(myInitialNotesGroupModelData.groupIdentity)
         assertNotNull(groupModel)
         assertEquals(myContact.identity, groupModel.groupIdentity.creatorIdentity)
-        assertEquals(emptySet(), groupModel.data.value?.otherMembers)
-        assertEquals(UserState.MEMBER, groupModel.data.value?.userState)
+        assertEquals(emptySet(), groupModel.data?.otherMembers)
+        assertEquals(UserState.MEMBER, groupModel.data?.userState)
 
         assertSuccessfulDisband(
             groupModel,
@@ -373,10 +373,10 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         when (intent) {
             GroupDisbandIntent.DISBAND -> assertEquals(
                 UserState.LEFT,
-                groupModel.data.value?.userState,
+                groupModel.data?.userState,
             )
 
-            GroupDisbandIntent.DISBAND_AND_REMOVE -> assertNull(groupModel.data.value)
+            GroupDisbandIntent.DISBAND_AND_REMOVE -> assertNull(groupModel.data)
         }
     }
 
@@ -385,11 +385,11 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         intent: GroupDisbandIntent,
         reflectionExpectation: ReflectionExpectation,
     ) {
-        val groupModelDataBefore = groupModel.data.value
+        val groupModelDataBefore = groupModel.data
         assertIs<GroupFlowResult.Failure>(
             runGroupDisband(groupModel, intent, reflectionExpectation),
         )
-        val groupModelDataAfter = groupModel.data.value
+        val groupModelDataAfter = groupModel.data
         // Assert that the group model has not changed
         assertEquals(groupModelDataBefore, groupModelDataAfter)
     }
@@ -399,7 +399,7 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         intent: GroupDisbandIntent,
         reflectionExpectation: ReflectionExpectation,
     ): GroupFlowResult {
-        val groupModelData = groupModel.data.value
+        val groupModelData = groupModel.data
 
         // Prepare task manager and group flow dispatcher
         val taskManager = ControlledTaskManager(

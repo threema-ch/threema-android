@@ -26,6 +26,7 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceStore
 import ch.threema.common.now
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
@@ -87,7 +88,7 @@ class GroupModelTest {
                 synchronizedAt = now,
                 lastUpdate = null,
                 isArchived = false,
-                precomputedColorIndex = 0.toUByte(),
+                precomputedIdColor = IdColor(0),
                 groupDescription = "Description",
                 groupDescriptionChangedAt = now,
                 otherMembers = members,
@@ -167,9 +168,8 @@ class GroupModelTest {
         val createdAt = now
         val synchronizedAt = now
         val lastUpdate = null
-        val deleted = false
         val isArchived = false
-        val colorIndex = 0.toUByte()
+        val idColor = IdColor(0)
         val groupDesc = "Description"
         val groupDescChangedAt = now
         val members = setOf("AAAAAAAA", "BBBBBBBB")
@@ -182,7 +182,7 @@ class GroupModelTest {
                 synchronizedAt = synchronizedAt,
                 lastUpdate = lastUpdate,
                 isArchived = isArchived,
-                precomputedColorIndex = colorIndex,
+                precomputedIdColor = IdColor(idColor.colorIndex),
                 groupDescription = groupDesc,
                 groupDescriptionChangedAt = groupDescChangedAt,
                 otherMembers = members,
@@ -193,14 +193,14 @@ class GroupModelTest {
             coreServiceManagerMock,
         )
 
-        val value = group.data.value!!
+        val value = group.data!!
         assertEquals(groupIdentity, value.groupIdentity)
         assertEquals(name, value.name)
         assertEquals(createdAt, value.createdAt)
         assertEquals(synchronizedAt, value.synchronizedAt)
         assertEquals(lastUpdate, value.lastUpdate)
         assertEquals(isArchived, value.isArchived)
-        assertEquals(colorIndex, value.colorIndex)
+        assertEquals(idColor, value.idColor)
         assertEquals(groupDesc, value.groupDescription)
         assertEquals(groupDescChangedAt, value.groupDescriptionChangedAt)
         assertEquals(members, value.otherMembers)
@@ -208,7 +208,7 @@ class GroupModelTest {
 
     @Test
     fun testConstructorValidGroupIdentity() {
-        val data = createTestGroup().data.value!!.copy(
+        val data = createTestGroup().data!!.copy(
             groupIdentity = GroupIdentity("AAAAAAAA", 42),
         )
         val model = GroupModel(
@@ -225,7 +225,7 @@ class GroupModelTest {
 
     @Test
     fun testConstructorValidateCreatorIdentity() {
-        val testData = createTestGroup().data.value!!
+        val testData = createTestGroup().data!!
         val groupIdentity = GroupIdentity("AAAAAAAA", 42)
         val data = testData.copy(groupIdentity = groupIdentity)
         assertFailsWith<AssertionError> {
@@ -240,7 +240,7 @@ class GroupModelTest {
 
     @Test
     fun testConstructorValidateGroupId() {
-        val testData = createTestGroup().data.value!!
+        val testData = createTestGroup().data!!
         val groupIdentity = GroupIdentity("AAAAAAAA", 42)
         val data = testData.copy(groupIdentity = groupIdentity)
         assertFailsWith<AssertionError> {

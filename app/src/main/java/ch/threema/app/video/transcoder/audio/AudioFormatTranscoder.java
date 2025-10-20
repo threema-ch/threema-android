@@ -193,28 +193,18 @@ public class AudioFormatTranscoder extends AbstractAudioTranscoder {
     }
 
     /**
-     * Detect the most optimal decoder. This method is only available with
-     * Android SDK >= {@link Build.VERSION_CODES#LOLLIPOP}
+     * Detect the most optimal decoder.
      *
      * @throws UnsupportedAudioFormatException if there is no decoder for this format available.
      * @throws IOException                     If the codec creation failed.
      */
     private MediaCodec getDecoderFor(MediaFormat inputFormat) throws UnsupportedAudioFormatException, IOException {
-
         final MediaCodecList mediaCodecList = new MediaCodecList(MediaCodecList.ALL_CODECS);
-
-        if (Build.VERSION.SDK_INT == Build.VERSION_CODES.LOLLIPOP) {
-            // Workaround for Framework bug, see {@link MediaCodecList#findDecoderForFormat)
-            inputFormat.setString(MediaFormat.KEY_FRAME_RATE, null);
-        }
-
         @Nullable final String codec = mediaCodecList.findDecoderForFormat(inputFormat);
-
         if (codec == null) {
             logger.warn("Could not find a codec for input format {}", inputFormat);
             throw new UnsupportedAudioFormatException(inputFormat);
         }
-
         return MediaCodec.createByCodecName(codec);
     }
 

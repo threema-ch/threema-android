@@ -69,7 +69,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/no_match_button"
-            style="@style/Threema.MaterialButton.Action.Outline.Info"
+            style="@style/Threema.MaterialButton.Outlined.Secondary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_match_question" />

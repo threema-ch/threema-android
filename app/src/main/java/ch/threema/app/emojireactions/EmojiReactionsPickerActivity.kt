@@ -34,12 +34,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.emojis.EmojiPicker
 import ch.threema.app.emojis.EmojiService
 import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
+import ch.threema.app.services.MessageService
 import ch.threema.app.ui.RootViewDeferringInsetsCallback
 import ch.threema.app.ui.SingleToast
 import ch.threema.app.ui.TranslateDeferringInsetsAnimationCallback
@@ -56,16 +56,19 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("EmojiReactionPickerActivity")
+private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsPickerActivity")
 
 class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.EmojiKeyListener {
     init {
         logScreenVisibility(logger)
     }
 
-    private var emojiService: EmojiService = ThreemaApplication.requireServiceManager().emojiService
-    private var messageService = ThreemaApplication.requireServiceManager().messageService
+    private val emojiService: EmojiService by inject()
+    private val messageService: MessageService by inject()
+    private val emojiReactionsRepository: EmojiReactionsRepository by inject()
+
     private var messageModel: AbstractMessageModel? = null
     private lateinit var parentLayout: LinearLayout
     private var emojiPicker: EmojiPicker? = null
@@ -73,17 +76,16 @@ class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.Emoji
     override fun getLayoutResource(): Int = R.layout.activity_emojireactions_picker
 
     override fun initActivity(savedInstanceState: Bundle?): Boolean {
+        if (!super.initActivity(savedInstanceState)) {
+            return false
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0)
         }
 
         messageModel = IntentDataUtil.getAbstractMessageModel(intent, messageService)
         if (messageModel == null) {
-            finish()
-            return false
-        }
-
-        if (!super.initActivity(savedInstanceState)) {
             finish()
             return false
         }
@@ -127,14 +129,11 @@ class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.Emoji
         }
 
         lifecycleScope.launch {
-            val emojiReactionsRepository: EmojiReactionsRepository =
-                ThreemaApplication.requireServiceManager().modelRepositories.emojiReaction
-            val emojiReactionsModel: EmojiReactionsModel? =
-                emojiReactionsRepository.getReactionsByMessage(messageModel!!)
+            val emojiReactionsModel: EmojiReactionsModel? = emojiReactionsRepository.getReactionsByMessage(messageModel!!)
 
             emojiReactionsModel?.let { reactionModel ->
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    reactionModel.data.firstOrNull()
+                    reactionModel.dataFlow.firstOrNull()
                         .let { emojiReactions: List<EmojiReactionData>? ->
                             emojiPicker?.let { picker ->
                                 // inflate emoji picker
@@ -191,7 +190,7 @@ class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.Emoji
 
         // If this is a group message, we have to check if we are still an active member of the group
         if (messageReceiver is GroupMessageReceiver) {
-            messageReceiver.groupModel?.data?.value?.let { currentGroupModelData ->
+            messageReceiver.groupModel?.data?.let { currentGroupModelData ->
                 if (!currentGroupModelData.isMember) {
                     SingleToast.getInstance().showLongText(getString(R.string.you_are_not_a_member_of_this_group))
                     finish()

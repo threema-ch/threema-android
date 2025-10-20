@@ -118,7 +118,7 @@ public class MoveGestureDetector extends BaseGestureDetector {
         mFocusDeltaExternal = mSkipNextMoveEvent ? FOCUS_DELTA_ZERO : new PointF(mCurrFocusInternal.x - mPrevFocusInternal.x, mCurrFocusInternal.y - mPrevFocusInternal.y);
 
         // - Don't directly use mFocusInternal (or skipping will occur). Add
-        // 	 unskipped delta values to mFocusExternal instead.
+        // unskipped delta values to mFocusExternal instead.
         mFocusExternal.x += mFocusDeltaExternal.x;
         mFocusExternal.y += mFocusDeltaExternal.y;
     }

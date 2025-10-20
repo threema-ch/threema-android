@@ -27,6 +27,7 @@ import android.view.View;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -41,14 +42,13 @@ import ch.threema.app.AppConstants;
 import androidx.compose.ui.platform.ComposeView;
 import ch.threema.app.R;
 import ch.threema.app.compose.common.interop.ComposeJavaBridge;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.groupflows.GroupCreateProperties;
-import ch.threema.app.groupflows.ProfilePicture;
 import ch.threema.app.dialogs.ContactEditDialog;
-import ch.threema.app.services.GroupFlowDispatcher;
+import ch.threema.app.profilepicture.CheckedProfilePicture;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.CoroutinesExtensionKt;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.GroupModel;
@@ -63,6 +63,9 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
 
     private static final String BUNDLE_GROUP_IDENTITIES = "grId";
 
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     private String[] groupIdentities;
 
     @Override
@@ -75,6 +78,11 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
         logger.debug("onCreate");
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+
+        if (!dependencies.isAvailable()) {
+            finish();
+            return;
+        }
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -97,14 +105,6 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
         @NonNull final Set<String> groupIdentities,
         @Nullable final File avatarFile
     ) {
-        final @NonNull GroupFlowDispatcher groupFlowDispatcher;
-        try {
-            groupFlowDispatcher = serviceManager.getGroupFlowDispatcher();
-        } catch (ThreemaException e) {
-            logger.error("Could not get group flow dispatcher", e);
-            return;
-        }
-
         final @NonNull ComposeView composeDialogView = findViewById(R.id.loading_dialog_container);
         composeDialogView.setVisibility(View.VISIBLE);
         ComposeJavaBridge.setLoadingWithTimeoutDialog(
@@ -115,11 +115,11 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
             true
         );
 
-        Deferred<GroupFlowResult> createGroupFlowResultDeferred = groupFlowDispatcher.runCreateGroupFlow(
+        Deferred<GroupFlowResult> createGroupFlowResultDeferred = dependencies.getGroupFlowDispatcher().runCreateGroupFlow(
             this,
             new GroupCreateProperties(
                 groupName,
-                new ProfilePicture(avatarFile),
+                CheckedProfilePicture.getOrConvertFromFile(avatarFile),
                 groupIdentities
             )
         );
@@ -158,7 +158,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
     private void onGroupCreatedSuccessfully(@NonNull GroupModel newModel) {
         RuntimeUtil.runOnUiThread(() -> {
             Intent intent = new Intent(this, ComposeMessageActivity.class);
-            intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (int) newModel.getDatabaseId());
+            intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, newModel.getDatabaseId());
             setResult(RESULT_OK);
             startActivity(intent);
             finish();

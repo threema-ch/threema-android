@@ -54,12 +54,11 @@ import com.google.common.collect.ListMultimap;
 
 import org.slf4j.Logger;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.regex.PatternSyntaxException;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -98,7 +97,7 @@ public class AndroidContactUtil {
     private static final String[] NAME_PROJECTION = new String[]{
         ContactsContract.Contacts.DISPLAY_NAME,
         ContactsContract.Contacts.SORT_KEY_ALTERNATIVE,
-        ContactsContract.Contacts._ID
+        ContactsContract.Contacts.LOOKUP_KEY
     };
 
     private static final String[] RAW_CONTACT_PROJECTION = new String[]{
@@ -160,21 +159,12 @@ public class AndroidContactUtil {
             return null;
         }
 
-        ContactModelData data = contactModel.getData().getValue();
+        ContactModelData data = contactModel.getData();
 
         if (data != null) {
             final String androidContactLookupKey = data.androidContactLookupKey;
             if (androidContactLookupKey != null) {
-                Uri contactLookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, androidContactLookupKey);
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    try {
-                        contactLookupUri = ContactsContract.Contacts.lookupContact(contentResolver, contactLookupUri);
-                    } catch (Exception e) {
-                        logger.error("Could not lookup the contact with identity {}", contactModel.getIdentity(), e);
-                        return null;
-                    }
-                }
-                return contactLookupUri;
+                return Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, androidContactLookupKey);
             }
         }
         return null;
@@ -195,7 +185,7 @@ public class AndroidContactUtil {
             return;
         }
 
-        ContactModelData data = contactModel.getData().getValue();
+        ContactModelData data = contactModel.getData();
         if (data == null) {
             logger.warn("Contact model data is null");
             return;
@@ -215,10 +205,10 @@ public class AndroidContactUtil {
             if (bitmap != null) {
                 try {
                     fileService.writeAndroidDefinedProfilePicture(contactModel.getIdentity(), BitmapUtil.bitmapToByteArray(bitmap, Bitmap.CompressFormat.PNG, 100));
-                    contactModel.setLocalAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
+                    contactModel.setLocalAvatarExpires(Instant.ofEpochMilli(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
                     return;
                 } catch (Exception e) {
-                    logger.error("Exception", e);
+                    logger.error("Exception while writing android defined profile picture", e);
                 }
             } else {
                 // delete old avatar
@@ -228,7 +218,7 @@ public class AndroidContactUtil {
                 logger.info("Removing android defined profile picture for identity {}", contactModel.getIdentity());
                 boolean success = fileService.removeAndroidDefinedProfilePicture(contactModel.getIdentity());
                 if (success) {
-                    contactModel.setLocalAvatarExpires(new Date(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
+                    contactModel.setLocalAvatarExpires(Instant.ofEpochMilli(System.currentTimeMillis() + DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY));
                     return;
                 }
             }
@@ -249,7 +239,7 @@ public class AndroidContactUtil {
         @NonNull ContactModel contactModel,
         @Nullable AndroidContactSyncLogger androidContactSyncLogger
     ) throws ThreemaException {
-        ContactModelData data = contactModel.getData().getValue();
+        ContactModelData data = contactModel.getData();
         if (data == null) {
             logger.warn("Contact model data is null");
             return;
@@ -306,14 +296,18 @@ public class AndroidContactUtil {
             null)) {
 
             if (nameCursor != null && nameCursor.moveToFirst()) {
-                long contactId = nameCursor.getLong(nameCursor.getColumnIndex(ContactsContract.Contacts._ID));
-                contactName = this.getContactNameFromContactId(contactId);
+                String lookupKey = nameCursor.getString(nameCursor.getColumnIndexOrThrow(ContactsContract.Contacts.LOOKUP_KEY));
+                if (lookupKey == null) {
+                    logger.error("Cannot get contact name as contact lookup key is null");
+                    return null;
+                }
+                contactName = this.getContactNameFromLookupKey(lookupKey);
 
                 // fallback
                 if (contactName.firstName == null && contactName.lastName == null) {
                     logger.info("Falling back to alternative sort key.");
                     //lastname, firstname
-                    String alternativeSortKey = nameCursor.getString(nameCursor.getColumnIndex(ContactsContract.Contacts.SORT_KEY_ALTERNATIVE));
+                    String alternativeSortKey = nameCursor.getString(nameCursor.getColumnIndexOrThrow(ContactsContract.Contacts.SORT_KEY_ALTERNATIVE));
 
                     if (!TestUtil.isEmptyOrNull(alternativeSortKey)) {
                         String[] lastNameFirstName = alternativeSortKey.split(",");
@@ -327,7 +321,7 @@ public class AndroidContactUtil {
                         }
                     } else {
                         // no contact name found
-                        logger.info("No contact name found for contact ID {}", contactId);
+                        logger.info("No contact name found for lookup key '{}'", lookupKey);
                         return null;
                     }
                 } else {
@@ -336,8 +330,8 @@ public class AndroidContactUtil {
             } else {
                 logger.info("Contact not found");
             }
-        } catch (PatternSyntaxException e) {
-            logger.error("Exception", e);
+        } catch (IllegalArgumentException e) {
+            logger.error("Could not get name of contact", e);
         }
         return contactName;
     }
@@ -347,12 +341,12 @@ public class AndroidContactUtil {
      * - First we will consider the Structured Name of the contact
      * - If the Structured Name is lacking either a first name, a last name, or both, we will fall back to the Display Name
      *
-     * @param contactId Id of the Android contact
+     * @param lookupKey the lookup key of the Android contact
      * @return ContactName object containing first and last name
      */
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
-    private @NonNull ContactName getContactNameFromContactId(long contactId) {
-        Map<String, String> structure = this.getStructuredNameByContactId(contactId);
+    private @NonNull ContactName getContactNameFromLookupKey(@NonNull String lookupKey) {
+        Map<String, String> structure = this.getStructuredNameByLookupKey(lookupKey);
 
         String firstName = structure.get(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME);
         String lastName = structure.get(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME);
@@ -401,14 +395,14 @@ public class AndroidContactUtil {
     }
 
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
-    private @NonNull Map<String, String> getStructuredNameByContactId(long id) {
+    private @NonNull Map<String, String> getStructuredNameByLookupKey(@NonNull String lookupKey) {
         Map<String, String> structuredName = new TreeMap<>();
 
         Cursor cursor = this.contentResolver.query(
             ContactsContract.Data.CONTENT_URI,
             STRUCTURED_NAME_FIELDS,
-            ContactsContract.Data.CONTACT_ID + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
-            new String[]{String.valueOf(id), ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE},
+            ContactsContract.Data.LOOKUP_KEY + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
+            new String[]{lookupKey, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE},
             null);
 
         if (cursor != null) {
@@ -460,13 +454,13 @@ public class AndroidContactUtil {
         Uri insertUri = ContactsContract.Data.CONTENT_URI.buildUpon().appendQueryParameter(ContactsContract.CALLER_IS_SYNCADAPTER, "true").build();
 
         /* Some contact apps may require a name */
-		/*
-		builder = ContentProviderOperation.newInsert(insertUri);
-		builder.withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, backReference);
-		builder.withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
-		builder.withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, identity);
-		contentProviderOperations.add(builder.build());
-		*/
+        /*
+        builder = ContentProviderOperation.newInsert(insertUri);
+        builder.withValueBackReference(ContactsContract.CommonDataKinds.StructuredName.RAW_CONTACT_ID, backReference);
+        builder.withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE);
+        builder.withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, identity);
+        contentProviderOperations.add(builder.build());
+        */
 
         /* Create a Data record of custom type */
         builder = ContentProviderOperation.newInsert(insertUri);

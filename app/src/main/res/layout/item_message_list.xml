@@ -246,14 +246,14 @@
             android:id="@+id/unread_bar"
             android:layout_width="5dp"
             android:layout_height="match_parent"
-            android:background="@color/messagelist_highlight_color"
+            android:background="@color/material_red"
             android:visibility="visible" />
 
         <View
             android:id="@+id/pin_bar"
             android:layout_width="5dp"
             android:layout_height="match_parent"
-            android:background="@color/messagelist_pinned_color"
+            android:background="@color/message_list_pin_color"
             android:visibility="visible" />
     </LinearLayout>
 

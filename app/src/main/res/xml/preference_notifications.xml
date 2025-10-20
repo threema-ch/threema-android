@@ -27,7 +27,7 @@
             android:title="@string/group_calls" />
     </PreferenceCategory>
 
-    <!-- legacy notification settings, only shown on Android 7 and older -->
+    <!-- legacy notification settings, only shown on Android 7 -->
     <PreferenceCategory
         android:key="@string/preferences__single_chat_notifications_legacy"
         android:title="@string/prefs_system_notifications">

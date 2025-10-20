@@ -29,11 +29,12 @@ import ch.threema.domain.protocol.csp.messages.EditMessageData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import java.util.Date
 import kotlinx.serialization.Serializable
 
 class OutgoingContactEditMessageTask(
-    private val toIdentity: String,
+    private val toIdentity: Identity,
     private val messageModelId: Int,
     private val messageId: MessageId,
     private val editedText: String,
@@ -73,7 +74,7 @@ class OutgoingContactEditMessageTask(
 
     @Serializable
     class OutgoingContactEditMessageData(
-        private val toIdentity: String,
+        private val toIdentity: Identity,
         private val messageModelId: Int,
         private val messageId: ByteArray,
         private val editedText: String,

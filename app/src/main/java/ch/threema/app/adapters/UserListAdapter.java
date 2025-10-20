@@ -213,7 +213,7 @@ public class UserListAdapter extends FilterableListAdapter {
 
         // load avatars asynchronously
         AvatarListItemUtil.loadAvatar(
-            contactModel,
+            contactModel.getIdentity(),
             this.contactService,
             holder,
             requestManager
@@ -292,7 +292,7 @@ public class UserListAdapter extends FilterableListAdapter {
 
     @Override
     public int getCount() {
-        return contactModels != null ? contactModels.size() : 0;
+        return contactModels.size();
     }
 
     @Override

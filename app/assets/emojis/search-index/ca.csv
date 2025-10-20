@@ -123,6 +123,7 @@
 😪|cansada|cansat|cara de son|dormint|dormir|plorant|son|trista
 🤤|bava|bavejant|cara que baveja
 😴|badallar|becaina|bona nit|cansada|cansat|cara de dormir|cara de son|dormint|dormir|el que sigui|hora de dormir|llit|son|zzz
+🫩|cansament|cara que fa ulleres|esgotament|son
 😷|cara amb màscara|cara amb mascareta|dentista|dermatòleg|dermatòloga|doctora|dr.|dra.|gèrmens|malalta|malaltia|màscara|mascareta|medecina|refredat
 🤒|cara amb termòmetre|malalta|malaltia|termòmetre
 🤕|ai|bena|cap embenat|cara amb el cap embenat|ferida|ferit|lesió
@@ -242,7 +243,7 @@
 🫷|aturar|bloquejar|empènyer|esperar|esquerra|mà que empeny cap a l’esquerra|prou|rebutjar|xocar
 🫸|aturar|bloquejar|dreta|empènyer|esperar|mà que empeny cap a la dreta|prou|rebutjar
 👌|acceptació|d’acord|entesos|genial|impressionant|mà d’acceptació|ok|perfecte|senyal d’aprovació amb la mà
-🤌|dits junts|gest de la mà|interrogació|paciència|què dius|relaxació|sarcàstic
+🤌|dits junts|gest de la mà|interrogació|italià|paciència|què dius|relaxació|sarcàstic
 🤏|dits|mà que pessiga|petit|quantitat petita|una mica
 ✌️|mà|pau|senyal de la victòria|victòria
 🤞|creuar|creuats|dits|mà|sort
@@ -281,7 +282,7 @@
 👂|cos|escoltar|oïda|orella|orelles|sentir|so
 🦻|accessibilitat|orella amb audiòfon|problema d’audició
 👃|cos|nassos|olors|pudor|tafanera
-🧠|cervell|intel·ligent
+🧠|cervell|coneixement|intel·ligent|llest|saviesa
 🫀|anatomia|batec|cardiologia|cor real|òrgan|pols|vermell
 🫁|exhalació|inhalació|òrgan|pulmó|pulmons|respiració|respirar
 🦷|blanc|dentista|dents|perlí|perlina
@@ -509,9 +510,9 @@
 ⛹️|bàsquet|basquetbol|esportista|home amb una pilota|home fent botar una pilota|jugador de bàsquet|jugador de basquetbol|persona amb una pilota|persona fent botar una pilota|pilota|tir lliure
 ⛹️‍♂️|home amb una pilota|masculí|pilota
 ⛹️‍♀️|dona amb una pilota|femení|pilota
-🏋️|aixecador|culturista|entrenament|esport|exercici|halterofília|home que aixeca peses|persona que aixeca peses|persona que practica halterofília|pesa
-🏋️‍♂️|aixecador|home que aixeca peses|masculí|peses
-🏋️‍♀️|aixecadora|dona que aixeca peses|femení|peses
+🏋️|aixecador|culturista|entrenament|esport|exercici|halterofília|home que aixeca pesos|persona que aixeca pesos|persona que practica halterofília|pes
+🏋️‍♂️|aixecador|home que aixeca pesos|masculí|pesos
+🏋️‍♀️|aixecadora|dona que aixeca pesos|femení|pesos
 🚴|bicicleta|ciclisme|ciclista|esport|persona amb bicicleta|persona en bicicleta|persona pedalejant
 🚴‍♂️|bicicleta|ciclisme|ciclista|home|masculí
 🚴‍♀️|anar amb bicicleta|bicicleta|ciclisme|ciclista|dona amb bicicleta|femení
@@ -554,6 +555,7 @@
 🧑‍🧒|adult|família|infant
 🧑‍🧒‍🧒|adult|família|infant
 👣|caminar|cos|descalça|empremta|petjades|roba|vestit
+🫆|empremta dactilar|empremta digital|forense|identitat|seguretat
 🐵|animal|cara de mona|curiosa|mona
 🐒|animal|mico|mona
 🦍|animal|goril·la|simi
@@ -592,7 +594,7 @@
 🐏|animals|àries|banyes|mardà|marrà|ovella|zodíac|zoo
 🐑|animal|bel|femella|granja|llana|ovella|pècora|xai
 🐐|animals|cabra|capricorn|granja|llet|zodíac
-🐪|animal|camell|desert|dromedari|gepa|una gepa
+🐪|animal|desert|dromedari|gepa|una gepa
 🐫|animal|camell amb dues gepes|camell bactrià|dues gepes|gepa|gepes
 🦙|alpaca|animal|guanac|llama|llana|vicunya
 🦒|girafa|taques
@@ -660,9 +662,14 @@
 🐡|animal|globus|peix
 🦈|animal|peix|tauró
 🐙|animal|criatura|mar|oceà|pop
-🐚|animal|cargol de mar|closca|conquilla|espiral|mar|platja
+🐚|animal|caragol de mar|cargol de mar|closca|conquilla|espiral|mar|platja
 🪸|canvi climàtic|corall|escullera|mar|oceà
 🪼|animal|aquari|coïssor|cremada|dolor|invertebrat|marí|medusa|oceà|picada|plàncton|tentacles
+🦀|càncer|cranc|horòscop|zodíac
+🦞|animal|bisque|llagosta vermella|marisc|pinces|sopa de marisc
+🦐|crustaci|gamba|llagostí|marisc|menjar
+🦑|animal|calamar|menjar|molusc
+🦪|busseig|ostra|perla
 🐌|animal|caragol|cargol|jardí|llimac|natura
 🦋|animal|bonica|insecte|papallona
 🐛|animal|bestiola|eruga|insecte|jardí
@@ -706,9 +713,10 @@
 🪹|branca|covar|llar|niu buit
 🪺|covar|niu amb ous|ocell|ous
 🍄|bolet verinós|fong|mario|planta
+🪾|caiguda de la fulla|fulla caduca|hivern|sequera
 🍇|dionís|dionisi|fruita|planta|raïm
 🍈|cantalup|fruita|meló|planta
-🍉|fruita|meló d’aigua|meló de moro|planta|síndria
+🍉|fruita|meló d’aigua|meló d’alger|meló de moro|planta|síndria
 🍊|cítric|fruita|mandarina|nectarina|planta|taronja|vitamina c
 🍋|àcida|cítric|fruita|llimona|planta
 🍋‍🟩|àcid|aliment|cítric|fruita|llima|menjar|planta|refrescant|tropical|verd
@@ -744,6 +752,7 @@
 🫚|arrel de gingebre|beguda|espècia|gingebre|gínger|herba|natural|salut
 🫛|beina de pèsol|edamame|fesol|llegum|mongeta|pèsol|soja|verdura
 🍄‍🟫|aliment|bolet marró|fong|menjar|natura|vegetal|vegetarià|xampinyó
+🫜|arrel|hort|rave|remolatxa|verdura
 🍞|blat|gra|llesca|menjar|pa|restaurant|torrada
 🥐|brioixeria|croissant|francès|menjar|pa
 🥖|baguet|barra|menjar|pa
@@ -795,11 +804,6 @@
 🥟|cresta japonesa|cresta xinesa|empanada|gyōza|jiaozi|pierogui
 🥠|fortuna|futur|galeta de la sort|profecia|sort
 🥡|bastonets|emportar|envàs|menjar a domicili|menjar per emportar|menjar xinès|paper
-🦀|càncer|cranc|horòscop|zodíac
-🦞|animal|bisque|llagosta vermella|marisc|pinces|sopa de marisc
-🦐|crustaci|gamba|llagostí|marisc|menjar
-🦑|animal|calamar|menjar|molusc
-🦪|busseig|ostra|perla
 🍦|dolç|gelat de màquina|màquina|menjar|postres|restaurant
 🍧|dolç|gelat|granissat|picat|postres
 🍨|crema|dolç|gelat|menjar|postres|restaurant
@@ -945,7 +949,7 @@
 🛹|monopatí|patí|patinadora|rodes
 🛼|esport|patí de rodes|rodes
 🚏|autobús|bus|parada d’autobús|parada de bus
-🛣️|autopista|autovia|carretera
+🛣️|autopista|autovia|carretera|via ràpida
 🛤️|ferrocarril|tren|via de tren
 🛢️|barril de petroli|bidó de petroli|petroli
 ⛽|assortidor de gasolina|benzina|benzinera|combustible|gasolina
@@ -1068,7 +1072,7 @@
 🎗️|celebració|cinta|commemorar|llaç commemoratiu
 🎟️|accés|admissió|bitllet d’entrada|bitllets d’entrada|entrada
 🎫|admissió|entrada|resguard|tiquet
-🎖️|celebració|medalla|militar|premi
+🎖️|celebració|condecoració|condecorar|medalla|militar|premi
 🏆|campió|campiona|esport|guanyar|premi|trofeu|victòria
 🏅|esport|guanyadora|medalla|or|premi
 🥇|medalla d’or|or|posició|primer
@@ -1097,7 +1101,7 @@
 ⛸️|gel|patí|patinar sobre gel|patinatge sobre gel|patins
 🎣|canya de pescar|entreteniment|esport|peix|pescar
 🤿|busseig|immersió lleugera|submarinisme amb tub|ulleres de busseig
-🎽|atletisme|banda|córrer|samarreta per córrer
+🎽|atletisme|banda|córrer|samarreta de tirants|samarreta per córrer
 🎿|esport|esquiar|esquís|neu
 🛷|lliscar|neu|trineu
 🥌|esport|gel|joc|pedra de cúrling
@@ -1204,6 +1208,7 @@
 🪘|conga|instrument|percussió|ritme|timbal
 🪇|ball|diversió|festa|instrument|maraques|música|percussió|ritme|sacsejar|sonall
 🪈|flauta dolça|flautista|instrument de vent de fusta|música|orquestra|vent
+🪉|amor|arpa|cupido|instrument|música|orquestra
 📱|comunicació|mòbil|telèfon
 📲|comunicació|fletxa|mòbil|rebre|telèfon mòbil amb fletxa|trucar
 ☎️|telèfon
@@ -1296,7 +1301,7 @@
 📈|a l’alça|amunt i cap a la dreta|augment|cap amunt|creixement|dades|gràfic d’augment|tendència
 📉|a la baixa|cap avall|dades|descendent|disminució|gràfic de disminució|negatiu|tendència
 📊|barres|dades|gràfic de barres
-📋|clip|llista de tasques pendents|notes|petjapapers|porta-retalls
+📋|clip|llista de tasques pendents|notes|petjapapers|porta-retalls|portanotes
 📌|agulla|collage|xinxeta
 📍|mapa|rodona|ubicació|xinxeta
 📎|clip
@@ -1334,6 +1339,7 @@
 🧰|caixa d’eines|caixa vermella|eines|mecànic
 🧲|atracció|ferradura|forma d’u|imant|magnètic|positiu negatiu
 🪜|escala de mà|esglaó|graó|pujar
+🪏|cavar|forat|pala
 🧪|ciència|experiment|laboratori|química|tub d’assaig
 🧫|bacteri|biòleg|biòloga|biologia|cultiu|laboratori|placa de cultiu|placa de petri
 🧬|adn|biòleg|biòloga|evolució|genètica|vida
@@ -1477,6 +1483,7 @@
 ➰|bucle|llaç arrissat
 ➿|bucle|doble|enrotllat|llaç
 〽️|alternança|marca d’alternança de la part|part|signe d’alternança
+🫟|esquitx|holi|pintura|taca|vessament
 🔠|abcd|botó de lletres llatines en majúscules|llatines|lletres|majúscules
 🔡|abcd|botó de lletres llatines en minúscules|entrada|llatines|lletres|minúscules
 🔢|1234|botó de números|dígits|entrada|números per introduir|xifres
@@ -1805,3 +1812,4 @@
 🏴󠁧󠁢󠁥󠁮󠁧󠁿|anglaterra
 🏴󠁧󠁢󠁳󠁣󠁴󠁿|escòcia
 🏴󠁧󠁢󠁷󠁬󠁳󠁿|gal·les
+🇨🇶|sark

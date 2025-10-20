@@ -22,8 +22,8 @@
 package ch.threema.app.ui;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -55,6 +55,8 @@ public class ControllerView extends MaterialCardView {
 
     private boolean hasBackgroundImage = false;
     private boolean isUsedForOutboxMessage = false;
+    @DrawableRes
+    private int lastIconRes = 0;
 
     public final static int STATUS_NONE = 0;
     public final static int STATUS_PROGRESSING = 1;
@@ -84,7 +86,7 @@ public class ControllerView extends MaterialCardView {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         inflater.inflate(R.layout.conversation_list_item_controller_view, this);
 
-        this.setCardBackgroundColor(getResources().getColor(android.R.color.transparent));
+        this.setCardBackgroundColor(getBackgroundColorStateList());
         this.setShapeAppearanceModel(ShapeAppearanceModel.builder(context, 0, R.style.ShapeAppearance_Material3_Corner_Medium).build());
         this.setStrokeWidth(0);
     }
@@ -178,12 +180,16 @@ public class ControllerView extends MaterialCardView {
             }
             progressBarIndeterminate.setVisibility(VISIBLE);
         } else {
-            setVisibility(VISIBLE);
-            if (cancelable) {
-                status = STATUS_PROGRESSING;
-            } else {
-                status = STATUS_PROGRESSING_NO_CANCEL;
+            var newStatus = cancelable
+                ? STATUS_PROGRESSING
+                : STATUS_PROGRESSING_NO_CANCEL;
+            if (status == newStatus && getVisibility() == VISIBLE) {
+                // nothing has changed, no need to call requestLayout()
+                return;
             }
+
+            setVisibility(VISIBLE);
+            status = newStatus;
         }
         requestLayout();
     }
@@ -223,10 +229,14 @@ public class ControllerView extends MaterialCardView {
     }
 
     public void setIconResource(@DrawableRes int resource) {
+        if (resource == lastIconRes) {
+            return;
+        }
+        lastIconRes = resource;
         logger.debug("setImageResource");
         reset();
         hasBackgroundImage = false;
-        iconImageView.setColorFilter(getIconTintColor(), PorterDuff.Mode.SRC_IN);
+        iconImageView.setImageTintList(getIconColorStateList());
         iconImageView.setScaleType(ImageView.ScaleType.CENTER);
         iconImageView.setImageResource(resource);
     }
@@ -235,11 +245,10 @@ public class ControllerView extends MaterialCardView {
         logger.debug("setBackgroundImage");
         hasBackgroundImage = bitmap != null;
         if (bitmap != null) {
-            iconImageView.clearColorFilter();
+            iconImageView.setImageTintList(null);
             iconImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             iconImageView.setImageDrawable(new BitmapDrawable(getResources(), bitmap));
-        } else {
-            iconImageView.setBackgroundColor(getBackgroundDefaultColor());
+            lastIconRes = 0;
         }
     }
 
@@ -251,22 +260,23 @@ public class ControllerView extends MaterialCardView {
         if (this.isUsedForOutboxMessage != isOutboxMessage) {
             this.isUsedForOutboxMessage = isOutboxMessage;
             if (!hasBackgroundImage) {
-                iconImageView.setBackgroundColor(getBackgroundDefaultColor());
-                iconImageView.setColorFilter(getIconTintColor(), PorterDuff.Mode.SRC_IN);
+                iconImageView.setImageTintList(getIconColorStateList());
             }
             initProgressBars();
         }
     }
 
-    private @ColorInt int getBackgroundDefaultColor() {
-        return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorSecondary);
+    @NonNull
+    private ColorStateList getBackgroundColorStateList() {
+        return getContext().getColorStateList(R.color.controller_view_background_colorstatelist);
     }
 
     private @ColorInt int getProgressTrackIndicatorColor() {
-        return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary);
+        return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSecondary);
     }
 
-    private @ColorInt int getIconTintColor() {
-        return ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSecondary);
+    @NonNull
+    private ColorStateList getIconColorStateList() {
+        return getContext().getColorStateList(R.color.controller_view_on_background_colorstatelist);
     }
 }

@@ -21,26 +21,35 @@
 
 package ch.threema.app.voip.groupcall.sfu
 
-import android.net.Uri
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
+import androidx.core.net.toUri
 import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.domain.protocol.ProtocolStrings
+import ch.threema.common.DispatcherProvider
+import ch.threema.common.Http
+import ch.threema.common.buildNew
+import ch.threema.common.buildRequest
+import ch.threema.common.execute
+import ch.threema.common.getSuccessBodyOrThrow
 import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.SfuToken
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.protocol.getUserAgent
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.protobuf.groupcall.SfuHttpRequest
-import com.google.protobuf.ByteString
+import com.google.protobuf.kotlin.toByteString
 import java.lang.Exception
-import java.net.HttpURLConnection
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.*
-import kotlinx.coroutines.Dispatchers
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody.Companion.toRequestBody
 
 private val logger = LoggingUtil.getThreemaLogger("SfuConnectionImpl")
 
@@ -49,16 +58,20 @@ private const val SFU_PEEK_PATH_SEGMENT = "peek"
 private const val SFU_JOIN_PATH_SEGMENT = "join"
 
 @WorkerThread
-internal class SfuConnectionImpl(
+internal class SfuConnectionImpl
+@JvmOverloads
+constructor(
     private val apiConnector: APIConnector,
-    private val identityStore: IdentityStoreInterface,
+    private val identityStore: IdentityStore,
+    private val okHttpClient: OkHttpClient,
     private val version: Version,
+    private val dispatcherProvider: DispatcherProvider = DispatcherProvider.default,
 ) : SfuConnection {
     private var cachedSfuToken: SfuToken? = null
 
     @AnyThread
     override suspend fun obtainSfuToken(forceRefresh: Boolean): SfuToken {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcherProvider.io) {
             logger.debug(
                 "Obtain sfu token forceRefresh={}, cached={}",
                 forceRefresh,
@@ -81,7 +94,7 @@ internal class SfuConnectionImpl(
         callId: CallId,
     ): PeekResponse {
         logger.debug("Peek call {}", callId)
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcherProvider.io) {
             try {
                 postPeek(token, sfuBaseUrl, callId)
             } catch (e: Exception) {
@@ -98,7 +111,7 @@ internal class SfuConnectionImpl(
         callDescription: GroupCallDescription,
         dtlsFingerprint: ByteArray,
     ): JoinResponse {
-        return withContext(Dispatchers.IO) {
+        return withContext(dispatcherProvider.io) {
             try {
                 postJoin(token, sfuBaseUrl, callDescription, dtlsFingerprint)
             } catch (e: Exception) {
@@ -112,10 +125,14 @@ internal class SfuConnectionImpl(
         val url = createURL(sfuBaseUrl, SFU_VERSION, SFU_PEEK_PATH_SEGMENT, callId.hex)
         logger.info("Peeking call {} via URL {}", callId, url)
         val request = SfuHttpRequest.Peek.newBuilder()
-            .setCallId(ByteString.copyFrom(callId.bytes))
+            .setCallId(callId.bytes.toByteString())
             .build()
-        val byteResponse =
-            post(token, url, request.toByteArray(), ProtocolDefines.GC_PEEK_TIMEOUT_MILLIS)
+        val byteResponse = post(
+            token = token,
+            url = url,
+            body = request.toByteArray(),
+            timeout = ProtocolDefines.GC_PEEK_TIMEOUT_MILLIS.milliseconds,
+        )
         val body = byteResponse.body?.let { PeekResponseBody.fromSfuResponseBytes(it) }
         logger.info("Peek status for {}: {}", callId, byteResponse.statusCode)
         return PeekResponse(byteResponse.statusCode, body)
@@ -133,11 +150,15 @@ internal class SfuConnectionImpl(
         logger.info("Joining call {} via URL {}", callDescription.callId, url)
         val request = SfuHttpRequest.Join.newBuilder()
             .setProtocolVersion(callDescription.protocolVersion.toInt())
-            .setCallId(ByteString.copyFrom(callDescription.callId.bytes))
-            .setDtlsFingerprint(ByteString.copyFrom(dtlsFingerprint))
+            .setCallId(callDescription.callId.bytes.toByteString())
+            .setDtlsFingerprint(dtlsFingerprint.toByteString())
             .build()
-        val byteResponse =
-            post(token, url, request.toByteArray(), ProtocolDefines.GC_JOIN_TIMEOUT_MILLIS)
+        val byteResponse = post(
+            token = token,
+            url = url,
+            body = request.toByteArray(),
+            timeout = ProtocolDefines.GC_JOIN_TIMEOUT_MILLIS.milliseconds,
+        )
         val body = byteResponse.body?.let { JoinResponseBody.fromSfuResponseBytes(it) }
         logger.info("JoinResponse with HTTP-status={}: {}", byteResponse.statusCode, body)
         return JoinResponse(byteResponse.statusCode, body)
@@ -148,48 +169,44 @@ internal class SfuConnectionImpl(
         token: SfuToken,
         url: URL,
         body: ByteArray,
-        timeoutMillis: Int,
+        timeout: Duration,
     ): ByteResponse {
-        val connection = (url.openConnection() as HttpURLConnection).also {
-            it.connectTimeout = timeoutMillis
-            it.readTimeout = timeoutMillis
-            it.requestMethod = "POST"
-            it.setRequestProperty("Content-Type", "application/octet-stream")
-            it.setRequestProperty("User-Agent", getUserAgent())
-            it.setRequestProperty("Authorization", "ThreemaSfuToken ${token.sfuToken}")
-            it.doInput = true
-            it.doOutput = true
+        val request = buildRequest {
+            url(url)
+            post(body.toRequestBody(contentType = "application/octet-stream".toMediaType()))
+            header(Http.Header.USER_AGENT, getUserAgent(version))
+            header(Http.Header.AUTHORIZATION, "ThreemaSfuToken ${token.sfuToken}")
         }
-
-        try {
-            connection.outputStream.use {
-                it.write(body)
+        return okHttpClient
+            .buildNew {
+                connectTimeout(timeout)
+                readTimeout(timeout)
             }
-
-            val statusCode = connection.responseCode
-            val bytes = when (statusCode) {
-                HTTP_STATUS_OK -> connection.inputStream.use { it.readBytes() }
-                else -> null
+            .execute(request)
+            .use { response ->
+                ByteResponse(
+                    statusCode = response.code,
+                    body = if (response.code == HTTP_STATUS_OK) {
+                        response.getSuccessBodyOrThrow().bytes()
+                    } else {
+                        null
+                    },
+                )
             }
-
-            return ByteResponse(statusCode, bytes)
-        } finally {
-            connection.disconnect()
-        }
     }
 
     private fun createURL(baseUrl: String, vararg pathParts: String): URL {
-        val builder = Uri.parse(baseUrl).buildUpon()
-        pathParts.forEach { builder.appendPath(it) }
+        val url = baseUrl.toUri().buildUpon()
+            .apply {
+                pathParts.forEach { appendPath(it) }
+            }
+            .build()
+            .toString()
         return try {
-            URL(builder.build().toString())
+            URL(url)
         } catch (e: MalformedURLException) {
             throw SfuException("Cannot parse URL", e)
         }
-    }
-
-    private fun getUserAgent(): String {
-        return "${ProtocolStrings.USER_AGENT}/${version.versionString}"
     }
 
     @WorkerThread

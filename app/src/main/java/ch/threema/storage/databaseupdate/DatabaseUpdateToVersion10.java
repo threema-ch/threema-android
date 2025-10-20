@@ -23,7 +23,7 @@ package ch.threema.storage.databaseupdate;
 
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 public class DatabaseUpdateToVersion10 implements DatabaseUpdate {
     private final SQLiteDatabase sqLiteDatabase;

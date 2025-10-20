@@ -37,7 +37,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.lifecycle.DefaultLifecycleObserver
 import ch.threema.app.R
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.getRunningSince
+import ch.threema.app.utils.GroupCallUtil
 import ch.threema.app.voip.activities.CallActivity
 import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.GroupCallDescription
@@ -105,9 +105,17 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
     @AnyThread
     fun showGroupCall(call: GroupCallDescription, mode: OngoingCallNoticeMode) {
         post {
-            val participantsCount = call.callState?.participants?.size ?: 0
+            val participantsCount: Int = call.callState?.participants?.size ?: 0
             setupGroupCallActions(call)
-            show(getRunningSince(call, context), mode, participantsCount)
+            val startAt = GroupCallUtil.getRunningSince(
+                call = call,
+                context = context,
+            )
+            show(
+                startTime = startAt,
+                mode = mode,
+                participantCount = participantsCount,
+            )
         }
     }
 
@@ -118,7 +126,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
     fun hide() {
         post {
             chronometer.stop()
-            visibility = View.GONE
+            visibility = GONE
         }
     }
 
@@ -128,7 +136,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
         chronometer.visibility = VISIBLE
         chronometer.base = startTime
         chronometer.start()
-        visibility = View.VISIBLE
+        visibility = VISIBLE
     }
 
     private fun setOperationMode(mode: OngoingCallNoticeMode, participantCount: Int) {
@@ -209,7 +217,7 @@ class OngoingCallNoticeView : LinearLayout, DefaultLifecycleObserver {
     }
 
     private fun groupCallButtonAction(call: GroupCallDescription) {
-        context.startActivity(GroupCallActivity.getJoinCallIntent(context, call.getGroupIdInt()))
+        context.startActivity(GroupCallActivity.createJoinCallIntent(context, call.getGroupIdInt()))
     }
 
     private fun setViewAction(view: View?, action: Runnable?) {

@@ -57,7 +57,7 @@ class GroupModelRepositoryTest {
             synchronizedAt = Date(),
             lastUpdate = null,
             isArchived = false,
-            colorIndex = 0.toUByte(),
+            colorIndex = 0,
             groupDescription = "Description",
             groupDescriptionChangedAt = Date(),
             members = setOf("AAAAAAAA", "BBBBBBBB"),
@@ -75,10 +75,12 @@ class GroupModelRepositoryTest {
 
         this.databaseService = TestDatabaseService()
         this.databaseBackend = SqliteDatabaseBackend(databaseService)
+        val serviceManager = ThreemaApplication.requireServiceManager()
         this.coreServiceManager = TestCoreServiceManager(
             version = AppVersionProvider.appVersion,
             databaseService = databaseService,
-            preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
+            preferenceStore = serviceManager.preferenceStore,
+            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
             taskManager = TestTaskManager(UnusedTaskCodec()),
         )
         this.groupModelRepository = ModelRepositories(coreServiceManager).groups
@@ -142,7 +144,7 @@ class GroupModelRepositoryTest {
         // This should work because the database is initially empty and the local group id starts
         // with 1.
         val fetchedGroup = groupModelRepository.getByLocalGroupDbId(1)
-        assertEquals(GroupModelDataFactory.toDataType(testGroup), fetchedGroup?.data?.value)
+        assertEquals(GroupModelDataFactory.toDataType(testGroup), fetchedGroup?.data)
     }
 
     @Test
@@ -155,7 +157,7 @@ class GroupModelRepositoryTest {
             groupIdentity.creatorIdentity,
             GroupId(groupIdentity.groupId),
         )
-        assertEquals(GroupModelDataFactory.toDataType(testGroup), fetchedGroup?.data?.value)
+        assertEquals(GroupModelDataFactory.toDataType(testGroup), fetchedGroup?.data)
     }
 
     @Test
@@ -183,7 +185,7 @@ class GroupModelRepositoryTest {
         val defaultGroup = createTestDbGroup(groupIdentity)
         testInsertAndGet(groupIdentity, defaultGroup)
 
-        val testData = groupModelRepository.getByGroupIdentity(groupIdentity)!!.data.value!!
+        val testData = groupModelRepository.getByGroupIdentity(groupIdentity)!!.data!!
         assertFailsWith<UnsupportedOperationException> {
             // Casting the set to a mutable set will work, but adding a new member to the set should
             // result in a runtime exception. Note that this is mainly in java code a problem, as
@@ -197,6 +199,6 @@ class GroupModelRepositoryTest {
         databaseBackend.createGroup(testGroup)
 
         val fetchedGroup = groupModelRepository.getByGroupIdentity(groupIdentity)
-        assertEquals(GroupModelDataFactory.toDataType(testGroup), fetchedGroup?.data?.value)
+        assertEquals(GroupModelDataFactory.toDataType(testGroup), fetchedGroup?.data)
     }
 }

@@ -37,7 +37,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.dialogs.ContactEditDialog;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ContactUtil;
@@ -51,6 +50,7 @@ import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 
@@ -112,7 +112,7 @@ public class ModifyContactHandler extends MessageReceiver {
 
         // Validate identity
         final ContactModel contactModel = contactModelRepository.getByIdentity(identity);
-        final ContactModelData contactModelData = contactModel != null ? contactModel.getData().getValue() : null;
+        final ContactModelData contactModelData = contactModel != null ? contactModel.getData() : null;
         if (contactModelData == null) {
             this.failed(identity, temporaryId, Protocol.ERROR_INVALID_CONTACT);
             return;
@@ -165,7 +165,7 @@ public class ModifyContactHandler extends MessageReceiver {
                 return Protocol.ERROR_VALUE_TOO_LONG;
             }
         } else {
-            ContactModelData contactModelData = contactModel.getData().getValue();
+            ContactModelData contactModelData = contactModel.getData();
             if (contactModelData == null) {
                 logger.error("Cannot get existing first name as the contact model data is null");
                 return Protocol.ERROR_INTERNAL;
@@ -179,7 +179,7 @@ public class ModifyContactHandler extends MessageReceiver {
                 return Protocol.ERROR_VALUE_TOO_LONG;
             }
         } else {
-            ContactModelData contactModelData = contactModel.getData().getValue();
+            ContactModelData contactModelData = contactModel.getData();
             if (contactModelData == null) {
                 logger.error("Cannot get existing last name as the contact model data is null");
                 return Protocol.ERROR_INTERNAL;
@@ -219,8 +219,8 @@ public class ModifyContactHandler extends MessageReceiver {
                     Bitmap avatar = BitmapFactory.decodeByteArray(bmp, 0, bmp.length);
                     // Resize to max allowed size
                     avatar = BitmapUtil.resizeBitmap(avatar,
-                        ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
-                        ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX);
+                        ProtocolDefines.PROFILE_PICTURE_WIDTH_PX,
+                        ProtocolDefines.PROFILE_PICTURE_HEIGHT_PX);
                     boolean success = this.contactService.setUserDefinedProfilePicture(
                         contactModel.getIdentity(),
                         // Without quality loss

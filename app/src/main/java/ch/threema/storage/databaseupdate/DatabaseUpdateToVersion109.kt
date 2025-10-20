@@ -22,24 +22,23 @@
 package ch.threema.storage.databaseupdate
 
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.storage.fieldExists
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 private val logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion109")
 
 internal class DatabaseUpdateToVersion109(
-    private val db: SQLiteDatabase,
+    private val sqLiteDatabase: SQLiteDatabase,
 ) : DatabaseUpdate {
     override fun run() {
-        if (db.fieldExists(table = "m_group", fieldName = "deleted")) {
+        if (sqLiteDatabase.fieldExists(table = "m_group", fieldName = "deleted")) {
             logger.info("Removing group members of groups that were marked as deleted")
-            db.execSQL("DELETE FROM `group_member` WHERE `groupId` IN (SELECT `id` FROM `m_group` WHERE `deleted` = 1)")
+            sqLiteDatabase.execSQL("DELETE FROM `group_member` WHERE `groupId` IN (SELECT `id` FROM `m_group` WHERE `deleted` = 1)")
 
             logger.info("Removing groups that were marked as deleted")
-            db.execSQL("DELETE FROM `m_group` WHERE `deleted` = 1")
+            sqLiteDatabase.execSQL("DELETE FROM `m_group` WHERE `deleted` = 1")
 
             logger.info("Removing `deleted` field from table `m_group`")
-            db.execSQL("ALTER TABLE `m_group` DROP COLUMN `deleted`")
+            sqLiteDatabase.execSQL("ALTER TABLE `m_group` DROP COLUMN `deleted`")
         }
     }
 

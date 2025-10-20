@@ -31,7 +31,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitServiceManagerWithTimeout
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionUtil
@@ -58,13 +58,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.core.component.KoinComponent
 
 private val logger = LoggingUtil.getThreemaLogger("AutoDeleteWorker")
 
 class AutoDeleteWorker(
     context: Context,
     workerParameters: WorkerParameters,
-) : CoroutineWorker(context, workerParameters) {
+) : CoroutineWorker(context, workerParameters), KoinComponent {
     private lateinit var preferenceService: PreferenceService
     private lateinit var conversationService: ConversationService
     private lateinit var groupService: GroupService

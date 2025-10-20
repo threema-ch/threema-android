@@ -26,8 +26,6 @@ import org.slf4j.Logger;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.net.ssl.HttpsURLConnection;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
@@ -35,9 +33,9 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
+import okhttp3.Credentials;
 
 import static ch.threema.app.threemasafe.ThreemaSafeService.BACKUP_ID_LENGTH;
 
@@ -103,7 +101,7 @@ public class ThreemaSafeServerInfo {
         return TestUtil.isEmptyOrNull(customServerName);
     }
 
-    URL getBackupUrl(byte[] backupId) throws ThreemaException {
+    URL getBackupUrl(@Nullable byte[] backupId) throws ThreemaException {
         if (backupId == null || backupId.length != BACKUP_ID_LENGTH) {
             throw new ThreemaException("Invalid Backup ID");
         }
@@ -116,7 +114,7 @@ public class ThreemaSafeServerInfo {
         return serverUrl;
     }
 
-    URL getConfigUrl(byte[] backupId) throws ThreemaException {
+    URL getConfigUrl(@Nullable byte[] backupId) throws ThreemaException {
         URL serverUrl = getServerUrl(backupId, "config");
         if (serverUrl == null) {
             throw new ThreemaException("Invalid URL");
@@ -125,7 +123,8 @@ public class ThreemaSafeServerInfo {
         return serverUrl;
     }
 
-    void addAuthorization(HttpsURLConnection urlConnection) throws ThreemaException {
+    @Nullable
+    String getAuthorization() throws ThreemaException {
         String username = serverUsername, password = serverPassword;
 
         if ((TestUtil.isEmptyOrNull(serverUsername) || TestUtil.isEmptyOrNull(serverPassword)) && !TestUtil.isEmptyOrNull(customServerName)) {
@@ -142,11 +141,15 @@ public class ThreemaSafeServerInfo {
         }
 
         if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
-            String basicAuth = "Basic " + Base64.encodeBytes((username + ":" + password).getBytes());
-            urlConnection.setRequestProperty("Authorization", basicAuth);
-        } else if (ConfigUtils.isOnPremBuild()) {
-            urlConnection.setRequestProperty("Authorization", "Token " + ThreemaApplication.getServiceManager().getApiService().getAuthToken());
+            return Credentials.basic(username, password);
         }
+
+        var serviceManager = ThreemaApplication.getServiceManager();
+        var authToken = serviceManager != null ? serviceManager.getApiService().getAuthToken() : null;
+        if (authToken != null) {
+            return "Token " + authToken;
+        }
+        return null;
     }
 
     private String getCustomServerNameOrDefault() {
@@ -157,7 +160,7 @@ public class ThreemaSafeServerInfo {
         }
     }
 
-    private URL getServerUrl(byte[] backupId, String filePart) {
+    private URL getServerUrl(@Nullable byte[] backupId, String filePart) {
         try {
             String shardHash = getShardHash(backupId);
             String serverUrl = SAFE_URL_PREFIX + getCustomServerNameOrDefault().replace("{backupIdPrefix8}", shardHash);
@@ -172,7 +175,7 @@ public class ThreemaSafeServerInfo {
         }
     }
 
-    private String getShardHash(byte[] backupId) {
+    private String getShardHash(@Nullable byte[] backupId) {
         if (backupId != null && backupId.length == BACKUP_ID_LENGTH) {
             return Utils.byteArrayToHexString(backupId).substring(0, 2);
         }

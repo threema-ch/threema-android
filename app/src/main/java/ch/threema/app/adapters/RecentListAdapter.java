@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
@@ -126,21 +127,20 @@ public class RecentListAdapter extends FilterableListAdapter {
 
         final ContactModel contactModel = conversationModel.getContact();
         final GroupModel groupModel = conversationModel.getGroup();
-        final DistributionListModel distributionListModel = conversationModel.getDistributionList();
 
-        String fromtext, subjecttext;
-
+        final @NonNull String subjectText;
         if (conversationModel.isGroupConversation()) {
-            fromtext = NameUtil.getDisplayName(groupModel, this.groupService);
-            subjecttext = groupService.getMembersString(groupModel);
-            holder.groupView.setImageResource(groupService.isGroupCreator(groupModel) ? (groupService.isNotesGroup(groupModel) ? R.drawable.ic_spiral_bound_booklet_outline : R.drawable.ic_group_outline) : R.drawable.ic_group_filled);
+            subjectText = groupService.getMembersString(groupModel);
+            holder.groupView.setImageResource(
+                groupService.isGroupCreator(groupModel)
+                    ? (groupService.isNotesGroup(groupModel) ? R.drawable.ic_spiral_bound_booklet_outline : R.drawable.ic_group_outline)
+                    : R.drawable.ic_group_filled
+            );
         } else if (conversationModel.isDistributionListConversation()) {
-            fromtext = NameUtil.getDisplayName(distributionListModel, this.distributionListService);
-            subjecttext = context.getString(R.string.distribution_list);
+            subjectText = context.getString(R.string.distribution_list);
             holder.groupView.setImageResource(R.drawable.ic_bullhorn_outline);
         } else {
-            fromtext = NameUtil.getDisplayNameOrNickname(contactModel, true);
-            subjecttext = contactModel.getIdentity();
+            subjectText = contactModel.getIdentity();
             holder.groupView.setImageResource(R.drawable.ic_person_outline);
         }
 
@@ -149,14 +149,19 @@ public class RecentListAdapter extends FilterableListAdapter {
             filterString = recentListFilter.getFilterString();
         }
 
-        holder.nameView.setText(highlightMatches(fromtext, filterString));
+        holder.nameView.setText(
+            highlightMatches(
+                conversationModel.messageReceiver.getDisplayName(),
+                filterString
+            )
+        );
         if (conversationModel.isGroupConversation()) {
             AdapterUtil.styleGroup(holder.nameView, groupService, groupModel);
         } else if (conversationModel.isContactConversation()) {
             AdapterUtil.styleContact(holder.nameView, contactModel);
         }
 
-        holder.subjectView.setText(highlightMatches(subjecttext, filterString));
+        holder.subjectView.setText(highlightMatches(subjectText, filterString));
 
         // load avatars asynchronously
         AvatarListItemUtil.loadAvatar(

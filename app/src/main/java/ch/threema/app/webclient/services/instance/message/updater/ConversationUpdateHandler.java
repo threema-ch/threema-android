@@ -23,6 +23,7 @@ package ch.threema.app.webclient.services.instance.message.updater;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import org.msgpack.core.MessagePackException;
@@ -111,7 +112,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
         ListenerManager.conversationListeners.remove(this.listener);
     }
 
-    private void respond(final ConversationModel model, final String mode) {
+    private void respond(@NonNull final ConversationModel model, final String mode) {
         // Respond only if the conversation is not a private chat
         String uniqueId = null;
         if (model.isGroupConversation()) {
@@ -149,7 +150,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
     private class Listener implements ConversationListener {
         @Override
         @AnyThread
-        public void onNew(ConversationModel conversationModel) {
+        public void onNew(@NonNull ConversationModel conversationModel) {
             logger.info("Conversation created, sending update to Threema Web (conversation={})", conversationModel.getUid());
             // Notify webclient in background thread
             handler.post(() -> ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_NEW));
@@ -157,7 +158,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
 
         @Override
         @AnyThread
-        public void onModified(ConversationModel modifiedConversationModel, Integer oldPosition) {
+        public void onModified(@NonNull ConversationModel modifiedConversationModel, @Nullable Integer oldPosition) {
             logger.info("Conversation modified, sending update to Threema Web (conversation={})", modifiedConversationModel.getUid());
             logger.info("Move item from: {} to {}", oldPosition, modifiedConversationModel.getPosition());
             // Notify webclient in background thread
@@ -166,7 +167,7 @@ public class ConversationUpdateHandler extends MessageUpdater {
 
         @Override
         @AnyThread
-        public void onRemoved(ConversationModel conversationModel) {
+        public void onRemoved(@NonNull ConversationModel conversationModel) {
             logger.info("Conversation removed, sending update to Threema Web (conversation={})", conversationModel.getUid());
             // Notify webclient in background thread
             handler.post(() -> ConversationUpdateHandler.this.respond(conversationModel, ARGUMENT_MODE_REMOVED));

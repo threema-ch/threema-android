@@ -29,19 +29,18 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.core.text.HtmlCompat;
-import androidx.lifecycle.ViewModelProvider;
 
+import org.koin.android.compat.ViewModelCompat;
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.notifications.NotificationIDs;
-import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ServerMessageViewModel;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
@@ -50,7 +49,8 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 public class ServerMessageActivity extends ThreemaActivity {
     private final static Logger logger = LoggingUtil.getThreemaLogger("ServerMessageActivity");
 
-    private NotificationService notificationService = null;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private ServerMessageViewModel viewModel;
 
@@ -77,9 +77,7 @@ public class ServerMessageActivity extends ThreemaActivity {
 
         handleDeviceInsets();
 
-        notificationService = ThreemaApplication.requireServiceManager().getNotificationService();
-
-        viewModel = new ViewModelProvider(this).get(ServerMessageViewModel.class);
+        viewModel = ViewModelCompat.getViewModel(this, ServerMessageViewModel.class);
 
         findViewById(R.id.close_button).setOnClickListener(v -> viewModel.markServerMessageAsRead());
 
@@ -121,6 +119,7 @@ public class ServerMessageActivity extends ThreemaActivity {
 
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         viewModel.markServerMessageAsRead();
     }
 
@@ -133,6 +132,6 @@ public class ServerMessageActivity extends ThreemaActivity {
     }
 
     private void cancelServerMessageNotification() {
-        notificationService.cancel(NotificationIDs.SERVER_MESSAGE_NOTIFICATION_ID);
+        dependencies.getNotificationService().cancel(NotificationIDs.SERVER_MESSAGE_NOTIFICATION_ID);
     }
 }

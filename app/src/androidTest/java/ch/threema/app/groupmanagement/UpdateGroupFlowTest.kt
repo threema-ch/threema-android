@@ -208,7 +208,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
         // Assert that the new member is not yet a member of the group
         assertTrue {
-            groupModel.data.value?.otherMembers?.contains(initialContactData.identity) == false
+            groupModel.data?.otherMembers?.contains(initialContactData.identity) == false
         }
 
         val groupChanges = GroupChanges(
@@ -225,7 +225,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         )
 
         assertTrue {
-            groupModel.data.value?.otherMembers?.contains(initialContactData.identity) == true
+            groupModel.data?.otherMembers?.contains(initialContactData.identity) == true
         }
     }
 
@@ -247,7 +247,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         )
 
         assertTrue {
-            groupModel.data.value?.otherMembers?.contains(initialContactData.identity) == true
+            groupModel.data?.otherMembers?.contains(initialContactData.identity) == true
         }
     }
 
@@ -268,7 +268,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
             ReflectionExpectation.REFLECTION_SUCCESS,
         )
 
-        assertTrue { groupModel.data.value?.otherMembers?.isEmpty() == true }
+        assertTrue { groupModel.data?.otherMembers?.isEmpty() == true }
     }
 
     @Test
@@ -288,7 +288,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
             ReflectionExpectation.REFLECTION_SKIPPED,
         )
 
-        assertTrue { groupModel.data.value?.otherMembers?.isEmpty() == true }
+        assertTrue { groupModel.data?.otherMembers?.isEmpty() == true }
     }
 
     @Test
@@ -304,7 +304,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
         // Delete the group before updating it
         groupModelRepository.persistRemovedGroup(groupModel.groupIdentity)
-        assertNull(groupModel.data.value)
+        assertNull(groupModel.data)
 
         assertUnsuccessfulGroupUpdate(
             groupModel,
@@ -312,7 +312,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
             ReflectionExpectation.REFLECTION_SUCCESS,
         )
 
-        assertNull(groupModel.data.value)
+        assertNull(groupModel.data)
     }
 
     @Test
@@ -328,7 +328,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
         // Delete the group before updating it
         groupModelRepository.persistRemovedGroup(groupModel.groupIdentity)
-        assertNull(groupModel.data.value)
+        assertNull(groupModel.data)
 
         assertUnsuccessfulGroupUpdate(
             groupModel,
@@ -336,7 +336,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
             ReflectionExpectation.REFLECTION_SKIPPED,
         )
 
-        assertNull(groupModel.data.value)
+        assertNull(groupModel.data)
     }
 
     @Test
@@ -357,7 +357,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         )
 
         assertTrue {
-            groupModel.data.value?.otherMembers?.contains(initialGroupMemberData.identity) == false
+            groupModel.data?.otherMembers?.contains(initialGroupMemberData.identity) == false
         }
     }
 
@@ -379,7 +379,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         )
 
         assertTrue {
-            groupModel.data.value?.otherMembers?.contains(initialGroupMemberData.identity) == false
+            groupModel.data?.otherMembers?.contains(initialGroupMemberData.identity) == false
         }
     }
 
@@ -422,7 +422,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         )
         assertIs<GroupFlowResult.Success>(groupFlowResult)
 
-        val groupModelData = groupModel.data.value
+        val groupModelData = groupModel.data
         assertNotNull(groupModelData)
         groupModelData.assertChangesApplied(groupChanges)
     }
@@ -447,7 +447,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         reflectionExpectation: ReflectionExpectation,
         successExpected: Boolean,
     ): GroupFlowResult {
-        val groupModelData = groupModel.data.value
+        val groupModelData = groupModel.data
 
         // Prepare task manager and group flow dispatcher
         val taskManager = ControlledTaskManager(

@@ -21,6 +21,7 @@
 
 package ch.threema.app.webrtc
 
+import android.annotation.SuppressLint
 import androidx.annotation.AnyThread
 import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.base.utils.LoggingUtil
@@ -34,6 +35,7 @@ import kotlinx.coroutines.CompletableDeferred
 import org.webrtc.*
 import org.webrtc.CameraVideoCapturer
 
+@SuppressLint("LoggerName")
 private val logger = LoggingUtil.getThreemaLogger("GroupCall.PeerConnectionObserver")
 
 /**

@@ -59,9 +59,9 @@
     <string name="prefs_sum_notification_sound">系統預設</string>
     <string name="prefs_vibrate">震動</string>
     <string name="prefs_sum_vibrate">收到訊息時震動</string>
-    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_notification_light">通知燈</string>
-    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_notification_light">使用彩色通知證（如裝置有通知證）顯示收到的訊息</string>
     <string name="prefs_sum_light">白色</string>
     <string name="prefs_title_wallpaper">選擇背景圖片</string>
@@ -101,6 +101,7 @@
     <string name="next">下一步</string>
     <string name="finish">完成</string>
     <string name="please_wait">請等候…</string>
+    <!-- Text shown when a task which shows a loading spinner takes longer than expected (e.g. creating a group) -->
     <string name="please_wait_timeout">所需時間比預期長</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">正在建立您的 ${app_name_short} ID…</string>
@@ -222,7 +223,6 @@
     <string name="code_invalid">您輸入的驗證碼無效。</string>
     <string name="try_again">再試一次</string>
     <string name="decoding_message">正在解密訊息</string>
-    <string name="invalid_barcode">無效的條形碼類型</string>
     <string name="expired_barcode">此QR碼已過期。請直接從其他使用者的應用程式再次掃描。</string>
     <string name="pending">待定</string>
     <string name="unlinking_email">正在解除連結電子郵件</string>
@@ -303,7 +303,8 @@
     <string name="restore_data_password_msg">輸入用於建立此備份的密碼。</string>
     <string name="backup_data_media">包括大型多媒體檔案（影片，文件，原始圖片）</string>
     <string name="backup_data_new">建立資料備份</string>
-    <string name="pinentry_enter_pin">輸入您的 %s PIN 碼以繼續</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinentry_enter_pin">輸入您的 ${app_name} PIN 碼以繼續</string>
     <string name="pinentry_wrong_pin">PIN 碼錯誤</string>
     <string name="prefs_sum_security_pin">鎖定取用使用者介面</string>
     <string name="prefs_title_pin_switch">應用程式鎖定</string>
@@ -707,6 +708,7 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="message_details_message_id_copied">訊息ID已複製至剪貼簿</string>
     <string name="contact_details_id_copied">ID已複製至剪貼簿</string>
     <string name="contact_details_nickname_copied">暱稱已複製至剪貼簿</string>
+    <string name="generic_copied_to_clipboard_hint">已複製至剪貼簿</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_use_id_as_nickname">您想用 ${app_name_short} ID 作為您的暱稱嗎？</string>
     <string name="new_wizard_phone_email_invalid">您輸入的電話號碼或電子郵件地址無效。\n請先更正，然後再繼續。</string>
@@ -749,8 +751,6 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="wait_one_minute">要求通話前，請至少等候10分鐘，直至收到簡訊。</string>
     <string name="backup_id">已匯出的ID</string>
     <string name="backup_data">資料備份</string>
-    <string name="really_leave_group_admin_message">您是這個群組的管理員。如果您現在離開這個群組，這個群組將會無人管理。
-其他成員仍然可以正常聊天，但是離開群組之後不能復原動作。</string>
     <string name="action_delete_group">刪除群組</string>
     <string name="action_leave_and_delete_group">離開並刪除群組</string>
     <string name="action_dissolve_and_delete_group">解散並刪除群組</string>
@@ -846,7 +846,6 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="battery_optimizations_explain">電池最佳化使 %1$s 在電話進入睡眠模式時無法正常執行。請為 %2$s 停用電池最佳化。</string>
     <string name="battery_optimizations_disable_guide">在下拉式選單中選擇「所有應用程式」</string>
     <string name="battery_optimizations_disable_guide_ctd">在清單中搜尋 %s 並停用最佳化</string>
-    <string name="battery_optimizations_disable_confirm">您確定要對 %1$s 保持開啟電池最佳化嗎？%2$s 無法正常執行。</string>
     <string name="enter_text_hint">輸入文字</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_explain_text">如果您切換或丟失裝置，如果您沒有備份，您將無法還原您的 ${app_name_short} ID 或對話。請使用適當的備份方法儲存您的資料。</string>
@@ -1128,6 +1127,8 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="safe_configure_server_credentials_title">驗證（選用）</string>
     <string name="username_hint">用戶名稱</string>
     <string name="server_hint">伺服器</string>
+    <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
+    <string name="about_screen_remote_secrets_activated">已啟用</string>
     <string name="lock_option_biometric">生物認證</string>
     <string name="biometric_enter_authentication">請認證以解鎖</string>
     <string name="biometric_authentication_failed">認證失敗</string>
@@ -1195,9 +1196,6 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="backup_data_no_permission">無法寫入此目錄。請選擇另一個。</string>
     <string name="prefs_sum_show_unread_badge">在導覽列顯示未讀訊息提示</string>
     <string name="prefs_title_show_unread_badge">未讀訊息提示</string>
-    <string name="pinning_not_trusted">憑證鎖定失敗。請檢查您的裝置上的認證儲存中是否安裝並啟動了「Entrust Root Certification Authority - G2」。</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="pinning_failed">憑證固定失敗。可能發生了中間人攻擊。如果您安裝了廣告攔截器、內容過濾器或防火牆應用程式，例如 AdGuard，請停用後重啟 ${app_name}。</string>
     <string name="open_myid_popup">開啟快速存取彈出式視窗</string>
     <string name="logo">標誌/回到頁首</string>
     <string name="quote_subj_end">結束引用</string>
@@ -1345,60 +1343,7 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="set_backup_path">設定備份路徑</string>
     <string name="set_backup_path_intro">在下一個畫面中，請選擇儲存資料備份的資料夾。</string>
     <string name="discard_changes_title">放棄變更</string>
-    <string name="group_join_request_message_info"><![CDATA[向群組管理員 <b>%1$s</b> 寫一句話，說明您想加入 <b>%2$s</b> 的原因。]]></string>
-    <string name="group_join_request">群組加入要求</string>
-    <string name="group_join_request_for">%s 群組加入要求</string>
-    <string name="group_link_default_name">未命名連結</string>
-    <string name="group_link_share">分享群組連結</string>
-    <string name="group_request_incoming_dialog_title">來自%s的要求</string>
     <string name="accept">接受</string>
-    <string name="reject">拒絕</string>
-    <string name="group_request_already_sent"><![CDATA[您已經透過這個連結傳送了 <b>%s</b> 公開群組加入要求，正在等待群組管理員的回覆。如果您想重新傳送要求，請重按清單中的連結。]]></string>
-    <string name="group_link_none">尚未生成連結</string>
-    <string name="group_request_confirm_send"><![CDATA[您即將向管理員 <b>%2$s</b> 傳送 <b>%1$s</b> 群組加入要求。如果此連結沒有失效，而且管理員接受您的加入要求後，您就會自動加入至群組。]]></string>
-    <string name="really_delete_group_request_title_singular">刪除群組加入要求</string>
-    <string name="really_delete_group_request_title_plural">刪除群組加入要求</string>
-    <string name="sent_to">傳送至：%s</string>
-    <string name="sent_on">傳送日期：%s</string>
-    <string name="group_response">群組加入回應</string>
-    <string name="group_response_accepted">您的 %s 群組加入要求已被批准</string>
-    <string name="group_response_full">您的 %s 群組加入要求被拒絕，因為群組已滿。</string>
-    <string name="group_response_rejected">您的 %s 群組加入要求被拒絕</string>
-    <string name="group_link_expiration_none">無限制</string>
-    <string name="group_request_hint">哈囉，大家好！</string>
-    <string name="group_request_send_title">傳送群組加入要求</string>
-    <string name="group_request_message_empty">群組加入要求不能為空</string>
-    <string name="group_requests_all_title">所有群組加入要求</string>
-    <string name="group_requests_none_outgoing">尚未傳送群組加入要求。您可以透過群組管理員建立的連結以傳送要求。</string>
-    <string name="notification_channel_group_join_response">群組加入回應的通知</string>
-    <string name="group_qr_code_title">群組QR碼</string>
-    <string name="group_link_qr_desc"><![CDATA[與想加入群組的人分享此群組連結：<b>%s</b>]]></string>
-    <string name="new_group_link_success">已新增新接結</string>
-    <string name="link_administration_off_explain">由於這個連結之前已被配置和分享，因此現在無法變更此屬性，您需要生成新連結。</string>
-    <string name="group_link_update_success">連結已成功更新</string>
-    <string name="no_group_links">沒有群組連結。如要建立一個群組連結，請按右下角的新增按鈕或群組詳細資料檢視中的預設連結。</string>
-    <string name="group_links_overview_title">%s 群組的連結</string>
-    <string name="group_link_invalid">已過期</string>
-    <string name="group_link_valid">有效</string>
-    <string name="open_group_requests_chips_title">公開群組加入要求</string>
-    <string name="all_open_group_requests">所有群組加入要求</string>
-    <string name="no_incoming_group_requests">沒有收到群組加入要求。這些要求可以透過電子郵件連結傳送給您，如果您是管理員，您可以在群組詳細資料檢視中管理這些連結。</string>
-    <string name="received_on">在 %s 收到</string>
-    <string name="group_request_state_full">群組已滿</string>
-    <string name="group_request_state_rejected">被拒絕</string>
-    <string name="group_request_state_expired">已過期</string>
-    <string name="group_request_state_pending">待定</string>
-    <string name="group_request_state_accepted">已批准</string>
-    <string name="open_group_requests_show">顯示加入要求</string>
-    <string name="open_group_requests_hide">隱藏加入要求</string>
-    <string name="group_request_link_already_deleted">同時刪除群組連結</string>
-    <string name="incoming_group_request_no_message">透過公開連結傳送…沒有訊息</string>
-    <string name="group_request_received_through">透過連結加入群組：%s</string>
-    <string name="reaccept">重新接受</string>
-    <string name="group_link_edit_expiration_date">編輯到期日</string>
-    <string name="group_link_show_qr">顯示QR碼</string>
-    <string name="group_link_rename">重新命名</string>
-    <string name="group_link_rename_tag">新名稱</string>
     <string name="tap_here_for_more">點擊這裡查看更多資訊</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="another_connection_instructions"><![CDATA[伺服器檢測到相同的 ${app_name_short} ID 在兩個或更多的裝置上同時連線。<br><br>相同的 ${app_name_short} ID 不可以在多個裝置上同時使用。新的訊息只會傳送至最新登入的裝置上。<br><br>如果您要切換至新裝置，請先在舊裝置上解除安裝或停用 %s，然後重新啟動新裝置。]]></string>
@@ -1416,20 +1361,7 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="download_failed">下載失敗。錯誤代碼：%d</string>
     <string name="edit_answer">編輯答案</string>
     <string name="share_media">與其他應用程式分享…</string>
-    <string name="group_link_administered">管理</string>
-    <string name="group_link_open">公開</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="group_link_share_message">透過以下連結加入我的 ${app_name_short} 群組！：%s</string>
-    <string name="group_link_bottom_sheet_title">群組連結</string>
-    <string name="group_link_bottom_sheet_desc">與想加入群組的人分享這個連結，請選擇以下的選項。</string>
-    <string name="group_link_bottom_sheet_link_title">連結</string>
-    <string name="group_link_properties_title">連結屬性</string>
-    <string name="group_link_property_administration_title">手動確認</string>
-    <string name="group_link_property_administration_desc">如果啟用的話，您會在群組對話中收到要求，您可以接受或拒絕。</string>
-    <string name="group_link_property_expiration_title">到期日</string>
-    <string name="group_link_property_expiration_desc">該連結在已設定的日期後過期。</string>
     <string name="group_image">群組圖示</string>
-    <string name="add_group_link">透過群組連結新增成員</string>
     <string name="miui_battery_optimization">請禁用電池優化器以使 %s 順利運行。由於小米不允許第三方應用程式直接開啟設定畫面，因此您必須手動開啟電話的相關設定畫面。如果您在停用電池最佳化方面需要協助，請聯絡小米支援。</string>
     <string name="forward_captions">包括描述</string>
     <string name="importing_files_failed">無法匯入備份檔案，請確保內部儲存有足夠的可用空間。</string>
@@ -1445,31 +1377,14 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="prefs_title_reset_receipts">清除個別設定</string>
     <string name="prefs_sum_reset_receipts">將特定聯絡人的已讀標記和打字狀態設定重設為預設值</string>
     <string name="reset_successful">成功重設為預設值</string>
-    <string name="group_link_add">新增群組連結</string>
-    <string name="group_requests_show_menu_title">顯示公開加入要求</string>
-    <string name="group_request_show_all">顯示所有群組加入要求</string>
-    <string name="group_links_manage_menu">管理群組連結</string>
-    <string name="group_request_sent_menu">傳送群組加入要求</string>
-    <string name="really_delete_group_link_title">刪除群組連結</string>
-    <string name="really_delete_multiple_group_links_title">刪除群組連結</string>
-    <string name="qr_scan_result_dialog_title">QR碼掃描結果</string>
-    <string name="scan_failure_dialog_title">掃描失敗</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="no_threema_qr_info">這不是 ${app_name_short} 專用的QR碼。解碼後的內容為：</string>
-    <string name="default_group_link">預設群組連結</string>
-    <string name="default_link_name">預設連結</string>
-    <string name="reset_default_group_link">重設預設群組連結</string>
-    <string name="resend">重新傳送</string>
-    <string name="group_request_already_sent_title">要求已傳送</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">您可以掃描聯絡人的QR碼以驗證其身份。如要顯示QR碼，請讓您的聯絡人按下 ${app_name_short} 主畫面左上角的大頭貼。</string>
     <string name="enable_storage_access_for_media">啟用儲存取用權限以檢視裝置上的圖片和影片</string>
     <string name="select_storage_access_for_media_is_granted">您已授予部份的照片和影片的存取權。</string>
     <string name="take_me_there">帶我去…</string>
     <string name="manage">管理</string>
-    <string name="notification_channel_group_join_request">收到群組加入要求的通知頻道</string>
-    <string name="reset_default_group_link_title">重設預設連結資訊</string>
-    <string name="reset_default_group_link_desc">之前分享的連結將失效，透過舊鏈接提出的要求將自動被拒絕，並給出過期的回應。</string>
     <string name="custom">其他</string>
     <string name="show_public_key">顯示公鑰</string>
     <string name="public_key_for">%s的公鑰</string>
@@ -1696,7 +1611,6 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="action_dissolve_group">解散群組</string>
     <string name="really_dissolve_group">如果您只是解散群組，沒有人可以再向此群組傳送新訊息，並且無法再對群組進行管理，而解散的群組仍然可以被克隆。</string>
     <string name="status_orphaned_group">*此群組變成為孤立群組*\n由於群組建立者已離開群組，管理員職位現在為空缺。其餘成員應該克隆該群組（按一下群組詳細資料）以成為新的管理員。</string>
-    <string name="group_orphaned_notice">由於群組建立者已離開群組，請您克隆群組，成為新的管理員。</string>
     <string name="group_not_a_member_notice">由於您不再是這個群組的成員，因此您不能再參與這個群組的討論。</string>
     <string name="group_dissolved_notice">因於這個群組已解散，因此您不能再參與這個群組的討論。</string>
     <string name="md_linked_devices">${app_name_desktop} 2.0 桌面版（測試版）</string>
@@ -1739,10 +1653,6 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">應用程式電池使用量設定為「最佳化」。</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">此應用程式被禁止與伺服器永久保持連線，以至 ${app_name_short} Push 無法正常執行。當此應用程式在背景執行時，您將不會收到新訊息的通知。如要解決問題，請先按「應用程式電池使用量」，然後選擇「無限制」。</string>
-    <!-- Title of warning message that informs the user that their app is no longer supported. -->
-    <string name="problemsolver_title_android_version_retired">此應用程式不再有更新</string>
-    <!-- Details of warning message that informs the user that their app is no longer supported. -->
-    <string name="problemsolver_explain_android_version_retired">您使用的是過時的 Android 版本，基於安全理由，Threema 已不再支援該版本。這表示您無法再收到 Threema 應用程式的更新。如需繼續使用 Threema 的所有功能，請升級至最新的作業系統版本。</string>
     <string name="problemsolver_to_settings">前往設定</string>
     <string name="prefs_advanced_options">進階選項</string>
     <string name="push_service">推播服務</string>
@@ -1760,15 +1670,6 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="new_group_messages">新的群組訊息</string>
     <string name="individual_notification_settings">個別通知設定</string>
     <string name="delete_message_not_supported_for_all_group_members">此訊息不會為以下群組成員刪除：%1$s</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="work_intro_more_link_text">了解更多關於 ${app_name} 的資訊</string>
-    <string name="work_intro_subtitle">為公司而設的安全商業版即時通訊工具。</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="work_intro_login">登入 ${app_name}</string>
-    <string name="consumer_notice_description">如果您是個人使用者，請下載普通版 Threema 應用程式。</string>
-    <string name="consumer_notice_playstore_link_description">Google Play 商店上的 Threema</string>
-    <string name="consumer_notice_appgallery_link_description">華為 AppGallery 商店上的 Threema</string>
-    <string name="consumer_notice_subtitle">僅限個人使用者使用</string>
     <string name="individual_notification_settings_warn">對每個已啟用個別通知設定的對話，都會建立一個通知頻道。即使此應用程式鎖定，對話名稱在裝置設定中顯示。是否繼續？</string>
     <string name="incoming_calls">來電</string>
     <string name="group_chats">群組對話</string>
@@ -1853,6 +1754,7 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="device_linking_error_unexpected_title">發生意外的錯誤</string>
     <string name="device_linking_error_unexpected_body">請重試連結裝置。如果問題仍然存在，請聯絡我們的支援人員（「主選單 &gt; 說明」）。</string>
     <string name="device_linking_error_invalid_contact_title">無效聯絡人</string>
+    <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <string name="device_linking_error_invalid_contact_body">由於在此裝置上儲存的身份為 %1$s 的聯絡人資訊不正確，導致無法連結至新裝置。請聯絡我們的支援團隊以解決問題（「主選單 &gt; 說明」）。</string>
     <string name="device_linking_error_screen_close">關閉</string>
     <string name="work_directory_title">公司目錄</string>
@@ -1870,6 +1772,44 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="error_preset_onprem_url_mismatch_mdm">您所提供的伺服器網址為無效，請聯絡您的管理員以取得協助。</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">啟動連結為無效，請聯絡您的管理員以取得協助。</string>
+    <string name="work_intro_screen_work_title">為企業提供高度安全的通訊</string>
+    <string name="work_intro_screen_work_subtitle">Threema Work 是專為公司設計的安全通訊解決方案 — 端對端加密、符合歐盟一般資料保護規則 (GDPR) 規範，應用程式在瑞士開發。</string>
+    <string name="work_intro_screen_work_sign_in_button_label">立即登入</string>
+    <string name="work_intro_screen_work_learn_more_hint">還沒使用 Threema Work？</string>
+    <string name="work_intro_screen_work_learn_more_button_label">了解更多</string>
+    <string name="work_intro_screen_work_use_private_hint">如果您想使用 Threema 作私人用途，我們建議您使用 Threema Private 應用程式。</string>
+    <string name="work_intro_screen_work_download_private_button_label">立刻下載</string>
+    <string name="work_intro_screen_onprem_title">最高安全等級的通訊</string>
+    <string name="work_intro_screen_onprem_subtitle">Threema OnPrem 是專為企業、政府機關及軍事組織所設計的自託管通訊解決方案 — 可完全保護資料主權、加密資料傳輸，並滿足安全敏感環境的高要求。</string>
+    <string name="work_intro_screen_onprem_sign_in_button_label">立即登入</string>
+    <string name="work_intro_screen_onprem_learn_more_hint">還沒使用 Threema OnPrem？</string>
+    <string name="work_intro_screen_onprem_learn_more_button_label">了解更多</string>
+    <string name="work_intro_screen_onprem_use_private_hint">如果您想使用 Threema 作私人用途，我們建議您使用 Threema Private 應用程式。</string>
+    <string name="work_intro_screen_onprem_download_private_button_label">立刻下載</string>
+    <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
+    <string name="remote_secrets_blocked_by_admin">您的管理員已阻止存取此應用程式。\n\n請聯絡您的管理員以獲取更多資訊。</string>
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
+    <string name="remote_secrets_failed_to_fetch">無法取得 ${remote_secret} 權杖，請檢查您的網路連線並再試一次。</string>
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
+    <string name="fetching_remote_secret">取得 ${remote_secret} 權杖</string>
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <string name="remote_secret_activated_notification_title">${remote_secret} 已啟用</string>
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <string name="remote_secret_activated_notification_content">此功能可在手機遺失或遭竊時保護您的對話內容安全。</string>
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <string name="remote_secret_deactivated_notification_title">${remote_secret} 已停用</string>
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <string name="remote_secret_deactivated_notification_content">如需更多資訊，請聯絡您的管理員。</string>
+    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
+    <string name="remote_secret_activated_learn_more">了解更多</string>
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
+    <string name="remote_secret_activating">正在啟用 ${remote_secret}</string>
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <string name="remote_secret_activating_failed">啟用 ${remote_secret} 失敗，請檢查您的網路連線並再試一次。</string>
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
+    <string name="remote_secret_deactivating">正在停用 ${remote_secret}</string>
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <string name="remote_secret_deactivating_failed">停用 ${remote_secret} 失敗，請檢查您的網路連線並再試一次。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>
@@ -1926,18 +1866,6 @@ ${app_name_short} 支援的所有表情符號。</string>
     </plurals>
     <plurals name="webclient_running_sessions">
         <item quantity="other">%d個工作階段正在執行</item>
-    </plurals>
-    <plurals name="really_delete_outgoing_request">
-        <item quantity="other">您確定要刪除%d個群組加入要求嗎？請注意，刪除要求並不會撤銷加入要求。如果加入要求還未得到回覆，你仍然可能被接受或被其他人邀請加入群組。</item>
-    </plurals>
-    <plurals name="really_delete_incoming_request">
-        <item quantity="other">您確定要刪除%d個群組加入要求嗎？
-一旦刪除，您就不能處理群組加入要求。</item>
-    </plurals>
-    <plurals name="really_delete_group_link">
-        <item quantity="other">您確定要刪除%d個群組連結嗎？
-其他人將無法再透過連結傳送群組加入要求。
-群組管理員仍然可以選擇接受或拒絕以前收到的群組加入要求。</item>
     </plurals>
     <plurals name="chat_deleted">
         <item quantity="other">%d個已封存對話</item>

@@ -22,13 +22,10 @@
 package ch.threema.data.repositories
 
 import ch.threema.app.managers.CoreServiceManager
-import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.ModelCache
 import ch.threema.data.storage.EditHistoryDaoImpl
 import ch.threema.data.storage.EmojiReactionsDaoImpl
 import ch.threema.data.storage.SqliteDatabaseBackend
-
-private val logger = LoggingUtil.getThreemaLogger("data.ModelRepositories")
 
 class ModelRepositories(
     coreServiceManager: CoreServiceManager,
@@ -42,8 +39,4 @@ class ModelRepositories(
     val groups = GroupModelRepository(cache.groups, databaseBackend, coreServiceManager)
     val editHistory = EditHistoryRepository(cache.editHistory, editHistoryDao, coreServiceManager)
     val emojiReaction = EmojiReactionsRepository(cache.emojiReaction, emojiReactionDao, coreServiceManager)
-
-    init {
-        logger.debug("Created")
-    }
 }

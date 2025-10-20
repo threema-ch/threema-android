@@ -21,6 +21,8 @@
 
 package ch.threema.app.webclient.services.instance.state;
 
+import android.annotation.SuppressLint;
+
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
 import org.msgpack.value.Value;
@@ -58,8 +60,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.SSLUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.SendMode;
 import ch.threema.app.webclient.converter.ConnectionDisconnect;
@@ -123,7 +125,7 @@ class SessionConnectionContext {
         @NonNull final SaltyRTCBuilder builder
     ) throws NoSuchAlgorithmException, InvalidKeyException, IllegalArgumentException {
         // Create SSL socket factory
-        final SSLSocketFactory sslSocketFactory = ConfigUtils.getSSLSocketFactory(ctx.model.getSaltyRtcHost());
+        final SSLSocketFactory sslSocketFactory = SSLUtil.getSSLSocketFactory(ctx.model.getSaltyRtcHost());
 
         // Create SaltyRTC tasks
         final Task[] tasks = new Task[]{
@@ -371,6 +373,7 @@ class SessionConnectionContext {
         final UnboundedFlowControlledDataChannel ufcdc = new UnboundedFlowControlledDataChannel(logPrefix, this.sdc);
 
         // Create signalling data channel logger
+        @SuppressLint("LoggerName")
         final Logger sdcLogger = LoggingUtil.getThreemaLogger("SignalingDataChannel");
         if (sdcLogger instanceof ThreemaLogger) {
             ((ThreemaLogger) sdcLogger).setPrefix(logPrefix + "." + this.sdc.label() + "/" + this.sdc.id());

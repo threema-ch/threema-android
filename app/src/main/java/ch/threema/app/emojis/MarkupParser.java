@@ -51,9 +51,9 @@ public class MarkupParser {
     private static final String URL_BOUNDARY_PATTERN = "[a-zA-Z0-9\\-._~:/?#\\[\\]@!$&'()*+,;=%]";
     private static final String URL_START_PATTERN = "^[a-zA-Z]+://.*";
 
-    private static final char MARKUP_CHAR_BOLD = '*';
-    private static final char MARKUP_CHAR_ITALIC = '_';
-    private static final char MARKUP_CHAR_STRIKETHRU = '~';
+    public static final char MARKUP_CHAR_BOLD = '*';
+    public static final char MARKUP_CHAR_ITALIC = '_';
+    public static final char MARKUP_CHAR_STRIKETHROUGH = '~';
     public static final String MARKUP_CHAR_PATTERN = ".*[\\*_~].*";
 
     private final Pattern boundaryPattern, urlBoundaryPattern, urlStartPattern;
@@ -74,7 +74,7 @@ public class MarkupParser {
         this.urlStartPattern = Pattern.compile(URL_START_PATTERN);
     }
 
-    private enum TokenType {
+    public enum TokenType {
         TEXT,
         NEWLINE,
         ASTERISK,
@@ -92,14 +92,20 @@ public class MarkupParser {
             this.start = start;
             this.end = end;
         }
+
+        @NonNull
+        @Override
+        public String toString() {
+            return "MarkupToken(" + "kind = " + kind + ", start = " + start + ", end = " + end + ")";
+        }
     }
 
-    private static class SpanItem {
-        TokenType kind;
-        int textStart;
-        int textEnd;
-        int markerStart;
-        int markerEnd;
+    public static class SpanItem {
+        public TokenType kind;
+        public int textStart;
+        public int textEnd;
+        public int markerStart;
+        public int markerEnd;
 
         SpanItem(TokenType kind, int textStart, int textEnd, int markerStart, int markerEnd) {
             this.kind = kind;
@@ -129,7 +135,7 @@ public class MarkupParser {
     {
         markupChars.put(TokenType.ASTERISK, MARKUP_CHAR_BOLD);
         markupChars.put(TokenType.UNDERSCORE, MARKUP_CHAR_ITALIC);
-        markupChars.put(TokenType.TILDE, MARKUP_CHAR_STRIKETHRU);
+        markupChars.put(TokenType.TILDE, MARKUP_CHAR_STRIKETHROUGH);
     }
 
     /**
@@ -218,7 +224,7 @@ public class MarkupParser {
                 } else if (currentChar == MARKUP_CHAR_ITALIC && (prevIsBoundary || nextIsBoundary)) {
                     tokenLength = pushTextBufToken(tokenLength, i, markupTokens);
                     markupTokens.add(new MarkupToken(TokenType.UNDERSCORE, i, i + 1));
-                } else if (currentChar == MARKUP_CHAR_STRIKETHRU && (prevIsBoundary || nextIsBoundary)) {
+                } else if (currentChar == MARKUP_CHAR_STRIKETHROUGH && (prevIsBoundary || nextIsBoundary)) {
                     tokenLength = pushTextBufToken(tokenLength, i, markupTokens);
                     markupTokens.add(new MarkupToken(TokenType.TILDE, i, i + 1));
                 } else if (currentChar == '\n') {
@@ -235,7 +241,7 @@ public class MarkupParser {
         return markupTokens;
     }
 
-    private void applySpans(SpannableStringBuilder s, Stack<SpanItem> spanStack) {
+    private void applySpans(@NonNull SpannableStringBuilder stringBuilder, @NonNull Stack<SpanItem> spanStack) {
         ArrayList<Integer> deletables = new ArrayList<>();
 
         while (!spanStack.isEmpty()) {
@@ -243,9 +249,9 @@ public class MarkupParser {
             if (span.textStart > span.textEnd) {
                 logger.debug("range problem. ignore");
             } else {
-                if (span.textStart > 0 && span.textEnd < s.length()) {
+                if (span.textStart > 0 && span.textEnd < stringBuilder.length()) {
                     if (span.textStart != span.textEnd) {
-                        s.setSpan(getCharacterStyle(span.kind), span.textStart, span.textEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                        stringBuilder.setSpan(getCharacterStyle(span.kind), span.textStart, span.textEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
                         deletables.add(span.markerStart);
                         deletables.add(span.markerEnd);
                     }
@@ -256,7 +262,7 @@ public class MarkupParser {
         if (!deletables.isEmpty()) {
             Collections.sort(deletables, Collections.reverseOrder());
             for (int deletable : deletables) {
-                s.delete(deletable, deletable + 1);
+                stringBuilder.delete(deletable, deletable + 1);
             }
         }
     }
@@ -300,6 +306,22 @@ public class MarkupParser {
     }
 
     private void parse(ArrayList<MarkupToken> markupTokens, SpannableStringBuilder builder, Editable editable, @ColorInt int markerColor) throws MarkupParserException {
+
+        Stack<SpanItem> spanStack = buildSpanStack(markupTokens);
+
+        // Concatenate processed tokens
+        if (builder != null) {
+            applySpans(builder, spanStack);
+        } else {
+            if (!spanStack.isEmpty()) {
+                applySpans(editable, markerColor, spanStack);
+            }
+        }
+    }
+
+    @NonNull
+    public Stack<SpanItem> buildSpanStack(@NonNull ArrayList<MarkupToken> markupTokens) throws MarkupParserException {
+
         // Process the tokens. Add them to a stack. When a token pair is complete
         // (e.g. the second asterisk is found), pop the stack until you find the
         // matching token and convert everything in between to formatted text.
@@ -363,14 +385,7 @@ public class MarkupParser {
             }
         }
 
-        // Concatenate processed tokens
-        if (builder != null) {
-            applySpans(builder, spanStack);
-        } else {
-            if (!spanStack.isEmpty()) {
-                applySpans(editable, markerColor, spanStack);
-            }
-        }
+        return spanStack;
     }
 
     /**

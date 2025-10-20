@@ -16,13 +16,15 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:visibility="invisible">
+        tools:ignore="UseCompoundDrawables"
+        tools:visibility="gone">
 
         <ImageView
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginVertical="@dimen/grid_unit_x4"
+            android:importantForAccessibility="no"
             android:src="@drawable/ic_contacts_outline"
             app:tint="?attr/colorOnSurface" />
 
@@ -34,11 +36,11 @@
             android:gravity="center_horizontal"
             android:text="@string/directory_explain_text"
             android:textAlignment="center"
-            android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
+            android:textAppearance="@style/Threema.TextAppearance.EmptyView" />
 
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/results_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -48,59 +50,25 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:visibility="visible">
 
-        <HorizontalScrollView
-            android:id="@+id/chip_group_scroll_container"
+        <TextView
+            android:id="@+id/empty_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fadingEdgeLength="@dimen/grid_unit_x5"
-            android:requiresFadingEdge="horizontal"
-            android:scrollbarSize="0dp"
-            android:scrollbars="none">
+            android:layout_marginTop="@dimen/grid_unit_x4"
+            android:gravity="center_horizontal"
+            android:paddingHorizontal="@dimen/grid_unit_x2"
+            android:textAlignment="center"
+            android:textAppearance="@style/Threema.TextAppearance.EmptyView" />
 
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/chip_group"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/grid_unit_x2"
-                android:animateLayoutChanges="true"
-                android:paddingTop="14dp"
-                android:paddingBottom="10dp"
-                android:visibility="gone"
-                app:chipSpacingHorizontal="@dimen/grid_unit_x0_5"
-                app:chipSpacingVertical="0dp"
-                app:singleLine="true" />
-
-        </HorizontalScrollView>
-
-        <FrameLayout
+        <ch.threema.app.ui.EmptyRecyclerView
+            android:id="@+id/recycler"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/tablet_additional_padding_horizontal"
-            android:layout_marginRight="@dimen/tablet_additional_padding_horizontal"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:layout_marginTop="@dimen/grid_unit_x0_5"
+            android:clipToPadding="false"
+            tools:listitem="@layout/item_directory" />
 
-            <TextView
-                android:id="@+id/empty_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/grid_unit_x4"
-                android:gravity="center_horizontal"
-                android:paddingHorizontal="@dimen/grid_unit_x2"
-                android:text=""
-                android:textAlignment="center"
-                android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
-
-            <ch.threema.app.ui.EmptyRecyclerView
-                android:id="@+id/recycler"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="@dimen/grid_unit_x0_5"
-                android:clipToPadding="false"
-                tools:listitem="@layout/item_directory" />
-
-        </FrameLayout>
-
-    </LinearLayout>
+    </FrameLayout>
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
@@ -115,16 +83,38 @@
 
             <com.google.android.material.search.SearchBar
                 android:id="@+id/toolbar"
+                style="@style/Threema.SearchBar.Style"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
                 app:defaultMarginsEnabled="true"
-                app:navigationIcon="@drawable/ic_arrow_left" />
+                app:navigationIcon="?attr/homeAsUpIndicator" />
 
             <include layout="@layout/connection_indicator" />
 
         </FrameLayout>
+
+        <HorizontalScrollView
+            android:id="@+id/chip_group_scroll_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/grid_unit_x2"
+            android:paddingBottom="@dimen/grid_unit_x1"
+            android:scrollbarSize="0dp"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:visibility="gone"
+                app:chipSpacingHorizontal="@dimen/grid_unit_x0_5"
+                app:chipSpacingVertical="0dp"
+                app:singleLine="true"
+                tools:visibility="visible" />
+
+        </HorizontalScrollView>
 
     </com.google.android.material.appbar.AppBarLayout>
 

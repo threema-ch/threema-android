@@ -21,65 +21,39 @@
 
 package ch.threema.app.emojireactions
 
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.createSavedStateHandle
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import ch.threema.app.activities.StateFlowViewModel
+import ch.threema.app.framework.BaseViewModel
 import ch.threema.app.services.MessageService
-import ch.threema.data.models.EmojiReactionData
 import ch.threema.data.models.EmojiReactionsModel
 import ch.threema.data.repositories.EmojiReactionsRepository
 import ch.threema.data.repositories.EmojiReactionsRepository.ReactionMessageIdentifier
 import ch.threema.data.repositories.EmojiReactionsRepository.ReactionMessageIdentifier.TargetMessageType
 import ch.threema.storage.models.AbstractMessageModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 
 class EmojiReactionsViewModel(
-    savedStateHandle: SavedStateHandle,
-    emojiReactionsRepository: EmojiReactionsRepository,
+    private val emojiReactionsRepository: EmojiReactionsRepository,
     private val messageService: MessageService,
-) : StateFlowViewModel() {
+    private val reactionMessageIdentifier: ReactionMessageIdentifier,
+) : BaseViewModel<EmojiReactionsViewState, Unit>() {
     private var emojiReactionsModel: EmojiReactionsModel? = null
 
-    companion object {
-        private const val MESSAGE_ID = "messageId"
-        private const val MESSAGE_TYPE = "messageType"
-
-        fun provideFactory(
-            emojiReactionsRepository: EmojiReactionsRepository,
-            messageService: MessageService,
-            reactionMessageIdentifier: ReactionMessageIdentifier,
-        ) = viewModelFactory {
-            initializer {
-                EmojiReactionsViewModel(
-                    this.createSavedStateHandle().apply {
-                        set(MESSAGE_ID, reactionMessageIdentifier.messageId)
-                        set(MESSAGE_TYPE, reactionMessageIdentifier.messageType)
-                    },
-                    emojiReactionsRepository,
-                    messageService,
-                )
+    override fun initialize() = runInitialization {
+        emojiReactionsModel = getMessageModel()
+            ?.let { messageModel ->
+                emojiReactionsRepository.getReactionsByMessage(messageModel)
             }
-        }
-    }
 
-    private val reactionMessageIdentifier by lazy {
-        ReactionMessageIdentifier(
-            messageId = checkNotNull(savedStateHandle.get<Int>(MESSAGE_ID)),
-            messageType = checkNotNull(savedStateHandle.get<TargetMessageType>(MESSAGE_TYPE)),
+        EmojiReactionsViewState(
+            emojiReactions = emojiReactionsModel?.data ?: emptyList(),
         )
     }
 
-    val emojiReactionsUiState: StateFlow<EmojiReactionsUiState> =
-        getMessageModel()?.let {
-            emojiReactionsModel = emojiReactionsRepository.getReactionsByMessage(it)
-            (emojiReactionsModel?.data ?: MutableStateFlow(emptyList()))
-                .map { reactions -> EmojiReactionsUiState(reactions ?: emptyList()) }
-                .stateInViewModel(initialValue = EmojiReactionsUiState(emptyList()))
-        } ?: MutableStateFlow(EmojiReactionsUiState(emptyList()))
+    override suspend fun onActive() = runAction {
+        emojiReactionsModel?.dataFlow?.collect { reactions ->
+            updateViewState {
+                copy(emojiReactions = reactions ?: emptyList())
+            }
+        }
+    }
 
     private fun getMessageModel(): AbstractMessageModel? =
         when (reactionMessageIdentifier.messageType) {
@@ -89,8 +63,4 @@ class EmojiReactionsViewModel(
 
             TargetMessageType.GROUP -> messageService.getGroupMessageModel(reactionMessageIdentifier.messageId)
         }
-
-    data class EmojiReactionsUiState(
-        val emojiReactions: List<EmojiReactionData>,
-    )
 }

@@ -27,10 +27,11 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.types.Identity
 
 class OutgoingVoipICECandidateMessageTask(
     private val voipICECandidatesData: VoipICECandidatesData,
-    private val toIdentity: String,
+    private val toIdentity: Identity,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingVoipICECandidateMessageTask"

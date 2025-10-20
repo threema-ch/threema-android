@@ -27,9 +27,7 @@ import android.widget.Toast;
 
 import org.slf4j.Logger;
 
-import java.security.SecureRandom;
 import java.util.List;
-import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

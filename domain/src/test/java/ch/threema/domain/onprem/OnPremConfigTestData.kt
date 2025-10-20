@@ -53,5 +53,5 @@ object OnPremConfigTestData {
      * An OPPF with an invalid signature
      */
     val badOppf
-        get() = goodOppf.replace("initrode", "injtrode")
+        get() = goodOppf.replace("threema.ch", "zweima.ch")
 }

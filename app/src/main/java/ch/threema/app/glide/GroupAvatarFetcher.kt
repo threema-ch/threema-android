@@ -28,7 +28,7 @@ import ch.threema.app.R
 import ch.threema.app.services.AvatarCacheServiceImpl
 import ch.threema.app.utils.AvatarConverterUtil
 import ch.threema.app.utils.BitmapUtil
-import ch.threema.app.utils.ColorUtil
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.GroupModelRepository
 import com.bumptech.glide.Priority
@@ -51,7 +51,7 @@ class GroupAvatarFetcher(
     }
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        val groupModel = config.model?.let {
+        val groupModel = config.subject?.let {
             groupModelRepository?.getByCreatorIdentityAndId(it.creatorIdentity, it.apiGroupId)
         }
         val defaultAvatar: Boolean
@@ -120,8 +120,8 @@ class GroupAvatarFetcher(
         highRes: Boolean,
         backgroundColor: Int,
     ): Bitmap {
-        val color = groupModel?.data?.value?.getThemedColor(context)
-            ?: ColorUtil.getInstance().getCurrentThemeGray(context)
+        val color = groupModel?.data?.idColor?.getThemedColor(context)
+            ?: IdColor.invalid().getThemedColor(context)
         return if (highRes) {
             buildDefaultAvatarHighRes(groupDefaultAvatar, color, backgroundColor)
         } else {

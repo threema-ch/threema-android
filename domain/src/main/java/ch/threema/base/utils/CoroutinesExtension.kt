@@ -24,9 +24,8 @@ package ch.threema.base.utils
 import androidx.annotation.AnyThread
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.slf4j.Logger
 
-val logger: Logger = LoggingUtil.getThreemaLogger("CoroutinesExtension")
+private val logger = LoggingUtil.getThreemaLogger("CoroutinesExtension")
 
 /**
  *  Merges all exceptions from the default completed exceptionally state and the ones that could be thrown by [Deferred.getCompleted].
@@ -34,9 +33,9 @@ val logger: Logger = LoggingUtil.getThreemaLogger("CoroutinesExtension")
  *  Note: If this [Deferred] was cancelled, [onCompletedExceptionally] will get called with the cancellation exception.
  */
 @OptIn(ExperimentalCoroutinesApi::class)
-inline fun <R> Deferred<R>.onCompleted(
-    @AnyThread crossinline onCompletedExceptionally: (throwable: Throwable) -> Unit,
-    @AnyThread crossinline onCompletedNormally: (value: R) -> Unit,
+fun <R> Deferred<R>.onCompleted(
+    @AnyThread onCompletedExceptionally: (throwable: Throwable) -> Unit,
+    @AnyThread onCompletedNormally: (value: R) -> Unit,
 ) {
     invokeOnCompletion { throwable: Throwable? ->
         throwable?.let {

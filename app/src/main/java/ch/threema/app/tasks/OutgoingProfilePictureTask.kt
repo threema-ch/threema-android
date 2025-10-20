@@ -29,6 +29,7 @@ import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessa
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.types.Identity
 
 /**
  * This class provides methods to send the csp messages set-profile-picture,
@@ -40,7 +41,7 @@ sealed class OutgoingProfilePictureTask(serviceManager: ServiceManager) :
      * Send request profile picture message to the receiver.
      */
     protected suspend fun sendRequestProfilePictureMessage(
-        toIdentity: String,
+        toIdentity: Identity,
         handle: ActiveTaskCodec,
     ) {
         // Create the message
@@ -64,7 +65,7 @@ sealed class OutgoingProfilePictureTask(serviceManager: ServiceManager) :
      */
     protected suspend fun sendSetProfilePictureMessage(
         data: ContactService.ProfilePictureUploadData,
-        toIdentity: String,
+        toIdentity: Identity,
         handle: ActiveTaskCodec,
     ) {
         // Create the message
@@ -88,7 +89,7 @@ sealed class OutgoingProfilePictureTask(serviceManager: ServiceManager) :
      * Send a delete profile picture message to the receiver.
      */
     protected suspend fun sendDeleteProfilePictureMessage(
-        toIdentity: String,
+        toIdentity: Identity,
         handle: ActiveTaskCodec,
     ) {
         // Create the message

@@ -34,15 +34,12 @@ import androidx.annotation.IdRes
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import ch.threema.app.R
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.fragments.ComposeMessageFragment.EXTRA_OVERRIDE_BACK_TO_HOME_BEHAVIOR
-import ch.threema.app.services.ContactService
 import ch.threema.app.services.ConversationCategoryService
-import ch.threema.app.services.GroupService
 import ch.threema.app.services.MessageService.MessageFilterFlags
 import ch.threema.app.services.MessageServiceImpl.FILTER_CHATS
 import ch.threema.app.services.MessageServiceImpl.FILTER_GROUPS
@@ -64,6 +61,8 @@ import ch.threema.storage.models.GroupMessageModel
 import com.bumptech.glide.Glide
 import com.google.android.material.chip.Chip
 import com.google.android.material.search.SearchBar
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private val logger = LoggingUtil.getThreemaLogger("GlobalSearchActivity")
 
@@ -72,25 +71,19 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
         logScreenVisibility(logger)
     }
 
-    private companion object {
-        const val QUERY_MIN_LENGTH: Int = 2
-        const val GLOBAL_SEARCH_QUERY_TIMEOUT_MS: Long = 500
-    }
+    private val conversationCategoryService: ConversationCategoryService by inject()
+    private val globalSearchViewModel: GlobalSearchViewModel by viewModel()
 
     private var chatsAdapter: GlobalSearchAdapter? = null
-    private var globalSearchViewModel: GlobalSearchViewModel? = null
     private var searchView: ThreemaSearchView? = null
     private var searchBar: SearchBar? = null
-    private lateinit var conversationCategoryService: ConversationCategoryService
-    private lateinit var contactService: ContactService
-    private lateinit var groupService: GroupService
 
     @MessageFilterFlags
     private var filterFlags = FILTER_CHATS or FILTER_GROUPS or FILTER_INCLUDE_ARCHIVED
     private var queryText: String? = null
     private val queryHandler = Handler(Looper.getMainLooper())
     private val queryTask = Runnable {
-        globalSearchViewModel?.onQueryChanged(
+        globalSearchViewModel.onQueryChanged(
             query = queryText,
             filterFlags = filterFlags,
             allowEmpty = false,
@@ -101,7 +94,7 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
     private val showMessageLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { _: ActivityResult ->
             // search results may have changed when returning from ComposeMessageFragment
-            globalSearchViewModel?.onDataChanged()
+            globalSearchViewModel.onDataChanged()
         }
 
     override fun onQueryTextSubmit(query: String?): Boolean {
@@ -110,12 +103,12 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
 
     override fun onQueryTextChange(newText: String?): Boolean {
         queryText = newText
-        if (globalSearchViewModel != null && chatsAdapter != null) {
+        if (chatsAdapter != null) {
             queryHandler.removeCallbacksAndMessages(null)
             if ((queryText?.length ?: 0) >= QUERY_MIN_LENGTH) {
                 queryHandler.postDelayed(queryTask, GLOBAL_SEARCH_QUERY_TIMEOUT_MS)
             } else {
-                globalSearchViewModel?.onQueryChanged(
+                globalSearchViewModel.onQueryChanged(
                     query = null,
                     filterFlags = filterFlags,
                     allowEmpty = false,
@@ -128,18 +121,6 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
     }
 
     override fun getLayoutResource(): Int = R.layout.activity_global_search
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        try {
-            contactService = serviceManager.getContactService()
-            groupService = serviceManager.getGroupService()
-            conversationCategoryService = serviceManager.conversationCategoryService
-        } catch (e: Exception) {
-            logger.error("Exception", e)
-            finish()
-        }
-    }
 
     override fun handleDeviceInsets() {
         super.handleDeviceInsets()
@@ -192,7 +173,6 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
         emptyView.setup(
             R.string.global_search_empty_view_text,
             R.drawable.ic_search_outline,
-            ConfigUtils.getColorFromAttribute(this, R.attr.colorOnBackground),
         )
         (recyclerView.parent.parent as ViewGroup).addView(emptyView)
         recyclerView.emptyView = emptyView
@@ -207,36 +187,33 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
             ),
         )
 
-        globalSearchViewModel =
-            ViewModelProvider(this)[GlobalSearchViewModel::class.java].also { globalSearchViewModel ->
-                globalSearchViewModel.messageModels.observe(this) { messageModels ->
-                    emptyView.setLoading(false)
+        globalSearchViewModel.messageModels.observe(this) { messageModels ->
+            emptyView.setLoading(false)
 
-                    val messageModelsWithoutPrivateChats = messageModels.filterNot { messageModel ->
-                        val uniqueIdString: String =
-                            if (messageModel is GroupMessageModel) {
-                                GroupUtil.getUniqueIdString(messageModel.groupId.toLong())
-                            } else {
-                                ContactUtil.getUniqueIdString(messageModel.identity)
-                            }
-                        conversationCategoryService.isPrivateChat(uniqueIdString)
+            val messageModelsWithoutPrivateChats = messageModels.filterNot { messageModel ->
+                val uniqueIdString: String =
+                    if (messageModel is GroupMessageModel) {
+                        GroupUtil.getUniqueIdString(messageModel.groupId.toLong())
+                    } else {
+                        ContactUtil.getUniqueIdString(messageModel.identity)
                     }
+                conversationCategoryService.isPrivateChat(uniqueIdString)
+            }
 
-                    chatsAdapter?.setMessageModels(messageModelsWithoutPrivateChats)
+            chatsAdapter?.setMessageModels(messageModelsWithoutPrivateChats)
 
-                    if (messageModelsWithoutPrivateChats.isEmpty()) {
-                        if ((queryText?.length ?: 0) >= QUERY_MIN_LENGTH) {
-                            emptyView.setup(R.string.search_no_matches)
-                        } else {
-                            emptyView.setup(R.string.global_search_empty_view_text)
-                        }
-                    }
-                }
-
-                globalSearchViewModel.isLoading.observe(this) { isLoading: Boolean ->
-                    emptyView.setLoading(isLoading)
+            if (messageModelsWithoutPrivateChats.isEmpty()) {
+                if ((queryText?.length ?: 0) >= QUERY_MIN_LENGTH) {
+                    emptyView.setup(R.string.search_no_matches)
+                } else {
+                    emptyView.setup(R.string.global_search_empty_view_text)
                 }
             }
+        }
+
+        globalSearchViewModel.isLoading.observe(this) { isLoading: Boolean ->
+            emptyView.setLoading(isLoading)
+        }
 
         onQueryTextChange(null)
         return true
@@ -308,5 +285,10 @@ class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextLis
     override fun onConfigurationChanged(newConfig: Configuration) {
         hideKeyboard()
         super.onConfigurationChanged(newConfig)
+    }
+
+    private companion object {
+        const val QUERY_MIN_LENGTH = 2
+        const val GLOBAL_SEARCH_QUERY_TIMEOUT_MS = 500L
     }
 }

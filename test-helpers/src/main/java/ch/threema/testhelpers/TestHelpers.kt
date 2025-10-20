@@ -22,8 +22,16 @@
 package ch.threema.testhelpers
 
 import app.cash.turbine.TurbineTestContext
+import ch.threema.common.DispatcherProvider
+import ch.threema.common.models.CryptographicByteArray
 import kotlin.random.Random
 import kotlin.test.assertEquals
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 
 /**
  * Generate an array of length `length` and fill it using a non-cryptographically-secure
@@ -34,6 +42,8 @@ import kotlin.test.assertEquals
 fun nonSecureRandomArray(length: Int): ByteArray {
     return Random.nextBytes(length)
 }
+
+fun cryptographicByteArrayOf(vararg bytes: Byte) = CryptographicByteArray(bytes)
 
 /**
  * Generate a random Threema ID using a non-cryptographically-secure random number generator.
@@ -53,10 +63,35 @@ fun MUST_NOT_BE_CALLED(): Nothing {
 }
 
 fun Any.loadResource(file: String): String =
-    javaClass.classLoader.getResourceAsStream(file).use {
-        it.readAllBytes().toString(Charsets.UTF_8)
-    }
+    loadResourceAsBytes(file).toString(Charsets.UTF_8)
+
+fun Any.loadResourceAsBytes(file: String): ByteArray =
+    (javaClass.classLoader.getResourceAsStream(file) ?: error("Resource file '$file' not found"))
+        .use {
+            it.readAllBytes()
+        }
 
 suspend fun <T> TurbineTestContext<T>.expectItem(expected: T) {
     assertEquals(expected, awaitItem())
+}
+
+fun TestScope.testDispatcherProvider(): DispatcherProvider {
+    val testDispatcher: TestDispatcher = StandardTestDispatcher(testScheduler)
+    return object : DispatcherProvider {
+        override val worker: CoroutineDispatcher
+            get() = testDispatcher
+        override val io: CoroutineDispatcher
+            get() = testDispatcher
+    }
+}
+
+@OptIn(ExperimentalCoroutinesApi::class)
+fun TestScope.unconfinedTestDispatcherProvider(): DispatcherProvider {
+    val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(testScheduler)
+    return object : DispatcherProvider {
+        override val worker: CoroutineDispatcher
+            get() = testDispatcher
+        override val io: CoroutineDispatcher
+            get() = testDispatcher
+    }
 }

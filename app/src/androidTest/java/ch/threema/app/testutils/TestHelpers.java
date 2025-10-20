@@ -26,7 +26,7 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.util.Log;
 
-import com.neilalexander.jnacl.NaCl;
+import ch.threema.base.crypto.NaCl;
 
 import java.util.Collection;
 import java.util.Date;
@@ -50,7 +50,7 @@ import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -75,10 +75,10 @@ public class TestHelpers {
 
         public TestContact(@NonNull String identity) {
             this.identity = identity;
-            publicKey = new byte[NaCl.PUBLICKEYBYTES];
-            privateKey = new byte[NaCl.SECRETKEYBYTES];
+            publicKey = new byte[NaCl.PUBLIC_KEY_BYTES];
+            privateKey = new byte[NaCl.SECRET_KEY_BYTES];
 
-            NaCl.genkeypair(publicKey, privateKey);
+            NaCl.generateKeypairInPlace(publicKey, privateKey);
         }
 
         public TestContact(@NonNull String identity, @NonNull byte[] publicKey, @NonNull byte[] privateKey) {
@@ -98,7 +98,7 @@ public class TestHelpers {
         }
 
         @NonNull
-        public IdentityStoreInterface getIdentityStore() {
+        public IdentityStore getIdentityStore() {
             return new InMemoryIdentityStore(
                 this.identity,
                 "",
@@ -256,8 +256,7 @@ public class TestHelpers {
 
         userService.restoreIdentity(
             user.identity,
-            user.privateKey,
-            user.publicKey
+            user.privateKey
         );
     }
 
@@ -276,8 +275,7 @@ public class TestHelpers {
         // Otherwise, create identity
         userService.restoreIdentity(
             TEST_CONTACT.identity,
-            TEST_CONTACT.privateKey,
-            TEST_CONTACT.publicKey
+            TEST_CONTACT.privateKey
         );
         Log.i(TAG, "Test identity restored: " + TEST_CONTACT.identity);
         return TEST_CONTACT.identity;

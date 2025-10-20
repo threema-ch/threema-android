@@ -24,7 +24,7 @@ package ch.threema.app.systemupdates.updates;
 import androidx.annotation.NonNull;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
 /**
@@ -48,7 +48,9 @@ public class SystemUpdateToVersion72 implements SystemUpdate {
             throw new RuntimeException(e);
         }
         for (ContactModel contact : contactService.getAll()) {
-            contact.initializeIdColor();
+            // Ignore the return value as we are only interested
+            // in triggering the computation of the color index.
+            contact.getIdColor();
             contactService.save(contact);
         }
     }

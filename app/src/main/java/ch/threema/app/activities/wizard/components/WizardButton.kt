@@ -75,16 +75,12 @@ enum class WizardButtonStyle {
  *
  *  We do **not** use the dynamic theme colors from [MaterialTheme.colorScheme] because we do not want
  *  Material You to take effect in this composable.
- *
- *  @param onPrimaryColorRes Will have no effect if [style] is [WizardButtonStyle.INVERSE]
  */
 @Composable
 fun WizardButton(
     modifier: Modifier = Modifier,
     text: String,
     @DrawableRes trailingIconRes: Int? = null,
-    @ColorRes primaryColorRes: Int = R.color.md_theme_dark_primary,
-    @ColorRes onPrimaryColorRes: Int = R.color.md_theme_dark_onPrimary,
     style: WizardButtonStyle = WizardButtonStyle.DEFAULT,
     isEnabled: Boolean = true,
     onClick: () -> Unit,
@@ -98,7 +94,7 @@ fun WizardButton(
         derivedStateOf {
             when (showAsInverse) {
                 true -> android.R.color.transparent
-                false -> primaryColorRes
+                false -> R.color.md_theme_dark_primary
             }
         }
     }
@@ -107,8 +103,8 @@ fun WizardButton(
     val contentColorRes: Int by remember {
         derivedStateOf {
             when (showAsInverse) {
-                true -> primaryColorRes
-                false -> onPrimaryColorRes
+                true -> R.color.md_theme_dark_primary
+                false -> R.color.md_theme_dark_onPrimary
             }
         }
     }
@@ -138,7 +134,6 @@ fun WizardButton(
         border = buildBorderStroke(
             isEnabled = isEnabled,
             showAsInverse = showAsInverse,
-            primaryColorRes = primaryColorRes,
         ),
         shape = RoundedCornerShape(size = 4.dp),
         contentPadding = PaddingValues(
@@ -181,16 +176,15 @@ fun WizardButton(
 private fun buildBorderStroke(
     isEnabled: Boolean,
     showAsInverse: Boolean,
-    @ColorRes primaryColorRes: Int,
 ): BorderStroke? = when {
     isEnabled && showAsInverse -> BorderStroke(
         width = BORDER_WIDTH.dp,
-        color = colorResource(primaryColorRes),
+        color = colorResource(R.color.md_theme_dark_primary),
     )
 
     !isEnabled -> BorderStroke(
         width = BORDER_WIDTH.dp,
-        color = colorResource(primaryColorRes).copy(
+        color = colorResource(R.color.md_theme_dark_primary).copy(
             alpha = AlphaValuesNight.DISABLED_CONTAINER,
         ),
     )
@@ -366,76 +360,6 @@ private fun WizardButtonPreviewIconDisabledInverse() {
                 trailingIconRes = R.drawable.ic_new_feature,
                 style = WizardButtonStyle.INVERSE,
                 isEnabled = false,
-                onClick = {},
-            )
-        }
-    }
-}
-
-@Preview(group = "default")
-@Composable
-private fun WizardButtonPreviewDifferentColors() {
-    ThreemaThemePreview(isDarkTheme = true) {
-        Surface(color = Color.Black) {
-            WizardButton(
-                modifier = Modifier.padding(8.dp),
-                text = "Close",
-                primaryColorRes = android.R.color.darker_gray,
-                onPrimaryColorRes = android.R.color.holo_red_light,
-                trailingIconRes = R.drawable.ic_new_feature,
-                onClick = {},
-            )
-        }
-    }
-}
-
-@Preview(group = "default")
-@Composable
-private fun WizardButtonPreviewDifferentColorsDisabled() {
-    ThreemaThemePreview(isDarkTheme = true) {
-        Surface(color = Color.Black) {
-            WizardButton(
-                modifier = Modifier.padding(8.dp),
-                text = "Close",
-                isEnabled = false,
-                primaryColorRes = android.R.color.darker_gray,
-                onPrimaryColorRes = android.R.color.holo_red_light,
-                trailingIconRes = R.drawable.ic_new_feature,
-                onClick = {},
-            )
-        }
-    }
-}
-
-@Preview(group = "inverse")
-@Composable
-private fun WizardButtonPreviewDifferentColorsInverse() {
-    ThreemaThemePreview(isDarkTheme = true) {
-        Surface(color = Color.Black) {
-            WizardButton(
-                modifier = Modifier.padding(8.dp),
-                text = "Close",
-                primaryColorRes = android.R.color.holo_red_light,
-                trailingIconRes = R.drawable.ic_new_feature,
-                style = WizardButtonStyle.INVERSE,
-                onClick = {},
-            )
-        }
-    }
-}
-
-@Preview(group = "inverse")
-@Composable
-private fun WizardButtonPreviewDifferentColorsInverseDisabled() {
-    ThreemaThemePreview(isDarkTheme = true) {
-        Surface(color = Color.Black) {
-            WizardButton(
-                modifier = Modifier.padding(8.dp),
-                text = "Close",
-                isEnabled = false,
-                primaryColorRes = android.R.color.holo_red_light,
-                trailingIconRes = R.drawable.ic_new_feature,
-                style = WizardButtonStyle.INVERSE,
                 onClick = {},
             )
         }

@@ -24,6 +24,8 @@ package ch.threema.app.mediaattacher;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import org.koin.android.compat.ViewModelCompat;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +33,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.MediaViewerActivity;
@@ -43,7 +44,7 @@ public class ImagePreviewPagerAdapter extends FragmentStateAdapter {
     public ImagePreviewPagerAdapter(FragmentActivity mediaSelectionBaseActivity) {
         super(mediaSelectionBaseActivity);
 
-        this.mediaAttachViewModel = new ViewModelProvider(mediaSelectionBaseActivity).get(MediaAttachViewModel.class);
+        this.mediaAttachViewModel = ViewModelCompat.getViewModel(mediaSelectionBaseActivity, MediaAttachViewModel.class);
     }
 
     @NonNull

@@ -46,6 +46,7 @@ public class CancelableGenericProgressDialog extends ThreemaDialogFragment {
     private Activity activity;
     private CancelableGenericProgressDialog.ProgressDialogClickListener callback;
 
+    @NonNull
     public static CancelableGenericProgressDialog newInstance(@StringRes int title, @StringRes int message, @StringRes int button) {
         CancelableGenericProgressDialog dialog = new CancelableGenericProgressDialog();
         Bundle args = new Bundle();

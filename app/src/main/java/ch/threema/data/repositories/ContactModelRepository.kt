@@ -27,6 +27,7 @@ import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.tasks.ReflectContactSyncCreateTask
 import ch.threema.base.ThreemaException
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.ModelTypeCache
 import ch.threema.data.models.ContactModel
@@ -37,8 +38,8 @@ import ch.threema.data.storage.DbContact
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import com.neilalexander.jnacl.NaCl
 
 private val logger = LoggingUtil.getThreemaLogger("data.ContactModelRepository")
 
@@ -54,7 +55,7 @@ class ContactModelRepository(
         // Register an "old" contact listener that updates the "new" models
         ListenerManager.contactListeners.add(
             object : ContactListener {
-                override fun onModified(identity: String) {
+                override fun onModified(identity: Identity) {
                     synchronized(this@ContactModelRepository) {
                         cache.get(identity)?.refreshFromDb(ContactModelRepositoryToken)
                     }
@@ -198,7 +199,7 @@ class ContactModelRepository(
         if (contactModelData.identity.length != ProtocolDefines.IDENTITY_LEN) {
             throw InvalidContactException("Invalid identity: ${contactModelData.identity}")
         }
-        if (contactModelData.publicKey.size != NaCl.PUBLICKEYBYTES) {
+        if (contactModelData.publicKey.size != NaCl.PUBLIC_KEY_BYTES) {
             throw InvalidContactException("Invalid public key size (${contactModelData.publicKey.size}) for identity ${contactModelData.identity}")
         }
     }
@@ -207,7 +208,7 @@ class ContactModelRepository(
      * Return the contact model for the specified identity.
      */
     @Synchronized
-    fun getByIdentity(identity: String): ContactModel? = cache.getOrCreate(identity) {
+    fun getByIdentity(identity: Identity): ContactModel? = cache.getOrCreate(identity) {
         databaseBackend.getContactByIdentity(identity)?.toModel()
     }
 
@@ -222,10 +223,10 @@ class ContactModelRepository(
     }
 
     @Synchronized
-    fun existsByIdentity(identity: String): Boolean =
+    fun existsByIdentity(identity: Identity): Boolean =
         (cache.get(identity) ?: databaseBackend.getContactByIdentity(identity)) != null
 
-    private fun notifyDeprecatedListenersOnNew(identity: String) {
+    private fun notifyDeprecatedListenersOnNew(identity: Identity) {
         ListenerManager.contactListeners.handle { it.onNew(identity) }
     }
 

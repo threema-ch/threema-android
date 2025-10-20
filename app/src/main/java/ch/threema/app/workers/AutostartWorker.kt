@@ -30,14 +30,16 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
-import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitServiceManagerWithTimeout
 import ch.threema.app.home.HomeActivity
 import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.notifications.NotificationIDs
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.localcrypto.MasterKeyManager
 import kotlin.time.Duration.Companion.seconds
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = LoggingUtil.getThreemaLogger("AutostartWorker")
 
@@ -45,16 +47,15 @@ class AutostartWorker(
     val context: Context,
     workerParameters: WorkerParameters,
 ) :
-    CoroutineWorker(context, workerParameters) {
+    CoroutineWorker(context, workerParameters), KoinComponent {
+
+    private val masterKeyManager: MasterKeyManager by inject()
 
     @SuppressLint("MissingPermission")
     override suspend fun doWork(): Result {
         logger.info("Processing AutoStart - start")
 
-        val masterKey = ThreemaApplication.getMasterKey()
-
-        // check if masterkey needs a password and issue a notification if necessary
-        if (masterKey.isLocked) {
+        if (masterKeyManager.isLockedWithPassphrase()) {
             val notificationCompat: NotificationCompat.Builder = NotificationCompat.Builder(
                 context,
                 NotificationChannels.NOTIFICATION_CHANNEL_NOTICE,
@@ -76,7 +77,7 @@ class AutostartWorker(
                 context,
                 0,
                 notificationIntent,
-                IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE,
+                PendingIntent.FLAG_IMMUTABLE,
             )
             notificationCompat.setContentIntent(pendingIntent)
             NotificationManagerCompat.from(context).notify(

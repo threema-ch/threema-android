@@ -23,7 +23,6 @@ package ch.threema.app.fragments.mediaviews;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -230,7 +229,7 @@ abstract public class MediaViewFragment extends Fragment {
     }
 
     public void destroy() {
-        if (TestUtil.required(this.messageModel)) {
+        if (messageModel != null) {
             logger.debug("destroy decrypted image in fragment " + this.position);
         }
 
@@ -238,7 +237,7 @@ abstract public class MediaViewFragment extends Fragment {
     }
 
     public void hide() {
-        if (TestUtil.required(this.messageModel)) {
+        if (messageModel != null) {
             logger.debug("hide fragment " + this.position);
         }
         this.killDecryptThread();
@@ -271,14 +270,14 @@ abstract public class MediaViewFragment extends Fragment {
                 try {
                     logger.debug("show decrypted of " + position);
                     final File decrypted = fileService.getDecryptedMessageFile(messageModel);
-                    if (!TestUtil.required(decrypted) || !decrypted.exists()) {
+                    if (decrypted == null || !decrypted.exists()) {
                         throw new Exception("Decrypted file not found");
                     }
 
                     RuntimeUtil.runOnUiThread(() -> {
                         fileDecrypted(decrypted);
 
-                        if (TestUtil.required(onMediaLoadListener)) {
+                        if (onMediaLoadListener != null) {
                             onMediaLoadListener.decrypted(true);
                         }
                     });
@@ -286,7 +285,7 @@ abstract public class MediaViewFragment extends Fragment {
                 } catch (Exception x) {
                     logger.error("Exception", x);
                     RuntimeUtil.runOnUiThread(() -> {
-                        if (TestUtil.required(onMediaLoadListener)) {
+                        if (onMediaLoadListener != null) {
                             onMediaLoadListener.decrypted(false);
                         }
 
@@ -310,7 +309,7 @@ abstract public class MediaViewFragment extends Fragment {
     }
 
     private void fileDecrypted(File file) {
-        if (!TestUtil.required(file) || !file.exists()) {
+        if (file == null || !file.exists()) {
             return;
         }
         logger.debug("file decrypted " + this.position);

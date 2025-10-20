@@ -33,7 +33,8 @@ import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataReject
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataTerminate
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityEnvelopeMessage
 import ch.threema.domain.stores.ContactStore
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
+import ch.threema.domain.types.Identity
 import java.util.LinkedList
 import java.util.Queue
 
@@ -44,7 +45,7 @@ import java.util.Queue
  */
 open class DecryptTaskCodec(
     private val contactStore: ContactStore,
-    private val identityStores: Map<String, IdentityStoreInterface>,
+    private val identityStores: Map<Identity, IdentityStore>,
     private val forwardSecurityMessageProcessors: Map<String, ForwardSecurityMessageProcessor>,
 ) : ServerAckTaskCodec() {
     val outboundAbstractMessages: Queue<AbstractMessage> = LinkedList()

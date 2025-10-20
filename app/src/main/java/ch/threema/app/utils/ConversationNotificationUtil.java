@@ -110,7 +110,7 @@ public class ConversationNotificationUtil {
         Person.Builder builder = new Person.Builder()
             .setKey(ContactUtil.getUniqueIdString(identity))
             .setName(name);
-        Bitmap avatar = contactService.getAvatar(contactModel, false);
+        Bitmap avatar = contactService.getAvatar(identity, false);
         if (avatar != null) {
             IconCompat iconCompat = IconCompat.createWithBitmap(avatar);
             builder.setIcon(iconCompat);
@@ -154,10 +154,10 @@ public class ConversationNotificationUtil {
                     contactService.createReceiver(contactModel),
                     () -> {
                         if (contactModel != null) {
-                            return contactService.getAvatar(
-                                isPrivateChat ? null : contactModel,
-                                false
-                            );
+                            String identity = isPrivateChat
+                                ? null
+                                : contactModel.getIdentity();
+                            return contactService.getAvatar(identity, false);
                         }
                         return null;
                     }

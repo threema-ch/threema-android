@@ -30,11 +30,14 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -42,19 +45,17 @@ import java.util.List;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.adapters.ballot.BallotOverviewListAdapter;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.ballot.BallotModel;
 
@@ -63,10 +64,8 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 public class BallotChooserActivity extends ThreemaToolbarActivity implements ListView.OnItemClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("BallotChooserActivity");
 
-    private BallotService ballotService;
-    private ContactService contactService;
-    private GroupService groupService;
-    private String myIdentity;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private BallotOverviewListAdapter listAdapter = null;
     private ListView listView;
@@ -101,8 +100,15 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!this.requireInstancesOrExit()) {
-            return;
+        if (!dependencies.isAvailable()) {
+            finish();
+        }
+    }
+
+    @Override
+    protected boolean initActivity(@Nullable Bundle savedInstanceState) {
+        if (!super.initActivity(savedInstanceState)) {
+            return false;
         }
 
         listView = this.findViewById(android.R.id.list);
@@ -138,6 +144,8 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
 
         this.setupList();
         this.updateList();
+
+        return true;
     }
 
     @Override
@@ -175,12 +183,8 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
     }
 
     private void updateList() {
-        if (!this.requiredInstances()) {
-            return;
-        }
-
         try {
-            List<BallotModel> ballots = this.ballotService.getBallots(new BallotService.BallotFilter() {
+            List<BallotModel> ballots = dependencies.getBallotService().getBallots(new BallotService.BallotFilter() {
                 @Override
                 public MessageReceiver<?> getReceiver() {
                     return null;
@@ -201,8 +205,8 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
                 this.listAdapter = new BallotOverviewListAdapter(
                     this,
                     ballots,
-                    this.ballotService,
-                    this.contactService,
+                    dependencies.getBallotService(),
+                    dependencies.getContactService(),
                     Glide.with(this)
                 );
 
@@ -211,7 +215,6 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
         } catch (NotAllowedException e) {
             logger.error("Exception", e);
             finish();
-            return;
         }
     }
 
@@ -231,37 +234,6 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
             setResult(RESULT_OK, resultIntent);
             finish();
         }
-    }
-
-    @Override
-    protected boolean checkInstances() {
-        return !TestUtil.isEmptyOrNull(this.myIdentity) && TestUtil.required(
-            this.ballotService,
-            this.contactService,
-            this.groupService);
-    }
-
-    @Override
-    protected void instantiate() {
-        if (serviceManager != null) {
-            try {
-                this.ballotService = serviceManager.getBallotService();
-                this.contactService = serviceManager.getContactService();
-                this.groupService = serviceManager.getGroupService();
-                this.myIdentity = serviceManager.getUserService().getIdentity();
-            } catch (Exception e) {
-                logger.error("Exception", e);
-            }
-        }
-    }
-
-    private boolean requireInstancesOrExit() {
-        if (!this.requiredInstances()) {
-            logger.error("Required instances failed");
-            this.finish();
-            return false;
-        }
-        return true;
     }
 
     @Override

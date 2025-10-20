@@ -25,24 +25,27 @@ import ch.threema.base.ProgressListener
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
-import ch.threema.base.utils.toHexString
-import ch.threema.domain.protocol.ProtocolStrings
+import ch.threema.common.Http
+import ch.threema.common.buildNew
+import ch.threema.common.buildRequest
+import ch.threema.common.execute
+import ch.threema.common.toHexString
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.data.leBytes
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.protocol.getUserAgent
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL
 import java.nio.charset.StandardCharsets
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.Volatile
+import kotlin.time.Duration.Companion.seconds
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.internal.closeQuietly
 import okio.BufferedSink
@@ -154,25 +157,25 @@ class BlobUploader private constructor(
 
         val blobUploadUrl = getBlobUploadUrl()
 
-        val okHttpClientUpload: OkHttpClient = baseOkhttpClient.newBuilder().apply {
-            connectTimeout(ProtocolDefines.BLOB_CONNECT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            readTimeout(ProtocolDefines.BLOB_LOAD_TIMEOUT.toLong(), TimeUnit.SECONDS)
-        }.build()
+        val okHttpClientUpload: OkHttpClient = baseOkhttpClient.buildNew {
+            connectTimeout(ProtocolDefines.BLOB_CONNECT_TIMEOUT.seconds)
+            readTimeout(ProtocolDefines.BLOB_LOAD_TIMEOUT.seconds)
+        }
 
-        val uploadRequest: Request = Request.Builder().apply {
+        val uploadRequest = buildRequest {
             url(blobUploadUrl)
-            addHeader("Content-Type", "multipart/form-data; boundary=$MULTIPART_BOUNDARY")
-            addHeader("User-Agent", "${ProtocolStrings.USER_AGENT}/${version.versionString}")
+            header(Http.Header.CONTENT_TYPE, "multipart/form-data; boundary=$MULTIPART_BOUNDARY")
+            header(Http.Header.USER_AGENT, getUserAgent(version))
             if (authToken != null) {
-                addHeader("Authorization", "Token $authToken")
+                header(Http.Header.AUTHORIZATION, "Token $authToken")
             }
             post(buildRequestBody())
-        }.build()
+        }
 
         logger.info("Uploading blob ({} bytes) in scope {}", blobLength, blobScope)
 
         try {
-            okHttpClientUpload.newCall(uploadRequest).execute().use { response ->
+            okHttpClientUpload.execute(uploadRequest).use { response ->
                 if (isCancelled) {
                     progressListener?.onFinished(false)
                     return null
@@ -182,11 +185,7 @@ class BlobUploader private constructor(
                     throw IOException("upload request failed with code ${response.code}")
                 }
 
-                val responseBodyStream: InputStream = response.body?.byteStream() ?: run {
-                    logger.error("Blob upload failed. Empty successful response body")
-                    throw ThreemaException("TB001") // Invalid blob ID received from server
-                }
-
+                val responseBodyStream: InputStream = response.body.byteStream()
                 val blobIdHex = IOUtils.toString(responseBodyStream, StandardCharsets.UTF_8)
 
                 progressListener?.onFinished(blobIdHex != null)
@@ -231,7 +230,6 @@ class BlobUploader private constructor(
             return URL(
                 appendQueryParametersForMirrorServer(
                     rawUrl = blobMirrorServerUploadUrl,
-                    shouldPersist = shouldPersist,
                     multiDevicePropertyProvider = multiDevicePropertyProvider,
                     scope = blobScope,
                 ),
@@ -249,10 +247,11 @@ class BlobUploader private constructor(
      * @param rawUrl An url string **without** any query parameters. The value of this will not be mutated.
      */
     private fun appendQueryParametersForUsualServer(rawUrl: String): String {
-        if (shouldPersist) {
-            return "$rawUrl?persist=1"
-        }
-        return rawUrl
+        return "$rawUrl?${getPersistParam()}"
+    }
+
+    private fun getPersistParam(): String {
+        return "persist=${if (shouldPersist) 1 else 0}"
     }
 
     /**
@@ -261,22 +260,12 @@ class BlobUploader private constructor(
     @Throws(ThreemaException::class)
     private fun appendQueryParametersForMirrorServer(
         rawUrl: String,
-        shouldPersist: Boolean,
         multiDevicePropertyProvider: MultiDevicePropertyProvider,
         scope: BlobScope,
     ): String {
-        val persistParam = if (shouldPersist) {
-            "&persist=1"
-        } else {
-            ""
-        }
-
-        val deviceGroupIdHex: String =
-            Utils.byteArrayToHexString(multiDevicePropertyProvider.get().keys.dgid)
-                ?: throw ThreemaException("Could not read device group id")
-        val deviceIdHex: String =
-            multiDevicePropertyProvider.get().mediatorDeviceId.leBytes().toHexString()
-        return "$rawUrl?deviceId=$deviceIdHex&deviceGroupId=$deviceGroupIdHex&scope=${scope.name}$persistParam"
+        val deviceGroupIdHex = multiDevicePropertyProvider.get().keys.dgid.toHexString()
+        val deviceIdHex = multiDevicePropertyProvider.get().mediatorDeviceId.leBytes().toHexString()
+        return "$rawUrl?deviceId=$deviceIdHex&deviceGroupId=$deviceGroupIdHex&scope=${scope.name}&${getPersistParam()}"
     }
 
     private fun buildRequestBody(): RequestBody {

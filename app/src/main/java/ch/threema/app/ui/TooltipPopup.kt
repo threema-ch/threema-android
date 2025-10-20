@@ -46,6 +46,7 @@ import androidx.preference.PreferenceManager
 import ch.threema.app.R
 import ch.threema.app.emojis.EmojiTextView
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.TestUtil
 import com.google.android.material.card.MaterialCardView
 
 class TooltipPopup
@@ -147,7 +148,7 @@ constructor(
         originLocation: IntArray,
         timeoutMs: Int = 0,
     ) {
-        if (isForeverDismissed()) {
+        if (isForeverDismissed() || TestUtil.isInDeviceTest()) {
             return
         }
 

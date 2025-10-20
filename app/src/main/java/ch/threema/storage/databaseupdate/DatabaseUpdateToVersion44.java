@@ -21,28 +21,29 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import ch.threema.storage.models.ContactModel;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import androidx.annotation.NonNull;
+
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 
 public class DatabaseUpdateToVersion44 implements DatabaseUpdate {
 
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion44(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion44(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 
     @Override
     public void run() throws SQLException {
-        if (!fieldExists(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_TYPE)) {
-            sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE
-                + " ADD COLUMN " + ContactModel.COLUMN_TYPE + " INT DEFAULT 0");
+        if (!fieldExists(this.sqLiteDatabase, "contacts", "type")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts"
+                + " ADD COLUMN type INT DEFAULT 0");
         }
     }
 

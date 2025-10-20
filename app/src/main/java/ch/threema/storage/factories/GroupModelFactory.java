@@ -172,7 +172,7 @@ public class GroupModelFactory extends ModelFactory {
         contentValues.put(GroupModel.COLUMN_IS_ARCHIVED, groupModel.isArchived());
         contentValues.put(GroupModel.COLUMN_GROUP_DESC, groupModel.getGroupDesc());
         contentValues.put(GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP, groupModel.getGroupDescTimestamp() != null ? CursorHelper.dateAsStringFormat.get().format(groupModel.getGroupDescTimestamp()) : null);
-        contentValues.put(GroupModel.COLUMN_COLOR_INDEX, groupModel.getColorIndex());
+        contentValues.put(GroupModel.COLUMN_COLOR_INDEX, groupModel.getIdColor().getColorIndex());
         // In case the user state is not set, we fall back to 'member'.
         contentValues.put(GroupModel.COLUMN_USER_STATE, groupModel.getUserState() != null ? groupModel.getUserState().value : GroupModel.UserState.MEMBER.value);
         contentValues.put(GroupModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE, groupModel.getNotificationTriggerPolicyOverride());

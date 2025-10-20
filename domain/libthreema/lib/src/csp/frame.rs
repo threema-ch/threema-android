@@ -1,11 +1,12 @@
 //! Incoming/Outgoing frame utilities.
+use educe::Educe;
 use libthreema_macros::Name;
 
 use super::CspProtocolError;
 use crate::utils::debug::debug_slice_length;
 
 /// An encoded outgoing frame.
-#[derive(Name, educe::Educe)]
+#[derive(Name, Educe)]
 #[educe(Debug)]
 pub struct OutgoingFrame(#[educe(Debug(method(debug_slice_length)))] pub Vec<u8>);
 

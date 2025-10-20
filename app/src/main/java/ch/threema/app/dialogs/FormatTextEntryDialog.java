@@ -124,7 +124,7 @@ public class FormatTextEntryDialog extends ThreemaDialogFragment {
 
         editText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged(@NonNull CharSequence text, int start, int before, int count) {
                 ActivityService.activityUserInteract(requireActivity());
             }
         });

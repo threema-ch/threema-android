@@ -27,6 +27,7 @@ import ch.threema.app.services.ContactServiceImpl
 import ch.threema.data.models.ContactModel
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.protocol.api.APIConnector
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 
 /**
@@ -42,7 +43,7 @@ enum class SendToSupportResult {
  * already available.
  */
 abstract class SendToSupportBackgroundTask(
-    myIdentity: String,
+    myIdentity: Identity,
     apiConnector: APIConnector,
     contactModelRepository: ContactModelRepository,
     context: Context,

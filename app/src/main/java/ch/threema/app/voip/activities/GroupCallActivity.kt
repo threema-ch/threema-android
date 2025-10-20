@@ -47,7 +47,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.annotation.StringRes
 import androidx.annotation.UiThread
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -64,7 +63,6 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.AppConstants
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.ComposeMessageActivity
 import ch.threema.app.activities.ThreemaActivity
 import ch.threema.app.adapters.GroupCallParticipantsAdapter
@@ -75,8 +73,8 @@ import ch.threema.app.dialogs.SimpleStringAlertDialog
 import ch.threema.app.dialogs.ThreemaDialogFragment
 import ch.threema.app.emojis.EmojiTextView
 import ch.threema.app.listeners.SensorListener
-import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ActivityService
+import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.LockAppService
 import ch.threema.app.services.SensorService
@@ -88,6 +86,7 @@ import ch.threema.app.utils.AudioDevice
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.Destroyer.Companion.createDestroyer
 import ch.threema.app.utils.PermissionRegistry
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.getIconResource
 import ch.threema.app.utils.getStringResource
 import ch.threema.app.utils.logScreenVisibility
@@ -107,6 +106,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private val logger = LoggingUtil.getThreemaLogger("GroupCallActivity")!!
 
@@ -119,55 +120,10 @@ class GroupCallActivity :
         logScreenVisibility(logger)
     }
 
-    companion object {
-        private const val EXTRA_GROUP_ID = "EXTRA_GROUP_ID"
-        private const val EXTRA_MICROPHONE_ACTIVE = "EXTRA_MICROPHONE_ACTIVE"
-        private const val EXTRA_INTENTION = "EXTRA_INTENTION"
-
-        private const val DURATION_ANIMATE_NAVIGATION_MILLIS = 300L
-        private const val DURATION_ANIMATE_GRADIENT_VISIBILITY_MILLIS = 200L
-        private const val TIMEOUT_HIDE_NAVIGATION_MILLIS = 7000L
-
-        private const val DIALOG_TAG_MIC_PERMISSION_DENIED = "mic_perm_denied"
-        private const val DIALOG_TAG_CAMERA_PERMISSION_DENIED = "cam_perm_denied"
-        private const val DIALOG_TAG_SELECT_AUDIO_DEVICE = "audio_select_tag"
-
-        private const val SENSOR_TAG_GROUP_CALL = "grpcall"
-        private const val KEEP_ALIVE_DELAY = 20000L
-
-        @JvmStatic
-        fun getStartCallIntent(context: Context, groupId: Int): Intent {
-            return getStartOrJoinCallIntent(context, groupId)
-                .putExtra(EXTRA_INTENTION, GroupCallIntention.JOIN_OR_CREATE)
-        }
-
-        @JvmStatic
-        fun getJoinCallIntent(
-            context: Context,
-            groupId: Int,
-            microphoneActive: Boolean = true,
-        ): Intent {
-            return getJoinCallIntent(context, groupId)
-                .putExtra(EXTRA_MICROPHONE_ACTIVE, microphoneActive)
-        }
-
-        @JvmStatic
-        fun getJoinCallIntent(context: Context, groupId: Int): Intent {
-            return getStartOrJoinCallIntent(context, groupId)
-                .putExtra(EXTRA_INTENTION, GroupCallIntention.JOIN)
-        }
-
-        @JvmStatic
-        private fun getStartOrJoinCallIntent(context: Context, groupId: Int): Intent {
-            return getGroupCallIntent(context, groupId)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        }
-
-        private fun getGroupCallIntent(context: Context, groupId: Int): Intent {
-            return Intent(context, GroupCallActivity::class.java)
-                .putExtra(EXTRA_GROUP_ID, groupId)
-        }
-    }
+    private val contactService: ContactService by inject()
+    private val lockAppService: LockAppService by inject()
+    private val sensorService: SensorService by inject()
+    private val groupService: GroupService by inject()
 
     private val destroyer = createDestroyer()
 
@@ -197,12 +153,7 @@ class GroupCallActivity :
 
     private var intention = GroupCallIntention.JOIN
 
-    private val viewModel: GroupCallViewModel by viewModels()
-
-    private lateinit var lockAppService: LockAppService
-    private lateinit var preferenceService: PreferenceService
-    private lateinit var sensorService: SensorService
-    private lateinit var groupService: GroupService
+    private val viewModel: GroupCallViewModel by viewModel()
 
     private lateinit var permissionRegistry: PermissionRegistry
 
@@ -233,18 +184,11 @@ class GroupCallActivity :
             return
         }
 
-        val serviceManager = ThreemaApplication.requireServiceManager()
-        lockAppService = serviceManager.lockAppService
-        preferenceService = serviceManager.preferenceService
-        groupService = serviceManager.groupService
         permissionRegistry = PermissionRegistry(this)
-        sensorService = destroyer.register(
-            create = { serviceManager.sensorService },
-            destroy = {
-                sensorService.unregisterSensors(SENSOR_TAG_GROUP_CALL)
-                sensorEnabled = false
-            },
-        )
+        destroyer.own {
+            sensorService.unregisterSensors(SENSOR_TAG_GROUP_CALL)
+            sensorEnabled = false
+        }
 
         destroyer.own {
             // remove lockscreen keepalive
@@ -353,7 +297,7 @@ class GroupCallActivity :
 
     override fun onResume() {
         super.onResume()
-        if (views.duration.visibility == View.VISIBLE) {
+        if (views.duration.isVisible) {
             views.layout.postDelayed(
                 autoRemoveInfoAndControlsRunnable,
                 TIMEOUT_HIDE_NAVIGATION_MILLIS,
@@ -368,10 +312,6 @@ class GroupCallActivity :
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-
-        if (intent == null) {
-            return
-        }
 
         val currentCallGroupId = viewModel.getGroupId()
         val groupId = LocalGroupId(intent.getIntExtra(EXTRA_GROUP_ID, -1))
@@ -470,7 +410,7 @@ class GroupCallActivity :
             setTurnScreenOn(true)
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val keyguard = getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager?
+            val keyguard = getSystemService(KEYGUARD_SERVICE) as KeyguardManager?
             keyguard?.let {
                 if (it.isKeyguardLocked) {
                     // this call can lead to a memory leak: https://issuetracker.google.com/issues/111158463
@@ -714,7 +654,6 @@ class GroupCallActivity :
     private fun initParticipantsList() {
         val gutterPx = resources.getDimensionPixelSize(R.dimen.group_call_participants_item_gutter)
 
-        val contactService = ThreemaApplication.requireServiceManager().contactService
         participantsAdapter = GroupCallParticipantsAdapter(contactService, gutterPx, Glide.with(this))
             .ownedBy(destroyer)
         views.participants.layoutManager = participantsLayoutManager
@@ -734,6 +673,14 @@ class GroupCallActivity :
                 if (adapter is GroupCallParticipantsAdapter) {
                     adapter.updateCaptureStates()
                 }
+            }
+        }
+        // TODO(ANDR-4127): Remove
+        viewModel.showScreenShareHint().observe(this) {
+            if (viewModel.confirmShowScreenShareHint()) {
+                Toast
+                    .makeText(this, R.string.voip_gc_screen_sharing_not_supported, Toast.LENGTH_SHORT)
+                    .show()
             }
         }
     }
@@ -792,7 +739,7 @@ class GroupCallActivity :
         if (groupModel != null) {
             views.title.setOnClickListener {
                 val intent = Intent(this, ComposeMessageActivity::class.java)
-                intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupModel.id)
+                intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupModel.id.toLong())
                 startActivity(intent)
             }
         } else {
@@ -833,7 +780,7 @@ class GroupCallActivity :
 
         if (event.call != null && viewModel.hasOtherJoinedCall(event.call)) {
             logger.info("There is another joined call, so recreate the activity")
-            newIntent = getGroupCallIntent(this, event.call.groupId.id)
+            newIntent = createGroupCallIntent(this, event.call.groupId.id)
         }
         finish()
     }
@@ -978,10 +925,6 @@ class GroupCallActivity :
         val buttonHangup: ImageButton = findViewById(R.id.button_end_call)
     }
 
-    override fun isPinLockable(): Boolean {
-        return true
-    }
-
     override fun onSensorChanged(key: String?, value: Boolean) {
         // called if sensor status changed
         logger.trace("onSensorChanged: {}={}", key, value)
@@ -1003,5 +946,47 @@ class GroupCallActivity :
             setResult(RESULT_CANCELED)
             finish()
         }
+    }
+
+    companion object {
+        private const val EXTRA_GROUP_ID = "EXTRA_GROUP_ID"
+        private const val EXTRA_MICROPHONE_ACTIVE = "EXTRA_MICROPHONE_ACTIVE"
+        private const val EXTRA_INTENTION = "EXTRA_INTENTION"
+
+        private const val DURATION_ANIMATE_NAVIGATION_MILLIS = 300L
+        private const val DURATION_ANIMATE_GRADIENT_VISIBILITY_MILLIS = 200L
+        private const val TIMEOUT_HIDE_NAVIGATION_MILLIS = 7000L
+
+        private const val DIALOG_TAG_MIC_PERMISSION_DENIED = "mic_perm_denied"
+        private const val DIALOG_TAG_CAMERA_PERMISSION_DENIED = "cam_perm_denied"
+        private const val DIALOG_TAG_SELECT_AUDIO_DEVICE = "audio_select_tag"
+
+        private const val SENSOR_TAG_GROUP_CALL = "grpcall"
+        private const val KEEP_ALIVE_DELAY = 20000L
+
+        @JvmStatic
+        fun createStartCallIntent(context: Context, groupId: Int) =
+            createGroupCallIntent(context, groupId) {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                putExtra(EXTRA_INTENTION, GroupCallIntention.JOIN_OR_CREATE)
+            }
+
+        @JvmStatic
+        fun createJoinCallIntent(context: Context, groupId: Int, microphoneActive: Boolean = true) =
+            createJoinCallIntent(context, groupId)
+                .putExtra(EXTRA_MICROPHONE_ACTIVE, microphoneActive)
+
+        @JvmStatic
+        fun createJoinCallIntent(context: Context, groupId: Int) =
+            createGroupCallIntent(context, groupId) {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                putExtra(EXTRA_INTENTION, GroupCallIntention.JOIN)
+            }
+
+        private fun createGroupCallIntent(context: Context, groupId: Int, extra: Intent.() -> Unit = {}) =
+            buildActivityIntent<GroupCallActivity>(context) {
+                putExtra(EXTRA_GROUP_ID, groupId)
+                extra()
+            }
     }
 }

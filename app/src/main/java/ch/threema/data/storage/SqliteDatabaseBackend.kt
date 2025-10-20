@@ -31,6 +31,7 @@ import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.ContactSyncState
@@ -41,15 +42,16 @@ import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.types.Identity
 import ch.threema.storage.CursorHelper
 import ch.threema.storage.DatabaseUtil
+import ch.threema.storage.buildContentValues
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.GroupMemberModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.IncomingGroupSyncRequestLogModel
-import com.neilalexander.jnacl.NaCl
 import java.util.Collections
 import java.util.Date
 import net.zetetic.database.sqlcipher.SQLiteDatabase
@@ -116,18 +118,6 @@ private fun Cursor.getBoolean(@IntRange(from = 0) columnIndex: Int): Boolean {
 }
 
 /**
- * Returns the value of the requested column as an UByte, assuming that it contains a numeric value
- * between 0 and [UByte.MAX_VALUE]. Otherwise, an [IllegalArgumentException] is thrown.
- */
-private fun Cursor.getUByte(@IntRange(from = 0) columnIndex: Int): UByte {
-    val numberAsInt = this.getInt(columnIndex)
-    if (numberAsInt < 0 || numberAsInt > UByte.MAX_VALUE.toInt()) {
-        throw IllegalArgumentException("Value '$numberAsInt' at index $columnIndex is not an ubyte")
-    }
-    return numberAsInt.toUByte()
-}
-
-/**
  * Returns the value of the requested column as a Boolean, assuming that it contains
  * a numeric 1 or 0 value.
  *
@@ -187,24 +177,25 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         require(contact.identity.length == ProtocolDefines.IDENTITY_LEN) {
             "Cannot create contact with invalid identity: ${contact.identity}"
         }
-        require(contact.publicKey.size == NaCl.PUBLICKEYBYTES) {
+        require(contact.publicKey.size == NaCl.PUBLIC_KEY_BYTES) {
             "Cannot create contact (${contact.identity}) with public key of invalid length: ${contact.publicKey.size}"
         }
 
-        val contentValues = ContentValues()
-        contentValues.put(ContactModel.COLUMN_IDENTITY, contact.identity)
-        contentValues.put(ContactModel.COLUMN_PUBLIC_KEY, contact.publicKey)
-        contentValues.put(ContactModel.COLUMN_CREATED_AT, contact.createdAt.time)
-        contentValues.update(contact)
+        val contentValues = buildContentValues {
+            put(ContactModel.COLUMN_IDENTITY, contact.identity)
+            put(ContactModel.COLUMN_PUBLIC_KEY, contact.publicKey)
+            put(ContactModel.COLUMN_CREATED_AT, contact.createdAt.time)
+            update(contact)
+        }
 
         sqlite.writableDatabase.insert(
-            ContactModel.TABLE,
-            SQLiteDatabase.CONFLICT_ROLLBACK,
-            contentValues,
+            table = ContactModel.TABLE,
+            conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
+            values = contentValues,
         )
     }
 
-    override fun getContactByIdentity(identity: String): DbContact? {
+    override fun getContactByIdentity(identity: Identity): DbContact? {
         val cursor = sqlite.readableDatabase.query(
             SupportSQLiteQueryBuilder.builder(ContactModel.TABLE)
                 .columns(
@@ -280,8 +271,8 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
 
         // Validation and mapping
         if (colorIndex < 0 || colorIndex > 255) {
-            logger.warn("colorIndex value out of range: {}. Falling back to 0.", colorIndex)
-            colorIndex = 0
+            logger.warn("colorIndex value out of range: {}. Falling back to -1.", colorIndex)
+            colorIndex = -1
         }
         val verificationLevel = when (verificationLevelRaw) {
             0 -> VerificationLevel.UNVERIFIED
@@ -389,7 +380,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             firstName = firstName,
             lastName = lastName,
             nickname = nickname,
-            colorIndex = colorIndex.toUByte(),
+            colorIndex = colorIndex,
             verificationLevel = verificationLevel,
             workVerificationLevel = workVerificationLevel,
             identityType = identityType,
@@ -411,8 +402,9 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
     }
 
     override fun updateContact(contact: DbContact) {
-        val contentValues = ContentValues()
-        contentValues.update(contact)
+        val contentValues = buildContentValues {
+            update(contact)
+        }
 
         sqlite.writableDatabase.update(
             table = ContactModel.TABLE,
@@ -428,7 +420,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         put(ContactModel.COLUMN_FIRST_NAME, contact.firstName)
         put(ContactModel.COLUMN_LAST_NAME, contact.lastName)
         put(ContactModel.COLUMN_PUBLIC_NICK_NAME, contact.nickname)
-        put(ContactModel.COLUMN_ID_COLOR_INDEX, contact.colorIndex.toInt())
+        put(ContactModel.COLUMN_ID_COLOR_INDEX, contact.colorIndex)
         put(ContactModel.COLUMN_VERIFICATION_LEVEL, contact.verificationLevel.code)
         put(
             ContactModel.COLUMN_IS_WORK,
@@ -494,7 +486,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         put(ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE, contact.notificationTriggerPolicyOverride)
     }
 
-    override fun deleteContactByIdentity(identity: String): Boolean {
+    override fun deleteContactByIdentity(identity: Identity): Boolean {
         return sqlite.writableDatabase.delete(
             table = ContactModel.TABLE,
             whereClause = "${ContactModel.COLUMN_IDENTITY} = ?",
@@ -502,7 +494,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         ) > 0
     }
 
-    override fun isContactInGroup(identity: String): Boolean {
+    override fun isContactInGroup(identity: Identity): Boolean {
         sqlite.readableDatabase.query(
             DatabaseUtil.IS_GROUP_MEMBER_QUERY,
             arrayOf(identity),
@@ -522,17 +514,18 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
      * @throws DatabaseException if the constraints fail while inserting the group
      */
     override fun createGroup(group: DbGroup) {
-        val contentValues = ContentValues()
-        contentValues.put(GroupModel.COLUMN_CREATOR_IDENTITY, group.creatorIdentity)
-        contentValues.put(GroupModel.COLUMN_API_GROUP_ID, group.groupId)
-        contentValues.put(GroupModel.COLUMN_CREATED_AT, group.createdAt.toDateStringOrNull())
-        contentValues.update(group)
+        val contentValues = buildContentValues {
+            put(GroupModel.COLUMN_CREATOR_IDENTITY, group.creatorIdentity)
+            put(GroupModel.COLUMN_API_GROUP_ID, group.groupId)
+            put(GroupModel.COLUMN_CREATED_AT, group.createdAt.toDateStringOrNull())
+            update(group)
+        }
 
         val rowId = try {
             sqlite.writableDatabase.insert(
-                GroupModel.TABLE,
-                SQLiteDatabase.CONFLICT_ROLLBACK,
-                contentValues,
+                table = GroupModel.TABLE,
+                conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
+                values = contentValues,
             )
         } catch (e: SQLiteException) {
             throw DatabaseException("Could not insert group", e)
@@ -548,25 +541,25 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
     override fun removeGroup(localDbId: Long) {
         // Remove messages
         sqlite.writableDatabase.delete(
-            GroupMessageModel.TABLE,
-            "${GroupMessageModel.COLUMN_GROUP_ID} = ?",
-            arrayOf(localDbId),
+            table = GroupMessageModel.TABLE,
+            whereClause = "${GroupMessageModel.COLUMN_GROUP_ID} = ?",
+            whereArgs = arrayOf(localDbId),
         )
 
         // Remove members
         sqlite.writableDatabase.delete(
-            GroupMemberModel.TABLE,
-            "${GroupMemberModel.COLUMN_GROUP_ID} = ?",
-            arrayOf(localDbId),
+            table = GroupMemberModel.TABLE,
+            whereClause = "${GroupMemberModel.COLUMN_GROUP_ID} = ?",
+            whereArgs = arrayOf(localDbId),
         )
 
         // Remove incoming group sync request log model. Note that outgoing group sync request logs
         // must not be removed as they need to be persisted to prevent sending sync requests too
         // often.
         sqlite.writableDatabase.delete(
-            IncomingGroupSyncRequestLogModel.TABLE,
-            "${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID} = ?",
-            arrayOf(localDbId),
+            table = IncomingGroupSyncRequestLogModel.TABLE,
+            whereClause = "${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID} = ?",
+            whereArgs = arrayOf(localDbId),
         )
 
         // TODO(ANDR-3633): Remove group calls and polls here as they are also located in the
@@ -574,9 +567,9 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
 
         // Remove the group itself
         sqlite.writableDatabase.delete(
-            GroupModel.TABLE,
-            "${GroupModel.COLUMN_ID} = ?",
-            arrayOf(localDbId),
+            table = GroupModel.TABLE,
+            whereClause = "${GroupModel.COLUMN_ID} = ?",
+            whereArgs = arrayOf(localDbId),
         )
     }
 
@@ -667,7 +660,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         val localGroupDbId = getLocalGroupDbId(group)
 
         // First update general group information
-        val contentValues = ContentValues().apply { update(group) }
+        val contentValues = buildContentValues { update(group) }
 
         sqlite.writableDatabase.update(
             table = GroupModel.TABLE,
@@ -692,7 +685,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             getDateOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_SYNCHRONIZED_AT))
         val lastUpdate = getDateOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_LAST_UPDATE))
         val isArchived = getBoolean(getColumnIndexOrThrow(this, GroupModel.COLUMN_IS_ARCHIVED))
-        val colorIndex = getUByte(getColumnIndexOrThrow(this, GroupModel.COLUMN_COLOR_INDEX))
+        val colorIndex = getInt(getColumnIndexOrThrow(this, GroupModel.COLUMN_COLOR_INDEX))
         val groupDesc = getStringOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_GROUP_DESC))
         val groupDescChangedAt = getDateByStringOrNull(
             getColumnIndexOrThrow(
@@ -732,7 +725,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         put(GroupModel.COLUMN_LAST_UPDATE, group.lastUpdate?.time)
         put(GroupModel.COLUMN_SYNCHRONIZED_AT, group.synchronizedAt?.time)
         put(GroupModel.COLUMN_IS_ARCHIVED, group.isArchived)
-        put(GroupModel.COLUMN_COLOR_INDEX, group.colorIndex.toInt())
+        put(GroupModel.COLUMN_COLOR_INDEX, group.colorIndex)
         put(GroupModel.COLUMN_GROUP_DESC, group.groupDescription)
         put(
             GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
@@ -796,15 +789,15 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         } )"
 
         sqlite.writableDatabase.delete(
-            GroupMemberModel.TABLE,
-            "$whereGroupId AND $whereNotMember",
-            (listOf(localDbId) + members).toTypedArray(),
+            table = GroupMemberModel.TABLE,
+            whereClause = "$whereGroupId AND $whereNotMember",
+            whereArgs = (listOf(localDbId) + members).toTypedArray(),
         )
 
         // Add all members (if not already exists)
         val existingMembers = getGroupMembers(localDbId)
         val contentValuesList = (members - existingMembers).map { memberIdentity ->
-            ContentValues().apply {
+            buildContentValues {
                 put(GroupMemberModel.COLUMN_IDENTITY, memberIdentity)
                 put(GroupMemberModel.COLUMN_GROUP_ID, localDbId)
             }
@@ -812,9 +805,9 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
 
         contentValuesList.forEach { contentValues ->
             sqlite.writableDatabase.insert(
-                GroupMemberModel.TABLE,
-                SQLiteDatabase.CONFLICT_FAIL,
-                contentValues,
+                table = GroupMemberModel.TABLE,
+                conflictAlgorithm = SQLiteDatabase.CONFLICT_FAIL,
+                values = contentValues,
             )
         }
     }

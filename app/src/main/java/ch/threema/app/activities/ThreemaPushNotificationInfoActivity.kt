@@ -21,6 +21,7 @@
 
 package ch.threema.app.activities
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.ScrollView
@@ -29,6 +30,7 @@ import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.applyDeviceInsetsAsMargin
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.button.MaterialButton
@@ -65,5 +67,9 @@ class ThreemaPushNotificationInfoActivity : ThreemaActivity() {
                 bottom = R.dimen.grid_unit_x2,
             ),
         )
+    }
+
+    companion object {
+        fun createIntent(context: Context) = buildActivityIntent<ThreemaPushNotificationInfoActivity>(context)
     }
 }

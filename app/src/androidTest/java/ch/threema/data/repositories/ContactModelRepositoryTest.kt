@@ -27,9 +27,10 @@ import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.utils.AppVersionProvider
+import ch.threema.base.crypto.NaCl
 import ch.threema.data.TestDatabaseService
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData
-import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
 import ch.threema.domain.helpers.TransactionAckTaskCodec
 import ch.threema.domain.helpers.UnusedTaskCodec
 import ch.threema.domain.models.ContactSyncState
@@ -39,11 +40,11 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.testhelpers.nonSecureRandomArray
 import ch.threema.testhelpers.randomIdentity
-import com.neilalexander.jnacl.NaCl
 import java.util.Date
 import junit.framework.TestCase.assertNotNull
 import kotlin.test.BeforeTest
@@ -78,10 +79,10 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
 
     companion object {
         @JvmStatic
-        @Parameterized.Parameters()
+        @Parameterized.Parameters
         fun initialValuesSet() = setOf(
             getInitialContactModelData(),
-            getInitialContactModelData(publicKey = ByteArray(NaCl.PUBLICKEYBYTES) { it.toByte() }),
+            getInitialContactModelData(publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES) { it.toByte() }),
             getInitialContactModelData(createdAt = Date(42)),
             getInitialContactModelData(identityType = IdentityType.WORK),
             getInitialContactModelData(acquaintanceLevel = AcquaintanceLevel.GROUP),
@@ -90,8 +91,8 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         )
 
         private fun getInitialContactModelData(
-            identity: String = "ABCDEFGH",
-            publicKey: ByteArray = ByteArray(NaCl.PUBLICKEYBYTES),
+            identity: Identity = "ABCDEFGH",
+            publicKey: ByteArray = ByteArray(NaCl.PUBLIC_KEY_BYTES),
             createdAt: Date = Date(),
             firstName: String = "",
             lastName: String = "",
@@ -118,7 +119,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
             firstName = firstName,
             lastName = lastName,
             nickname = nickname,
-            colorIndex = getIdColorIndex(identity),
+            idColor = IdColor.ofIdentity(identity),
             verificationLevel = verificationLevel,
             workVerificationLevel = workVerificationLevel,
             identityType = identityType,
@@ -141,8 +142,9 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
 
     @BeforeTest
     fun before() {
+        val serviceManager = ThreemaApplication.requireServiceManager()
         TestHelpers.setIdentity(
-            ThreemaApplication.requireServiceManager(),
+            serviceManager,
             TestHelpers.TEST_CONTACT,
         )
 
@@ -151,7 +153,8 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         this.coreServiceManager = TestCoreServiceManager(
             version = AppVersionProvider.appVersion,
             databaseService = databaseService,
-            preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
+            preferenceStore = serviceManager.preferenceStore,
+            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
             taskManager = TestTaskManager(UnusedTaskCodec()),
         )
         this.contactModelRepository = ModelRepositories(coreServiceManager).contacts
@@ -162,7 +165,8 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         this.coreServiceManagerMd = TestCoreServiceManager(
             version = AppVersionProvider.appVersion,
             databaseService = databaseServiceMd,
-            preferenceStore = ThreemaApplication.requireServiceManager().preferenceStore,
+            preferenceStore = serviceManager.preferenceStore,
+            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
             multiDeviceManager = TestMultiDeviceManager(
                 isMultiDeviceActive = true,
                 isMdDisabledOrSupportsFs = false,
@@ -244,10 +248,10 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         val model = contactModelRepository.getByIdentity(identity)!!
         val modelMd = contactModelRepositoryMd.getByIdentity(identity)!!
         assertEquals(model.identity, modelMd.identity)
-        assertContentEquals(model.data.value, modelMd.data.value)
+        assertContentEquals(model.data, modelMd.data)
         assertTrue { model.identity == identity }
-        assertTrue { model.data.value?.identity == identity }
-        assertContentEquals(publicKey, model.data.value?.publicKey)
+        assertTrue { model.data?.identity == identity }
+        assertContentEquals(publicKey, model.data?.publicKey)
     }
 
     private fun testCreateFromLocalOrRemote(
@@ -287,8 +291,8 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         val queriedModelMd = contactModelRepositoryMd.getByIdentity(contactModelData.identity)
         assertEquals(newModelMd, queriedModelMd)
 
-        assertContentEquals(contactModelData, newModel.data.value)
-        assertContentEquals(contactModelData, newModelMd.data.value)
+        assertContentEquals(contactModelData, newModel.data)
+        assertContentEquals(contactModelData, newModelMd.data)
 
         // Reset transaction count in case this test is run several times
         taskCodecMd.transactionBeginCount = 0
@@ -348,8 +352,8 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         val queriedModelMd = contactModelRepositoryMd.getByIdentity(contactModelData.identity)
         assertEquals(newModelMd, queriedModelMd)
 
-        assertContentEquals(contactModelData, newModel.data.value)
-        assertContentEquals(contactModelData, newModelMd.data.value)
+        assertContentEquals(contactModelData, newModel.data)
+        assertContentEquals(contactModelData, newModelMd.data)
 
         // Insert for the second time and assert that an exception is thrown
         assertFailsWith<ContactStoreException> { runBlocking { runCreation() } }
@@ -378,7 +382,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         assertTrue(taskCodecMd.outboundMessages.isEmpty())
 
         // Assert that the contact data has been inserted correctly
-        val addedData = contactModel.data.value!!
+        val addedData = contactModel.data!!
         assertContentEquals(contactModelData, addedData)
 
         // Reset transaction count in case this test is run several times
@@ -403,7 +407,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         assertTrue(taskCodecMd.outboundMessages.isEmpty())
 
         // Assert that the contact data has been inserted correctly
-        val addedData = contactModel.data.value!!
+        val addedData = contactModel.data!!
         assertContentEquals(contactModelData, addedData)
 
         // Assert that the contact data cannot be inserted again (as it already exists)
@@ -431,9 +435,9 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         val model: ch.threema.data.models.ContactModel? =
             contactModelRepository.getByIdentity(identity)
         assertNotNull(model)
-        assertEquals(null, model!!.data.value?.nickname)
+        assertEquals(null, model!!.data?.nickname)
         model.setNicknameFromSync("testnick")
-        assertEquals("testnick", model.data.value?.nickname)
+        assertEquals("testnick", model.data?.nickname)
     }
 
     private fun assertContentEquals(expected: ContactModelData?, actual: ContactModelData?) {
@@ -455,7 +459,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         assertEquals(expected.firstName, actual.firstName)
         assertEquals(expected.lastName, actual.lastName)
         assertEquals(expected.nickname, actual.nickname)
-        assertEquals(expected.colorIndex, actual.colorIndex)
+        assertEquals(expected.idColor, actual.idColor)
         assertEquals(expected.verificationLevel, actual.verificationLevel)
         assertEquals(expected.workVerificationLevel, actual.workVerificationLevel)
         assertEquals(expected.identityType, actual.identityType)

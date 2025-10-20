@@ -43,7 +43,6 @@ import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.tasks.OutboundIncomingContactMessageUpdateReadTask;
 import ch.threema.app.tasks.OutgoingContactDeliveryReceiptMessageTask;
 import ch.threema.app.tasks.OutgoingContactDeleteMessageTask;
@@ -80,6 +79,7 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.domain.taskmanager.Task;
 import ch.threema.domain.taskmanager.TaskManager;
@@ -571,7 +571,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public List<MessageModel> loadMessages(MessageService.MessageFilter filter) {
         return databaseService.getMessageModelFactory().find(
             contact.getIdentity(),
-            filter);
+            filter
+        );
     }
 
     /**
@@ -641,13 +642,21 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     @Override
     @Nullable
     public Bitmap getNotificationAvatar() {
-        return contactService.getAvatar(contact, false);
+        return getAvatar(false);
     }
 
     @Override
     @Nullable
     public Bitmap getAvatar() {
-        return contactService.getAvatar(contact, true, true);
+        return getAvatar(true);
+    }
+
+    @Nullable
+    private Bitmap getAvatar(boolean highResolution) {
+        String identity = contact != null
+            ? contact.getIdentity()
+            : null;
+        return contactService.getAvatar(identity, highResolution);
     }
 
     @Deprecated

@@ -40,9 +40,6 @@ dependencies {
     api(libs.androidx.annotation)
     api(libs.streamsupport.flow)
     api(libs.protobuf.kotlin.lite)
-    api(platform(libs.okhttp3.bom))
-    api(libs.okhttp3)
-    api(libs.okhttp3.loggingInterceptor)
 
     implementation(libs.slf4j.api)
     implementation(libs.commonsIo)
@@ -51,7 +48,6 @@ dependencies {
     implementation(libs.jna)
 
     testImplementation(libs.junit)
-    testImplementation(libs.mockito.powermock.reflect)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.slf4j.simple)
@@ -107,7 +103,7 @@ afterEvaluate {
     // Define the task to generate libthreema library (only used to generate bindings for it)
     val generateLibthreema = tasks.register<Exec>("generateLibthreema") {
         workingDir("${project.projectDir}/libthreema")
-        commandLine("cargo", "build", "-F", "uniffi", "-p", "libthreema", "--release")
+        commandLine("cargo", "build", "-F", "uniffi", "-p", "libthreema", "--release", "--locked")
     }
 
     // Define the task to generate the uniffi bindings for libthreema
@@ -173,6 +169,8 @@ publishing {
 }
 
 tasks.register<Exec>("compileProto") {
+    group = "build"
+    description = "generate class bindings from protobuf files in the 'protocol/src' directory"
     workingDir(project.projectDir)
     commandLine("./compile-proto.sh")
 }

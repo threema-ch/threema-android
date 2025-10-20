@@ -27,7 +27,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import ch.threema.app.R
 import ch.threema.app.services.AvatarCacheServiceImpl
 import ch.threema.app.services.DistributionListService
-import ch.threema.app.utils.ColorUtil
+import ch.threema.data.datatypes.IdColor
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.data.DataFetcher
 
@@ -49,8 +49,8 @@ class DistributionListAvatarFetcher(
     }
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        val color = distributionListService?.getAvatarColor(distributionListConfig.model)
-            ?: ColorUtil.getInstance().getCurrentThemeGray(context)
+        val color = distributionListService?.getAvatarColor(distributionListConfig.subject)
+            ?: IdColor.invalid().getThemedColor(context)
         callback.onDataReady(buildDefaultAvatarLowRes(distributionListDefaultAvatar, color))
     }
 }

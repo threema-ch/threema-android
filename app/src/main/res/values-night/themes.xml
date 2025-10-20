@@ -42,6 +42,8 @@
         <item name="colorSurfaceContainerHighest">@color/md_theme_dark_surfaceContainerHighest
         </item>
 
+        <item name="android:textColorHighlight">@color/md_theme_dark_inversePrimary</item>
+
         <!-- deprecated color mappings -->
         <!-- darker variant for the status bar and contextual app bars -->
         <item name="colorPrimaryDark">@color/md_theme_dark_secondary</item>
@@ -63,15 +65,14 @@
         <item name="android:colorControlNormal">@color/md_theme_dark_onSurface</item>
 
         <!-- Status bar and navigation bar color -->
-        <item name="android:windowLightStatusBar" tools:targetApi="23">false</item>
+        <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar" tools:targetApi="27">false</item>
         <item name="windowActionModeOverlay">true</item>
 
         <!-- drawables -->
         <item name="android:actionModeCloseDrawable">@drawable/ic_close_daynight</item>
         <item name="actionModeCloseDrawable">@drawable/ic_close_daynight</item>
-        <item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb_material
-        </item> <!-- thumbscroller image - override this by default in >v21 -->
+        <item name="android:fastScrollThumbDrawable">@drawable/fastscroll_thumb_material</item>
 
         <!-- mapping for system styles -->
         <item name="android:textAppearanceLarge">@style/Threema.TextAppearance.BodyLarge</item>
@@ -93,7 +94,7 @@
         <item name="searchViewStyle">@style/Threema.SearchView</item>
         <item name="toolbarStyle">@style/Threema.ToolbarStyle</item>
         <item name="materialButtonStyle">@style/Threema.MaterialButtonStyle</item>
-        <item name="materialAlertDialogTheme">@style/Threema.AlertDialogStyle</item>
+        <item name="materialAlertDialogTheme">@style/Threema.MaterialAlertDialog</item>
         <item name="badgeStyle">@style/Threema.BadgeStyle</item>
         <item name="bottomSheetDialogTheme">@style/Threema.BottomSheetDialog</item>
         <item name="bottomSheetStyle">@style/Threema.BottomSheetStyle</item>

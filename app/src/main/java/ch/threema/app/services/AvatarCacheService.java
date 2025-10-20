@@ -31,7 +31,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.data.models.GroupIdentity;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 
@@ -41,29 +40,29 @@ import ch.threema.storage.models.GroupModel;
 public interface AvatarCacheService {
 
     /**
-     * Get the avatar of the provided contact model in high resolution. If an error happens while
+     * Get the avatar for the provided identity in high resolution. If an error happens while
      * loading the avatar, the default avatar or null is returned. Note: Do not call this method
-     * with the {@link AvatarOptions.DefaultAvatarPolicy#CUSTOM_AVATAR} for contacts that do not
+     * with the {@link AvatarOptions.DefaultAvatarPolicy#CUSTOM_AVATAR} for identities that do not
      * have a custom avatar. This may cause glide to misbehave :)
      *
-     * @param contactModel if the contact model is null, the neutral contact avatar is returned
-     * @param options      the options for loading the avatar
-     * @return the contact avatar depending on the given choices
+     * @param identity if the identity is null, the neutral identity avatar is returned
+     * @param options  the options for loading the avatar
+     * @return the identity avatar depending on the given choices
      */
     @AnyThread
     @Nullable
-    Bitmap getContactAvatar(@Nullable ContactModel contactModel, @NonNull AvatarOptions options);
+    Bitmap getIdentityAvatar(@Nullable String identity, @NonNull AvatarOptions options);
 
     /**
      * Load the avatar directly into the given image view.
      *
-     * @param contactModel the contact model
+     * @param identity     the identity to use the avatar for
      * @param imageView    the image view
      * @param options      the options for loading the image
      */
     @AnyThread
-    void loadContactAvatarIntoImage(
-        @NonNull ContactModel contactModel,
+    void loadIdentityAvatarIntoImage(
+        @NonNull String identity,
         @NonNull ImageView imageView,
         @NonNull AvatarOptions options,
         @NonNull RequestManager requestManager
@@ -77,7 +76,7 @@ public interface AvatarCacheService {
      *
      * @param groupModel if the group model is null, the neutral group avatar is returned
      * @param options    the options for loading the avatar
-     * @return the contact group depending on the given choices
+     * @return the group avatar depending on the given choices
      */
     @AnyThread
     @Nullable
@@ -133,13 +132,7 @@ public interface AvatarCacheService {
     void clear();
 
     /**
-     * Clears the cache of the given contact model.
-     */
-    @AnyThread
-    void reset(@NonNull ContactModel contactModel);
-
-    /**
-     * Clears the cache of the contact with the given identity.
+     * Clears the cache of the for the given identity.
      */
     @AnyThread
     void reset(@NonNull String identity);

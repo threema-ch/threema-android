@@ -27,12 +27,11 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.common.ByteArrayExtensionsKt;
 
 public class Utils {
 
@@ -66,16 +65,9 @@ public class Utils {
     /**
      * @return String with lowercase hex characters. Nullability is the same as with {@param bytes}.
      */
-    public static String byteArrayToHexString(byte[] bytes) {
+    public static String byteArrayToHexString(@Nullable byte[] bytes) {
         if (bytes != null) {
-            char[] hexChars = new char[bytes.length * 2];
-            int v;
-            for (int j = 0; j < bytes.length; j++) {
-                v = bytes[j] & 0xFF;
-                hexChars[j * 2] = HEX_LOOKUP_TABLE[v >>> 4];
-                hexChars[j * 2 + 1] = HEX_LOOKUP_TABLE[v & 0x0F];
-            }
-            return new String(hexChars);
+            return ByteArrayExtensionsKt.toHexString(bytes, 0);
         }
         return null;
     }
@@ -186,6 +178,15 @@ public class Utils {
         if (str == null) {
             return null;
         }
+        return truncateUTF8StringNonNull(str, maxLen);
+    }
+
+    /**
+     * Truncate the string to the provided length. This implementation avoids producing invalid
+     * UTF-8 encoded strings by not truncating in the middle of an encoded multi-byte character.
+     */
+    @NonNull
+    public static String truncateUTF8StringNonNull(@NonNull String str, int maxLen) {
         if (str.isEmpty()) {
             return str;
         }
@@ -195,41 +196,6 @@ public class Utils {
         } catch (UnsupportedEncodingException e) {
             return str.substring(0, maxLen).trim();
         }
-    }
-
-    public static @Nullable String removeLeadingCharacters(@NonNull String str, int maxLeading) {
-        List<Integer> codePoints = stringToCodePoints(str);
-        StringBuilder result = new StringBuilder();
-
-        int size = codePoints.size();
-        int startIndex = size <= maxLeading ? 0 : size - maxLeading;
-
-        for (int i = startIndex; i < size; i++) {
-            result.appendCodePoint(codePoints.get(i));
-        }
-
-        return result.toString();
-    }
-
-    private static List<Integer> stringToCodePoints(@NonNull String in) {
-        List<Integer> out = new ArrayList<>();
-        final int length = in.length();
-        for (int offset = 0; offset < length; ) {
-            final int codepoint = in.codePointAt(offset);
-            out.add(codepoint);
-            offset += Character.charCount(codepoint);
-        }
-        return out;
-    }
-
-
-    public static boolean isAnyObjectNull(@Nullable Object... objects) {
-        for (Object o : objects) {
-            if (o == null) {
-                return true;
-            }
-        }
-        return false;
     }
 
     public static byte[] concatByteArrays(byte[] a, byte[] b) {

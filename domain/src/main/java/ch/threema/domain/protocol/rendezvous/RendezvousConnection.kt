@@ -22,7 +22,7 @@
 package ch.threema.domain.protocol.rendezvous
 
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.chunked
+import ch.threema.common.chunked
 import ch.threema.libthreema.PathProcessResult
 import ch.threema.libthreema.PathStateUpdate
 import ch.threema.libthreema.RendezvousProtocol

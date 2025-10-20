@@ -3,7 +3,7 @@ use core::ptr;
 
 use duplicate::duplicate_item;
 
-/// An error occurred while writing while using a [`ByteWriter`].
+/// An error occurred while writing bytes.
 #[derive(Clone, Debug, thiserror::Error)]
 pub enum ByteWriterError {
     /// Provided relative offset would move the writer offset out of bounds.
@@ -50,6 +50,7 @@ pub(crate) trait ByteWriter {
     ///
     /// Returns [`ByteWriterError::InsufficientSpace`] if the writer offset would move outside of
     /// the underlying buffer boundary.
+    #[expect(dead_code, reason = "Will use later")]
     fn skip(&mut self, length: usize) -> Result<(), ByteWriterError>;
 
     /// Run an arbitrary operation on the writer.

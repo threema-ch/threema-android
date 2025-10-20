@@ -44,7 +44,7 @@ internal class ReflectedOutgoingGroupDeliveryReceiptTask(
     serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
-    private val myIdentity by lazy { serviceManager.identityStore.identity }
+    private val myIdentity by lazy { serviceManager.identityStore.getIdentity()!! }
 
     override fun processOutgoingMessage() {
         logger.info(

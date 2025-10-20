@@ -33,24 +33,37 @@ import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
-import androidx.lifecycle.DefaultLifecycleObserver
-import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
+import ch.threema.app.AppConstants.ACTIVITY_CONNECTION_LIFETIME
 import ch.threema.app.AppLogging.logAppVersionInfo
 import ch.threema.app.AppLogging.logExitReason
+import ch.threema.app.apptaskexecutor.AppTaskExecutor
 import ch.threema.app.debug.StrictModeMonitor
+import ch.threema.app.di.MasterKeyLockStateChangeHandler
+import ch.threema.app.di.Qualifiers
+import ch.threema.app.di.getOrNull
+import ch.threema.app.di.initDependencyInjection
 import ch.threema.app.drafts.DraftManager
 import ch.threema.app.managers.CoreServiceManagerImpl
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.notifications.NotificationIDs
+import ch.threema.app.passphrase.PassphraseStateMonitor
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.push.PushService
 import ch.threema.app.restrictions.AppRestrictionService
+import ch.threema.app.services.ServiceManagerProvider
 import ch.threema.app.services.ThreemaPushService
-import ch.threema.app.startup.AppStartupMonitor
+import ch.threema.app.startup.AppProcessLifecycleObserver
+import ch.threema.app.startup.AppStartupError
 import ch.threema.app.startup.AppStartupMonitorImpl
-import ch.threema.app.stores.IdentityStore
+import ch.threema.app.startup.MasterKeyEventMonitor
+import ch.threema.app.startup.RemoteSecretMonitorRetryController
+import ch.threema.app.startup.models.AppSystem
+import ch.threema.app.stores.EncryptedPreferenceStore
+import ch.threema.app.stores.EncryptedPreferenceStoreImpl
+import ch.threema.app.stores.IdentityStoreImpl
+import ch.threema.app.stores.MutableIdentityProvider
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.systemupdates.SystemUpdateException
 import ch.threema.app.systemupdates.SystemUpdateProvider
@@ -59,6 +72,7 @@ import ch.threema.app.ui.DynamicColorsHelper
 import ch.threema.app.utils.AppVersionProvider.appVersion
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ConnectionIndicatorUtil
+import ch.threema.app.utils.DispatcherProvider
 import ch.threema.app.utils.FileUtil
 import ch.threema.app.utils.LinuxSecureRandom
 import ch.threema.app.utils.LoggingUEH
@@ -75,16 +89,19 @@ import ch.threema.app.workers.WorkSyncWorker
 import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.toHexString
 import ch.threema.common.now
 import ch.threema.data.repositories.ModelRepositories
 import ch.threema.domain.protocol.connection.ConnectionState
 import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.stores.DHSessionStoreInterface
 import ch.threema.libthreema.LogLevel
-import ch.threema.libthreema.init as initLibthreema
+import ch.threema.libthreema.initialize as initLibthreema
 import ch.threema.localcrypto.MasterKey
-import ch.threema.localcrypto.MasterKeyLockedException
+import ch.threema.localcrypto.MasterKeyManager
+import ch.threema.localcrypto.MasterKeyManagerImpl
+import ch.threema.localcrypto.exceptions.BlockedByAdminException
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException
+import ch.threema.localcrypto.exceptions.RemoteSecretMonitorException
 import ch.threema.logging.LibthreemaLogger
 import ch.threema.storage.DatabaseDowngradeException
 import ch.threema.storage.DatabaseNonceStore
@@ -92,31 +109,43 @@ import ch.threema.storage.DatabaseService
 import ch.threema.storage.DatabaseState
 import ch.threema.storage.DatabaseUpdateException
 import ch.threema.storage.SQLDHSessionStore
+import ch.threema.storage.deriveDatabasePassword
 import ch.threema.storage.setupDatabaseLogging
-import com.datatheorem.android.trustkit.TrustKit
-import java.io.File
-import java.io.IOException
-import kotlin.concurrent.Volatile
+import kotlin.getValue
 import kotlin.system.exitProcess
-import kotlin.time.Duration
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
+import org.koin.core.component.inject
 
 private val logger = LoggingUtil.getThreemaLogger("ThreemaApplication")
 
 @OpenForTesting
-open class ThreemaApplication : Application(), DefaultLifecycleObserver {
+open class ThreemaApplication : Application() {
+
+    // TODO(ANDR-4187): Move these dependencies and the logic that uses them to a better place
+    private val passphraseStateMonitor: PassphraseStateMonitor by inject()
+    private val masterKeyEventMonitor: MasterKeyEventMonitor by inject()
+    private val appTaskExecutor: AppTaskExecutor by inject()
+    private val appStartupMonitor: AppStartupMonitorImpl by inject()
+
     override fun onCreate() {
-        context = applicationContext
+        if (!checkAppReplacingState(applicationContext)) {
+            return
+        }
+        instance = this
 
         StrictModeMonitor.enableIfNeeded()
 
-        super<Application>.onCreate()
+        super.onCreate()
 
         DynamicColorsHelper.applyDynamicColorsIfEnabled(this)
 
@@ -124,44 +153,66 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
 
         initLibthreema(LogLevel.TRACE, LibthreemaLogger())
 
-        if (!checkAppReplacingState(applicationContext)) {
-            return
-        }
-
-        setUpCertificatePinning()
-
         setUpUnhandledExceptionLogger()
-
-        ProcessLifecycleOwner.get().lifecycle.addObserver(this)
 
         setUpSecureRandom()
 
-        val masterKeyFile = getMasterKeyFile(applicationContext)
-            ?: run {
-                appStartupMonitor.reportAppStartupError(AppStartupMonitor.AppStartupError("MK-0"))
-                return
-            }
+        setUpDayNightMode(this)
 
-        masterKey = try {
-            if (!masterKeyFile.exists()) {
-                onMasterKeyFileNotFound(applicationContext)
-            }
-            MasterKey(masterKeyFile, null, true)
-        } catch (e: IOException) {
-            logger.error("Failed to process master key", e)
-            appStartupMonitor.reportAppStartupError(AppStartupMonitor.AppStartupError("MK-1"))
+        logger.info("*** App launched")
+        logAppVersionInfo(applicationContext)
+        logExitReason(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
+        logger.info("Remote secrets supported: {}", ConfigUtils.isRemoteSecretsSupported())
+
+        initDependencyInjection(this)
+
+        ProcessLifecycleOwner.get().lifecycle.addObserver(get<AppProcessLifecycleObserver>())
+
+        val masterKeyManager: MasterKeyManagerImpl = try {
+            get()
+        } catch (e: Exception) {
+            logger.error("Failed to create master key manager", e)
+            appStartupMonitor.reportUnexpectedAppStartupError("MK-0")
             return
         }
 
-        if (!masterKey.isLocked) {
-            onMasterKeyUnlocked(masterKey)
-        } else {
-            setUpDayNightMode()
+        coroutineScope.launch {
+            try {
+                withContext(dispatcherProvider.io) {
+                    masterKeyManager.readOrGenerateKey()
+                }
+            } catch (e: Exception) {
+                logger.error("Failed to read or generate master key", e)
+                appStartupMonitor.reportUnexpectedAppStartupError("MK-1")
+                return@launch
+            }
+
+            // TODO(ANDR-4187): Move all of these coroutines to a better place
+            launch(dispatcherProvider.worker) {
+                monitorRemoteSecret(
+                    masterKeyManager = masterKeyManager,
+                    appStartupMonitor = appStartupMonitor,
+                )
+            }
+            launch(dispatcherProvider.main) {
+                monitorMasterKey(
+                    masterKeyManager = masterKeyManager,
+                    appStartupMonitor = appStartupMonitor,
+                )
+            }
+            launch(dispatcherProvider.worker) {
+                masterKeyEventMonitor.monitorMasterKeyEvents()
+            }
+            launch(dispatcherProvider.worker) {
+                passphraseStateMonitor.monitorPassphraseLock()
+            }
+            launch(dispatcherProvider.worker) {
+                appTaskExecutor.start()
+                logger.error("App task executor has stopped")
+            }
         }
 
         GlobalBroadcastReceivers.registerBroadcastReceivers(applicationContext)
-
-        startThreemaPushIfNeeded(applicationContext)
     }
 
     private fun checkAppReplacingState(context: Context): Boolean {
@@ -174,10 +225,6 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
         return true
     }
 
-    private fun setUpCertificatePinning() {
-        TrustKit.initializeWithNetworkSecurityConfiguration(this)
-    }
-
     private fun setUpUnhandledExceptionLogger() {
         Thread.setDefaultUncaughtExceptionHandler(LoggingUEH())
     }
@@ -187,91 +234,59 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
         LinuxSecureRandom()
     }
 
-    private fun getMasterKeyFile(context: Context): File? {
-        val filesDir = context.filesDir
-        if (filesDir == null) {
-            logger.error("App directory was unexpectedly null")
-            return null
-        }
-        filesDir.mkdirs()
-        if (!filesDir.isDirectory) {
-            logger.error("App directory could not be created")
-            return null
-        }
-        return File(filesDir, AppConstants.AES_KEY_FILE)
-    }
-
-    private fun onMasterKeyFileNotFound(context: Context) {
-        // If the MasterKey file does not exist, remove every file that is encrypted with this non-existing MasterKey file
-        logger.warn("master key is missing or does not match, deleting DB and preferences")
-        deleteDatabaseFiles(context)
-        deleteAllPreferences(context)
-    }
-
-    private fun deleteDatabaseFiles(context: Context) {
-        val defaultDatabaseFile = context.getDatabasePath(DatabaseService.DEFAULT_DATABASE_NAME_V4)
-        if (defaultDatabaseFile.exists()) {
-            val databaseBackup = File(defaultDatabaseFile.path + ".backup")
-            if (!defaultDatabaseFile.renameTo(databaseBackup)) {
-                FileUtil.deleteFileOrWarn(defaultDatabaseFile, "threema4 database", logger)
+    private suspend fun monitorRemoteSecret(
+        masterKeyManager: MasterKeyManagerImpl,
+        appStartupMonitor: AppStartupMonitorImpl,
+    ) = coroutineScope {
+        while (isActive) {
+            try {
+                masterKeyManager.monitorRemoteSecret()
+            } catch (_: BlockedByAdminException) {
+                logger.info("User is blocked by admin")
+                masterKeyManager.lockPermanently()
+                appStartupMonitor.reportAppStartupError(AppStartupError.BlockedByAdmin)
+            } catch (e: RemoteSecretMonitorException) {
+                logger.warn("Fetching/monitoring remote secret failed", e)
+                masterKeyManager.lockWithRemoteSecret()
+                appStartupMonitor.reportAppStartupError(AppStartupError.FailedToFetchRemoteSecret)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                logger.error("Fetching/monitoring remote secret failed unexpectedly", e)
+                masterKeyManager.lockPermanently()
+                appStartupMonitor.reportAppStartupError(AppStartupError.Unexpected("RS-MONITOR"))
             }
-        }
 
-        val nonceDatabaseFile = context.getDatabasePath(DatabaseNonceStore.DATABASE_NAME_V4)
-        if (nonceDatabaseFile.exists()) {
-            FileUtil.deleteFileOrWarn(nonceDatabaseFile, "nonce4 database", logger)
-        }
-
-        val sqldhSessionDatabaseFile = context.getDatabasePath(SQLDHSessionStore.DATABASE_NAME)
-        if (sqldhSessionDatabaseFile.exists()) {
-            FileUtil.deleteFileOrWarn(sqldhSessionDatabaseFile, "sql dh session database", logger)
+            // Wait for the user to request a retry
+            RemoteSecretMonitorRetryController.awaitRetryRequest()
+            appStartupMonitor.clearTemporaryStartupErrors()
         }
     }
 
-    private fun deleteAllPreferences(context: Context) {
-        val preferenceStore = PreferenceStore(context, null)
-        preferenceStore.clear()
-    }
+    private suspend fun monitorMasterKey(
+        masterKeyManager: MasterKeyManagerImpl,
+        appStartupMonitor: AppStartupMonitorImpl,
+    ) = coroutineScope {
+        val masterKeyProvider = masterKeyManager.masterKeyProvider
+        while (isActive) {
+            if (masterKeyManager.isLockedWithRemoteSecret()) {
+                try {
+                    appStartupMonitor.whileFetchingRemoteSecret {
+                        masterKeyManager.unlockWithRemoteSecret()
+                    }
+                } catch (e: Exception) {
+                    logger.warn("Failed to unlock with remote secret", e)
+                    appStartupMonitor.reportUnexpectedAppStartupError("RS-UNLOCK")
+                    cancel()
+                }
+            }
 
-    private fun startThreemaPushIfNeeded(context: Context) {
-        ThreemaPushService.tryStart(logger, context)
-    }
+            val masterKey = masterKeyProvider.awaitUnlocked()
+            onMasterKeyUnlocked(masterKey)
 
-    override fun onStart(owner: LifecycleOwner) {
-        logger.info("*** Lifecycle: App now visible")
-    }
-
-    override fun onStop(owner: LifecycleOwner) {
-        logger.info("*** Lifecycle: App now stopped")
-    }
-
-    override fun onCreate(owner: LifecycleOwner) {
-        logger.info("*** Lifecycle: App now created")
-    }
-
-    override fun onResume(owner: LifecycleOwner) {
-        logger.info("*** Lifecycle: App now resumed")
-        GlobalAppState.isAppResumed = true
-
-        serviceManager?.let { serviceManager ->
-            serviceManager.lifetimeService.acquireConnection(AppConstants.ACTIVITY_CONNECTION_TAG)
-            logger.info("Connection now acquired")
-
-            reloadAppRestrictionsIfNeeded()
+            masterKeyProvider.awaitLocked()
+            get<MasterKeyLockStateChangeHandler>().onMasterKeyLocked()
         }
-            ?: logger.info("Service manager is null")
-    }
-
-    override fun onPause(owner: LifecycleOwner) {
-        logger.info("*** Lifecycle: App now paused")
-        GlobalAppState.isAppResumed = false
-
-        serviceManager?.lifetimeService?.releaseConnectionLinger(AppConstants.ACTIVITY_CONNECTION_TAG, ACTIVITY_CONNECTION_LIFETIME)
-    }
-
-    override fun onDestroy(owner: LifecycleOwner) {
-        logger.info("*** Lifecycle: App now destroyed")
-        coroutineScope.cancel()
     }
 
     @Deprecated("Deprecated in Java")
@@ -280,7 +295,10 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
 
         super.onLowMemory()
         try {
-            serviceManager?.avatarCacheService?.clear()
+            get<ServiceManagerProvider>()
+                .getServiceManagerOrNull()
+                ?.avatarCacheService
+                ?.clear()
         } catch (e: Exception) {
             logger.error("Failed to clear avatar cache", e)
         }
@@ -288,127 +306,106 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
 
     override fun onTrimMemory(level: Int) {
         logger.info("onTrimMemory (level={})", level)
-
         super.onTrimMemory(level)
-
-        /* save our master key now if necessary, as we may get killed and if the user was still in the
-         * initial setup procedure, this can lead to trouble as the database may already be there
-         * but we may no longer be able to access it due to missing master key
-         */
-        try {
-            val masterKey = ThreemaApplication.masterKey
-            if (!masterKey.isProtected) {
-                if (serviceManager?.notificationPreferenceService?.getWizardRunning() == true) {
-                    masterKey.setPassphrase(null)
-                }
-            }
-        } catch (e: Exception) {
-            logger.error("Exception", e)
-        }
     }
 
-    companion object {
-        private const val ACTIVITY_CONNECTION_LIFETIME = 60_000L
-
-        private val coroutineScope = CoroutineScope(Dispatchers.Default)
-
+    companion object : KoinComponent {
         @SuppressLint("StaticFieldLeak")
-        private lateinit var context: Context
+        private lateinit var instance: Context
 
-        private val appStartupMonitor = AppStartupMonitorImpl()
+        private val masterKeyManager: MasterKeyManager by inject()
+        private val appStartupMonitor: AppStartupMonitorImpl by inject()
+        private val masterKeyLockStateChangeHandler: MasterKeyLockStateChangeHandler by inject()
+        private val dispatcherProvider: DispatcherProvider by inject()
+        private val coroutineScope by lazy { CoroutineScope(dispatcherProvider.worker) }
 
-        @Volatile
-        private var serviceManager: ServiceManager? = null
+        private suspend fun onMasterKeyUnlocked(masterKey: MasterKey) {
+            logger.info("*** Master key unlocked")
 
-        private lateinit var masterKey: MasterKey
-
-        private fun reloadAppRestrictionsIfNeeded() {
-            // Check app restrictions when the app resumes
-            if (ConfigUtils.isWorkBuild()) {
-                coroutineScope.launch {
-                    AppRestrictionService.getInstance().reload()
-                }
-            }
-        }
-
-        @JvmStatic
-        @Synchronized
-        fun onMasterKeyUnlocked(masterKey: MasterKey) {
-            val appContext = getAppContext()
+            val appContext = instance
 
             val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(appContext)
-            resolveMasterKeyDeactivationRaceCondition(appContext, masterKey, sharedPreferences)
-            setUpDayNightMode()
-
-            logger.info("*** App launched, master key unlocked")
-            logAppVersionInfo(appContext)
-            logExitReason(appContext, sharedPreferences)
+            resolveMasterKeyDeactivationRaceCondition(appContext, masterKeyManager, sharedPreferences)
+            setUpDayNightMode(appContext)
 
             StateBitmapUtil.init(appContext)
 
             ConnectionIndicatorUtil.init(appContext)
 
             try {
-                val preferenceStore = PreferenceStore(appContext, masterKey)
+                val preferenceStore: PreferenceStore = get()
+                val mutableIdentityProvider: MutableIdentityProvider = get()
+                val encryptedPreferenceStore = EncryptedPreferenceStoreImpl(appContext, masterKey)
 
                 setUpSqlCipher()
-                val masterKeyBytes = masterKey.key
-                val databaseService = createDatabaseService(appContext, masterKeyBytes)
-                val dhSessionStore = createDHSessionStore(appContext, masterKeyBytes)
-                val identityStore = IdentityStore(preferenceStore)
+                val databaseService = createDatabaseService(appContext, masterKey)
+                coroutineScope.launch {
+                    try {
+                        databaseService.migrateIfNeeded()
+                    } catch (e: DatabaseUpdateException) {
+                        appStartupMonitor.reportUnexpectedAppStartupError("DB-${e.failedDatabaseUpdateVersion}")
+                    } catch (e: DatabaseDowngradeException) {
+                        appStartupMonitor.reportUnexpectedAppStartupError("DB-DG-${e.oldDatabaseVersion}")
+                    }
+                }
+                val dhSessionStore = createDHSessionStore(appContext, masterKey)
+                val identityStore = IdentityStoreImpl(mutableIdentityProvider, preferenceStore, encryptedPreferenceStore)
+
+                // Since the DB updates are kicked off on a different thread, we have to wait for them to start before we continue.
+                // Otherwise we might get race-conditions with other threads that might access the DB before the migration thread.
+                databaseService.databaseState.first { it != DatabaseState.INIT }
 
                 // Note: the task manager should only be used to schedule tasks once the service manager is set
                 val coreServiceManager = createCoreServiceManager(
                     appContext,
                     databaseService,
                     preferenceStore,
+                    encryptedPreferenceStore,
                     identityStore,
                 )
 
                 val modelRepositories = ModelRepositories(coreServiceManager)
 
                 val systemUpdater = SystemUpdater(sharedPreferences)
-                appStartupMonitor.init(
-                    databaseService.databaseState,
-                    systemUpdater.systemUpdateState,
-                )
-
-                coroutineScope.launch {
-                    try {
-                        databaseService.migrateIfNeeded()
-                    } catch (e: DatabaseUpdateException) {
-                        appStartupMonitor.reportAppStartupError(AppStartupMonitor.AppStartupError("DB-${e.failedDatabaseUpdateVersion}"))
-                    } catch (e: DatabaseDowngradeException) {
-                        appStartupMonitor.reportAppStartupError(AppStartupMonitor.AppStartupError("DB-DG-${e.oldDatabaseVersion}"))
-                    }
-                }
-                runBlocking {
-                    // Since the DB migrations are kicked off on a different thread, we have to wait for them to start before we continue.
-                    // Otherwise we might get race-conditions with other threads that might access the DB before the migration thread.
-                    databaseService.databaseState.first { it != DatabaseState.INIT }
-                }
-
                 val serviceManager = try {
                     ServiceManager(
                         modelRepositories,
                         dhSessionStore,
-                        masterKey,
+                        masterKeyManager.masterKeyProvider,
                         coreServiceManager,
+                        get(qualifier = Qualifiers.okHttpBase),
+                        getOrNull(),
                     )
                 } catch (e: ThreemaException) {
                     logger.error("Could not instantiate service manager", e)
-                    appStartupMonitor.reportAppStartupError(AppStartupMonitor.AppStartupError("SM-0"))
+                    appStartupMonitor.reportUnexpectedAppStartupError("SM-0")
                     return
                 }
-                runSystemUpdatesIfNeeded(systemUpdater, serviceManager, databaseService)
+                runSystemUpdatesIfNeeded(
+                    appContext,
+                    systemUpdater,
+                    serviceManager,
+                    databaseService,
+                    appStartupMonitor,
+                )
 
-                ThreemaApplication.serviceManager = serviceManager
+                masterKeyLockStateChangeHandler.onMasterKeyUnlocked(
+                    serviceManager,
+                    databaseService.databaseState,
+                    systemUpdater.systemUpdateState,
+                )
 
-                setDefaultPreferences(sharedPreferences)
+                startThreemaPushIfNeeded(appContext)
+
+                setDefaultPreferences(appContext, sharedPreferences)
 
                 registerConnectionStateChangedListener(appContext, serviceManager.connection)
 
-                reloadAppRestrictionsIfNeeded()
+                if (ConfigUtils.isWorkBuild()) {
+                    coroutineScope.launch {
+                        AppRestrictionService.getInstance().reload()
+                    }
+                }
 
                 cancelNewMessageNotification(appContext)
 
@@ -419,10 +416,8 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
                     releaseConnectionLinger("resetConnection", ACTIVITY_CONNECTION_LIFETIME)
                 }
 
-                GlobalListeners(appContext, serviceManager).setUp()
-
                 coroutineScope.launch {
-                    appStartupMonitor.awaitSystem(AppStartupMonitor.AppSystem.DATABASE_UPDATES)
+                    appStartupMonitor.awaitSystem(AppSystem.DATABASE_UPDATES)
 
                     markUploadingFilesAsFailed(databaseService)
                     SessionWakeUpServiceImpl.getInstance().processPendingWakeupsAsync()
@@ -440,20 +435,23 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
                 }
             } catch (e: MasterKeyLockedException) {
                 logger.error("Master key was unexpectedly locked during onMasterKeyUnlocked", e)
-                appStartupMonitor.reportAppStartupError(AppStartupMonitor.AppStartupError("MK-L"))
+                appStartupMonitor.reportUnexpectedAppStartupError("MK-L")
             } catch (e: SQLiteException) {
                 logger.error("Failed to open database", e)
-                appStartupMonitor.reportAppStartupError(AppStartupMonitor.AppStartupError("DB-U0"))
-            } catch (e: ThreemaException) {
-                // no identity
-                logger.info("No valid identity.", e)
+                appStartupMonitor.reportUnexpectedAppStartupError("DB-U0")
             }
         }
 
+        private fun startThreemaPushIfNeeded(context: Context) {
+            ThreemaPushService.tryStart(logger, context)
+        }
+
         private fun runSystemUpdatesIfNeeded(
+            context: Context,
             systemUpdater: SystemUpdater,
             serviceManager: ServiceManager,
             databaseService: DatabaseService,
+            appStartupMonitor: AppStartupMonitorImpl,
         ) {
             val hasUpdates = systemUpdater.checkForUpdates(
                 systemUpdateProvider = SystemUpdateProvider(context, serviceManager),
@@ -464,7 +462,7 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
                     try {
                         systemUpdater.runUpdates()
                     } catch (e: SystemUpdateException) {
-                        appStartupMonitor.reportAppStartupError(AppStartupMonitor.AppStartupError("SU-${e.failedSystemUpdateVersion}"))
+                        appStartupMonitor.reportUnexpectedAppStartupError("SU-${e.failedSystemUpdateVersion}")
                     }
                 }
             }
@@ -477,8 +475,8 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
             return databaseService.oldVersion?.coerceAtMost(109)
         }
 
-        private fun setUpDayNightMode() {
-            AppCompatDelegate.setDefaultNightMode(ConfigUtils.getAppThemePrefs())
+        private fun setUpDayNightMode(context: Context) {
+            AppCompatDelegate.setDefaultNightMode(ConfigUtils.getAppThemePrefs(context))
         }
 
         private fun setUpSqlCipher() {
@@ -490,12 +488,14 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
             appContext: Context,
             databaseService: DatabaseService,
             preferenceStore: PreferenceStore,
-            identityStore: IdentityStore,
+            encryptedPreferenceStore: EncryptedPreferenceStore,
+            identityStore: IdentityStoreImpl,
         ) =
             CoreServiceManagerImpl(
                 appVersion,
                 databaseService,
                 preferenceStore,
+                encryptedPreferenceStore,
                 identityStore,
                 nonceDatabaseStoreProvider = {
                     val databaseNonceStore = DatabaseNonceStore(appContext, identityStore)
@@ -543,12 +543,11 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
 
         private fun createDatabaseService(
             context: Context,
-            masterKey: ByteArray,
+            masterKey: MasterKey,
         ): DatabaseService {
             val databaseService = DatabaseService(
                 context = context,
-                databaseName = DatabaseService.DEFAULT_DATABASE_NAME_V4,
-                databaseKey = getDatabaseKey(masterKey),
+                password = masterKey.deriveDatabasePassword(),
                 onDatabaseCorrupted = {
                     showToast("Database corrupted. Please restart your device and try again.", duration = LONG)
                     exitProcess(2)
@@ -557,16 +556,17 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
             return databaseService
         }
 
-        private fun getDatabaseKey(masterKey: ByteArray) = "x\"${masterKey.toHexString()}\""
-
         private fun resolveMasterKeyDeactivationRaceCondition(
             context: Context,
-            masterKey: MasterKey,
+            masterKeyManager: MasterKeyManager,
             sharedPreferences: SharedPreferences,
         ) {
             // Fix master key preference state if necessary (could be wrong if user kills app
             // while disabling master key passphrase).
-            if (masterKey.isProtected && !sharedPreferences.getBoolean(context.getString(R.string.preferences__masterkey_switch), false)) {
+            if (
+                masterKeyManager.isProtectedWithPassphrase() &&
+                !sharedPreferences.getBoolean(context.getString(R.string.preferences__masterkey_switch), false)
+            ) {
                 logger.debug("Master key is protected, but switch preference is disabled - fixing")
                 sharedPreferences.edit {
                     putBoolean(context.getString(R.string.preferences__masterkey_switch), true)
@@ -581,7 +581,7 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
          * the views and attaching them. As the synchronized settings require the service manager to be available to persist the setting, this method
          * must be called after the service manager has been initialized.
          */
-        private fun setDefaultPreferences(sharedPreferences: SharedPreferences) {
+        private fun setDefaultPreferences(context: Context, sharedPreferences: SharedPreferences) {
             // If device is in AEC exclusion list and the user did not choose a preference yet,
             // update the shared preference.
             if (sharedPreferences.getString(context.getString(R.string.preferences__voip_echocancel), "none") == "none") {
@@ -616,11 +616,11 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
 
         private fun createDHSessionStore(
             context: Context,
-            masterKey: ByteArray,
+            masterKey: MasterKey,
         ): DHSessionStoreInterface {
             // We create the DH session store here and execute a null operation on it to prevent
             // the app from being launched when the database is downgraded.
-            val dhSessionStore = SQLDHSessionStore(context, masterKey)
+            val dhSessionStore = SQLDHSessionStore(context, masterKey.value)
             try {
                 dhSessionStore.executeNull()
                 return dhSessionStore
@@ -631,7 +631,7 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
                 if (databaseFile.exists()) {
                     FileUtil.deleteFileOrWarn(databaseFile, "sql dh session database", logger)
                 }
-                return SQLDHSessionStore(context, masterKey)
+                return SQLDHSessionStore(context, masterKey.value)
             }
         }
 
@@ -654,32 +654,15 @@ open class ThreemaApplication : Application(), DefaultLifecycleObserver {
             DraftManager.retrieveMessageDraftsFromStorage(serviceManager.preferenceService)
         }
 
+        // TODO(ANDR-4187): Remove this static method
         @JvmStatic
-        fun onMasterKeyLocked() {
-            appStartupMonitor.reset()
-        }
+        fun getServiceManager(): ServiceManager? = get<ServiceManagerProvider>().getServiceManagerOrNull()
+
+        // TODO(ANDR-4187): Remove this static method
+        @JvmStatic
+        fun requireServiceManager(): ServiceManager = get<ServiceManager>()
 
         @JvmStatic
-        fun getServiceManager(): ServiceManager? = serviceManager
-
-        @JvmStatic
-        fun requireServiceManager(): ServiceManager = serviceManager!!
-
-        /**
-         * Returns the [ServiceManager] once the app is ready for normal operation, or null if the [timeout] is reached.
-         */
-        suspend fun awaitServiceManagerWithTimeout(timeout: Duration): ServiceManager? = withTimeoutOrNull(timeout) {
-            appStartupMonitor.awaitAll()
-            requireServiceManager()
-        }
-
-        @JvmStatic
-        fun getAppStartupMonitor(): AppStartupMonitor = appStartupMonitor
-
-        @JvmStatic
-        fun getMasterKey(): MasterKey = masterKey
-
-        @JvmStatic
-        fun getAppContext(): Context = context
+        fun getAppContext(): Context = instance
     }
 }

@@ -21,6 +21,7 @@
 
 package ch.threema.logging;
 
+import android.annotation.SuppressLint;
 import android.util.Log;
 
 import org.slf4j.Logger;
@@ -38,6 +39,7 @@ import ch.threema.base.utils.LoggingUtil;
  * An adapter that sends WebRTC native logs to the SLFJ logger.
  */
 public class WebRTCLogger implements Loggable {
+    @SuppressLint("LoggerName")
     private static final Logger logger = LoggingUtil.getThreemaLogger("libwebrtc");
 
     public final Logging.Severity severity;

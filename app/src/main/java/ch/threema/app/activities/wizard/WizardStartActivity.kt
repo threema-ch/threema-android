@@ -25,11 +25,14 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.app.NotificationManagerCompat
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication.Companion.getServiceManager
 import ch.threema.app.activities.ThreemaAppCompatActivity
 import ch.threema.app.backuprestore.csv.RestoreService
+import ch.threema.app.services.UserService
+import org.koin.android.ext.android.inject
 
 class WizardStartActivity : ThreemaAppCompatActivity() {
+
+    private val userService: UserService by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,7 +41,7 @@ class WizardStartActivity : ThreemaAppCompatActivity() {
     }
 
     private fun launchNextActivity() {
-        val intent = if (getServiceManager()?.userService?.hasIdentity() == true) {
+        val intent = if (userService.hasIdentity()) {
             Intent(this, WizardBaseActivity::class.java)
         } else {
             Intent(this, WizardIntroActivity::class.java)

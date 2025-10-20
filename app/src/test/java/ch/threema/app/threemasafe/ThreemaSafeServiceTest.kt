@@ -29,15 +29,18 @@ import ch.threema.app.services.ContactService
 import ch.threema.app.services.DistributionListService
 import ch.threema.app.services.ExcludedSyncIdentitiesService
 import ch.threema.app.services.GroupService
-import ch.threema.app.stores.IdentityStore
 import ch.threema.base.utils.JSONUtil
 import ch.threema.base.utils.Utils
+import ch.threema.common.toHexString
 import ch.threema.data.ModelTypeCache
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.GroupId
+import ch.threema.domain.stores.IdentityStore
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
 import ch.threema.storage.models.GroupModel
+import ch.threema.testhelpers.mockOkHttpClient
 import ch.threema.testhelpers.nonSecureRandomArray
 import io.mockk.every
 import io.mockk.mockk
@@ -111,16 +114,18 @@ class ThreemaSafeServiceTest {
         mockk(relaxed = true),
         /* serverAddressProvider = */
         mockk(),
-        /* preferenceStore = */
+        /* encryptedPreferenceStore = */
         mockk(),
         /* contactModelRepository = */
         contactModelRepository,
+        /* okHttpClient */
+        mockOkHttpClient { mockk() },
     )
 
     @Suppress("DEPRECATION")
     @BeforeTest
     fun prepareMocks() {
-        every { identityStoreMock.privateKey } returns TEST_PRIVATE_KEY_BYTES
+        every { identityStoreMock.getPrivateKey() } returns TEST_PRIVATE_KEY_BYTES
         every { blockedIdentitiesServiceMock.getAllBlockedIdentities() } returns emptySet()
         every { excludedSyncIdentitiesServiceMock.getExcludedIdentities() } returns emptySet()
 
@@ -145,8 +150,8 @@ class ThreemaSafeServiceTest {
 
         // act
         // Test case as defined in specification (see confluence)
-        val masterKey: ByteArray? = threemaSafeServiceMock.deriveMasterKey("shootdeathstar", "ECHOECHO")
-        val masterKeyHex: String = Utils.byteArrayToHexString(masterKey).lowercase(Locale.getDefault())
+        val masterKey = threemaSafeServiceMock.deriveMasterKey("shootdeathstar", "ECHOECHO")!!
+        val masterKeyHex: String = masterKey.toHexString()
 
         // assert
         assertEquals(MASTER_KEY_HEX, masterKeyHex)
@@ -171,8 +176,8 @@ class ThreemaSafeServiceTest {
     fun testGetThreemaSafeBackupId() {
         every { preferenceServiceMock.threemaSafeMasterKey } returns Utils.hexStringToByteArray(MASTER_KEY_HEX)
 
-        val backupId: ByteArray? = threemaSafeServiceImpl.threemaSafeBackupId
-        val backupIdHex: String = Utils.byteArrayToHexString(backupId).lowercase(Locale.getDefault())
+        val backupId = threemaSafeServiceImpl.threemaSafeBackupId!!
+        val backupIdHex = backupId.toHexString()
         assertEquals(
             expected = "066384d3695fbbd9f31a7d533900fd0cd8d1373beb6a28678522d2a49980c9c3",
             actual = backupIdHex,
@@ -198,8 +203,8 @@ class ThreemaSafeServiceTest {
     fun testGetThreemaSafeEncryptionKey() {
         every { preferenceServiceMock.threemaSafeMasterKey } returns Utils.hexStringToByteArray(MASTER_KEY_HEX)
 
-        val encryptionKey: ByteArray? = threemaSafeServiceImpl.threemaSafeEncryptionKey
-        val encryptionKeyHex: String = Utils.byteArrayToHexString(encryptionKey).lowercase(Locale.getDefault())
+        val encryptionKey = threemaSafeServiceImpl.threemaSafeEncryptionKey!!
+        val encryptionKeyHex = encryptionKey.toHexString()
         assertEquals(
             expected = "51c3d8d752fb6e1fd3199ead7f0895d6e3893ff691f2a5ee1976ed0897fc2f66",
             actual = encryptionKeyHex,
@@ -407,13 +412,13 @@ class ThreemaSafeServiceTest {
     @Test
     fun testSafeJsonSettingsContainBlockedContacts() {
         // arrange
-        val blockedIdentities: Set<String> = setOf("NONONONO", "BLOCKED0")
+        val blockedIdentities: Set<Identity> = setOf("NONONONO", "BLOCKED0")
         every { blockedIdentitiesServiceMock.getAllBlockedIdentities() } returns blockedIdentities
 
         // act
         val settingsJson: JSONObject = requireParsedThreemaSafeJson().getJSONObject("settings")
         val identitiesJson: JSONArray = settingsJson.getJSONArray("blockedContacts")
-        val actualBlockedIdentities: Set<String> = setOf(*JSONUtil.getStringArray(identitiesJson))
+        val actualBlockedIdentities: Set<Identity> = setOf(*JSONUtil.getStringArray(identitiesJson))
 
         // assert
         assertTrue(blockedIdentities.containsAll(actualBlockedIdentities))

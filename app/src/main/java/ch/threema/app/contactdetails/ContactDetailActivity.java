@@ -23,19 +23,16 @@ package ch.threema.app.contactdetails;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,6 +42,8 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.koin.android.compat.ViewModelCompat;
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -66,14 +65,14 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.GroupDetailActivity;
-import ch.threema.app.activities.MediaGalleryActivity;
+import ch.threema.app.di.DependencyContainer;
+import ch.threema.app.mediagallery.MediaGalleryActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.activities.VerificationLevelActivity;
@@ -96,15 +95,8 @@ import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.services.BlockedIdentitiesService;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.ConversationCategoryService;
-import ch.threema.app.services.ExcludedSyncIdentitiesService;
-import ch.threema.app.services.GroupService;
-import ch.threema.app.services.IdListService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.QRCodeService;
-import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.tasks.ForwardSecurityStateLogTask;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.ResumePauseHandler;
@@ -115,7 +107,6 @@ import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.LazyProperty;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -123,21 +114,19 @@ import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
-import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.webviews.WorkExplainActivity;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupIdentity;
-import ch.threema.data.repositories.ContactModelRepository;
-import ch.threema.data.repositories.ModelRepositories;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
 import static ch.threema.app.utils.QRScannerUtil.REQUEST_CODE_QR_SCANNER;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+import static org.koin.core.parameter.ParametersHolderKt.parametersOf;
 
 public class ContactDetailActivity extends ThreemaToolbarActivity
     implements LifecycleOwner,
@@ -158,15 +147,8 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
     private static final int REQUEST_CODE_CONTACT_EDITOR = 39255;
 
-    // Services
-    private ContactService contactService;
-    private ContactModelRepository contactModelRepository;
-    private GroupService groupService;
-    private BlockedIdentitiesService blockedIdentitiesService;
-    private IdListService profilePicRecipientsService;
-    private ConversationCategoryService conversationCategoryService;
-    private VoipStateService voipStateService;
-    private DeleteContactServices deleteContactServices;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private final @NonNull LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
 
@@ -204,14 +186,14 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     private final ResumePauseHandler.RunIfActive runIfActiveUpdate = new ResumePauseHandler.RunIfActive() {
         @Override
         public void runOnUiThread() {
-            groupList = groupService.getGroupsByIdentity(identity);
+            groupList = dependencies.getGroupService().getGroupsByIdentity(identity);
             refreshAdapter();
         }
     };
     private final ResumePauseHandler.RunIfActive runIfActiveGroupUpdate = new ResumePauseHandler.RunIfActive() {
         @Override
         public void runOnUiThread() {
-            groupList = groupService.getGroupsByIdentity(identity);
+            groupList = dependencies.getGroupService().getGroupsByIdentity(identity);
             refreshAdapter();
         }
     };
@@ -324,7 +306,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
     @Override
     protected void handleDeviceInsets() {
-
         final @NonNull LinearLayout collapsingBottomContainer = findViewById(R.id.collapsing_bottom_container);
         final @NonNull FloatingActionButton floatingActionButton = findViewById(R.id.floating);
         final @NonNull RecyclerView contactGroupList = findViewById(R.id.contact_group_list);
@@ -378,65 +359,43 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
+        if (!dependencies.isAvailable()) {
+            finish();
+            return;
+        }
+
         this.identity = this.getIntent().getStringExtra(AppConstants.INTENT_DATA_CONTACT);
         if (this.identity == null || this.identity.isEmpty()) {
             logger.error("no identity");
             this.finish();
             return;
         }
-        if (this.identity.equals(getMyIdentity())) {
+        if (dependencies.getUserService().isMe(identity)) {
             this.finish();
             return;
         }
 
         this.resumePauseHandler = ResumePauseHandler.getByActivity(this, this);
 
-        // Set up services
-        final ModelRepositories modelRepositories;
-        try {
-            this.contactService = serviceManager.getContactService();
-            modelRepositories = serviceManager.getModelRepositories();
-            contactModelRepository = modelRepositories.getContacts();
-            this.blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
-            this.profilePicRecipientsService = serviceManager.getProfilePicRecipientsService();
-            this.groupService = serviceManager.getGroupService();
-            this.conversationCategoryService = serviceManager.getConversationCategoryService();
-            this.voipStateService = serviceManager.getVoipStateService();
-            this.deleteContactServices = new DeleteContactServices(
-                serviceManager.getUserService(),
-                contactService,
-                serviceManager.getConversationService(),
-                serviceManager.getRingtoneService(),
-                conversationCategoryService,
-                profilePicRecipientsService,
-                serviceManager.getWallpaperService(),
-                serviceManager.getFileService(),
-                serviceManager.getExcludedSyncIdentitiesService(),
-                serviceManager.getDHSessionStore(),
-                serviceManager.getNotificationService(),
-                serviceManager.getDatabaseService()
-            );
-        } catch (Exception e) {
-            LogUtil.exception(e, this);
-            this.finish();
-            return;
-        }
-
         // Look up contact data
-        this.contact = this.contactService.getByIdentity(this.identity);
-        contactModel = modelRepositories.getContacts().getByIdentity(this.identity);
-        if (this.contact == null || contactModel == null) {
+        contact = dependencies.getContactService().getByIdentity(identity);
+        contactModel = dependencies.getContactModelRepository().getByIdentity(identity);
+        ContactModelData contactModelDataSnapshot = contactModel != null ? contactModel.getData() : null;
+        if (this.contact == null || contactModel == null || contactModelDataSnapshot == null) {
             Toast.makeText(this, R.string.contact_not_found, Toast.LENGTH_LONG).show();
             this.finish();
             return;
         }
-        this.groupList = this.groupService.getGroupsByIdentity(this.identity);
+        this.groupList = dependencies.getGroupService().getGroupsByIdentity(this.identity);
 
         // Look up viewmodel
-        this.viewModel = new ViewModelProvider(
+        this.viewModel = ViewModelCompat.getViewModel(
             this,
-            ContactDetailViewModel.Companion.getFactory()
-        ).get(ContactDetailViewModel.class);
+            ContactDetailViewModel.class,
+            null,
+            null,
+            () -> parametersOf(identity)
+        );
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -447,7 +406,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         final @NonNull CollapsingToolbarLayout collapsingToolbar = findViewById(R.id.collapsing_toolbar);
         final @NonNull ViewGroup collapsingBottomContainer = findViewById(R.id.collapsing_bottom_container);
         collapsingToolbar.setTitle(" ");
-        @ColorInt int scrimColor = contactService.getAvatarColor(contact);
+        @ColorInt int scrimColor = dependencies.getContactService().getAvatarColor(identity);
         collapsingToolbar.setContentScrimColor(scrimColor);
         collapsingToolbar.setStatusBarScrimColor(scrimColor);
 
@@ -486,7 +445,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
         // Configure avatar view
         this.avatarEditView.setHires(true);
-        this.avatarEditView.setContactModel(contact);
+        this.avatarEditView.setContactIdentity(contactModel.getIdentity());
 
         this.isReadonly = getIntent().getBooleanExtra(AppConstants.INTENT_DATA_CONTACT_READONLY, false);
 
@@ -509,11 +468,8 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             getString(ConfigUtils.isWorkBuild() ? R.string.private_contact : R.string.threema_work_contact)
         );
 
-        // Get current contact model (only used for further initialization)
-        //
         // Note: This logic should probably be changed to be more reactive, instead of using
         //       the contact model data snapshot here.
-        final ContactModelData contactModelDataSnapshot = contactModel.getData().getValue();
         if (contactModelDataSnapshot.acquaintanceLevel == ContactModel.AcquaintanceLevel.GROUP) {
             GenericAlertDialog.newInstance(
                 R.string.menu_add_contact,
@@ -525,16 +481,16 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             onCreateLocal();
 
             if (savedInstanceState == null) {
-                if (!ConfigUtils.isWorkBuild() && contactService.showBadge(contactModelDataSnapshot)) {
-                    if (!preferenceService.getIsWorkHintTooltipShown()) {
+                if (!ConfigUtils.isWorkBuild() && dependencies.getContactService().showBadge(contactModelDataSnapshot)) {
+                    if (!dependencies.getPreferenceService().getIsWorkHintTooltipShown()) {
                         showWorkTooltip();
                     }
                 }
             }
         }
 
-        serviceManager.getTaskManager().schedule(new ForwardSecurityStateLogTask(
-            contactService, contact
+        dependencies.getTaskManager().schedule(new ForwardSecurityStateLogTask(
+            dependencies.getContactService(), contact
         ));
     }
 
@@ -574,7 +530,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         this.contactTitle.setText(contactModelData.getDisplayName());
 
         // Show or hide badge for work/private contacts
-        ViewUtil.show(workIcon, contactService.showBadge(contactModelData));
+        ViewUtil.show(workIcon, dependencies.getContactService().showBadge(contactModelData));
 
         // Update adapter
         this.refreshAdapter();
@@ -591,7 +547,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             workTooltipPopup.setListener(new TooltipPopup.TooltipPopupListener() {
                 @Override
                 public void onClicked(@NonNull TooltipPopup tooltipPopup) {
-                    startActivity(new Intent(ContactDetailActivity.this, WorkExplainActivity.class));
+                    startActivity(WorkExplainActivity.createIntent(ContactDetailActivity.this));
                 }
             });
             workTooltipPopup.show(this, workIcon, null, getString(R.string.tooltip_work_hint), TooltipPopup.Alignment.BELOW_ANCHOR_ARROW_LEFT, location, 0);
@@ -637,15 +593,14 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             public void onItemClick(View v, GroupModel groupModel) {
 
                 Intent intent = new Intent(ContactDetailActivity.this, GroupDetailActivity.class);
-                intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getId());
+                intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) groupModel.getId());
 
                 startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_GROUP_DETAIL);
             }
 
             @Override
             public void onVerificationInfoClick(View v) {
-                Intent intent = new Intent(ContactDetailActivity.this, VerificationLevelActivity.class);
-                startActivity(intent);
+                startActivity(VerificationLevelActivity.createIntent(ContactDetailActivity.this));
             }
         });
 
@@ -709,8 +664,21 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                 getSupportFragmentManager(),
                 new WeakReference<>(this),
                 Set.of(identity),
-                contactModelRepository,
-                deleteContactServices,
+                dependencies.getContactModelRepository(),
+                new DeleteContactServices(
+                    dependencies.getUserService(),
+                    dependencies.getContactService(),
+                    dependencies.getConversationService(),
+                    dependencies.getRingtoneService(),
+                    dependencies.getConversationCategoryService(),
+                    dependencies.getIdListService(),
+                    dependencies.getWallpaperService(),
+                    dependencies.getFileService(),
+                    dependencies.getExcludedSyncIdentitiesService(),
+                    dependencies.getDhSessionStoreInterface(),
+                    dependencies.getNotificationService(),
+                    dependencies.getDatabaseService()
+                ),
                 addToExcludeList ? ContactSyncPolicy.EXCLUDE : ContactSyncPolicy.INCLUDE,
                 AndroidContactLinkPolicy.REMOVE_LINK
             ) {
@@ -785,7 +753,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         updateVoipCallMenuItem(null);
 
         MenuItem galleryMenuItem = menu.findItem(R.id.menu_gallery);
-        galleryMenuItem.setVisible(!conversationCategoryService.isPrivateChat(ContactUtil.getUniqueIdString(identity)));
+        galleryMenuItem.setVisible(!dependencies.getConversationCategoryService().isPrivateChat(ContactUtil.getUniqueIdString(identity)));
 
         return super.onPrepareOptionsMenu(menu);
     }
@@ -794,11 +762,11 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     private void updateVoipCallMenuItem(final Boolean newState) {
         if (callItem != null) {
             if (
-                ContactUtil.canReceiveVoipMessages(contact, blockedIdentitiesService)
+                ContactUtil.canReceiveVoipMessages(contact, dependencies.getBlockedIdentitiesService())
                     && ConfigUtils.isCallsEnabled()) {
                 logger.debug("updateVoipMenu newState {}", newState);
 
-                callItem.setVisible(newState != null ? newState : voipStateService.getCallState().isIdle());
+                callItem.setVisible(newState != null ? newState : dependencies.getVoipStateService().getCallState().isIdle());
             } else {
                 callItem.setVisible(false);
             }
@@ -826,7 +794,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         } else if (id == R.id.menu_threema_call) {
             VoipUtil.initiateCall(this, contact, false, null);
         } else if (id == R.id.action_block_contact) {
-            if (this.blockedIdentitiesService != null && this.blockedIdentitiesService.isBlocked(this.identity)) {
+            if (dependencies.getBlockedIdentitiesService().isBlocked(this.identity)) {
                 unblockContact();
             } else {
                 GenericAlertDialog.newInstance(R.string.block_contact, R.string.really_block_contact, R.string.yes, R.string.no).show(getSupportFragmentManager(), DIALOG_TAG_CONFIRM_BLOCK);
@@ -834,16 +802,16 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         } else if (id == R.id.action_share_contact) {
             ShareUtil.shareContact(this, contact);
         } else if (id == R.id.menu_gallery) {
-            if (!conversationCategoryService.isPrivateChat(ContactUtil.getUniqueIdString(identity))) {
+            if (!dependencies.getConversationCategoryService().isPrivateChat(ContactUtil.getUniqueIdString(identity))) {
                 Intent mediaGalleryIntent = new Intent(this, MediaGalleryActivity.class);
                 mediaGalleryIntent.putExtra(AppConstants.INTENT_DATA_CONTACT, identity);
                 startActivity(mediaGalleryIntent);
             }
         } else if (id == R.id.action_add_profilepic_recipient) {
-            if (!profilePicRecipientsService.has(this.identity)) {
-                profilePicRecipientsService.add(this.identity);
+            if (!dependencies.getProfilePicRecipientsService().has(this.identity)) {
+                dependencies.getProfilePicRecipientsService().add(this.identity);
             } else {
-                profilePicRecipientsService.remove(this.identity);
+                dependencies.getProfilePicRecipientsService().remove(this.identity);
             }
             updateProfilepicMenu();
         } else if (id == R.id.action_send_profilepic) {
@@ -855,28 +823,20 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     }
 
     private void sendProfilePic() {
-        serviceManager.getTaskCreator().scheduleProfilePictureSendTaskAsync(this.identity);
+        dependencies.getTaskCreator().scheduleProfilePictureSendTaskAsync(this.identity);
     }
 
     private void blockContact() {
-        if (this.blockedIdentitiesService != null) {
-            this.blockedIdentitiesService.blockIdentity(identity, this);
-        } else {
-            logger.error("Could not block contact as the service is null");
-        }
+        dependencies.getBlockedIdentitiesService().blockIdentity(identity, this);
     }
 
     private void unblockContact() {
-        if (this.blockedIdentitiesService != null) {
-            this.blockedIdentitiesService.unblockIdentity(identity, null);
-        } else {
-            logger.error("Could not unblock contact as the service is null");
-        }
+        dependencies.getBlockedIdentitiesService().unblockIdentity(identity, null);
     }
 
     private void updateBlockMenu() {
         if (this.blockMenuItem != null) {
-            if (blockedIdentitiesService != null && blockedIdentitiesService.isBlocked(this.identity)) {
+            if (dependencies.getBlockedIdentitiesService().isBlocked(this.identity)) {
                 blockMenuItem.setTitle(R.string.unblock_contact);
             } else {
                 blockMenuItem.setTitle(R.string.block_contact);
@@ -893,14 +853,14 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                 return;
             }
 
-            switch (preferenceService.getProfilePicRelease()) {
+            switch (dependencies.getPreferenceService().getProfilePicRelease()) {
                 case PreferenceService.PROFILEPIC_RELEASE_EVERYONE:
                     this.profilePicItem.setVisible(false);
                     this.profilePicSendItem.setVisible(!ContactUtil.isEchoEchoOrGatewayContact(contact));
                     break;
                 case PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST:
                     if (!ContactUtil.isEchoEchoOrGatewayContact(contact)) {
-                        if (profilePicRecipientsService != null && profilePicRecipientsService.has(this.identity)) {
+                        if (dependencies.getProfilePicRecipientsService().has(this.identity)) {
                             profilePicItem.setTitle(R.string.menu_send_profilpic_off);
                             profilePicItem.setIcon(R.drawable.ic_person_remove_outline);
                             profilePicSendItem.setVisible(true);
@@ -926,7 +886,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     }
 
     private void scanQR() {
-        QRScannerUtil.getInstance().initiateScan(this, null, QRCodeServiceImpl.QR_TYPE_ID);
+        QRScannerUtil.getInstance().initiateScan(this, null);
     }
 
     @Override
@@ -945,13 +905,13 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         switch (requestCode) {
             case ACTIVITY_ID_GROUP_DETAIL:
                 // contacts may have been edited
-                this.groupList = this.groupService.getGroupsByIdentity(this.identity);
+                this.groupList = dependencies.getGroupService().getGroupsByIdentity(this.identity);
                 this.refreshAdapter();
                 break;
             case REQUEST_CODE_QR_SCANNER:
+                var qrCodeService = dependencies.getQrCodeService();
                 QRCodeService.QRCodeContentResult qrRes =
-                    QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent,
-                        this.serviceManager.getQRCodeService());
+                    QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent, qrCodeService);
 
                 if (qrRes != null) {
                     applyQRCodeResult(qrRes);
@@ -961,7 +921,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                 try {
                     AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel, null);
                     AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel);
-                    this.avatarEditView.setContactModel(contact);
+                    this.avatarEditView.setContactIdentity(contactModel.getIdentity());
                 } catch (ThreemaException | SecurityException e) {
                     logger.info("Unable to update contact name or avatar after returning from ContactEditor");
                 }
@@ -975,12 +935,9 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     }
 
     void deleteContact(ContactModel contactModel) {
-        final ExcludedSyncIdentitiesService excludedSyncIdentitiesService
-            = this.serviceManager.getExcludedSyncIdentitiesService();
-
         //second question, if the contact is a synced contact
-        if (contactModel.isLinkedToAndroidContact()
-            && !excludedSyncIdentitiesService.isExcluded(contactModel.getIdentity())) {
+        var excludedSyncIdentitiesService = dependencies.getExcludedSyncIdentitiesService();
+        if (contactModel.isLinkedToAndroidContact() && !excludedSyncIdentitiesService.isExcluded(contactModel.getIdentity())) {
 
             GenericAlertDialog dialogFragment = GenericAlertDialog.newInstance(
                 R.string.delete_contact_action,
@@ -995,7 +952,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     }
 
     void unhideContact(ContactModel contactModel) {
-        contactService.setAcquaintanceLevel(contactModel.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
+        dependencies.getContactService().setAcquaintanceLevel(contactModel.getIdentity(), ContactModel.AcquaintanceLevel.DIRECT);
         onCreateLocal();
     }
 
@@ -1015,9 +972,9 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         AddOrUpdateContactBackgroundTask<String> task = new AddOrUpdateContactBackgroundTask<>(
             identity,
             ContactModel.AcquaintanceLevel.DIRECT,
-            contactService.getMe().getIdentity(),
-            serviceManager.getAPIConnector(),
-            contactModelRepository,
+            dependencies.getContactService().getMe().getIdentity(),
+            dependencies.getApiConnector(),
+            dependencies.getContactModelRepository(),
             AddContactRestrictionPolicy.CHECK,
             this,
             qrRes.getPublicKey()
@@ -1099,7 +1056,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     public void onNo(String tag) {
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(
         int requestCode,

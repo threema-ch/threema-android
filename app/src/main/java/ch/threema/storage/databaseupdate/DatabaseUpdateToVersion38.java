@@ -22,28 +22,25 @@
 package ch.threema.storage.databaseupdate;
 
 import android.database.Cursor;
+import android.database.SQLException;
 
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 import org.slf4j.Logger;
 
-import android.database.SQLException;
-
+import androidx.annotation.NonNull;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.DatabaseService;
-import ch.threema.storage.models.WebClientSessionModel;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 
 public class DatabaseUpdateToVersion38 implements DatabaseUpdate {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion38");
 
-    private final DatabaseService databaseService;
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion38(DatabaseService databaseService, SQLiteDatabase sqLiteDatabase) {
-        this.databaseService = databaseService;
+    public DatabaseUpdateToVersion38(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 
@@ -117,5 +114,16 @@ public class DatabaseUpdateToVersion38 implements DatabaseUpdate {
     @Override
     public int getVersion() {
         return 38;
+    }
+
+    private static class WebClientSessionModel {
+        public static final String TABLE = "wc_session";
+        public static final String COLUMN_ID = "id";
+        public static final String COLUMN_KEY = "key";
+        public static final String COLUMN_SELF_HOSTED = "self_hosted";
+        public static final String COLUMN_PROTOCOL_VERSION = "protocol_version";
+        public static final String COLUMN_SALTY_RTC_HOST = "salty_host";
+        public static final String COLUMN_SALTY_RTC_PORT = "salty_port";
+        public static final String COLUMN_SERVER_KEY = "server_key";
     }
 }

@@ -70,17 +70,17 @@
 😃|ağzı açık gülen yüz|ağzı açık gülümseme|ağzı açık sırıtma|gülen yüz|gülme|gülümseme|lol|neşeli|yüz
 😄|ağzı açık gülen gözler|gülen gözlerle ağzı açık gülümseme|gülen gözlerle ağzı açık sırıtma|gülen yüz|gülme|gülümseme|lol|neşeli|yüz
 😁|gülen gözlerle sırıtan yüz|gülen gözlerle sırıtma|gülen yüz|gülme|gülümseme|gülümseyen gözler|lol|neşeli|yüz
-😆|32 diş|ağız açık|ahaha|çok komik|gözler kapalı|gülmekten ölmek|hahaha|inanılmaz|kahkaha|kapalı gözlerle ağzı açık sırıtma|kapalı gözlerle gülümseme|komik|lol|mutlu|yüz ifadesi
+😆|32 diş|ağız|ahaha|çok komik|gözler kapalı|gülmek|hahaha|kahkaha|komik|lol|mutlu|yüz
 😅|heyecanlı|soğuk terli ağzı açık gülümseme|stresli|yüz
-🤣|ahaha|aşırı komik|çok komik|eheh|gözümden yaş geldi|gözyaşı|gülmekten ölmek|gülmekten yerlere yatmak|hahaha|kahkaha|komik|lol|mutluluk|neşe|yerlere yatmak|yüz ifadesi
-😂|ağlamak|çok komik|gözyaşı|gözyaşları|gülmekten ağlamak|gülmekten ölmek|gülüş|haha|harika|inanılmaz|kahkaha|katılmak|komik|lol|mutluluk|neşe|sevinç
+🤣|ahaha|çok komik|gözümden yaş geldi|gözyaşı|gülme|hahaha|kahkaha|komik|mutluluk|neşe|yerlere yatmak|yüz
+😂|ağlamak|gözyaşı|gülmekten ağlamak|haha|inanılmaz|kahkaha|katılmak|komik|mutluluk|neşe|sevinç
 🙂|gülme|gülümseme|hafifçe gülümseme|hafifçe gülümseyen yüz|mutlu|neşeli|yüz
 🙃|gülme|gülümseme|hehe|ters yüz|yüz
-🫠|aşkından erimek|çözülme|eridim|erimek|eriyen yüz|eriyorum|ifade|kaybolma|sıcak|sıvılaşma|utanç|yüz ifadesi
+🫠|aşkından erimek|çözülme|eridim|erime|eriyen yüz|eriyorum|ifade|kaybolma|sıcak|sıvılaşma|utanç|yüz ifadesi
 😉|cilve|göz kırpan yüz|göz kırpma|yüz
 😊|ağzı açık gülme|gülen gözlerle gülümseme|gülümseyen gözler|gülümseyen yüz ve gözler|samimi|sevecen|yüz
 😇|gülümseme|hare|ışık halkalı gülümseme|ışık halkası|melek|yüz
-🥰|3 kalpli gülümseyen yüz|aşık olma|aşk|çarpılma|gülen yüz|hayranlık|ilk görüşte aşk|kalpler|kalpli gülümseyen yüz|mutluluk|romantik|seni seviyorum|sevgili|üç kalpli yüz|yüz ifadesi
+🥰|aşık|aşk|çarpılma|gülen yüz|hayranlık|ilk görüşte aşk|kalp|mutluluk|romantik|seni seviyorum|sevgi|üç kalpli yüz
 😍|aşk|değer verme|gözler|kalp gözlü gülümseme|kalpler|romantik|yüz
 🤩|gözler|heyecanlı|sırıtan|surat|vov|yıldız çarpmış|yüz
 😘|aşk|muah|muck|öptüm|öpücük gönderen yüz|romantik|sevgi|yüz
@@ -88,7 +88,7 @@
 ☺️|gülen yüz|içi boş gülen yüz|masum|mutlu|utandım|utanmış|yüz
 😚|aşk|gözler kapalı öpüşme|kapalı gözlerle öpen yüz|öpücük yollama|yüz
 😙|gülen gözlerle öpen yüz|gülümseme|gülümseyen gözler|gülümseyerek öpen yüz|öptüm|öpücük|yüz
-🥲|acı|duygulanmış|gözü yaşlı gülümseyen yüz|gözyaşı|gülümseme|gururlu|hislenmiş|memnun|minnettar|mutluluk|rahatlamış|sevinç|yüz ifadesi
+🥲|acı|duygulanmış|gözyaşı|gülümseme|gururlu|hislenmiş|memnun|minnettar|mutluluk|rahatlamış|sevinç|yüz ifadesi
 😋|gülümseyen yüz|harika yemek|keyifli yemek|lezzetli yiyecek beğenen yüz|oh oh harika|yüz
 😛|dil çıkarmış yüz|dil dışarıda kalmış|komik|şapşal|yüz
 😜|dil dışardayken göz kırpma|dili dışarda göz kırpma|göz kırpma|haylaz|kışkırtma|şaka|yaramaz|yüz
@@ -107,50 +107,51 @@
 😐|duygusuz|etkilenmemiş|nötr|umurumda değil|yorum yok|yüz
 😑|ifadesiz yüz|ifadesizlik|kıskanç|umurumda değil|yorum yok|yüz
 😶|ağız|ağzı olmayan yüz|ifadesiz|sakin|sesi kesilmiş|sessiz|sır|suskun|yüz
-🫥|bilinmez|depresif|eh|endişe|gizlenme|gizli|görünmez|içe dönük|ifade|kaybolma|kaygılı|neyse|noktalı çizgili yüz|yüz ifadesi
+🫥|bilinmez|depresif|endişe|gizlenme|gizli|görünmez|içe dönük|kaybolma|kaygılı|noktalı çizgili yüz|yüz ifadesi
 😶‍🌫️|bulutlardaki kafa|bulutlardaki yüz|dalgın|sisler arasındaki yüz
 😏|hin|imalı gülümseme|kuşkucu|sinsi|yapmacık gülümseme|yapmacık gülümseyen yüz|yüz
 😒|canı sıkkın|canım sıkıldı|garip|keyifsiz|mutsuz|neyse|sıkılmış|yüz
-🙄|bana ne|banane|beni ilgilendirmez|bilemiyorum|göz devirme|gözlerini deviren yüz|her neyse|hmm|neyse|yani|yüz ifadesi
+🙄|bana ne|banane|beni ilgilendirmez|bilemiyorum|göz devirme|gözlerini deviren yüz|her neyse|hmm|neyse|yani|yüz
 😬|dişçi|dişlerini gösteren yüz|dişlerini sıkmak|endişeli|tedirgin|yüzünü ekşitme
-😮‍💨|bitik|duman|fısıldama|iç çekme|ıslık|nefes veren yüz|nefes verme|off|rahatlama|sızlanma|üfleme|yorgun|yüz ifadesi
+😮‍💨|bitik|duman|fısıldama|iç çekme|ıslık|nefes verme|off|rahatlama|sızlanma|üfleme|yorgun
 🤥|pinokyo|yalan söyleme|yalan söyleyen yüz|yüz
-🫨|deprem|olamaz|panik|sallama|sallanan yüz|sallanma|sersemlik|şok|sürpriz|titreme|titreşim|titreyen yüz|yüz
+🫨|deprem|olamaz|panik|sallama|sallanma|sersemlik|şok|sürpriz|titreme|titreşim|titreyen yüz|yüz
 🙂‍↔️|hayır|sallama|yatay olarak sallanan yüz
 🙂‍↕️|dikey olarak sallanan yüz|evet|onay
 😌|huzur|rahatlamış|yüz
 😔|dargın|düşünceli|gemileri batmış|karamsar|üzgün|yüz
 😪|ağlayan yüz|uykulu yüz|yorgun|yüz
 🤤|ağzı sulanmış|salya akıtan yüz|salya akıtma|yüz
-😴|esnemek|geç oldu|iyi geceler|iyi uykular|kestirme|şekerleme|tatlı rüyalar|uyku saati|uykulu|uykum geldi|uyumak|uyuyan yüz|yatak|yatıyorum|yatmak|yorgun|yüz ifadesi|zzz
+😴|esnemek|iyi geceler|iyi uykular|şekerleme|tatlı rüyalar|uykulu|uyumak|yatak|yatmak|yorgun|zzz
+🫩|gözlerinin altı torbalı yüz|tükenmiş|uykulu|yorgun
 😷|grip|hasta|maskeli yüz|nezle|rahatsız|soğuk|tıbbi maske|yüz
 🤒|ağzında termometre olan yüz|ateş|grip|hasta|nezle|termometre|yüz
 🤕|bandaj|kafası sarılı yüz|yaralı|yüz
 🤢|iğrenç|istifra|kusmak üzere olan yüz|midesi bulanmış|yüz
 🤮|hasta|istifra|kusan yüz|kusmak|kusmuk|surat
 🤧|çok yaşa|grip|hapşıran yüz|hapşırma|hasta|nezle|yüz
-🥵|ateşi çıkmış|ateşlenmek|bitmek|çarpıntı|çok sıcak|hararet|kırmızı surat|kırmızı yüz|kızarmış yüz|nefes nefese|sıcak çarpması|sıcaklamak|surat|terlemek|tükenmek|yorgunluktan ölmek|yüz ifadesi
-🥶|buz gibi|buz kesme|donma|kış|mavi surat|morarmış yüz|sıfırın altı|soğuktan donmak|titremek|üşümek|üşümüş yüz
-🥴|akşamdan kalma|alkollü|baş dönmesi|çakırkeyif|kaymış gözler|şapşal|sarhoş yüz|şaşı|sersemlemiş|titreyen ağız|yamuk ağız|yamulmak|yüz ifadesi
+🥵|ateşlenmek|çarpıntı|hararet|kızarmış yüz|nefes nefese|sıcak çarpması|terleme|tükenmek|yorgun
+🥶|buz gibi|buz kesme|donma|kış|mavi surat|morarmış yüz|sıfırın altı|soğuktan donmak|titremek|üşümek
+🥴|akşamdan kalma|alkollü|baş dönmesi|çakırkeyif|kaymış gözler|sarhoş|şaşı|sersemlemiş|yamuk ağız|yamulmak|yüz ifadesi
 😵|başı dönen|baygınlık|hasta|sersemlemiş|yüz
-😵‍💫|aklı karışık|aman tanrım|başım döndü|gülen yüz|hipnotize|inanamıyorum|kafası bulanık|kafası karışık|mide bulantısı|sarmal gözlü yüz|sersem|sıkıntı|yüz ifadesi
+😵‍💫|aklı karışık|aman tanrım|başım döndü|gülen yüz|hipnotize|inanamıyorum|kafası bulanık|kafası karışık|mide bulantısı|sersem|sıkıntı|yüz ifadesi
 🤯|aklını başından almak|patlayan kafa|şaşırmış|şok olmuş|şoke|surat
 🤠|kadın kovboy|kovboy şapkalı yüz|kovboy şapkası yüzü|şapka|yüz
-🥳|doğum günü|eğlence|eğlenmek|iyi ki doğdun|konfeti|kutlamak|mutlu yıllar|neşeli|oley|parti düdüğü|parti şapkası|partide eğlenen yüz|şapka|yaşasın|yılbaşı
-🥸|ajan|bıyık|burun|casus|gizlenmiş yüz|gizli|gözlük|kalın kaşlar|kimliğini gizlemek|kimliğini gizleyen|kişi|kılık değiştirmek|maskeli|yüz ifadesi
+🥳|doğum günü|eğlence|iyi ki doğdun|konfeti|kutlama|mutlu yıllar|neşeli|oley|partide eğlenen yüz|şapka|yılbaşı
+🥸|ajan|bıyık|burun|casus|gözlük|kimliğini gizlemek|kılık değiştirmek|maskeli|yüz ifadesi
 😎|cool|gülümseme|güneş gözlüğü|güneş gözlükleriyle gülümseme|güneş gözlüklü gülümseme|havalı|janti|kanka|kanki|yüz
 🤓|akıllı|bilgili|bilmiş|çalışkan|gözlüklü|inek öğrenci|ukala|yüz|zeki
 🧐|havalı|kendini beğenmiş|klas|surat|tek cam gözlüklü yüz|varlıklı|zengin
 😕|bilmiyorum|emin olmayan|kafası karışık yüz|kafası karışmış|yüz
-🫤|eh|hayal kırıklığına uğramış|hüsran|ifade|kararsız|kırgın|meh|memnuniyetsiz|şüpheli yüz|yamuk ağızlı yüz|yüz ifadesi
+🫤|eh|hayal kırıklığı|hüsran|ifade|kararsız|kırgın|meh|memnuniyetsiz|şüpheli yüz|yüz ifadesi
 😟|endişeli|gergin|yüz
 🙁|asık surat|biraz asık surat|endişeli|yüz
 😮|ağız|ağzı açık yüz|şaşkın|şok|süpriz|yüz
 😯|şaşırmış|şaşkın yüz|şok olmuş|yüz
 😲|afallamış|şaşkın|şoke olmuş|tamamen şoke olmuş|yüz
 😳|kızarmış ve şaşkın yüz|şaşırmış|şaşkınlık içinde|şok|tuhaf|yüz
-🥺|acıklı bakışlar|af dilemek|gözleri dolmak|koca göz|lütfen|merhamet|pişmanlık|üzgün|üzülmek|yalvaran gözler|yalvaran yüz|yalvarırım|yalvarmak|yüz ifadesi
-🥹|ağlamaklı|direnme|duygusal|gözleri dolmak|gözleri dolmuş yüz|gözyaşı|gözyaşlarını tutan yüz|gurur|ifade|kızgın|mutlu|sevinç gözyaşları|sulugöz|üzgün|yüz ifadesi
+🥺|acıklı bakışlar|af dilemek|gözleri dolmak|koca göz|lütfen|merhamet|pişmanlık|üzgün|yalvaran gözler|yalvarırım|yüz ifadesi
+🥹|ağlamaklı|direnme|duygusal|gözyaşı|gurur|ifade|kızgın|mutlu|sevinç gözyaşları|sulugöz|üzgün|yüz ifadesi
 😦|açık ağızlı hoşnutsuz yüz|ağzı açık|boş bulunmuş|hoşnutsuz|korkmuş|yüz
 😧|acı çeken|kederli|mutsuz|şaşkın|yüz
 😨|endişeli|korkmuş|korkulu|yüz
@@ -165,7 +166,7 @@
 😓|baş ağrısı|endişeli|soğuk terli yüz|yüz
 😩|acıkmış|çok yorgun|hayır|olamaz|pişman|uykulu|yorgun yüz|yorulmuş|yüz
 😫|hapşuran yüz|perişan|pişman|üzgün|yorgun|yüz
-🥱|esnemek|esneyen yüz|gece|iyi geceler|iyi uykular|şekerleme|sıkıcı|sıkıldım|sıkılmış|uykulu|uykusuz|uyuklama|uyumak|yatıyorum|yatmak|yorgun|yüz ifadesi|zzz
+🥱|esneme|iyi geceler|iyi uykular|sıkıcı|sıkılmış|uykulu|uykusuz|uyuklama|uyumak|yatmak|yorgun|zzz
 😤|ben kazandım yüzü|burnundan soluyan yüz|kızgın|mutsuz|sinirli|yüz|zafer
 😡|deli gibi|kırmızı somurtkan yüz|kırmızı yüz|öfkeli|somurtkan|yüz
 😠|deli gibi|kızgın|mutsuz|öfkeli|yüz
@@ -241,7 +242,7 @@
 🫴|avuç içi yukarı bakan el|çağırmak|çağrı|davet|el etmek|el uzatmak|gel|sunmak|teklif|yakalamak|yardım
 🫷|bekletme|çakma|durdurma|itme|reddetme|sola iten el
 🫸|bekletme|çakma|durdurma|itme|reddetme|sağa iten el
-👌|anlaştık|budur|el|harika|inanılmaz|işaret|işte bu|kıstırma|leziz|mükemmel|müthiş|okey|süper|tam olarak|tamam el işareti|tamam işareti|tamamdır|yes
+👌|anlaştık|el|harika|işaret|işte bu|mükemmel|müthiş|ok|süper|tam olarak|tamamdır
 🤌|bravo|çok güzel|el hareketleri|harika|kıstırma hareketi yapan parmaklar|lezzetli|parmaklar
 🤏|azıcık|bir tutam|biraz|kıstırma hareketi yapan el|kıstırma hareketi yapan parmaklar|küçük|parmaklar
 ✌️|barış|el|oleey|zafer eli|zafer işareti
@@ -284,7 +285,7 @@
 🧠|akıllı|beyin|zeka|zeki
 🫀|anatomi|kalp atışı|kan|kardiyoloji|kırmızı|merkez|nabız|organ
 🫁|akciğer|beden|ciğerler|nefes almak|organ|soluk|solumak|solunum|vücut
-🦷|ağız sağlığı|ağrı|azı dişi|beyaz|diş ağrısı|diş hekimi|diş perisi|dişçi|inci gibi|köpek dişi|süt dişi
+🦷|ağız|ağrı|azı dişi|beyaz|diş ağrısı|diş hekimi|diş perisi|dişçi|inci gibi|köpek dişi|süt dişi
 🦴|iskelet|kemik|köpek kemiği|mama
 👀|bakmak|görmek|gözcü|gözetlemek|gözler|yüz
 👁️|beden|göz|kahverengi göz
@@ -313,16 +314,16 @@
 🙎|darılan kişi|darılma|hareket|hayal kırıklığı|kişi|kırgın|küsme|mimik|öfkeli|somurtma|surat asma|üzgün
 🙎‍♂️|adam|darılan erkek|darılma|erkek|mimik
 🙎‍♀️|bayan|darılan kadın|darılma|kadın|mimik
-🙅|asla|hareket|hayır hareketi|insan|iyi değil|izin vermiyorum|izinsiz|kişi|olmaz|vücut|yasak|yüz
+🙅|asla|hareket|hayır|insan|iyi değil|izin vermiyorum|izinsiz|kişi|olmaz|vücut|yasak|yüz
 🙅‍♂️|el|erkek|hareket|hayır hareketi yapan erkek|insan|iyi değil|yasak|yok
 🙅‍♀️|bayan|el|hareket|hayır hareketi yapan kadın|iyi değil|kadın|yasak
 🙆|aman tanrım|egzersiz|el|hareket|kişi|kocaman|oldu|tamam hareketi|vücut|yüz
 🙆‍♂️|adam|aman allah|aman tanrım|egzersiz|eller yukarı|erkek|hareket|insan|tamam hareketi yapan erkek
 🙆‍♀️|bayan|el|hareket|kadın|tamam hareketi yapan kadın
-💁|alaycı|bilgilendirme|dedikodu|elini yana yatırma|keyfin bilir|kişiler|neyse|saçını savurma|sen bilirsin|umurumda değil|yardım
+💁|alaycı|bilgilendirme|dedikodu|elini yana yatırma|keyfin bilir|kişiler|neyse|saçını savurma|sen bilirsin|umurumda değil
 💁‍♂️|adam|bilgi|dedikodu|elini yana yatıran erkek|erkek|insan|küstah|sarkastik|yana yatmış el
 💁‍♀️|bayan|elini yana yatıran kadın|kadın|küstah|yana yatmış el
-🙋|ben|burada|el kaldıran kişi|el kaldırma|elini kaldırma|hareket|kalkan el|kişi|merhaba|mutlu|selam|soru|söz isteme|vücut
+🙋|ben|burada|el kaldırma|hareket|kalkan el|kişi|merhaba|selam|soru|söz isteme
 🙋‍♂️|adam|el hareketi|el kaldırma|elini kaldıran erkek|erkek|hareket|insan|soru
 🙋‍♀️|bayan|el kaldırma|elini kaldıran kadın|hareket|kadın
 🧏|duyma|erişilebilirlik|işitme engelli kişi|kulak
@@ -331,11 +332,11 @@
 🙇|affetme|bağışlama|başını öne eğme|eğilme|hareket|kişi|merhamet|özür dilerim|üzgünüm|yakarma|yalvarma
 🙇‍♂️|adam|baş eğme|başını öne eğen erkek|erkek|hareket|lütuf|özür
 🙇‍♀️|baş eğme|başını öne eğen kadın|bayan|hareket|kadın|lütuf|özür
-🤦|aman tanrım|avuç|çileden çıkma|inanamıyorum|inanmama|inanmıyorum|kişi|kızgınlık|öfke|olamaz|şok|vücut|yüzünü eliyle kapama
-🤦‍♂️|adam|aman tanrım|çileden çıkma|eliyle yüzünü kapatan erkek|erkek|inanamıyorum|inanmama|kişi|öfke|olamaz|sinir|utancından eliyle yüzünü kapatma|utanma
-🤦‍♀️|aman tanrım|bayan|çileden çıkma|eliyle yüzünü kapatan kadın|inanamıyorum|inanmama|kadın|öfke|olamaz|pişman|sinir|utanç|utancından eliyle yüzünü kapatma
+🤦|aman tanrım|çileden çıkma|inanamıyorum|inanmama|inanmıyorum|kızgınlık|öfke|olamaz|şok|yüzünü eliyle kapama
+🤦‍♂️|adam|aman tanrım|çileden çıkma|eliyle yüzünü kapatan erkek|erkek|inanamıyorum|inanmama|öfke|olamaz|sinir|utancından eliyle yüzünü kapatma|utanma
+🤦‍♀️|aman tanrım|çileden çıkma|eliyle yüzünü kapatan kadın|inanamıyorum|inanmama|kadın|öfke|olamaz|sinir|utanç|utancından eliyle yüzünü kapatma
 🤷|bilemem|bilmeme|bilmiyorum|ilgisizlik|kararsız|kişi|ne bileyim|ne yapalım|omuz silkme|sanırım|vücut
-🤷‍♂️|adam|belki|bilmem|cahillik|cehalet|erkek|her neyse|ilgisizlik|kişi|kuşku|omuz silken erkek|omuz silkme|sanırım|şüphe|vücut
+🤷‍♂️|adam|belki|bilmem|erkek|her neyse|ilgisizlik|kişi|kuşku|omuz silken erkek|omuz silkme|sanırım|şüphe
 🤷‍♀️|bayan|belki|bilmem|cahillik|cehalet|her neyse|ilgisizlik|kadın|kişi|kuşku|omuz silken kadın|omuz silkme|sanırım|şüphe|vücut
 🧑‍⚕️|doktor|hasta bakıcı|hemşire|sağlık çalışanı|sağlık personeli|terapist
 👨‍⚕️|adam|doktor|erkek sağlık çalışanı|hastabakıcı|meslek|sağlık|terapist
@@ -518,8 +519,8 @@
 🚵|antrenman|atletik|bisikletçi|dağ bisikletçisi|kişi|spor|sürüş|vücut
 🚵‍♂️|adam|bisiklet sürme|bisikletçi|dağ bisikleti süren erkek|erkek
 🚵‍♀️|bayan|bisiklet sürme|bisikletçi|dağ bisikleti süren kadın|kadın
-🤸|aktif|birey|jimnastik|kişi|mutlu|neşe|perende atan kadın|perende atan kişi|sevinç|spor|vücut|yanlamasına takla
-🤸‍♂️|adam|aktif|çember hareketi|erkek|heyecanlı|jimnastik|kişi|mutlu|neşe|perende atan erkek|spor|vücut
+🤸|aktif|birey|jimnastik|perende atan kişi|spor|yanlamasına takla
+🤸‍♂️|adam|çember hareketi|erkek|jimnastik|kişi|perende atan erkek|spor
 🤸‍♀️|aktif|bayan|çember hareketi|heyecanlı|jimnastik|kadın|kişi|mutlu|neşe|oyun|perende atan kadın|sevinç|spor
 🤼|birey|dövüş|düello|güreş minderi|güreşçilik|güreşen kişiler|kişi|spor|vücut
 🤼‍♂️|adam|antrenman|dövüş|düello|er meydanı|erkek|güreş yapan erkek|kişi|kırkpınar|spor
@@ -537,7 +538,7 @@
 🧘‍♂️|lotus pozisyonundaki erkek|meditasyon|yoga
 🧘‍♀️|lotus pozisyonundaki kadın|meditasyon|yoga
 🛀|banyo yapan kişi|küvet
-🛌|gece|insan|iyi geceler|iyi uykular|kestirme|öğle uykusu|otel|uyku saati|uyumak|yastık|yatakta yatan kişi|yatan insan|yatıyorum|yatmak|zzz
+🛌|gece|insan|iyi geceler|iyi uykular|kestirme|otel|uyku saati|uyumak|yatan insan|yatmak|zzz
 🧑‍🤝‍🧑|çift|el ele tutuşan insanlar|kişi|tutmak|tutuşan eller
 👭|arkadaş|çift|dost|el ele tutuşan iki kadın|el ele tutuşan kadınlar|kadınlar|kanki|kişiler|kızkardeşler
 👫|çift|el ele tutuşan erkek ve kadın|el ele tutuşan kız ve erkek|erkek|kadın|kişiler|sevgili
@@ -554,6 +555,7 @@
 🧑‍🧒|aile|çocuk|yetişkin
 🧑‍🧒‍🧒|aile|çocuk|yetişkin
 👣|ayak izi|gövde|iz
+🫆|adli tıp|güvenlik|kimlik|parmak izi
 🐵|hayvan|komik|maymun yüzü|meraklı maymun|muz|neşeli|yüz
 🐒|hayvan|maymun|muz|orman
 🦍|goril|hayvan
@@ -663,6 +665,11 @@
 🐚|deniz kabuğu|deniz sesi|hayvan|midye|okyanus|spiral deniz kabuğu
 🪸|canlı|dalış|deniz|doğa|hayvan|iklim değişikliği|mercan|okyanus|resif|su altı
 🪼|ahh|akvaryum|çarpma|denizanası|dokunaç|hayvan|iğne|medüz|okyanus|omurgasız|plankton|sokma|yanma
+🦀|burç|deniz|ıstakoz|yengeç
+🦞|bisque|deniz ürünü|hayvan|ıstakoz|kabuklu|kırmızı|kıskaç
+🦐|deniz mahsulü|kabuklu deniz hayvanı|karides|küçük|okyanus|yiyecek
+🦑|mürekkep balığı|okyanus|yiyecek|yumuşakçalar sınıfı
+🦪|dalma|inci|istiridye
 🐌|böcek|hayvan|salyangoz|sümüklü böcek|yavaş
 🦋|böcek|kelebek|şirin
 🐛|böcek|hayvan|kırkayak|tırtıl
@@ -675,14 +682,14 @@
 🕷️|böcek|örümcek
 🕸️|örümcek ağı
 🦂|akrep|burç|hayvan|iğne|zehir
-🦟|ateş|böcek|hastalık|hayvan|ısırmak|kaşıntı|malarya|sinek ısırığı|sivrisinek|sıtma|virüs|vızıltı
+🦟|ateş|böcek|hastalık|sivrisinek|sıtma|virüs
 🪰|at sineği|böcek|çürüme|hastalık|hayvan|karasinek|kurt sineği|larva|sinek|uçmak
 🪱|hayvan|kurtçuk|parazit|solucan|sürüngen
 🦠|amip|bakteri|bilim|deney|hastalık|hücre|laboratuvar|mikrop|tek hücreli|virüs
 💐|aşk|buket|çiçek|doğum günü|gül|romantizm
 🌸|bahar|çiçek izleme|kiraz çiçeği
 💮|beyaz çiçek|çiçek damgası|damga|iyi çalışma damgası
-🪷|bitki|budizm|çiçek|hindistan|hinduizm|huzur|lotus|namaste|nilüfer|saflık|sakin|vietnam|yoga
+🪷|bitki|budizm|çiçek|hinduizm|huzur|lotus|namaste|nilüfer|saflık|sakin|yoga
 🏵️|bitki|çiçek rozet|gülce|sarı çiçek
 🌹|aşk|bitki|çiçek|gül|kırmızı gül
 🥀|boynu bükük|çiçek|gül|kırgın|kırmızı gül|solmuş|üzgün
@@ -706,6 +713,7 @@
 🪹|boş yuva|dal|doğa|ev|kuş|yuva
 🪺|dal|doğa|hayvan|huzur|kuş yuvası|yavru kuş|yumurta bulunan yuva|yuva
 🍄|bitki|kırmızı mantar|mantar|masal
+🪾|çorak|kış|kurak|yapraksız ağaç
 🍇|gıda|meyve|salkım|üzüm
 🍈|gıda|kavun|meyve|meze|rakı|yemek
 🍉|gıda|karpuz|meyve
@@ -744,6 +752,7 @@
 🫚|baharat|bira|bitki|çeşni|doğal|kök|sağlık|şifalı|yiyecek|yumru|zencefil
 🫛|baklagil|barbunya|bezelye|edamame|fasulye sırığı|kabuklu bezelye|sebze|vejetaryen
 🍄‍🟫|doğa|gıda|kahverengi mantar|mantar|pizza malzemesi|portobello|sebze|şitaki|trüf|yiyecek
+🫜|bahçe|kök|pancar|sebze|turp
 🍞|ekmek dilimi|gıda|kahvaltı|restoran|yemek
 🥐|ay çöreği|ekmek|fransız|gıda|kruvasan|pastane|yiyecek
 🥖|baget|ekmek|fransız|gıda|yiyecek
@@ -771,7 +780,7 @@
 🍳|gıda|kahvaltı|kızartma tavası|pişirme|restoran|sahanda yumurta|tavada yumurta|yemek|yiyecek|yumurta
 🥘|gıda|güveç|kahvaltı|krep tavası|küçük|menemen|paella|sahanda yemek|tava|yemek|yiyecek
 🍲|gıda|restoran|tencere yemeği|yahni|yemek tenceresi|yiyecek
-🫕|çikolata|çubuk|dağ|erimiş|fondü|isviçre|kap|kayak|peynir|raklet|yemek|yiyecek
+🫕|çikolata|çubuk|erimiş|fondü|kap|kayak|peynir|raklet|yemek|yiyecek
 🥣|çorba|gıda|kahvaltı|kase|kaşıklı kase|pirinç lapası|tahıl gevreği|yemek
 🥗|gıda|sağlıklı|salata|yemek|yeşil|yiyecek
 🍿|gıda|mısır|patlamış mısır|sinema
@@ -795,11 +804,6 @@
 🥟|empanada|gıda|gyōza|hamur köftesi|haşlanmış içli hamur|jiaozi|mantı|pierogi|potsticker
 🥠|fal kurabiyesi|gıda|içinden fal çıkan çin kurabiye|kehanet|şans kurabiyesi|talih kurabiyesi
 🥡|çin yemeği|eve servis|gıda|kutu|paket yemek|yemek|yiyecek paketi
-🦀|burç|deniz|ıstakoz|yengeç
-🦞|bisque|deniz ürünü|hayvan|ıstakoz|kabuklu|kırmızı|kıskaç
-🦐|deniz mahsulü|kabuklu deniz hayvanı|karides|küçük|okyanus|yiyecek
-🦑|mürekkep balığı|okyanus|yiyecek|yumuşakçalar sınıfı
-🦪|dalma|inci|istiridye
 🍦|dondurma külahı|gıda|krema|külah|restoran|vanilyalı dondurma|yumuşak dondurma
 🍧|buz|meyveli|restoran
 🍨|buz|dondurma|gıda|krema|kup|restoran|tatlı
@@ -807,7 +811,7 @@
 🍪|çikolatalı kurabiye|cookie|gıda|kurabiye|restoran
 🎂|dilek|doğum günü pastası|gıda|iyi ki doğdun|kek|krema|kutlama|mum|mutlu yıllar|nice senelere|parti|pasta|tatlı|üflemek|yaş günü|yemek|yiyecek
 🍰|dilim pasta|doğum günü|gıda|pasta dilimi|restoran
-🧁|cupcake|fırın|kapkek|kek|krema|muffin|pastane|pembe krema|şekerli|tatlı|top kek|yemek
+🧁|cupcake|fırın|kapkek|kek|krema|muffin|pasta|pembe krema|şekerli|tatlı|top kek|yemek
 🥧|elmalı pay|gıda|pasta|pay|poğaça|şeftalili pay|tart|tatlı|yemek
 🍫|bar|çikolata barı|gıda|restoran|tatlı
 🍬|bayram|restoran|şekerleme
@@ -1204,6 +1208,7 @@
 🪘|conga|davul çalmak|enstrüman|eşya|müzik aleti|perküsyon|ritim|ritm|tempo|tumba|uzun davul|vurmak|vuruş
 🪇|alet|çaça|çıngırak|dans|enstrüman|marakas|müzik aleti|nesne|parti|perküsyon|sallamalı|vurmalı
 🪈|ahşap üflemeli|bando|blokflüt|boru|enstrüman|fife|fifre|flüt|kaval|müzik|nefesli|orkestra|recorder|üflemeli
+🪉|arp|aşk|enstrüman|eros|müzik|orkestra
 📱|cep telefonu|iphone|mobil telefon|telefon
 📲|çağrı yapmak|cep telefonu|mobil telefon|ok işaretli cep telefonu|telefon
 ☎️|kırmızı telefon|telefon
@@ -1257,14 +1262,14 @@
 🔖|defter|işaret|kitap|not|yer işareti
 🏷️|etiket
 💰|çanta|dolar çantası|para çuvalı|para torbası|zengin
-🪙|altın|avro|bozuk para|dolar|eşya|euro|gümüş|hazine|jeton|madeni para|metal|para|sikke|zengin
+🪙|altın|avro|bozuk para|dolar|gümüş|hazine|jeton|madeni para|metal|para|sikke|zengin
 💴|banknot|döviz|para|yen
 💵|banknot|dolar|döviz|fatura|para
 💶|avro|banknot|döviz|euro|fatura|para
 💷|banknot|döviz|para|sterlin
 💸|banka|banknot|kanatlı para|para|uçan banknot
 💳|kart|kredi kartı
-🧾|bakiye|belge|defter tutma|dekont|ekstre|evrak|fatura|finans|fiş|hesap|irsaliye|kağıt|kanıt|kayıt|makbuz|maliyet|muhasebe|senet
+🧾|belge|defter tutma|dekont|ekstre|evrak|fatura|fiş|hesap|kanıt|maliye|muhasebe|senet
 💹|banka|grafik|para|piyasa|yen simgeli artış grafiği|yukarı giden grafik|yukarı yönlü
 📧|e-posta|iletişim|mektup|posta
 📨|alınan posta|e-posta|gelen|iletişim|mektup|posta|zarf
@@ -1318,7 +1323,7 @@
 🛠️|alet|çekiç ve ingiliz anahtarı|çekiç ve somun anahtarı|ingiliz anahtarı
 🗡️|bıçak|hançer|silah
 💣|bomba|çizgi roman|duygu
-🪃|aborjin|atmak|avustralya|boomerang|bumerang|eşya|fırlatmak|geri gelmek|geri tepme|oyun|sekme|silah|tepki
+🪃|aborjin|atmak|boomerang|bumerang|eşya|fırlatmak|geri gelmek|geri tepme|oyun|sekme|silah|tepki
 🏹|araç|burç|ok ve yay|okçu|silah|yay
 🛡️|kalkan|silah
 🪚|alet|eşya|kereste|kesmek|marangoz|odun|testere
@@ -1334,8 +1339,9 @@
 🧰|alet çantası|alet kutusu|çanta|ingiliz anahtarı|kırmızı|kutu|onarmak|sandık|tamirat|tamirci
 🧲|at nalı|çekim|çekmek|elektrik yükü|eş kutuplar|manyetik|mıknatıs|pozitif negatif|zıt kutuplar
 🪜|adım|aşağı|ayaklı merdiven|basamak|çıkmak|eşya|merdiven|tırmanış|tırmanmak|yukarı
-🧪|beher|bilim adamı|bilim insanı|bilim kadını|biyoloji|deney tüpü|deney yapmak|doktor|fizik|genetik|kimyacı|kimyager|laboratuvar|test|tüp|yeşil sıvı
-🧫|bakteri|bilim|biyolog|biyoloji|damlatmak|deney tüpü|kimya|kültür|laboratuvar|mikrop|petri kabı|tıp|virüs
+🪏|çukur|kazı|kazmak|kürek
+🧪|bilim|deney tüpü|kimyacı|laboratuvar
+🧫|bakteri|biyolog|biyoloji|kültür|laboratuvar|petri kabı
 🧬|biyolog|biyoloji|dna|evrim|genetik|sarmal|yaşam
 🔬|alet|bilim|labrotuar|mikroskop|test
 🔭|alet|teleskop|uzay gözlemleme
@@ -1477,6 +1483,7 @@
 ➰|döngü|dönüş|kıvrık döngü
 ➿|çift kıvrık döngü|japonya|kıvrık döngü|ücretsiz numara
 〽️|bölüm değiştirme işareti|işaret|parça değiştirme işareti
+🫟|boya|dökmek|holi|lekelemek|sıçratmak
 🔠|abcd|büyük harfler|latin büyük harfleriyle giriş
 🔡|abcd|alfabe|küçük harfler|latin küçük harfleriyle giriş
 🔢|1234|sayı girişi|sayılar

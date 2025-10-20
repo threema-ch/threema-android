@@ -21,69 +21,17 @@
 
 package ch.threema.app.utils;
 
-import java.text.Normalizer;
 import java.util.Arrays;
-import java.util.Date;
 
 import androidx.annotation.Nullable;
 
 public class TestUtil {
-    @Deprecated
-    public static boolean required(Object o) {
-        return o != null;
-    }
-
     public static boolean required(Object... o) {
-        for (Object x : o) {
-            if (!required(x)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public static boolean requireOne(Object... o) {
-        for (Object x : o) {
-            if (x != null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean requireAll(Object[] o) {
         for (Object x : o) {
             if (x == null) {
                 return false;
             }
         }
-        return true;
-    }
-
-    public static boolean compare(Object[] a, Object[] b) {
-        if (a == null) {
-            return b == null;
-        }
-
-        if (b == null) {
-            return a == null;
-        }
-
-        //not the same length
-        if (a.length != b.length) {
-            return false;
-        }
-
-        for (int n = 0; n < a.length; n++) {
-            if (b.length < n) {
-                return false;
-            }
-
-            if (!compare(a[n], b[n])) {
-                return false;
-            }
-        }
-
         return true;
     }
 
@@ -93,35 +41,14 @@ public class TestUtil {
         }
 
         if (b == null) {
-            return a == null;
+            return false;
         }
 
-        if (a instanceof byte[]) {
-            return compare((byte[]) a, (byte[]) b);
+        if (a instanceof byte[] && b instanceof byte[]) {
+            return Arrays.equals((byte[]) a, (byte[]) b);
         }
 
-        return a == null ? b == null : a.equals(b);
-    }
-
-    public static boolean compare(byte[] a, byte[] b) {
-        return a == null ? b == null : Arrays.equals(a, b);
-    }
-
-    public static boolean compare(int a, int b) {
-        return a == b;
-    }
-
-    public static boolean compare(float a, float b) {
-        return a == b;
-    }
-
-    public static boolean compare(double a, double b) {
-        return a == b;
-    }
-
-    public static boolean compare(Date a, Date b) {
-        return a == null ? b == null :
-            a.compareTo(b) == 0;
+        return a.equals(b);
     }
 
     /**
@@ -165,51 +92,20 @@ public class TestUtil {
         return isBlankOrNull(string);
     }
 
-    public static boolean contains(String search, String string) {
-        return contains(search, string, false);
+    public static boolean isInTest() {
+        return isClassAvailable("org.junit.Test");
     }
 
-    public static boolean contains(String search, String string, boolean caseSensitive) {
-        return string != null
-            && search != null
-            && (!caseSensitive ?
-            string.toLowerCase().contains(search.toLowerCase()) :
-            string.contains(search));
+    public static boolean isInDeviceTest() {
+        return isClassAvailable("ch.threema.app.ThreemaTestRunner");
     }
 
-    /**
-     * Check if the query string matches the conversation title. A query matches the conversation
-     * text if
-     * <ul>
-     *     <li>the conversation text contains the query, or</li>
-     *     <li>the normalized conversation text without the diacritics contains the query.</li>
-     * </ul>
-     * <p>
-     * If any of the arguments is null, {@code false} is returned.
-     *
-     * @param query        the query
-     * @param conversation the conversation text
-     * @return {@code true} if there is a match, {@code false} otherwise
-     */
-    public static boolean matchesConversationSearch(@Nullable String query, @Nullable String conversation) {
-        if (query == null || conversation == null) {
+    private static boolean isClassAvailable(String className) {
+        try {
+            Class.forName(className);
+            return true;
+        } catch (ClassNotFoundException e) {
             return false;
         }
-
-        query = query.toUpperCase();
-        conversation = conversation.toUpperCase();
-
-        if (conversation.contains(query)) {
-            return true;
-        }
-
-        // Only normalize the query without removing the diacritics
-        String queryNorm = Normalizer.isNormalized(query, Normalizer.Form.NFD) ? query :
-            Normalizer.normalize(query, Normalizer.Form.NFD);
-
-        // Normalize conversation and remove diacritics
-        String conversationNormDiacritics = LocaleUtil.normalize(conversation);
-
-        return conversationNormDiacritics.contains(queryNorm);
     }
 }

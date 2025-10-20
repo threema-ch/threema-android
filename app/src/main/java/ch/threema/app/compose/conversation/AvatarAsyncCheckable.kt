@@ -41,7 +41,6 @@ import androidx.compose.ui.res.painterResource
 import ch.threema.app.R
 import ch.threema.app.compose.common.AvatarAsync
 import ch.threema.app.compose.theme.dimens.GridUnit
-import ch.threema.app.services.AvatarCacheService
 import ch.threema.storage.models.ReceiverModel
 
 private const val FLIP_ANIMATION_DURATION_MILLIS = 400
@@ -55,7 +54,6 @@ private const val FLIP_ANIMATION_DURATION_MILLIS = 400
 @Composable
 fun AvatarAsyncCheckable(
     modifier: Modifier = Modifier,
-    avatarCacheService: AvatarCacheService,
     receiverModel: ReceiverModel,
     contentDescription: String?,
     @DrawableRes fallbackIcon: Int,
@@ -83,7 +81,6 @@ fun AvatarAsyncCheckable(
         if (rotation.value <= 90f) {
             AvatarAsync(
                 modifier = Modifier.fillMaxSize(),
-                avatarCacheService = avatarCacheService,
                 receiverModel = receiverModel,
                 contentDescription = contentDescription,
                 fallbackIcon = fallbackIcon,

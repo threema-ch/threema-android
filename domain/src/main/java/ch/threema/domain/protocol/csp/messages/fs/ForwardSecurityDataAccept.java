@@ -22,7 +22,7 @@
 package ch.threema.domain.protocol.csp.messages.fs;
 
 import com.google.protobuf.ByteString;
-import com.neilalexander.jnacl.NaCl;
+import ch.threema.base.crypto.NaCl;
 
 import androidx.annotation.NonNull;
 import ch.threema.domain.fs.DHSessionId;
@@ -41,7 +41,7 @@ public class ForwardSecurityDataAccept extends ForwardSecurityData {
     ) throws InvalidEphemeralPublicKeyException {
         super(sessionId);
         this.versionRange = versionRange;
-        if (ephemeralPublicKey.length != NaCl.PUBLICKEYBYTES) {
+        if (ephemeralPublicKey.length != NaCl.PUBLIC_KEY_BYTES) {
             throw new InvalidEphemeralPublicKeyException("Bad ephemeral public key length");
         }
         this.ephemeralPublicKey = ephemeralPublicKey;

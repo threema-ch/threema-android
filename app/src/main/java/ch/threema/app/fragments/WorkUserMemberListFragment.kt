@@ -32,6 +32,7 @@ import ch.threema.app.utils.ContactUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.protocol.ThreemaFeature
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import com.bumptech.glide.Glide
 
@@ -45,8 +46,8 @@ class WorkUserMemberListFragment : MemberListFragment() {
     @SuppressLint("StaticFieldLeak")
     override fun createListAdapter(
         checkedItemPositions: ArrayList<Int>?,
-        preselectedIdentities: ArrayList<String>?,
-        excludedIdentities: ArrayList<String>?,
+        preselectedIdentities: ArrayList<Identity>?,
+        excludedIdentities: ArrayList<Identity>?,
         groups: Boolean,
         profilePics: Boolean,
     ) {

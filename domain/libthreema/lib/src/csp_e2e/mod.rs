@@ -1,43 +1,44 @@
 //! Implementation of the end-to-end encryption layer of the _Chat Server Protocol_.
-use core::fmt;
-use std::rc::Rc;
+use core::{cell::RefCell, fmt};
+use std::{collections::HashMap, rc::Rc};
 
-use config::Config;
-use contact::lookup::ContactLookupCache;
-use incoming_message::task::IncomingMessageTask;
+use educe::Educe;
 use libthreema_macros::Name;
-use provider::{ContactProvider, MessageProvider, NonceStorage, SettingsProvider, ShortcutProvider};
+use tracing::debug;
 
 use crate::{
-    common::{ClientKey, DeviceGroupKey, DeviceId, ThreemaId, WorkCredentials},
-    csp::payload::MessageWithMetadataBox,
-    utils::{
-        bytes::{ByteReaderError, ByteWriterError},
-        sequence_numbers::{SequenceNumberOverflow, SequenceNumberU32, SequenceNumberValue},
+    common::{
+        ClientInfo, D2xDeviceId, ThreemaId,
+        config::{Config, Flavor},
+        keys::{ClientKey, DeviceGroupKey},
     },
+    csp::payload::MessageWithMetadataBox,
+    csp_e2e::{contacts::lookup::ContactLookupCache, incoming_message::task::IncomingMessageTask},
+    https::endpoint::HttpsEndpointError,
+    model::provider::{
+        ContactProvider, MessageProvider, NonceStorage, ProviderError, SettingsProvider, ShortcutProvider,
+    },
+    utils::sequence_numbers::{SequenceNumberOverflow, SequenceNumberU32, SequenceNumberValue},
 };
 
-pub mod config;
-pub mod contact;
-pub mod endpoints;
+pub mod contacts;
+pub mod identity;
 pub mod incoming_message;
-pub mod message;
-pub mod provider;
 pub mod reflect;
 pub mod transaction;
 
 /// An error occurred while running the end-to-end encryption layer of the _Chat Server Protocol_.
 ///
-/// TODO(LIB-16): Clarify recoverability and what to do when encountering an error. so far, the idea
-/// is that an error means unrecoverable and that the CSP or CSP/D2M connection needs to be
-/// restarted. a new instance of the protocol can then be created with linear/exponential backoff.
+/// TODO(LIB-16): Clarify recoverability and what to do when encountering an error. so far, the idea is that
+/// an error means unrecoverable and that the CSP or CSP/D2M connection needs to be restarted. a new instance
+/// of the protocol can then be created with linear/exponential backoff.
 #[derive(Clone, Debug, thiserror::Error)]
 #[cfg_attr(feature = "uniffi", derive(uniffi::Error), uniffi(flat_error))]
 pub enum CspE2eProtocolError {
-    /// Invalid parameter provided by foreign code.
-    #[cfg(feature = "uniffi")]
-    #[error("Invalid parameter: {0}")]
-    InvalidParameter(&'static str),
+    /// A foreign function considered infallible returned an error.
+    #[cfg(any(test, feature = "uniffi", feature = "cli"))]
+    #[error("Infallible function failed in foreign code: {0}")]
+    Foreign(String),
 
     /// Invalid state for the requested operation.
     #[error("Invalid state: {0}")]
@@ -51,58 +52,12 @@ pub enum CspE2eProtocolError {
     #[error("Sequence number overflow happened")]
     SequenceNumberOverflow(#[from] SequenceNumberOverflow),
 
-    /// The task is already done.
-    #[error("Task '{0}' already done")]
-    TaskAlreadyDone(&'static str),
-
-    /// Unable to decrypt a handshake message or a payload.
-    #[error("Decrypting '{name}' failed")]
-    DecryptionFailed {
-        /// Name of the handshake message or payload
-        name: &'static str,
-    },
-
-    /// Unable to encrypt a handshake message or a payload.
+    /// Unable to encrypt a message or a struct.
     #[error("Encrypting '{name}' failed")]
     EncryptionFailed {
-        /// Name of the handshake message or payload
+        /// Name of the message or struct
         name: &'static str,
     },
-
-    /// Unable to encode a struct.
-    #[error("Encoding '{name}' failed: {source}")]
-    EncodingFailed {
-        /// Name of the struct
-        name: &'static str,
-        /// Error source
-        source: ByteWriterError,
-    },
-
-    /// Unable to decode a struct.
-    #[error("Decoding '{name}' failed: {source}")]
-    DecodingFailed {
-        /// Name of the struct
-        name: &'static str,
-        /// Error source
-        source: ByteReaderError,
-    },
-
-    /// Invalid data in message or payload.
-    #[error("Invalid '{name}': {cause}")]
-    InvalidMessage {
-        /// Name of the handshake message or payload
-        name: &'static str,
-        /// Error cause
-        cause: String,
-    },
-
-    /// A network error occurred while communicating with a server.
-    #[error("Network error: {0}")]
-    NetworkError(String),
-
-    /// A server misbehaved in an operation considered infallible.
-    #[error("Server error: {0}")]
-    ServerError(String),
 
     /// A desync occurred.
     ///
@@ -116,26 +71,59 @@ pub enum CspE2eProtocolError {
     ///   transaction is ongoing), or
     /// - an implementation error of this protocol state machine.
     ///
-    /// If multi-device is active, device group integrity may have been compromised and relinking
-    /// against another device is advisable.
+    /// If multi-device is active, device group integrity may have been compromised and relinking against
+    /// another device is advisable.
     #[error("Desync error: {0}")]
     DesyncError(&'static str),
 
-    /// Invalid credentials (should only be relevant for Work and OnPrem) reported by a server
-    /// caused an operation to fail.
+    /// A network error occurred while communicating with a server.
+    #[error("Network error: {0}")]
+    NetworkError(String),
+
+    /// A server misbehaved in an operation considered infallible.
+    #[error("Server error: {0}")]
+    ServerError(String),
+
+    /// Invalid credentials (should only be relevant for Work and OnPrem) reported by a server caused an
+    /// operation to fail.
     ///
-    /// When processing this variant, notify the user that the Work credentials are invalid and
-    /// request new ones. A new CSP connection may be retried after the credentials have been
-    /// validated.
+    /// When processing this variant, notify the user that the Work credentials are invalid and request new
+    /// ones. A new CSP connection may be retried after the credentials have been validated.
     #[error("Invalid credentials")]
     InvalidCredentials,
 
     /// A rate limit of a server has been exceeded.
     ///
-    /// When processing this variant, ensure that a new CSP connection attempt is delayed by at
-    /// least 10s.
+    /// When processing this variant, ensure that a new CSP connection attempt is delayed by at least 10s.
     #[error("Rate limit exceeded")]
     RateLimitExceeded,
+}
+impl From<HttpsEndpointError> for CspE2eProtocolError {
+    fn from(error: HttpsEndpointError) -> Self {
+        match error {
+            HttpsEndpointError::NetworkError(_) | HttpsEndpointError::ChallengeExpired => {
+                CspE2eProtocolError::NetworkError(error.to_string())
+            },
+            HttpsEndpointError::RateLimitExceeded => CspE2eProtocolError::RateLimitExceeded,
+            HttpsEndpointError::InvalidCredentials => CspE2eProtocolError::InvalidCredentials,
+            HttpsEndpointError::Forbidden
+            | HttpsEndpointError::NotFound
+            | HttpsEndpointError::InvalidChallengeResponse
+            | HttpsEndpointError::UnexpectedStatus(_)
+            | HttpsEndpointError::CustomPossiblyLocalizedError(_)
+            | HttpsEndpointError::DecodingFailed(_) => CspE2eProtocolError::ServerError(error.to_string()),
+        }
+    }
+}
+impl From<ProviderError> for CspE2eProtocolError {
+    fn from(error: ProviderError) -> Self {
+        match error {
+            ProviderError::InvalidParameter(message) => Self::InternalError(message.into()),
+            ProviderError::InvalidState(message) => Self::DesyncError(message),
+            #[cfg(any(test, feature = "uniffi", feature = "cli"))]
+            ProviderError::Foreign(message) => Self::Foreign(message),
+        }
+    }
 }
 
 /// A D2M reflect ID.
@@ -143,7 +131,7 @@ pub enum CspE2eProtocolError {
 pub struct ReflectId(pub u32);
 impl fmt::Debug for ReflectId {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{}({:016x})", Self::NAME, self.0.swap_bytes())
+        write!(formatter, "{}({:016x})", Self::NAME, self.0.to_be())
     }
 }
 impl From<SequenceNumberValue<u32>> for ReflectId {
@@ -152,59 +140,50 @@ impl From<SequenceNumberValue<u32>> for ReflectId {
     }
 }
 
-/// Result of polling a task or advancing a task's state in any other fashion.
-///
-/// Note: This allows to easily expose instructions of a sub-task from a task without exposing the
-/// sub-task's results.
-pub enum TaskLoop<TInstruction, TResult> {
-    /// An enclosed instructions needs to be handled in order to advance the task's state.
-    Instruction(TInstruction),
-
-    /// Result of the completed task.
-    Done(TResult),
-}
-
-/// Work flavour of the application.
-pub enum WorkFlavor {
-    /// (Normal) Work application.
-    Work,
-    /// OnPrem application.
-    OnPrem,
-}
-
-/// Work-related context information.
-pub struct WorkContext {
-    /// Work variant credentials.
-    credentials: WorkCredentials,
-    /// Work flavour of the application.
-    flavor: WorkFlavor,
-}
-
-/// General flavour of the application.
-pub enum Flavor {
-    /// Consumer application.
-    Consumer,
-    /// Work (or OnPrem) application.
-    Work(WorkContext),
-}
-
-/// CSP-specific context information.
-struct CspE2eContext {
+/// Initializer for a [`CspE2eContext`].
+pub struct CspE2eContextInit {
     /// The user's identity.
-    user_identity: ThreemaId,
-    /// Client key (`CK`).
-    client_key: ClientKey,
+    pub user_identity: ThreemaId,
+    /// Client key.
+    pub client_key: ClientKey,
     /// Application flavour.
-    flavor: Flavor,
+    pub flavor: Flavor,
     /// CSP nonce storage.
-    nonce_storage: Rc<dyn NonceStorage>,
+    pub nonce_storage: Box<RefCell<dyn NonceStorage>>,
 }
 
-/// Sequence number used for outgoing reflections.
-struct ReflectSequenceNumber(SequenceNumberU32);
+/// Initializer for a [`D2xContext`]
+pub struct D2xContextInit {
+    /// The device's (D2X) ID.
+    pub device_id: D2xDeviceId,
+    /// The device group key.
+    pub device_group_key: DeviceGroupKey,
+    /// D2D nonce storage.
+    pub nonce_storage: Box<RefCell<dyn NonceStorage>>,
+}
+
+/// Initializer for a [`CspE2eProtocolContext`]
+pub struct CspE2eProtocolContextInit {
+    /// Client info.
+    pub client_info: ClientInfo,
+    /// Configuration used by the protocol.
+    pub config: Rc<Config>,
+    /// See [`CspE2eContext`].
+    pub csp_e2e: CspE2eContextInit,
+    /// Optional D2X context, only available if multi-device is enabled, see [`D2xContext`].
+    pub d2x: Option<D2xContextInit>,
+    /// See [`ShortcutProvider`].
+    pub shortcut: Box<dyn ShortcutProvider>,
+    /// See [`SettingsProvider`].
+    pub settings: Box<RefCell<dyn SettingsProvider>>,
+    /// See [`ContactProvider`].
+    pub contacts: Box<RefCell<dyn ContactProvider>>,
+    /// See [`MessageProvider`].
+    pub messages: Box<RefCell<dyn MessageProvider>>,
+}
 
 /// The current D2M role.
-#[derive(Clone, Copy, PartialEq)]
+#[derive(Debug, Clone, Copy, PartialEq)]
 pub enum D2mRole {
     /// Follower role (i.e. not yet _leader_).
     Follower,
@@ -212,38 +191,91 @@ pub enum D2mRole {
     Leader,
 }
 
+/// Sequence number used for outgoing reflections.
+struct ReflectSequenceNumber(SequenceNumberU32);
+
+/// CSP-specific context information.
+pub struct CspE2eContext {
+    /// The user's identity.
+    user_identity: ThreemaId,
+    /// Client key.
+    client_key: ClientKey,
+    /// Application flavour.
+    flavor: Flavor,
+    /// CSP nonce storage.
+    nonce_storage: Rc<RefCell<dyn NonceStorage>>,
+}
+impl From<CspE2eContextInit> for CspE2eContext {
+    fn from(init: CspE2eContextInit) -> Self {
+        Self {
+            user_identity: init.user_identity,
+            client_key: init.client_key,
+            flavor: init.flavor,
+            nonce_storage: init.nonce_storage.into(),
+        }
+    }
+}
+
 /// D2M/D2D-specific context information
 pub struct D2xContext {
     /// The device's (D2X) ID.
-    device_id: DeviceId,
+    device_id: D2xDeviceId,
     /// The device group key.
     device_group_key: DeviceGroupKey,
     /// D2D nonce storage.
-    nonce_storage: Box<dyn NonceStorage>,
+    nonce_storage: Box<RefCell<dyn NonceStorage>>,
     /// Sequence number used for outgoing reflections.
     reflect_id: ReflectSequenceNumber,
     /// The current D2M role.
     role: D2mRole,
 }
+impl From<D2xContextInit> for D2xContext {
+    fn from(init: D2xContextInit) -> Self {
+        Self {
+            device_id: init.device_id,
+            device_group_key: init.device_group_key,
+            nonce_storage: init.nonce_storage,
+            reflect_id: ReflectSequenceNumber(SequenceNumberU32::new(0)),
+            role: D2mRole::Follower,
+        }
+    }
+}
 
 /// CSP E2EE protocol context
 pub struct CspE2eProtocolContext {
-    /// See [`ShortcutProvider`].
-    shortcut_provider: Box<dyn ShortcutProvider>,
+    /// Client info.
+    client_info: ClientInfo,
     /// Configuration used by the protocol.
-    config: Config,
+    config: Rc<Config>,
     /// See [`CspE2eContext`].
     csp_e2e: CspE2eContext,
     /// Optional D2X context, only available if multi-device is enabled, see [`D2xContext`].
     d2x: Option<D2xContext>,
+    /// See [`ShortcutProvider`].
+    shortcut: Box<dyn ShortcutProvider>,
     /// See [`SettingsProvider`].
-    settings: Rc<dyn SettingsProvider>,
+    settings: Rc<RefCell<dyn SettingsProvider>>,
     /// See [`ContactProvider`].
-    contacts: Rc<dyn ContactProvider>,
+    contacts: Rc<RefCell<dyn ContactProvider>>,
     /// See [`MessageProvider`].
-    messages: Rc<dyn MessageProvider>,
+    messages: Rc<RefCell<dyn MessageProvider>>,
     /// See [`ContactLookupCache`].
     contact_lookup_cache: ContactLookupCache,
+}
+impl From<CspE2eProtocolContextInit> for CspE2eProtocolContext {
+    fn from(init: CspE2eProtocolContextInit) -> Self {
+        Self {
+            client_info: init.client_info,
+            config: init.config,
+            csp_e2e: CspE2eContext::from(init.csp_e2e),
+            d2x: init.d2x.map(From::from),
+            shortcut: init.shortcut,
+            settings: init.settings.into(),
+            contacts: init.contacts.into(),
+            messages: init.messages.into(),
+            contact_lookup_cache: ContactLookupCache::new(HashMap::new()),
+        }
+    }
 }
 
 /// The Chat Server E2EE Protocol state machine.
@@ -253,15 +285,37 @@ pub struct CspE2eProtocolContext {
 /// - Protocol must be recreated whenever a reconnection happens.
 /// - Add linear/exponential backoff when retrying a connection.
 /// - ...
+#[derive(Educe)]
+#[educe(Debug)]
 pub struct CspE2eProtocol {
+    #[educe(Debug(ignore))]
     context: CspE2eProtocolContext,
 }
 impl CspE2eProtocol {
+    /// Initiate a new CSP E2EE protocol.
+    #[must_use]
+    #[tracing::instrument(skip_all)]
+    pub fn new(context: CspE2eProtocolContextInit) -> Self {
+        debug!("Creating CSP E2EE protocol");
+
+        // Create initial state
+        Self {
+            context: CspE2eProtocolContext::from(context),
+        }
+    }
+
+    /// Borrow current [`CspE2eProtocolContext`] state.
+    #[inline]
+    pub fn context(&mut self) -> &mut CspE2eProtocolContext {
+        &mut self.context
+    }
+
     /// TODO(LIB-16): How to use
     ///
     /// # Errors
     ///
     /// TODO(LIB-16): Describe errors
+    #[tracing::instrument(skip_all, fields(?d2m_state))]
     pub fn update_d2m_state(&mut self, d2m_state: D2mRole) -> Result<(), CspE2eProtocolError> {
         let Some(d2m_context) = &mut self.context.d2x else {
             return Err(CspE2eProtocolError::InvalidState("MD context not initialized"));
@@ -271,6 +325,7 @@ impl CspE2eProtocol {
                 "Downgrading D2M state is not allowed",
             ));
         }
+        debug!("Updating D2M state");
         d2m_context.role = d2m_state;
         Ok(())
     }
@@ -280,8 +335,12 @@ impl CspE2eProtocol {
     /// # Errors
     ///
     /// TODO(LIB-16): Describe errors
+    #[expect(clippy::unused_self, reason = "TODO(LIB-16)")]
     #[must_use]
-    pub fn handle_incoming_message(payload: MessageWithMetadataBox) -> IncomingMessageTask {
+    #[tracing::instrument(skip_all, fields(?payload))]
+    pub fn handle_incoming_message(&self, payload: MessageWithMetadataBox) -> IncomingMessageTask {
+        // TODO(LIB-16): Check for leading state!
+        debug!("Creating incoming message task");
         IncomingMessageTask::new(payload)
     }
 }

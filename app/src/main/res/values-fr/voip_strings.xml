@@ -83,6 +83,7 @@
     <string name="voip_gc_waiting_for_participants">En attente des participants</string>
     <string name="voip_gc_participant_avatar_description">Image de profil du participant</string>
     <string name="voip_gc_participant_mute_status_description">État de sourdine du participant</string>
+    <string name="voip_gc_participant_screen_share_status_description">Le participant partage son écran</string>
     <string name="voip_gc_notification_new_call_public">Un nouvel appel de groupe a été lancé</string>
     <string name="voip_gc_open_call">Ouvrir</string>
     <string name="voip_gc_call_started">L\'appel de groupe a été lancé</string>
@@ -92,6 +93,7 @@
     <string name="voip_gc_call_error">Appel arrêté à cause d\'une erreur</string>
     <string name="voip_gc_call_start_error">Impossible de lancer l\'appel de groupe</string>
     <string name="voip_gc_call_already_ended">L\'appel de groupe est déjà terminé</string>
+    <string name="voip_gc_screen_sharing_not_supported">Le partage d’écran est actuellement limité aux ordinateurs de bureau.</string>
     <string name="voip_gc_call_full_generic">Maximum atteint : plus aucun participant ne peut rejoindre cet appel de groupe.</string>
     <string name="voip_gc_call_full_n">Maximum de %1$d participants atteint, vous ne pouvez pas rejoindre cet appel de groupe.</string>
     <plurals name="n_participants_in_call">

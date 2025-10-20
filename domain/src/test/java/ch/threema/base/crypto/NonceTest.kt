@@ -21,7 +21,6 @@
 
 package ch.threema.base.crypto
 
-import com.neilalexander.jnacl.NaCl
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import org.junit.jupiter.api.assertThrows
@@ -103,7 +102,7 @@ class NonceTest {
     @Test
     fun testHashing() {
         // Arrange
-        val nonce = Nonce(ByteArray(NaCl.NONCEBYTES))
+        val nonce = Nonce(ByteArray(NaCl.NONCE_BYTES))
         val identity = "01234567"
 
         // Act
@@ -119,7 +118,7 @@ class NonceTest {
         )
     }
 
-    private fun generateNonceBytes(): ByteArray = generateBytes(NaCl.NONCEBYTES)
+    private fun generateNonceBytes(): ByteArray = generateBytes(NaCl.NONCE_BYTES)
 
     private fun generateNonceHashBytes(): ByteArray = generateBytes(32)
 

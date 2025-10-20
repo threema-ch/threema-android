@@ -239,8 +239,8 @@ public abstract class RecipientListFragment extends ListFragment implements List
         getListView().setChoiceMode(AbsListView.CHOICE_MODE_MULTIPLE);
         if (isVisible) {
             snackbar = SnackbarUtil.make(topLayout, "", Snackbar.LENGTH_INDEFINITE, 4);
-//			snackbar.setBackgroundTint(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));
-//			snackbar.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSecondary));
+            // snackbar.setBackgroundTint(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorPrimary));
+            // snackbar.setTextColor(ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSecondary));
             snackbar.getView().getLayoutParams().width = AppBarLayout.LayoutParams.MATCH_PARENT;
             snackbar.show();
             snackbar.getView().post(new Runnable() {

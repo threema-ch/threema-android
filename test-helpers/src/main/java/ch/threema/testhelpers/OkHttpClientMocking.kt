@@ -24,6 +24,7 @@ package ch.threema.testhelpers
 import io.mockk.every
 import io.mockk.mockk
 import java.io.IOException
+import kotlin.test.fail
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -35,8 +36,9 @@ import okio.Buffer
 
 fun mockOkHttpClient(
     createResponse: (Request) -> Response,
-): OkHttpClient =
-    mockk<OkHttpClient> {
+): OkHttpClient {
+    val builderMock = mockk<OkHttpClient.Builder>(relaxed = true)
+    val clientMock = mockk<OkHttpClient> {
         every { newCall(any()) } answers {
             val request = firstArg<Request>()
             mockk<Call> {
@@ -55,12 +57,25 @@ fun mockOkHttpClient(
                 }
             }
         }
+        every { newBuilder() } returns builderMock
+    }
+    every { builderMock.callTimeout(any<kotlin.time.Duration>()) } returns builderMock
+    every { builderMock.callTimeout(any<java.time.Duration>()) } returns builderMock
+    every { builderMock.build() } returns clientMock
+    return clientMock
+}
+
+fun mockNoRequestOkHttpClient() =
+    mockOkHttpClient { request ->
+        fail("Expected no requests, but got $request")
     }
 
 fun Request.buildResponse(block: Response.Builder.() -> Unit): Response =
     Response.Builder()
+        .code(200)
         .protocol(Protocol.HTTP_2)
         .request(this)
+        .message("")
         .apply(block)
         .build()
 
@@ -71,9 +86,12 @@ fun Request.respondWith(body: String = "", code: Int = 200) =
         body(body.toResponseBody())
     }
 
-fun Request.getBodyAsUtf8String(): String? {
+fun Request.getBodyAsByteArray(): ByteArray? {
     val buffer = Buffer()
     (body ?: return null)
         .writeTo(buffer)
-    return buffer.readUtf8()
+    return buffer.readByteArray()
 }
+
+fun Request.getBodyAsUtf8String(): String? =
+    getBodyAsByteArray()?.toString(Charsets.UTF_8)

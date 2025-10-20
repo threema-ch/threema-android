@@ -39,7 +39,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitServiceManagerWithTimeout
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.GroupCallPolicySetting
 import ch.threema.app.preference.service.O2oCallPolicySetting
@@ -56,12 +56,20 @@ import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.workers.AutoDeleteWorker.Companion.scheduleAutoDelete
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.common.minus
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.localcrypto.MasterKeyManager
+import ch.threema.localcrypto.models.RemoteSecretCheckType
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.ScreenshotPolicy
+import java.time.Instant
 import java.util.concurrent.TimeUnit
+import kotlin.collections.any
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = LoggingUtil.getThreemaLogger("ApplyAppRestrictionsWorker")
 
@@ -70,13 +78,16 @@ private val logger = LoggingUtil.getThreemaLogger("ApplyAppRestrictionsWorker")
  * - Mapping the currently set app restrictions to their corresponding preferences. Those preferences will be reflected if multi device is
  * active. TODO(PRD-152): Note that this behavior is likely to change once we reflect mdm parameters directly.
  * - Deactivating multi device in case th_disable_multidevice or th_disable_web is set.
+ * - Restarting the app if Remote Secrets needs to be activated or deactivated
  *
  * Note that this work must never be enqueued from SYNC.
  */
 class ApplyAppRestrictionsWorker(
     private val context: Context,
     workerParameters: WorkerParameters,
-) : CoroutineWorker(context, workerParameters) {
+) : CoroutineWorker(context, workerParameters), KoinComponent {
+
+    private val masterKeyManager: MasterKeyManager by inject()
 
     override suspend fun doWork(): Result {
         val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
@@ -115,6 +126,10 @@ class ApplyAppRestrictionsWorker(
             multiDeviceManager = serviceManager.multiDeviceManager,
             taskCreator = serviceManager.taskCreator,
         )
+
+        if (masterKeyManager.shouldUpdateRemoteSecretProtectionState(RemoteSecretCheckType.APP_RUNTIME)) {
+            ConfigUtils.scheduleAppRestart(context)
+        }
 
         return Result.success()
     }
@@ -498,19 +513,25 @@ class ApplyAppRestrictionsWorker(
          */
         fun applyAppRestrictions(context: Context) {
             val workManager = WorkManager.getInstance(context)
-            val workIsAlreadyEnqueued = workManager.getWorkInfosForUniqueWork(UNIQUE_WORK_NAME).get().any { workInfo ->
-                workInfo.state == WorkInfo.State.ENQUEUED
-            }
-            if (workIsAlreadyEnqueued) {
-                // No need to enqueue another work request as there already is one instance that has not yet started.
+
+            if (workManager.isWorkAlreadyEnqueued(UNIQUE_WORK_NAME, withinNext = 30.seconds)) {
+                // No need to enqueue another work request as there already is one instance that will soon start.
                 return
             }
 
             workManager.enqueueUniqueWork(
                 uniqueWorkName = UNIQUE_WORK_NAME,
-                existingWorkPolicy = ExistingWorkPolicy.APPEND_OR_REPLACE,
+                existingWorkPolicy = ExistingWorkPolicy.REPLACE,
                 request = buildOneTimeWorkRequest(),
             )
+        }
+
+        private fun WorkManager.isWorkAlreadyEnqueued(uniqueWorkName: String, withinNext: Duration): Boolean {
+            val now = Instant.now()
+            return getWorkInfosForUniqueWork(uniqueWorkName).get().any { workInfo ->
+                workInfo.state == WorkInfo.State.ENQUEUED &&
+                    Instant.ofEpochMilli(workInfo.nextScheduleTimeMillis) - now < withinNext
+            }
         }
 
         private fun buildOneTimeWorkRequest(): OneTimeWorkRequest = OneTimeWorkRequestBuilder<ApplyAppRestrictionsWorker>().apply {
@@ -522,12 +543,12 @@ class ApplyAppRestrictionsWorker(
                     .build(),
             )
 
-            // If it fails, retry once in an hour. The most likely case that it fails is because of a locked passphrase or unstable network
+            // If it fails, retry again in a few minutes. The most likely case that it fails is because of a locked master key or unstable network
             // connection. Note that this worker is also enqueued once the master key is being unlocked.
             setBackoffCriteria(
                 backoffPolicy = BackoffPolicy.LINEAR,
-                backoffDelay = 1,
-                timeUnit = TimeUnit.HOURS,
+                backoffDelay = 5,
+                timeUnit = TimeUnit.MINUTES,
             )
         }
             .build()

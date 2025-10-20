@@ -103,7 +103,7 @@
 🤔|buźka|hmm|myśląca twarz|myślę|zamyślony|zastanawiam się|zastanowienie
 🫡|ok|pogodna twarz|powodzenia|salutowanie|salutująca twarz|tak jest|wojsko
 🤐|buzia na kłódkę|buźka|nic nie powiem|tajemnica|twarz z zamkiem błyskawicznym na ustach
-🤨|brew|buźka|dziwne|głowa|hę|hmm|nie wierzę|sceptyczny|twarz z podniesioną brwią|zdiwiony|że co
+🤨|brew|buźka|dziwne|głowa|hę|hmm|nie wierzę|sceptyczny|twarz z podniesioną brwią|zdziwiony|że co
 😐|buźka bez wyrazu|hm|neutralna twarz|nic|nie mam zdania|nie obchodzi mnie|wtf
 😑|brak emocji|buźka|nic|nie mam zdania|nie obchodzi mnie|twarz bez wyrazu|wtf
 😶|buźka bez ust|cisza|nic nie mówię|oczy|twarz bez ust
@@ -123,6 +123,7 @@
 😪|buźka|senna twarz|senność|spać|śpiąca buźka
 🤤|buźka|cieknie mi ślinka|głodny|mniam|ślina|śliniąca się twarz|ślinka
 😴|buźka|chrapanie|dobranoc|drzemka|noc|nuda|sen|spać|spanie|śpiąca twarz|śpiący|twarz|ziew|zmęczenie|zzz
+🫩|podkrążone oczy|senność|worki pod oczami|zmęczenie
 😷|buźka|choroba|lekarz|maska|operacja|pielęgniarka|twarz w masce medycznej
 🤒|buźka|choroba|gorączka|smutek|temperatura|termometr|twarz z termometrem
 🤕|bandaż|buźka|czoło|głowa|rana|skaleczenie|smutny|twarz z bandażem
@@ -539,7 +540,7 @@
 🛀|biorąca kąpiel|kąpiel|osoba|w wannie|wanna
 🛌|dobranoc|drzemka|hotel|łóżko|nocleg|nocowanie|osoba|pensjonat|posłanie|sen|spać|w łóżku|zzz
 🧑‍🤝‍🧑|ludzie|osoby trzymające się za ręce|para|rękę|za ręce
-👭|dwie kobiety trzymające się za ręce|kobieca para|kobieta|kobiety trzymające się za ręce|miłość|para|przyjaciółka|przyjaźń|za ręce|zakochane|zakochani
+👭|kobieca para|kobieta|kobiety trzymające się za ręce|miłość|para|przyjaciółka|przyjaźń|za ręce|zakochane|zakochani
 👫|kobieta i mężczyzna|ludzie|mężczyzna i kobieta|miłość|para|rodzeństwo|trzymający się|za ręce|zakochani
 👬|dwóch mężczyzn trzymających się za ręce|gej|lgbt|mężczyźni|miłość|para|za ręce|zakochani
 💏|buziaki|całusy|kocham|miłość|osoba|osoby|para|pocałunek|zakochani|związek
@@ -554,6 +555,7 @@
 🧑‍🧒|dorosły|dziecko|rodzina: dorosły, dziecko
 🧑‍🧒‍🧒|dorosły|dziecko|rodzina: dorosły, dziecko, dziecko
 👣|odciski stóp|ślady stóp|stopy
+🫆|bezpieczeństwo|odcisk palca|tożsamość
 🐵|buźka|głowa małpy|małpka|zwierzę
 🐒|małpa|małpka|zwierzę
 🦍|goryl|zwierzę
@@ -663,6 +665,11 @@
 🐚|morze|muszelka|muszla spiralna|plaża|spirala|zwierzę
 🪸|koralowa|koralowiec|ocean|rafa
 🪼|akwarium|bezkręgowiec|galareta|macki|meduza|morskie|morze|ocean|parzyć|plankton|zwierzę
+🦀|krab|morze|ocean|plaża|rak|zodiak|zwierzę
+🦞|czerwony|homar|owoce morza|rak|szczypce|zwierzę
+🦐|jedzenie|krewetka|morze|ocean|owoce morza|zwierzę
+🦑|atrament|jedzenie|kałamarnica|mątwa|mięczak|morze|ocean|ośmiornica|owoce morza|sepia|tusz|zwierzę
+🦪|małże|nurkowanie|ostryga|perła|perły|zwierzę
 🐌|mięczak|muszla|powolny|ślimak|wolny|zwierzę
 🦋|kolorowy|motyl|owad|zwierzę
 🐛|gąsienica|owad|robak|zwierzę
@@ -706,6 +713,7 @@
 🪹|gniazdowanie|gnieżdżenie|ptasie|puste
 🪺|gniazdowanie|gnieżdżenie|jajka|ptasie|z jajkami|zniesione jaja
 🍄|grzyb|muchomorek|trujący
+🪾|bez liści|drzewo|susza|zima
 🍇|jedzenie|owoce|winogrona
 🍈|jedzenie|melon|owoc
 🍉|arbuza|jedzenie|kawałek|lato|owoc
@@ -744,6 +752,7 @@
 🫚|imbiru|korzeń|naturalne|przyprawa|zdrowie|zioła|zioło
 🫛|edamame|fasola|grochu|łuskać|roślina|soja|sojowa|strączek|strączkowa|strąk|warzywo
 🍄‍🟫|borowik|brązowy|grzyb|jedzenie|natura|shiitake|warzywo
+🫜|burak|korzeń|ogród|rzepa|warzywo
 🍞|bochenek|chleba|jedzenie|kawałek|pieczywo
 🥐|croissant|francuski|jedzenie|pieczywo|rogalik
 🥖|bagietka|bułka|chleb|jedzenie|pieczywo
@@ -795,11 +804,6 @@
 🥟|gyoza|jedzenie|pieróg|pierogi
 🥠|ciasteczko|ciastko|przepowiednia|szczęście|wróżba|z wróżbą
 🥡|jedzenie|na wynos|pałeczki|pudełko|ryż
-🦀|krab|morze|ocean|plaża|rak|zodiak|zwierzę
-🦞|czerwony|homar|owoce morza|rak|szczypce|zwierzę
-🦐|jedzenie|krewetka|morze|ocean|owoce morza|zwierzę
-🦑|atrament|jedzenie|kałamarnica|mątwa|mięczak|morze|ocean|ośmiornica|owoce morza|sepia|tusz|zwierzę
-🦪|małże|nurkowanie|ostryga|perła|perły|zwierzę
 🍦|jedzenie|lody|śmietankowe|świderek|w kubku|włoskie
 🍧|deser|hawajskie|jedzenie|lody
 🍨|deser|jedzenie|lody
@@ -1204,6 +1208,7 @@
 🪘|bębenek|bębnić|instrument|konga|muzyka|rytm|tamburyn
 🪇|cza cza|grzechotać|grzechotki|impreza|instrument|marakasy|muzyka|perkusja|perkusyjny|potrząsać|taniec
 🪈|dęty|drewniany|flet|fujarka|grać|gwizdać|instrument|muzyka|na flecie|orkiestra|piccolo|pikolo|piszczałka|prosty
+🪉|amorek|harfa|instrument|miłość|muzyka|orkiestra
 📱|komóra|komórka|smartfon|telefon komórkowy
 📲|dzwonić|komórka|odebrać|połączenie|smartfon ze strzałką|strzałka|telefon komórkowy ze strzałką
 ☎️|aparat telefoniczny|telefon
@@ -1334,6 +1339,7 @@
 🧰|czerwona|klucze|kombinerki|mechanik|na narzędzia|narzędzia|narzędzie|skrzynka|z narzędziami
 🧲|kształt u|magnes|magnetyczny|magnetyzm|odpychanie|podkowa|przyciąganie
 🪜|do góry|drabina|hierarchia|ranking|stopnie|szczebel|wspinać się
+🪏|dziura|kopać|łopata|szpadel
 🧪|chemia|chemik|eksperyment|laboratorium|nauka|probówka
 🧫|badania|bakteria|bakterie|biologia|kultura|laboratorium|płytka petriego|szalka petriego
 🧬|biolog|dna|ewolucja|genetyka|geny|życie
@@ -1477,6 +1483,7 @@
 ➰|pętla|zawijas|znak
 ➿|pętla|podwójna|zawijas
 〽️|m|początek partii wokalnej|znak|zygzak
+🫟|farba|holi|plama|rozbryzg|rozlanie
 🔠|abcd|alfabet łaciński|duże litery|kapitaliki|łacińskie|litery|pisać|wielkie litery|wielkimi literami|wprowadzać
 🔡|abcd|alfabet łaciński|łacińskie|litery|małe litery|małymi literami|pisać|wprowadzać
 🔢|1234|cyfry|kalkulator|liczby|wprowadzać

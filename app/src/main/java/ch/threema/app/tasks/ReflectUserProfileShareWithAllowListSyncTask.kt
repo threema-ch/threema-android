@@ -26,6 +26,7 @@ import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy.Policy
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.d2d.sync.MdD2DSync
 import ch.threema.protobuf.d2d.sync.UserProfileKt.profilePictureShareWith
 import ch.threema.protobuf.d2d.sync.userProfile
@@ -40,7 +41,7 @@ import kotlinx.serialization.Serializable
  * Any empty list can be passed here as specified by the protocol.
  */
 class ReflectUserProfileShareWithAllowListSyncTask(
-    private val allowedIdentities: Set<String>,
+    private val allowedIdentities: Set<Identity>,
     serviceManager: ServiceManager,
 ) : ReflectUserProfileShareWithPolicySyncTaskBase(
     newPolicy = Policy.ALLOW_LIST,
@@ -68,7 +69,7 @@ class ReflectUserProfileShareWithAllowListSyncTask(
 
     @Serializable
     data class ReflectUserProfileShareWithAllowListSyncTaskData(
-        val allowedIdentities: List<String>,
+        val allowedIdentities: List<Identity>,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
             return ReflectUserProfileShareWithAllowListSyncTask(

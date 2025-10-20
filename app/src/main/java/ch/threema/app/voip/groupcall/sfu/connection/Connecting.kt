@@ -111,6 +111,7 @@ class Connecting internal constructor(
             participant.cameraActive = false
             participant.microphoneActive =
                 participantIds.size < MUTE_MICROPHONE_PARTICIPANT_THRESHOLD
+            participant.screenShareActive = false
 
             call.completableConnectedSignal.complete(joinResponse.startedAt to participantIds)
             logger.trace("Waiting for call confirmation")

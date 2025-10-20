@@ -83,6 +83,7 @@
     <string name="voip_gc_waiting_for_participants">Attendi altri partecipanti</string>
     <string name="voip_gc_participant_avatar_description">Immagine di profilo del partecipante</string>
     <string name="voip_gc_participant_mute_status_description">Modalità silenzioso del partecipante</string>
+    <string name="voip_gc_participant_screen_share_status_description">Il partecipante sta condividendo uno schermo</string>
     <string name="voip_gc_notification_new_call_public">È stata avviata una nuova chiamata di gruppo</string>
     <string name="voip_gc_open_call">Apri</string>
     <string name="voip_gc_call_started">Chiamata di gruppo avviata</string>
@@ -92,6 +93,7 @@
     <string name="voip_gc_call_error">Impossibile avviare la chiamata di gruppo</string>
     <string name="voip_gc_call_start_error">Impossibile avviare chiamata di gruppo</string>
     <string name="voip_gc_call_already_ended">La chiamata di gruppo è già stata terminata</string>
+    <string name="voip_gc_screen_sharing_not_supported">Al momento, la condivisione dello schermo è limitata ai dispositivi desktop.</string>
     <string name="voip_gc_call_full_generic">Impossibile partecipare: è stato raggiunto il numero massimo di partecipanti.</string>
     <string name="voip_gc_call_full_n">Impossibile partecipare: è stato raggiunto il numero massimo di partecipanti (%1$d).</string>
     <plurals name="n_participants_in_call">

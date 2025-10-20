@@ -33,6 +33,7 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.ReceiverModel;
 
 public interface ConversationService {
 
@@ -78,6 +79,12 @@ public interface ConversationService {
      */
     @NonNull
     List<ConversationModel> getAll(boolean forceReloadFromDatabase, @Nullable Filter filter);
+
+    /**
+     * Return a list of all archived conversation models.
+     */
+    @NonNull
+    List<ConversationModel> getArchived();
 
     /**
      * Return a list of all conversation models that have been archived and match the
@@ -168,6 +175,11 @@ public interface ConversationService {
     void unarchive(List<ConversationModel> conversations, @NonNull TriggerSource triggerSource);
 
     /**
+     * clear archived flag in archived conversations
+     */
+    void unarchiveByReceivers(@NonNull List<ReceiverModel> receivers, @NonNull TriggerSource triggerSource);
+
+    /**
      * Empty associated conversation (remove all messages).
      *
      * @param silentMessageUpdate do not fire MessageListener updates for removed messages if true
@@ -192,15 +204,6 @@ public interface ConversationService {
      * @return the number of removed messages.
      */
     int empty(@NonNull String identity);
-
-    /**
-     * Empty associated conversation (remove all messages).
-     * <p>
-     * The message listener onRemoved method will *not* be called for removed messages.
-     *
-     * @return the number of removed messages.
-     */
-    int empty(@NonNull GroupModel groupModel);
 
     /**
      * Empty associated conversation (remove all messages).

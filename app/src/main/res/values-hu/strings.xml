@@ -57,8 +57,8 @@
     <string name="prefs_sum_notification_sound">Rendszer alapértelmezett</string>
     <string name="prefs_vibrate">Rezgés</string>
     <string name="prefs_sum_vibrate">Rezgés bejövő üzenetre</string>
-    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
-    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_light">Fehér</string>
     <string name="prefs_title_wallpaper">Háttérkép kiválasztása</string>
     <string name="prefs_sum_wallpaper">Kép kiválasztása a háttérhez</string>
@@ -93,6 +93,7 @@
     <string name="next">Tovább</string>
     <string name="finish">Befejezés</string>
     <string name="please_wait">Kérjük, várjon…</string>
+    <!-- Text shown when a task which shows a loading spinner takes longer than expected (e.g. creating a group) -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">A kulcspár generálása…</string>
     <string name="wizard1_sync_contacts">A névjegyek szinkronizálása…</string>
@@ -213,7 +214,6 @@
     <string name="code_invalid">A megadott kód érvénytelen.</string>
     <string name="try_again">Próbálja újra</string>
     <string name="decoding_message">Az üzenet dekódolása</string>
-    <string name="invalid_barcode">Érvénytelen vonalkód</string>
     <string name="expired_barcode">Ez a kód lejárt. Kérjük, olvassa be újra közvetlenül a másik felhasználó alkalmazásából.</string>
     <string name="pending">Felülvizsgálat alatt</string>
     <string name="unlinking_email">Az összekapcsolás bontása</string>
@@ -286,7 +286,8 @@
     <string name="restore_data_password_msg">Itt adja meg a biztonsági mentés létrehozásakor beállított jelszót.</string>
     <string name="backup_data_media">Nagyméretű médiák (videók, fájlok, képek) mentése</string>
     <string name="backup_data_new">Adatmentés létrehozása</string>
-    <string name="pinentry_enter_pin">A folytatáshoz adja meg a %s-PIN-kódot</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinentry_enter_pin">A folytatáshoz adja meg a ${app_name}-PIN-kódot</string>
     <string name="pinentry_wrong_pin">Rossz PIN-kód</string>
     <string name="prefs_sum_security_pin">Az alkalmazáshoz való hozzáférés védelme</string>
     <string name="prefs_title_pin_switch">Alkalmazás zárolása</string>
@@ -704,7 +705,6 @@
     <string name="wait_one_minute">Kérjük, várjon legalább 10 percet az SMS-re, mielőtt visszahívást kérne.</string>
     <string name="backup_id">ID export</string>
     <string name="backup_data">Adatmentés</string>
-    <string name="really_leave_group_admin_message">Ön ennek a csoportnak az adminisztrátora. Ha most elhagyja, akkor elárvul. A többi tag folytathatja a csevegést, de módosítások már nem lehetségesek.</string>
     <string name="action_delete_group">Csoport törlése</string>
     <string name="delete_my_group_message">Teljesen törölni szeretné ezt a csoportot? Minden üzenet törlésre kerül, és a megmaradt tagok többé nem használhatják a csoportot.</string>
     <string name="error_out_of_memory">Túl kevés a szabad memória a művelet végrehajtásához</string>
@@ -784,7 +784,6 @@
     <string name="battery_optimizations_explain">Az akkumulátorteljesítmény optimalizálása megakadályozza, hogy a %1$s megfelelően működjön, amikor a telefon alvó üzemmódba kapcsol. Kérjük, tiltsa le az optimalizálást %2$s számára.</string>
     <string name="battery_optimizations_disable_guide">A legördülő menüben válassza az «Összes alkalmazás»-t</string>
     <string name="battery_optimizations_disable_guide_ctd">Keresse a %s-t a listában és kikapcsolja ki az optimalizálást</string>
-    <string name="battery_optimizations_disable_confirm">Tényleg engedélyezve akarja hagyni az akkumulátor teljesítményének optimalizálását %1$s esetében? Ezáltal a %2$s használhatatlanná válhat.</string>
     <string name="enter_text_hint">Írja be</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_explain_text">Ha lecseréli vagy elveszíti a készülékét, senki sem tudja visszaállítani a ${app_name_short} azonosítóját és a csevegéseket biztonsági mentés nélkül. Ezért készítsen biztonsági másolatot az adatokról a rendelkezésre álló biztonsági mentési lehetőségekkel.</string>
@@ -1053,6 +1052,7 @@
     <string name="time_remaining">még %s</string>
     <string name="safe_configure_server_credentials_title">Hitelesítés (opcionális)</string>
     <string name="username_hint">Felhasználónév</string>
+    <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
     <string name="lock_option_biometric">Biometrikus</string>
     <string name="biometric_enter_authentication">Kérjük, hitelesítse magát a feloldáshoz</string>
     <string name="biometric_authentication_failed">A hitelesítés sikertelen</string>
@@ -1112,9 +1112,6 @@
     <string name="backup_data_no_permission">Nincs író hozzáférés ehhez a könyvtárhoz. Kérjük, válasszon egy másikat.</string>
     <string name="prefs_sum_show_unread_badge">Jelvények megjelenítése a navigációs fülön</string>
     <string name="prefs_title_show_unread_badge">Jelvények</string>
-    <string name="pinning_not_trusted">A tanúsítvány nem ellenőrizhető. Győződjön meg róla, hogy az «Entrust Root Certification Authority - G2» biztonsági tanúsítvány telepítve és aktiválva van a telefon tanúsítványtárolójában..</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="pinning_failed">A tanúsítvány nem ellenőrizhető. Lehetséges man-in-the-middle támadás. Ha telepítve van egy reklámblokkoló, tartalomszűrő vagy tűzfal alkalmazás, mint például az \"AdGuard\", tiltsa le a ${app_name} számára.</string>
     <string name="open_myid_popup">Felugró ablak megnyitása a gyorsválasztóhoz</string>
     <string name="logo">Logó / Görgessen a tetejére</string>
     <string name="quote_subj_end">Idézet vége</string>
@@ -1259,58 +1256,7 @@
     <string name="set_backup_path">Biztonsági mentés helyének beállítása</string>
     <string name="set_backup_path_intro">A következő képernyőn válassza ki azt a mappát, ahová az adatmentéseket tenni kívánja.</string>
     <string name="discard_changes_title">Változások elvetése</string>
-    <string name="group_join_request_message_info"><![CDATA[Írjon egy rövid üzenetet <b>%1$s</b> adminnak, hogy miért szeretne csatlakozni az <b>%2$s</b>-hoz.]]></string>
-    <string name="group_join_request">Csoportkérelem</string>
-    <string name="group_join_request_for">Csoportkérelem %s számára</string>
-    <string name="group_link_default_name">Ismeretlen link</string>
-    <string name="group_link_share">Csoport link megosztása</string>
-    <string name="group_request_incoming_dialog_title">Kérelem %s-tól</string>
     <string name="accept">Elfogad</string>
-    <string name="reject">Elutasít</string>
-    <string name="group_request_already_sent"><![CDATA[Már van egy nyitott kérelme <b>%s</b> számára, és a csoportadminisztrátor válaszára vár. Kattintson a listában a kérelemre, ha újra el szeretné küldeni a kérelmet.]]></string>
-    <string name="group_link_none">Még nem generált linket</string>
-    <string name="group_request_confirm_send"><![CDATA[Csoportkérelmet készül küldeni <b>%1$s</b> számára <b>%2$s</b> adminisztrátornak. Ha ez a link időközben nem lett érvénytelenítve, akkor Önt hozzáadjuk a csoporthoz, amint az admin eszköze elérhetővé válik.]]></string>
-    <string name="sent_to">Ide küldve: %s</string>
-    <string name="sent_on">Elküldve: %s</string>
-    <string name="group_response">Válasz a csoportkérelemre</string>
-    <string name="group_response_accepted">A %s csoportra vonatkozó kérelmét elfogadták.</string>
-    <string name="group_response_full">A %s csoportra vonatkozó kérelmét elutasították, mivel a csoport már megtelt.</string>
-    <string name="group_response_rejected">A %s csoportra vonatkozó kérelmét elutasították.</string>
-    <string name="group_link_expiration_none">Korlátlan</string>
-    <string name="group_request_hint">Szia, én vagyok…</string>
-    <string name="group_request_send_title">Csoportkérelem küldése</string>
-    <string name="group_request_message_empty">Az adminisztrátornak küldött üzenet nem lehet üres!</string>
-    <string name="group_requests_all_title">Összes csoportkérelem</string>
-    <string name="group_requests_none_outgoing">Nem küldött csoportkérelmet. A kérelmeket csoporthivatkozásokon keresztül lehet elküldeni.</string>
-    <string name="notification_channel_group_join_response">Értesítés a csoportkérelmekre adott válaszokról</string>
-    <string name="group_qr_code_title">Csoport QR-kód</string>
-    <string name="group_link_qr_desc"><![CDATA[Ossza meg ezt a linket azokkal, akiket szeretne meghívni az <b>%s</b> csoportba.]]></string>
-    <string name="new_group_link_success">Új link hozzáadva</string>
-    <string name="link_administration_off_explain">Ezt a linket már megosztották, és nyilvános. Az adminisztráció utólag nem módosítható. Egyszerűen hozzon létre egy új linket a kívánt opcióval.</string>
-    <string name="group_link_update_success">Link frissítés sikeres</string>
-    <string name="no_group_links">Nincsenek csoporthivatkozások. Csoporthivatkozások létrehozásához kattintson a \"Link létrehozása\" gombra, vagy aktiválja az alapértelmezett linket a csoport áttekintésében.</string>
-    <string name="group_links_overview_title">Csoporthivatkozások %s számára</string>
-    <string name="group_link_invalid">Lejárt</string>
-    <string name="group_link_valid">Érvényes</string>
-    <string name="open_group_requests_chips_title">Nyitott csoportkérelmek</string>
-    <string name="all_open_group_requests">Összes csoportkérelem</string>
-    <string name="no_incoming_group_requests">Még nincsenek bejövő csoportkérelmek. Ezeket csoporthivatkozásokként küldhetik el Önnek, amelyeket a csoport adatainak nézetében kezelhet, ha Ön az adminisztrátor.</string>
-    <string name="received_on">Beérkezett %s-kor</string>
-    <string name="group_request_state_full">Csoport teli</string>
-    <string name="group_request_state_rejected">Visszautasítva</string>
-    <string name="group_request_state_expired">Lejárt</string>
-    <string name="group_request_state_pending">Függőben</string>
-    <string name="group_request_state_accepted">Elfogadva</string>
-    <string name="open_group_requests_show">Csoportkérelmek mutatása</string>
-    <string name="open_group_requests_hide">Csoportkérelmek elrejtése</string>
-    <string name="group_request_link_already_deleted">Csoporthivatkozás már törölve</string>
-    <string name="incoming_group_request_no_message">Nyitott hivatkozáson keresztül küldték… Nincs üzenet</string>
-    <string name="group_request_received_through">Hivatkozáson keresztül: %s</string>
-    <string name="reaccept">Újra elfogad</string>
-    <string name="group_link_edit_expiration_date">Lejárati idő megadása</string>
-    <string name="group_link_show_qr">QR-kód megjelenítése</string>
-    <string name="group_link_rename">Hivatkozás átnevezése</string>
-    <string name="group_link_rename_tag">Új név</string>
     <string name="tap_here_for_more">További információért kattintson ide</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="another_connection_instructions"><![CDATA[A kiszolgáló két vagy több különböző eszközről származó, azonos ${app_name_short} ID-vel rendelkező kapcsolatot észlelt.
@@ -1331,20 +1277,7 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <string name="forgot_your_password"><![CDATA[<a href=%s>Elfelejtette a jelszót?</a>]]></string>
     <string name="download_failed">Letöltés sikertelen. Hibakód: %d</string>
     <string name="share_media">Megosztás más alkalmazással…</string>
-    <string name="group_link_administered">Adminisztrált</string>
-    <string name="group_link_open">Nyílt</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="group_link_share_message">Csatlakozz a ${app_name_short} csoportomhoz az alábbi hivatkozáson keresztül: %s</string>
-    <string name="group_link_bottom_sheet_title">Csoporthivatkozás</string>
-    <string name="group_link_bottom_sheet_desc">Ossza meg ezt a hivatkozást azokkal, akiket meg szeretne meghívni. Vegye figyelembe az alábbi beállításokat</string>
-    <string name="group_link_bottom_sheet_link_title">Hivatkozás</string>
-    <string name="group_link_properties_title">Hivatkozás tulajdonságok</string>
-    <string name="group_link_property_administration_title">Kézi megerősítés</string>
-    <string name="group_link_property_administration_desc">Ha engedélyezve van, akkor a csoportban kapja meg a kérelmeket, és egyenként megerősítheti azokat.</string>
-    <string name="group_link_property_expiration_title">Lejárati idő</string>
-    <string name="group_link_property_expiration_desc">A hivatkozás a megadott dátum után érvénytelenné válik.</string>
     <string name="group_image">Csoportkép</string>
-    <string name="add_group_link">Tagok hozzáadása csoporthivatkozásokkal</string>
     <string name="miui_battery_optimization">Kérjük, kapcsolja ki az \"Akkumulátor optimalizálás\" opciót a %s-hoz, hogy lehetővé tegye ezt a funkciót. Mivel a Xiaomi nem tartja szükségesnek az Android szabványok betartását, ezt kézileg kell megtennie a telefon beállításaiban. Az akkumulátor-optimalizálás letiltásával kapcsolatos segítségért forduljon a Xiaomi ügyfélszolgálatához.</string>
     <string name="forward_captions">Küldje el a címkéket is</string>
     <string name="importing_files_failed">A biztonsági mentési fájl importálása sikertelen. Győződjön meg róla, hogy elegendő szabad tárhely van.</string>
@@ -1360,28 +1293,12 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <string name="prefs_title_reset_receipts">Egyedi beállítások visszaállítása</string>
     <string name="prefs_sum_reset_receipts">Az olvasási bizonylatok és a «jelentés, amikor írok» kapcsolatspecifikus beállításainak alapértelmezettre állítása</string>
     <string name="reset_successful">Alapértelmezett beállításokat sikeresen visszaállítva</string>
-    <string name="group_link_add">Hivatkozás létrehozása</string>
-    <string name="group_requests_show_menu_title">Nyitott csoportkérelmek megjelenítése</string>
-    <string name="group_request_show_all">Összes csoportoskérelem megjelenítése</string>
-    <string name="group_links_manage_menu">Csoporthivatkozások kezelése</string>
-    <string name="group_request_sent_menu">Elküldött csoportkérelem</string>
-    <string name="really_delete_group_link_title">Csoporthivatkozások törlése</string>
-    <string name="qr_scan_result_dialog_title">QR beolvasás eredmény</string>
-    <string name="scan_failure_dialog_title">Sikertelen beolvasás</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="no_threema_qr_info">Ez nem egy ${app_name_short} QR-kód, a dekódolt tartalma:</string>
-    <string name="default_group_link">Alapértelmezett csoporthivatkozás</string>
-    <string name="default_link_name">Alapértelmezett hivatkozás</string>
-    <string name="reset_default_group_link">Csoporthivatkozás visszaállítása</string>
-    <string name="resend">Újra elküldeni</string>
-    <string name="group_request_already_sent_title">Csoportkérelem már elküldve</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Egy másik névjegy QR-kódjának beolvasásával ellenőrizheti őt. A QR-kód a ${app_name_short} főképernyő bal felső sarkában lévő profilképre kattintva tekinthető meg.</string>
     <string name="enable_storage_access_for_media">Aktiválja a tárhelyelérést a képek és videók megtekintéséhez</string>
     <string name="take_me_there">Aktiváld most…</string>
-    <string name="notification_channel_group_join_request">Értesítések a csoportkérelmekről</string>
-    <string name="reset_default_group_link_title">Visszaállítás-infó</string>
-    <string name="reset_default_group_link_desc">A korábban megosztott hivatkozás érvénytelenné válik, és a régi linken keresztül érkező kérelmeket automatikusan elutasítjuk.</string>
     <string name="custom">továbbiak</string>
     <string name="show_public_key">Nyilvános kulcs megjelenítése</string>
     <string name="public_key_for">%s nyilvános kulcsa</string>
@@ -1452,10 +1369,6 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <!-- Title of warning message that informs the user that their app is no longer supported. -->
-    <!-- Details of warning message that informs the user that their app is no longer supported. -->
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- accessibility -->
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1470,6 +1383,7 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <!-- Instruction text for the user directory search -->
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <!-- Message that is shown when the user wants to share an invalid file. -->
@@ -1477,6 +1391,19 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <!-- Title shown in "About" screen above item that indicates whether the DualLock (a.k.a. "Remote Secret") feature is currently activated. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d névjegyek</item>
         <item quantity="other">%d névjegyek</item>

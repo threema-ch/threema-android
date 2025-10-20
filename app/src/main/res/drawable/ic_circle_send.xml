@@ -4,7 +4,7 @@
         <shape
             android:shape="oval"
             android:useLevel="false">
-            <solid android:color="?attr/colorPrimaryContainer" />
+            <solid android:color="?attr/colorPrimary" />
         </shape>
     </item>
 </layer-list>

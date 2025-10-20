@@ -21,18 +21,25 @@
 
 package ch.threema.domain.fs;
 
+import org.slf4j.Logger;
+
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.util.Arrays;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.crypto.ThreemaKDF;
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.libthreema.CryptoException;
+import ch.threema.libthreema.LibthreemaKt;
 
 /**
  * Key-derivation function ratchet for generating ephemeral message encryption keys
  */
 public class KDFRatchet {
+
+    private final static Logger logger = LoggingUtil.getThreemaLogger("KDFRatchet");
 
     /**
      * Upper limit on how many times we are willing to turn the ratchet to catch up with a peer.
@@ -55,8 +62,18 @@ public class KDFRatchet {
      * Turn the ratchet once.
      */
     public void turn() {
-        this.currentChainKey = new ThreemaKDF(DHSession.KDF_PERSONAL).deriveKey(KDF_SALT_CK, this.currentChainKey);
-        this.counter++;
+        try {
+            this.currentChainKey = LibthreemaKt.blake2bMac256(
+                currentChainKey,
+                DHSession.KDF_PERSONAL.getBytes(StandardCharsets.UTF_8),
+                KDF_SALT_CK.getBytes(StandardCharsets.UTF_8),
+                new byte[0]
+            );
+            this.counter++;
+        } catch (CryptoException cryptoException) {
+            logger.error("Failed to compute blake2b hash", cryptoException);
+            throw new Error("Failed to compute blake2b hash", cryptoException);
+        }
     }
 
     /**
@@ -90,10 +107,22 @@ public class KDFRatchet {
         return this.currentChainKey;
     }
 
+    /**
+     * The encryption key is derived from the chain key, but separate, so that
+     * a leaked encryption key cannot be used to calculate any chain keys
+     */
     public byte[] getCurrentEncryptionKey() {
-        // The encryption key is derived from the chain key, but separate, so that
-        // a leaked encryption key cannot be used to calculate any chain keys
-        return new ThreemaKDF(DHSession.KDF_PERSONAL).deriveKey(KDF_SALT_AEK, this.currentChainKey);
+        try {
+            return LibthreemaKt.blake2bMac256(
+                currentChainKey,
+                DHSession.KDF_PERSONAL.getBytes(StandardCharsets.UTF_8),
+                KDF_SALT_AEK.getBytes(StandardCharsets.UTF_8),
+                new byte[0]
+            );
+        } catch (CryptoException cryptoException) {
+            logger.error("Failed to compute blake2b hash", cryptoException);
+            throw new Error("Failed to compute blake2b hash", cryptoException);
+        }
     }
 
     @Override

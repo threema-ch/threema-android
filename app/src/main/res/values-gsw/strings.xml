@@ -59,9 +59,9 @@
     <string name="prefs_sum_notification_sound">System-Standard</string>
     <string name="prefs_vibrate">Vibriere</string>
     <string name="prefs_sum_vibrate">Bi iigehender Nachricht vibriere</string>
-    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_notification_light">Benachrichtigungsliecht</string>
-    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_notification_light">Farbigi LED für iigehendi Nachrichte bruuche (falls vorhande)</string>
     <string name="prefs_sum_light">Wiiss</string>
     <string name="prefs_title_wallpaper">Hindergrundbild uswähle</string>
@@ -101,6 +101,7 @@
     <string name="next">Wiiter</string>
     <string name="finish">Abschlüsse</string>
     <string name="please_wait">Bitte warte…</string>
+    <!-- Text shown when a task which shows a loading spinner takes longer than expected (e.g. creating a group) -->
     <string name="please_wait_timeout">Das gaht länger als erwartet</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Schlüsselpaar wird erzüügt…</string>
@@ -216,7 +217,6 @@
     <string name="code_invalid">De Code, wo Sie iigeh händ, isch ungültig.</string>
     <string name="try_again">Nomal versueche</string>
     <string name="decoding_message">Nachricht wird entschlüsslet</string>
-    <string name="invalid_barcode">Ungültige Barcode</string>
     <string name="expired_barcode">De Code isch abgloffe. Bitte scanned Sie ihn nomal direkt usde App vom andere Nutzer.</string>
     <string name="pending">In Prüefig</string>
     <string name="unlinking_email">Verchnüpfig wird entfernt</string>
@@ -294,7 +294,8 @@
     <string name="restore_data_password_msg">Gebed Sie da s’Passwort ii, wo Sie bim Erstelle vom Backup gsetzt händ</string>
     <string name="backup_data_media">Grossi Medie (Videos, Dateie, Bilder) mitsichere</string>
     <string name="backup_data_new">Date-Backup erstelle</string>
-    <string name="pinentry_enter_pin">%s-PIN iigeh, zum fortzfahre</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinentry_enter_pin">${app_name}-PIN iigeh, zum fortzfahre</string>
     <string name="pinentry_wrong_pin">Falsche PIN</string>
     <string name="prefs_sum_security_pin">Zuegriff ufd App schütze</string>
     <string name="prefs_title_pin_switch">App-Sperri</string>
@@ -722,7 +723,6 @@
     <string name="wait_one_minute">Bitte warted Sie mindestens 10 Minute uf das SMS, bevor Sie en Aruef aaforderet.</string>
     <string name="backup_id">ID-Export</string>
     <string name="backup_data">Date-Backup</string>
-    <string name="really_leave_group_admin_message">Sie sind Administrator vo dere Gruppe. Wenn Sie sie jetzt verlönd, isch sie verwaist. Die andere Mitglieder chönd zwar wiiterchatte, aber Änderige sind nüme möglich.</string>
     <string name="action_delete_group">Gruppe lösche</string>
     <string name="action_leave_and_delete_group">Gruppe verlaa und lösche</string>
     <string name="action_dissolve_and_delete_group">Gruppe uflöse und lösche</string>
@@ -818,7 +818,6 @@
     <string name="battery_optimizations_explain">D’Akku-Leistigsoptimierig verhinderet, dass %1$s korrekt funktioniert, wenn Ihres Handy in Schlafmodus gheit. Bitte deaktiviered Sie d’Optimierig für %2$s.</string>
     <string name="battery_optimizations_disable_guide">Wähled Sie «Alle Apps» im Usklappmenü</string>
     <string name="battery_optimizations_disable_guide_ctd">Sueched Sie nach %s i de Liste und deaktiviered Sie d’Optimierig</string>
-    <string name="battery_optimizations_disable_confirm">Wänd Sie d’Akku-Leistigsoptimierig für %1$s würklich aktiviert laa? Dur das isch %2$s nöd zueverlässig nutzbar.</string>
     <string name="enter_text_hint">Text iigeh</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_explain_text">Wenn Sie Ihres Grät wechsled oder verlüüred, chan ohni es Backup niemer Ihri ${app_name_short}-ID und Chats wiederherstelle. Sichered Sie drum Ihri Date mit de vorliegende Backup-Möglichkeite.</string>
@@ -1100,6 +1099,7 @@
     <string name="safe_configure_server_credentials_title">Authentisierig (optional)</string>
     <string name="username_hint">Username</string>
     <string name="server_hint">Server</string>
+    <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
     <string name="lock_option_biometric">Biometrisch</string>
     <string name="biometric_enter_authentication">Zum Entsperre bitte authentisiere</string>
     <string name="biometric_authentication_failed">D’Authentisierig isch fehlgschlage</string>
@@ -1166,9 +1166,6 @@
     <string name="backup_data_no_permission">Kei Schriibzuegriff uf das Verzeichnis. Bitte wähled Sie es anders.</string>
     <string name="prefs_sum_show_unread_badge">Plakette ide Navigations-Tabs aazeige</string>
     <string name="prefs_title_show_unread_badge">Plakette</string>
-    <string name="pinning_not_trusted">Zertifikat cha nöd überprüeft werde. Stelled Sie sicher, dass s’Sicherheitszertifikat «Entrust Root Certification Authority – G2» im Zertifikatsspeicher vo Ihrem Handy installiert und aktiv isch.</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="pinning_failed">Zertifikat cha nöd überprüeft werde. Mögliche Man-in-the-Middle-Aagriff. Wenn Sie e Werbeblocker-, Inhaltsfilter- oder Firewall-App wie «AdGuard» installiert händ, deaktiviered Sie die für ${app_name}.</string>
     <string name="open_myid_popup">Popup-Fenster für Schnellzuegriff ufmache</string>
     <string name="logo">Logo / Ganz ufe scrolle</string>
     <string name="quote_subj_end">Zitat Endi</string>
@@ -1316,60 +1313,7 @@
     <string name="set_backup_path">Backup-Pfad festlegge</string>
     <string name="set_backup_path_intro">Bitte wähled Sie im folgende Bildschirm de Ordner us, i dem Date-Backups sölled gsicheret werde.</string>
     <string name="discard_changes_title">Änderige verwerfe</string>
-    <string name="group_join_request_message_info"><![CDATA[Schribed Sie e churzi Nachricht an Admin <b>%1$s</b>, wieso Sie <b>%2$s</b> wänd biiträtte.]]></string>
-    <string name="group_join_request">Gruppeaafrag</string>
-    <string name="group_join_request_for">Gruppeaafrag für %s</string>
-    <string name="group_link_default_name">Unbenännte Link</string>
-    <string name="group_link_share">Gruppe-Link teile</string>
-    <string name="group_request_incoming_dialog_title">Aafrag vo %s</string>
     <string name="accept">Akzeptiere</string>
-    <string name="reject">Ablehne</string>
-    <string name="group_request_already_sent"><![CDATA[Sie händ scho e offeni Aafrag für <b>%s</b> und es wird uf e Antwort vom Gruppe-Admin gwarted. Klicked Sie uf d’Aafrag ide Liste, falls Sie sie nomal schicke wänd.]]></string>
-    <string name="group_link_none">No kein Link generiert</string>
-    <string name="group_request_confirm_send"><![CDATA[Sind sind grad debii, e Gruppeaafrag für <b>%1$s</b> an Admin <b>%2$s</b> z’schicke. Falls de Link ide Zwüscheziit nöd invalidiert worde isch, werded Sie id Gruppe ufgnoh, sobald s’Grät vom Admin erreichbar isch.]]></string>
-    <string name="really_delete_group_request_title_singular">Gruppe-Aafrag lösche</string>
-    <string name="really_delete_group_request_title_plural">Gruppe-Aafrage lösche</string>
-    <string name="sent_to">Gschickt a: %s</string>
-    <string name="sent_on">Gschickt am: %s</string>
-    <string name="group_response">Antwort ufd Gruppeaafrag</string>
-    <string name="group_response_accepted">Ihri Gruppeaafrag für %s isch akzeptiert worde.</string>
-    <string name="group_response_full">Ihri Gruppeaafrag für %s isch abglehnt worde, wil d’Gruppe scho volle isch.</string>
-    <string name="group_response_rejected">Ihri Gruppeaafrag für %s isch abglehnt worde.</string>
-    <string name="group_link_expiration_none">Unbeschränkt</string>
-    <string name="group_request_hint">Hallo! Ich bins…</string>
-    <string name="group_request_send_title">Gruppeaafrag schicke</string>
-    <string name="group_request_message_empty">Nachricht an Admin dörf nöd leer sii!</string>
-    <string name="group_requests_all_title">All Gruppeaafrage</string>
-    <string name="group_requests_none_outgoing">Kei verschickti Gruppeaafrage. Aafrage chönd über Gruppelinks verschickt werde.</string>
-    <string name="notification_channel_group_join_response">Benachrichtigung über Antworte uf Gruppeaafrage</string>
-    <string name="group_qr_code_title">Gruppe-QR-Code</string>
-    <string name="group_link_qr_desc"><![CDATA[Teiled Sie de Link mit Kontäkt, wo Sie id Gruppe <b>%s</b> iilade wänd.]]></string>
-    <string name="new_group_link_success">Neue Link dezue taa</string>
-    <string name="link_administration_off_explain">De Link isch scho teilt worde und isch öffentlich. D’Adminstration cha nöd nachträglich veränderet werde. Generiered Sie eifach en neue Link mit de gwünschte Option.</string>
-    <string name="group_link_update_success">Link-Update erfolgriich</string>
-    <string name="no_group_links">Kei Gruppe-Links. Zum en Gruppe-Link z’erstelle, klicked Sie ufde «Link erstelle»-Button oder aktiviered Sie de Default-Link ide Gruppeübersicht.</string>
-    <string name="group_links_overview_title">Gruppe-Links für %s</string>
-    <string name="group_link_invalid">Abgloffe</string>
-    <string name="group_link_valid">Gültig</string>
-    <string name="open_group_requests_chips_title">Offeni Gruppeaafrage</string>
-    <string name="all_open_group_requests">All Gruppeaafrage</string>
-    <string name="no_incoming_group_requests">No kei iigehendi Gruppeaafrage. Die chönd Ihne über Gruppe-Links gschickt werde, wo Sie ide Gruppedetail-Aasicht verwalte chönd, falls Sie de Admin sind.</string>
-    <string name="received_on">Empfange am %s</string>
-    <string name="group_request_state_full">Gruppe voll</string>
-    <string name="group_request_state_rejected">Abglehnt</string>
-    <string name="group_request_state_expired">Abgloffe</string>
-    <string name="group_request_state_pending">Usstehend</string>
-    <string name="group_request_state_accepted">Aagnoh</string>
-    <string name="open_group_requests_show">Gruppeaafrag aazeige</string>
-    <string name="open_group_requests_hide">Gruppeaafrag verberge</string>
-    <string name="group_request_link_already_deleted">Gruppe-Link scho glöscht</string>
-    <string name="incoming_group_request_no_message">Über en offene Link gschickt… Kei Nachricht</string>
-    <string name="group_request_received_through">Durde Link: %s</string>
-    <string name="reaccept">Nomal aaneh</string>
-    <string name="group_link_edit_expiration_date">Ablaufdatum aapasse</string>
-    <string name="group_link_show_qr">QR-Code aazeige</string>
-    <string name="group_link_rename">Link umbenänne</string>
-    <string name="group_link_rename_tag">Neue Name</string>
     <string name="tap_here_for_more">Da tippe für meh Informatione</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="another_connection_instructions"><![CDATA[De Server hät zwei oder meh Verbindige vo verschiedene Grät mit de gliiche ${app_name_short}-ID erchännt.<br><br>Es isch nöd möglich, e ${app_name_short}-ID uf mehrere Grät gliichziitig z’bruuche. Neui Nachrichte werded nur as Grät übermittled, wo sich zletscht bim Server agmäldet hät.<br><br>Falls Sie uf es neus Grät wächsled, deinstalliered oder deaktiviered Sie bitte %s ufem alte Grät und started Sie dänn s’neue Grät neu.]]></string>
@@ -1387,20 +1331,7 @@
     <string name="download_failed">Download fehlgschlage. Fehlercode: %d</string>
     <string name="edit_answer">Antwort bearbeite</string>
     <string name="share_media">Mitere andere App teile…</string>
-    <string name="group_link_administered">Administriert</string>
-    <string name="group_link_open">Offe</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="group_link_share_message">Minere ${app_name_short}-Gruppe über folgende Link biiträtte: %s</string>
-    <string name="group_link_bottom_sheet_title">Gruppe-Link</string>
-    <string name="group_link_bottom_sheet_desc">Teiled Sie de Link mit Kontäkt, wo Sie gern iilade wänd. Erwäged Sie die folgende Optione.</string>
-    <string name="group_link_bottom_sheet_link_title">Link</string>
-    <string name="group_link_properties_title">Link-Eigeschafte</string>
-    <string name="group_link_property_administration_title">Manuell bestätige</string>
-    <string name="group_link_property_administration_desc">Falls aktiviert, chömed Sie Aafrage im dezueghörige Gruppechat über und chönd die individuell bestätige.</string>
-    <string name="group_link_property_expiration_title">Ablaufdatum</string>
-    <string name="group_link_property_expiration_desc">De Link wird nachem gsetzte Datum ungültig.</string>
     <string name="group_image">Gruppebild</string>
-    <string name="add_group_link">Mitglieder mit Gruppe-Link dezue tue</string>
     <string name="miui_battery_optimization">Bitte deaktiviered Sie d’Akkuoptimierig für %s, zum die Funktion z’ermögliche. Wils Xiaomi nöd als notwendig erachted, sich a d’Android-Standards z’halte, müend Sie das manuell ide Iistellige vo Ihrem Handy vorneh. Für Unterstützig bide Deaktivierig vode Akkuoptimierig kontaktiered Sie bitte de Xiaomi-Support.</string>
     <string name="forward_captions">Beschriftig mitschicke</string>
     <string name="importing_files_failed">Importiere vode Backup-Datei fehlgschlage. Stelled Sie sicher, dass gnueg freie Platz im interne Speicher ume isch.</string>
@@ -1416,31 +1347,14 @@
     <string name="prefs_title_reset_receipts">Individuelli Iistellige zruggsetze</string>
     <string name="prefs_sum_reset_receipts">Kontaktspezifischi Iistellige für Läsebestätigunge und «Mälde, wenn ich tippe» ufde Standard zruggsetze</string>
     <string name="reset_successful">Erfolgriich uf Standardiistellige zrugggsetzt</string>
-    <string name="group_link_add">Link erstelle</string>
-    <string name="group_requests_show_menu_title">Offeni Gruppeaafrage aazeige</string>
-    <string name="group_request_show_all">All Gruppeaafrage aazeige</string>
-    <string name="group_links_manage_menu">Gruppe-Links verwalte</string>
-    <string name="group_request_sent_menu">Gruppeaafrage schicke</string>
-    <string name="really_delete_group_link_title">Gruppe-Links lösche</string>
-    <string name="really_delete_multiple_group_links_title">Gruppe-Links lösche</string>
-    <string name="qr_scan_result_dialog_title">QR-Scan-Resultat</string>
-    <string name="scan_failure_dialog_title">Scan fehlgschlage</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="no_threema_qr_info">Das isch kein ${app_name_short}-QR-Code, de decodiert Inhalt isch:</string>
-    <string name="default_group_link">Default-Gruppe-Link</string>
-    <string name="default_link_name">Default-Link</string>
-    <string name="reset_default_group_link">Gruppe-Link zruggsetze</string>
-    <string name="resend">Nomal schicke</string>
-    <string name="group_request_already_sent_title">Gruppeaafrag scho gschickt</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Scanned Sie de QR-Code vomene andere Kontakt, zum ihn z’verifiziere. De QR-Code cha dur Tippe ufs Profilbild obe links im ${app_name_short}-Hauptbildschirm aazeigt werde.</string>
     <string name="enable_storage_access_for_media">Aktiviered Sie de Speicherzuegriff, zum Bilder und Videos uf Ihrem Grät z’gseh</string>
     <string name="select_storage_access_for_media_is_granted">Sie händ Zuegriff uf e Uuswahl a Fotis und Videos geh.</string>
     <string name="take_me_there">Jetzt aktiviere…</string>
     <string name="manage">Verwalte</string>
-    <string name="notification_channel_group_join_request">Benachrichtigunge für Gruppeaafrage</string>
-    <string name="reset_default_group_link_title">Zruggsetze Info</string>
-    <string name="reset_default_group_link_desc">De vorher teilti Link isch somit ungültig, und Aafrage über de alt Link werded automatisch abglehnt.</string>
     <string name="custom">anderi</string>
     <string name="show_public_key">Öffentliche Schlüssel aazeige</string>
     <string name="public_key_for">Öffentliche Schlüssel vo %s</string>
@@ -1667,7 +1581,6 @@
     <string name="action_dissolve_group">Gruppe uflöse</string>
     <string name="really_dissolve_group">Wenn Sie die Gruppe nur uflösed, cha niemer meh neui Nachrichte id Gruppe schicke, und sie laht sich au nüme verwalte. Die ufglösti Gruppe cha wiiterhin klont werde.</string>
     <string name="status_orphaned_group">*Die Gruppe isch verwaist* \nDe Gruppe-Ersteller hät d’Gruppe verlaa, und sie isch ez nüme administrierbar. Es verbliibends Gruppemitglied söll d’Gruppe (via Gruppedetails) chlone, zum de neu Administrator z’werde.</string>
-    <string name="group_orphaned_notice">Die Gruppe isch verwaist, wil de Gruppe-Ersteller d’Gruppe verlaa hät. Bitte chloned Sie d’Gruppe, zum de neu Adminstrator z’werde.</string>
     <string name="group_not_a_member_notice">Sie sind nüme Mitglied vo dere Gruppe und chönd Sie nüme bruuche.</string>
     <string name="group_dissolved_notice">Die Gruppe isch ufglöst worde und cha nüme bruucht werde.</string>
     <string name="md_linked_devices">${app_name_desktop} 2.0 für Desktop (Beta)</string>
@@ -1710,10 +1623,6 @@
     <string name="problemsolver_title_app_battery_usgae_optimized">Akkunutzig vode App «optimiert»</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">D’App cha kei permanenti Verbindig zude Server ufrächterhalte, was für d’Funktion vo ${app_name_short} Push aber erforderlich isch. Befindet sich d’App im Hindergrund, werded Sie nöd über neui Nachrichte informiert. Zum das z’behebe, tipped Sie uf «Akkunutzung der App» und wähled Sie «Uneingeschränkt».</string>
-    <!-- Title of warning message that informs the user that their app is no longer supported. -->
-    <string name="problemsolver_title_android_version_retired">Die App wird nüme aktualisiert</string>
-    <!-- Details of warning message that informs the user that their app is no longer supported. -->
-    <string name="problemsolver_explain_android_version_retired">Wil Sie e veralteti Android-Version bruuched, wo vo Threema us Sicherheitsgründ nüme unterstützt wird, chömed Sie kei Updates für d’Threema-App über. Zum Threema mit allne Funktione wiiterhin z’nutze, wächsled Sie bitte uf e aktuelli Betriebssystemversion.</string>
     <string name="problemsolver_to_settings">Zude Iistellige</string>
     <string name="prefs_advanced_options">Erwiitereti Optione</string>
     <string name="push_service">Push-Dienst</string>
@@ -1731,15 +1640,6 @@
     <string name="new_group_messages">Neui Gruppe-Nachrichte</string>
     <string name="individual_notification_settings">Individuelli Benachrichtigungsiistellige</string>
     <string name="delete_message_not_supported_for_all_group_members">Bi folgende Gruppemitglieder wird d’Nachricht nöd glöscht: %1$s</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="work_intro_more_link_text">Meh über ${app_name} erfahre</string>
-    <string name="work_intro_subtitle">De sicheri Business-Messenger\nfür Undernehme.</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="work_intro_login">Aamäldig ${app_name}</string>
-    <string name="consumer_notice_description">Wenn Sie d’App privat nutze wänd, ladet Sie bitte di regulär Threema-App abe.</string>
-    <string name="consumer_notice_playstore_link_description">Threema im Play Store</string>
-    <string name="consumer_notice_appgallery_link_description">Threema ide AppGallery</string>
-    <string name="consumer_notice_subtitle">Für di privat Nutzig</string>
     <string name="individual_notification_settings_warn">Für jede Chat mit individuelle Benachrichtigungsiistellige wird en eigene Benachrichtigungskanal erstellt, wo uslöst, dass de Name vom Chat ide Gräteiistellige sichtbar isch, au wenn d’App gsperrt isch. Trotzdem wiitermache?</string>
     <string name="incoming_calls">Iigehendi Aarüef</string>
     <string name="group_chats">Gruppechats</string>
@@ -1825,6 +1725,7 @@
     <string name="device_linking_error_unexpected_title">Unvorhergsehne Fehler</string>
     <string name="device_linking_error_unexpected_body">Bitte versueched Sie nomal, s’Grät z’verchnüpfe. Falls s’Problem wiiterhin bestaht, wänded Sie sich bitte an Support («Hauptmenü &gt; Hilfe»).</string>
     <string name="device_linking_error_invalid_contact_title">Ungültige Kontakt</string>
+    <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <string name="device_linking_error_invalid_contact_body">De Kontakt mit de ID %1$s isch ungültig abgspeicheret, drum cha s’Grät nöd verchnüpft werde. Wändet Sie sich bitte an Support («Hauptmenü &gt; Hilfe»).</string>
     <string name="device_linking_error_screen_close">Schlüsse</string>
     <string name="work_directory_title">Unternehmensverzeichnis</string>
@@ -1842,6 +1743,19 @@
     <string name="error_preset_onprem_url_mismatch_mdm">D’Server-URL isch ungültig. Bitte kontaktiered Sie Ihre Administrator.</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">De Aktivierigslink isch ungültig. Bitte kontaktiered Sie Ihre Administrator.</string>
+    <!-- Title shown in "About" screen above item that indicates whether the DualLock (a.k.a. "Remote Secret") feature is currently activated. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontäkt</item>
@@ -1917,20 +1831,6 @@
     <plurals name="webclient_running_sessions">
         <item quantity="one">%d Sitzig lauft</item>
         <item quantity="other">%d Sitzige laufed</item>
-    </plurals>
-    <plurals name="really_delete_outgoing_request">
-        <item quantity="one">Wänd Sie würklich %d Gruppeafrag lösche?
-Beachted Sie, dass d’Afrag nöd widerruefe wird und Sie möglicherwiis no akzeptiert oder aagforderet werded, wenn d’Afrag nonig beantwortet worde isch.</item>
-        <item quantity="other">Wänd Sie würklich %d Gruppeafrage lösche?
-Beachted Sie, dass d’Afrage nöd widerruefe werded und Sie möglicherwiis no akzeptiert oder aagforderet werded, wenn d’Afrage nonig beantwortet worde sind.</item>
-    </plurals>
-    <plurals name="really_delete_incoming_request">
-        <item quantity="one">Wänd Sie würklich %d Gruppeafrag lösche? Sie chönd nüme uf d’Afrag antworte, wenn sie glöscht worde isch.</item>
-        <item quantity="other">Wänd Sie würklich %d Gruppeafrage lösche? Sie chönd nüme uf Afrage antworte, wenn sie glöscht worde sind.</item>
-    </plurals>
-    <plurals name="really_delete_group_link">
-        <item quantity="one">Wänd Sie würklich %d Gruppe-Link lösche? Persone werded nüme ide Laag sii, Afrage z’schicke. Afrage, wo Sie chürzlich übercho händ, chönd immerno akzeptiert oder zrugggwise werde.</item>
-        <item quantity="other">Wänd Sie würklich %d Gruppe-Links lösche? Persone werded nüme ide Laag sii, Afrage z’schicke. Afrage, wo Sie chürzlich übercho händ, chönd immerno akzeptiert oder zrugggwise werde.</item>
     </plurals>
     <plurals name="chat_deleted">
         <item quantity="one">%d Chat glöscht.</item>

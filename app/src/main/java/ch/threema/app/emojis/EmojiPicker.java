@@ -288,9 +288,7 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 
             @Override
             public void onRecentLongClicked(View view, String emojiCodeString) {
-                if (!isInReactionsMode()) {
-                    onRecentListLongClicked(view, emojiCodeString);
-                }
+                onRecentListLongClicked(view, emojiCodeString);
             }
         };
 
@@ -389,13 +387,14 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
                             if (handler != null) return true;
                             handler = new Handler();
                             handler.postDelayed(action, 600);
-                            break;
+                            return true;
                         case MotionEvent.ACTION_UP:
+                        case MotionEvent.ACTION_CANCEL:
                             if (handler == null) return true;
                             handler.removeCallbacks(action);
                             handler = null;
                             emojiKeyListener.onBackspaceClick();
-                            break;
+                            return true;
                     }
                     return false;
                 }
@@ -469,6 +468,7 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
 
         void onEmojiClick(String emojiCodeString);
 
-        default void onShowPicker() {}
+        default void onShowPicker() {
+        }
     }
 }

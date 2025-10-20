@@ -272,7 +272,7 @@ class RemoveGroupFlowTest : GroupFlowTest() {
         assertIs<GroupFlowResult.Success>(
             runGroupRemove(groupModel, reflectionExpectation),
         )
-        assertNull(groupModel.data.value)
+        assertNull(groupModel.data)
     }
 
     private suspend fun assertUnsuccessfulRemove(
@@ -282,14 +282,14 @@ class RemoveGroupFlowTest : GroupFlowTest() {
         assertIs<GroupFlowResult.Failure>(
             runGroupRemove(groupModel, reflectionExpectation),
         )
-        assertNotNull(groupModel.data.value)
+        assertNotNull(groupModel.data)
     }
 
     private suspend fun runGroupRemove(
         groupModel: GroupModel,
         reflectionExpectation: ReflectionExpectation,
     ): GroupFlowResult {
-        val groupModelData = groupModel.data.value
+        val groupModelData = groupModel.data
 
         // Prepare task manager and group flow dispatcher
         val taskManager = ControlledTaskManager(

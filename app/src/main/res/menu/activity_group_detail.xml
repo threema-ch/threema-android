@@ -31,15 +31,6 @@
         app:showAsAction="always" />
 
     <item
-        android:id="@+id/menu_group_links_manage"
-        android:icon="@drawable/ic_link_outline"
-        app:iconTint="?attr/colorOnSurface"
-        android:orderInCategory="50"
-        android:visible="false"
-        android:title="@string/group_links_manage_menu"
-        app:showAsAction="never" />
-
-    <item
         android:id="@+id/menu_resync"
         android:enabled="true"
         android:icon="@drawable/ic_loop_white_24dp"

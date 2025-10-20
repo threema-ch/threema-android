@@ -5,256 +5,246 @@
     android:id="@+id/content_frame"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <ch.threema.app.contactdetails.ContactAvailabilityView
+        android:id="@+id/availability_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ch.threema.app.ui.SectionHeaderView
+        android:id="@+id/header_job_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/title_job_title" />
+
+    <ch.threema.app.emojis.EmojiTextView
+        android:id="@+id/value_job_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_unit_x1"
+        android:layout_marginBottom="@dimen/grid_unit_x3"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+        tools:text="Customer Service Representative" />
+
+    <ch.threema.app.ui.SectionHeaderView
+        android:id="@+id/header_department"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/title_department" />
+
+    <ch.threema.app.emojis.EmojiTextView
+        android:id="@+id/value_department"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_unit_x1"
+        android:layout_marginBottom="@dimen/grid_unit_x3"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+        tools:text="Customer Success (Sales)" />
+
+    <ch.threema.app.ui.SectionHeaderView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/title_threemaid" />
+
+    <TextView
+        android:id="@+id/threema_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_unit_x1"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
+        tools:text="00000000" />
 
     <LinearLayout
-        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/grid_unit_x2">
+
+        <ch.threema.app.ui.VerificationLevelImageView
+            android:id="@+id/verification_level_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:adjustViewBounds="true"
+            android:maxHeight="@dimen/grid_unit_x1"
+            tools:srcCompat="@drawable/ic_verification_full" />
+
+        <ImageButton
+            android:id="@+id/verification_information_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/new_wizard_more_information"
+            android:padding="@dimen/grid_unit_x1"
+            app:srcCompat="@drawable/ic_info_outline"
+            app:tint="?attr/colorOnSurface" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nickname_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingRight="16dp"
-        android:paddingLeft="16dp">
-
-        <ch.threema.app.contactdetails.ContactAvailabilityView
-            android:id="@+id/availability_status"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+        android:layout_marginBottom="@dimen/grid_unit_x3"
+        android:orientation="vertical">
 
         <ch.threema.app.ui.SectionHeaderView
-            android:id="@+id/header_job_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:text="@string/title_job_title" />
+            android:text="@string/title_public_nickname" />
 
         <ch.threema.app.emojis.EmojiTextView
-            android:id="@+id/value_job_title"
+            android:id="@+id/public_nickname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            tools:text="Customer Service Representative"
-            android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
-            android:layout_marginBottom="10dp"
-            android:maxLines="2"
-            android:ellipsize="end" />
+            android:layout_marginTop="@dimen/grid_unit_x1"
+            android:singleLine="true"
+            android:textAppearance="@style/Threema.TextAppearance.BodyLarge" />
+    </LinearLayout>
 
-        <ch.threema.app.ui.SectionHeaderView
-            android:id="@+id/header_department"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:text="@string/title_department" />
-
-        <ch.threema.app.emojis.EmojiTextView
-            android:id="@+id/value_department"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            tools:text="Customer Success (Sales)"
-            android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
-            android:layout_marginBottom="10dp"
-            android:maxLines="2"
-            android:ellipsize="end" />
+    <LinearLayout
+        android:id="@+id/synchronize_contact_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/grid_unit_x3"
+        android:orientation="vertical">
 
         <ch.threema.app.ui.SectionHeaderView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="0dp"
-            android:text="@string/title_threemaid" />
+            android:layout_gravity="bottom"
+            android:text="@string/synchronize_contact" />
 
-        <LinearLayout
-            android:id="@+id/threemaid_layout"
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="10dp"
-            android:clickable="true">
+            android:layout_marginTop="@dimen/grid_unit_x1"
+            android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/threema_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="16dp"
-                android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
-                android:singleLine="true" />
-
-            <ch.threema.app.ui.VerificationLevelImageView
-                android:id="@+id/verification_level_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical" />
-
-            <ImageButton
-                android:id="@+id/verification_information_icon"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:padding="16dp"
-                android:contentDescription="@string/new_wizard_more_information"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                app:srcCompat="@drawable/ic_info_outline"
-                app:tint="?attr/colorOnSurface" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/nickname_container"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <ch.threema.app.ui.SectionHeaderView
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/synchronize_contact"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="10dp"
-                android:text="@string/title_public_nickname" />
+                android:layout_alignParentLeft="true"
+                android:layout_toLeftOf="@+id/sync_source_icon"
+                android:checked="false"
+                android:minWidth="0dp"
+                android:minHeight="0dp"
+                android:text="@string/exclude_contact"
+                android:visibility="visible" />
 
-            <ch.threema.app.emojis.EmojiTextView
-                android:id="@+id/public_nickname"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:textAppearance="@style/Threema.TextAppearance.BodyLarge"
-                android:singleLine="true" />
-        </LinearLayout>
+            <ImageView
+                android:id="@+id/sync_source_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:scaleType="centerInside" />
 
-        <LinearLayout
-            android:id="@+id/synchronize_contact_container"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        </RelativeLayout>
 
+    </LinearLayout>
 
-            <ch.threema.app.ui.SectionHeaderView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
-                android:layout_gravity="bottom"
-                android:text="@string/synchronize_contact" />
+    <ch.threema.app.ui.SectionHeaderView
+        android:id="@+id/privacy_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/prefs_privacy" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_unit_x1"
+        android:hint="@string/prefs_title_read_receipts"
+        app:expandedHintEnabled="false">
 
-                <com.google.android.material.materialswitch.MaterialSwitch
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_toLeftOf="@+id/sync_source_icon"
-                    android:text="@string/exclude_contact"
-                    android:id="@+id/synchronize_contact"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginBottom="5dp"
-                    android:checked="false"
-                    android:visibility="visible"
-                    android:minWidth="0dp"
-                    android:minHeight="0dp" />
-
-                <ImageView
-                    android:id="@+id/sync_source_icon"
-                    android:layout_marginLeft="5dp"
-                    android:layout_marginRight="5dp"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:scaleType="centerInside" />
-
-            </RelativeLayout>
-
-        </LinearLayout>
-
-        <ch.threema.app.ui.SectionHeaderView
-            android:id="@+id/privacy_header"
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/read_receipts_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="10dp"
-            android:text="@string/prefs_privacy" />
+            android:focusable="false"
+            android:inputType="none" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_unit_x0_5"
+        android:layout_marginBottom="@dimen/grid_unit_x3"
+        android:hint="@string/prefs_title_typing_indicator"
+        app:expandedHintEnabled="false">
+
+        <com.google.android.material.textfield.MaterialAutoCompleteTextView
+            android:id="@+id/typing_indicators_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:hint="@string/prefs_title_read_receipts"
-            app:expandedHintEnabled="false">
+            android:focusable="false"
+            android:inputType="none" />
 
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/read_receipts_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:inputType="none" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-        </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/public_key_button"
+        style="@style/Threema.MaterialButton.Action"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/grid_unit_x3"
+        android:text="@string/show_public_key" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:hint="@string/prefs_title_typing_indicator"
-            app:expandedHintEnabled="false">
-
-            <com.google.android.material.textfield.MaterialAutoCompleteTextView
-                android:id="@+id/typing_indicators_spinner"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:focusable="false"
-                android:inputType="none" />
-
-        </com.google.android.material.textfield.TextInputLayout>
+    <LinearLayout
+        android:id="@+id/clear_forward_security_section"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="@dimen/grid_unit_x3"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/public_key_button"
-            style="@style/Threema.MaterialButton.Action"
+            android:id="@+id/clear_forward_security"
+            style="@style/Threema.MaterialButton.Outlined.Primary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:text="@string/show_public_key" />
+            android:text="@string/clear_forward_security" />
 
-        <LinearLayout
-            android:id="@+id/clear_forward_security_section"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"
-            android:layout_gravity="center_horizontal"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/clear_forward_security"
-                style="@style/Threema.MaterialButton.Action.Outline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="2dp"
-                android:text="@string/clear_forward_security" />
-
-            <TextView
-                style="@style/Threema.TextAppearance.BodyMedium"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="@string/clear_forward_security_warning" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/group_members_title_container"
+        <TextView
+            style="@style/Threema.TextAppearance.BodyMedium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="14dp"
-            android:layout_marginBottom="5dp"
-            android:orientation="vertical"
-            android:visibility="visible">
+            android:layout_gravity="center_horizontal"
+            android:text="@string/clear_forward_security_warning" />
 
-            <ch.threema.app.ui.SectionHeaderView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/group_membership_title" />
+    </LinearLayout>
 
-        </LinearLayout>
+    <LinearLayout
+        android:id="@+id/group_members_title_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/grid_unit_x2"
+        android:layout_marginBottom="@dimen/grid_unit_x1"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <ch.threema.app.ui.SectionHeaderView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/group_membership_title" />
+
     </LinearLayout>
 </LinearLayout>

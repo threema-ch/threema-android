@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import androidx.annotation.NonNull;
 import ch.threema.base.utils.LoggingUtil;
 
 public class MentionTextWatcher extends SimpleTextWatcher {
@@ -49,7 +50,7 @@ public class MentionTextWatcher extends SimpleTextWatcher {
     }
 
     @Override
-    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+    public void beforeTextChanged(@NonNull CharSequence text, int start, int count, int after) {
         if (count == 1) {
             int end = start + count;
             Editable editableText = editText.getEditableText();
@@ -70,7 +71,7 @@ public class MentionTextWatcher extends SimpleTextWatcher {
     }
 
     @Override
-    public void afterTextChanged(Editable s) {
+    public void afterTextChanged(@NonNull Editable editable) {
         Editable editableText = editText.getEditableText();
 
         if (editableText == null) {
@@ -91,7 +92,7 @@ public class MentionTextWatcher extends SimpleTextWatcher {
         spansToRemove.clear();
 
         // workaround to keep hint ellipsized on the first line
-        if (s.length() > 0) {
+        if (editable.length() > 0) {
             editText.setHint(null);
             editText.setMaxLines(maxLines);
         } else {

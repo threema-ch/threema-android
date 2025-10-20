@@ -67,7 +67,7 @@ class IncomingGroupSyncRequestTask(
 
         val senderContact = message.fromIdentity.let {
             serviceManager.contactStore.getCachedContact(it)
-                ?: serviceManager.modelRepositories.contacts.getByIdentity(it)?.data?.value?.toBasicContact()
+                ?: serviceManager.modelRepositories.contacts.getByIdentity(it)?.data?.toBasicContact()
         } ?: run {
             logger.error("Cannot handle incoming group sync request because sender is unknown")
             return ReceiveStepsResult.DISCARD
@@ -125,7 +125,7 @@ suspend fun handleIncomingGroupSyncRequest(
                 MdD2D.TransactionScope.Scope.GROUP_SYNC,
                 TRANSACTION_TTL_MAX,
                 precondition = {
-                    group.data.value != null
+                    group.data != null
                 },
             ).execute {
                 answerGroupSyncRequest(group, sender, serviceManager, handle)
@@ -147,7 +147,7 @@ private suspend fun answerGroupSyncRequest(
     serviceManager: ServiceManager,
     handle: ActiveTaskCodec,
 ) {
-    val data = group.data.value ?: run {
+    val data = group.data ?: run {
         logger.error("Group model data cannot be null at this point")
         return
     }

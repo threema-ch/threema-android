@@ -29,6 +29,7 @@ import ch.threema.domain.protocol.csp.messages.GroupEditMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import java.util.Date
 import kotlinx.serialization.Serializable
 
@@ -37,7 +38,7 @@ class OutgoingGroupEditMessageTask(
     private val messageId: MessageId,
     private val editedText: String,
     private val editedAt: Date,
-    private val recipientIdentities: Set<String>,
+    private val recipientIdentities: Set<Identity>,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingGroupEditMessageTask"
@@ -83,7 +84,7 @@ class OutgoingGroupEditMessageTask(
         private val messageId: ByteArray,
         private val editedText: String,
         private val editedAt: Long,
-        private val recipientIdentities: Set<String>,
+        private val recipientIdentities: Set<Identity>,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingGroupEditMessageTask(

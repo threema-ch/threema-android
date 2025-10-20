@@ -37,18 +37,17 @@ import androidx.core.app.ServiceCompat;
 import androidx.core.app.TaskStackBuilder;
 import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DummyActivity;
 import ch.threema.app.home.HomeActivity;
-import ch.threema.app.activities.StopPassphraseServiceActivity;
+import ch.threema.app.passphrase.PassphraseLockActivity;
 import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.notifications.NotificationIDs;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.localcrypto.MasterKey;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
+import static ch.threema.app.di.DIJavaCompat.getServiceManagerOrNull;
 
 public class PassphraseService extends Service {
     private static final Logger logger = LoggingUtil.getThreemaLogger("PassphraseService");
@@ -109,9 +108,9 @@ public class PassphraseService extends Service {
             Intent.FLAG_ACTIVITY_SINGLE_TOP);
         notificationIntent.setAction(Long.toString(System.currentTimeMillis()));
 
-        Intent stopIntent = new Intent(this, StopPassphraseServiceActivity.class);
+        Intent stopIntent = PassphraseLockActivity.createIntent(this);
         stopIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NO_ANIMATION | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-        PendingIntent stopPendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+        PendingIntent stopPendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), stopIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
         // Adds the back stack
@@ -119,7 +118,7 @@ public class PassphraseService extends Service {
         // Adds the Intent to the top of the stack
         stackBuilder.addNextIntent(notificationIntent);
         // Gets a PendingIntent containing the entire back stack
-        PendingIntent pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent((int) System.currentTimeMillis(), PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_PASSPHRASE)
             .setSmallIcon(R.drawable.ic_noti_passguard)
@@ -146,11 +145,10 @@ public class PassphraseService extends Service {
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.cancel(NotificationIDs.PASSPHRASE_SERVICE_NOTIFICATION_ID);
 
-        if (ThreemaApplication.getServiceManager() != null) {
-            NotificationService notificationService = ThreemaApplication.getServiceManager().getNotificationService();
-            if (notificationService != null) {
-                notificationService.cancelConversationNotificationsOnLockApp();
-            }
+        var serviceManager = getServiceManagerOrNull();
+        if (serviceManager != null) {
+            NotificationService notificationService = serviceManager.getNotificationService();
+            notificationService.cancelConversationNotificationsOnLockApp();
         }
     }
 
@@ -164,33 +162,28 @@ public class PassphraseService extends Service {
      */
     public static void start(final Context context) {
         logger.debug("start");
-        MasterKey masterKey = ThreemaApplication.getMasterKey();
+        var masterKeyManager = getMasterKeyManager();
 
         // start service, if not yet started
         if (service == null) {
-            if (masterKey.isLocked() || !masterKey.isProtected()) {
+            if (masterKeyManager.isLockedWithPassphrase() || !masterKeyManager.isProtectedWithPassphrase()) {
                 return;
             }
             service = new Intent(context, PassphraseService.class);
             ContextCompat.startForegroundService(context, service);
         } else {
-            if (!masterKey.isProtected()) {
-                removePersistentNotification(context);
-                context.stopService(service);
-                service = null;
+            if (!masterKeyManager.isProtectedWithPassphrase()) {
+                stop(context);
             }
         }
     }
 
     public static void stop(final Context context) {
         logger.debug("stop");
-        MasterKey masterKey = ThreemaApplication.getMasterKey();
         if (service != null) {
-            if (masterKey.isProtected()) {
-                removePersistentNotification(context);
-                context.stopService(service);
-                service = null;
-            }
+            removePersistentNotification(context);
+            context.stopService(service);
+            service = null;
         }
     }
 }

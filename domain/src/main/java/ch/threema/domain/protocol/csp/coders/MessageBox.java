@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.csp.coders;
 
-import com.neilalexander.jnacl.NaCl;
+import ch.threema.base.crypto.NaCl;
 
 import org.apache.commons.io.EndianUtils;
 import org.slf4j.Logger;
@@ -150,7 +150,7 @@ public class MessageBox implements Serializable {
             message.setMetadataBox(new MetadataBox(metadataBoxData));
         }
 
-        byte[] nonce = new byte[NaCl.NONCEBYTES];
+        byte[] nonce = new byte[NaCl.NONCE_BYTES];
         bis.read(nonce);
         message.setNonce(nonce);
 

@@ -21,11 +21,11 @@
 
 package ch.threema.data.storage
 
-import android.content.ContentValues
 import androidx.core.database.getStringOrNull
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.repositories.EditHistoryEntryCreateException
+import ch.threema.storage.buildContentValues
 import ch.threema.storage.factories.ContactEditHistoryEntryModelFactory
 import ch.threema.storage.factories.GroupEditHistoryEntryModelFactory
 import ch.threema.storage.models.AbstractMessageModel
@@ -39,12 +39,12 @@ class EditHistoryDaoImpl(
     private val sqlite: SupportSQLiteOpenHelper,
 ) : EditHistoryDao {
     override fun create(entry: DbEditHistoryEntry, messageModel: AbstractMessageModel): Long {
-        val contentValues = ContentValues()
-
-        contentValues.put(DbEditHistoryEntry.COLUMN_MESSAGE_UID, entry.messageUid)
-        contentValues.put(DbEditHistoryEntry.COLUMN_MESSAGE_ID, entry.messageId)
-        contentValues.put(DbEditHistoryEntry.COLUMN_TEXT, entry.text)
-        contentValues.put(DbEditHistoryEntry.COLUMN_EDITED_AT, entry.editedAt.time)
+        val contentValues = buildContentValues {
+            put(DbEditHistoryEntry.COLUMN_MESSAGE_UID, entry.messageUid)
+            put(DbEditHistoryEntry.COLUMN_MESSAGE_ID, entry.messageId)
+            put(DbEditHistoryEntry.COLUMN_TEXT, entry.text)
+            put(DbEditHistoryEntry.COLUMN_EDITED_AT, entry.editedAt.time)
+        }
 
         val table = when (messageModel) {
             is MessageModel -> ContactEditHistoryEntryModelFactory.TABLE
@@ -55,9 +55,9 @@ class EditHistoryDaoImpl(
         }
 
         return sqlite.writableDatabase.insert(
-            table,
-            SQLiteDatabase.CONFLICT_ROLLBACK,
-            contentValues,
+            table = table,
+            conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
+            values = contentValues,
         )
     }
 

@@ -21,11 +21,9 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import ch.threema.storage.models.DistributionListMemberModel;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 public class DatabaseUpdateToVersion34 implements DatabaseUpdate {
 
@@ -39,7 +37,7 @@ public class DatabaseUpdateToVersion34 implements DatabaseUpdate {
     public void run() throws SQLException {
         sqLiteDatabase.rawExecSQL(
             "CREATE INDEX IF NOT EXISTS `distribution_list_member_dis_idx`" +
-                " ON `" + DistributionListMemberModel.TABLE + "`(`" + DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "`)");
+                " ON `distribution_list_member`(`distributionListId`)");
     }
 
     @Override

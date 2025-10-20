@@ -35,20 +35,21 @@ import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import ch.threema.app.BuildConfig
-import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
 import ch.threema.app.backuprestore.csv.BackupService
+import ch.threema.app.di.awaitServiceManagerWithTimeout
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.app.utils.WorkManagerUtil
 import ch.threema.base.utils.LoggingUtil
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
+import org.koin.core.component.KoinComponent
 
 private val logger = LoggingUtil.getThreemaLogger("ShareTargetUpdateWorker")
 
 class ShareTargetUpdateWorker(
     context: Context,
     workerParams: WorkerParameters,
-) : CoroutineWorker(context, workerParams) {
+) : CoroutineWorker(context, workerParams), KoinComponent {
     override suspend fun doWork(): Result {
         logger.info("Updating share target shortcuts")
 

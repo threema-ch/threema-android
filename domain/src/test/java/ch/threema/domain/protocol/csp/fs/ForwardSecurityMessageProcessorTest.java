@@ -23,7 +23,6 @@ package ch.threema.domain.protocol.csp.fs;
 
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import org.powermock.reflect.Whitebox;
 
 import java.lang.reflect.Field;
 import java.util.Date;
@@ -92,7 +91,7 @@ import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.DHSessionStoreException;
 import ch.threema.domain.stores.DHSessionStoreInterface;
 import ch.threema.domain.stores.DummyContactStore;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.domain.testhelpers.TestHelpers;
 import ch.threema.protobuf.csp.e2e.fs.Terminate;
@@ -102,6 +101,7 @@ import kotlin.Pair;
 
 import static ch.threema.domain.protocol.connection.ConnectionTestUtilsKt.getFromOutboundMessage;
 import static ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessorTestHelperKt.mockMessageBody;
+import static ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessorTestHelperKt.setSupportedVersionRange;
 import static ch.threema.domain.taskmanager.OutgoingCspMessageUtilsKt.toCspMessageJava;
 
 public class ForwardSecurityMessageProcessorTest {
@@ -519,7 +519,7 @@ public class ForwardSecurityMessageProcessorTest {
                 .setMax(Version.V1_0.getNumber())
                 .build()
         );
-        Assert.assertEquals(Version.V1_0.getNumber(), DHSession.SUPPORTED_VERSION_RANGE.getMax());
+        Assert.assertEquals(Version.V1_0.getNumber(), DHSession.getSupportedVersionRange().getMax());
         // Note that Bob only processes one message, i.e. the init message. He does not yet process
         // the text message
         processOneReceivedMessage(aliceContext.handle, bobContext, 0, false);
@@ -758,7 +758,7 @@ public class ForwardSecurityMessageProcessorTest {
                 .setMax(Version.V1_0.getNumber())
                 .build()
         );
-        Assert.assertEquals(Version.V1_0.getNumber(), DHSession.SUPPORTED_VERSION_RANGE.getMax());
+        Assert.assertEquals(Version.V1_0.getNumber(), DHSession.getSupportedVersionRange().getMax());
         // Bob processes the messages now. First he processes the init message, and sends back an
         // accept with support for only v1.0. Then he processes Alice's text message and upgrades
         // to V1.2 (because we did not mock the announced version).
@@ -1633,22 +1633,10 @@ public class ForwardSecurityMessageProcessorTest {
         return ForwardSecurityDecryptionResult.getNONE();
     }
 
-    /**
-     * Replaces the static {@link DHSession#SUPPORTED_VERSION_RANGE} with the given range. Note that
-     * this has only an impact on the initial handshake. A client with a restricted supported
-     * version range still announces the latest minor version.
-     * Also, this method sets the version range globally, so that both Alice and Bob are affected.
-     *
-     * @param versionRange the new supported version range
-     */
-    private void setSupportedVersionRange(VersionRange versionRange) {
-        Whitebox.setInternalState(DHSession.class, "SUPPORTED_VERSION_RANGE", versionRange);
-    }
-
     private static class UserContext {
         DHSessionStoreInterface dhSessionStore;
         ContactStore contactStore;
-        IdentityStoreInterface identityStore;
+        IdentityStore identityStore;
         ServerAckTaskCodec handle;
         ForwardSecurityMessageProcessorWrapper fsmp;
     }

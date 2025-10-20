@@ -55,6 +55,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -140,7 +141,7 @@ import ch.threema.storage.models.data.media.BallotDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
+import static ch.threema.storage.models.GroupModel.UserState.KICKED;
 import static ch.threema.storage.models.GroupModel.UserState.LEFT;
 import static ch.threema.storage.models.GroupModel.UserState.MEMBER;
 
@@ -181,6 +182,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     private static final String EXTRA_ID_CANCEL = "cnc";
 
     private final HashMap<String, String> identityIdMap = new HashMap<>();
+    private final HashSet<String> identitiesSet = new HashSet<>();
     private final HashMap<String, Integer> groupUidMap = new HashMap<>();
 
     private long currentProgressStep = 0;
@@ -250,11 +252,6 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                 PowerManager powerManager = (PowerManager) getApplicationContext().getSystemService(Context.POWER_SERVICE);
                 if (powerManager != null) {
                     String tag = BuildConfig.APPLICATION_ID + ":restore";
-                    if (Build.VERSION.SDK_INT == Build.VERSION_CODES.M && Build.MANUFACTURER.equals("Huawei")) {
-                        // Huawei will not kill your app if your Wakelock has a well known tag
-                        // see https://dontkillmyapp.com/huawei
-                        tag = "LocationManagerService";
-                    }
                     wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, tag);
                     if (wakeLock != null) {
                         wakeLock.acquire(DateUtils.DAY_IN_MILLIS);
@@ -442,6 +439,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                 }
 
                 this.identityIdMap.clear();
+                this.identitiesSet.clear();
                 this.groupUidMap.clear();
                 this.ballotIdMap.clear();
                 this.ballotOldIdMap.clear();
@@ -1328,7 +1326,8 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                     }
 
                     String myIdentity = userService.getIdentity();
-                    boolean isInMemberList = false;
+                    boolean userIsInMemberList = false;
+                    boolean creatorIsInMemberList = false;
 
                     List<GroupMemberModel> groupMemberModels = createGroupMembers(row, groupModel.getId());
 
@@ -1337,10 +1336,13 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                         if (myIdentity.equals(memberIdentity)) {
                             // Don't save the user in member list. Just set the flag for setting
                             // the user state later.
-                            isInMemberList = true;
+                            userIsInMemberList = true;
                         } else if (contactService.getByIdentity(memberIdentity) != null) {
                             // In case the contact exists, add the contact as a member
                             databaseService.getGroupMemberModelFactory().create(groupMemberModel);
+                            if (memberIdentity != null && memberIdentity.equals(groupModel.getCreatorIdentity())) {
+                                creatorIsInMemberList = true;
+                            }
                         } else {
                             // The contact does not exist. This can happen when the data backup is
                             // corrupt or the contact hasn't been added due to an invalid public
@@ -1351,7 +1353,14 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                     if (restoreSettings.getVersion() < 25) {
                         // In this case the group user state is not included in the backup and we
                         // need to determine the state based on the group member list.
-                        groupModel.setUserState(isInMemberList ? MEMBER : LEFT);
+                        groupModel.setUserState(userIsInMemberList ? MEMBER : LEFT);
+                        databaseService.getGroupModelFactory().update(groupModel);
+                    }
+
+                    if (groupModel.getUserState() == MEMBER && !myIdentity.equals(groupModel.getCreatorIdentity()) && !creatorIsInMemberList) {
+                        // If the creator is not a member, the group is considered to be 'orphaned'. This is not allowed, so instead we treat
+                        // the group as if we had been kicked from it.
+                        groupModel.setUserState(KICKED);
                         databaseService.getGroupModelFactory().update(groupModel);
                     }
                 }
@@ -1558,6 +1567,10 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
             return linkBallotModel;
         } else if (identity != null) {
+            if (!identitiesSet.contains(identity)) {
+                logger.error("invalid ballot reference {} with id {}, contact {} does not exist", reference, referenceId, identity);
+                return null;
+            }
             IdentityBallotModel linkBallotModel = new IdentityBallotModel();
             linkBallotModel.setBallotId(ballotId);
             linkBallotModel.setIdentity(referenceId);
@@ -1914,7 +1927,6 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     }
 
     private ContactModel createContactModel(CSVRow row, RestoreSettings restoreSettings) throws ThreemaException {
-
         ContactModel contactModel = ContactModel.create(
             row.getString(Tags.TAG_CONTACT_IDENTITY),
             Utils.hexStringToByteArray(row.getString(Tags.TAG_CONTACT_PUBLIC_KEY))
@@ -1948,6 +1960,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
         } else {
             identityIdMap.put(contactModel.getIdentity(), contactModel.getIdentity());
         }
+        identitiesSet.add(contactModel.getIdentity());
         if (restoreSettings.getVersion() >= 22) {
             contactModel.setLastUpdate(row.getDate(Tags.TAG_CONTACT_LAST_UPDATE));
         }
@@ -2274,9 +2287,9 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
         cancelIntent.putExtra(EXTRA_ID_CANCEL, true);
         PendingIntent cancelPendingIntent;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            cancelPendingIntent = PendingIntent.getForegroundService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+            cancelPendingIntent = PendingIntent.getForegroundService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         } else {
-            cancelPendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+            cancelPendingIntent = PendingIntent.getService(this, (int) System.currentTimeMillis(), cancelIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         }
 
         notificationBuilder = new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_BACKUP_RESTORE_IN_PROGRESS)
@@ -2355,7 +2368,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
             // Android Q does not allow restart in the background
             Intent backupIntent = new Intent(this, HomeActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             builder.setContentIntent(pendingIntent);
 

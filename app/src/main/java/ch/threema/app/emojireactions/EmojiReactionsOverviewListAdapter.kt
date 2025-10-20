@@ -31,9 +31,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.ContactService
+import ch.threema.app.services.MessageService
 import ch.threema.app.ui.AvatarView
 import ch.threema.app.utils.AdapterUtil
 import ch.threema.app.utils.MessageUtil
@@ -42,14 +42,15 @@ import ch.threema.data.models.EmojiReactionData
 import ch.threema.storage.models.AbstractMessageModel
 
 class EmojiReactionsOverviewListAdapter(
+    messageService: MessageService,
+    private val contactService: ContactService,
     val messageModel: AbstractMessageModel?,
     val onItemClickListener: OnItemClickListener?,
 ) :
     ListAdapter<EmojiReactionData, EmojiReactionsOverviewListAdapter.EmojiReactionViewHolder>(
         EmojiReactionDiffCallback(),
     ) {
-    val contactService: ContactService = ThreemaApplication.requireServiceManager().contactService
-    val messageService = ThreemaApplication.requireServiceManager().messageService
+
     val messageReceiver: MessageReceiver<*> = messageService.getMessageReceiver(messageModel)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EmojiReactionViewHolder {
@@ -90,8 +91,9 @@ class EmojiReactionsOverviewListAdapter(
         private val removeIconView: ImageView = itemView.findViewById(R.id.remove_icon)
 
         fun onBind(data: EmojiReactionData) {
+            val avatar = contactService.getAvatar(data.senderIdentity, false)
+
             val contactModel = contactService.getByIdentity(data.senderIdentity)
-            val avatar = contactService.getAvatar(contactModel, false)
 
             contactNameTextView.text = NameUtil.getDisplayNameOrNickname(contactModel, true)
             AdapterUtil.styleContact(contactNameTextView, contactModel)

@@ -30,7 +30,7 @@ import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.emojis.EmojiPicker
 import ch.threema.base.utils.LoggingUtil
 
-private val logger = LoggingUtil.getThreemaLogger("InsetsCallbackRoot")
+private val logger = LoggingUtil.getThreemaLogger("RootViewDeferringInsetsCallback")
 
 class RootViewDeferringInsetsCallback(
     private val tag: String,

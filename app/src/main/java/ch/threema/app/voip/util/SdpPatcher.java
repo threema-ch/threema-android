@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.slf4j.Logger;
+import org.slf4j.helpers.NOPLogger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,8 +41,6 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import ch.threema.app.utils.LogUtil;
 
 public class SdpPatcher {
     // Regex patterns
@@ -89,7 +88,7 @@ public class SdpPatcher {
     private @NonNull final RtpExtensionReplayer rtpExtensionsInRemoteOffer = new RtpExtensionReplayer();
 
     // Configuration fields
-    private @NonNull Logger logger = LogUtil.NULL_LOGGER;
+    private @NonNull Logger logger = NOPLogger.NOP_LOGGER;
     private @NonNull RtpHeaderExtensionConfig rtpHeaderExtensionConfig = RtpHeaderExtensionConfig.DISABLE;
 
     /**

@@ -327,4 +327,11 @@
         android:restrictionType="string"
         android:title="@string/restriction_department" />
 
+    <restriction
+        android:defaultValue="false"
+        android:description="@string/restriction_enable_remote_secret_description"
+        android:key="th_enable_remote_secret"
+        android:restrictionType="bool"
+        android:title="@string/restriction_enable_remote_secret" />
+
 </restrictions>

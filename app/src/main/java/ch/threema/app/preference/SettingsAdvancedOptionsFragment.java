@@ -85,7 +85,6 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.push.PushService;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
@@ -148,7 +147,6 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
     private PreferenceService preferenceService;
     private RingtoneService ringtoneService;
     private NotificationService notificationService;
-    private FileService fileService;
     private UserService userService;
     private LifetimeService lifetimeService;
     private MessageService messageService;
@@ -345,27 +343,22 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
         });
 
         Preference powerManagerPrefs = getPref(getResources().getString(R.string.preferences__powermanager_workarounds));
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            powerManagerPrefs.setOnPreferenceClickListener(preference -> {
-                if (PowermanagerUtil.hasPowerManagerOption(this.getActivity())) {
-                    GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.disable_powermanager_title,
-                        String.format(getString(R.string.disable_powermanager_explain), getString(R.string.app_name)),
-                        R.string.next,
-                        R.string.cancel);
+        powerManagerPrefs.setOnPreferenceClickListener(preference -> {
+            if (PowermanagerUtil.hasPowerManagerOption(this.getActivity())) {
+                GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.disable_powermanager_title,
+                    String.format(getString(R.string.disable_powermanager_explain), getString(R.string.app_name)),
+                    R.string.next,
+                    R.string.cancel);
 
-                    dialog.setTargetFragment(this, 0);
-                    dialog.show(getParentFragmentManager(), DIALOG_TAG_POWERMANAGER_WORKAROUNDS);
-                } else {
-                    disableAutostart();
-                }
-                return true;
-            });
+                dialog.setTargetFragment(this, 0);
+                dialog.show(getParentFragmentManager(), DIALOG_TAG_POWERMANAGER_WORKAROUNDS);
+            } else {
+                disableAutostart();
+            }
+            return true;
+        });
 
-            updatePowerManagerPrefs();
-        } else {
-            PreferenceCategory preferenceCategory = getPref("pref_key_fix_device");
-            preferenceScreen.removePreference(preferenceCategory);
-        }
+        updatePowerManagerPrefs();
 
         final Context context = getContext();
         if (context != null) {
@@ -511,11 +504,6 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
      * @param context the context is needed to read the hibernation setting and to open system settings
      */
     private void updateHibernationPref(@NonNull Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-            // "fix device" settings are not present on older Android versions
-            return;
-        }
-
         PreferenceCategory fixDeviceCategory = getPref("pref_key_fix_device");
         final Preference hibernationPref = getPrefOrNull(getString(R.string.preferences__hibernation_mode));
         if (hibernationPref == null) {
@@ -573,9 +561,7 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
     }
 
     private void updatePowerManagerPrefs() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            getPref(getResources().getString(R.string.preferences__powermanager_workarounds)).setEnabled(PowermanagerUtil.needsFixing(getActivity()));
-        }
+        getPref(getResources().getString(R.string.preferences__powermanager_workarounds)).setEnabled(PowermanagerUtil.needsFixing(getActivity()));
     }
 
     final protected boolean requiredInstances() {
@@ -590,7 +576,6 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
             this.wallpaperService,
             this.lifetimeService,
             this.preferenceService,
-            this.fileService,
             this.userService,
             this.ringtoneService,
             this.messageService,
@@ -608,7 +593,6 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
                 this.wallpaperService = serviceManager.getWallpaperService();
                 this.lifetimeService = serviceManager.getLifetimeService();
                 this.preferenceService = serviceManager.getPreferenceService();
-                this.fileService = serviceManager.getFileService();
                 this.userService = serviceManager.getUserService();
                 this.ringtoneService = serviceManager.getRingtoneService();
                 this.messageService = serviceManager.getMessageService();
@@ -766,7 +750,7 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
             @NonNull
             @Override
             public SendToSupportResult onSupportAvailable(@NonNull ContactModel contactModel) {
-                File zipFile = DebugLogFileBackend.getZipFile(fileService.getExtTmpPath());
+                File zipFile = DebugLogFileBackend.createZipFile(requireContext());
 
                 try {
                     ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
@@ -785,6 +769,7 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
                         Collections.singletonList(receiver), new MessageServiceImpl.SendResultListener() {
                             @Override
                             public void onError(String errorMessage) {
+                                logger.error("Could not send file message: {}", errorMessage);
                                 RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.an_error_occurred_during_send, Toast.LENGTH_LONG).show());
                             }
 

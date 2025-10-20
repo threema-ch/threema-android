@@ -141,7 +141,7 @@ private fun copyToClipboardAndShowHint(
 
 @Preview
 @Composable
-private fun MessageDetailsRowPreview() {
+private fun MessageDetailsRow_Preview() {
     MessageDetailsRow(
         modifier = Modifier.padding(16.dp),
         label = "Label",

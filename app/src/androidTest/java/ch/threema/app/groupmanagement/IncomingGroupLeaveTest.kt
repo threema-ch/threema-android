@@ -33,6 +33,7 @@ import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
+import ch.threema.domain.types.Identity
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
@@ -273,7 +274,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
 
     private class GroupLeaveTracker(
         private val group: TestGroup?,
-        private val leavingIdentity: String?,
+        private val leavingIdentity: Identity?,
         private val expectStateChange: Boolean = false,
     ) {
         private var memberHasLeft = false

@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 import androidx.preference.PreferenceManager
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.compose.theme.color.ColorsDark
 import ch.threema.app.compose.theme.color.ColorsLight
 
@@ -50,8 +49,9 @@ fun ThreemaTheme(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    val shouldUseDynamicColors: Boolean = remember {
-        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext())
+    val context = LocalContext.current
+    val shouldUseDynamicColors = remember {
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         sharedPreferences.getBoolean("pref_dynamic_color", false)
     }
 
@@ -80,8 +80,7 @@ private fun ThreemaThemeBase(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
-                !isDarkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !isDarkTheme
         }
     }
 

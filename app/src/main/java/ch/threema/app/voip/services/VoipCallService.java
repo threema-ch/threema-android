@@ -102,7 +102,6 @@ import ch.threema.app.utils.AudioDevice;
 import ch.threema.app.utils.CloseableLock;
 import ch.threema.app.utils.CloseableReadWriteLock;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RandomUtil;
@@ -136,7 +135,7 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
 import ch.threema.domain.protocol.csp.messages.voip.features.FeatureList;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.protobuf.callsignaling.O2OCall;
 import ch.threema.storage.models.ContactModel;
 import java8.util.function.Supplier;
@@ -278,7 +277,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
                             break;
                         case ACTION_ICE_CANDIDATES:
                             if (!intent.hasExtra(EXTRA_CALL_ID)) {
-                                logger.warn("Received broadcast intent without EXTRA_CALL_ID: action={}", action);
+                                logger.warn("Received broadcast intent without EXTRA_CALL_ID for action ICE_CANDIDATES");
                             }
                             final long callId = intent.getLongExtra(EXTRA_CALL_ID, 0L);
                             final String contactIdentity = intent.getStringExtra(VoipCallService.EXTRA_CONTACT_IDENTITY);
@@ -818,8 +817,6 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
      */
     @UiThread
     private void handleNewCall(final long callId, final String contactIdentity, final Intent intent) throws IllegalStateException {
-        logger.trace("handleNewCall ({} / {})", callId, contactIdentity);
-
         if (this.voipStateService == null) {
             logger.debug("voipStateService not available.");
             return;
@@ -861,9 +858,14 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
         }
         if (newContact == null) {
             // We cannot initialize a new call if the contact cannot be looked up.
-            this.abortCall(R.string.voip_error_init_call, "Cannot retrieve contact for ID " + contactIdentity, false);
+            this.abortCall(R.string.voip_error_init_call, "Cannot retrieve contact for provided contact", false);
             return;
         } else {
+            logCallInfo(
+                callId,
+                "Found contact with identity {}",
+                newContact.getIdentity()
+            );
             contact = newContact;
         }
 
@@ -874,7 +876,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
         // Can we use videocalls?
         if (this.videoEnabled && !ConfigUtils.isVideoCallsEnabled()) {
-            logCallInfo(callId, "videoEnabled=false, diabled via user config");
+            logCallInfo(callId, "videoEnabled=false, disabled via user config");
             this.videoEnabled = false;
         }
         if (this.videoEnabled && !ThreemaFeature.canVideocall(contact.getFeatureMask())) {
@@ -1604,13 +1606,13 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
             // Log error
             final long callId = this.voipStateService.getCallState().getCallId();
             if (throwable != null) {
-                logCallError(callId, "Aborting call: " + description, throwable);
+                logCallError(callId, "Aborting call: {}", description, throwable);
             } else {
                 logCallError(callId, "Aborting call: {}", description);
             }
         } else {
             if (throwable != null) {
-                logger.error("Aborting call: " + description, throwable);
+                logger.error("Aborting call: {}", description, throwable);
             } else {
                 logger.error("Aborting call: {}", description);
             }
@@ -2182,7 +2184,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
             this,
             (int) System.currentTimeMillis(),
             hangupIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE);
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
 
         // Prepare open action
         final Intent openIntent = new Intent(this, CallActivity.class);
@@ -2199,7 +2202,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
             this,
             (int) System.currentTimeMillis(),
             openIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT | IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE);
+            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
 
         // Prepare notification
         final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NotificationChannels.NOTIFICATION_CHANNEL_IN_CALL)
@@ -2216,7 +2220,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
             .setContentIntent(openPendingIntent)
             .setStyle(NotificationCompat.CallStyle.forOngoingCall(callerPerson, hangupPendingIntent));
 
-        final Bitmap avatar = contactService.getAvatar(contact, false);
+        final Bitmap avatar = contactService.getAvatar(contact.getIdentity(), false);
         notificationBuilder.setLargeIcon(avatar);
         Notification notification = notificationBuilder.build();
         notification.flags |= NotificationCompat.FLAG_NO_CLEAR | NotificationCompat.FLAG_ONGOING_EVENT;

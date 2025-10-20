@@ -30,10 +30,11 @@ import ch.threema.domain.protocol.csp.messages.ReactionMessageData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.csp.e2e.Reaction.ActionCase
 import com.google.protobuf.ByteString
 import java.util.Date
-import kotlin.jvm.Throws
+import kotlin.Throws
 import kotlinx.serialization.Serializable
 
 class OutgoingGroupReactionMessageTask(
@@ -42,7 +43,7 @@ class OutgoingGroupReactionMessageTask(
     private val actionCase: ActionCase,
     private val emojiSequence: String,
     private val reactedAt: Date,
-    private val recipientIdentities: Set<String>,
+    private val recipientIdentities: Set<Identity>,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingGroupReactionMessageTask"
@@ -101,7 +102,7 @@ class OutgoingGroupReactionMessageTask(
         private val actionCase: ActionCase,
         private val emojiSequence: String,
         private val reactedAt: Long,
-        private val recipientIdentities: Set<String>,
+        private val recipientIdentities: Set<Identity>,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingGroupReactionMessageTask(

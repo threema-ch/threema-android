@@ -1,4 +1,7 @@
 {
+  "version": "1.0",
+  "signatureKey": "jae1lgwR3W7YyKiGQlsbdqObG13FR1EvjVci2aDNIi8=",
+  "refresh": 86400,
   "license": {
     "expires": "2099-12-31",
     "count": 100,
@@ -7,7 +10,7 @@
   "domains": {
     "rules": [
       {
-        "fqdn": "threemaonprem.initrode.com",
+        "fqdn": "onprem.example.threema.ch",
         "matchMode": "include-subdomains",
         "spkis": [
           {
@@ -21,7 +24,7 @@
         ]
       },
       {
-        "fqdn": "another-host.initrode.com",
+        "fqdn": "another-host.example.threema.ch",
         "matchMode": "exact",
         "spkis": [
           {
@@ -35,54 +38,54 @@
         ]
       },
       {
-        "fqdn": "unknown.initrode.com",
+        "fqdn": "unknown.example.threema.ch",
         "matchMode": "unknown-mode"
       }
     ]
   },
-  "blob": {
-    "uploadUrl": "https://blob.threemaonprem.initrode.com/blob/upload",
-    "downloadUrl": "https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}",
-    "doneUrl": "https://blob-{blobIdPrefix}.threemaonprem.initrode.com/blob/{blobId}/done"
-  },
-  "web": {
-    "url": "https://web.threemaonprem.initrode.com/"
-  },
   "chat": {
-    "hostname": "chat.threemaonprem.initrode.com",
+    "hostname": "chat.onprem.example.threema.ch",
     "publicKey": "r9utIHN9ngo21q9OlZcotsQu1f2HwAW2Wi+u6Psp4Wc=",
     "ports": [
       5222,
       443
     ]
   },
+  "directory": {
+    "url": "https://onprem.example.threema.ch/directory"
+  },
+  "blob": {
+    "uploadUrl": "https://blob.onprem.example.threema.ch/blob/upload",
+    "downloadUrl": "https://blob-{blobIdPrefix}.onprem.example.threema.ch/blob/{blobId}",
+    "doneUrl": "https://blob-{blobIdPrefix}.onprem.example.threema.ch/blob/{blobId}/done"
+  },
   "work": {
-    "url": "https://work.threemaonprem.initrode.com/"
+    "url": "https://work.onprem.example.threema.ch/"
   },
-  "signatureKey": "jae1lgwR3W7YyKiGQlsbdqObG13FR1EvjVci2aDNIi8=",
-  "safe": {
-    "url": "https://safe.threemaonprem.initrode.com/"
-  },
-  "refresh": 86400,
   "avatar": {
-    "url": "https://avatar.threemaonprem.initrode.com/"
+    "url": "https://avatar.onprem.example.threema.ch/"
+  },
+  "safe": {
+    "url": "https://safe.onprem.example.threema.ch/"
+  },
+  "web": {
+    "url": "https://web.onprem.example.threema.ch/"
+  },
+  "rendezvous": {
+    "url": "wss://rendezvous.onprem.example.threema.ch/"
   },
   "mediator": {
     "blob": {
-      "uploadUrl": "https://mediator.threemaonprem.initrode.com/blob/upload",
-      "downloadUrl": "https://mediator.threemaonprem.initrode.com/blob/{blobId}",
-      "doneUrl": "https://mediator.threemaonprem.initrode.com/blob/{blobId}/done"
+      "uploadUrl": "https://blob-mirror.onprem.example.threema.ch/blob/upload",
+      "downloadUrl": "https://blob-mirror.onprem.example.threema.ch/blob/{blobId}",
+      "doneUrl": "https://blob-mirror.onprem.example.threema.ch/blob/{blobId}/done"
     },
-    "url": "https://mediator.threemaonprem.initrode.com/"
+    "url": "wss://mediator.onprem.example.threema.ch/"
   },
   "maps": {
-    "styleUrl": "https://map.initrode.com/styles/threema/style.json",
-    "poiNamesUrl": "https://poi.initrode.com/names/{latitude}/{longitude}/{query}/",
-    "poiAroundUrl": "https://poi.initrode.com/around/{latitude}/{longitude}/{radius}/"
-  },
-  "version": "1.0",
-  "directory": {
-    "url": "https://dir.threemaonprem.initrode.com/directory"
+    "styleUrl": "https://map.onprem.example.threema.ch/styles/threema/style.json",
+    "poiNamesUrl": "https://poi.onprem.example.threema.ch/names/{latitude}/{longitude}/{query}",
+    "poiAroundUrl": "https://poi.onprem.example.threema.ch/around/{latitude}/{longitude}/{radius}"
   }
 }
-5WCL7I50TrBBCuz8nX3yeQhqlAIXaPK2bGQQbTeg6DdWS8yZVN49t4l/pwDyntSpYQklBPYN5OMrGeQOjMVRAg==
+Un3uKLXpaQerR2DfZhZI2NRd8RbUWZmDVSBlmpeBL9dRM7+K3YYSOLibKlmXR86GXg1lB49jCIvLwCzay10RDA==

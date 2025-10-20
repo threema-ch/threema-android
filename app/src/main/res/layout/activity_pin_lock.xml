@@ -25,7 +25,8 @@
             android:layout_marginLeft="@dimen/pin_lock_side_margin"
             android:layout_marginTop="@dimen/pin_lock_top_margin"
             android:layout_marginRight="@dimen/pin_lock_side_margin"
-            android:textColor="?attr/colorPrimary" />
+            android:textColor="?attr/colorPrimary"
+            android:text="@string/confirm_your_pin" />
 
         <TextView
             android:id="@+id/detailsText"
@@ -34,7 +35,8 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/pin_lock_side_margin"
             android:layout_marginTop="@dimen/grid_unit_x1_5"
-            android:layout_marginRight="@dimen/pin_lock_side_margin" />
+            android:layout_marginRight="@dimen/pin_lock_side_margin"
+            android:text="@string/pinentry_enter_pin" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/cancelButton"

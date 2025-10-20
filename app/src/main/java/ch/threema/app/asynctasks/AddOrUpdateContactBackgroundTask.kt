@@ -29,10 +29,11 @@ import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.common.Http
 import ch.threema.common.now
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
-import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
 import ch.threema.data.repositories.ContactCreateException
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.ContactSyncState
@@ -46,8 +47,8 @@ import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.APIConnector.FetchIdentityResult
 import ch.threema.domain.protocol.api.APIConnector.HttpConnectionException
 import ch.threema.domain.protocol.api.APIConnector.NetworkException
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import java.net.HttpURLConnection
 import kotlinx.coroutines.runBlocking
 
 private val logger = LoggingUtil.getThreemaLogger("AddOrUpdateContactBackgroundTask")
@@ -69,9 +70,9 @@ private val logger = LoggingUtil.getThreemaLogger("AddOrUpdateContactBackgroundT
  * background work, the [BasicAddOrUpdateContactBackgroundTask] can be used.
  */
 abstract class AddOrUpdateContactBackgroundTask<T>(
-    protected val identity: String,
+    protected val identity: Identity,
     protected val acquaintanceLevel: AcquaintanceLevel,
-    private val myIdentity: String,
+    private val myIdentity: Identity,
     private val apiConnector: APIConnector,
     private val contactModelRepository: ContactModelRepository,
     private val addContactRestrictionPolicy: AddContactRestrictionPolicy,
@@ -142,7 +143,7 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
 
         // Update contact if it exists
         contactModelRepository.getByIdentity(identity)?.let {
-            val data = it.data.value
+            val data = it.data
 
             if (data != null) {
                 return updateContact(it, data, expectedPublicKey)
@@ -164,7 +165,7 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
 
             when (e) {
                 is HttpConnectionException -> {
-                    return if (e.errorCode == HttpURLConnection.HTTP_NOT_FOUND) {
+                    return if (e.errorCode == Http.StatusCode.NOT_FOUND) {
                         InvalidThreemaId(context)
                     } else {
                         ConnectionError(context)
@@ -209,7 +210,7 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
                         firstName = "",
                         lastName = "",
                         nickname = null,
-                        colorIndex = getIdColorIndex(result.identity),
+                        idColor = IdColor.ofIdentity(result.identity),
                         verificationLevel = verificationLevel,
                         workVerificationLevel = WorkVerificationLevel.NONE,
                         identityType = result.getIdentityType(),
@@ -308,9 +309,9 @@ fun FetchIdentityResult.getIdentityState(): IdentityState = when (state) {
  * [AddOrUpdateContactBackgroundTask] for more information about contact creation.
  */
 open class BasicAddOrUpdateContactBackgroundTask(
-    identity: String,
+    identity: Identity,
     acquaintanceLevel: AcquaintanceLevel,
-    myIdentity: String,
+    myIdentity: Identity,
     apiConnector: APIConnector,
     contactModelRepository: ContactModelRepository,
     addContactRestrictionPolicy: AddContactRestrictionPolicy,

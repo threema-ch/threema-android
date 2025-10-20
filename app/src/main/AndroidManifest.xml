@@ -13,11 +13,13 @@
         android:smallScreens="true"
         android:xlargeScreens="true" />
 
-    <!-- Maplibre requires gl es version 3. To support more devices, we remove this requirement and
-    handle missing gl es version 3 support by disabling the location features on the affected
-    devices. -->
+    <!-- Maplibre requires OpenGL ES 3.0 and/or Vulkan 1.0. To support more devices, we remove this requirement and
+    handle missing support by disabling the location features on the affected devices. -->
     <uses-feature
         android:glEsVersion="0x00030000"
+        tools:node="remove" />
+    <uses-feature
+        android:name="android.hardware.vulkan.version"
         tools:node="remove" />
 
     <!-- DANGEROUS PERMISSIONS -->
@@ -298,8 +300,7 @@
 
             <meta-data
                 android:name="android.service.chooser.chooser_target_service"
-                android:value="androidx.sharetarget.ChooserTargetServiceCompat"
-                tools:targetApi="23" />
+                android:value="androidx.sharetarget.ChooserTargetServiceCompat" />
         </activity>
         <activity
             android:name=".activities.RecipientListBaseActivity"
@@ -424,7 +425,11 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activities.UnlockMasterKeyActivity"
+            android:name=".passphrase.PassphraseLockActivity"
+            android:autoRemoveFromRecents="true"
+            android:theme="@android:style/Theme.NoDisplay" />
+        <activity
+            android:name=".passphrase.PassphraseUnlockActivity"
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
             android:excludeFromRecents="true"
             android:launchMode="singleTop"
@@ -445,7 +450,7 @@
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
             android:name=".activities.SendMediaActivity"
-            android:theme="@style/Theme.Threema.MediaViewer"
+            android:theme="@style/Theme.Threema.WithToolbar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
             android:name=".activities.BackupAdminActivity"
@@ -471,26 +476,6 @@
             android:theme="@style/Theme.Threema.TransparentStatusbar"
             android:windowSoftInputMode="stateAlwaysHidden|adjustResize" />
         <activity
-            android:name=".qrscanner.activity.BaseQrScannerActivity"
-            android:theme="@style/Theme.Threema.Translucent" />
-        <activity
-            android:name=".grouplinks.AddGroupLinkBottomSheet"
-            android:theme="@style/Theme.Threema.Translucent" />
-        <activity
-            android:name=".grouplinks.GroupLinkQrCodeActivity"
-            android:theme="@style/Theme.Threema.WithToolbar" />
-        <activity
-            android:name=".grouplinks.GroupLinkOverviewActivity"
-            android:theme="@style/Theme.Threema.WithToolbar" />
-        <activity
-            android:name=".grouplinks.OutgoingGroupRequestActivity"
-            android:parentActivityName=".home.HomeActivity"
-            android:theme="@style/Theme.Threema.WithToolbar" />
-        <activity
-            android:name=".grouplinks.IncomingGroupRequestActivity"
-            android:parentActivityName=".home.HomeActivity"
-            android:theme="@style/Theme.Threema.WithToolbar" />
-        <activity
             android:name=".activities.DistributionListAddActivity"
             android:configChanges="uiMode"
             android:theme="@style/Theme.Threema.WithToolbar" />
@@ -512,13 +497,9 @@
         <activity
             android:name=".activities.MediaViewerActivity"
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-            android:theme="@style/Theme.Threema.MediaViewer" />
+            android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
-            android:name=".activities.QRCodeZoomActivity"
-            android:noHistory="true"
-            android:theme="@style/Theme.Threema.Translucent" />
-        <activity
-            android:name=".activities.MediaGalleryActivity"
+            android:name=".mediagallery.MediaGalleryActivity"
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
             android:theme="@style/Theme.Threema.WithToolbar" />
 
@@ -574,7 +555,7 @@
         <activity
             android:name=".activities.ImagePaintActivity"
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
-            android:theme="@style/Theme.Threema.MediaViewer"
+            android:theme="@style/Theme.Threema.WithToolbar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
 
         <!-- Webclient activities -->
@@ -737,7 +718,7 @@
             android:theme="@style/Theme.Threema.Translucent"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name=".locationpicker.LocationPickerActivity"
+            android:name=".location.LocationPickerActivity"
             android:configChanges="orientation|keyboardHidden|screenSize|screenLayout|uiMode"
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
@@ -763,10 +744,6 @@
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
             android:theme="@style/Theme.Threema.WithToolbar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
-        <activity
-            android:name=".activities.StopPassphraseServiceActivity"
-            android:autoRemoveFromRecents="true"
-            android:theme="@android:style/Theme.NoDisplay" />
         <activity
             android:name="ch.threema.app.activities.DirectoryActivity"
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
@@ -794,10 +771,6 @@
                     android:host="${contactActionUrl}"
                     android:pathPattern="/.*"
                     android:scheme="https" />
-                <data
-                    android:host="${groupLinkActionUrl}"
-                    android:pathPattern="/join#\.*"
-                    android:scheme="https" />
             </intent-filter>
         </activity>
         <activity
@@ -822,7 +795,7 @@
             android:theme="@style/Theme.Threema.StarredMessages"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".locationpicker.LocationAutocompleteActivity"
+            android:name=".location.LocationAutocompleteActivity"
             android:theme="@style/Theme.Threema.WithToolbar"
             android:windowSoftInputMode="adjustResize" />
         <activity
@@ -831,7 +804,7 @@
             android:theme="@style/Theme.Threema.WithToolbar"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".activities.MapActivity"
+            android:name=".location.MapActivity"
             android:configChanges="keyboardHidden|screenSize|screenLayout|uiMode"
             android:exported="true"
             android:theme="@style/Theme.Threema.WithToolbar">
@@ -852,7 +825,7 @@
             android:name=".activities.VerificationLevelActivity"
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
-            android:name=".activities.MessageDetailsActivity"
+            android:name=".messagedetails.MessageDetailsActivity"
             android:launchMode="singleTop"
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
@@ -883,7 +856,7 @@
             android:launchMode="singleTop"
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
-            android:name=".debug.PatternLibraryActivity"
+            android:name=".debug.patternlibrary.PatternLibraryActivity"
             android:theme="@style/Theme.Threema.Translucent" />
         <activity
             android:name="ch.threema.app.emojireactions.EmojiReactionsOverviewActivity"
@@ -898,7 +871,13 @@
             android:excludeFromRecents="true"
             android:exported="false"
             android:launchMode="singleTop"
-            android:theme="@style/Theme.Threema.Translucent" />
+            android:theme="@style/Theme.Threema.AppStartup" />
+        <activity
+            android:name=".startup.RemoteSecretProtectionUpdateActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Threema.AppStartup" />
 
         <!-- services -->
         <service
@@ -991,8 +970,7 @@
         <service
             android:name="androidx.sharetarget.ChooserTargetServiceCompat"
             android:exported="true"
-            tools:node="merge"
-            tools:targetApi="23" />
+            tools:node="merge" />
         <service
             android:name=".services.VoiceMessagePlayerService"
             android:exported="false"

@@ -25,10 +25,9 @@ import androidx.annotation.UiThread
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication.Companion.requireServiceManager
-import ch.threema.app.activities.StateFlowViewModel
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.multidevice.linking.DeviceLinkingInvalidContact
@@ -48,17 +47,18 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceWizardViewModel")
 
-class LinkNewDeviceWizardViewModel : StateFlowViewModel() {
-    private val serviceManager: ServiceManager by lazy { requireServiceManager() }
-    private val multiDeviceManager: MultiDeviceManager by lazy { serviceManager.multiDeviceManager }
-    private val taskCreator: TaskCreator by lazy { serviceManager.taskCreator }
+class LinkNewDeviceWizardViewModel(
+    private val serviceManager: ServiceManager,
+    private val multiDeviceManager: MultiDeviceManager,
+    private val taskCreator: TaskCreator,
+) : ViewModel() {
 
     private var linkingJob: Job? = null
     private var sendDataJob: Job? = null
@@ -80,8 +80,8 @@ class LinkNewDeviceWizardViewModel : StateFlowViewModel() {
 
     lateinit var deviceLinkingStatusConnected: DeviceLinkingStatus.Connected
 
-    private val _linkingResult: MutableStateFlow<LinkingResult?> = MutableStateFlow(null)
-    val linkingResult: StateFlow<LinkingResult?> = _linkingResult.stateInViewModel(null)
+    private val _linkingResult = MutableStateFlow<LinkingResult?>(null)
+    val linkingResult = _linkingResult.asStateFlow()
 
     fun setCurrentFragment(fragment: Fragment) {
         mutableCurrentFragment.value = fragment

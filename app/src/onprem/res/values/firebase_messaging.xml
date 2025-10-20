@@ -3,9 +3,9 @@
   ~ All rights reserved.
   -->
 <resources>
+    <string name="project_id" translatable="false">threema-onprem</string>
     <string name="google_app_id" translatable="false">1:510718414732:android:eaed0f724bbfcf09b6d0a9</string>
     <string name="gcm_defaultSenderId" translatable="false">510718414732</string>
     <string name="google_api_key" translatable="false">AIzaSyBtanE-w4rtqA80O4ZxJeAQ8luYMegNVSQ</string>
     <string name="google_crash_reporting_api_key" translatable="false">AIzaSyBtanE-w4rtqA80O4ZxJeAQ8luYMegNVSQ</string>
-    <string name="project_id" translatable="false">threema-onprem</string>
 </resources>

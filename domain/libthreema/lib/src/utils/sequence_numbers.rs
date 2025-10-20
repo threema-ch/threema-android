@@ -1,5 +1,4 @@
 //! Sequence numbers.
-
 use duplicate::duplicate_item;
 
 /// Exhausted the available sequence numbers.
@@ -7,7 +6,8 @@ use duplicate::duplicate_item;
 #[error("Sequence number would overflow")]
 pub struct SequenceNumberOverflow;
 
-/// A sequence number value, safely yielded by calling [`SequenceNumber::get_and_increment`].
+/// A sequence number value, safely yielded by calling [`SequenceNumberU32::get_and_increment`] resp.
+/// [`SequenceNumberU64::get_and_increment`].
 pub(crate) struct SequenceNumberValue<T>(pub(crate) T);
 
 /// A generic 64-bit unsigned sequence number. Prevents wrapping.

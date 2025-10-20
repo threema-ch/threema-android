@@ -24,7 +24,6 @@ package ch.threema.app.services;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
-import android.content.ClipData;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -42,7 +41,7 @@ import android.text.format.DateUtils;
 import android.util.SparseIntArray;
 import android.widget.Toast;
 
-import com.neilalexander.jnacl.NaCl;
+import ch.threema.base.crypto.NaCl;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -98,7 +97,6 @@ import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.ballot.BallotUpdateResult;
 import ch.threema.app.services.messageplayer.MessagePlayerService;
 import ch.threema.app.services.notification.NotificationService;
-import ch.threema.app.stores.IdentityStore;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.BitmapUtil;
@@ -158,7 +156,9 @@ import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 import ch.threema.domain.protocol.csp.messages.location.Poi;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.taskmanager.TriggerSource;
+import ch.threema.libthreema.CryptoException;
 import ch.threema.protobuf.csp.e2e.Reaction;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.GroupMessageModelFactory;
@@ -768,18 +768,28 @@ public class MessageServiceImpl implements MessageService {
             return;
         }
 
-        // 3. Let `created-at` be the current timestamp to be applied to the delete
-        //    message.
+        // Let `created-at` be the current timestamp to be applied to the delete message
         Date createdAt = new Date();
-        long deltaTime = createdAt.getTime() - message.getPostedAt().getTime();
-        // 2. If the referred message has been sent (`sent-at`) more than 6 hours ago,
-        //    prevent creation and abort these steps.
-        if (deltaTime > DeleteMessage.DELETE_MESSAGES_MAX_AGE) {
-            logger.error("Cannot delete message older than {}}ms", DeleteMessage.DELETE_MESSAGES_MAX_AGE);
+
+        final @Nullable ch.threema.data.models.GroupModel groupModel;
+        if (receiver instanceof GroupMessageReceiver) {
+            groupModel = ((GroupMessageReceiver) receiver).getGroupModel();
+        } else {
+            groupModel = null;
+        }
+        final boolean isNotesGroup = groupModel != null && Boolean.TRUE.equals(groupModel.isNotesGroup());
+
+        // If the group is not a notes group, we have to check the messages age
+        if (!isNotesGroup) {
+            long deltaTime = createdAt.getTime() - message.getPostedAt().getTime();
+            // If the referred message has been sent (`sent-at`) more than 6 hours ago, prevent creation and abort these steps.
+            if (deltaTime > DeleteMessage.DELETE_MESSAGES_MAX_AGE) {
+                logger.error("Cannot delete message older than {}}ms", DeleteMessage.DELETE_MESSAGES_MAX_AGE);
+                return;
+            }
         }
 
-        // 4. Replace `message` with a message informing the user that the message of
-        //    the user has been removed at `created-at`.
+        // Replace `message` with a message informing the user that the message of the user has been removed at `created-at`.
         deleteMessageContentsAndRelatedData(message, createdAt);
 
         if (receiver instanceof ContactMessageReceiver) {
@@ -1010,10 +1020,10 @@ public class MessageServiceImpl implements MessageService {
 
                             try (FileInputStream inputStream = new FileInputStream(decryptedMessageFile)) {
                                 fileDataBoxedLength = inputStream.available();
-                                fileData = new byte[fileDataBoxedLength + NaCl.BOXOVERHEAD];
+                                fileData = new byte[fileDataBoxedLength + NaCl.BOX_OVERHEAD_BYTES];
                                 IOUtils.readFully(inputStream,
                                     fileData,
-                                    NaCl.BOXOVERHEAD,
+                                    NaCl.BOX_OVERHEAD_BYTES,
                                     fileDataBoxedLength);
                             }
                         } else {
@@ -1984,7 +1994,7 @@ public class MessageServiceImpl implements MessageService {
             }
         );
 
-        if (thumbnailBlob != null && thumbnailBlob.length > NaCl.BOXOVERHEAD) {
+        if (thumbnailBlob != null && thumbnailBlob.length > NaCl.BOX_OVERHEAD_BYTES) {
             byte[] thumbnail = symmetricEncryptionService.decrypt(thumbnailBlob, encryptionKey, ProtocolDefines.THUMBNAIL_NONCE);
 
             if (thumbnail != null) {
@@ -2430,10 +2440,10 @@ public class MessageServiceImpl implements MessageService {
             // Mark as saved to show message without image e.g.
             messageModel.setSaved(true);
             r.saveLocalModel(messageModel);
-/*
-			//create the record
-			messageModelFactory.create(messageModel);
-*/
+            /*
+            //create the record
+            messageModelFactory.create(messageModel);
+            */
             logger.info("saveBoxMessage: {} - E", message.getMessageId());
 
             cache(messageModel);
@@ -3117,7 +3127,7 @@ public class MessageServiceImpl implements MessageService {
     ) throws ThreemaException {
         if (mediaMessageModel.getType() != MessageType.IMAGE) {
             File messageFile = fileService.getMessageFile(mediaMessageModel);
-            if (messageFile != null && messageFile.exists() && messageFile.length() > NaCl.BOXOVERHEAD) {
+            if (messageFile != null && messageFile.exists() && messageFile.length() > NaCl.BOX_OVERHEAD_BYTES) {
                 // hack: do not re-download a blob that's already present on the file system
                 return true;
             }
@@ -3137,7 +3147,7 @@ public class MessageServiceImpl implements MessageService {
             blobScopeMarkAsDone,
             progressListener
         );
-        if (blob == null || blob.length < NaCl.BOXOVERHEAD) {
+        if (blob == null || blob.length < NaCl.BOX_OVERHEAD_BYTES) {
             logger.error("Blob for message {} is empty", mediaMessageModel.getApiMessageId());
 
             downloadService.error(mediaMessageModel.getId());
@@ -3203,22 +3213,26 @@ public class MessageServiceImpl implements MessageService {
         logger.info("Decrypting blob for message {}", messageModel.getApiMessageId());
 
         byte[] nonce = getNonceForMessageType(messageModel.getType());
-        if (symmetricEncryptionService.decryptInplace(blob, data.getEncryptionKey(), nonce)) {
-            logger.info("Write conversation media for message {}", messageModel.getApiMessageId());
 
-            // save the file
-            try {
-                if (fileService.writeConversationMedia(messageModel, blob, 0, blob.length - NaCl.BOXOVERHEAD, true)) {
-                    logger.info("Media for message {} successfully saved.", messageModel.getApiMessageId());
-                    return true;
-                }
-            } catch (Exception e) {
-                logger.warn("Unable to save media");
+        try {
+            symmetricEncryptionService.decryptInplace(blob, data.getEncryptionKey(), nonce);
+        } catch (IllegalArgumentException | CryptoException exception) {
+            throw new ThreemaException("Unable to decrypt media", exception);
+        }
+        logger.info("Write conversation media for message {}", messageModel.getApiMessageId());
 
-                downloadService.error(messageModel.getId());
-
-                throw new ThreemaException("Unable to save media");
+        // save the file
+        try {
+            if (fileService.writeConversationMedia(messageModel, blob, 0, blob.length - NaCl.BOX_OVERHEAD_BYTES, true)) {
+                logger.info("Media for message {} successfully saved.", messageModel.getApiMessageId());
+                return true;
             }
+        } catch (Exception e) {
+            logger.warn("Unable to save media");
+
+            downloadService.error(messageModel.getId());
+
+            throw new ThreemaException("Unable to save media");
         }
         return false;
     }
@@ -3228,9 +3242,14 @@ public class MessageServiceImpl implements MessageService {
         @NonNull byte[] blob
     ) {
         ImageDataModel imageData = messageModel.getImageData();
-        byte[] image = messageModel instanceof GroupMessageModel
-            ? NaCl.symmetricDecryptData(blob, imageData.getEncryptionKey(), ProtocolDefines.IMAGE_NONCE)
-            : identityStore.decryptData(blob, imageData.getNonce(), imageData.getEncryptionKey());
+        byte[] image = null;
+        try {
+            image = messageModel instanceof GroupMessageModel
+                ? NaCl.symmetricDecryptData(blob, imageData.getEncryptionKey(), ProtocolDefines.IMAGE_NONCE)
+                : identityStore.decryptData(blob, imageData.getNonce(), imageData.getEncryptionKey());
+        } catch (CryptoException cryptoException) {
+            logger.error("Failed to decrypt image data", cryptoException);
+        }
 
         if (image != null && image.length > 0) {
             try {
@@ -3392,7 +3411,14 @@ public class MessageServiceImpl implements MessageService {
 
     @NonNull
     private String getMimeTypeString(AbstractMessageModel model) {
-        switch (model.getType()) {
+        @Nullable MessageType type = model.getType();
+
+        if (type == null) {
+            logger.error("No message type set for message {} use fall back mime type '{}'", model.getApiMessageId(), MimeUtil.MIME_TYPE_ANY);
+            return MimeUtil.MIME_TYPE_ANY;
+        }
+
+        switch (type) {
             case VIDEO:
                 return MimeUtil.MIME_TYPE_VIDEO;
             case FILE:
@@ -3474,6 +3500,9 @@ public class MessageServiceImpl implements MessageService {
             Intent intent = new Intent(Intent.ACTION_VIEW);
 
             String mimeType = getMimeTypeString(model);
+            if (mimeType.isEmpty()) {
+                logger.warn("Mime type is empty for message {}", model.getApiMessageId());
+            }
             if (MimeUtil.isImageFile(mimeType)) {
                 // some viewers cannot handle image/gif - give them a generic mime type
                 mimeType = MimeUtil.MIME_TYPE_IMAGE;
@@ -3481,10 +3510,6 @@ public class MessageServiceImpl implements MessageService {
             intent.setDataAndType(uri, mimeType);
             if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(uri.getScheme())) {
                 intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
-                    intent.setClipData(ClipData.newRawUri("", uri));
-                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                }
             } else if (!(context instanceof Activity)) {
                 intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             }
@@ -3585,7 +3610,7 @@ public class MessageServiceImpl implements MessageService {
         });
 
         new MarkAsReadRoutine(this, notificationService)
-                .run(unreadMessages,  messageReceiver);
+            .run(unreadMessages, messageReceiver);
         notificationService.cancel(messageReceiver);
     }
 
@@ -4050,9 +4075,8 @@ public class MessageServiceImpl implements MessageService {
                 sendResultListener.onCompleted();
             }
         } else {
-            logger.warn("sendMedia: Did not complete successfully, failedCounter={}", failedCounter);
+            logger.error("sendMedia: Did not complete successfully, failedCounter={}", failedCounter);
             final String errorString = context.getString(R.string.an_error_occurred_during_send);
-            logger.info(errorString);
             RuntimeUtil.runOnUiThread(() -> Toast.makeText(context, errorString, Toast.LENGTH_LONG).show());
             if (sendResultListener != null) {
                 sendResultListener.onError(errorString);
@@ -4134,7 +4158,7 @@ public class MessageServiceImpl implements MessageService {
                         if (imageByteArray != null) {
                             fileDataModel.setFileSize(imageByteArray.length);
                             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                            outputStream.write(new byte[NaCl.BOXOVERHEAD]);
+                            outputStream.write(new byte[NaCl.BOX_OVERHEAD_BYTES]);
                             outputStream.write(imageByteArray);
 
                             return outputStream.toByteArray();
@@ -4159,7 +4183,7 @@ public class MessageServiceImpl implements MessageService {
                             final byte[] imageByteArray = BitmapUtil.getJpegByteArray(bitmap, mediaItem.getRotation(), mediaItem.getFlip());
                             if (imageByteArray != null) {
                                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-                                outputStream.write(new byte[NaCl.BOXOVERHEAD]);
+                                outputStream.write(new byte[NaCl.BOX_OVERHEAD_BYTES]);
                                 outputStream.write(imageByteArray);
 
                                 return outputStream.toByteArray();
@@ -4359,7 +4383,7 @@ public class MessageServiceImpl implements MessageService {
             save(messageModel);
 
             try {
-                fileService.writeConversationMedia(messageModel, contentData, NaCl.BOXOVERHEAD, contentData.length - NaCl.BOXOVERHEAD);
+                fileService.writeConversationMedia(messageModel, contentData, NaCl.BOX_OVERHEAD_BYTES, contentData.length - NaCl.BOX_OVERHEAD_BYTES);
             } catch (Exception e) {
                 // Failure to write local media is not necessarily fatal, continue
                 logger.debug("Exception", e);
@@ -4408,7 +4432,7 @@ public class MessageServiceImpl implements MessageService {
                                 messageModel.setState(MessageState.UPLOADING);
                                 save(messageModel);
                             }
-                            fileDataModel.setFileSize(contentData.length - NaCl.BOXOVERHEAD);
+                            fileDataModel.setFileSize(contentData.length - NaCl.BOX_OVERHEAD_BYTES);
                             messageModel.setFileData(fileDataModel);
                             fireOnModifiedMessage(messageModel);
                         })
@@ -4899,13 +4923,13 @@ public class MessageServiceImpl implements MessageService {
                     fileLength = MAX_BLOB_SIZE + 1;
                 }
 
-                if (ConfigUtils.checkAvailableMemory(fileLength + NaCl.BOXOVERHEAD)) {
-                    byte[] fileData = new byte[fileLength + NaCl.BOXOVERHEAD];
+                if (ConfigUtils.checkAvailableMemory(fileLength + NaCl.BOX_OVERHEAD_BYTES)) {
+                    byte[] fileData = new byte[fileLength + NaCl.BOX_OVERHEAD_BYTES];
 
                     try {
                         int readCount = 0;
                         try {
-                            readCount = IOUtils.read(inputStream, fileData, NaCl.BOXOVERHEAD, fileLength);
+                            readCount = IOUtils.read(inputStream, fileData, NaCl.BOX_OVERHEAD_BYTES, fileLength);
                         } catch (Exception e) {
                             // it's OK to get an EOF
                         }
@@ -4918,7 +4942,7 @@ public class MessageServiceImpl implements MessageService {
                         }
 
                         if (readCount < fileLength) {
-                            return Arrays.copyOf(fileData, readCount + NaCl.BOXOVERHEAD);
+                            return Arrays.copyOf(fileData, readCount + NaCl.BOX_OVERHEAD_BYTES);
                         }
 
                         return fileData;

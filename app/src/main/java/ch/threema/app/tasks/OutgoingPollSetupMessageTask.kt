@@ -31,13 +31,14 @@ import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
 class OutgoingPollSetupMessageTask(
     private val messageModelId: Int,
     @MessageReceiverType
     private val receiverType: Int,
-    private val recipientIdentities: Set<String>,
+    private val recipientIdentities: Set<Identity>,
     private val ballotId: BallotId,
     private val ballotData: BallotData,
     private val serviceManager: ServiceManager,
@@ -61,7 +62,7 @@ class OutgoingPollSetupMessageTask(
 
         // Create the message
         val message = PollSetupMessage().also {
-            it.ballotCreatorIdentity = serviceManager.identityStore.identity
+            it.ballotCreatorIdentity = serviceManager.identityStore.getIdentity()
             it.ballotId = ballotId
             it.ballotData = ballotData
         }
@@ -90,7 +91,7 @@ class OutgoingPollSetupMessageTask(
             ensureMessageId(messageModel),
             {
                 GroupPollSetupMessage().also {
-                    it.ballotCreatorIdentity = serviceManager.identityStore.identity
+                    it.ballotCreatorIdentity = serviceManager.identityStore.getIdentity()
                     it.ballotId = ballotId
                     it.ballotData = ballotData
                 }
@@ -112,7 +113,7 @@ class OutgoingPollSetupMessageTask(
         private val messageModelId: Int,
         @MessageReceiverType
         private val receiverType: Int,
-        private val recipientIdentities: Set<String>,
+        private val recipientIdentities: Set<Identity>,
         private val ballotId: ByteArray,
         private val ballotData: String,
     ) : SerializableTaskData {

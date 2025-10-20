@@ -87,30 +87,6 @@
     </group>
 
     <group
-        android:id="@+id/group_links"
-        android:checkableBehavior="none">
-
-        <item
-            android:id="@+id/menu_group_requests_show"
-            android:icon="@drawable/ic_outline_visibility"
-            android:orderInCategory="90"
-            android:visible="false"
-            android:title="@string/group_requests_show_menu_title"
-            app:iconTint="?attr/colorOnSurface"
-            app:showAsAction="never" />
-
-        <item
-            android:id="@+id/menu_group_request_show_all"
-            android:icon="@drawable/ic_hand_up_outline"
-            android:orderInCategory="90"
-            android:visible="false"
-            android:title="@string/group_request_show_all"
-            app:iconTint="?attr/colorOnSurface"
-            app:showAsAction="never" />
-
-    </group>
-
-    <group
         android:id="@+id/group_delete"
         android:checkableBehavior="none">
 

@@ -32,7 +32,6 @@ import com.tngtech.archunit.lang.ArchRule;
 import org.junit.runner.RunWith;
 
 import ch.threema.storage.factories.ModelFactory;
-import ch.threema.storage.models.ValidationMessage;
 import ch.threema.storage.models.access.Access;
 import ch.threema.storage.models.data.DisplayTag;
 import ch.threema.storage.models.data.MessageContentsType;
@@ -69,7 +68,6 @@ public class StorageLayerTest {
             .and().areNotNestedClasses()
             .and().areNotEnums()
             .and().doNotBelongToAnyOf(
-                ValidationMessage.class,
                 Access.class,
                 MessageContentsType.class,
                 MessageDataInterface.class,

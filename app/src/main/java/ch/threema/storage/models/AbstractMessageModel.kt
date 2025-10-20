@@ -27,6 +27,7 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.data.DisplayTag
 import ch.threema.storage.models.data.LocationDataModel
 import ch.threema.storage.models.data.MessageContentsType
@@ -69,7 +70,7 @@ internal constructor(
      * The associated identity: Either the recipient
      * (for outgoing messages) or the sender (for incoming messages).
      */
-    open var identity: String? = null
+    open var identity: Identity? = null
 
     /**
      * Whether the message is an outgoing one, i.e., sent by the user
@@ -345,134 +346,134 @@ internal constructor(
         /**
          * The message id, unique per type.
          */
-        const val COLUMN_ID: String = "id"
+        const val COLUMN_ID = "id"
 
         /**
          * The message uid, unique globally.
          */
-        const val COLUMN_UID: String = "uid"
+        const val COLUMN_UID = "uid"
 
         /**
          * The chat protocol message id assigned by the sender.
          */
-        const val COLUMN_API_MESSAGE_ID: String = "apiMessageId"
+        const val COLUMN_API_MESSAGE_ID = "apiMessageId"
 
         /**
          * Identity of the conversation partner.
          */
-        const val COLUMN_IDENTITY: String = "identity"
+        const val COLUMN_IDENTITY = "identity"
 
         /**
          * Message direction. true = outgoing, false = incoming.
          */
-        const val COLUMN_OUTBOX: String = "outbox"
+        const val COLUMN_OUTBOX = "outbox"
 
         /**
          * Message type.
          */
-        const val COLUMN_TYPE: String = "type"
+        const val COLUMN_TYPE = "type"
 
         /**
          * Correlation ID.
          */
-        const val COLUMN_CORRELATION_ID: String = "correlationId"
+        const val COLUMN_CORRELATION_ID = "correlationId"
 
         /**
          * Message body.
          */
-        const val COLUMN_BODY: String = "body"
+        const val COLUMN_BODY = "body"
 
         /**
          * Message caption.
          */
-        const val COLUMN_CAPTION: String = "caption"
+        const val COLUMN_CAPTION = "caption"
 
         /**
          * Whether this message has been read by the receiver.
          */
-        const val COLUMN_IS_READ: String = "isRead"
+        const val COLUMN_IS_READ = "isRead"
 
         /**
          * Whether this message has been saved to the internal database.
          */
-        const val COLUMN_IS_SAVED: String = "isSaved"
+        const val COLUMN_IS_SAVED = "isSaved"
 
         /**
          * The message state.
          */
-        const val COLUMN_STATE: String = "state"
+        const val COLUMN_STATE = "state"
 
         /**
          * When the message was created.
          */
-        const val COLUMN_CREATED_AT: String = "createdAtUtc"
+        const val COLUMN_CREATED_AT = "createdAtUtc"
 
         /**
          * When the message was accepted by the server.
          */
-        const val COLUMN_POSTED_AT: String = "postedAtUtc"
+        const val COLUMN_POSTED_AT = "postedAtUtc"
 
         /**
          * When the message was last modified.
          */
-        const val COLUMN_MODIFIED_AT: String = "modifiedAtUtc"
+        const val COLUMN_MODIFIED_AT = "modifiedAtUtc"
 
         /**
          * Whether this message is a status message.
          */
-        const val COLUMN_IS_STATUS_MESSAGE: String = "isStatusMessage"
+        const val COLUMN_IS_STATUS_MESSAGE = "isStatusMessage"
 
         /**
          * This was used to indicate whether the message was saved to the message queue. Note that this
          * column is not used anymore. We just keep it in the database to prevent performing a risky
          * database migration since the message tables potentially contain many rows.
          */
-        const val COLUMN_IS_QUEUED: String = "isQueued"
+        const val COLUMN_IS_QUEUED = "isQueued"
 
         /**
          * API message id of quoted message, if any.
          */
-        const val COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID: String = "quotedMessageId"
+        const val COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID = "quotedMessageId"
 
         /**
          * contents type of message - may be different from type
          */
-        const val COLUMN_MESSAGE_CONTENTS_TYPE: String = "messageContentsType"
+        const val COLUMN_MESSAGE_CONTENTS_TYPE = "messageContentsType"
 
         /**
          * message flags that affect delivery receipt behavior etc. - carried over from AbstractMessage
          */
-        const val COLUMN_MESSAGE_FLAGS: String = "messageFlags"
+        const val COLUMN_MESSAGE_FLAGS = "messageFlags"
 
         /**
          * When the message was delivered.
          */
-        const val COLUMN_DELIVERED_AT: String = "deliveredAtUtc"
+        const val COLUMN_DELIVERED_AT = "deliveredAtUtc"
 
         /**
          * When the message was read.
          */
-        const val COLUMN_READ_AT: String = "readAtUtc"
+        const val COLUMN_READ_AT = "readAtUtc"
 
         /**
          * The forward security mode in which the message was received/sent.
          */
-        const val COLUMN_FORWARD_SECURITY_MODE: String = "forwardSecurityMode"
+        const val COLUMN_FORWARD_SECURITY_MODE = "forwardSecurityMode"
 
         /**
          * Display tags. Used e.g. for starred or pinned messages
          */
-        const val COLUMN_DISPLAY_TAGS: String = "displayTags"
+        const val COLUMN_DISPLAY_TAGS = "displayTags"
 
         /**
          * When the message was edited
          */
-        const val COLUMN_EDITED_AT: String = "editedAtUtc"
+        const val COLUMN_EDITED_AT = "editedAtUtc"
 
         /**
          * When the message was deleted
          */
-        const val COLUMN_DELETED_AT: String = "deletedAtUtc"
+        const val COLUMN_DELETED_AT = "deletedAtUtc"
 
         // These models are used as workaround for the case where the data model is accessed
         // through a getter, but the stored body is missing or of the wrong type. We can't return null

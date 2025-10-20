@@ -32,11 +32,12 @@ import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.stores.DHSessionStoreException
 import ch.threema.domain.stores.DHSessionStoreInterface
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.csp.e2e.fs.Terminate
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel
 import kotlinx.serialization.Serializable
@@ -48,9 +49,9 @@ private val logger = LoggingUtil.getThreemaLogger("OnFSFeatureMaskDowngradedTask
  * change of its feature mask. This includes creating a status message in the conversation with that
  * contact to warn the user that forward security has been disabled for this contact. This task also
  * terminates all existing sessions with the contact by invoking [DeleteAndTerminateFSSessionsTask].
- * <p>
+ *
  * Note that the status message is only created if a forward security session currently exists.
- * <p>
+ *
  * Note that this task must only be scheduled if the feature mask of a contact is changed from a
  * feature mask that indicates forward security support to a feature mask without forward
  * security support.
@@ -62,12 +63,12 @@ class OnFSFeatureMaskDowngradedTask(
     private val contactService: ContactService,
     private val messageService: MessageService,
     private val dhSessionStore: DHSessionStoreInterface,
-    private val identityStore: IdentityStoreInterface,
+    private val identityStore: IdentityStore,
     private val forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor,
 ) : ActiveTask<Unit>, PersistableTask {
     override val type = "FSFeatureMaskDowngraded"
 
-    private val contactModelData by lazy { contactModel.data.value }
+    private val contactModelData by lazy { contactModel.data }
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
         val data = contactModelData ?: return
@@ -88,7 +89,7 @@ class OnFSFeatureMaskDowngradedTask(
         var fsSession: DHSession? = null
         try {
             fsSession = dhSessionStore.getBestDHSession(
-                identityStore.identity,
+                identityStore.getIdentity(),
                 contactModel.identity,
                 handle,
             )
@@ -135,7 +136,7 @@ class OnFSFeatureMaskDowngradedTask(
 
     @Serializable
     class OnFSFeatureMaskDowngradedData(
-        private val identity: String,
+        private val identity: Identity,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
             val contactModel = serviceManager.modelRepositories.contacts.getByIdentity(identity)

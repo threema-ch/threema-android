@@ -182,8 +182,8 @@ public class BallotServiceImpl implements BallotService {
                 this.databaseService.getBallotModelFactory().update(
                     ballotModel);
                 this.openBallotId = ballotModel.getId();
-                //disabled for the moment!
-//						this.handleModified(ballotModel);
+                // disabled for the moment!
+                // this.handleModified(ballotModel);
                 return true;
             } else if (this.openBallotId == ballotModel.getId()) {
                 this.openBallotId = 0;

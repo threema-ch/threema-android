@@ -38,7 +38,6 @@ import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.app.testutils.clearDatabaseAndCaches
 import ch.threema.app.utils.AppVersionProvider
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ForwardSecurityStatusSender
 import ch.threema.base.crypto.HashedNonce
 import ch.threema.base.crypto.Nonce
@@ -68,7 +67,7 @@ import ch.threema.domain.protocol.csp.messages.TextMessage
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataInit
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityEnvelopeMessage
 import ch.threema.domain.stores.ContactStore
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.QueueSendCompleteListener
 import ch.threema.domain.taskmanager.Task
@@ -86,6 +85,7 @@ import kotlin.test.BeforeTest
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.runBlocking
+import okhttp3.OkHttpClient
 import org.junit.Rule
 import org.junit.rules.Timeout
 
@@ -191,11 +191,13 @@ open class MessageProcessorProvider {
             null,
             /* isWork = */
             false,
-            /* sslSocketFactoryFactory = */
-            ConfigUtils::getSSLSocketFactory,
+            /* okHttpClient = */
+            OkHttpClient(),
             /* version = */
             Version(),
             /* language = */
+            null,
+            /* authenticator= */
             null,
         ),
         serviceManager.userService,
@@ -417,6 +419,7 @@ open class MessageProcessorProvider {
             AppVersionProvider.appVersion,
             serviceManager.databaseService,
             serviceManager.preferenceStore,
+            serviceManager.encryptedPreferenceStore,
             TaskArchiverImpl(serviceManager.databaseService.taskArchiveFactory),
             serviceManager.deviceCookieManager,
             taskManager,
@@ -520,7 +523,7 @@ open class MessageProcessorProvider {
      */
     protected suspend fun processMessage(
         message: AbstractMessage,
-        identityStore: IdentityStoreInterface,
+        identityStore: IdentityStore,
     ) {
         val messageBox = createMessageBox(
             message,
@@ -556,7 +559,7 @@ open class MessageProcessorProvider {
      */
     private fun createMessageBox(
         msg: AbstractMessage,
-        identityStore: IdentityStoreInterface,
+        identityStore: IdentityStore,
         forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor,
     ): MessageBox {
         val nonceFactory = NonceFactory(object : NonceStore {

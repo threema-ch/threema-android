@@ -22,31 +22,33 @@
 package ch.threema.domain.onprem
 
 import ch.threema.base.ThreemaException
+import ch.threema.common.Http
 import ch.threema.common.TimeProvider
+import ch.threema.common.buildRequest
+import ch.threema.common.execute
+import ch.threema.common.getSuccessBodyOrThrow
 import ch.threema.common.minus
-import ch.threema.domain.protocol.ProtocolStrings
+import ch.threema.domain.protocol.getUserAgent
 import java.io.IOException
-import java.net.HttpURLConnection.HTTP_FORBIDDEN
-import java.net.HttpURLConnection.HTTP_UNAUTHORIZED
 import java.time.Instant
 import kotlin.time.Duration.Companion.minutes
 import okhttp3.Credentials
 import okhttp3.OkHttpClient
-import okhttp3.Request
 
 class OnPremConfigFetcher(
     private val okHttpClient: OkHttpClient,
     private val onPremConfigVerifier: OnPremConfigVerifier,
     private val onPremConfigParser: OnPremConfigParser,
+    private val onPremConfigStore: OnPremConfigStore,
     private val serverParameters: OnPremServerConfigParameters,
     private val timeProvider: TimeProvider = TimeProvider.default,
 ) {
-    private var cachedConfig: OnPremConfig? = null
+    private var inMemoryCache: OnPremConfig? = null
     private var lastUnauthorized: Instant? = null
 
     @Throws(ThreemaException::class)
     fun fetch(): OnPremConfig = synchronized(this) {
-        cachedConfig?.let { cachedConfig ->
+        inMemoryCache?.let { cachedConfig ->
             if (cachedConfig.validUntil > timeProvider.get()) {
                 return cachedConfig
             }
@@ -58,25 +60,26 @@ class OnPremConfigFetcher(
             }
         }
 
-        val requestBuilder = Request.Builder().apply {
+        val request = buildRequest {
             url(serverParameters.url)
-            addHeader("User-Agent", ProtocolStrings.USER_AGENT)
+            header(Http.Header.USER_AGENT, getUserAgent())
             if (serverParameters.username != null && serverParameters.password != null) {
-                addHeader("Authorization", Credentials.basic(serverParameters.username, serverParameters.password))
+                header(Http.Header.AUTHORIZATION, Credentials.basic(serverParameters.username, serverParameters.password))
             }
         }
 
         val oppfString = try {
-            val response = okHttpClient.newCall(requestBuilder.build())
-                .execute()
-            if (!response.isSuccessful) {
-                if (response.code == HTTP_UNAUTHORIZED || response.code == HTTP_FORBIDDEN) {
-                    lastUnauthorized = timeProvider.get()
-                }
-                throw ThreemaException("Failed to fetch OnPrem config, unexpected response")
-            }
+            okHttpClient.execute(request)
+                .use { response ->
+                    if (!response.isSuccessful) {
+                        if (response.code == Http.StatusCode.UNAUTHORIZED || response.code == Http.StatusCode.FORBIDDEN) {
+                            lastUnauthorized = timeProvider.get()
+                        }
+                        throw ThreemaException("Failed to fetch OnPrem config, unexpected response")
+                    }
 
-            response.body!!.string()
+                    response.getSuccessBodyOrThrow().string()
+                }
         } catch (e: IOException) {
             throw ThreemaException("Failed to fetch OnPrem config", e)
         }
@@ -86,7 +89,12 @@ class OnPremConfigFetcher(
         if (!onPremConfig.isLicenseStillValid()) {
             throw ThreemaException("OnPrem license has expired")
         }
-        this.cachedConfig = onPremConfig
+        this.inMemoryCache = onPremConfig
+        try {
+            onPremConfigStore.store(oppfJsonObject)
+        } catch (e: IOException) {
+            throw ThreemaException("Failed to store OnPrem config in cache", e)
+        }
 
         return onPremConfig
     }

@@ -34,7 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-private val logger = LoggingUtil.getThreemaLogger("AudioWaveFormGenerator")
+private val logger = LoggingUtil.getThreemaLogger("AudioWaveformGeneratorTask")
 
 /**
  * Waveform generator for voice messages. Accepts 16bit sampled audio data only

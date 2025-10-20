@@ -24,47 +24,60 @@ package ch.threema.app.startup
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.launch
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.compose.theme.ThreemaTheme
+import ch.threema.app.passphrase.PassphraseUnlockContract
 import ch.threema.app.startup.components.AppStartupScreen
 import ch.threema.app.startup.components.ErrorState
 import ch.threema.app.startup.components.LoadingState
 import ch.threema.app.startup.components.UnlockRetryDialog
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.ShareUtil
+import ch.threema.app.utils.buildActivityIntent
+import ch.threema.app.utils.disableEnterTransition
+import ch.threema.app.utils.disableExitTransition
 import ch.threema.app.utils.getParcelable
+import ch.threema.app.utils.logScreenVisibility
 import ch.threema.app.utils.showToast
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.localcrypto.MasterKeyManager
 import kotlin.system.exitProcess
+import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 
 private val logger = LoggingUtil.getThreemaLogger("AppStartupActivity")
 
 /**
  * This activity is shown when the app is not (yet) ready to display the screen that the user requested,
- * e.g. because database or system updates need to wrap up first, or because an irrecoverable error occurred
+ * e.g. because database or system updates need to wrap up first, the master key is locked, or because an irrecoverable error occurred.
  */
-class AppStartupActivity : ComponentActivity() {
+class AppStartupActivity : AppCompatActivity() {
+    init {
+        logScreenVisibility(logger)
+    }
 
-    private val appStartupMonitor = ThreemaApplication.getAppStartupMonitor()
+    private val appStartupMonitor: AppStartupMonitor by inject()
+    private val masterKeyManager: MasterKeyManager by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
+        disableEnterTransition()
         super.onCreate(savedInstanceState)
 
         lifecycleScope.launch {
@@ -78,24 +91,19 @@ class AppStartupActivity : ComponentActivity() {
         }
 
         setContent {
-            var showUnlockRetryDialog by remember { mutableStateOf(false) }
-            val masterKeyUnlocker = rememberLauncherForActivityResult(MasterKeyUnlockContract) { unlocked ->
+            var showLoading by rememberSaveable { mutableStateOf(false) }
+            var showUnlockRetryDialog by rememberSaveable { mutableStateOf(false) }
+            val masterKeyUnlocker = rememberLauncherForActivityResult(PassphraseUnlockContract) { unlocked ->
+                showLoading = false
                 if (!unlocked) {
                     showUnlockRetryDialog = true
                 }
             }
             val pendingSystems by appStartupMonitor.observePendingSystems().collectAsStateWithLifecycle()
-            val errorCodes by appStartupMonitor.observeErrors().collectAsStateWithLifecycle()
+            val errors by appStartupMonitor.observeErrors().collectAsStateWithLifecycle()
 
             LaunchedEffect(Unit) {
-                val masterKey = try {
-                    ThreemaApplication.getMasterKey()
-                } catch (e: Exception) {
-                    // it might be that we got to the AppStartupActivity before or because of the failed initialization of the master key,
-                    // in which case we can't do anything here apart from displaying the error to the user.
-                    return@LaunchedEffect
-                }
-                if (masterKey.isLocked) {
+                if (errors.isEmpty() && !showUnlockRetryDialog && masterKeyManager.isProtected() && masterKeyManager.isLockedWithPassphrase()) {
                     masterKeyUnlocker.launch()
                 }
             }
@@ -115,14 +123,25 @@ class AppStartupActivity : ComponentActivity() {
                                 },
                             )
                         }
-                        errorCodes.isNotEmpty() -> {
+                        errors.isNotEmpty() -> {
                             ErrorState(
-                                errorCodes = errorCodes,
+                                errors = errors,
                                 onClickedExportLogs = ::exportLogs,
+                                onClickedRetryRemoteSecrets = RemoteSecretMonitorRetryController::requestRetry,
                             )
                         }
                         pendingSystems.isNotEmpty() -> {
-                            LoadingState(pendingSystems)
+                            LaunchedEffect(showLoading) {
+                                if (!showLoading) {
+                                    // We delay the displaying of the loading state a bit to avoid it flickering up,
+                                    // as in most cases it would only be visible very briefly anyway.
+                                    delay(500.milliseconds)
+                                    showLoading = true
+                                }
+                            }
+                            if (showLoading) {
+                                LoadingState(pendingSystems)
+                            }
                         }
                     }
                 }
@@ -145,6 +164,7 @@ class AppStartupActivity : ComponentActivity() {
             logger.error("Failed to return to original activity", e)
         }
         finish()
+        disableExitTransition()
     }
 
     private fun exportLogs() {
@@ -165,8 +185,10 @@ class AppStartupActivity : ComponentActivity() {
         private const val EXTRA_ORIGINAL_INTENT = "original_intent"
 
         fun createIntent(context: Context, originalIntent: Intent) =
-            Intent(context, AppStartupActivity::class.java)
-                .putExtra(EXTRA_ORIGINAL_INTENT, originalIntent)
+            buildActivityIntent<AppStartupActivity>(context) {
+                putExtra(EXTRA_ORIGINAL_INTENT, originalIntent)
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            }
 
         fun Intent.getOriginalIntent(): Intent = getParcelable(EXTRA_ORIGINAL_INTENT)!!
     }

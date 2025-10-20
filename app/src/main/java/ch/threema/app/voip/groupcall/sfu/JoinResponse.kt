@@ -24,7 +24,7 @@ package ch.threema.app.voip.groupcall.sfu
 import ch.threema.app.voip.groupcall.sfu.webrtc.DtlsParameters
 import ch.threema.app.voip.groupcall.sfu.webrtc.IceParameters
 import ch.threema.app.voip.groupcall.sfu.webrtc.SessionParameters
-import ch.threema.base.utils.toHexString
+import ch.threema.common.toHexString
 import ch.threema.protobuf.groupcall.SfuHttpResponse
 
 typealias JoinResponse = SfuResponse<JoinResponseBody>

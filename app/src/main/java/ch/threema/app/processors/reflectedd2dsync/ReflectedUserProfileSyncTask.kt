@@ -22,6 +22,7 @@
 package ch.threema.app.processors.reflectedd2dsync
 
 import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.profilepicture.RawProfilePicture
 import ch.threema.app.services.ContactService.ProfilePictureUploadData
 import ch.threema.app.services.IdListService
 import ch.threema.app.services.UserService
@@ -192,7 +193,7 @@ class ReflectedUserProfileSyncTask(
         when (blobLoadingResult) {
             is ReflectedBlobDownloader.BlobLoadingResult.Success -> {
                 val profilePictureUploadData = ProfilePictureUploadData().apply {
-                    this.bitmapArray = blobLoadingResult.blobBytes
+                    this.profilePicture = RawProfilePicture(blobLoadingResult.blobBytes)
                     this.blobId = profilePicture.updated.blob.id.toByteArray()
                     this.encryptionKey = profilePicture.updated.blob.key.toByteArray()
                     this.size = blobLoadingResult.blobSize

@@ -83,6 +83,7 @@
     <string name="voip_gc_waiting_for_participants">Wachten op deelnemers</string>
     <string name="voip_gc_participant_avatar_description">Profielfoto van deelnemer</string>
     <string name="voip_gc_participant_mute_status_description">Gedempte status deelnemer</string>
+    <string name="voip_gc_participant_screen_share_status_description">De deelnemer deelt een scherm</string>
     <string name="voip_gc_notification_new_call_public">Er is een nieuw groepsgesprek begonnen</string>
     <string name="voip_gc_open_call">Open</string>
     <string name="voip_gc_call_started">Groepsgesprek is gestart</string>
@@ -92,6 +93,7 @@
     <string name="voip_gc_call_error">Gesprek afgebroken vanwege een fout</string>
     <string name="voip_gc_call_start_error">Groepsgesprek is niet gestart</string>
     <string name="voip_gc_call_already_ended">Groepsgesprek is al beëindigd</string>
+    <string name="voip_gc_screen_sharing_not_supported">Scherm delen is momenteel beperkt tot desktopapparaten.</string>
     <string name="voip_gc_call_full_generic">Maximum bereikt: niet mogelijk om extra deelnemers toe te voegen aan dit groepsgesprek.</string>
     <string name="voip_gc_call_full_n">Maximum van %1$d deelnemers is bereikt, u kunt niet deelnemen aan dit groepsgesprek.</string>
     <plurals name="n_participants_in_call">

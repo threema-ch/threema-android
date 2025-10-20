@@ -2,11 +2,12 @@
 use std::collections::HashMap;
 
 use duplicate::duplicate_item;
+use educe::Educe;
 use libthreema_macros::{DebugVariantNames, VariantNames};
 use prost::Message as _;
 use rand::{self, Rng as _};
 use tracing::{debug, trace, warn};
-use zeroize::{Zeroize, ZeroizeOnDrop};
+use zeroize::ZeroizeOnDrop;
 
 use self::frame::FrameDecoder;
 pub use self::frame::{IncomingFrame, OutgoingFrame};
@@ -106,7 +107,7 @@ pub enum RendezvousProtocolError {
 }
 
 /// Authentication Key (AK).
-#[derive(Zeroize, ZeroizeOnDrop)]
+#[derive(ZeroizeOnDrop)]
 pub struct AuthenticationKey(pub [u8; 32]);
 
 /// Rendezvous Path Hash (RPH), derived from the Shared Transport Key (STK).
@@ -888,6 +889,7 @@ impl Path for path_type {
 }
 
 /// Internal protocol state.
+#[derive(DebugVariantNames, VariantNames)]
 enum ProtocolState {
     /// The paths are currently racing, meaning we are in the _handshake and nomination phase_.
     RacingPaths(HashMap<u32, Box<dyn Path>>),
@@ -944,14 +946,16 @@ enum ProtocolState {
 /// 3. Tear down the protocol state machine.
 /// 4. Close all remaining paths exceptionally.
 /// 5. Hand off `cause` to the ULP.
+#[derive(Educe)]
+#[educe(Debug)]
 pub struct RendezvousProtocol {
+    #[educe(Debug(ignore))]
     ctx: Context,
     state: ProtocolState,
 }
 
 // TODO(LIB-11): Add construction of the `RendezvousInit` from the paths here.
 impl RendezvousProtocol {
-    #[tracing::instrument(skip(ak))]
     /// Create a new Connection Rendezvous Protocol as the Rendezvous Initiator Device (RID) from a
     /// formerly exchanged `RendezvousInit`.
     ///
@@ -959,6 +963,7 @@ impl RendezvousProtocol {
     /// (PID).
     ///
     /// Returns the protocol state machine instance.
+    #[tracing::instrument(skip_all, fields(?is_nominator, ?pids))]
     pub fn new_as_rid(is_nominator: bool, ak: AuthenticationKey, pids: &[u32]) -> Self {
         debug!("Creating D2D rendezvous protocol");
         let ctx = Context::new(is_nominator, ak);
@@ -987,7 +992,7 @@ impl RendezvousProtocol {
     ///
     /// Returns a tuple of the protocol state machine instance and a list of PIDs and outgoing
     /// frames to be enqueued on the respective paths immediately.
-    #[tracing::instrument(skip(ak))]
+    #[tracing::instrument(skip_all, fields(?is_nominator, ?pids))]
     pub fn new_as_rrd(
         is_nominator: bool,
         ak: AuthenticationKey,
@@ -1038,7 +1043,10 @@ impl RendezvousProtocol {
     ///
     /// Returns [`RendezvousProtocolError::UnknownOrDroppedPath`] if the path associated to `pid`
     /// could not be found.
-    #[tracing::instrument(skip(self, chunks))]
+    #[tracing::instrument(skip_all, fields(
+        ?self, ?pid,
+        chunks_byte_length = chunks.iter().map(|chunk| chunk.len()).sum::<usize>(),
+    ))]
     pub fn add_chunks(&mut self, pid: u32, chunks: &[&[u8]]) -> Result<(), RendezvousProtocolError> {
         let path = Self::lookup_path(&mut self.state, pid)?;
         path.add_chunks(chunks)
@@ -1052,7 +1060,7 @@ impl RendezvousProtocol {
     /// to `pid` could not be found, an incoming frame could not be decoded or decrypted, or an
     /// unexpected message was received, or, as a response to it, another outgoing frame could not
     /// be encrypted.
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(skip_all, fields(?self, ?pid))]
     pub fn process_frame(&mut self, pid: u32) -> Result<Option<PathProcessResult>, RendezvousProtocolError> {
         let path = Self::lookup_path(&mut self.state, pid)?;
 
@@ -1089,7 +1097,7 @@ impl RendezvousProtocol {
     /// Returns [`RendezvousProtocolError`] if the protocol did not take the role of the nominator,
     /// the path associated to `pid` could not be found, the path is not ready to be nominated or
     /// nomination already happened.
-    #[tracing::instrument(skip(self))]
+    #[tracing::instrument(skip_all, fields(?self, ?pid))]
     pub fn nominate_path(&mut self, pid: u32) -> Result<PathProcessResult, RendezvousProtocolError> {
         // Ensure we're allowed to nominate
         if !self.ctx.is_nominator {
@@ -1125,6 +1133,7 @@ impl RendezvousProtocol {
     ///
     /// Returns [`RendezvousProtocolError`] if nomination of a path is still pending or the ULP
     /// frame could not be encrypted or encoded.
+    #[tracing::instrument(skip_all, fields(?self, outgoing_data_length = outgoing_data.len()))]
     pub fn create_ulp_frame(
         &mut self,
         outgoing_data: Vec<u8>,

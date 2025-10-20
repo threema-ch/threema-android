@@ -58,6 +58,19 @@ sealed class BuildFlavor(
         HMS,
         HMS_WORK,
         ONPREM,
+        ;
+
+        fun isOnPrem() =
+            this == ONPREM
+
+        fun isWork() =
+            when (this) {
+                GOOGLE_WORK,
+                HMS_WORK,
+                ONPREM,
+                -> true
+                else -> false
+            }
     }
 
     enum class BuildEnvironment {
@@ -182,4 +195,10 @@ sealed class BuildFlavor(
      */
     val isSandbox: Boolean
         get() = buildEnvironment == BuildEnvironment.SANDBOX
+
+    val isWork: Boolean
+        get() = licenseType.isWork()
+
+    val isOnPrem: Boolean
+        get() = licenseType.isOnPrem()
 }

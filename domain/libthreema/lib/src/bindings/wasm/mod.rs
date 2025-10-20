@@ -1,9 +1,9 @@
+//! WASM (FFI) bindings.
 #![allow(
     clippy::allow_attributes,
     reason = "https://github.com/rust-lang/rust-clippy/issues/14008"
 )]
 
-//! WASM (FFI) bindings.
 use logging::{LogDispatcher, LogLevel, PanicDispatcher, init_logging, init_panic_dispatcher};
 use wasm_bindgen::prelude::*;
 
@@ -16,7 +16,9 @@ mod external_crate_false_positives {
 
 pub mod crypto;
 pub mod d2d_rendezvous;
+pub mod https;
 pub mod logging;
+pub mod remote_secret;
 
 /// Initialise libthreema.
 ///

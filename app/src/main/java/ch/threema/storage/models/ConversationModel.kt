@@ -87,6 +87,9 @@ class ConversationModel(
     @JvmField
     var isUnreadTagged: Boolean = false
 
+    @JvmField
+    var isArchived: Boolean = false
+
     val uid: String
         get() = when {
             isContactConversation -> getIdentityConversationUid(contact!!.identity)

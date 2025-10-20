@@ -22,6 +22,8 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.ThreemaApplication
+import ch.threema.base.crypto.NaCl
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModelData
@@ -32,14 +34,11 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.domain.taskmanager.Task
-import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.ContactModel
-import com.neilalexander.jnacl.NaCl
 import java.util.Date
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
-import junit.framework.TestCase.fail
+import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -56,7 +55,7 @@ class PersistableTasksTest {
     @Test
     fun testContactDeliveryReceiptMessageTask() {
         assertValidEncoding(
-            OutgoingContactDeliveryReceiptMessageTask::class.java,
+            OutgoingContactDeliveryReceiptMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingContactDeliveryReceiptMessageTask.OutgoingDeliveryReceiptMessageData",""" +
                 """"receiptType":1,"messageIds":["0000000000000000"],"date":"1234567890","toIdentity":"01234567"}""",
         )
@@ -65,7 +64,7 @@ class PersistableTasksTest {
     @Test
     fun testFileMessageTask() {
         assertValidEncoding(
-            OutgoingFileMessageTask::class.java,
+            OutgoingFileMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingFileMessageTask.OutgoingFileMessageData","messageModelId":1,"receiverType":0,""" +
                 """"recipientIdentities":["01234567"],"thumbnailBlobId":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}""",
         )
@@ -74,7 +73,7 @@ class PersistableTasksTest {
     @Test
     fun testGroupDeleteProfilePictureTask() {
         assertValidEncoding(
-            OutgoingGroupDeleteProfilePictureTask::class.java,
+            OutgoingGroupDeleteProfilePictureTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingGroupDeleteProfilePictureTask.OutgoingGroupDeleteProfilePictureData",""" +
                 """"groupId":[0,0,0,0,0,0,0,0],"creatorIdentity":"01234567","receiverIdentities":["01234567"],""" +
                 """"messageId":[0,0,0,0,0,0,0,0]}""",
@@ -84,7 +83,7 @@ class PersistableTasksTest {
     @Test
     fun testGroupDeliveryReceiptMessageTask() {
         assertValidEncoding(
-            OutgoingGroupDeliveryReceiptMessageTask::class.java,
+            OutgoingGroupDeliveryReceiptMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingGroupDeliveryReceiptMessageTask.OutgoingGroupDeliveryReceiptMessageData",""" +
                 """"messageModelId":0,"recipientIdentities":["01234567","01234567"],"receiptType":0}""",
         )
@@ -93,7 +92,7 @@ class PersistableTasksTest {
     @Test
     fun testGroupLeaveTask() {
         assertValidEncoding(
-            OutgoingGroupLeaveTask::class.java,
+            OutgoingGroupLeaveTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingGroupLeaveTask.OutgoingGroupLeaveTaskData",""" +
                 """"groupIdentity":{"creatorIdentity":"01234567","groupId":42},"memberIdentities":["01234567"],""" +
                 """"messageId":[0,0,0,0,0,0,0,0]}""",
@@ -103,7 +102,7 @@ class PersistableTasksTest {
     @Test
     fun testGroupNameTask() {
         assertValidEncoding(
-            OutgoingGroupNameTask::class.java,
+            OutgoingGroupNameTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingGroupNameTask.OutgoingGroupNameData","groupId":[0,0,0,0,0,0,0,0],""" +
                 """"creatorIdentity":"01234567","groupName":"groupName","receiverIdentities":["01234567"],""" +
                 """"messageId":[0,0,0,0,0,0,0,0]}""",
@@ -113,7 +112,7 @@ class PersistableTasksTest {
     @Test
     fun testGroupProfilePictureTask() {
         assertValidEncoding(
-            OutgoingGroupProfilePictureTask::class.java,
+            OutgoingGroupProfilePictureTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingGroupProfilePictureTask.OutgoingGroupProfilePictureData",""" +
                 """"groupId":[0,0,0,0,0,0,0,0],"creatorIdentity":"01234567","receiverIdentities":["01234567"],""" +
                 """"messageId":[0,0,0,0,0,0,0,0]}""",
@@ -123,7 +122,7 @@ class PersistableTasksTest {
     @Test
     fun testGroupSetupTask() {
         assertValidEncoding(
-            OutgoingGroupSetupTask::class.java,
+            OutgoingGroupSetupTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingGroupSetupTask.OutgoingGroupSetupData","groupId":[0,0,0,0,0,0,0,0],""" +
                 """"creatorIdentity":"01234567","memberIdentities":["01234567"],"receiverIdentities":["01234567"],""" +
                 """"messageId":[0,0,0,0,0,0,0,0]}""",
@@ -133,7 +132,7 @@ class PersistableTasksTest {
     @Test
     fun testGroupSyncRequestTask() {
         assertValidEncoding(
-            OutgoingGroupSyncRequestTask::class.java,
+            OutgoingGroupSyncRequestTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingGroupSyncRequestTask.OutgoingGroupSyncRequestData",""" +
                 """"groupId":[0,0,0,0,0,0,0,0],"creatorIdentity":"01234567","messageId":[0,0,0,0,0,0,0,0]}""",
         )
@@ -142,7 +141,7 @@ class PersistableTasksTest {
     @Test
     fun testGroupSyncTask() {
         assertValidEncoding(
-            OutgoingGroupSyncTask::class.java,
+            OutgoingGroupSyncTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingGroupSyncTask.OutgoingGroupSyncData","groupId":[0,0,0,0,0,0,0,0],""" +
                 """"creatorIdentity":"01234567","receiverIdentities":["01234567"]}""",
         )
@@ -151,7 +150,7 @@ class PersistableTasksTest {
     @Test
     fun testLocationMessageTask() {
         assertValidEncoding(
-            OutgoingLocationMessageTask::class.java,
+            OutgoingLocationMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingLocationMessageTask.OutgoingLocationMessageTaskData","messageModelId":0,""" +
                 """"recipientIdentities":["01234567","01234567"],"receiverType":0}""",
         )
@@ -160,7 +159,7 @@ class PersistableTasksTest {
     @Test
     fun testPollSetupMessageTask() {
         assertValidEncoding(
-            OutgoingPollSetupMessageTask::class.java,
+            OutgoingPollSetupMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingPollSetupMessageTask.OutgoingPollSetupMessageData","messageModelId":0,""" +
                 """"recipientIdentities":["01234567","01234567"],"receiverType":0,"ballotId":[-58,11,102,-122,-119,-102,19,-10],""" +
                 """"ballotData":"{\"d\":\"description\",\"s\":0,\"a\":0,\"t\":1,\"o\":0,\"u\":0,""" +
@@ -171,7 +170,7 @@ class PersistableTasksTest {
     @Test
     fun testPollVoteContactMessageTask() {
         assertValidEncoding(
-            OutgoingPollVoteContactMessageTask::class.java,
+            OutgoingPollVoteContactMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingPollVoteContactMessageTask.OutgoingPollVoteContactMessageData",""" +
                 """"messageId":"0000000000000000","ballotId":[-127,-79,80,-109,-98,62,-3,81],"ballotCreator":"01234567",""" +
                 """"ballotVotes":[{"first":0,"second":0}],"toIdentity":"01234567"}""",
@@ -181,7 +180,7 @@ class PersistableTasksTest {
     @Test
     fun testPollVoteGroupMessageTask() {
         assertValidEncoding(
-            OutgoingPollVoteGroupMessageTask::class.java,
+            OutgoingPollVoteGroupMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingPollVoteGroupMessageTask.OutgoingPollVoteGroupMessageData",""" +
                 """"messageId":"0000000000000000","recipientIdentities":["01234567","01234567"],"ballotId":[52,64,-6,18,2,-71,124,-19],""" +
                 """"ballotCreator":"01234567","ballotVotes":[{"first":0,"second":0}],"ballotType":"INTERMEDIATE",""" +
@@ -192,7 +191,7 @@ class PersistableTasksTest {
     @Test
     fun testTextMessageTask() {
         assertValidEncoding(
-            OutgoingTextMessageTask::class.java,
+            OutgoingTextMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingTextMessageTask.OutgoingTextMessageData","messageModelId":0,""" +
                 """"recipientIdentities":["01234567","01234567"],"receiverType":0}""",
         )
@@ -201,7 +200,7 @@ class PersistableTasksTest {
     @Test
     fun testSendProfilePictureTask() {
         assertValidEncoding(
-            SendProfilePictureTask::class.java,
+            SendProfilePictureTask::class,
             """{"type":"ch.threema.app.tasks.SendProfilePictureTask.SendProfilePictureData","toIdentity":"01234567"}""",
         )
     }
@@ -209,7 +208,7 @@ class PersistableTasksTest {
     @Test
     fun testSendPushTokenTask() {
         assertValidEncoding(
-            SendPushTokenTask::class.java,
+            SendPushTokenTask::class,
             """{"type":"ch.threema.app.tasks.SendPushTokenTask.SendPushTokenData","token":"token","tokenType":0}""",
         )
     }
@@ -217,7 +216,7 @@ class PersistableTasksTest {
     @Test
     fun testOutgoingContactRequestProfilePictureTask() {
         assertValidEncoding(
-            OutgoingContactRequestProfilePictureTask::class.java,
+            OutgoingContactRequestProfilePictureTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingContactRequestProfilePictureTask.OutgoingContactRequestProfilePictureData",""" +
                 """"toIdentity":"01234567"}""",
         )
@@ -229,22 +228,22 @@ class PersistableTasksTest {
         addTestData()
 
         assertValidEncoding(
-            DeleteAndTerminateFSSessionsTask::class.java,
+            DeleteAndTerminateFSSessionsTask::class,
             """{"type":"ch.threema.app.tasks.DeleteAndTerminateFSSessionsTask.DeleteAndTerminateFSSessionsTaskData",""" +
                 """"identity":"01234567","cause":"RESET"}""",
         )
         assertValidEncoding(
-            DeleteAndTerminateFSSessionsTask::class.java,
+            DeleteAndTerminateFSSessionsTask::class,
             """{"type":"ch.threema.app.tasks.DeleteAndTerminateFSSessionsTask.DeleteAndTerminateFSSessionsTaskData",""" +
                 """"identity":"01234567","cause":"UNKNOWN_SESSION"}""",
         )
         assertValidEncoding(
-            DeleteAndTerminateFSSessionsTask::class.java,
+            DeleteAndTerminateFSSessionsTask::class,
             """{"type":"ch.threema.app.tasks.DeleteAndTerminateFSSessionsTask.DeleteAndTerminateFSSessionsTaskData",""" +
                 """"identity":"01234567","cause":"DISABLED_BY_LOCAL"}""",
         )
         assertValidEncoding(
-            DeleteAndTerminateFSSessionsTask::class.java,
+            DeleteAndTerminateFSSessionsTask::class,
             """{"type":"ch.threema.app.tasks.DeleteAndTerminateFSSessionsTask.DeleteAndTerminateFSSessionsTaskData",""" +
                 """"identity":"01234567","cause":"DISABLED_BY_REMOTE"}""",
         )
@@ -253,7 +252,7 @@ class PersistableTasksTest {
     @Test
     fun testApplicationUpdateStepsTask() {
         assertValidEncoding(
-            ApplicationUpdateStepsTask::class.java,
+            ApplicationUpdateStepsTask::class,
             """{"type":"ch.threema.app.tasks.ApplicationUpdateStepsTask.ApplicationUpdateStepsData"}""",
         )
     }
@@ -261,7 +260,7 @@ class PersistableTasksTest {
     @Test
     fun testFSRefreshStepsTask() {
         assertValidEncoding(
-            FSRefreshStepsTask::class.java,
+            FSRefreshStepsTask::class,
             """{"type":"ch.threema.app.tasks.FSRefreshStepsTask.FSRefreshStepsTaskData","contactIdentities":["01234567"]}""",
         )
     }
@@ -269,7 +268,7 @@ class PersistableTasksTest {
     @Test
     fun testOutboundIncomingContactMessageUpdateReadTask() {
         assertValidEncoding(
-            OutboundIncomingContactMessageUpdateReadTask::class.java,
+            OutboundIncomingContactMessageUpdateReadTask::class,
             """{"type":"ch.threema.app.tasks.OutboundIncomingContactMessageUpdateReadTask.OutboundIncomingContactMessageUpdateReadData",""" +
                 """"messageIds":[[0,-1,2,3,4,5,6,7]],"timestamp":1704067200000,"recipientIdentity":"01234567"}""",
         )
@@ -278,7 +277,7 @@ class PersistableTasksTest {
     @Test
     fun testOutboundIncomingGroupMessageUpdateReadTask() {
         assertValidEncoding(
-            OutboundIncomingGroupMessageUpdateReadTask::class.java,
+            OutboundIncomingGroupMessageUpdateReadTask::class,
             """{"type":"ch.threema.app.tasks.OutboundIncomingGroupMessageUpdateReadTask.OutboundIncomingGroupMessageUpdateReadData",""" +
                 """"messageIds":[[0,-1,2,3,4,5,6,7]],"timestamp":1704067200000,"groupId":[0,0,0,0,0,0,0,0],""" +
                 """"creatorIdentity":"01234567"}""",
@@ -288,7 +287,7 @@ class PersistableTasksTest {
     @Test
     fun testOutgoingContactEditMessageTask() {
         assertValidEncoding(
-            OutgoingContactEditMessageTask::class.java,
+            OutgoingContactEditMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingContactEditMessageTask.OutgoingContactEditMessageData",""" +
                 """"toIdentity":"01234567","messageModelId":0, "messageId":[0,0,0,0,0,0,0,0], "editedText":"test", "editedAt":0}""",
         )
@@ -297,7 +296,7 @@ class PersistableTasksTest {
     @Test
     fun testOutgoingGroupEditMessageTask() {
         assertValidEncoding(
-            OutgoingGroupEditMessageTask::class.java,
+            OutgoingGroupEditMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingGroupEditMessageTask.OutgoingGroupEditMessageData","messageModelId":0, """ +
                 """"messageId":[0,0,0,0,0,0,0,0], "editedText":"test", "editedAt":0,"recipientIdentities":["01234567","01234567"]}""",
         )
@@ -306,7 +305,7 @@ class PersistableTasksTest {
     @Test
     fun testOutgoingContactDeleteMessageTask() {
         assertValidEncoding(
-            OutgoingContactDeleteMessageTask::class.java,
+            OutgoingContactDeleteMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingContactDeleteMessageTask.OutgoingContactDeleteMessageData",""" +
                 """"toIdentity":"01234567","messageModelId":0, "messageId":[0,0,0,0,0,0,0,0], "deletedAt":0}""",
         )
@@ -315,7 +314,7 @@ class PersistableTasksTest {
     @Test
     fun testOutgoingGroupDeleteMessageTask() {
         assertValidEncoding(
-            OutgoingGroupDeleteMessageTask::class.java,
+            OutgoingGroupDeleteMessageTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingGroupDeleteMessageTask.OutgoingGroupDeleteMessageData",""" +
                 """"messageModelId":0,"messageId":[0,0,0,0,0,0,0,0],"deletedAt":0,"recipientIdentities":["01234567","01234567"]}""",
         )
@@ -324,7 +323,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectUserProfileNicknameSyncTask() {
         assertValidEncoding(
-            ReflectUserProfileNicknameSyncTask::class.java,
+            ReflectUserProfileNicknameSyncTask::class,
             """{"type":"ch.threema.app.tasks.ReflectUserProfileNicknameSyncTask.ReflectUserProfileNicknameSyncTaskData",""" +
                 """"newNickname":"nick"}""",
         )
@@ -333,7 +332,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectUserProfilePictureSyncTask() {
         assertValidEncoding(
-            ReflectUserProfilePictureSyncTask::class.java,
+            ReflectUserProfilePictureSyncTask::class,
             """{"type":"ch.threema.app.tasks.ReflectUserProfilePictureSyncTask.ReflectUserProfilePictureSyncTaskData"}""",
         )
     }
@@ -341,7 +340,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectUserProfileShareWithPolicySyncTask() {
         assertValidEncoding(
-            ReflectUserProfileShareWithPolicySyncTask::class.java,
+            ReflectUserProfileShareWithPolicySyncTask::class,
             """{"type":"ch.threema.app.tasks.ReflectUserProfileShareWithPolicySyncTask.ReflectUserProfileShareWithPolicySyncTaskData",""" +
                 """"newPolicy":"NOBODY"}""",
         )
@@ -350,7 +349,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectUserProfileShareWithAllowListSyncTask() {
         assertValidEncoding(
-            ReflectUserProfileShareWithAllowListSyncTask::class.java,
+            ReflectUserProfileShareWithAllowListSyncTask::class,
             """{"type":""" +
                 """"ch.threema.app.tasks.ReflectUserProfileShareWithAllowListSyncTask.ReflectUserProfileShareWithAllowListSyncTaskData",""" +
                 """"allowedIdentities":["01234567", "01234568"]}""",
@@ -360,7 +359,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectUserProfileIdentityLinksTask() {
         assertValidEncoding(
-            expectedTaskClass = ReflectUserProfileIdentityLinksTask::class.java,
+            expectedTaskClass = ReflectUserProfileIdentityLinksTask::class,
             encodedTask = """{"type":"ch.threema.app.tasks.ReflectUserProfileIdentityLinksTask.ReflectUserProfileIdentityLinksTaskData"}""",
         )
     }
@@ -368,17 +367,17 @@ class PersistableTasksTest {
     @Test
     fun testReflectNameUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectNameUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectNameUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectNameUpdate.ReflectNameUpdateData",""" +
                 """"firstName":"A","lastName":"B","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectNameUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectNameUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectNameUpdate.ReflectNameUpdateData",""" +
                 """"firstName":"A","lastName":"","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectNameUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectNameUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectNameUpdate.ReflectNameUpdateData",""" +
                 """"firstName":"","lastName":"B","identity":"01234567"}""",
         )
@@ -387,17 +386,17 @@ class PersistableTasksTest {
     @Test
     fun testReflectReadReceiptPolicyUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate.ReflectReadReceiptPolicyUpdateData",""" +
                 """"readReceiptPolicy":"DEFAULT","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate.ReflectReadReceiptPolicyUpdateData",""" +
                 """"readReceiptPolicy":"SEND","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate.ReflectReadReceiptPolicyUpdateData",""" +
                 """"readReceiptPolicy":"DONT_SEND","identity":"01234567"}""",
         )
@@ -406,17 +405,17 @@ class PersistableTasksTest {
     @Test
     fun testReflectTypingIndicatorPolicyUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate.""" +
                 """ReflectTypingIndicatorPolicyUpdateData","typingIndicatorPolicy":"DEFAULT","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate.""" +
                 """ReflectTypingIndicatorPolicyUpdateData","typingIndicatorPolicy":"SEND","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate.""" +
                 """ReflectTypingIndicatorPolicyUpdateData","typingIndicatorPolicy":"DONT_SEND","identity":"01234567"}""",
         )
@@ -425,17 +424,17 @@ class PersistableTasksTest {
     @Test
     fun testReflectActivityStateUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectActivityStateUpdate.ReflectActivityStateUpdateData",""" +
                 """"identityState":"ACTIVE","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectActivityStateUpdate.ReflectActivityStateUpdateData",""" +
                 """"identityState":"INACTIVE","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectActivityStateUpdate.ReflectActivityStateUpdateData",""" +
                 """"identityState":"INVALID","identity":"01234567"}""",
         )
@@ -444,7 +443,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectFeatureMaskUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectFeatureMaskUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectFeatureMaskUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectFeatureMaskUpdate.ReflectFeatureMaskUpdateData",""" +
                 """"featureMask":12345,"identity":"01234567"}""",
         )
@@ -453,17 +452,17 @@ class PersistableTasksTest {
     @Test
     fun testVerificationLevelUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate.ReflectVerificationLevelUpdateData",""" +
                 """"verificationLevel":"UNVERIFIED","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate.ReflectVerificationLevelUpdateData",""" +
                 """"verificationLevel":"SERVER_VERIFIED","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate.ReflectVerificationLevelUpdateData",""" +
                 """"verificationLevel":"FULLY_VERIFIED","identity":"01234567"}""",
         )
@@ -472,12 +471,12 @@ class PersistableTasksTest {
     @Test
     fun testWorkVerificationLevelUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate.""" +
                 """ReflectWorkVerificationLevelUpdateData","workVerificationLevel":"NONE","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate.""" +
                 """ReflectWorkVerificationLevelUpdateData","workVerificationLevel":"WORK_SUBSCRIPTION_VERIFIED","identity":"01234567"}""",
         )
@@ -486,12 +485,12 @@ class PersistableTasksTest {
     @Test
     fun testIdentityTypeUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate.ReflectIdentityTypeUpdateData",""" +
                 """"identityType":"NORMAL","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate.ReflectIdentityTypeUpdateData",""" +
                 """"identityType":"WORK","identity":"01234567"}""",
         )
@@ -500,12 +499,12 @@ class PersistableTasksTest {
     @Test
     fun testAcquaintanceLevelUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate.ReflectAcquaintanceLevelUpdateData",""" +
                 """"acquaintanceLevel":"DIRECT","identity":"01234567"}""",
         )
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate.ReflectAcquaintanceLevelUpdateData",""" +
                 """"acquaintanceLevel":"GROUP","identity":"01234567"}""",
         )
@@ -514,7 +513,7 @@ class PersistableTasksTest {
     @Test
     fun testUserDefinedProfilePictureUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectUserDefinedProfilePictureUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectUserDefinedProfilePictureUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectUserDefinedProfilePictureUpdate.""" +
                 """ReflectUserDefinedProfilePictureUpdateData","identity":"0BZYE2H9"}""",
         )
@@ -526,7 +525,7 @@ class PersistableTasksTest {
         addTestData()
 
         assertValidEncoding(
-            OnFSFeatureMaskDowngradedTask::class.java,
+            OnFSFeatureMaskDowngradedTask::class,
             """{"type":"ch.threema.app.tasks.OnFSFeatureMaskDowngradedTask.OnFSFeatureMaskDowngradedData","identity":"01234567"}""",
         )
     }
@@ -534,7 +533,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectContactSyncPolicyUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectContactSyncPolicySyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectContactSyncPolicySyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectContactSyncPolicySyncUpdate.""" +
                 """ReflectContactSyncPolicySyncUpdateData"}""",
         )
@@ -543,7 +542,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectUnknownContactPolicyUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectUnknownContactPolicySyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectUnknownContactPolicySyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectUnknownContactPolicySyncUpdate.""" +
                 """ReflectUnknownContactPolicySyncUpdateData"}""",
         )
@@ -552,7 +551,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectReadReceiptPolicySyncUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectReadReceiptPolicySyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectReadReceiptPolicySyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectReadReceiptPolicySyncUpdate.ReadReceiptPolicySyncUpdateData"}""",
         )
     }
@@ -560,7 +559,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectTypingIndicatorPolicySyncUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectTypingIndicatorPolicySyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectTypingIndicatorPolicySyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectTypingIndicatorPolicySyncUpdate.""" +
                 """ReflectTypingIndicatorPolicySyncUpdateData"}""",
         )
@@ -569,7 +568,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectO2oCallPolicySyncUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectO2oCallPolicySyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectO2oCallPolicySyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectO2oCallPolicySyncUpdate.""" +
                 """ReflectO2oCallPolicySyncUpdateData"}""",
         )
@@ -578,7 +577,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectO2oCallConnectionPolicySyncUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectO2oCallConnectionPolicySyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectO2oCallConnectionPolicySyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectO2oCallConnectionPolicySyncUpdate.""" +
                 """ReflectO2oCallConnectionPolicySyncUpdateData"}""",
         )
@@ -587,7 +586,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectO2oCallVideoPolicySyncUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectO2oCallVideoPolicySyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectO2oCallVideoPolicySyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectO2oCallVideoPolicySyncUpdate.""" +
                 """ReflectO2oCallVideoPolicySyncUpdateData"}""",
         )
@@ -596,7 +595,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectGroupCallPolicySyncUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectGroupCallPolicySyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectGroupCallPolicySyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectGroupCallPolicySyncUpdate.""" +
                 """ReflectGroupCallPolicySyncUpdateData"}""",
         )
@@ -605,7 +604,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectScreenshotPolicySyncUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectScreenshotPolicySyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectScreenshotPolicySyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectScreenshotPolicySyncUpdate.""" +
                 """ReflectScreenshotPolicySyncUpdateData"}""",
         )
@@ -614,7 +613,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectKeyboardDataCollectionPolicySyncUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectKeyboardDataCollectionPolicySyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectKeyboardDataCollectionPolicySyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectKeyboardDataCollectionPolicySyncUpdate.""" +
                 """ReflectKeyboardDataCollectionPolicySyncUpdateData"}""",
         )
@@ -623,7 +622,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectBlockedIdentitiesSyncUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectBlockedIdentitiesSyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectBlockedIdentitiesSyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectBlockedIdentitiesSyncUpdate.ReflectBlockedIdentitiesSyncUpdateData"}""",
         )
     }
@@ -631,7 +630,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectExcludeFromSyncIdentitiesSyncUpdate() {
         assertValidEncoding(
-            ReflectSettingsSyncTask.ReflectExcludeFromSyncIdentitiesSyncUpdate::class.java,
+            ReflectSettingsSyncTask.ReflectExcludeFromSyncIdentitiesSyncUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectExcludeFromSyncIdentitiesSyncUpdate.""" +
                 """ReflectExcludeFromSyncIdentitiesSyncUpdateData"}""",
         )
@@ -640,7 +639,7 @@ class PersistableTasksTest {
     @Test
     fun testGroupCreateTask() {
         assertValidEncoding(
-            GroupCreateTask::class.java,
+            GroupCreateTask::class,
             """{"type":"ch.threema.app.tasks.GroupCreateTask.GroupCreateTaskData","name":"Name","profilePictureChange":""" +
                 """{"type":"ch.threema.app.protocol.RemoveProfilePicture"},"members":["TESTTEST","01234567"],"groupIdentity":""" +
                 """{"creatorIdentity":"01234567","groupId":42},"predefinedMessageIds":{"messageIdBytes1":[-121,-57,86,-82,-126,8,80,89],""" +
@@ -652,7 +651,7 @@ class PersistableTasksTest {
     @Test
     fun testGroupUpdateTask() {
         assertValidEncoding(
-            GroupUpdateTask::class.java,
+            GroupUpdateTask::class,
             """{"type":"ch.threema.app.tasks.GroupUpdateTask.GroupUpdateTaskData","name":"Name","profilePictureChange":""" +
                 """{"type":"ch.threema.app.protocol.RemoveProfilePicture"},"updatedMembers":["01234567"],"addedMembers":["TESTTEST",""" +
                 """"01234567"],"removedMembers":["01234567"],"groupIdentity":{"creatorIdentity":"01234567","groupId":42},""" +
@@ -664,7 +663,7 @@ class PersistableTasksTest {
     @Test
     fun testOutgoingGroupDisbandTask() {
         assertValidEncoding(
-            OutgoingGroupDisbandTask::class.java,
+            OutgoingGroupDisbandTask::class,
             """{"type":"ch.threema.app.tasks.OutgoingGroupDisbandTask.OutgoingGroupDisbandTaskData","groupIdentity":""" +
                 """{"creatorIdentity":"TESTTEST","groupId":42},"members":["01234567"],"messageId":[0,1,2,3,4,5,6,7]}""",
         )
@@ -673,7 +672,7 @@ class PersistableTasksTest {
     @Test
     fun testContactNotificationTriggerPolicyOverrideUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectNotificationTriggerPolicyOverrideUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectNotificationTriggerPolicyOverrideUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectNotificationTriggerPolicyOverrideUpdate.""" +
                 """ReflectNotificationTriggerPolicyOverrideUpdateData","notificationTriggerPolicyOverride":1740396679447,""" +
                 """"contactIdentity":"01234567"}""",
@@ -684,7 +683,7 @@ class PersistableTasksTest {
     fun testGroupNotificationTriggerPolicyOverrideUpdate() {
         addTestData()
         assertValidEncoding(
-            ReflectGroupSyncUpdateTask.ReflectNotificationTriggerPolicyOverrideUpdate::class.java,
+            ReflectGroupSyncUpdateTask.ReflectNotificationTriggerPolicyOverrideUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectGroupSyncUpdateTask.ReflectNotificationTriggerPolicyOverrideUpdate.""" +
                 """ReflectNotificationTriggerPolicyOverrideUpdateData","newNotificationTriggerPolicyOverride":""" +
                 """{"type":"ch.threema.data.datatypes.NotificationTriggerPolicyOverride.MutedUntil","dbValue":1740396953761,""" +
@@ -695,7 +694,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectContactConversationCategoryUpdate() {
         assertValidEncoding(
-            expectedTaskClass = ReflectContactSyncUpdateTask.ReflectConversationCategoryUpdate::class.java,
+            expectedTaskClass = ReflectContactSyncUpdateTask.ReflectConversationCategoryUpdate::class,
             encodedTask = "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectConversationCategoryUpdate" +
                 ".ReflectContactConversationCategoryUpdateData\",\"contactIdentity\":\"01234567\",\"isPrivateChat\":true}",
         )
@@ -705,7 +704,7 @@ class PersistableTasksTest {
     fun testReflectGroupConversationCategoryUpdate() {
         addTestData()
         assertValidEncoding(
-            expectedTaskClass = ReflectGroupSyncUpdateTask.ReflectGroupConversationCategoryUpdateTask::class.java,
+            expectedTaskClass = ReflectGroupSyncUpdateTask.ReflectGroupConversationCategoryUpdateTask::class,
             encodedTask = "{\"type\":\"ch.threema.app.tasks.ReflectGroupSyncUpdateTask.ReflectGroupConversationCategoryUpdateTask" +
                 ".ReflectGroupConversationCategoryData\",\"groupIdentity\":{\"creatorIdentity\":\"01234567\",\"groupId\":6361180283070237492}" +
                 "\"isPrivateChat\":true}",
@@ -715,7 +714,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectContactConversationVisibilityArchiveUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectConversationVisibilityArchiveUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectConversationVisibilityArchiveUpdate::class,
             "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectConversationVisibilityArchiveUpdate" +
                 ".ReflectConversationVisibilityArchiveUpdateData\",\"isArchived\":true,\"contactIdentity\":\"01234567\"}",
         )
@@ -725,7 +724,7 @@ class PersistableTasksTest {
     fun testReflectGroupConversationVisibilityArchiveUpdate() {
         addTestData()
         assertValidEncoding(
-            ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityArchiveUpdate::class.java,
+            ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityArchiveUpdate::class,
             "{\"type\":\"ch.threema.app.tasks.ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityArchiveUpdate" +
                 ".ReflectGroupConversationVisibilityArchiveUpdateData\",\"isArchived\":true," +
                 "\"groupIdentity\":{\"creatorIdentity\":\"01234567\",\"groupId\":6361180283070237492}}",
@@ -735,7 +734,7 @@ class PersistableTasksTest {
     @Test
     fun testReflectContactConversationVisibilityPinnedUpdate() {
         assertValidEncoding(
-            ReflectContactSyncUpdateTask.ReflectConversationVisibilityPinnedUpdate::class.java,
+            ReflectContactSyncUpdateTask.ReflectConversationVisibilityPinnedUpdate::class,
             "{\"type\":\"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectConversationVisibilityPinnedUpdate" +
                 ".ReflectConversationVisibilityPinnedUpdateData\",\"isPinned\":true,\"contactIdentity\":\"01234567\"}",
         )
@@ -745,7 +744,7 @@ class PersistableTasksTest {
     fun testReflectGroupConversationVisibilityPinnedUpdate() {
         addTestData()
         assertValidEncoding(
-            ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityPinnedUpdate::class.java,
+            ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityPinnedUpdate::class,
             "{\"type\":\"ch.threema.app.tasks.ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityPinnedUpdate" +
                 ".ReflectGroupConversationVisibilityPinnedUpdateData\",\"isPinned\":true," +
                 "\"groupIdentity\":{\"creatorIdentity\":\"01234567\",\"groupId\":6361180283070237492}}",
@@ -753,9 +752,17 @@ class PersistableTasksTest {
     }
 
     @Test
+    fun testSyncFormerlyOrphanedGroupsTask() {
+        assertValidEncoding(
+            SyncFormerlyOrphanedGroupsTask::class,
+            """{"type":"ch.threema.app.tasks.SyncFormerlyOrphanedGroupsTask.SyncFormerlyOrphanedGroupsTaskData"}""",
+        )
+    }
+
+    @Test
     fun testDeactivateMultiDeviceTask() {
         assertValidEncoding(
-            expectedTaskClass = DeactivateMultiDeviceTask::class.java,
+            expectedTaskClass = DeactivateMultiDeviceTask::class,
             encodedTask = """{"type":"ch.threema.app.tasks.DeactivateMultiDeviceTask.DeactivateMultiDeviceTaskData"}""",
         )
     }
@@ -763,8 +770,17 @@ class PersistableTasksTest {
     @Test
     fun testDeactivateMultiDeviceIfAloneTask() {
         assertValidEncoding(
-            expectedTaskClass = DeactivateMultiDeviceIfAloneTask::class.java,
+            expectedTaskClass = DeactivateMultiDeviceIfAloneTask::class,
             encodedTask = """{"type":"ch.threema.app.tasks.DeactivateMultiDeviceIfAloneTask.DeactivateMultiDeviceIfAloneTaskData"}""",
+        )
+    }
+
+    @Test
+    fun testConvertGroupProfilePictureTask() {
+        assertValidEncoding(
+            expectedTaskClass = ConvertGroupProfilePictureTask::class,
+            encodedTask = """{"type":"ch.threema.app.tasks.ConvertGroupProfilePictureTask.ConvertGroupProfilePictureTaskData",""" +
+                """"groupIdentity":{"creatorIdentity":"01234567","groupId":42}}""",
         )
     }
 
@@ -775,12 +791,17 @@ class PersistableTasksTest {
             return@runBlocking
         }
 
-        serviceManager.identityStore.storeIdentity(identity, "", byteArrayOf(), byteArrayOf())
+        val keyPair = NaCl.generateKeypair()
+        serviceManager.identityStore.storeIdentity(
+            identity = identity,
+            serverGroup = "",
+            privateKey = keyPair.privateKey,
+        )
 
         serviceManager.modelRepositories.contacts.createFromLocal(
             ContactModelData(
                 identity = identity,
-                publicKey = ByteArray(NaCl.PUBLICKEYBYTES),
+                publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES),
                 createdAt = Date(42),
                 firstName = "0123",
                 lastName = "4567",
@@ -816,7 +837,7 @@ class PersistableTasksTest {
                 synchronizedAt = null,
                 lastUpdate = null,
                 isArchived = false,
-                precomputedColorIndex = null,
+                precomputedIdColor = IdColor.invalid(),
                 groupDescription = null,
                 groupDescriptionChangedAt = null,
                 otherMembers = setOf(identity),
@@ -826,18 +847,9 @@ class PersistableTasksTest {
         )
     }
 
-    private fun <T> assertValidEncoding(expectedTaskClass: Class<T>, encodedTask: String) {
-        val decodedTask = encodedTask.decodeToTask()
+    private fun assertValidEncoding(expectedTaskClass: KClass<*>, encodedTask: String) {
+        val decodedTask = Json.decodeFromString<SerializableTaskData>(encodedTask).createTask(serviceManager)
         assertNotNull(decodedTask)
-        assertEquals(expectedTaskClass, decodedTask!!::class.java)
-    }
-
-    private fun String.decodeToTask(): Task<*, TaskCodec>? {
-        return try {
-            Json.decodeFromString<SerializableTaskData>(this).createTask(serviceManager)
-        } catch (e: Exception) {
-            fail("Task data decoding error for task '$this'. Error: $e")
-            null
-        }
+        assertEquals(expectedTaskClass, decodedTask::class)
     }
 }

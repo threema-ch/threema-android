@@ -21,17 +21,18 @@
 
 package ch.threema.app.activities
 
+import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
 import ch.threema.app.R
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("VerificationLevelActivity")
+private val logger = LoggingUtil.getThreemaLogger("VerificationLevelActivity")
 
 class VerificationLevelActivity : ThreemaToolbarActivity() {
 
@@ -63,5 +64,10 @@ class VerificationLevelActivity : ThreemaToolbarActivity() {
             finish()
         }
         return false
+    }
+
+    companion object {
+        @JvmStatic
+        fun createIntent(context: Context) = buildActivityIntent<VerificationLevelActivity>(context)
     }
 }

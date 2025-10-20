@@ -43,9 +43,9 @@
         app:persistent="true"
         app:title="@string/prefs_title_calls" />
     <Preference
-        app:key="@string/preferences__rate"
-        app:icon="@drawable/ic_star_outline_24dp"
         app:fragment="ch.threema.app.preference.SettingsRateFragment"
+        app:icon="@drawable/ic_star_outlined"
+        app:key="@string/preferences__rate"
         app:title="@string/rate_title" />
     <Preference
         app:fragment="ch.threema.app.preference.SettingsAboutFragment"
@@ -61,7 +61,7 @@
         app:icon="@drawable/icon_work_square"
         app:key="pref_key_work"
         app:layout="@layout/preference_notice_material3"
-        app:title="@string/threema_work"
-        app:summary="@string/prefs_threema_work_summary" />
+        app:summary="@string/prefs_threema_work_summary"
+        app:title="@string/threema_work" />
 
 </PreferenceScreen>

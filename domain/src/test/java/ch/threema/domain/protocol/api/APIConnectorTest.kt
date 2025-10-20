@@ -23,7 +23,7 @@ package ch.threema.domain.protocol.api
 
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory
 import ch.threema.domain.protocol.api.work.WorkDirectoryFilter
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import io.mockk.every
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
@@ -268,12 +268,12 @@ class APIConnectorTest {
 
     @Test
     fun testObtainTurnServers() {
-        val identityStoreMock = mockk<IdentityStoreInterface> {
-            every { identity } returns "FOOBAR12"
+        val identityStoreMock = mockk<IdentityStore> {
+            every { getIdentity() } returns "FOOBAR12"
             every { calcSharedSecret(any()) } returns ByteArray(32)
         }
         every {
-            httpRequester.post("https://server.url/identity/turn_cred", any(), any())
+            httpRequester.post("https://server.url/identity/turn_cred", any())
         } answers {
             HttpRequesterResult.Success("""{"token": "/wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==","tokenRespKeyPub": "dummy"}""")
         } andThenAnswer {
@@ -372,8 +372,8 @@ class APIConnectorTest {
 
     @Test
     fun testFetchWorkData_Directory2() {
-        val identityStoreMock = mockk<IdentityStoreInterface> {
-            every { identity } returns "IDENTITY"
+        val identityStoreMock = mockk<IdentityStore> {
+            every { getIdentity() } returns "IDENTITY"
         }
         mockPostRequest(
             url = "https://api-work.threema.ch/directory",
@@ -457,12 +457,12 @@ class APIConnectorTest {
         JSONObject().apply(builder)
 
     private fun mockGetRequest(url: String, response: String) {
-        every { httpRequester.get(url, any()) } returns response
+        every { httpRequester.get(url) } returns HttpRequesterResult.Success(response)
     }
 
     private fun mockPostRequest(url: String, expectedPayload: JSONObject, response: String) {
         every {
-            httpRequester.post(url, match { it.toString() == expectedPayload.toString() }, any())
+            httpRequester.post(url, match { it.toString() == expectedPayload.toString() })
         } returns HttpRequesterResult.Success(response)
     }
 }

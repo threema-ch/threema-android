@@ -28,6 +28,7 @@ import static ch.threema.app.services.MessageServiceImpl.FILTER_INCLUDE_ARCHIVED
 import android.annotation.SuppressLint;
 import android.os.AsyncTask;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -35,11 +36,8 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class GlobalSearchRepository {
@@ -50,27 +48,19 @@ public class GlobalSearchRepository {
     private int filterFlags = 0;
     private boolean sortAscending = false; /* whether to sort the results in ascending or descending order by message creation date */
 
-    GlobalSearchRepository() {
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager != null) {
-            messageService = null;
-            try {
-                messageService = serviceManager.getMessageService();
-            } catch (ThreemaException e) {
-                return;
+    GlobalSearchRepository(@NonNull MessageService messageService) {
+        this.messageService = messageService;
+        messageModels = new MutableLiveData<>() {
+            @Nullable
+            @Override
+            public List<AbstractMessageModel> getValue() {
+                return getMessagesForText(
+                    queryString,
+                    FILTER_CHATS | FILTER_GROUPS | FILTER_INCLUDE_ARCHIVED,
+                    sortAscending
+                );
             }
-            messageModels = new MutableLiveData<>() {
-                @Nullable
-                @Override
-                public List<AbstractMessageModel> getValue() {
-                    return getMessagesForText(
-                        queryString,
-                        FILTER_CHATS | FILTER_GROUPS | FILTER_INCLUDE_ARCHIVED,
-                        sortAscending
-                    );
-                }
-            };
-        }
+        };
     }
 
     LiveData<List<AbstractMessageModel>> getMessageModels() {

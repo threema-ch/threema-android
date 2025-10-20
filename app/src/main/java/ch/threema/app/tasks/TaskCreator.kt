@@ -28,6 +28,7 @@ import ch.threema.domain.models.Contact
 import ch.threema.domain.protocol.rendezvous.RendezvousConnection
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.csp.e2e.fs.Terminate.Cause
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
 import kotlinx.coroutines.CompletableDeferred
@@ -36,7 +37,7 @@ import kotlinx.coroutines.Deferred
 private val logger = LoggingUtil.getThreemaLogger("TaskCreator")
 
 open class TaskCreator(private val serviceManager: ServiceManager) {
-    fun scheduleProfilePictureSendTaskAsync(toIdentity: String): Deferred<Unit> =
+    fun scheduleProfilePictureSendTaskAsync(toIdentity: Identity): Deferred<Unit> =
         scheduleTaskAsync {
             SendProfilePictureTask(toIdentity, serviceManager)
         }
@@ -89,7 +90,7 @@ open class TaskCreator(private val serviceManager: ServiceManager) {
         DeactivateMultiDeviceIfAloneTask(serviceManager)
     }
 
-    fun scheduleUserDefinedProfilePictureUpdate(identity: String) = scheduleTaskAsync {
+    fun scheduleUserDefinedProfilePictureUpdate(identity: Identity) = scheduleTaskAsync {
         ReflectContactSyncUpdateTask.ReflectUserDefinedProfilePictureUpdate(
             identity = identity,
             contactModelRepository = serviceManager.modelRepositories.contacts,
@@ -133,7 +134,7 @@ open class TaskCreator(private val serviceManager: ServiceManager) {
         )
     }
 
-    fun scheduleReflectContactConversationCategory(contactIdentity: String, isPrivateChat: Boolean) = scheduleTaskAsync {
+    fun scheduleReflectContactConversationCategory(contactIdentity: Identity, isPrivateChat: Boolean) = scheduleTaskAsync {
         ReflectContactSyncUpdateTask.ReflectConversationCategoryUpdate(
             contactIdentity = contactIdentity,
             isPrivateChat = isPrivateChat,
@@ -164,7 +165,7 @@ open class TaskCreator(private val serviceManager: ServiceManager) {
         }
     }
 
-    fun scheduleReflectConversationVisibilityPinned(identity: String, isPinned: Boolean) = scheduleTaskAsync {
+    fun scheduleReflectConversationVisibilityPinned(identity: Identity, isPinned: Boolean) = scheduleTaskAsync {
         ReflectContactSyncUpdateTask.ReflectConversationVisibilityPinnedUpdate(
             isPinned = isPinned,
             contactIdentity = identity,
@@ -216,7 +217,7 @@ open class TaskCreator(private val serviceManager: ServiceManager) {
         )
     }
 
-    fun scheduleReflectUserProfileShareWithAllowListSyncTask(allowedIdentities: Set<String>): Deferred<Unit> = scheduleTaskAsync {
+    fun scheduleReflectUserProfileShareWithAllowListSyncTask(allowedIdentities: Set<Identity>): Deferred<Unit> = scheduleTaskAsync {
         ReflectUserProfileShareWithAllowListSyncTask(
             allowedIdentities = allowedIdentities,
             serviceManager,

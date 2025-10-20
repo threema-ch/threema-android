@@ -40,11 +40,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.glide.AvatarOptions;
-import ch.threema.app.listeners.DistributionListListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
-import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConversationUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ShortcutUtil;
@@ -56,6 +54,7 @@ import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
+import ch.threema.data.datatypes.IdColor;
 
 public class DistributionListServiceImpl implements DistributionListService {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DistributionListServiceImpl");
@@ -139,12 +138,7 @@ public class DistributionListServiceImpl implements DistributionListService {
             }
         }
 
-        ListenerManager.distributionListListeners.handle(new ListenerManager.HandleListener<DistributionListListener>() {
-            @Override
-            public void handle(DistributionListListener listener) {
-                listener.onModify(distributionListModel);
-            }
-        });
+        ListenerManager.distributionListListeners.handle(listener -> listener.onModify(distributionListModel));
         return distributionListModel;
     }
 
@@ -167,9 +161,9 @@ public class DistributionListServiceImpl implements DistributionListService {
     @Override
     public @ColorInt int getAvatarColor(@Nullable DistributionListModel distributionList) {
         if (distributionList != null) {
-            return distributionList.getThemedColor(context);
+            return distributionList.getIdColor().getThemedColor(context);
         }
-        return ColorUtil.getInstance().getCurrentThemeGray(context);
+        return IdColor.invalid().getThemedColor(context);
     }
 
     @Override
@@ -354,12 +348,7 @@ public class DistributionListServiceImpl implements DistributionListService {
             distributionListModel.setArchived(archived);
             save(distributionListModel);
 
-            ListenerManager.distributionListListeners.handle(new ListenerManager.HandleListener<DistributionListListener>() {
-                @Override
-                public void handle(DistributionListListener listener) {
-                    listener.onModify(distributionListModel);
-                }
-            });
+            ListenerManager.distributionListListeners.handle(listener -> listener.onModify(distributionListModel));
         }
     }
 

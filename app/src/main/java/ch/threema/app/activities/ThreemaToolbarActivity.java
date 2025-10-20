@@ -27,6 +27,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,19 +40,16 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.HashSet;
 import java.util.Set;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.wizard.WizardIntroActivity;
-import ch.threema.app.emojis.EmojiPicker;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.LockAppService;
-import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.di.DependencyContainer;
+import ch.threema.app.passphrase.PassphraseUnlockContract;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
@@ -58,11 +57,11 @@ import ch.threema.app.utils.ConnectionIndicatorUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.connection.ConnectionStateListener;
-import ch.threema.localcrypto.MasterKey;
+import kotlin.Unit;
 
+import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 
 /**
@@ -74,17 +73,36 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
     private AppBarLayout appBarLayout;
     private Toolbar toolbar;
     private View connectionIndicator;
-    protected ServiceManager serviceManager;
-    protected LockAppService lockAppService;
-    protected PreferenceService preferenceService;
-    private NotificationPreferenceService notificationPreferenceService;
-    protected ServerConnection connection;
+
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
+    private final ActivityResultLauncher<Unit> masterKeyUnlockLauncher = registerForActivityResult(
+        PassphraseUnlockContract.INSTANCE,
+        unlocked -> {
+            if (unlocked) {
+                new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.master_key_locked)
+                    .setMessage(R.string.master_key_locked_want_exit)
+                    .setPositiveButton(R.string.try_again, (dialog, whichButton) -> launchMasterKeyUnlocker())
+                    .setNegativeButton(R.string.cancel, (dialog, which) -> finish()).show();
+            } else {
+                if (!finishAndRestartLaterIfNotReady(this)) {
+                    recreate();
+                }
+            }
+        }
+    );
+
+    private void launchMasterKeyUnlocker() {
+        masterKeyUnlockLauncher.launch(Unit.INSTANCE);
+    }
 
     @Override
     protected void onResume() {
-        if (connection != null) {
-            connection.addConnectionStateListener(this);
-            ConnectionState connectionState = connection.getConnectionState();
+        if (dependencies.isAvailable()) {
+            dependencies.getServerConnection().addConnectionStateListener(this);
+            ConnectionState connectionState = dependencies.getServerConnection().getConnectionState();
             ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState);
         }
         super.onResume();
@@ -92,8 +110,8 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
     @Override
     protected void onPause() {
-        if (connection != null) {
-            connection.removeConnectionStateListener(this);
+        if (dependencies.isAvailable()) {
+            dependencies.getServerConnection().removeConnectionStateListener(this);
         }
         super.onPause();
     }
@@ -105,11 +123,8 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
         super.onCreate(savedInstanceState);
 
-        //check master key
-        MasterKey masterKey = ThreemaApplication.getMasterKey();
-
-        if (masterKey.isLocked()) {
-            startActivityForResult(new Intent(this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY);
+        if (getMasterKeyManager().isLockedWithPassphrase()) {
+            launchMasterKeyUnlocker();
             return;
         } else {
             if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
@@ -119,12 +134,9 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
             }
         }
 
-        initServices();
-
-        if (!(this instanceof ComposeMessageActivity)) {
-            if (!this.initActivity(savedInstanceState)) {
-                finish();
-            }
+        if (!initActivity(savedInstanceState)) {
+            finish();
+            return;
         }
 
         handleDeviceInsets();
@@ -140,49 +152,31 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
         }
     }
 
-    protected void initServices() {
-        if (serviceManager == null) {
-            serviceManager = ThreemaApplication.getServiceManager();
-            if (serviceManager == null) {
-                // app is probably locked. This might not be possible to ever happen
-                finish();
-                return;
-            }
-
-            lockAppService = serviceManager.getLockAppService();
-            preferenceService = serviceManager.getPreferenceService();
-            notificationPreferenceService = serviceManager.getNotificationPreferenceService();
-        }
-    }
-
     /**
-     * This method sets up the layout, the connection indicator, language override and screenshot blocker. It is called from onCreate() after all the basic initialization has been done.
-     * Override this to do your own initialization, such as instantiating services
+     * This method sets up the layout, the connection indicator, language override and screenshot blocker.
+     * It is called from onCreate() after all the basic initialization has been done.
+     * Override this to do your own initialization.
      *
      * @param savedInstanceState the bundle provided to onCreate()
-     * @return true on success, false otherwise
+     * @return true on success, false otherwise, in which case the activity is finished
      */
+    @CallSuper
     protected boolean initActivity(@Nullable Bundle savedInstanceState) {
         logger.debug("initActivity");
 
-        @LayoutRes int layoutResource = getLayoutResource();
-
-        initServices();
-
-        try {
-            connection = serviceManager.getConnection();
-        } catch (Exception e) {
-            logger.info("Unable to get Threema connection.");
-            finish();
+        if (!dependencies.isAvailable()) {
+            return false;
         }
 
-        if (notificationPreferenceService != null && notificationPreferenceService.getWizardRunning()) {
+        @LayoutRes int layoutResource = getLayoutResource();
+
+        if (dependencies.getNotificationPreferenceService().getWizardRunning()) {
             startActivity(new Intent(this, WizardIntroActivity.class));
             return false;
         }
 
         // hide contents in app switcher and inhibit screenshots
-        ConfigUtils.setScreenshotsAllowed(this, preferenceService, lockAppService);
+        ConfigUtils.setScreenshotsAllowed(this, dependencies.getPreferenceService(), dependencies.getLockAppService());
 
         if (layoutResource != 0) {
             logger.debug("setContentView");
@@ -228,25 +222,6 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY) {
-            if (ThreemaApplication.getMasterKey().isLocked()) {
-                new MaterialAlertDialogBuilder(this)
-                    .setTitle(R.string.master_key_locked)
-                    .setMessage(R.string.master_key_locked_want_exit)
-                    .setPositiveButton(R.string.try_again, (dialog, whichButton) -> startActivityForResult(new Intent(ThreemaToolbarActivity.this, UnlockMasterKeyActivity.class), ThreemaActivity.ACTIVITY_ID_UNLOCK_MASTER_KEY))
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> finish()).show();
-            } else {
-                if (!finishAndRestartLaterIfNotReady(this)) {
-                    this.initActivity(null);
-                }
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
-    }
-
-    @Override
     public void updateConnectionState(final ConnectionState connectionState) {
         RuntimeUtil.runOnUiThread(() -> ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState));
     }
@@ -271,10 +246,6 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
     public void removeOnSoftKeyboardChangedListener(OnSoftKeyboardChangedListener listener) {
         softKeyboardChangedListeners.remove(listener);
-    }
-
-    public void removeAllListeners() {
-        softKeyboardChangedListeners.clear();
     }
 
     public void notifySoftKeyboardHidden() {
@@ -357,11 +328,11 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
     public void saveSoftKeyboardHeight(int softKeyboardHeight) {
         if (ConfigUtils.isLandscape(this)) {
-            logger.info("Keyboard height (landscape): " + softKeyboardHeight);
+            logger.info("Keyboard height (landscape): {}", softKeyboardHeight);
             PreferenceManager.getDefaultSharedPreferences(this)
                 .edit().putInt(LANDSCAPE_HEIGHT, softKeyboardHeight).apply();
         } else {
-            logger.info("Keyboard height (portrait): " + softKeyboardHeight);
+            logger.info("Keyboard height (portrait): {}", softKeyboardHeight);
             PreferenceManager.getDefaultSharedPreferences(this)
                 .edit().putInt(PORTRAIT_HEIGHT, softKeyboardHeight).apply();
         }
@@ -393,14 +364,13 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
     public void resetKeyboard() {
         minEmojiPickerHeight = getResources().getDimensionPixelSize(R.dimen.min_emoji_keyboard_height);
 
-        removeAllListeners();
+        softKeyboardChangedListeners.clear();
         softKeyboardOpen = false;
     }
 
     @Override
     protected void onDestroy() {
-        removeAllListeners();
-
+        softKeyboardChangedListeners.clear();
         super.onDestroy();
     }
 }

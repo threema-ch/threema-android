@@ -1,0 +1,123 @@
+[
+  {
+    "id": 3925446122,
+    "name": "Rathaus",
+    "public_transport": "platform",
+    "highway": "bus_stop",
+    "lat": 47.2690785,
+    "lon": 8.7142272,
+    "dist": 64
+  },
+  {
+    "id": -24434288,
+    "name": "Rathaus Parkplatz",
+    "amenity": "parking",
+    "lat": 47.26955135,
+    "lon": 8.71836055,
+    "dist": 381
+  },
+  {
+    "id": -25904302,
+    "name": "Schützenhaus",
+    "sport": "shooting",
+    "lat": 47.271989850000004,
+    "lon": 8.715951500000003,
+    "dist": 386
+  },
+  {
+    "id": 9127136671,
+    "name": "Charging station",
+    "amenity": "charging_station",
+    "lat": 47.2690642,
+    "lon": 8.7185135,
+    "dist": 388
+  },
+  {
+    "id": 7556528544,
+    "name": "Besucher-Info",
+    "tourism": "information",
+    "lat": 47.2650615,
+    "lon": 8.711721,
+    "dist": 455
+  },
+  {
+    "id": 443720477,
+    "name": "Waldhüüsli",
+    "amenity": "shelter",
+    "lat": 47.264990300000006,
+    "lon": 8.7106736,
+    "dist": 490
+  },
+  {
+    "id": -263135458,
+    "name": "Klinik am Waldrand",
+    "amenity": "hospital",
+    "lat": 47.268759900000006,
+    "lon": 8.72112655,
+    "dist": 511
+  },
+  {
+    "id": -25904311,
+    "name": "Landgasthof Hirschen",
+    "amenity": "restaurant",
+    "lat": 47.2709529,
+    "lon": 8.7194953,
+    "dist": 532
+  },
+  {
+    "id": 2410744401,
+    "name": "Bergli",
+    "natural": "peak",
+    "lat": 47.266857900000005,
+    "lon": 8.7068393,
+    "dist": 549
+  },
+  {
+    "id": 34094737,
+    "name": "Au",
+    "natural": "saddle",
+    "lat": 47.2639846,
+    "lon": 8.7129321,
+    "dist": 557
+  },
+  {
+    "id": 3350776547,
+    "name": "Zum Gipfeli",
+    "shop": "bakery",
+    "lat": 47.270968100000005,
+    "lon": 8.7202064,
+    "dist": 561
+  },
+  {
+    "id": -795158662,
+    "name": "Spa",
+    "amenity": "social_facility",
+    "lat": 47.270551499999996,
+    "lon": 8.72090025,
+    "dist": 594
+  },
+  {
+    "id": 7533838091,
+    "name": "Info-Tafel",
+    "tourism": "information",
+    "lat": 47.269865700000004,
+    "lon": 8.721253200000001,
+    "dist": 603
+  },
+  {
+    "id": 3337928383,
+    "name": "Bank GmbH",
+    "amenity": "atm",
+    "lat": 47.270215500000006,
+    "lon": 8.7213434,
+    "dist": 617
+  },
+  {
+    "id": 3370968801,
+    "name": "Threema Shop",
+    "shop": "supermarket",
+    "lat": 47.2701987,
+    "lon": 8.721412800000001,
+    "dist": 622
+  }
+]

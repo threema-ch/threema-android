@@ -123,6 +123,7 @@
 😪|cara de sueño|dormir|sueño|cara somnolienta|gota|mocos|resfriado|somnoliento
 🤤|babeando|babas|babear|cara babeando|cara que babea|delicioso|rico|saliva|suculento
 😴|cara durmiendo|dormido|sueño|buenas noches|cansancio|dormir|durmiendo|hora de dormir|noche|siesta|zzzzz
+🫩|agotado|agotamiento|cansado|cansancio|extenuación|extenuado|ojeras|ojos|sueño|cara cansada|cara con ojeras|dormí mal|falta de sueño|no dormí|cara con bolsas bajo los ojos|somnoliento|exhausto
 😷|cara con mascarilla médica|enfermo|malo|máscara|cara con cubrebocas|cubrebocas|enfermedad|gérmenes|gripe|mascarilla|resfriado|resfrío|barbijo|doctor
 🤒|cara con termómetro|enfermo|malo|termómetro|calentura|enfermedad|fiebre
 🤕|cara con la cabeza vendada|dolor|herida|cabeza vendada|cara con vendaje|descalabrado|descalabrar|enfermo|lesión|vendaje|herido|vendas
@@ -554,6 +555,7 @@
 🧑‍🧒|adulto|niño|familia: adulto, infante|infante
 🧑‍🧒‍🧒|adulto|niño|familia: adulto, infante, infante|infante
 👣|huellas de pies|pies|pisada|cuerpo|ropa
+🫆|delito|detective|forense|huella dactilar|huella digital|identidad|misterio|rastro|seguridad
 🐵|cara de mono|mono|animal|chango|chimpancé|simio
 🐒|macaco|mono|simio|animal|cara de mono|chango|chimpancé
 🦍|gorila|primate|simio|animal|king kong|zoo|cara
@@ -663,6 +665,11 @@
 🐚|espiral|animal|caracola marina|concha de caracol|marino|oceano|playa|caracol marino
 🪸|arrecife|coral|océano|animales y naturaleza|cambio climático|mar|planta
 🪼|invertebrado|marino|medusa|picadura|picar|acuario|jalea|océano|plancton|tentáculos
+🦀|animal|cáncer|cangrejo|zodiaco|crustáceo|mariscos
+🦞|bogavante|langosta|pinzas|animal|crustáceo|mariscos|playa|tenazas|bisque
+🦐|camarón|comida|gamba|langostino|oceano|paella|mariscos
+🦑|calamar|comida|molusco|oceano|mariscos
+🦪|buceo|ostra|perla|almeja|concha|ostión
 🐌|caracola|molusco|animal|babosa|baboso|insecto
 🦋|bonito|insecto|mariposa|azul|bonita|animal
 🐛|bicho|gusano|insecto|animal|naturaleza|oruga
@@ -706,6 +713,7 @@
 🪹|anidación|anidamiento|anidar|nido vacío|animales y naturaleza|hogar|rama
 🪺|anidación|anidamiento|anidar|nido con huevos|animales y naturaleza|ave|huevos|pájaro|rama
 🍄|champiñón|hongo|seta|alucinar|mario
+🪾|deshojado|estéril|invierno|madera|muerto|sequía|sin hojas|tronco|ramas secas|yermo|árbol sin hojas|árido
 🍇|agracejo|fruta|racimo|uvas|fruto
 🍈|fruta|melón|planta
 🍉|fruta|sandía|comida|patilla|planta
@@ -744,6 +752,7 @@
 🫚|cerveza|especia|garganta|raíz de jengibre|hierba|jengibre|natural|salud
 🫛|edamame|guisante|judías|legumbre|soja|vaina|verdura|porotos|vegetal
 🍄‍🟫|champiñón marrón|comida|naturaleza|seta|vegetal|espora|hongo café|hongo portabello|hongos|ingrediente|trufa|hongo marrón|champiñones|cremini
+🫜|chirivía|comida|ensalada|huerto|nabo|rábano|raíz|remolacha|vegetariano|verdura|cocina vegetariana|vegetales|betabel|jardín
 🍞|pan de molde|tostada|calorias|comida|desayuno|rebanada de pan|rodaja|trigo|barra de pan
 🥐|bollo|comida|croissant|cruasán|francés|cachito|desayuno|medialuna|cuernito|pan
 🥖|baguete|baguette|barra|comida|francés|desayuno|pan francés
@@ -795,11 +804,6 @@
 🥟|comida|dumpling|gyōza|jiaozi|masa|empanada
 🥠|adivinación|galleta de la fortuna|profecía|superstición|comida|galleta de la suerte|galletita
 🥡|caja para llevar|recipiente para llevar|restaurante|comida a domicilio|comida para llevar|palillos chinos
-🦀|animal|cáncer|cangrejo|zodiaco|crustáceo|mariscos
-🦞|bogavante|langosta|pinzas|animal|crustáceo|mariscos|playa|tenazas|bisque
-🦐|camarón|comida|gamba|langostino|oceano|paella|mariscos
-🦑|calamar|comida|molusco|oceano|mariscos
-🦪|buceo|ostra|perla|almeja|concha|ostión
 🍦|cucurucho de helado|dulce|helado de cucurucho|restaurante|helado en barquillo|cono|hielo|nieve en cono|postre
 🍧|granizado hawaiano|helado|postre|raspado|comida|dulce|frío|hielo molido|nieve|restaurante
 🍨|helado|postre|sorbete
@@ -1155,7 +1159,7 @@
 🛍️|bolsas de compras|compras|rebajas|regalo|hotel
 🎒|colegio|mochila escolar|bolso|escuela|estudiar|maletín|backpack
 🩴|chancla de dedo|chancleta|chinela|sandalia|calzado|comodidad|ojota|verano|zapato|sandalía para la playa|zori
-👞|calzado|hombre|ropa|zapato de hombre|marron|pie|vestimenta
+👞|calzado|hombre|ropa|zapato de hombre|café|marrón|pie|vestimenta
 👟|calzado|correr|tenis|zapatilla deportiva|carrera|deporte|deportivas|ropa deportiva|vestimenta|zapato deportivo
 🥾|bota de senderismo|camping|mochilero|senderismo|acampada|bota de camping|campamento|excursión|excursionismo|acampar|botas de excursión
 🥿|bailarinas|ballet|chatitas|chinitas|pantuflas|toreritas|zapato plano|zapatos cómodos|calzado de piso|zapato de piso
@@ -1204,6 +1208,7 @@
 🪘|conga|ritmo|tamboril|instrumento musical|música|percursión|sonido|yembé
 🪇|agitar|brasil|instrumento|maracas|movimiento|música|percusión|baile|cha cha|coctelera|fiesta|matraca
 🪈|flauta|flautín|instrumento de viento madera|música|banda|grabador|orquesta|pífano
+🪉|amor|arpa|cupido|harpa|instrumento|música|orquesta|angelical|cuerdas
 📱|celular|móvil|teléfono
 📲|móvil con una flecha|celular|comunicación|hacer llamada|hacer una llamada|llamada entrante|recibir llamada|teléfono móvil con una flecha|flecha apuntado a teléfono celular|auricular
 ☎️|agenda|cables|línea|llamar|teléfono de línea|teléfono fijo
@@ -1334,6 +1339,7 @@
 🧰|armario|caja de herramientas|mecánico|cajón|herramientas|cofre
 🧲|atracción|herradura|imán|magnético|forma de u|polos|positivo y negativo
 🪜|escalar|escalera|escalerilla|escalón|peldaño|bajar|subir
+🪏|agujero|cavar|enterrar|excavar|hoyo|huerto|nieve|pala|jardín|palear|plantar|cuchara|pica
 🧪|experimento|laboratorio|química|químico|tubo de ensayo|ciencias|sustancia
 🧫|bacterias|biología|biólogo|cultivo|laboratorio|placa de petri|bióloga|microbio
 🧬|adn|biólogo|evolución|genética|vida|bióloga|genes
@@ -1477,6 +1483,7 @@
 ➰|bucle|giro|tirabuzón
 ➿|doble|bucle doble|japón|llamada gratuita|giro
 〽️|alternancia|marca de alternancia
+🫟|gotear|líquido|manchar|pintura|salpicadura|salpicar|tinta|derrame|goteo|holi|krishna|lío
 🔠|abcd|letras latinas mayúsculas|mayúsculas|abecedario|alfabeto|letras mayúsculas|entrada|latín
 🔡|abcd|letras latinas minúsculas|abecesario|alfabeto|letras minúsculas latinas|minúsculas latinas|entrada|latín
 🔢|1234|dígitos|números|entrada

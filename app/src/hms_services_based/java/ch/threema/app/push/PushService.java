@@ -41,6 +41,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -103,7 +104,7 @@ public class PushService extends HmsMessageService {
      * check for specific huawei services
      */
     public static boolean hmsServicesInstalled(Context context) {
-        return RuntimeUtil.isInTest() || (HuaweiMobileServicesUtil.isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS);
+        return TestUtil.isInDeviceTest() || (HuaweiMobileServicesUtil.isHuaweiMobileServicesAvailable(context) == ConnectionResult.SUCCESS);
     }
 
     /**

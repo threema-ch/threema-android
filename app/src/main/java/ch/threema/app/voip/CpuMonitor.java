@@ -83,12 +83,6 @@ import java.util.concurrent.TimeUnit;
  * be unreadable. If it is desirable to call it more often than say once per
  * second, one would need to increase SAMPLE_SAVE_NUMBER and probably use
  * Queue<Integer> to avoid copying overhead.
- *
- * <p>Known problems:
- * 1. Nexus 7 devices running Kitkat have a kernel which often output an
- * incorrect 'idle' field in /proc/stat.  The value is close to twice the
- * correct value, and then returns to back to correct reading.  Both when
- * jumping up and back down we might create faulty CPU load readings.
  */
 public class CpuMonitor {
     private static final String TAG = "CpuMonitor";

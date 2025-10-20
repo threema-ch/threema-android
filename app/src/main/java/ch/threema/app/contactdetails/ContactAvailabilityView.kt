@@ -109,7 +109,7 @@ private fun ContactAvailability(status: AvailabilityStatus) {
 
 @Preview
 @Composable
-private fun ContactAvailabilityAvailablePreview() {
+private fun ContactAvailability_Preview_Available() {
     ThreemaThemePreview {
         ContactAvailability(status = AvailabilityStatus.AVAILABLE)
     }
@@ -117,7 +117,7 @@ private fun ContactAvailabilityAvailablePreview() {
 
 @Preview
 @Composable
-private fun ContactAvailabilityUnAvailablePreview() {
+private fun ContactAvailability_Preview_UnAvailable() {
     ThreemaThemePreview {
         ContactAvailability(status = AvailabilityStatus.UNAVAILABLE)
     }

@@ -161,9 +161,9 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements Ballo
         });
         this.createChoiceEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {
-                if (s != null && createChoiceButton != null) {
-                    createChoiceButton.setEnabled(s.length() > 0);
+            public void afterTextChanged(@NonNull Editable editable) {
+                if (createChoiceButton != null) {
+                    createChoiceButton.setEnabled(editable.length() > 0);
                 }
             }
         });
@@ -320,7 +320,7 @@ public class BallotWizardFragment1 extends BallotWizardFragment implements Ballo
      * Create a new Choice with a Input Alert.
      */
     private void createChoice() {
-        if (TestUtil.required(this.createChoiceEditText.getText())) {
+        if (createChoiceEditText.getText() != null) {
             String text = createChoiceEditText.getText().toString();
             if (!TestUtil.isEmptyOrNull(text)) {
                 createChoice(text.trim(), BallotChoiceModel.Type.Text);

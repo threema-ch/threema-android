@@ -136,7 +136,7 @@ public class DatabaseContactStore implements ContactStore {
         if (existingModel != null) {
             isUpdate = true;
             //check for modifications!
-            if (TestUtil.compare(contactModel.getModifiedValueCandidates(), existingModel.getModifiedValueCandidates())) {
+            if (Arrays.equals(contactModel.getModifiedValueCandidates(), existingModel.getModifiedValueCandidates())) {
                 logger.info("Do not save unmodified contact");
                 return;
             }

@@ -24,7 +24,6 @@ package ch.threema.app.ui;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Build;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
@@ -174,10 +173,7 @@ public class ComposeEditText extends EmojiEditText implements MentionSelectorPop
         this.mentionTextWatcher = new MentionTextWatcher(this);
         new MarkupTextWatcher(context, this);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // do not add on lollipop or lower due to this bug: https://issuetracker.google.com/issues/36937508
-            setCustomSelectionActionModeCallback(textSelectionCallback);
-        }
+        setCustomSelectionActionModeCallback(textSelectionCallback);
     }
 
     /**

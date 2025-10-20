@@ -28,22 +28,24 @@ import android.content.IntentFilter
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.backuprestore.csv.BackupService
 import ch.threema.app.backuprestore.csv.RestoreService
+import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
+import com.google.android.material.progressindicator.LinearProgressIndicator
+import org.koin.android.ext.android.inject
 
 private val logger = LoggingUtil.getThreemaLogger("BackupRestoreProgressActivity")
 
@@ -56,11 +58,13 @@ class BackupRestoreProgressActivity : AppCompatActivity() {
         logScreenVisibility(logger)
     }
 
+    private val notificationService: NotificationService by inject()
+
     private lateinit var titleTextView: TextView
     private lateinit var infoTextView: TextView
     private lateinit var durationDelimiter: View
     private lateinit var durationText: TextView
-    private lateinit var backupRestoreProgress: ProgressBar
+    private lateinit var backupRestoreProgress: LinearProgressIndicator
     private lateinit var closeButton: Button
     private lateinit var progressType: ProgressType
 
@@ -133,7 +137,7 @@ class BackupRestoreProgressActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
 
-        LocalBroadcastManager.getInstance(ThreemaApplication.getAppContext()).apply {
+        LocalBroadcastManager.getInstance(applicationContext).apply {
             registerReceiver(backupReceiver, IntentFilter(BackupService.BACKUP_PROGRESS_INTENT))
             registerReceiver(restoreReceiver, IntentFilter(RestoreService.RESTORE_PROGRESS_INTENT))
         }
@@ -148,7 +152,7 @@ class BackupRestoreProgressActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
 
-        LocalBroadcastManager.getInstance(ThreemaApplication.getAppContext()).apply {
+        LocalBroadcastManager.getInstance(applicationContext).apply {
             unregisterReceiver(backupReceiver)
             unregisterReceiver(restoreReceiver)
         }
@@ -216,11 +220,16 @@ class BackupRestoreProgressActivity : AppCompatActivity() {
     }
 
     private fun cancelCompleteNotification() {
-        ThreemaApplication.getServiceManager()?.notificationService?.cancel(
+        notificationService.cancel(
             when (progressType) {
                 ProgressType.BACKUP -> BackupService.BACKUP_COMPLETION_NOTIFICATION_ID
                 ProgressType.RESTORE -> RestoreService.RESTORE_COMPLETION_NOTIFICATION_ID
             },
         )
+    }
+
+    companion object {
+        @JvmStatic
+        fun createIntent(context: Context) = buildActivityIntent<BackupRestoreProgressActivity>(context)
     }
 }

@@ -12,8 +12,13 @@
     </PreferenceCategory>
 
     <PreferenceCategory
-        android:key="pref_key_conversation"
-        android:title="Conversations">
+        android:key="pref_key_debug_info"
+        android:title="Debug Info">
+        <CheckBoxPreference
+            android:key="@string/preferences__message_debug_info"
+            android:summary="Show debug info in message details"
+            android:title="Message debug info"
+            android:widgetLayout="@layout/preference_switch_layout" />
         <CheckBoxPreference
             android:key="@string/preferences__show_last_update_prefix"
             android:summary="Show the lastUpdate timestamp as prefix in the conversation name. Requires app restart."
@@ -24,6 +29,10 @@
     <PreferenceCategory
         android:key="pref_key_generate"
         android:title="Generate Data">
+        <Preference
+            android:key="@string/preferences__dev_create_text_messages"
+            android:title="Create text messages"
+            android:summary="Create messages galore in contact and group chats (local only, nothing will be sent)" />
         <Preference
             android:key="@string/preferences__dev_create_messages_with_reactions"
             android:title="Create messages with reactions"
@@ -50,7 +59,7 @@
             android:widgetLayout="@layout/preference_switch_layout" />
         <CheckBoxPreference
             android:key="@string/preferences__group_call_skip_delay"
-            android:summary="If enabled the artificial delay for group call creation will be skiped and the call created immediately"
+            android:summary="If enabled the artificial delay for group call creation will be skipped and the call created immediately"
             android:title="Skip group call start delay"
             android:widgetLayout="@layout/preference_switch_layout" />
     </PreferenceCategory>

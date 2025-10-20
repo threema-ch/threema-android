@@ -29,11 +29,14 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
-import java.util.Date;
+import java.time.Instant;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.WizardDialog;
@@ -61,10 +64,19 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity
     private ProgressBar swipeProgress;
     private ImageView fingerView;
 
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+
+        if (!dependencies.isAvailable()) {
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_new_fingerprint);
 
         ViewExtensionsKt.applyDeviceInsetsAsPadding(
@@ -115,11 +127,11 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    if (!userService.hasIdentity()) {
-                        userService.createIdentity(bytes);
-                        preferenceService.resetIDBackupCount();
-                        preferenceService.setLastIDBackupReminderDate(new Date());
-                        notificationPreferenceService.setWizardRunning(true);
+                    if (!dependencies.getUserService().hasIdentity()) {
+                        dependencies.getUserService().createIdentity(bytes);
+                        dependencies.getPreferenceService().resetIDBackupCount();
+                        dependencies.getPreferenceService().setLastIDBackupReminderTimestamp(Instant.now());
+                        dependencies.getNotificationPreferenceService().setWizardRunning(true);
                     }
                 } catch (final ThreemaException e) {
                     logger.error("Exception", e);
@@ -144,7 +156,7 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity
                     finish();
                 } else {
                     try {
-                        userService.removeIdentity();
+                        dependencies.getUserService().removeIdentity();
                     } catch (Exception e) {
                         logger.error("Exception", e);
                     }
@@ -161,16 +173,10 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity
     }
 
     @Override
-    protected boolean enableOnBackPressedCallback() {
-        // Override the behavior of WizardBackgroundActivity to allow normal back navigation
-        return false;
-    }
-
-    @Override
     public void onYes(String tag, Object data) {
         if (tag.equals(DIALOG_TAG_CREATE_ERROR)) {
             // check again for a valid license and try to create identity
-            StoreLicenseCheck.checkLicense(this, userService);
+            StoreLicenseCheck.checkLicense(this, dependencies.getUserService());
             createIdentity((byte[]) data);
         }
     }

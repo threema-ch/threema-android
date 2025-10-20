@@ -51,9 +51,7 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import ch.threema.app.R;
 import ch.threema.base.utils.LoggingUtil;
-
-import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX;
-import static ch.threema.app.dialogs.ContactEditDialog.CONTACT_AVATAR_WIDTH_PX;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class AvatarConverterUtil {
     private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarConverterUtil");
@@ -102,7 +100,7 @@ public class AvatarConverterUtil {
             x = inWidth > inHeight ? (inWidth - size) / 2 : 0;
             y = inWidth < inHeight ? (inHeight - size) / 2 : 0;
 
-            sampleResult = BitmapUtil.getSampleSize(inWidth, inHeight, CONTACT_AVATAR_WIDTH_PX, CONTACT_AVATAR_HEIGHT_PX);
+            sampleResult = BitmapUtil.getSampleSize(inWidth, inHeight, ProtocolDefines.PROFILE_PICTURE_WIDTH_PX, ProtocolDefines.PROFILE_PICTURE_HEIGHT_PX);
         } catch (IOException e) {
             logger.error("Exception", e);
             return null;

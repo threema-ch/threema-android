@@ -26,9 +26,8 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.net.ssl.HttpsURLConnection;
-
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.ThreemaException;
@@ -79,7 +78,7 @@ public class ApiServiceImpl implements ApiService {
         if (multiDeviceManager.isMultiDeviceActive()) {
             blobUploader = BlobUploader.mirror(
                 baseOkHttpClient,
-                ConfigUtils.isOnPremBuild() ? getAuthToken() : null,
+                getAuthToken(),
                 blobData,
                 appVersion,
                 serverAddressProvider,
@@ -91,7 +90,7 @@ public class ApiServiceImpl implements ApiService {
         } else {
             blobUploader = BlobUploader.usual(
                 baseOkHttpClient,
-                ConfigUtils.isOnPremBuild() ? getAuthToken() : null,
+                getAuthToken(),
                 blobData,
                 appVersion,
                 serverAddressProvider,
@@ -130,7 +129,11 @@ public class ApiServiceImpl implements ApiService {
     }
 
     @Override
+    @Nullable
     public String getAuthToken() throws ThreemaException {
+        if (!ConfigUtils.isOnPremBuild()) {
+            return null;
+        }
         try {
             return apiConnector.obtainAuthToken(authTokenStore, false);
         } catch (IOException | JSONException e) {
@@ -144,13 +147,8 @@ public class ApiServiceImpl implements ApiService {
     }
 
     @Override
-    public HttpsURLConnection createAvatarURLConnection(String identity) throws ThreemaException, IOException {
-        URL url = new URL(serverAddressProvider.getAvatarServerUrl(false) + identity);
-        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        connection.setSSLSocketFactory(ConfigUtils.getSSLSocketFactory(url.getHost()));
-        if (ConfigUtils.isOnPremBuild()) {
-            connection.setRequestProperty("Authorization", "Token " + getAuthToken());
-        }
-        return connection;
+    @NonNull
+    public URL getAvatarURL(@NonNull String identity) throws ThreemaException, IOException {
+        return new URL(serverAddressProvider.getAvatarServerUrl(useIpv6) + identity);
     }
 }

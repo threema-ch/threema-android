@@ -34,6 +34,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import java.io.File;
 
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.messageplayer.FileMessagePlayer;
@@ -313,7 +314,8 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
                     holder.controller.setBackgroundImage(thumbnail);
                 }
             } else {
-                if (holder.controller != null) {
+                @Nullable final MessageState state = getMessageModel().getState();
+                if (holder.controller != null && !usesUploadProgress(state)) {
                     holder.controller.setIconResource(IconUtil.getMimeIcon(fileData.getMimeType()));
                 }
             }
@@ -327,11 +329,14 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
     }
 
     private void setControllerState(@NonNull ComposeMessageHolder holder, @NonNull FileDataModel fileData) {
+        @Nullable final MessageState state = getMessageModel().getState();
         if (fileData.isDownloaded()) {
-            if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_MEDIA || fileData.getRenderingType() == FileData.RENDERING_STICKER)) {
-                holder.controller.setHidden();
-            } else {
-                holder.controller.setNeutral();
+            if (!usesUploadProgress(state)) {
+                if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_MEDIA || fileData.getRenderingType() == FileData.RENDERING_STICKER)) {
+                    holder.controller.setHidden();
+                } else {
+                    holder.controller.setNeutral();
+                }
             }
         } else {
             holder.controller.setReadyToDownload();
@@ -349,7 +354,6 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
             }
         }
 
-        MessageState state = getMessageModel().getState();
         if (state == null) {
             return;
         }
@@ -373,5 +377,9 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
                 holder.controller.setRetry();
                 break;
         }
+    }
+
+    private static boolean usesUploadProgress(MessageState state) {
+        return state == MessageState.PENDING || state == MessageState.SENDING || state == MessageState.UPLOADING;
     }
 }

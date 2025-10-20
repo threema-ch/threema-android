@@ -3,10 +3,10 @@
     <item android:drawable="@drawable/shape_list_checkbox_selected" />
     <item>
         <inset
-            android:drawable="@drawable/ic_done_white_24dp"
-            android:insetRight="7dp"
-            android:insetTop="7dp"
+            android:drawable="@drawable/ic_check"
             android:insetLeft="7dp"
+            android:insetTop="7dp"
+            android:insetRight="7dp"
             android:insetBottom="7dp" />
     </item>
 </layer-list>

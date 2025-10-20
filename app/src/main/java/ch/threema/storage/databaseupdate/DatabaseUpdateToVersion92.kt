@@ -21,11 +21,10 @@
 
 package ch.threema.storage.databaseupdate
 
-import ch.threema.storage.fieldExists
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 class DatabaseUpdateToVersion92(
-    private val db: SQLiteDatabase,
+    private val sqLiteDatabase: SQLiteDatabase,
 ) : DatabaseUpdate {
     override fun run() {
         for (table in arrayOf(
@@ -33,8 +32,8 @@ class DatabaseUpdateToVersion92(
             "m_group_message",
             "distribution_list_message",
         )) {
-            if (db.fieldExists(table, "displayTags")) {
-                db.execSQL("UPDATE $table SET `displayTags` = 0 WHERE `type` = 12 AND `displayTags` = 1")
+            if (sqLiteDatabase.fieldExists(table, "displayTags")) {
+                sqLiteDatabase.execSQL("UPDATE $table SET `displayTags` = 0 WHERE `type` = 12 AND `displayTags` = 1")
             }
         }
     }

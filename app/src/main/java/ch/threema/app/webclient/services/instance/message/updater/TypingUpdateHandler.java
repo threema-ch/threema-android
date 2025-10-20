@@ -91,12 +91,12 @@ public class TypingUpdateHandler extends MessageUpdater {
     @AnyThread
     private class Listener implements ContactTypingListener {
         @Override
-        public void onContactIsTyping(ContactModel fromContact, boolean isTyping) {
+        public void onContactIsTyping(@NonNull ContactModel contactModel, boolean isTyping) {
             handler.post(new Runnable() {
                 @Override
                 @WorkerThread
                 public void run() {
-                    TypingUpdateHandler.this.update(fromContact, isTyping);
+                    TypingUpdateHandler.this.update(contactModel, isTyping);
                 }
             });
         }

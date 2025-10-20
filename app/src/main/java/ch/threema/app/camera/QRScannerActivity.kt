@@ -23,13 +23,10 @@ package ch.threema.app.camera
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.util.Size
 import android.view.MotionEvent
 import android.view.View
-import android.view.WindowManager
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.camera.core.Camera
@@ -41,11 +38,11 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.activities.ThreemaActivity
-import ch.threema.app.services.QRCodeServiceImpl.QRCodeColor
-import ch.threema.app.services.QRCodeServiceImpl.QR_TYPE_ANY
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
@@ -64,7 +61,6 @@ class QRScannerActivity : ThreemaActivity() {
 
     companion object {
         const val KEY_HINT_TEXT: String = "hint"
-        const val KEY_QR_TYPE: String = "qrType"
     }
 
     private lateinit var cameraExecutor: ExecutorService
@@ -73,9 +69,6 @@ class QRScannerActivity : ThreemaActivity() {
     private lateinit var cameraPreviewContainer: View
 
     private var hint: String = ""
-
-    @QRCodeColor
-    private var qrColor = QR_TYPE_ANY
 
     private var camera: Camera? = null
     private var preview: Preview? = null
@@ -93,16 +86,11 @@ class QRScannerActivity : ThreemaActivity() {
         cameraPreview = findViewById(R.id.camera_preview)
         cameraPreviewContainer = findViewById(R.id.camera_preview_container)
 
-        window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)
-        window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // we want dark icons, i.e. a light status bar
-            window.decorView.systemUiVisibility =
-                window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        // Hide the system bars
+        WindowInsetsControllerCompat(window, findViewById(R.id.root_view)).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
-
-        qrColor = intent.getIntExtra(KEY_QR_TYPE, QR_TYPE_ANY)
 
         if (hint.isEmpty()) {
             hint = if (intent.hasExtra(KEY_HINT_TEXT)) {
@@ -113,25 +101,15 @@ class QRScannerActivity : ThreemaActivity() {
         }
 
         // set hint text
-        val hintView = findViewById<TextView>(R.id.hint_view)
-        hintView?.let {
-            it.text = hint
-            it.applyDeviceInsetsAsPadding(
+        findViewById<TextView>(R.id.hint_view)?.let { hintTextView ->
+            hintTextView.text = hint
+            hintTextView.applyDeviceInsetsAsPadding(
                 insetSides = InsetSides.horizontal(),
                 ownPadding = SpacingValues.symmetric(
                     vertical = R.dimen.grid_unit_x1,
                     horizontal = R.dimen.grid_unit_x2,
                 ),
             )
-        }
-
-        // set viewfinder color
-        findViewById<ImageView>(R.id.camera_viewfinder)?.let {
-            if (qrColor == QR_TYPE_ANY) {
-                it.visibility = View.GONE
-            } else {
-                it.setColorFilter(qrColor)
-            }
         }
 
         // Wait for the views to be properly laid out
@@ -235,7 +213,7 @@ class QRScannerActivity : ThreemaActivity() {
             )
 
             // Attach the viewfinder's surface provider to preview use case
-            preview?.setSurfaceProvider(cameraPreview.surfaceProvider)
+            preview?.surfaceProvider = cameraPreview.surfaceProvider
 
             val point = cameraPreview.meteringPointFactory.createPoint(
                 cameraPreviewContainer.left + cameraPreviewContainer.width / 2.0f,

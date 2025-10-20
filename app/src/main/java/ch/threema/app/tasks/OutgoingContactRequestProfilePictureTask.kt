@@ -26,6 +26,7 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
 private val logger = LoggingUtil.getThreemaLogger("OutgoingContactRequestProfilePictureTask")
@@ -36,7 +37,7 @@ private val logger = LoggingUtil.getThreemaLogger("OutgoingContactRequestProfile
  * cleared from the contact.
  */
 class OutgoingContactRequestProfilePictureTask(
-    private val toIdentity: String,
+    private val toIdentity: Identity,
     serviceManager: ServiceManager,
 ) : OutgoingProfilePictureTask(serviceManager) {
     override val type = "OutgoingContactRequestProfilePictureTask"
@@ -52,7 +53,7 @@ class OutgoingContactRequestProfilePictureTask(
             return
         }
 
-        val contactModelData = contactModel.data.value
+        val contactModelData = contactModel.data
         if (contactModelData == null) {
             logger.warn(
                 "Contact model data for identity {} is null, even though a profile picture request should be sent",
@@ -79,7 +80,7 @@ class OutgoingContactRequestProfilePictureTask(
 
     @Serializable
     data class OutgoingContactRequestProfilePictureData(
-        private val toIdentity: String,
+        private val toIdentity: Identity,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingContactRequestProfilePictureTask(toIdentity, serviceManager)

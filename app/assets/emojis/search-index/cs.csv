@@ -123,6 +123,7 @@
 😪|brečet|nachlazený|obličej|ospalý obličej|ospalý výraz|plakat|rozespalý|smajlík|smutný|spánek|tvář|unavený|uplakaný|výraz
 🤤|bryndat|chutné|cintat|hlad|obličej|slina|slinit|slintající obličej|slintající tvář|slintání|slintat blahem|sliny|smajlík|tvář|vynikající|výraz
 😴|chrnět|chrr|dobrou|noc|obličej|ospalý|pochrupovat|postel|šlofík|spánek|spát|spící|tvář|unavený|usínat|utahaný|výraz|zdřímnout|zívat|zzz
+🫩|kruhy|obličej|oči|ospalost|pozdě|únava|váčky|vyčerpanost|znuděnost
 😷|bacily|bakterie|dermatolog|doktor|lékař|maska|nachlazený|nemocný|obličej s lékařskou rouškou|prevence|rouška|rýma|smajlík|tvář s doktorskou rouškou|výraz|zubař
 🤒|angína|chřipka|horečka|nemocný|obličej s teploměrem|smajlík|teploměr|teplota|tvář s teploměrem v puse|výraz
 🤕|au|bolest|bolí|boule|obličej s ovázanou hlavou|obvaz|ofačovaná hlava|smajlík|tvář|výraz|zafačovaný|zranění|zraněný
@@ -554,6 +555,7 @@
 🧑‍🧒|dítě|rodina: dospělý, dítě
 🧑‍🧒‍🧒|dítě|rodina: dospělý, dítě, dítě
 👣|bosky|bosý|chodidlo|chůze|jít|naboso|neobutý|oblečení|otisk|procházka|šlápota|šlépěj|stopa|stopy|tělo
+🫆|bezpečnost|detektiv|identita|kriminalistika|otisky prstů|stopa|záhada|zločin
 🐵|banán|hlava opice|obličej|opice|opička|smajlík|tvář|výraz|zoo|zvědavá opice|zvědavý george|zvíře
 🐒|banán|džungle|opice|opička|zvíře
 🦍|gorila|hlava|opice|prales|primát|příroda|zvíře
@@ -663,6 +665,11 @@
 🐚|lastura|měkkýš|moře|mušle|mušlička|pláž|škeble|spirála|ulita|zvíře
 🪸|klimatické změny|korálový útes|moře|oceán|ohrožený druh|útes
 🪼|bezobratlí|chapadla|medúza|moře|mořská|popálení|požahání|žahavci|žahnutí|zvíře
+🦀|horoskop|krab|rak|znamení raka|zvěrokruh|zvíře
+🦞|humr|humří polévka|klepeta|korýš|langusta|plody moře|rak|zvíře
+🦐|garnát|jídlo|korýš|kreveta|malý|moře|mořský|oceán|plody moře|zvíře
+🦑|chobotnice|hlavonožec|jídlo|kalamár|kalmar|krakatice|měkkýš|mořské plody|oliheň|plody moře|sépie|zvíře
+🦪|jídlo|perla|perleť|potápění|ústřice
 🐌|hlemýžď|příroda|slimák|šneček|šnek|ulita|zahrada|zvíře
 🦋|hmyz|krásný|modrásek|modrý motýl|motýl|zvíře
 🐛|brouk|hmyz|housenka|příroda|stonožka|zahrada|zvíře
@@ -706,6 +713,7 @@
 🪹|hnízdečko|hnízdění|hnízdit|prázdné hnízdo|ptačí hnízdo|větvičky
 🪺|hnízdění|hnízdo s vejci|ptáček|ptačí hnízdo|pták|snášet vejce|vajíčka|vejce|větvičky
 🍄|houba|hřib|hříbek|jedovatá|jedovatý|muchomůrka
+🪾|bez listí|dřevo|holé|kmen|mrtvé|neplodný|strom|sucho|větve|zima
 🍇|červené hrozny|dionýsos|hrozen|hroznové víno|hrozny|jídlo|ovoce|rostlina|víno
 🍈|ananasový meloun|cukrový meloun|jídlo|meloun|ovoce|rostlina|žlutý meloun
 🍉|červený|jídlo|meloun|ovoce|rostlina|vodní
@@ -744,6 +752,7 @@
 🫚|čaj|koření|pivo|zázvor
 🫛|edamame|hrách|hrachový lusk|hrášek|kulička|lusk|luštěniny|sója|zelenina
 🍄‍🟫|hnědá houba|houbařit|houbová|hříbek|jídlo|les|portobello|příroda|sbírat houby|shiitake|zelenina
+🫜|jídlo|kořen|ředkvička|řepa|salát|tuřín|vegetariánské|zahrada|zelenina
 🍞|bochník|chléb|chleba|jídlo|karbohydráty|moučný|obilí|obilniny|obiloviny|pecen|pšenice|restaurace|sacharidy|toastový chleba
 🥐|croissant|francouzské|francouzský|jídlo|kroasant|loupáček|loupák|pečivo|rohlík
 🥖|bageta|francouzské|jídlo|pečivo|veka
@@ -795,11 +804,6 @@
 🥟|čínský knedlíček|dim sum|džiaozi|empanada|gjózu|gyoza|jiaozi|jídlo|knedlíček|knedlík|pelmeň|pelmeně|pirohy|pirožky|plněný knedlík|taštička|tortellini|wonton
 🥠|budoucnost|čínský koláček štěstí|jídlo|koláček štěstí|předpověď|proroctví|sušenka štěstí|věštba|věštění budoucnosti
 🥡|dovážka jídla|jídelní hůlky|jídlo do domu|krabice na jídlo|krabice s jídlem|krabička na jídlo|papírová krabička|rozvoz jídla|rýže
-🦀|horoskop|krab|rak|znamení raka|zvěrokruh|zvíře
-🦞|humr|humří polévka|klepeta|korýš|langusta|plody moře|rak|zvíře
-🦐|garnát|jídlo|korýš|kreveta|malý|moře|mořský|oceán|plody moře|zvíře
-🦑|chobotnice|hlavonožec|jídlo|kalamár|kalmar|krakatice|měkkýš|mořské plody|oliheň|plody moře|sépie|zvíře
-🦪|jídlo|perla|perleť|potápění|ústřice
 🍦|cukrovinka|dezert|jemný|jídlo|kornoutek|krémová zmrzlina|sladkost|sladký|točená zmrzlina|zákusek|zmrzlina v kornoutku
 🍧|cukrovinka|dezert|dřeň|jídlo|ledová tříšť|osvěžující|restaurace|sladkost|sladký|tříšť|zákusek|zmrzlina|zmrzlinový pohár
 🍨|cukrovinka|dezert|jídlo|kopeček zmrzliny|kopečková zmrzlina|pohár|restaurace|sladkost|sladký|zákusek|zmrzlina|zmrzlinový
@@ -1204,6 +1208,7 @@
 🪘|buben|bubínek|bubnování|conga|congo|hudba|hudební|konga|kongo|nástroj|perkuse|protáhlý buben|rytmus
 🪇|chrastítko|hudba|maracas|nástroj|perkuse|rumbakoule
 🪈|dechový nástroj|flétna|hudba|pikola|píšťala|zobcová flétna
+🪉|amor|harfa|hudba|láska|nástroj|orchestr
 📱|komunikace|mobilní|smartphone|telefon
 📲|hovor|komunikace|mobil se šipkou|mobilní|příjem|přijmout|šipka|telefon|volání
 ☎️|červená|číselník|sluchátko|telefonovat|volat
@@ -1334,6 +1339,7 @@
 🧰|bedna na nářadí|bedýnka|box na nářadí|francouzský klíč|hasák|kleště|krabice|mechanik|nářadí|nástroje|opravář|opravit|souprava nářadí|štípačky
 🧲|kladný|magnetické pole|magnetický|odpuzovat|podkova|přitahovat|přitažlivost|ve tvaru písmene u|záporný
 🪜|lezení|nářadí|příčka|schod|schůdky|šplhat|šprušel|žebřík
+🪏|jáma|kopat|lopata|rostlina|rýč|sníh|zahrabat|zahrada
 🧪|chemička|chemie|chemik|experiment|kapalina|kyselina|laboratoř|pokus|věda|žíravina|zkumavka
 🧫|bakterie|biologie|bioložka|buněčná kultura|chemie|experiment|kapátko|kultivovat|laboratoř|petriho miska|pokusy|věda
 🧬|biologie člověka|bioložka|deoxyribonukleová kyselina|dna|evoluce|genetická informace|genetika|šroubovice|život
@@ -1477,6 +1483,7 @@
 ➰|kadeř|kudrna|lokna|smyčka|spirálka|zatočený
 ➿|dvojitá|dvojitý|kadeř|kudrlinka|kudrna|smyčka|spirálka
 〽️|část|part|symbol|začátek|značka přechodu mezi částmi skladby|značka pro začátek zpěvu v karaoke|znak|zpěvák
+🫟|barva|inkoust|kapka|nepořádek|rozlití|skvrna|tekutina
 🔠|abcd|abeceda|kapitálky|klávesnice|latinka|písmena|psaní|velká písmena|velká tiskací písmena|vstup|zadávání v latince, velká písmena
 🔡|abcd|abeceda|klávesnice|latinka|malá písmena|písmena|psaní|vstup|zadávání v latince, malá písmena
 🔢|1234|čísla|číslo|numerická klávesnice|zadávání čísel

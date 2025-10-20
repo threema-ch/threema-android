@@ -28,21 +28,19 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
 class DatabaseUpdater(
     private val context: Context,
     private val database: SQLiteDatabase,
-    @Deprecated("Only available for old updates. New updates must NOT use the database service and instead use raw queries")
-    private val databaseService: DatabaseService,
 ) {
     fun getUpdates(oldVersion: Int): List<DatabaseUpdate> = buildList {
         if (oldVersion < 4) {
             add(DatabaseUpdateToVersion4(database))
         }
         if (oldVersion < 6) {
-            add(DatabaseUpdateToVersion6(context, database))
+            add(DatabaseUpdateToVersion6(database))
         }
         if (oldVersion < 7) {
             add(DatabaseUpdateToVersion7(context, database))
         }
         if (oldVersion < 8) {
-            add(DatabaseUpdateToVersion8(databaseService, database))
+            add(DatabaseUpdateToVersion8(database))
         }
         if (oldVersion < 9) {
             add(DatabaseUpdateToVersion9(database))
@@ -60,7 +58,7 @@ class DatabaseUpdater(
             add(DatabaseUpdateToVersion13(database))
         }
         if (oldVersion < 15) {
-            add(DatabaseUpdateToVersion15(databaseService, database))
+            add(DatabaseUpdateToVersion15(database))
         }
         if (oldVersion < 16) {
             add(DatabaseUpdateToVersion16(database))
@@ -75,13 +73,13 @@ class DatabaseUpdater(
             add(DatabaseUpdateToVersion20(database))
         }
         if (oldVersion < 21) {
-            add(DatabaseUpdateToVersion21(databaseService, database))
+            add(DatabaseUpdateToVersion21(database))
         }
         if (oldVersion < 24) {
             add(DatabaseUpdateToVersion24(database))
         }
         if (oldVersion < 25) {
-            add(DatabaseUpdateToVersion25(databaseService, database))
+            add(DatabaseUpdateToVersion25(database))
         }
         if (oldVersion < 27) {
             add(DatabaseUpdateToVersion27(database))
@@ -93,7 +91,7 @@ class DatabaseUpdater(
             add(DatabaseUpdateToVersion32(database))
         }
         if (oldVersion < 33) {
-            add(DatabaseUpdateToVersion33(databaseService, database))
+            add(DatabaseUpdateToVersion33(database))
         }
         if (oldVersion < 34) {
             add(DatabaseUpdateToVersion34(database))
@@ -105,10 +103,10 @@ class DatabaseUpdater(
             add(DatabaseUpdateToVersion36(database))
         }
         if (oldVersion < 37) {
-            add(DatabaseUpdateToVersion37(databaseService, database))
+            add(DatabaseUpdateToVersion37(database))
         }
         if (oldVersion < 38) {
-            add(DatabaseUpdateToVersion38(databaseService, database))
+            add(DatabaseUpdateToVersion38(database))
         }
         if (oldVersion < 40) {
             add(DatabaseUpdateToVersion40(database))
@@ -120,7 +118,7 @@ class DatabaseUpdater(
             add(DatabaseUpdateToVersion44(database))
         }
         if (oldVersion < 45) {
-            add(DatabaseUpdateToVersion45(databaseService, database))
+            add(DatabaseUpdateToVersion45(database))
         }
         if (oldVersion < 47) {
             add(DatabaseUpdateToVersion47(database))
@@ -156,7 +154,7 @@ class DatabaseUpdater(
             add(DatabaseUpdateToVersion62(database))
         }
         if (oldVersion < DatabaseUpdateToVersion65.VERSION) {
-            add(DatabaseUpdateToVersion65(databaseService, database))
+            add(DatabaseUpdateToVersion65(database))
         }
         if (oldVersion < DatabaseUpdateToVersion67.VERSION) {
             add(DatabaseUpdateToVersion67(database))
@@ -165,7 +163,7 @@ class DatabaseUpdater(
             add(DatabaseUpdateToVersion68(database))
         }
         if (oldVersion < DatabaseUpdateToVersion69.VERSION) {
-            add(DatabaseUpdateToVersion69(databaseService, database))
+            add(DatabaseUpdateToVersion69(database))
         }
         if (oldVersion < DatabaseUpdateToVersion70.VERSION) {
             add(DatabaseUpdateToVersion70(database))
@@ -287,9 +285,21 @@ class DatabaseUpdater(
         if (oldVersion < DatabaseUpdateToVersion110.VERSION) {
             add(DatabaseUpdateToVersion110(database))
         }
+        if (oldVersion < DatabaseUpdateToVersion111.VERSION) {
+            add(DatabaseUpdateToVersion111(database))
+        }
+        if (oldVersion < DatabaseUpdateToVersion112.VERSION) {
+            add(DatabaseUpdateToVersion112(database, context))
+        }
+        if (oldVersion < DatabaseUpdateToVersion113.VERSION) {
+            add(DatabaseUpdateToVersion113(database))
+        }
+        if (oldVersion < DatabaseUpdateToVersion114.VERSION) {
+            add(DatabaseUpdateToVersion114(database))
+        }
     }
 
     companion object {
-        const val VERSION = DatabaseUpdateToVersion110.VERSION
+        const val VERSION = DatabaseUpdateToVersion114.VERSION
     }
 }

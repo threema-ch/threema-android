@@ -26,7 +26,7 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.util.Date;
 import java.util.TimeZone;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 public class DatabaseUpdateToVersion24 implements DatabaseUpdate {
     private final SQLiteDatabase sqLiteDatabase;

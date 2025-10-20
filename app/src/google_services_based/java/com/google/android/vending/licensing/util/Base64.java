@@ -271,17 +271,6 @@ public class Base64 {
     }
 
     /**
-     * Encodes a byte array into web safe Base64 notation.
-     *
-     * @param source    The data to convert
-     * @param doPadding is {@code true} to pad result with '=' chars
-     *                  if it does not fall on 3 byte boundaries
-     */
-    public static String encodeWebSafe(byte[] source, boolean doPadding) {
-        return encode(source, 0, source.length, WEBSAFE_ALPHABET, doPadding);
-    }
-
-    /**
      * Encodes a byte array into Base64 notation.
      *
      * @param source    The data to convert
@@ -443,44 +432,6 @@ public class Base64 {
     }
 
     /**
-     * Decodes data from web safe Base64 notation.
-     * Web safe encoding uses '-' instead of '+', '_' instead of '/'
-     *
-     * @param s the string to decode (decoded in default encoding)
-     * @return the decoded data
-     */
-    public static byte[] decodeWebSafe(String s) throws Base64DecoderException {
-        byte[] bytes = s.getBytes();
-        return decodeWebSafe(bytes, 0, bytes.length);
-    }
-
-    /**
-     * Decodes Base64 content in byte array format and returns
-     * the decoded byte array.
-     *
-     * @param source The Base64 encoded data
-     * @return decoded data
-     * @throws Base64DecoderException
-     * @since 1.3
-     */
-    public static byte[] decode(byte[] source) throws Base64DecoderException {
-        return decode(source, 0, source.length);
-    }
-
-    /**
-     * Decodes web safe Base64 content in byte array format and returns
-     * the decoded data.
-     * Web safe encoding uses '-' instead of '+', '_' instead of '/'
-     *
-     * @param source the string to decode (decoded in default encoding)
-     * @return the decoded data
-     */
-    public static byte[] decodeWebSafe(byte[] source)
-        throws Base64DecoderException {
-        return decodeWebSafe(source, 0, source.length);
-    }
-
-    /**
      * Decodes Base64 content in byte array format and returns
      * the decoded byte array.
      *
@@ -494,21 +445,6 @@ public class Base64 {
     public static byte[] decode(byte[] source, int off, int len)
         throws Base64DecoderException {
         return decode(source, off, len, DECODABET);
-    }
-
-    /**
-     * Decodes web safe Base64 content in byte array format and returns
-     * the decoded byte array.
-     * Web safe encoding uses '-' instead of '+', '_' instead of '/'
-     *
-     * @param source The Base64 encoded data
-     * @param off    The offset of where to begin decoding
-     * @param len    The length of characters to decode
-     * @return decoded data
-     */
-    public static byte[] decodeWebSafe(byte[] source, int off, int len)
-        throws Base64DecoderException {
-        return decode(source, off, len, WEBSAFE_DECODABET);
     }
 
     /**

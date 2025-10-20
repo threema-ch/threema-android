@@ -22,6 +22,7 @@
 package ch.threema.app.activities;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -31,13 +32,18 @@ import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.method.LinkMovementMethod;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputLayout;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
@@ -45,16 +51,14 @@ import androidx.annotation.Nullable;
 import androidx.core.text.HtmlCompat;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.wizard.components.WizardButtonXml;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericProgressDialog;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.restrictions.AppRestrictionService;
-import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceUser;
-import ch.threema.app.services.license.SerialCredentials;
-import ch.threema.app.services.license.UserCredentials;
+import ch.threema.domain.models.SerialCredentials;
+import ch.threema.domain.models.UserCredentials;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SimpleTextWatcher;
@@ -68,6 +72,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.utils.executor.BackgroundTask;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.models.LicenseCredentials;
 
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -84,8 +89,9 @@ public class EnterSerialActivity extends ThreemaActivity {
     private EditText licenseKeyOrUsernameText, passwordText, serverText;
     private MaterialButton unlockButton;
     private WizardButtonXml loginButtonCompose;
-    private LicenseService licenseService;
-    private PreferenceService preferenceService;
+
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
 
@@ -106,10 +112,6 @@ public class EnterSerialActivity extends ThreemaActivity {
 
         setContentView(R.layout.activity_enter_serial);
 
-        ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
-        licenseService = serviceManager.getLicenseService();
-        preferenceService = serviceManager.getPreferenceService();
-
         checkForValidCredentialsInBackground();
 
         ViewExtensionsKt.applyDeviceInsetsAsPadding(
@@ -122,6 +124,16 @@ public class EnterSerialActivity extends ThreemaActivity {
         licenseKeyOrUsernameText = findViewById(R.id.license_key);
         passwordText = findViewById(getResources().getIdentifier("password", "id", getPackageName()));
         serverText = findViewById(getResources().getIdentifier("server", "id", getPackageName()));
+
+        // Workaround to fix the prefix in the TextInputLayout not being aligned correctly when the phones font size changes
+        // Open Issue: https://github.com/material-components/material-components-android/issues/773
+        final @Nullable TextInputLayout serverContainer = findViewById(getResources().getIdentifier("server_container", "id", getPackageName()));
+        if (serverContainer != null) {
+            serverContainer.getPrefixTextView().setLayoutParams(
+                new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            );
+            serverContainer.getPrefixTextView().setGravity(Gravity.CENTER);
+        }
 
         TextView enterKeyExplainText = findViewById(R.id.layout_top);
         enterKeyExplainText.setText(HtmlCompat.fromHtml(getString(R.string.flavored__enter_serial_body), HtmlCompat.FROM_HTML_MODE_COMPACT));
@@ -140,7 +152,7 @@ public class EnterSerialActivity extends ThreemaActivity {
     private void checkForValidCredentialsInBackground() {
         // In case there are credentials, we can validate them and skip this activity so that the
         // user does not have to enter them again.
-        if (licenseService.hasCredentials()) {
+        if (dependencies.getLicenseService().hasCredentials()) {
             backgroundExecutor.get().execute(new BackgroundTask<Boolean>() {
                 @Override
                 public void runBefore() {
@@ -149,7 +161,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 
                 @Override
                 public Boolean runInBackground() {
-                    return licenseService.validate(false) == null;
+                    return dependencies.getLicenseService().validate(false) == null;
                 }
 
                 @Override
@@ -182,74 +194,85 @@ public class EnterSerialActivity extends ThreemaActivity {
         this.setLoginButtonEnabled(false);
     }
 
-    // We need to use getResources().getIdentifier(...) because of flavor specific layout files for this fragment
     @SuppressLint("DiscouragedApi")
     private void setupForWorkBuild() {
         licenseKeyOrUsernameText.addTextChangedListener(new TextChangeWatcher());
         passwordText.addTextChangedListener(new TextChangeWatcher());
 
+        // We need to use getResources().getIdentifier(...) because of flavor specific layout files for this fragment
         loginButtonCompose = findViewById(getResources().getIdentifier("unlock_button_work_compose", "id", getPackageName()));
         loginButtonCompose.setOnClickListener(v -> doUnlock());
 
+        // We need to use getResources().getIdentifier(...) because of flavor specific layout files for this fragment
         TextView lostCredentialsHelp = findViewById(getResources().getIdentifier("work_lost_credential_help", "id", getPackageName()));
         lostCredentialsHelp.setText(getString(R.string.work_lost_credentials_help));
 
         // Always enable for work build
         setLoginButtonEnabled(true);
 
-        String presetServerUrl = getPresetOnPremServerUrlIfWhiteLabeled();
-        if (presetServerUrl != null) {
-            serverText.setText(presetServerUrl);
-            serverText.setEnabled(false);
+        // Disable the edit texts based on whether there are unchangeable preset values that must be
+        // used.
+        String configuredUsername = getConfiguredUsername();
+        if (configuredUsername != null) {
+            licenseKeyOrUsernameText.setText(configuredUsername);
+            licenseKeyOrUsernameText.setEnabled(false);
+        }
+
+        String configuredPassword = getConfiguredPassword();
+        if (configuredPassword != null) {
+            passwordText.setEnabled(false);
+        }
+
+        if (ConfigUtils.isOnPremBuild()) {
+            String configuredServerUrl = getConfiguredOnPremServerUrl();
+            if (configuredServerUrl != null) {
+                serverText.setText(getBaseUrl(configuredServerUrl));
+                serverText.setEnabled(false);
+            }
+
+            if (ConfigUtils.isWhitelabelOnPremBuild(this) && configuredServerUrl == null) {
+                // In case of a whitelabel build without pre configured server url, we do not want
+                // the server url to be edited even if there is no configured server url. App setup
+                // won't be possible.
+                serverText.setEnabled(false);
+                setLoginButtonEnabled(false);
+                onMissingPresetUrl();
+            }
         }
     }
 
     private void handleUrlIntent(@Nullable Intent intent) {
-        String scheme = null;
-        Uri data = null;
-        if (intent != null) {
-            data = intent.getData();
-            if (data != null) {
-                scheme = data.getScheme();
+        // In case the activation link is not available or in the wrong format, it will be null.
+        Uri activationLink = getActivationLink(intent);
+
+        if (ConfigUtils.isSerialLicenseValid()) {
+            if (activationLink != null) {
+                // We inform the user only if there was an active attempt to re-license the app.
+                Toast.makeText(this, R.string.already_licensed, Toast.LENGTH_LONG).show();
             }
+            finish();
+            return;
         }
 
-        if (!ConfigUtils.isSerialLicenseValid()) {
-            if (scheme != null) {
-                if (scheme.startsWith(BuildConfig.uriScheme)) {
-                    parseUrlAndCheck(data);
-                } else if (scheme.startsWith("https")) {
-                    String path = data.getPath();
+        if (activationLink != null) {
+            // In case there is an activation link that could be checked, we parse it, combine it
+            // with mdm values (if work) and check the resulting credentials.
+            checkActivationLinkAndMdm(activationLink);
+        } else if (ConfigUtils.isWorkRestricted()) {
+            // Otherwise we just check whether we have all the information solely from mdm config.
+            String username = getConfiguredUsername();
+            String password = getConfiguredPassword();
 
-                    if (path != null && path.length() > 1) {
-                        path = path.substring(1);
-                        if (path.startsWith("license")) {
-                            parseUrlAndCheck(data);
-                        }
-                    }
-                }
-            }
+            if (ConfigUtils.isOnPremBuild()) {
+                String server = getConfiguredOnPremServerUrl();
 
-            if (ConfigUtils.isWorkRestricted()) {
-                String username = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_username));
-                String password = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_password));
-                String server = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__onprem_server));
-
-                String presetServerUrl = getPresetOnPremServerUrlIfWhiteLabeled();
-                if (isServerUrlMismatch(presetServerUrl, server)) {
-                    onMDMServerUrlPresetMismatch();
-                    return;
-                }
-
-                if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
+                if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password) && !TestUtil.isEmptyOrNull(server)) {
                     check(new UserCredentials(username, password), server);
                 }
-            }
-        } else {
-            // We get here if called from url intent and we're already licensed
-            if (scheme != null) {
-                Toast.makeText(this, R.string.already_licensed, Toast.LENGTH_LONG).show();
-                finish();
+            } else {
+                if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
+                    check(new UserCredentials(username, password), null);
+                }
             }
         }
     }
@@ -265,49 +288,89 @@ public class EnterSerialActivity extends ThreemaActivity {
         }
     }
 
-    private void parseUrlAndCheck(@NonNull Uri data) {
-        String query = data.getQuery();
-        if (!TestUtil.isEmptyOrNull(query)) {
-            if (licenseService instanceof LicenseServiceUser) {
-                parseWorkLicense(data);
+    private void checkActivationLinkAndMdm(@NonNull Uri activationLink) {
+        String query = activationLink.getQuery();
+        if (query != null && !query.isEmpty()) {
+            if (dependencies.getLicenseService() instanceof LicenseServiceUser) {
+                checkWorkActivationLinkAndMdm(activationLink);
             } else {
-                parseConsumerLicense(data);
+                checkPrivateActivationLink(activationLink);
             }
         }
     }
 
-    private void parseConsumerLicense(@NonNull Uri data) {
+    private void checkPrivateActivationLink(@NonNull Uri data) {
         final String key = data.getQueryParameter("key");
         if (!TestUtil.isEmptyOrNull(key)) {
             check(new SerialCredentials(key), null);
         }
     }
 
-    private void parseWorkLicense(@NonNull Uri data) {
-        final String username = data.getQueryParameter("username");
-        final String password = data.getQueryParameter("password");
-        final String server = data.getQueryParameter("server");
+    private void checkWorkActivationLinkAndMdm(@NonNull Uri data) {
+        final String intentUsername = getIntentUsername(data);
+        final String intentPassword = getIntentPassword(data);
+        final String intentServerUrl = getIntentServerUrl(data);
 
-        if (ConfigUtils.isOnPremBuild()) {
-            final String presetServerUrl = getPresetOnPremServerUrlIfWhiteLabeled();
-            if (isServerUrlMismatch(presetServerUrl, server)) {
-                onIntentServerUrlPresetMismatch();
+        final String configuredUsername = getConfiguredUsername();
+        final String configuredPassword = getConfiguredPassword();
+        final String configuredServerUrl = getConfiguredOnPremServerUrl();
+
+        final String effectiveUsername = configuredUsername != null ? configuredUsername : intentUsername;
+        final String effectivePassword = configuredPassword != null ? configuredPassword : intentPassword;
+        final String effectiveServerUrl;
+
+        if (ConfigUtils.isWhitelabelOnPremBuild(this)) {
+            // Assert that we have a server url on the whitelabel build. If we don't, we abort
+            // parsing the uri.
+            if (configuredServerUrl == null) {
                 return;
             }
 
-            if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password) && !TestUtil.isEmptyOrNull(server)) {
-                check(new UserCredentials(username, password), server);
-            } else {
-                licenseKeyOrUsernameText.setText(username);
-                passwordText.setText(password);
-                serverText.setText(presetServerUrl != null ? presetServerUrl : server);
+            // Check that the intent server url matches the configured server url
+            if (intentServerUrl != null && !intentServerUrl.isBlank()) {
+                if (!configuredServerUrl.equals(intentServerUrl)) {
+                    onIntentServerUrlMismatch();
+                    return;
+                }
+            }
+
+            // The effective server url is always the configured server url on whitelabel builds.
+            effectiveServerUrl = configuredServerUrl;
+        } else if (ConfigUtils.isOnPremBuild()) {
+            // Check that both server urls equal if they are both defined
+            if (configuredServerUrl != null && intentServerUrl != null && !configuredServerUrl.equals(intentServerUrl)) {
+                onIntentServerUrlMismatch();
+                return;
+            }
+
+            // If there is a configured server url, use it. Otherwise try the intent server url
+            effectiveServerUrl = configuredServerUrl != null ? configuredServerUrl : intentServerUrl;
+        } else {
+            // On non-onprem builds we never use a server url
+            effectiveServerUrl = null;
+        }
+
+        // Pre-fill the available credentials into the edit texts.
+        licenseKeyOrUsernameText.setText(effectiveUsername);
+        // We must not display the password that has been set by mdm. However, we can show
+        // the password provided by the activation link.
+        if (configuredPassword == null) {
+            passwordText.setText(intentPassword);
+        }
+
+        // Check the credentials if available
+        if (ConfigUtils.isOnPremBuild()) {
+            // Also show the server url if available
+            serverText.setText(effectiveServerUrl != null ? getBaseUrl(effectiveServerUrl) : null);
+
+            // Check license if credentials and server url are available
+            if (!TestUtil.isEmptyOrNull(effectiveUsername) && !TestUtil.isEmptyOrNull(effectivePassword) && !TestUtil.isEmptyOrNull(effectiveServerUrl)) {
+                check(new UserCredentials(effectiveUsername, effectivePassword), effectiveServerUrl);
             }
         } else {
-            if (!TestUtil.isEmptyOrNull(username) && !TestUtil.isEmptyOrNull(password)) {
-                check(new UserCredentials(username, password), null);
-            } else {
-                licenseKeyOrUsernameText.setText(username);
-                passwordText.setText(password);
+            // Check license if credentials are available
+            if (!TestUtil.isEmptyOrNull(effectiveUsername) && !TestUtil.isEmptyOrNull(effectivePassword)) {
+                check(new UserCredentials(effectiveUsername, effectivePassword), null);
             }
         }
     }
@@ -319,15 +382,29 @@ public class EnterSerialActivity extends ThreemaActivity {
         this.setLoginButtonEnabled(false);
 
         if (ConfigUtils.isOnPremBuild()) {
-            if (!TestUtil.isEmptyOrNull(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.isEmptyOrNull(this.passwordText.getText().toString()) && !TestUtil.isEmptyOrNull(this.serverText.getText().toString())) {
-                this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), this.serverText.getText().toString());
+            String configuredUsername = getConfiguredUsername();
+            String configuredPassword = getConfiguredPassword();
+            String configuredServerUrl = getConfiguredOnPremServerUrl();
+
+            String effectiveUsername = configuredUsername != null ? configuredUsername : licenseKeyOrUsernameText.getText().toString();
+            String effectivePassword = configuredPassword != null ? configuredPassword : passwordText.getText().toString();
+            String effectiveServerUrl = configuredServerUrl != null ? configuredServerUrl : serverText.getText().toString();
+
+            if (!TestUtil.isEmptyOrNull(effectiveUsername) && !TestUtil.isEmptyOrNull(effectivePassword) && !TestUtil.isEmptyOrNull(effectiveServerUrl)) {
+                this.check(new UserCredentials(effectiveUsername, effectivePassword), effectiveServerUrl);
             } else {
                 this.setLoginButtonEnabled(true);
                 this.stateTextView.setText(getString(R.string.invalid_input));
             }
         } else if (ConfigUtils.isWorkBuild()) {
-            if (!TestUtil.isEmptyOrNull(this.licenseKeyOrUsernameText.getText().toString()) && !TestUtil.isEmptyOrNull(this.passwordText.getText().toString())) {
-                this.check(new UserCredentials(this.licenseKeyOrUsernameText.getText().toString(), this.passwordText.getText().toString()), null);
+            String configuredUsername = getConfiguredUsername();
+            String configuredPassword = getConfiguredPassword();
+
+            String effectiveUsername = configuredUsername != null ? configuredUsername : licenseKeyOrUsernameText.getText().toString();
+            String effectivePassword = configuredPassword != null ? configuredPassword : passwordText.getText().toString();
+
+            if (!TestUtil.isEmptyOrNull(effectiveUsername) && !TestUtil.isEmptyOrNull(effectivePassword)) {
+                this.check(new UserCredentials(effectiveUsername, effectivePassword), null);
             } else {
                 this.setLoginButtonEnabled(true);
                 this.stateTextView.setText(getString(R.string.invalid_input));
@@ -339,23 +416,23 @@ public class EnterSerialActivity extends ThreemaActivity {
 
     private class PasswordWatcher extends SimpleTextWatcher {
         @Override
-        public void afterTextChanged(Editable s) {
-            String initial = s.toString();
+        public void afterTextChanged(@NonNull Editable editable) {
+            String initial = editable.toString();
             String processed = initial.replaceAll("[^a-zA-Z0-9]", "");
             processed = processed.replaceAll("([a-zA-Z0-9]{5})(?=[a-zA-Z0-9])", "$1-");
 
             if (!initial.equals(processed)) {
-                s.replace(0, initial.length(), processed);
+                editable.replace(0, initial.length(), processed);
             }
 
             //enable login only if the length of the key is 11 chars
-            setLoginButtonEnabled(s.length() == 11);
+            setLoginButtonEnabled(editable.length() == 11);
         }
     }
 
     public class TextChangeWatcher extends SimpleTextWatcher {
         @Override
-        public void afterTextChanged(Editable s) {
+        public void afterTextChanged(@NonNull Editable editable) {
             if (stateTextView != null) {
                 stateTextView.setText("");
             }
@@ -380,11 +457,12 @@ public class EnterSerialActivity extends ThreemaActivity {
     }
 
     @SuppressLint("StaticFieldLeak")
-    private void check(final LicenseService.Credentials credentials, String onPremServer) {
+    private void check(final LicenseCredentials credentials, String onPremServer) {
         if (ConfigUtils.isOnPremBuild()) {
             if (onPremServer != null) {
                 onPremServer = getUrlToOppf(onPremServer);
             }
+            var preferenceService = dependencies.getPreferenceService();
             preferenceService.setOnPremServer(onPremServer);
             preferenceService.setLicenseUsername(((UserCredentials) credentials).username);
             preferenceService.setLicensePassword(((UserCredentials) credentials).password);
@@ -400,13 +478,14 @@ public class EnterSerialActivity extends ThreemaActivity {
             protected String doInBackground(Void... voids) {
                 String error = getString(R.string.error);
                 try {
+                    LicenseService licenseService = dependencies.getLicenseService();
                     error = licenseService.validate(credentials);
                     if (error == null) {
                         // validated
                         if (ConfigUtils.isWorkBuild()) {
                             AppRestrictionService.getInstance()
                                 .fetchAndStoreWorkMDMSettings(
-                                    ThreemaApplication.getServiceManager().getAPIConnector(),
+                                    dependencies.getApiConnector(),
                                     (UserCredentials) credentials
                                 );
                         }
@@ -430,19 +509,23 @@ public class EnterSerialActivity extends ThreemaActivity {
         }.execute();
     }
 
-    private void onIntentServerUrlPresetMismatch() {
-        logger.error("The intent's server url does not match the preset server url");
+    /**
+     * Shows an error to the user that the provided server url in the activation link does not match
+     * the requirements, i.e., either the server url set by mdm (onprem) or the pre-configured
+     * server url (whitelabel onprem).
+     */
+    private void onIntentServerUrlMismatch() {
+        logger.error("The intent's server url does not match the requirements");
         changeState(getString(R.string.error_preset_onprem_url_mismatch_intent));
     }
 
-    private void onMDMServerUrlPresetMismatch() {
-        logger.error("The server url provided by MDM does not match the preset server url");
-        changeState(getString(R.string.error_preset_onprem_url_mismatch_mdm));
-        // Disable any input to keep the error message showing. Additionally, it wouldn't make sense
-        // to enter any credentials as long as a wrong mdm server url is set.
-        licenseKeyOrUsernameText.setEnabled(false);
-        passwordText.setEnabled(false);
-        this.setLoginButtonEnabled(false);
+    /**
+     * Shows an error to the user that there is no pre-configured server url. This can happen when
+     * a whitelabel build does not have the preconfigured url set.
+     */
+    private void onMissingPresetUrl() {
+        logger.error("The preset server url is missing for a whitelabel build");
+        changeState("No preset OPPF Url");
     }
 
     private void changeState(String state) {
@@ -484,12 +567,101 @@ public class EnterSerialActivity extends ThreemaActivity {
         return url;
     }
 
-    private boolean isServerUrlMismatch(@Nullable String presetServerUrl, @Nullable String serverUrl) {
-        if (presetServerUrl == null || serverUrl == null) {
-            return false;
+    @NonNull
+    private String getBaseUrl(@NonNull String url) {
+        return url
+            .replace("https://", "")
+            .replace("/prov/config.oppf", "");
+    }
+
+    @Nullable
+    private Uri getActivationLink(@Nullable Intent intent) {
+        if (intent == null) {
+            return null;
         }
-        @NonNull String canonicalPresetServerUrl = getUrlToOppf(presetServerUrl);
-        @NonNull String canonicalServerUrl = getUrlToOppf(serverUrl);
-        return !canonicalPresetServerUrl.equals(canonicalServerUrl);
+
+        Uri data = intent.getData();
+        String scheme = data != null ? data.getScheme() : null;
+        if (scheme == null) {
+            return null;
+        }
+
+        if (scheme.startsWith(BuildConfig.uriScheme)) {
+            return data;
+        } else if (scheme.startsWith("https")) {
+            String path = data.getPath();
+            if (path == null || path.isEmpty()) {
+                return null;
+            }
+
+            return path.startsWith("/license") ? data : null;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Get the username from the uri. Returns null if no username is present.
+     */
+    @Nullable
+    private String getIntentUsername(@NonNull Uri uri) {
+        return uri.getQueryParameter("username");
+    }
+
+    /**
+     * Get the password from the uri. Returns null if no password is present.
+     */
+    @Nullable
+    private String getIntentPassword(@NonNull Uri uri) {
+        return uri.getQueryParameter("password");
+    }
+
+    /**
+     * Get the server url and make it point directly to the oppf if possible. Returns null if no
+     * server url is set.
+     */
+    @Nullable
+    private String getIntentServerUrl(@NonNull Uri uri) {
+        final String serverUrl = uri.getQueryParameter("server");
+        return serverUrl != null ? getUrlToOppf(serverUrl) : null;
+    }
+
+    /**
+     * Get the username configured via mdm. If no username is configured via mdm, null is returned.
+     */
+    @Nullable
+    private String getConfiguredUsername() {
+        return AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_username));
+    }
+
+    /**
+     * Get the password configured via mdm. If no password is configured via mdm, null is returned.
+     */
+    @Nullable
+    private String getConfiguredPassword() {
+        return AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_password));
+    }
+
+    /**
+     * Get the configure onprem server url and make it point to the oppf file if possible. On
+     * whitelabel builds this is the pre-configured url, on normal onprem builds it is the mdm
+     * defined server url or null. On non-onprem builds, null is returned.
+     */
+    @Nullable
+    private String getConfiguredOnPremServerUrl() {
+        if (!ConfigUtils.isOnPremBuild()) {
+            return null;
+        }
+
+        final String serverUrl = ConfigUtils.isWhitelabelOnPremBuild(this)
+            ? getPresetOnPremServerUrlIfWhiteLabeled()
+            : AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__onprem_server));
+
+        return serverUrl != null ? getUrlToOppf(serverUrl) : null;
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context) {
+        return new Intent(context, EnterSerialActivity.class);
     }
 }

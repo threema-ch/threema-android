@@ -29,25 +29,25 @@ import android.graphics.drawable.Drawable;
 import org.maplibre.android.annotations.Icon;
 import org.maplibre.android.annotations.IconFactory;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.drawable.DrawableCompat;
 import ch.threema.app.R;
-import ch.threema.app.locationpicker.Poi;
+import ch.threema.app.location.NearbyPoi;
 
 public class LocationUtil {
-    public static int getPlaceDrawableRes(@NonNull Context context, @NonNull Poi poi, boolean returnDefault) {
-        int id = 0;
-        String defPackage = context.getPackageName();
+    @DrawableRes
+    public static int getPlaceDrawableRes(@NonNull Context context, @NonNull NearbyPoi poi, boolean returnDefault) {
         String type = poi.getType();
-
-        if (!TestUtil.isEmptyOrNull(poi.getType())) {
-            id = context.getResources().getIdentifier("ic_places_" + type, "drawable", defPackage);
+        if (!TestUtil.isEmptyOrNull(type)) {
+            String defPackage = context.getPackageName();
+            int id = context.getResources().getIdentifier("ic_places_" + type, "drawable", defPackage);
+            if (id != 0) {
+                return id;
+            }
         }
 
-        if (id > 0) {
-            return id;
-        }
         if (returnDefault) {
             return R.drawable.ic_location_on_filled;
         } else {
@@ -62,11 +62,11 @@ public class LocationUtil {
      * @param poi     The Point of Interest
      * @return A MapBox icon
      */
-    public static @NonNull Icon getMarkerIcon(@NonNull Context context, @NonNull Poi poi) {
+    public static @NonNull Icon getMarkerIcon(@NonNull Context context, @NonNull NearbyPoi poi) {
         int innerIconSize = context.getResources().getDimensionPixelSize(R.dimen.lp_marker_inner_icon_size);
 
         Drawable bgDrawable = AppCompatResources.getDrawable(context, R.drawable.ic_map_marker_solid_red_32dp);
-        DrawableCompat.setTint(bgDrawable, context.getResources().getColor("natural".equals(poi.getCategory()) ? R.color.material_green : R.color.material_red));
+        DrawableCompat.setTint(bgDrawable, context.getResources().getColor(poi.isNatural() ? R.color.material_green : R.color.material_red));
 
         Drawable fgDrawable = AppCompatResources.getDrawable(context, getPlaceDrawableRes(context, poi, false));
         DrawableCompat.setTint(fgDrawable, context.getResources().getColor(R.color.lp_marker_icon));

@@ -37,15 +37,12 @@ import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ServerMessageModel;
-import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
-import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 
 public interface NotificationService {
 
@@ -280,9 +277,7 @@ public interface NotificationService {
 
     void cancelRestoreNotification();
 
-    void showGroupJoinResponseNotification(@NonNull OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel,
-                                           @NonNull OutgoingGroupJoinRequestModel.Status status,
-                                           @NonNull DatabaseService databaseService);
+    void showRemoteSecretActivatedNotification();
 
-    void showGroupJoinRequestNotification(@NonNull IncomingGroupJoinRequestModel incomingGroupJoinRequestModel, GroupModel groupModel);
+    void showRemoteSecretDeactivatedNotification();
 }

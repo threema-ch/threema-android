@@ -78,10 +78,10 @@ fun CharSequence?.highlightMatches(
     }
 
     @ColorInt
-    val highlightColor: Int = ConfigUtils.getColorFromAttribute(context, R.attr.colorPrimary)
+    val highlightColor: Int = ConfigUtils.getColorFromAttribute(context, android.R.attr.textColorHighlight)
 
     @ColorInt
-    val foregroundColor = if (drawBackground) {
+    val foregroundColor: Int = if (drawBackground) {
         ConfigUtils.getColorFromAttribute(context, R.attr.colorOnPrimary)
     } else {
         highlightColor

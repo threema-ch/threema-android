@@ -1,39 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="10dp"
-    android:paddingRight="12dp"
-    android:paddingTop="6dp"
-    android:paddingBottom="8dp"
     android:fadingEdge="none"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:paddingTop="6dp"
+    android:paddingBottom="8dp">
 
     <ch.threema.app.emojis.EmojiConversationTextView
         android:id="@+id/title"
-        style="@style/MaterialAlertDialog.Material3.Title.Text"
+        style="@style/Threema.MaterialAlertDialog.Title.Style"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:maxLines="3"
-        android:singleLine="false"
+        android:layout_margin="@dimen/grid_unit_x2"
         android:ellipsize="end"
-        android:layout_margin="16dp"
-        android:text="Title" />
+        tools:text="Ballot Title" />
 
     <ListView
         android:id="@+id/ballot_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:divider="@null"
-        android:dividerHeight="0dp"
-        android:paddingBottom="4dp"
-        android:paddingTop="4dp"
-        android:listSelector="@drawable/listitem_background_selector"
         android:cacheColorHint="@android:color/transparent"
         android:clickable="false"
-        android:focusable="false"
-        android:fadeScrollbars="true" />
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:fadeScrollbars="true"
+        android:paddingVertical="@dimen/grid_unit_x0_5"
+        tools:listitem="@layout/item_ballot_choice_vote" />
 
 </LinearLayout>
 

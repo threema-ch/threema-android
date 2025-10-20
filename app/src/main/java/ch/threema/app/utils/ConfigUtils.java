@@ -45,7 +45,6 @@ import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -64,7 +63,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.datatheorem.android.trustkit.TrustKit;
 import com.google.android.material.search.SearchBar;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
@@ -202,11 +200,6 @@ public class ConfigUtils {
         return (Build.MANUFACTURER.equalsIgnoreCase("Huawei") && !Build.MODEL.contains("Nexus"));
     }
 
-
-    public static boolean hasBrokenDeleteNotificationChannelGroup() {
-        return isHuaweiDevice() && Build.VERSION.SDK_INT == Build.VERSION_CODES.Q;
-    }
-
     public static boolean isOnePlusDevice() {
         return (Build.MANUFACTURER.equalsIgnoreCase("OnePlus"));
     }
@@ -328,22 +321,14 @@ public class ConfigUtils {
         }
     }
 
-    public static boolean isEditMessagesEnabled() {
-        return BuildConfig.EDIT_MESSAGES_ENABLED;
-    }
-
-    public static boolean isDeleteMessagesEnabled() {
-        return BuildConfig.DELETE_MESSAGES_ENABLED;
-    }
-
     /**
-     * Get a Socket Factory for certificate pinning and forced TLS version upgrade.
+     * Check, whether remote secrets are supported by this build. Note that support for remote secrets
+     * does not necessarily mean, that the feature is active. This still depends on the app configuration.
+     *
+     * @return `true` if remote secrets are supported by this build, `false` otherwise.
      */
-    public static @NonNull SSLSocketFactory getSSLSocketFactory(String host) {
-        final var sslSocketFactory = ConfigUtils.isOnPremBuild()
-            ? OnPremSSLSocketFactoryProvider.getInstance().getSslSocketFactory(host)
-            : TrustKit.getInstance().getSSLSocketFactory(host);
-        return new TLSUpgradeSocketFactoryWrapper(sslSocketFactory);
+    public static boolean isRemoteSecretsSupported() {
+        return BuildConfig.REMOTE_SECRETS_SUPPORTED && isOnPremBuild();
     }
 
     public static boolean isXiaomiDevice() {
@@ -420,26 +405,26 @@ public class ConfigUtils {
     }
 
     @SuppressLint("WrongConstant")
-    public static @AppThemeSetting String getAppThemePrefsSettings() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
+    public static @AppThemeSetting String getAppThemePrefsSettings(@NonNull Context context) {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 
         // set default day/night setting depending on app type
         @AppThemeSetting String appThemeSetting = null;
         if (prefs != null) {
-            appThemeSetting = prefs.getString(ThreemaApplication.getAppContext().getString(R.string.preferences__theme), null);
+            appThemeSetting = prefs.getString(context.getString(R.string.preferences__theme), null);
         }
         if (TestUtil.isEmptyOrNull(appThemeSetting)) {
             // fix default setting according to app flavor
             appThemeSetting = BuildConfig.DEFAULT_APP_THEME;
             if (prefs != null) {
-                prefs.edit().putString(ThreemaApplication.getAppContext().getString(R.string.preferences__theme), BuildConfig.DEFAULT_APP_THEME).apply();
+                prefs.edit().putString(context.getString(R.string.preferences__theme), BuildConfig.DEFAULT_APP_THEME).apply();
             }
         }
         return appThemeSetting;
     }
 
-    public static @AppCompatDelegate.NightMode int getAppThemePrefs() {
-        return getDayNightModeFromAppThemeSetting(getAppThemePrefsSettings());
+    public static @AppCompatDelegate.NightMode int getAppThemePrefs(@NonNull Context context) {
+        return getDayNightModeFromAppThemeSetting(getAppThemePrefsSettings(context));
     }
 
     public static boolean isTheDarkSide(@NonNull Context context) {
@@ -645,15 +630,12 @@ public class ConfigUtils {
         activity.startActivity(intent);
     }
 
-    public static void recreateActivity(Activity activity, Class<?> cls, Bundle bundle) {
-        activity.finish();
+    public static void scheduleAppRestart(@NonNull Context context) {
+        scheduleAppRestart(context, 1000, null);
+    }
 
-        final Intent intent = new Intent(activity, cls);
-        if (bundle != null) {
-            intent.putExtras(bundle);
-        }
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        activity.startActivity(intent);
+    public static void scheduleAppRestart(@NonNull Context context, int delayMs) {
+        scheduleAppRestart(context, delayMs, null);
     }
 
     /**
@@ -711,14 +693,11 @@ public class ConfigUtils {
     }
 
     public static boolean isWorkBuild() {
-        BuildFlavor.LicenseType currentLicenseType = BuildFlavor.getCurrent().getLicenseType();
-        return currentLicenseType.equals(BuildFlavor.LicenseType.GOOGLE_WORK)
-            || currentLicenseType.equals(BuildFlavor.LicenseType.HMS_WORK)
-            || isOnPremBuild();
+        return BuildFlavor.getCurrent().isWork();
     }
 
     public static boolean isOnPremBuild() {
-        return BuildFlavor.getCurrent().getLicenseType().equals(BuildFlavor.LicenseType.ONPREM);
+        return BuildFlavor.getCurrent().isOnPrem();
     }
 
     public static boolean isWhitelabelOnPremBuild(@NonNull Context context) {
@@ -734,10 +713,6 @@ public class ConfigUtils {
         return currentBuildFlavorDisplayName.contains("DEBUG") ||
             currentBuildFlavorDisplayName.equals("Blue") || currentBuildFlavorDisplayName.equals("DEV") ||
             currentBuildFlavorDisplayName.equals("Green");
-    }
-
-    public static boolean supportsGroupLinks() {
-        return false;
     }
 
     public static boolean supportGroupDescription() {
@@ -809,11 +784,6 @@ public class ConfigUtils {
     }
 
     @Deprecated
-    public static @ColorInt int getAccentColor(Context context) {
-        return getColorFromAttribute(context, R.attr.colorPrimary);
-    }
-
-    @Deprecated
     public static boolean useContentUris() {
         return true;
     }
@@ -851,7 +821,7 @@ public class ConfigUtils {
             return insets.bottom - insets.top;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && activity.isInMultiWindowMode()) {
+        if (activity.isInMultiWindowMode()) {
             return 0;
         }
 
@@ -879,13 +849,6 @@ public class ConfigUtils {
 
         if (realWidth > usableWidth)
             dimensions.width = realWidth - usableWidth;
-    }
-
-    public static int getUsableWidth(WindowManager windowManager) {
-        DisplayMetrics metrics = new DisplayMetrics();
-        windowManager.getDefaultDisplay().getMetrics(metrics);
-
-        return metrics.widthPixels;
     }
 
     /**
@@ -963,8 +926,7 @@ public class ConfigUtils {
     }
 
     public static boolean isPermissionGranted(@NonNull Context context, @NonNull String permission) {
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.M ||
-            ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
+        return ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     /**
@@ -1260,11 +1222,9 @@ public class ConfigUtils {
     }
 
     private static boolean checkIfNeedsPermissionRequest(@NonNull Context context, String[] permissions) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            for (String permission : permissions) {
-                if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
-                    return true;
-                }
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                return true;
             }
         }
         return false;
@@ -1449,16 +1409,6 @@ public class ConfigUtils {
             || rawSharedPreferences.getBoolean(context.getString(R.string.preferences__threema_push_switch), false);
     }
 
-
-    /**
-     * Return whether to show border around qr code to indicate its purpose
-     *
-     * @return true if borders are to be shown, false otherwise
-     */
-    public static boolean showQRCodeTypeBorders() {
-        return false;
-    }
-
     /**
      * Apply operations to content provider in small batches preventing TransactionTooLargeException
      *
@@ -1594,20 +1544,11 @@ public class ConfigUtils {
      * Check whether the user has restricted the app from network use when in the background
      *
      * @param context           A context
-     * @param compatibilityMode whether to check for network blocked state instead on API <24
      * @return true if the app cannot access the network when in background
      */
-    public static boolean isBackgroundDataRestricted(@NonNull Context context, boolean compatibilityMode) {
-        ConnectivityManager mgr = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            return mgr.getRestrictBackgroundStatus() == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
-        } else if (compatibilityMode) {
-            //noinspection deprecation
-            NetworkInfo networkInfo = mgr.getActiveNetworkInfo();
-            //noinspection deprecation
-            return networkInfo != null && networkInfo.getDetailedState() == NetworkInfo.DetailedState.BLOCKED;
-        }
-        return false;
+    public static boolean isBackgroundDataRestricted(@NonNull Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        return connectivityManager.getRestrictBackgroundStatus() == ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED;
     }
 
     /**

@@ -21,11 +21,9 @@
 
 package ch.threema.app.compose.common.interop
 
-import android.os.Build
 import android.text.TextUtils
 import android.view.View
 import androidx.annotation.StyleRes
-import androidx.appcompat.view.ContextThemeWrapper
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -33,7 +31,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -47,7 +44,6 @@ import ch.threema.app.emojis.EmojiConversationTextView
 import ch.threema.app.ui.CustomTextSelectionCallback
 import ch.threema.app.utils.LinkifyUtil
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InteropEmojiConversationTextView(
     text: String,
@@ -61,7 +57,11 @@ fun InteropEmojiConversationTextView(
     var textViewRef: EmojiConversationTextView? by remember { mutableStateOf(null) }
 
     // Box is a workaround to make semantics work when merging descendants
-    Box(modifier = Modifier.semantics { contentDescription = text }) {
+    Box(
+        modifier = Modifier.semantics {
+            contentDescription = text
+        },
+    ) {
         AndroidView(
             modifier = Modifier
                 .fillMaxWidth()
@@ -72,30 +72,23 @@ fun InteropEmojiConversationTextView(
                     textViewRef?.onTouchEvent(it) ?: false
                 },
             factory = { context ->
-                val textView =
-                    EmojiConversationTextView(ContextThemeWrapper(context, R.style.AppBaseTheme))
-                TextViewCompat.setTextAppearance(textView, textAppearanceRes)
-                textView.setTextColor(contentColor.toArgb())
-
-                textView.apply {
+                EmojiConversationTextView(context).apply {
+                    TextViewCompat.setTextAppearance(this, textAppearanceRes)
+                    setTextColor(contentColor.toArgb())
+                    setLinkTextColor(context.getColorStateList(R.color.bubble_text_link_colorstatelist))
                     setMaxLines(maxLines)
                     ellipsize = TextUtils.TruncateAt.END
                     // TODO(ANDR-3193)
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        // do not add on lollipop or lower due to this bug: https://issuetracker.google.com/issues/36937508
-                        textSelectionCallback?.let { callback ->
-                            customSelectionActionModeCallback = callback
-                            textSelectionCallback.setTextViewRef(textView)
-                        }
+                    textSelectionCallback?.let { callback ->
+                        customSelectionActionModeCallback = callback
+                        textSelectionCallback.setTextViewRef(this)
                     }
                     setTextIsSelectable(isTextSelectable)
                     // disable accessibility since we set it for the Box parent
                     importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
+                }.also {
+                    textViewRef = it
                 }
-
-                textViewRef = textView
-
-                textView
             },
             update = { textView ->
                 textView.apply {
@@ -104,8 +97,16 @@ fun InteropEmojiConversationTextView(
                     setMaxLines(maxLines)
                     ellipsize = TextUtils.TruncateAt.END
                     if (shouldMarkupText) {
-                        LinkifyUtil.getInstance()
-                            .linkify(context, null, null, textView, null, true, false, null)
+                        LinkifyUtil.getInstance().linkify(
+                            context,
+                            null,
+                            null,
+                            textView,
+                            null,
+                            true,
+                            false,
+                            null,
+                        )
                     }
                 }
             },

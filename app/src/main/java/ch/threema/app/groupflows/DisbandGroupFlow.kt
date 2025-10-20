@@ -74,7 +74,7 @@ class DisbandGroupFlow(
     private val taskManager: TaskManager,
     private val connection: ServerConnection,
 ) : BackgroundTask<GroupFlowResult> {
-    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.identity }
+    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentity()!! }
 
     private val groupService by lazy { outgoingCspMessageServices.groupService }
 
@@ -83,7 +83,7 @@ class DisbandGroupFlow(
     override fun runInBackground(): GroupFlowResult {
         logger.info("Running disband group flow with intent {}", intent)
 
-        val groupModelData = groupModel.data.value
+        val groupModelData = groupModel.data
         if (groupModelData == null) {
             logger.warn("Cannot disband already deleted group")
             return GroupFlowResult.Failure.Other
@@ -94,7 +94,7 @@ class DisbandGroupFlow(
             return GroupFlowResult.Failure.Other
         }
 
-        if (groupModel.data.value?.isMember != true) {
+        if (groupModel.data?.isMember != true) {
             logger.error("Cannot disband already disbanded group")
             return GroupFlowResult.Failure.Other
         }

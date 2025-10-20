@@ -30,6 +30,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.FileNotFoundException;
@@ -38,8 +39,8 @@ import java.io.IOException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.wizard.components.WizardButtonXml;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
@@ -49,7 +50,6 @@ import ch.threema.app.services.ActivityService;
 import ch.threema.app.threemasafe.ThreemaSafeAdvancedDialog;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
-import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.threemasafe.ThreemaSafeServiceImpl;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.LongToast;
@@ -85,7 +85,8 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
     private static final String DIALOG_TAG_PASSWORD_PRESET_CONFIRM = "safe_pw_preset";
     private static final String DIALOG_TAG_APPLICATION_SETUP_RETRY = "app-setup-retry";
 
-    private ThreemaSafeService threemaSafeService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private final BackgroundExecutor executor = new BackgroundExecutor();
 
@@ -98,6 +99,11 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
+        if (!dependencies.isAvailable()) {
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_wizard_restore_safe);
 
         ViewExtensionsKt.applyDeviceInsetsAsPadding(
@@ -105,13 +111,6 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
             InsetSides.all(),
             SpacingValues.symmetric(R.dimen.wizard_contents_padding, R.dimen.wizard_contents_padding_horizontal)
         );
-
-        try {
-            threemaSafeService = ThreemaApplication.requireServiceManager().getThreemaSafeService();
-        } catch (Exception e) {
-            finish();
-            return;
-        }
 
         this.safeMDMConfig = ThreemaSafeMDMConfig.getInstance();
 
@@ -226,14 +225,14 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
             return;
         }
 
-        preferenceService.setLatestVersion(this);
+        dependencies.getPreferenceService().setLatestVersion(this);
 
         new AsyncTask<Void, Void, String>() {
             @Override
             protected void onPreExecute() {
                 GenericProgressDialog.newInstance(R.string.restore, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_PROGRESS);
                 try {
-                    serviceManager.stopConnection();
+                    dependencies.getServiceManager().stopConnection();
                 } catch (InterruptedException e) {
                     this.cancel(true);
                 }
@@ -244,15 +243,15 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
                 if (this.isCancelled()) {
                     return "Backup cancelled";
                 }
-                preferenceService.setThreemaSafeEnabled(false);
+                dependencies.getPreferenceService().setThreemaSafeEnabled(false);
                 try {
+                    var threemaSafeService = dependencies.getThreemaSafeService();
                     threemaSafeService.restoreBackup(identity, password, serverInfo);
                     threemaSafeService.testServer(serverInfo);  // intentional: test server to update configuration only after restoring backup, so that master key (and thus shard hash) is set
                     threemaSafeService.setEnabled(true);
                     return null;
-                } catch (ThreemaException e) {
-                    return e.getMessage();
-                } catch (IOException e) {
+                } catch (ThreemaException | IOException e) {
+                    logger.error("Failed to restore backup", e);
                     if (e instanceof FileNotFoundException) {
                         return getString(R.string.safe_no_backup_found);
                     }
@@ -294,7 +293,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 
             @Override
             public Boolean runInBackground() {
-                return runApplicationSetupSteps(serviceManager);
+                return runApplicationSetupSteps(dependencies.getServiceManager());
             }
 
             @Override
@@ -339,7 +338,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
 
     private void removeIdentity() {
         try {
-            userService.removeIdentity();
+            dependencies.getUserService().removeIdentity();
         } catch (Exception e) {
             logger.error("Unable to remove identity", e);
         }
@@ -367,17 +366,11 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
             true
         ).show(getSupportFragmentManager(), "d");
         try {
-            serviceManager.startConnection();
+            dependencies.getServiceManager().startConnection();
         } catch (ThreemaException e) {
             logger.error("Exception", e);
         }
-        ConfigUtils.scheduleAppRestart(getApplicationContext(), 3000, null);
-    }
-
-    @Override
-    protected boolean enableOnBackPressedCallback() {
-        // Override the behavior of WizardBackgroundActivity to allow normal back navigation
-        return false;
+        ConfigUtils.scheduleAppRestart(getApplicationContext(), 3000);
     }
 
     @Override

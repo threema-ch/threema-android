@@ -28,14 +28,14 @@ object ColorsLight : ComposeColorPaletteLight() {
     // Primary
     override val primary = Color(BrandColor.SHADE_800)
     override val onPrimary = Color(0xFFFFFFFF)
-    override val primaryContainer = Color(BrandColor.SHADE_800)
-    override val onPrimaryContainer = Color(0xFFFFFFFF)
+    override val primaryContainer = Color(BrandColor.SHADE_100)
+    override val onPrimaryContainer = Color(0xFF1D1D1B) // Brand Text
     override val inversePrimary = Color(BrandColor.SHADE_600)
 
     // Secondary
     override val secondary = Color(BrandColor.SHADE_400)
     override val onSecondary = Color(BrandColor.SHADE_900)
-    override val secondaryContainer = Color(BrandColor.SHADE_400)
+    override val secondaryContainer = Color(BrandColor.SHADE_200)
     override val onSecondaryContainer = Color(BrandColor.SHADE_900)
 
     // Secondary
@@ -45,7 +45,7 @@ object ColorsLight : ComposeColorPaletteLight() {
     override val onTertiaryContainer = Color(0xFF1D1D1B) // Brand Text
 
     // Error
-    override val error = Color(0xFFBA1A1A)
+    override val error = Color(0xFFE11D24)
     override val onError = Color(0xFFFFFFFF)
     override val errorContainer = Color(0xFFFFDAD6)
     override val onErrorContainer = Color(0xFF410002)

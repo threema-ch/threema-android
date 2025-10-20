@@ -2,22 +2,20 @@
 use js_sys::Error;
 use serde::Serialize;
 use serde_bytes::ByteBuf;
-use tsify_next::Tsify;
+use tsify::Tsify;
 use wasm_bindgen::prelude::*;
 
 use crate::d2d_rendezvous::{self, AuthenticationKey};
 
-/// Binding-friendly version of [`d2d_rendezvous::PathStateUpdate`].
+/// Binding version of [`d2d_rendezvous::PathStateUpdate`].
 #[derive(Tsify, Serialize)]
-#[serde(tag = "state", rename_all = "kebab-case")]
+#[serde(tag = "state", rename_all = "kebab-case", rename_all_fields = "camelCase")]
 #[tsify(into_wasm_abi)]
 pub enum PathStateUpdate {
-    #[expect(missing_docs, reason = "Binding-friendly version")]
-    #[serde(rename_all = "camelCase")]
+    #[expect(missing_docs, reason = "Binding version")]
     AwaitingNominate { measured_rtt_ms: u32 },
 
-    #[expect(missing_docs, reason = "Binding-friendly version")]
-    #[serde(rename_all = "camelCase")]
+    #[expect(missing_docs, reason = "Binding version")]
     Nominated { rph: ByteBuf },
 }
 
@@ -37,18 +35,18 @@ impl From<d2d_rendezvous::PathStateUpdate> for PathStateUpdate {
     }
 }
 
-/// Binding-friendly version of [`d2d_rendezvous::PathProcessResult`].
+/// Binding version of [`d2d_rendezvous::PathProcessResult`].
 #[derive(Tsify, Serialize)]
 #[serde(rename_all = "camelCase")]
 #[tsify(into_wasm_abi)]
 pub struct PathProcessResult {
-    #[expect(missing_docs, reason = "Binding-friendly version")]
+    /// Binding version of [`d2d_rendezvous::PathProcessResult::state_update`].
     pub state_update: Option<PathStateUpdate>,
 
-    #[expect(missing_docs, reason = "Binding-friendly version")]
+    /// Binding version of [`d2d_rendezvous::PathProcessResult::outgoing_frame`].
     pub outgoing_frame: Option<ByteBuf>,
 
-    #[expect(missing_docs, reason = "Binding-friendly version")]
+    /// Binding version of [`d2d_rendezvous::PathProcessResult::incoming_ulp_data`].
     pub incoming_ulp_data: Option<ByteBuf>,
 }
 
@@ -96,7 +94,7 @@ impl From<(u32, d2d_rendezvous::OutgoingFrame)> for OutgoingFrame {
     }
 }
 
-/// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol`].
+/// Binding version of [`d2d_rendezvous::RendezvousProtocol`].
 #[wasm_bindgen]
 pub struct RendezvousProtocol {
     inner: d2d_rendezvous::RendezvousProtocol,
@@ -105,11 +103,11 @@ pub struct RendezvousProtocol {
 
 #[wasm_bindgen]
 impl RendezvousProtocol {
-    /// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol::new_as_rid`].
+    /// Binding version of [`d2d_rendezvous::RendezvousProtocol::new_as_rid`].
     ///
     /// # Errors
     ///
-    /// Throws if `ak` is not exactly 32 bytes.
+    /// Returns an error if `ak` is not exactly 32 bytes.
     #[wasm_bindgen(js_name = newAsRid)]
     pub fn new_as_rid(is_nominator: bool, ak: &[u8], pids: &[u32]) -> Result<RendezvousProtocol, Error> {
         let ak: [u8; 32] = ak.try_into().map_err(|_| Error::new("AK must be 32 bytes"))?;
@@ -119,7 +117,7 @@ impl RendezvousProtocol {
         })
     }
 
-    /// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol::new_as_rrd`].
+    /// Binding version of [`d2d_rendezvous::RendezvousProtocol::new_as_rrd`].
     ///
     /// # Deviations
     ///
@@ -129,7 +127,7 @@ impl RendezvousProtocol {
     ///
     /// # Errors
     ///
-    /// Throws if `ak` is not exactly 32 bytes.
+    /// Returns an error if `ak` is not exactly 32 bytes.
     #[wasm_bindgen(js_name = newAsRrd)]
     pub fn new_as_rrd(is_nominator: bool, ak: &[u8], pids: &[u32]) -> Result<RendezvousProtocol, Error> {
         let ak: [u8; 32] = ak.try_into().map_err(|_| Error::new("AK must be 32 bytes"))?;
@@ -163,8 +161,8 @@ impl RendezvousProtocol {
         self.inner.nominated_path()
     }
 
-    /// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol::add_chunks`].
-    #[allow(clippy::missing_errors_doc, reason = "Binding-friendly version")]
+    /// Binding version of [`d2d_rendezvous::RendezvousProtocol::add_chunks`].
+    #[allow(clippy::missing_errors_doc, reason = "Binding version")]
     #[wasm_bindgen(js_name = addChunk)]
     pub fn add_chunk(&mut self, pid: u32, chunk: &[u8]) -> Result<(), Error> {
         self.inner
@@ -172,8 +170,8 @@ impl RendezvousProtocol {
             .map_err(|error| Error::new(format!("Could not add chunks: {error}").as_ref()))
     }
 
-    /// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol::process_frame`].
-    #[allow(clippy::missing_errors_doc, reason = "Binding-friendly version")]
+    /// Binding version of [`d2d_rendezvous::RendezvousProtocol::process_frame`].
+    #[allow(clippy::missing_errors_doc, reason = "Binding version")]
     #[wasm_bindgen(js_name = processFrame)]
     pub fn process_frame(&mut self, pid: u32) -> Result<Option<PathProcessResult>, Error> {
         self.inner
@@ -182,8 +180,8 @@ impl RendezvousProtocol {
             .map_err(|error| Error::new(format!("Could not process frame: {error}").as_ref()))
     }
 
-    /// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol::nominate_path`].
-    #[allow(clippy::missing_errors_doc, reason = "Binding-friendly version")]
+    /// Binding version of [`d2d_rendezvous::RendezvousProtocol::nominate_path`].
+    #[allow(clippy::missing_errors_doc, reason = "Binding version")]
     #[wasm_bindgen(js_name = nominatePath)]
     pub fn nominate_path(&mut self, pid: u32) -> Result<PathProcessResult, Error> {
         self.inner
@@ -192,8 +190,8 @@ impl RendezvousProtocol {
             .map_err(|error| Error::new(format!("Could not nominate path: {error}").as_ref()))
     }
 
-    /// Binding-friendly version of [`d2d_rendezvous::RendezvousProtocol::create_ulp_frame`].
-    #[allow(clippy::missing_errors_doc, reason = "Binding-friendly version")]
+    /// Binding version of [`d2d_rendezvous::RendezvousProtocol::create_ulp_frame`].
+    #[allow(clippy::missing_errors_doc, reason = "Binding version")]
     #[wasm_bindgen(js_name = createUlpFrame)]
     pub fn create_ulp_frame(&mut self, outgoing_data: Vec<u8>) -> Result<PathProcessResult, Error> {
         self.inner

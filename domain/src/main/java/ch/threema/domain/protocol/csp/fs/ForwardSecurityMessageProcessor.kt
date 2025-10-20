@@ -22,6 +22,7 @@
 package ch.threema.domain.protocol.csp.fs
 
 import ch.threema.base.ThreemaException
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
@@ -29,7 +30,7 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.fs.DHSession
 import ch.threema.domain.fs.DHSession.RejectMessageError
 import ch.threema.domain.fs.DHSessionId
-import ch.threema.domain.fs.KDFRatchet.RatchetRotationException
+import ch.threema.domain.fs.KDFRatchet
 import ch.threema.domain.models.BasicContact
 import ch.threema.domain.models.Contact
 import ch.threema.domain.protocol.ThreemaFeature
@@ -50,16 +51,17 @@ import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
 import ch.threema.domain.stores.ContactStore
 import ch.threema.domain.stores.DHSessionStoreException
 import ch.threema.domain.stores.DHSessionStoreInterface
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.awaitOutgoingMessageAck
 import ch.threema.domain.taskmanager.toCspMessage
+import ch.threema.domain.types.Identity
+import ch.threema.libthreema.CryptoException
 import ch.threema.protobuf.Common.GroupIdentity
 import ch.threema.protobuf.csp.e2e.fs.Encapsulated.DHType
 import ch.threema.protobuf.csp.e2e.fs.Reject
 import ch.threema.protobuf.csp.e2e.fs.Terminate
 import ch.threema.protobuf.csp.e2e.fs.Terminate.Cause
-import com.neilalexander.jnacl.NaCl
 import java.io.ByteArrayOutputStream
 import java.util.Date
 import kotlinx.coroutines.runBlocking
@@ -69,7 +71,7 @@ private val logger = LoggingUtil.getThreemaLogger("ForwardSecurityMessageProcess
 class ForwardSecurityMessageProcessor(
     private val dhSessionStoreInterface: DHSessionStoreInterface,
     private val contactStore: ContactStore,
-    private val identityStoreInterface: IdentityStoreInterface,
+    private val identityStore: IdentityStore,
     private val nonceFactory: NonceFactory,
     private val statusListener: ForwardSecurityStatusListener,
 ) {
@@ -218,14 +220,14 @@ class ForwardSecurityMessageProcessor(
 
         // Check if we already have a session with this contact
         var session = dhSessionStoreInterface.getBestDHSession(
-            identityStoreInterface.identity,
+            identityStore.getIdentity(),
             contact.identity,
             handle,
         )
         var isExistingSession = true
         if (session == null) {
             // Establish a new DH session
-            session = DHSession(contact, identityStoreInterface)
+            session = DHSession(contact, identityStore)
             // Set last outgoing message timestamp to now, as we will just send a message (init) in
             // this session.
             session.lastOutgoingMessageTimestamp = Date().time
@@ -243,7 +245,7 @@ class ForwardSecurityMessageProcessor(
             // Create init message
             val init = ForwardSecurityDataInit(
                 session.id,
-                DHSession.SUPPORTED_VERSION_RANGE,
+                DHSession.getSupportedVersionRange(),
                 session.myEphemeralPublicKey,
             )
             initMessage = ForwardSecurityEnvelopeMessage(init, true)
@@ -334,7 +336,7 @@ class ForwardSecurityMessageProcessor(
     )
     suspend fun runFsRefreshSteps(contact: Contact, handle: ActiveTaskCodec) {
         val session = dhSessionStoreInterface.getBestDHSession(
-            identityStoreInterface.identity,
+            identityStore.getIdentity(),
             contact.identity,
             handle,
         )
@@ -358,7 +360,7 @@ class ForwardSecurityMessageProcessor(
         val contact = contactStore.getContactForIdentity(message.fromIdentity) ?: return
         val bestSession = try {
             dhSessionStoreInterface.getBestDHSession(
-                identityStoreInterface.identity,
+                identityStore.getIdentity(),
                 message.fromIdentity,
                 handle,
             )
@@ -401,7 +403,7 @@ class ForwardSecurityMessageProcessor(
         val dhType = peerRatchetIdentifier.dhType
 
         val session = dhSessionStoreInterface.getDHSession(
-            identityStoreInterface.identity,
+            identityStore.getIdentity(),
             peerIdentity,
             sessionId,
             handle,
@@ -443,7 +445,7 @@ class ForwardSecurityMessageProcessor(
     ) {
         // Is there already a session with this ID?
         if (dhSessionStoreInterface.getDHSession(
-                identityStoreInterface.identity,
+                identityStore.getIdentity(),
                 contact.identity,
                 init.sessionId,
                 handle,
@@ -459,7 +461,7 @@ class ForwardSecurityMessageProcessor(
         // We will keep 2DH sessions (which will have been initiated by us), as otherwise messages may
         // be lost during Init race conditions.
         val existingSessionPreempted: Boolean = dhSessionStoreInterface.deleteAllSessionsExcept(
-            identityStoreInterface.identity,
+            identityStore.getIdentity(),
             contact.identity,
             init.sessionId,
             true,
@@ -477,7 +479,7 @@ class ForwardSecurityMessageProcessor(
                 init.versionRange,
                 init.ephemeralPublicKey,
                 contact,
-                identityStoreInterface,
+                identityStore,
             )
 
             // Save the current timestamp to the session as we will send an accept in this session
@@ -491,7 +493,7 @@ class ForwardSecurityMessageProcessor(
             // Send an accept
             val accept = ForwardSecurityDataAccept(
                 init.sessionId,
-                DHSession.SUPPORTED_VERSION_RANGE,
+                DHSession.getSupportedVersionRange(),
                 session.myEphemeralPublicKey,
             )
 
@@ -532,7 +534,7 @@ class ForwardSecurityMessageProcessor(
         handle: ActiveTaskCodec,
     ) {
         val session = dhSessionStoreInterface.getDHSession(
-            identityStoreInterface.identity,
+            identityStore.getIdentity(),
             contact.identity,
             accept.sessionId,
             handle,
@@ -555,7 +557,7 @@ class ForwardSecurityMessageProcessor(
             accept.versionRange,
             accept.ephemeralPublicKey,
             contact,
-            identityStoreInterface,
+            identityStore,
         )
         dhSessionStoreInterface.storeDHSession(session)
         logger.info(
@@ -579,7 +581,7 @@ class ForwardSecurityMessageProcessor(
             reject.cause,
         )
         val session = dhSessionStoreInterface.getDHSession(
-            identityStoreInterface.identity,
+            identityStore.getIdentity(),
             contact.identity,
             reject.sessionId,
             handle,
@@ -587,7 +589,7 @@ class ForwardSecurityMessageProcessor(
         if (session != null) {
             // Discard session
             dhSessionStoreInterface.deleteDHSession(
-                identityStoreInterface.identity,
+                identityStore.getIdentity(),
                 contact.identity,
                 reject.sessionId,
             )
@@ -620,7 +622,7 @@ class ForwardSecurityMessageProcessor(
             message.cause,
         )
         val sessionDeleted = dhSessionStoreInterface.deleteDHSession(
-            identityStoreInterface.identity,
+            identityStore.getIdentity(),
             contact.identity,
             message.sessionId,
         )
@@ -645,7 +647,7 @@ class ForwardSecurityMessageProcessor(
         val message = envelopeMessage.data as ForwardSecurityDataMessage
 
         val session = dhSessionStoreInterface.getDHSession(
-            identityStoreInterface.identity,
+            identityStore.getIdentity(),
             contact.identity,
             message.sessionId,
             handle,
@@ -686,7 +688,7 @@ class ForwardSecurityMessageProcessor(
             )
             sendReject(contact, session.id, envelopeMessage, Reject.Cause.STATE_MISMATCH, handle)
             dhSessionStoreInterface.deleteDHSession(
-                identityStoreInterface.identity,
+                identityStore.getIdentity(),
                 contact.identity,
                 session.id,
             )
@@ -722,7 +724,7 @@ class ForwardSecurityMessageProcessor(
                 handle,
             )
             dhSessionStoreInterface.deleteDHSession(
-                identityStoreInterface.identity,
+                identityStore.getIdentity(),
                 contact.identity,
                 session.id,
             )
@@ -738,21 +740,26 @@ class ForwardSecurityMessageProcessor(
             if (numTurns > 0) {
                 statusListener.messagesSkipped(message.sessionId, contact, numTurns)
             }
-        } catch (e: RatchetRotationException) {
+        } catch (ratchetRotationException: KDFRatchet.RatchetRotationException) {
             statusListener.messageOutOfOrder(message.sessionId, contact, envelopeMessage.messageId)
-            throw BadMessageException("Out of order FS message, cannot decrypt")
+            throw BadMessageException("Out of order FS message, cannot decrypt", ratchetRotationException)
         }
 
         // A new key is used for each message, so the nonce can be zero
-        val nonce = ByteArray(NaCl.NONCEBYTES)
-        val plaintext =
-            NaCl.symmetricDecryptData(message.message, ratchet.currentEncryptionKey, nonce)
-        if (plaintext == null) {
+        val nonce = ByteArray(NaCl.NONCE_BYTES)
+        val plaintext: ByteArray = try {
+            NaCl.symmetricDecryptData(
+                data = message.message,
+                key = ratchet.currentEncryptionKey,
+                nonce = nonce,
+            )
+        } catch (cryptoException: CryptoException) {
             logger.warn(
                 "Rejecting message in session {} with {}, cause: Message decryption failed (message-id={})",
                 session,
                 contact.identity,
                 envelopeMessage.messageId,
+                cryptoException,
             )
             sendReject(
                 contact,
@@ -762,7 +769,7 @@ class ForwardSecurityMessageProcessor(
                 handle,
             )
             dhSessionStoreInterface.deleteDHSession(
-                identityStoreInterface.identity,
+                identityStore.getIdentity(),
                 contact.identity,
                 session.id,
             )
@@ -798,13 +805,13 @@ class ForwardSecurityMessageProcessor(
             // If this message was sent in what we also consider to be the "best" session (lowest ID),
             // then we can delete any other sessions.
             val bestSession = dhSessionStoreInterface.getBestDHSession(
-                identityStoreInterface.identity,
+                identityStore.getIdentity(),
                 contact.identity,
                 handle,
             )
             if (bestSession != null && bestSession.id == session.id) {
                 dhSessionStoreInterface.deleteAllSessionsExcept(
-                    identityStoreInterface.identity,
+                    identityStore.getIdentity(),
                     contact.identity,
                     session.id,
                     false,
@@ -836,7 +843,7 @@ class ForwardSecurityMessageProcessor(
 
         // Decode inner message
         val innerMsg = try {
-            MessageCoder(contactStore, identityStoreInterface)
+            MessageCoder(contactStore, identityStore)
                 .decodeEncapsulated(plaintext, envelopeMessage, processedVersions.appliedVersion)
                 .also { it.forwardSecurityMode = mode }
         } catch (e: BadMessageException) {
@@ -854,7 +861,7 @@ class ForwardSecurityMessageProcessor(
      */
     private suspend fun createAndSendNewSession(contact: Contact, handle: ActiveTaskCodec) {
         val existingSession = dhSessionStoreInterface.getBestDHSession(
-            identityStoreInterface.identity,
+            identityStore.getIdentity(),
             contact.identity,
             handle,
         )
@@ -864,7 +871,7 @@ class ForwardSecurityMessageProcessor(
         }
 
         // When there is no existing session, we create a new session
-        val session = DHSession(contact, identityStoreInterface)
+        val session = DHSession(contact, identityStore)
         // Set last outgoing message timestamp
         session.lastOutgoingMessageTimestamp = Date().time
         // Do not yet save the session. In case the send task fails and is restarted, the init
@@ -876,7 +883,7 @@ class ForwardSecurityMessageProcessor(
         // Create and send init message
         val init = ForwardSecurityDataInit(
             session.id,
-            DHSession.SUPPORTED_VERSION_RANGE,
+            DHSession.getSupportedVersionRange(),
             session.myEphemeralPublicKey,
         )
         val message = ForwardSecurityEnvelopeMessage(init, true)
@@ -942,8 +949,16 @@ class ForwardSecurityMessageProcessor(
         message.body?.let { bos.write(it) } ?: throw ThreemaException("Message body is null")
         val plaintext = bos.toByteArray()
         // A new key is used for each message, so the nonce can be zero
-        val nonce = ByteArray(NaCl.NONCEBYTES)
-        val ciphertext = NaCl.symmetricEncryptData(plaintext, currentKey, nonce)
+        val nonce = ByteArray(NaCl.NONCE_BYTES)
+        val ciphertext = try {
+            NaCl.symmetricEncryptData(
+                data = plaintext,
+                key = currentKey,
+                nonce = nonce,
+            )
+        } catch (cryptoException: CryptoException) {
+            throw ThreemaException("Failed to encrypt data", cryptoException)
+        }
 
         val groupIdentity = when (message) {
             is AbstractGroupMessage ->
@@ -1033,7 +1048,7 @@ class ForwardSecurityMessageProcessor(
         // Try to delete the dh session
         try {
             dhSessionStoreInterface.deleteDHSession(
-                identityStoreInterface.identity,
+                identityStore.getIdentity(),
                 contact.identity,
                 sessionId,
             )
@@ -1070,7 +1085,7 @@ class ForwardSecurityMessageProcessor(
      */
     private suspend fun sendMessageToContact(message: AbstractMessage, handle: ActiveTaskCodec) {
         val nonce = nonceFactory.next(NonceScope.CSP)
-        handle.write(message.toCspMessage(identityStoreInterface, contactStore, nonce))
+        handle.write(message.toCspMessage(identityStore, contactStore, nonce))
         if (message.protectAgainstReplay()) {
             nonceFactory.store(NonceScope.CSP, nonce)
         }
@@ -1091,10 +1106,9 @@ class ForwardSecurityMessageProcessor(
         handle: ActiveTaskCodec,
     ) {
         try {
-            val myIdentity = identityStoreInterface.identity
+            val myIdentity = identityStore.getIdentity()!!
             val peerIdentity = contact.identity
-            val sessions =
-                dhSessionStoreInterface.getAllDHSessions(myIdentity, peerIdentity, handle)
+            val sessions = dhSessionStoreInterface.getAllDHSessions(myIdentity, peerIdentity, handle)
 
             // Terminate and remove all sessions without renewing them except the last
             sessions.dropLast(1).forEach {
@@ -1133,7 +1147,7 @@ class ForwardSecurityMessageProcessor(
     @Throws(DHSessionStoreException::class)
     suspend fun terminateAllInvalidSessions(contact: Contact, handle: ActiveTaskCodec) {
         val invalidSessions = dhSessionStoreInterface.getAllDHSessions(
-            identityStoreInterface.identity,
+            identityStore.getIdentity()!!,
             contact.identity,
             handle,
         ).mapNotNull {
@@ -1167,7 +1181,7 @@ class PeerRatchetIdentifier(
     /**
      * The peer identity of the session.
      */
-    val peerIdentity: String,
+    val peerIdentity: Identity,
     /**
      * The dh type of the received message.
      */

@@ -35,7 +35,6 @@ import androidx.annotation.AnyThread
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.widget.TextViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
@@ -50,10 +49,10 @@ import ch.threema.app.ui.DebouncedOnClickListener
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder
 import ch.threema.app.utils.AdapterUtil
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.GroupCallUtil
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.utils.StateBitmapUtil
 import ch.threema.app.utils.ViewUtil
-import ch.threema.app.utils.getRunningSince
 import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.app.voip.groupcall.GroupCallObserver
@@ -105,7 +104,7 @@ class MessageListViewHolder(
         val draftText: String,
     )
 
-    lateinit var listItem: View
+    private lateinit var listItem: View
     private lateinit var unreadBar: View
     private lateinit var unreadCountView: MaterialButton
     private lateinit var pinBar: View
@@ -191,7 +190,6 @@ class MessageListViewHolder(
         avatarView = view.findViewById(R.id.avatar_view)
         avatarListItemHolder = AvatarListItemHolder()
         avatarListItemHolder.avatarView = avatarView
-        avatarListItemHolder.avatarLoadingAsyncTask = null
         ongoingGroupCallContainer = view.findViewById(R.id.ongoing_group_call_container)
         ongoingCallText = view.findViewById(R.id.ongoing_call_text)
         joinGroupCallButton = view.findViewById(R.id.join_group_call_button)
@@ -297,7 +295,6 @@ class MessageListViewHolder(
         messageListAdapterItem.latestMessage?.isDeleted?.let {
             initializeDeletedAppearance(
                 isDeleted = it,
-                isOutbox = messageListAdapterItem.latestMessage.isOutbox,
             )
         }
 
@@ -456,6 +453,9 @@ class MessageListViewHolder(
         if (isHiddenChat) {
             hiddenStatus.visibility = VISIBLE
             subjectView.setText(R.string.private_chat_subject)
+            // Note that setting the typeface and alpha is required in case the last message has been deleted
+            subjectView.setTypeface(Typeface.create(subjectView.typeface, Typeface.NORMAL))
+            subjectView.alpha = 1f
             attachmentView.visibility = GONE
             dateView.visibility = INVISIBLE
             deliveryView.visibility = GONE
@@ -466,20 +466,15 @@ class MessageListViewHolder(
 
     private fun initializeDeletedAppearance(
         isDeleted: Boolean,
-        isOutbox: Boolean,
     ) {
         if (isDeleted) {
             subjectView.setText(R.string.message_was_deleted)
-            subjectView.setTextColor(
-                ResourcesCompat.getColorStateList(
-                    context.resources,
-                    if (isOutbox) R.color.bubble_send_text_colorstatelist else R.color.bubble_receive_text_colorstatelist,
-                    context.theme,
-                ),
-            )
             subjectView.setTypeface(subjectView.typeface, Typeface.ITALIC)
+            subjectView.alpha = 0.6f
             attachmentView.visibility = GONE
             deliveryView.visibility = GONE
+        } else {
+            subjectView.alpha = 1f
         }
     }
 
@@ -551,7 +546,10 @@ class MessageListViewHolder(
 
     @AnyThread
     fun updateGroupCallDuration(call: GroupCallDescription) {
-        val runningSince = getRunningSince(call, context)
+        val runningSince: Long = GroupCallUtil.getRunningSince(
+            call = call,
+            context = context,
+        )
         startGroupCallDuration(runningSince)
     }
 

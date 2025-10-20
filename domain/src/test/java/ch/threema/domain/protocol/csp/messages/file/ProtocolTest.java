@@ -40,7 +40,7 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.stores.ContactStore;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.testhelpers.TestHelpers;
 
 public class ProtocolTest {
@@ -78,7 +78,7 @@ public class ProtocolTest {
         groupFileMessage.setFileData(data);
 
         ContactStore contactStore = createFakeContactStore();
-        IdentityStoreInterface identityStore = createFakeIdentityStore(myIdentity);
+        IdentityStore identityStore = createFakeIdentityStore(myIdentity);
         MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 
         NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
@@ -129,7 +129,7 @@ public class ProtocolTest {
         fileMessage.setFileData(data);
 
         ContactStore contactStore = createFakeContactStore();
-        IdentityStoreInterface identityStore = createFakeIdentityStore(myIdentity);
+        IdentityStore identityStore = createFakeIdentityStore(myIdentity);
         MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 
         NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
@@ -189,8 +189,8 @@ public class ProtocolTest {
         };
     }
 
-    private static IdentityStoreInterface createFakeIdentityStore(final String myIdentity) {
-        return new IdentityStoreInterface() {
+    private static IdentityStore createFakeIdentityStore(final String myIdentity) {
+        return new IdentityStore() {
             @Override
             public byte[] encryptData(@NonNull byte[] plaintext, @NonNull byte[] nonce, @NonNull byte[] receiverPublicKey) {
                 return plaintext;
@@ -201,6 +201,7 @@ public class ProtocolTest {
                 return ciphertext;
             }
 
+            @NonNull
             @Override
             public byte[] calcSharedSecret(@NonNull byte[] publicKey) {
                 return new byte[32];
@@ -233,7 +234,15 @@ public class ProtocolTest {
             }
 
             @Override
-            public void storeIdentity(@NonNull String identity, @NonNull String serverGroup, @NonNull byte[] publicKey, @NonNull byte[] privateKey) {
+            public void setPublicNickname(@NonNull String publicNickname) {
+            }
+
+            @Override
+            public void storeIdentity(@NonNull String identity, @NonNull String serverGroup, @NonNull byte[] privateKey) {
+            }
+
+            @Override
+            public void clear() {
             }
         };
     }

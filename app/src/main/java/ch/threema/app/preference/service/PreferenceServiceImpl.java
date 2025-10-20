@@ -32,12 +32,11 @@ import org.slf4j.Logger;
 
 import java.security.MessageDigest;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -47,11 +46,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import ch.threema.app.AppConstants;
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
+import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.stores.PreferenceStoreInterface;
+import ch.threema.app.stores.EncryptedPreferenceStore;
+import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils;
@@ -61,9 +61,7 @@ import ch.threema.base.utils.Base64;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
-import ch.threema.domain.taskmanager.ActiveTask;
 import ch.threema.domain.taskmanager.TaskManager;
-import ch.threema.domain.taskmanager.TriggerSource;
 
 import static ch.threema.app.utils.AutoDeleteUtil.validateKeepMessageDays;
 
@@ -77,11 +75,9 @@ public class PreferenceServiceImpl implements PreferenceService {
     @NonNull
     private final Context context;
     @NonNull
-    private final PreferenceStoreInterface preferenceStore;
+    private final PreferenceStore preferenceStore;
     @NonNull
-    private final TaskManager taskManager;
-    @NonNull
-    private final MultiDeviceManager multiDeviceManager;
+    private final EncryptedPreferenceStore encryptedPreferenceStore;
 
     @NonNull
     private final ContactSyncPolicySetting contactSyncPolicySetting;
@@ -108,15 +104,15 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     public PreferenceServiceImpl(
         @NonNull Context context,
-        @NonNull PreferenceStoreInterface preferenceStore,
+        @NonNull PreferenceStore preferenceStore,
+        @NonNull EncryptedPreferenceStore encryptedPreferenceStore,
         @NonNull TaskManager taskManager,
         @NonNull MultiDeviceManager multiDeviceManager,
         @NonNull NonceFactory nonceFactory
     ) {
         this.context = context;
         this.preferenceStore = preferenceStore;
-        this.taskManager = taskManager;
-        this.multiDeviceManager = multiDeviceManager;
+        this.encryptedPreferenceStore = encryptedPreferenceStore;
 
         this.contactSyncPolicySetting = new ContactSyncPolicySetting(
             this,
@@ -399,40 +395,60 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     @Nullable
     public synchronized String getLicenseUsername() {
-        return this.preferenceStore.getStringCompat(this.getKeyName(R.string.preferences__license_username));
+        return getEncryptedStringCompat(getKeyName(R.string.preferences__license_username));
     }
 
     @Override
     public void setLicenseUsername(String username) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__license_username), username, true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__license_username), username);
     }
 
     @Override
     public synchronized String getLicensePassword() {
-        return this.preferenceStore.getStringCompat(this.getKeyName(R.string.preferences__license_password));
+        return getEncryptedStringCompat(getKeyName(R.string.preferences__license_password));
     }
 
     @Override
     public void setLicensePassword(String password) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__license_password), password, true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__license_password), password);
     }
 
     @Override
     @Nullable
     public synchronized String getOnPremServer() {
-        return this.preferenceStore.getStringCompat(this.getKeyName(R.string.preferences__onprem_server));
+        return getEncryptedStringCompat(getKeyName(R.string.preferences__onprem_server));
+    }
+
+    /**
+     * Get encrypted string preferences in a backwards compatible way.
+     * If no encrypted prefs with given key exist, the current (unencrypted) value will be migrated
+     *
+     * @param key Key of preference
+     * @return Value of preference or null if neither an encrypted nor an unencrypted value is found
+     */
+    private String getEncryptedStringCompat(@NonNull String key) {
+        var value = encryptedPreferenceStore.getString(key);
+        if (value != null && !value.isEmpty()) {
+            return value;
+        }
+        var legacyValue = preferenceStore.getString(key);
+        if (legacyValue != null) {
+            encryptedPreferenceStore.save(key, legacyValue);
+            preferenceStore.remove(key);
+        }
+        return legacyValue;
     }
 
     @Override
     public void setOnPremServer(String server) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__onprem_server), server, true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__onprem_server), server);
     }
 
     @Override
     @Deprecated
     public LinkedList<Integer> getRecentEmojis() {
         LinkedList<Integer> list = new LinkedList<>();
-        JSONArray array = this.preferenceStore.getJSONArray(this.getKeyName(R.string.preferences__recent_emojis), false);
+        JSONArray array = preferenceStore.getJSONArray(getKeyName(R.string.preferences__recent_emojis));
         for (int i = 0; i < array.length(); i++) {
             try {
                 list.add(array.getInt(i));
@@ -463,7 +479,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public void setRecentEmojis2(LinkedList<String> list) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__recent_emojis2), list.toArray(new String[0]), false);
+        preferenceStore.save(getKeyName(R.string.preferences__recent_emojis2), list.toArray(new String[0]));
     }
 
     @Override
@@ -492,21 +508,15 @@ public class PreferenceServiceImpl implements PreferenceService {
         return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__save_media));
     }
 
-    /*
-        @Override
-        public boolean isPinLockEnabled() {
-            return isPinSet() && this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__pin_lock_enabled));
-        }
-    */
     @Override
     public boolean isPinSet() {
-        return isPinCodeValid(this.preferenceStore.getString(this.getKeyName(R.string.preferences__pin_lock_code), true));
+        return isPinCodeValid(encryptedPreferenceStore.getString(getKeyName(R.string.preferences__pin_lock_code)));
     }
 
     @Override
     public boolean setPin(String newCode) {
         if (isPinCodeValid(newCode)) {
-            this.preferenceStore.save(this.getKeyName(R.string.preferences__pin_lock_code), newCode, true);
+            encryptedPreferenceStore.save(getKeyName(R.string.preferences__pin_lock_code), newCode);
             return true;
         } else {
             this.preferenceStore.remove(this.getKeyName(R.string.preferences__pin_lock_code));
@@ -516,7 +526,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public boolean isPinCodeCorrect(String code) {
-        String storedCode = this.preferenceStore.getString(this.getKeyName(R.string.preferences__pin_lock_code), true);
+        String storedCode = encryptedPreferenceStore.getString(getKeyName(R.string.preferences__pin_lock_code));
 
         // use MessageDigest for a timing-safe comparison
         return
@@ -550,7 +560,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public int getIDBackupCount() {
-        return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__id_backup_count));
+        return preferenceStore.getInt(getKeyName(R.string.preferences__id_backup_count));
     }
 
     @Override
@@ -568,10 +578,10 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public void setLastIDBackupReminderDate(Date lastIDBackupReminderDate) {
+    public void setLastIDBackupReminderTimestamp(@Nullable Instant lastIDBackupReminderTimestamp) {
         this.preferenceStore.save(
             this.getKeyName(R.string.preferences__last_id_backup_date),
-            lastIDBackupReminderDate
+            lastIDBackupReminderTimestamp
         );
     }
 
@@ -635,8 +645,9 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public Date getLastIDBackupReminderDate() {
-        return this.preferenceStore.getDate(this.getKeyName(R.string.preferences__last_id_backup_date));
+    @Nullable
+    public Instant getLastIDBackupReminderTimestamp() {
+        return this.preferenceStore.getInstant(this.getKeyName(R.string.preferences__last_id_backup_date));
     }
 
     @Override
@@ -679,14 +690,19 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     @NonNull
     public String[] getList(String listName, boolean encrypted) {
-        String[] res = this.preferenceStore.getStringArray(listName, encrypted);
+        String[] res;
+        if (encrypted) {
+            res = encryptedPreferenceStore.getStringArray(listName);
+        } else {
+            res = preferenceStore.getStringArray(listName);
+        }
         if (res == null && encrypted) {
             // check if we have an old unencrypted identity list - migrate if necessary and return its values
             if (this.preferenceStore.containsKey(listName)) {
-                res = this.preferenceStore.getStringArray(listName, false);
-                this.preferenceStore.remove(listName, false);
+                res = this.preferenceStore.getStringArray(listName);
+                this.preferenceStore.remove(listName);
                 if (res != null) {
-                    this.preferenceStore.save(listName, res, true);
+                    encryptedPreferenceStore.save(listName, res);
                 }
             }
         }
@@ -695,11 +711,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public void setList(String listName, String[] elements) {
-        this.preferenceStore.save(
-            listName,
-            elements,
-            true
-        );
+        encryptedPreferenceStore.save(listName, elements);
     }
 
     @Override
@@ -709,100 +721,27 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public void setListQuietly(@NonNull String listName, @NonNull String[] elements, boolean encrypted) {
-        this.preferenceStore.saveQuietly(
-            listName,
-            elements,
-            encrypted
-        );
+        if (encrypted) {
+            encryptedPreferenceStore.saveQuietly(listName, elements);
+        } else {
+            preferenceStore.saveQuietly(listName, elements);
+        }
     }
 
     @Override
-    public HashMap<Integer, String> getHashMap(String listName, boolean encrypted) {
-        return this.preferenceStore.getHashMap(listName, encrypted);
+    public Map<String, String> getStringMap(String listName) {
+        return preferenceStore.getMap(listName);
     }
 
     @Override
-    public void setHashMap(String listName, HashMap<Integer, String> hashMap) {
-        this.preferenceStore.save(
-            listName,
-            hashMap
-        );
-    }
-
-    @Override
-    public HashMap<String, String> getStringHashMap(String listName, boolean encrypted) {
-        return this.preferenceStore.getStringHashMap(listName, encrypted);
-    }
-
-    @Override
-    public void setStringHashMap(String listName, HashMap<String, String> hashMap) {
-        this.preferenceStore.saveStringHashMap(
-            listName,
-            hashMap,
-            false
-        );
+    public void setStringMap(String listName, Map<String, String> map) {
+        preferenceStore.save(listName, map);
     }
 
     @Override
     public void clear() {
-        this.preferenceStore.clear();
-    }
-
-    @Override
-    public List<String[]> write() {
-        List<String[]> res = new ArrayList<>();
-        Map<String, ?> values = this.preferenceStore.getAllNonCrypted();
-        Iterator<String> i = values.keySet().iterator();
-        while (i.hasNext()) {
-            String key = i.next();
-            Object v = values.get(key);
-
-            String value = null;
-            if (v instanceof Boolean) {
-                value = String.valueOf(v);
-            } else if (v instanceof Float) {
-                value = String.valueOf(v);
-            } else if (v instanceof Integer) {
-                value = String.valueOf(v);
-            } else if (v instanceof Long) {
-                value = String.valueOf(v);
-            } else if (v instanceof String) {
-                value = ((String) v);
-            }
-            res.add(new String[]{
-                key,
-                value,
-                v.getClass().toString()
-            });
-        }
-        return res;
-    }
-
-    @Override
-    public boolean read(List<String[]> values) {
-
-        for (String[] v : values) {
-            if (v.length != 3) {
-                //invalid row
-                return false;
-            }
-
-            String key = v[0];
-            String value = v[1];
-            String valueClass = v[2];
-
-            if (valueClass.equals(Boolean.class.toString())) {
-                this.preferenceStore.save(key, Boolean.parseBoolean(value));
-            } else if (valueClass.equals(Integer.class.toString())) {
-                this.preferenceStore.save(key, Integer.parseInt(value));
-            } else if (valueClass.equals(Long.class.toString())) {
-                this.preferenceStore.save(key, Long.valueOf(value));
-            } else if (valueClass.equals(String.class.toString())) {
-                this.preferenceStore.save(key, value);
-            }
-        }
-
-        return true;
+        preferenceStore.clear();
+        encryptedPreferenceStore.clear();
     }
 
     private String getKeyName(@StringRes int resourceId) {
@@ -884,15 +823,6 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public int getAppThemeValue() {
-        String theme = this.preferenceStore.getString(this.getKeyName(R.string.preferences__theme));
-        if (theme != null && !theme.isEmpty()) {
-            return Integer.parseInt(theme);
-        }
-        return Integer.parseInt(BuildConfig.DEFAULT_APP_THEME);
-    }
-
-    @Override
     @EmojiStyle
     public int getEmojiStyle() {
         final @Nullable String emojiStyleString = this.preferenceStore.getString(
@@ -912,23 +842,14 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public void setLockoutDeadline(long deadline) {
+    public void setLockoutDeadline(@Nullable Instant deadline) {
         this.preferenceStore.save(this.getKeyName(R.string.preferences__lockout_deadline), deadline);
     }
 
     @Override
-    public void setLockoutTimeout(long timeout) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__lockout_timeout), timeout);
-    }
-
-    @Override
-    public long getLockoutDeadline() {
-        return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__lockout_deadline));
-    }
-
-    @Override
-    public long getLockoutTimeout() {
-        return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__lockout_timeout));
+    @Nullable
+    public Instant getLockoutDeadline() {
+        return this.preferenceStore.getInstant(this.getKeyName(R.string.preferences__lockout_deadline));
     }
 
     @Override
@@ -953,7 +874,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public void setAppLogoExpiresAt(Date expiresAt, @ConfigUtils.AppThemeSetting String theme) {
+    public void setAppLogoExpiresAt(@Nullable Instant expiresAt, @NonNull @ConfigUtils.AppThemeSetting String theme) {
         this.preferenceStore.save(this.getKeyName(
             ConfigUtils.THEME_DARK.equals(theme) ?
                 R.string.preferences__app_logo_dark_expires_at :
@@ -961,8 +882,9 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public Date getAppLogoExpiresAt(@ConfigUtils.AppThemeSetting String theme) {
-        return this.preferenceStore.getDate(this.getKeyName(
+    @Nullable
+    public Instant getAppLogoExpiresAt(@NonNull @ConfigUtils.AppThemeSetting String theme) {
+        return this.preferenceStore.getInstant(this.getKeyName(
             ConfigUtils.THEME_DARK.equals(theme) ?
                 R.string.preferences__app_logo_dark_expires_at :
                 R.string.preferences__app_logo_light_expires_at));
@@ -995,11 +917,6 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public void setSaveToGallery(Boolean booleanPreset) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__save_media), booleanPreset);
-    }
-
-    @Override
     public void setLockMechanism(String lockingMech) {
         this.preferenceStore.save(this.getKeyName(R.string.preferences__lock_mechanism), lockingMech);
     }
@@ -1010,33 +927,28 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public void setImageAttachPreviewsEnabled(boolean enable) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__image_attach_previews), enable);
-    }
-
-    @Override
     public boolean isDirectShare() {
         return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__direct_share));
     }
 
     @Override
-    public void setMessageDrafts(HashMap<String, String> messageDrafts) {
-        this.preferenceStore.saveStringHashMap(this.getKeyName(R.string.preferences__message_drafts), messageDrafts, true);
+    public void setMessageDrafts(Map<String, String> messageDrafts) {
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__message_drafts), messageDrafts);
     }
 
     @Override
-    public HashMap<String, String> getMessageDrafts() {
-        return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__message_drafts), true);
+    public Map<String, String> getMessageDrafts() {
+        return encryptedPreferenceStore.getMap(getKeyName(R.string.preferences__message_drafts));
     }
 
     @Override
-    public void setQuoteDrafts(HashMap<String, String> quoteDrafts) {
-        this.preferenceStore.saveStringHashMap(this.getKeyName(R.string.preferences__quote_drafts), quoteDrafts, true);
+    public void setQuoteDrafts(Map<String, String> quoteDrafts) {
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__quote_drafts), quoteDrafts);
     }
 
     @Override
-    public HashMap<String, String> getQuoteDrafts() {
-        return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__quote_drafts), true);
+    public Map<String, String> getQuoteDrafts() {
+        return encryptedPreferenceStore.getMap(getKeyName(R.string.preferences__quote_drafts));
     }
 
     private @NonNull
@@ -1049,7 +961,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public void setAppLogo(@NonNull String url, @ConfigUtils.AppThemeSetting String theme) {
-        this.preferenceStore.save(this.getAppLogoKey(theme), url, true);
+        encryptedPreferenceStore.save(getAppLogoKey(theme), url);
     }
 
     @Override
@@ -1066,27 +978,27 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     @Nullable
     public String getAppLogo(@ConfigUtils.AppThemeSetting String theme) {
-        return this.preferenceStore.getString(this.getAppLogoKey(theme), true);
+        return encryptedPreferenceStore.getString(this.getAppLogoKey(theme));
     }
 
     @Override
     public void setCustomSupportUrl(String supportUrl) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__custom_support_url), supportUrl, true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__custom_support_url), supportUrl);
     }
 
     @Override
     public String getCustomSupportUrl() {
-        return this.preferenceStore.getString(this.getKeyName(R.string.preferences__custom_support_url), true);
+        return encryptedPreferenceStore.getString(getKeyName(R.string.preferences__custom_support_url));
     }
 
     @Override
-    public HashMap<String, String> getDiverseEmojiPrefs() {
-        return this.preferenceStore.getStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis), false);
+    public Map<String, String> getDiverseEmojiPrefs() {
+        return preferenceStore.getMap(getKeyName(R.string.preferences__diverse_emojis));
     }
 
     @Override
-    public void setDiverseEmojiPrefs(HashMap<String, String> diverseEmojis) {
-        this.preferenceStore.saveStringHashMap(this.getKeyName(R.string.preferences__diverse_emojis), diverseEmojis, false);
+    public void setDiverseEmojiPrefs(Map<String, String> diverseEmojis) {
+        preferenceStore.save(getKeyName(R.string.preferences__diverse_emojis), diverseEmojis);
     }
 
     @Override
@@ -1101,18 +1013,12 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public void setPushToken(String fcmToken) {
-        this.preferenceStore.save(
-            this.getKeyName(R.string.preferences__push_token),
-            fcmToken,
-            true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__push_token), fcmToken);
     }
 
     @Override
     public String getPushToken() {
-        return this.preferenceStore.getString(
-            this.getKeyName(R.string.preferences__push_token),
-            true
-        );
+        return encryptedPreferenceStore.getString(getKeyName(R.string.preferences__push_token));
     }
 
     @Override
@@ -1126,8 +1032,9 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public long getProfilePicUploadDate() {
-        return this.preferenceStore.getDateAsLong(this.getKeyName(R.string.preferences__profile_pic_upload_date));
+    @Nullable
+    public Instant getProfilePicUploadTimestamp() {
+        return this.preferenceStore.getInstant(this.getKeyName(R.string.preferences__profile_pic_upload_date));
     }
 
     @Override
@@ -1145,19 +1052,23 @@ public class PreferenceServiceImpl implements PreferenceService {
             }
         }
 
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__profile_pic_upload_data), toStore, true);
-
-        if (result != null) {
-            this.preferenceStore.save(this.getKeyName(R.string.preferences__profile_pic_upload_date), new Date(result.uploadedAt));
+        if (toStore != null) {
+            encryptedPreferenceStore.save(getKeyName(R.string.preferences__profile_pic_upload_data), toStore);
         } else {
-            this.preferenceStore.save(this.getKeyName(R.string.preferences__profile_pic_upload_date), new Date(0));
+            // calling the listeners here might not be needed anymore, but we do it to be on the safe side
+            ListenerManager.preferenceListeners.handle(
+                listener -> listener.onChanged(getKeyName(R.string.preferences__profile_pic_upload_data), null)
+            );
         }
+
+        var uploadDate = result != null ? Instant.ofEpochMilli(result.uploadedAt) : null;
+        this.preferenceStore.save(this.getKeyName(R.string.preferences__profile_pic_upload_date), uploadDate);
     }
 
     @Override
     @Nullable
     public ContactService.ProfilePictureUploadData getProfilePicUploadData() {
-        JSONObject fromStore = this.preferenceStore.getJSONObject(this.getKeyName(R.string.preferences__profile_pic_upload_data), true);
+        JSONObject fromStore = encryptedPreferenceStore.getJSONObject(getKeyName(R.string.preferences__profile_pic_upload_data));
         if (fromStore != null) {
             try {
                 ContactService.ProfilePictureUploadData data = new ContactService.ProfilePictureUploadData();
@@ -1220,53 +1131,54 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public Set<String> getMobileAutoDownload() {
-        return this.preferenceStore.getStringSet(this.getKeyName(R.string.preferences__auto_download_mobile), R.array.list_auto_download_mobile_default);
+        var stringSet = preferenceStore.getStringSet(getKeyName(R.string.preferences__auto_download_mobile));
+        return stringSet != null
+            ? stringSet
+            : new HashSet<>(Arrays.stream(context.getResources().getStringArray(R.array.list_auto_download_mobile_default)).toList());
     }
 
     @Override
     public Set<String> getWifiAutoDownload() {
-        return this.preferenceStore.getStringSet(this.getKeyName(R.string.preferences__auto_download_wifi), R.array.list_auto_download_wifi_default);
+        var stringSet = preferenceStore.getStringSet(getKeyName(R.string.preferences__auto_download_wifi));
+        return stringSet != null
+            ? stringSet
+            : new HashSet<>(Arrays.stream(context.getResources().getStringArray(R.array.list_auto_download_wifi_default)).toList());
     }
 
     @Override
     public void setRatingReference(String reference) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__rate_ref), reference, true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__rate_ref), reference);
     }
 
     @Override
     @Nullable
     public String getRatingReference() {
-        return this.preferenceStore.getString(this.getKeyName(R.string.preferences__rate_ref), true);
+        return encryptedPreferenceStore.getString(getKeyName(R.string.preferences__rate_ref));
     }
 
     @Override
     public void setRatingReviewText(String review) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__rate_text), review, true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__rate_text), review);
     }
 
     @Override
     public String getRatingReviewText() {
-        return this.preferenceStore.getString(this.getKeyName(R.string.preferences__rate_text), true);
+        return encryptedPreferenceStore.getString(getKeyName(R.string.preferences__rate_text));
     }
 
     @Override
-    public void setPrivacyPolicyAccepted(Date date, int source) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__privacy_policy_accept_date), date);
+    public void setPrivacyPolicyAccepted(@Nullable Instant timestamp, int source) {
+        this.preferenceStore.save(this.getKeyName(R.string.preferences__privacy_policy_accept_date), timestamp);
         this.preferenceStore.save(this.getKeyName(R.string.preferences__privacy_policy_accept_source), source);
     }
 
     @Override
-    public Date getPrivacyPolicyAccepted() {
+    @Nullable
+    public Instant getPrivacyPolicyAccepted() {
         if (this.preferenceStore.getInt(this.getKeyName(R.string.preferences__privacy_policy_accept_source)) != PRIVACY_POLICY_ACCEPT_NONE) {
-            return this.preferenceStore.getDate(this.getKeyName(R.string.preferences__privacy_policy_accept_date));
+            return this.preferenceStore.getInstant(this.getKeyName(R.string.preferences__privacy_policy_accept_date));
         }
         return null;
-    }
-
-    @Override
-    public void clearPrivacyPolicyAccepted() {
-        this.preferenceStore.remove(this.getKeyName(R.string.preferences__privacy_policy_accept_date));
-        this.preferenceStore.remove(this.getKeyName(R.string.preferences__privacy_policy_accept_source));
     }
 
     @Override
@@ -1311,41 +1223,41 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public void setThreemaSafeMasterKey(byte[] masterKey) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_masterkey), masterKey, true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__threema_safe_masterkey), masterKey);
         ThreemaSafeMDMConfig.getInstance().saveConfig(this);
     }
 
     @Override
     public byte[] getThreemaSafeMasterKey() {
-        return this.preferenceStore.getBytes(this.getKeyName(R.string.preferences__threema_safe_masterkey), true);
+        return encryptedPreferenceStore.getBytes(this.getKeyName(R.string.preferences__threema_safe_masterkey));
     }
 
     @Override
     public void setThreemaSafeServerInfo(@Nullable ThreemaSafeServerInfo serverInfo) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_server_name), serverInfo != null ? serverInfo.getCustomServerName() : null, true);
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_server_username), serverInfo != null ? serverInfo.getServerUsername() : null, true);
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_server_password), serverInfo != null ? serverInfo.getServerPassword() : null, true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__threema_safe_server_name), serverInfo != null ? serverInfo.getCustomServerName() : null);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__threema_safe_server_username), serverInfo != null ? serverInfo.getServerUsername() : null);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__threema_safe_server_password), serverInfo != null ? serverInfo.getServerPassword() : null);
     }
 
     @Override
     @NonNull
     public ThreemaSafeServerInfo getThreemaSafeServerInfo() {
         return new ThreemaSafeServerInfo(
-            this.preferenceStore.getString(this.getKeyName(R.string.preferences__threema_safe_server_name), true),
-            this.preferenceStore.getString(this.getKeyName(R.string.preferences__threema_safe_server_username), true),
-            this.preferenceStore.getString(this.getKeyName(R.string.preferences__threema_safe_server_password), true)
+            encryptedPreferenceStore.getString(getKeyName(R.string.preferences__threema_safe_server_name)),
+            encryptedPreferenceStore.getString(getKeyName(R.string.preferences__threema_safe_server_username)),
+            encryptedPreferenceStore.getString(getKeyName(R.string.preferences__threema_safe_server_password))
         );
     }
 
     @Override
-    public void setThreemaSafeUploadDate(Date date) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_backup_date), date);
+    public void setThreemaSafeUploadTimestamp(@Nullable Instant timestamp) {
+        this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_backup_date), timestamp);
     }
 
     @Override
     @Nullable
-    public Date getThreemaSafeUploadDate() {
-        return this.preferenceStore.getDate(this.getKeyName(R.string.preferences__threema_safe_backup_date));
+    public Instant getThreemaSafeUploadTimestamp() {
+        return this.preferenceStore.getInstant(this.getKeyName(R.string.preferences__threema_safe_backup_date));
     }
 
     @Override
@@ -1364,14 +1276,14 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public void setThreemaSafeErrorDate(@Nullable Date date) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_create_error_date), date);
+    public void setThreemaSafeErrorTimestamp(@Nullable Instant timestamp) {
+        this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_create_error_date), timestamp);
     }
 
     @Override
     @Nullable
-    public Date getThreemaSafeErrorDate() {
-        return this.preferenceStore.getDate(this.getKeyName(R.string.preferences__threema_safe_create_error_date));
+    public Instant getThreemaSafeErrorTimestamp() {
+        return this.preferenceStore.getInstant(this.getKeyName(R.string.preferences__threema_safe_create_error_date));
     }
 
     @Override
@@ -1415,13 +1327,14 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public void setThreemaSafeBackupDate(Date date) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_backup_date), date);
+    public void setThreemaSafeBackupTimestamp(@Nullable Instant timestamp) {
+        this.preferenceStore.save(this.getKeyName(R.string.preferences__threema_safe_backup_date), timestamp);
     }
 
     @Override
-    public Date getThreemaSafeBackupDate() {
-        return this.preferenceStore.getDate(this.getKeyName(R.string.preferences__threema_safe_backup_date));
+    @Nullable
+    public Instant getThreemaSafeBackupTimestamp() {
+        return this.preferenceStore.getInstant(this.getKeyName(R.string.preferences__threema_safe_backup_date));
     }
 
     @Override
@@ -1451,12 +1364,12 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public void setThreemaSafeMDMConfig(String mdmConfigHash) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__work_safe_mdm_config), mdmConfigHash, true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__work_safe_mdm_config), mdmConfigHash);
     }
 
     @Override
     public String getThreemaSafeMDMConfig() {
-        return this.preferenceStore.getString(this.getKeyName(R.string.preferences__work_safe_mdm_config), true);
+        return encryptedPreferenceStore.getString(getKeyName(R.string.preferences__work_safe_mdm_config));
     }
 
     @Override
@@ -1482,12 +1395,12 @@ public class PreferenceServiceImpl implements PreferenceService {
                 }
             }
         }
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__work_directory_categories), array, true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__work_directory_categories), array);
     }
 
     @Override
     public List<WorkDirectoryCategory> getWorkDirectoryCategories() {
-        JSONArray array = this.preferenceStore.getJSONArray(this.getKeyName(R.string.preferences__work_directory_categories), true);
+        JSONArray array = encryptedPreferenceStore.getJSONArray(getKeyName(R.string.preferences__work_directory_categories));
         List<WorkDirectoryCategory> categories = new ArrayList<>();
         for (int i = 0; i < array.length(); i++) {
             try {
@@ -1504,12 +1417,12 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public void setWorkOrganization(WorkOrganization organization) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__work_directory_organization), organization.toJSON(), true);
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__work_directory_organization), organization.toJSON());
     }
 
     @Override
     public WorkOrganization getWorkOrganization() {
-        JSONObject object = this.preferenceStore.getJSONObject(this.getKeyName(R.string.preferences__work_directory_organization), true);
+        JSONObject object = encryptedPreferenceStore.getJSONObject(getKeyName(R.string.preferences__work_directory_organization));
 
         if (object != null) {
             return new WorkOrganization(object);
@@ -1561,13 +1474,14 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public Date getLastDataBackupDate() {
-        return this.preferenceStore.getDate(this.getKeyName(R.string.preferences__last_data_backup_date));
+    @Nullable
+    public Instant getLastDataBackupTimestamp() {
+        return this.preferenceStore.getInstant(this.getKeyName(R.string.preferences__last_data_backup_date));
     }
 
     @Override
-    public void setLastDataBackupDate(Date date) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__last_data_backup_date), date);
+    public void setLastDataBackupTimestamp(@Nullable Instant timestamp) {
+        this.preferenceStore.save(this.getKeyName(R.string.preferences__last_data_backup_date), timestamp);
     }
 
     @Override
@@ -1627,22 +1541,12 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public void setGroupRequestsOverviewHidden(boolean hidden) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__group_request_overview_hidden), hidden);
-    }
-
-    @Override
-    public boolean getGroupRequestsOverviewHidden() {
-        return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__group_request_overview_hidden));
-    }
-
-    @Override
     public int getVideoCallToggleTooltipCount() {
         return this.preferenceStore.getInt(this.getKeyName(R.string.preferences__tooltip_video_toggle));
     }
 
     @Override
-    public void incremenetVideoCallToggleTooltipCount() {
+    public void incrementVideoCallToggleTooltipCount() {
         this.preferenceStore.save(this.getKeyName(R.string.preferences__tooltip_video_toggle), getVideoCallToggleTooltipCount() + 1);
     }
 
@@ -1743,7 +1647,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     public void getMediaGalleryContentTypes(boolean[] contentTypes) {
         Arrays.fill(contentTypes, true);
-        JSONArray array = this.preferenceStore.getJSONArray(this.getKeyName(R.string.preferences__media_gallery_content_types), false);
+        JSONArray array = preferenceStore.getJSONArray(getKeyName(R.string.preferences__media_gallery_content_types));
         if (array != null && array.length() > 0 && array.length() == contentTypes.length) {
             for (int i = 0; i < array.length(); i++) {
                 try {
@@ -1798,18 +1702,24 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
+    public boolean showMessageDebugInfo() {
+        return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__message_debug_info), false);
+    }
+
+    @Override
     public boolean showConversationLastUpdate() {
         return this.preferenceStore.getBoolean(this.getKeyName(R.string.preferences__show_last_update_prefix), false);
     }
 
     @Override
-    public Date getLastShortcutUpdateDate() {
-        return this.preferenceStore.getDate(this.getKeyName(R.string.preferences__last_shortcut_update_date));
+    @Nullable
+    public Instant getLastShortcutUpdateTimestamp() {
+        return this.preferenceStore.getInstant(this.getKeyName(R.string.preferences__last_shortcut_update_date));
     }
 
     @Override
-    public void setLastShortcutUpdateDate(Date date) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__last_shortcut_update_date), date);
+    public void setLastShortcutUpdateTimestamp(@Nullable Instant timestamp) {
+        this.preferenceStore.save(this.getKeyName(R.string.preferences__last_shortcut_update_date), timestamp);
     }
 
     @Override
@@ -1831,27 +1741,6 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     public void setLastMultiDeviceGroupCheckTimestamp(final @NonNull Instant timestamp) {
         preferenceStore.save(getKeyName(R.string.preferences__last_multi_device_group_check_timestamp), timestamp);
-    }
-
-    private boolean changeRequired(@NonNull String keyName, boolean value) {
-        return !preferenceStore.containsKey(keyName) || preferenceStore.getBoolean(keyName) != value;
-    }
-
-    private void scheduleSettingsSyncUpdateTask(@NonNull ActiveTask<?> task, TriggerSource triggerSource) {
-        if (multiDeviceManager.isMultiDeviceActive() && triggerSource == TriggerSource.LOCAL) {
-            taskManager.schedule(task);
-        }
-    }
-
-    @Override
-    public boolean shouldShowUnsupportedAndroidVersionWarning() {
-        var lastDismissed = preferenceStore.getInstant(getKeyName(R.string.preferences__last_deprecated_android_warning_dimissed_timestamp));
-        return lastDismissed == null || lastDismissed.plus(21, ChronoUnit.DAYS).isBefore(Instant.now());
-    }
-
-    @Override
-    public void setUnsupportedAndroidVersionDismissedNow() {
-        preferenceStore.save(getKeyName(R.string.preferences__last_deprecated_android_warning_dimissed_timestamp), Instant.now());
     }
 
     @Nullable

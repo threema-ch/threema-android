@@ -106,13 +106,13 @@ internal class MultiplexLayer(private val controller: ServerConnectionController
 
     /**
      * Extract the `CspData` from a D2m Proxy message.
-     * <p>
+     *
      * If the csp login is not yet completed, the full payload is relevant data which must be passed
      * on to the next layer as a [CspLoginMessage].
      * If the csp login is already done, the length has to be stripped from the payload, as this is
      * not required for further processing (will be passed on as a [CspFrame]).
      * Note: The conversion to a [CspLoginMessage] or a [CspFrame] will be completed in [handleInboundCspMessage].
-     * <p>
+     *
      * When the [ch.threema.domain.protocol.connection.CspConnection] is used, the differentiation between
      * login messages and frames is already performed in the [ch.threema.domain.protocol.connection.socket.CspSocket].
      */

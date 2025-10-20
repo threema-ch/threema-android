@@ -15,7 +15,7 @@
 
         <item
             android:id="@+id/starred_messages"
-            android:icon="@drawable/ic_star_outline_24dp"
+            android:icon="@drawable/ic_star_outlined"
             android:orderInCategory="16"
             android:title="@string/starred_messages"
             android:visible="true"
@@ -41,21 +41,6 @@
             android:orderInCategory="30"
             android:title="@string/title_add_distribution_list"
             android:visible="true"
-            app:showAsAction="never" />
-
-    </group>
-
-    <group
-        android:id="@+id/group_open_group_requests"
-        android:checkableBehavior="none"
-        android:visible="false">
-
-        <item
-            android:id="@+id/group_requests"
-            android:icon="@drawable/ic_link_outline"
-            android:orderInCategory="40"
-            android:title="@string/group_request_sent_menu"
-            android:visible="false"
             app:showAsAction="never" />
 
     </group>
@@ -99,14 +84,6 @@
             android:icon="@drawable/ic_web_notification"
             android:orderInCategory="65"
             android:title="@string/webclient"
-            app:showAsAction="never" />
-
-        <item
-            android:id="@+id/scanner"
-            android:icon="@drawable/ic_qr_code"
-            android:orderInCategory="70"
-            android:title="@string/qr_code"
-            android:visible="false"
             app:showAsAction="never" />
 
         <item

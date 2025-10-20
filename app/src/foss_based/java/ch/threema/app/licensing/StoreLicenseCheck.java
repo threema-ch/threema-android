@@ -26,7 +26,7 @@ import android.content.Context;
 import ch.threema.app.routines.CheckLicenseRoutine;
 import ch.threema.app.services.UserService;
 
-public class StoreLicenseCheck implements CheckLicenseRoutine.StoreLicenseChecker {
+public class StoreLicenseCheck {
 
     private StoreLicenseCheck() {
     }

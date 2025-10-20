@@ -29,10 +29,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.emojis.EmojiParser;
 import ch.threema.app.restrictions.AppRestrictionUtil;
@@ -133,5 +135,40 @@ public class TextUtil {
             }
         }
         return false;
+    }
+
+    /**
+     * Check if the query matches the text. A query matches the text
+     * text if
+     * <ul>
+     *     <li>the text contains the query, or</li>
+     *     <li>the normalized text without the diacritics contains the query.</li>
+     * </ul>
+     * <p>
+     * If any of the arguments is null, {@code false} is returned.
+     *
+     * @return {@code true} if there is a match, {@code false} otherwise
+     */
+    public static boolean matchesQueryDiacriticInsensitive(@Nullable String text, @Nullable String query) {
+        if (text == null || query == null) {
+            return false;
+        }
+
+        text = text.toUpperCase();
+        query = query.toUpperCase();
+
+        if (text.contains(query)) {
+            return true;
+        }
+
+        // Only normalize the query without removing the diacritics
+        String queryNorm = Normalizer.isNormalized(query, Normalizer.Form.NFD)
+            ? query
+            : Normalizer.normalize(query, Normalizer.Form.NFD);
+
+        // Normalize conversation and remove diacritics
+        String conversationNormDiacritics = LocaleUtil.normalize(text);
+
+        return conversationNormDiacritics.contains(queryNorm);
     }
 }

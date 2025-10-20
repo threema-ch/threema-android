@@ -30,7 +30,7 @@ import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import ch.threema.domain.protocol.connection.util.MainConnectionController
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.QueueSendCompleteListener
 import ch.threema.domain.taskmanager.TaskManager
@@ -434,7 +434,7 @@ interface ConnectionLockProvider {
 }
 
 interface BaseServerConnectionConfiguration {
-    val identityStore: IdentityStoreInterface
+    val identityStore: IdentityStore
     val serverAddressProvider: ServerAddressProvider
     val version: Version
 

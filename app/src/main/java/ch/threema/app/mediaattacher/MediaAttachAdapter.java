@@ -35,7 +35,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -46,6 +45,7 @@ import com.bumptech.glide.request.target.Target;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.shape.ShapeAppearanceModel;
 
+import org.koin.android.compat.ViewModelCompat;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -72,7 +72,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
         this.mediaAttachItems = new ArrayList<>();
         this.clickListener = clickListener;
         this.columnCount = columnCount;
-        this.mediaAttachViewModel = new ViewModelProvider((MediaSelectionBaseActivity) context).get(MediaAttachViewModel.class);
+        this.mediaAttachViewModel = ViewModelCompat.getViewModel((MediaSelectionBaseActivity) context, MediaAttachViewModel.class);
     }
 
     public interface ItemClickListener {

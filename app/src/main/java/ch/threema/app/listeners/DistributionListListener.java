@@ -32,6 +32,6 @@ public interface DistributionListListener {
     void onModify(DistributionListModel distributionListModel);
 
     @AnyThread
-    void onRemove(DistributionListModel distributionListModel);
+    default void onRemove(DistributionListModel distributionListModel) {}
 
 }

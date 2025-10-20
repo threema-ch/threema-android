@@ -27,15 +27,15 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.Toast;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatActivity;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.services.UserService;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.taskmanager.TriggerSource;
 
@@ -45,7 +45,8 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 public class SMSVerificationLinkActivity extends AppCompatActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SMSVerificationLinkActivity");
 
-    private UserService userService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,15 +57,14 @@ public class SMSVerificationLinkActivity extends AppCompatActivity {
 
         Integer resultText = R.string.verify_failed_summary;
 
-        ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
-        this.userService = serviceManager.getUserService();
-        if (this.userService.getMobileLinkingState() == UserService.LinkingState_PENDING) {
+        var userService = dependencies.getUserService();
+        if (userService.getMobileLinkingState() == UserService.LinkingState_PENDING) {
             Intent intent = getIntent();
             Uri data = intent.getData();
             if (data != null) {
                 final String code = data.getQueryParameter("code");
 
-                if (!TestUtil.isEmptyOrNull(code)) {
+                if (code != null && !code.isEmpty()) {
                     resultText = null;
 
                     new AsyncTask<Void, Void, Boolean>() {
@@ -86,10 +86,10 @@ public class SMSVerificationLinkActivity extends AppCompatActivity {
                     }.execute();
                 }
             }
-        } else if (this.userService.getMobileLinkingState() == UserService.LinkingState_LINKED) {
+        } else if (userService.getMobileLinkingState() == UserService.LinkingState_LINKED) {
             // already linked
             resultText = R.string.verify_success_text;
-        } else if (this.userService.getMobileLinkingState() == UserService.LinkingState_NONE) {
+        } else if (userService.getMobileLinkingState() == UserService.LinkingState_NONE) {
             resultText = R.string.verify_failed_not_linked;
         }
 

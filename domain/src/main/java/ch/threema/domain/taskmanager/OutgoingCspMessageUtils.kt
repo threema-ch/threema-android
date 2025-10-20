@@ -28,17 +28,17 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.coders.MessageCoder
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.stores.ContactStore
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 
 @JvmName("toCspMessageJava")
 fun AbstractMessage.toCspMessage(
-    identityStore: IdentityStoreInterface,
+    identityStore: IdentityStore,
     contactStore: ContactStore,
     nonce: Nonce,
 ): CspMessage {
     // Add missing attributes, if necessary
     if (fromIdentity == null) {
-        fromIdentity = identityStore.identity
+        fromIdentity = identityStore.getIdentity()
     }
 
     // Make box

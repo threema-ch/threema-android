@@ -79,13 +79,26 @@
       Empty is equivalent to unset.
     type: string
 
-  work-user-categories-delimited: &work-user-categories-delimited
+  work-job-title: &work-job-title
     description: |-
-      Custom categories of the user (e.g. building name, room number), sourced
-      from the MDM parameter `th_category`. Empty is equivalent to unset.
+      Job title of the user, sourced from the MDM parameter `th_job_title`.
+      Empty is equivalent to unset.
+    type: string
+
+  work-department: &work-department
+    description: |-
+      Department the user is working in, sourced from the MDM parameter
+      `th_department`. Empty is equivalent to unset.
+    type: string
+
+  work-user-category-labels-delimited: &work-user-category-labels-delimited
+    description: |-
+      Custom category labels assigned to the user (e.g. building name, room
+      number), sourced from the MDM parameter `th_category`. Empty is equivalent
+      to unset.
 
       Note: For compatibility with the app configuration parameter
-      `th_category`, this is the delimited variant with the category name
+      `th_category`, this is the delimited variant with the category label
       separated by the category delimiter (`,` by default).
     type: string
     example: Building 1, Room 337
@@ -98,8 +111,9 @@
 
   work-user-category-ids: &work-user-category-ids
     description: |-
-      Custom category IDs of the user (e.g. mapping to the building name, room
-      number), chosen by the Work subscription administrator.
+      Custom category IDs of the user (e.g. mapping to a corresponding label
+      such as building name or room number), chosen by the Work subscription
+      administrator.
     type: array
     items: *work-user-category-id
     example:
@@ -131,6 +145,8 @@
         type:
           - string
           - 'null'
+      jobTitle: *work-job-title
+      department: *work-department
 
   work-organisation: &work-organisation
     type: object
@@ -435,7 +451,9 @@
       firstName: *work-first-name
       lastName: *work-last-name
       csi: *work-user-identifier
-      category: *work-user-categories-delimited
+      jobTitle: *work-job-title
+      department: *work-department
+      category: *work-user-category-labels-delimited
 
   update-work-data-response:
     ok: &update-work-data-response-ok
@@ -547,7 +565,7 @@
                 const: true
               cat:
                 description: |-
-                  Map of contact category IDs to their respective (display) name.
+                  Map of contact category IDs to their respective label.
                 type: object
                 additionalProperties: *work-user-category-id
       mdm:

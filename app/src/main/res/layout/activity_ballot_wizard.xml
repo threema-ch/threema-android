@@ -45,9 +45,11 @@
                     android:layout_gravity="left|center_vertical"
                     android:maxWidth="250dp"
                     android:text="@string/ballot_copy"
+                    android:textColor="?attr/colorPrimary"
                     android:visibility="visible"
                     app:icon="@drawable/ic_content_copy_outline"
-                    app:iconGravity="start" />
+                    app:iconGravity="start"
+                    app:iconTint="?attr/colorPrimary" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/prev_page_button"
@@ -57,9 +59,11 @@
                     android:layout_gravity="left|center_vertical"
                     android:maxWidth="250dp"
                     android:text="@string/back"
+                    android:textColor="?attr/colorPrimary"
                     android:visibility="gone"
                     app:icon="@drawable/ic_keyboard_arrow_left"
-                    app:iconGravity="start" />
+                    app:iconGravity="start"
+                    app:iconTint="?attr/colorPrimary" />
 
             </FrameLayout>
 
@@ -81,9 +85,11 @@
                 android:layout_alignParentRight="true"
                 android:maxWidth="250dp"
                 android:text="@string/next"
+                android:textColor="?attr/colorPrimary"
                 android:visibility="visible"
                 app:icon="@drawable/ic_keyboard_arrow_right"
-                app:iconGravity="end" />
+                app:iconGravity="end"
+                app:iconTint="?colorPrimary" />
 
         </RelativeLayout>
 

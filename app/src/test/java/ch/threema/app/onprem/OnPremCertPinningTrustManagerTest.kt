@@ -21,7 +21,6 @@
 
 package ch.threema.app.onprem
 
-import ch.threema.app.services.OnPremConfigFetcherProvider
 import ch.threema.base.utils.Base64
 import ch.threema.domain.onprem.OnPremConfigDomainRule
 import ch.threema.domain.onprem.OnPremConfigDomainRuleMatchMode
@@ -41,7 +40,7 @@ class OnPremCertPinningTrustManagerTest {
     fun `delegate is used for checkClientTrusted`() {
         val delegate = mockk<TrustManagerDelegate>(relaxed = true)
         val trustManager = OnPremCertPinningTrustManager(
-            onPremConfigFetcherProvider = mockConfigFetcherProvider(),
+            getOnPremConfigDomains = mockGetOnPremConfigDomains(),
             hostnameProvider = { "3ma.ch" },
             delegate = delegate,
         )
@@ -59,7 +58,7 @@ class OnPremCertPinningTrustManagerTest {
             every { checkClientTrusted(any(), any()) } throws CertificateException()
         }
         val trustManager = OnPremCertPinningTrustManager(
-            onPremConfigFetcherProvider = mockConfigFetcherProvider(),
+            getOnPremConfigDomains = mockGetOnPremConfigDomains(),
             hostnameProvider = { "3ma.ch" },
             delegate = delegate,
         )
@@ -73,7 +72,7 @@ class OnPremCertPinningTrustManagerTest {
     fun `checkServerTrusted fails if hostname is not set`() {
         val delegate = mockk<TrustManagerDelegate>(relaxed = true)
         val trustManager = OnPremCertPinningTrustManager(
-            onPremConfigFetcherProvider = mockConfigFetcherProvider(),
+            getOnPremConfigDomains = mockGetOnPremConfigDomains(),
             hostnameProvider = { throw IllegalStateException("hostname not set") },
             delegate = delegate,
         )
@@ -89,7 +88,7 @@ class OnPremCertPinningTrustManagerTest {
     fun `delegate is used for checkServerTrusted`() {
         val delegate = mockk<TrustManagerDelegate>(relaxed = true)
         val trustManager = OnPremCertPinningTrustManager(
-            onPremConfigFetcherProvider = mockConfigFetcherProvider(),
+            getOnPremConfigDomains = mockGetOnPremConfigDomains(),
             hostnameProvider = { "3ma.ch" },
             delegate = delegate,
         )
@@ -107,7 +106,7 @@ class OnPremCertPinningTrustManagerTest {
             every { checkServerTrusted(any(), any(), any()) } throws CertificateException()
         }
         val trustManager = OnPremCertPinningTrustManager(
-            onPremConfigFetcherProvider = mockConfigFetcherProvider(),
+            getOnPremConfigDomains = mockGetOnPremConfigDomains(),
             hostnameProvider = { "3ma.ch" },
             delegate = delegate,
         )
@@ -120,7 +119,7 @@ class OnPremCertPinningTrustManagerTest {
     @Test
     fun `exact hostname match and valid fingerprint`() {
         val trustManager = OnPremCertPinningTrustManager(
-            onPremConfigFetcherProvider = mockConfigFetcherProvider(
+            getOnPremConfigDomains = mockGetOnPremConfigDomains(
                 rules = listOf(
                     OnPremConfigDomainRule(
                         fqdn = "3ma.ch",
@@ -145,7 +144,7 @@ class OnPremCertPinningTrustManagerTest {
     @Test
     fun `exact hostname match, but no valid fingerprint`() {
         val trustManager = OnPremCertPinningTrustManager(
-            onPremConfigFetcherProvider = mockConfigFetcherProvider(
+            getOnPremConfigDomains = mockGetOnPremConfigDomains(
                 rules = listOf(
                     OnPremConfigDomainRule(
                         fqdn = "3ma.ch",
@@ -172,7 +171,7 @@ class OnPremCertPinningTrustManagerTest {
     @Test
     fun `subdomain hostname match and valid fingerprint`() {
         val trustManager = OnPremCertPinningTrustManager(
-            onPremConfigFetcherProvider = mockConfigFetcherProvider(
+            getOnPremConfigDomains = mockGetOnPremConfigDomains(
                 rules = listOf(
                     OnPremConfigDomainRule(
                         fqdn = "3ma.ch",
@@ -197,7 +196,7 @@ class OnPremCertPinningTrustManagerTest {
     @Test
     fun `subdomain hostname match, but no valid fingerprint`() {
         val trustManager = OnPremCertPinningTrustManager(
-            onPremConfigFetcherProvider = mockConfigFetcherProvider(
+            getOnPremConfigDomains = mockGetOnPremConfigDomains(
                 rules = listOf(
                     OnPremConfigDomainRule(
                         fqdn = "3ma.ch",
@@ -221,14 +220,10 @@ class OnPremCertPinningTrustManagerTest {
         }
     }
 
-    private fun mockConfigFetcherProvider(rules: List<OnPremConfigDomainRule>? = null): OnPremConfigFetcherProvider =
-        mockk {
-            every { getOnPremConfigFetcher() } returns mockk {
-                every { fetch() } returns mockk {
-                    every { domains } returns rules?.let {
-                        OnPremConfigDomains(rules = rules)
-                    }
-                }
+    private fun mockGetOnPremConfigDomains(rules: List<OnPremConfigDomainRule>? = null): () -> OnPremConfigDomains? =
+        {
+            rules?.let {
+                OnPremConfigDomains(rules = rules)
             }
         }
 

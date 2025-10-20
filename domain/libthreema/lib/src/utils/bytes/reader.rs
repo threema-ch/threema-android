@@ -2,8 +2,11 @@
 use core::ops::Range;
 
 use duplicate::duplicate_item;
+use educe::Educe;
 
-/// An error occurred while reading while using a [`ByteReader`].
+use crate::utils::debug::debug_slice_length;
+
+/// An error occurred while reading bytes.
 #[derive(Clone, Debug, thiserror::Error)]
 pub enum ByteReaderError {
     /// Provided relative offset would move the reader offset out of bounds.
@@ -100,6 +103,7 @@ pub(crate) trait ByteReader {
     /// underlying data boundary.
     ///
     /// Returns any [`ByteReaderError`] returned by the operation.
+    #[expect(dead_code, reason = "Will use later")]
     fn run_at<T, F: FnOnce(Self::RunAtReader<'_>) -> Result<T, ByteReaderError>>(
         &mut self,
         relative_offset: isize,
@@ -200,10 +204,14 @@ pub(crate) trait ByteReader {
 }
 
 /// Contains a range reference to an encrypted section of data, explicitly including its tag.
+#[derive(Clone, Educe)]
+#[educe(Debug)]
 pub(crate) struct EncryptedDataRange<const TAG_LENGTH: usize> {
     /// Data range reference
     pub(crate) data: Range<usize>,
+
     /// Tag for the decryption process
+    #[educe(Debug(method(debug_slice_length)))]
     pub(crate) tag: [u8; TAG_LENGTH],
 }
 
@@ -249,6 +257,13 @@ impl<'buffer> ByteReaderContainer<buffer_type> {
     #[allow(dead_code, reason = "Will use later")]
     pub(crate) const fn new(buffer: buffer_type) -> Self {
         Self { buffer, offset: 0 }
+    }
+
+    /// Consume this reader, returning the underlying buffer.
+    #[inline]
+    #[allow(dead_code, reason = "Will use later")]
+    pub(crate) fn into_inner(self) -> buffer_type {
+        self.buffer
     }
 }
 
@@ -434,8 +449,6 @@ impl ByteReaderContainer<buffer_type> {
     buffer_type;
     [ Vec<u8> ];
 )]
-#[expect(clippy::allow_attributes, reason = "duplicate shenanigans")]
-#[allow(clippy::multiple_inherent_impl, reason = "Abstracted duplicate")]
 impl ByteReaderContainer<Vec<u8>> {
     /// Read all remaining bytes and consume the reader and its underlying buffer.
     #[inline]
@@ -602,6 +615,6 @@ pub(crate) type SliceByteReader<'buffer> = ByteReaderContainer<&'buffer [u8]>;
 /// space.
 pub(crate) type OwnedVecByteReader = ByteReaderContainer<Vec<u8>>;
 
-/// Wraps a [`&Vec<u8>`] and is otherwise identical to the [`OwnedVecByteReader`].
+/// Wraps a [`&Vec<u8>`](Vec<u8>) and is otherwise identical to the [`OwnedVecByteReader`].
 #[expect(dead_code, reason = "Will use later")]
 pub(crate) type BorrowedVecByteReader<'buffer> = ByteReaderContainer<&'buffer Vec<u8>>;

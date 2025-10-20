@@ -42,33 +42,34 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
 import ch.threema.app.asynctasks.AddOrUpdateWorkContactBackgroundTask
+import ch.threema.app.di.awaitServiceManagerWithTimeout
 import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.notifications.NotificationIDs
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionService
 import ch.threema.app.routines.UpdateAppLogoRoutine
 import ch.threema.app.routines.UpdateWorkInfoRoutine
-import ch.threema.app.services.license.UserCredentials
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.utils.WorkManagerUtil
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.common.Http
 import ch.threema.data.models.ContactModel
+import ch.threema.domain.models.UserCredentials
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.api.work.WorkData
-import java.net.HttpURLConnection
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
+import org.koin.core.component.KoinComponent
 
 private val logger = LoggingUtil.getThreemaLogger("WorkSyncWorker")
 
 class WorkSyncWorker(
     private val context: Context,
     workerParameters: WorkerParameters,
-) : CoroutineWorker(context, workerParameters) {
+) : CoroutineWorker(context, workerParameters), KoinComponent {
 
     companion object {
         private const val EXTRA_FORCE_UPDATE = "FORCE_UPDATE"
@@ -222,6 +223,7 @@ class WorkSyncWorker(
 
         val contactService = serviceManager.contactService
         val preferenceService = serviceManager.preferenceService
+        val okHttpClient = serviceManager.okHttpClient
         val fileService = serviceManager.fileService
         val licenseService = serviceManager.licenseService
         val apiConnector = serviceManager.apiConnector
@@ -265,7 +267,7 @@ class WorkSyncWorker(
                 "Failed to fetch2 work data. Server response code = {}",
                 workData.responseCode,
             )
-            if (workData.responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            if (workData.responseCode == Http.StatusCode.UNAUTHORIZED) {
                 RuntimeUtil.runOnUiThread {
                     Toast.makeText(context, R.string.fetch2_failure, Toast.LENGTH_LONG).show()
                 }
@@ -282,7 +284,7 @@ class WorkSyncWorker(
             .mapNotNull { workContact ->
                 AddOrUpdateWorkContactBackgroundTask(
                     workContact = workContact,
-                    myIdentity = userService.identity,
+                    myIdentity = userService.identity!!,
                     contactModelRepository = contactModelRepository,
                 ).runSynchronously()
             }.map { it.identity }
@@ -300,7 +302,7 @@ class WorkSyncWorker(
 
             // Additionally, the contact may not be server verified anymore (except it has been
             // fully verified before)
-            if (it.data.value?.verificationLevel == VerificationLevel.SERVER_VERIFIED) {
+            if (it.data?.verificationLevel == VerificationLevel.SERVER_VERIFIED) {
                 it.setVerificationLevelFromLocal(VerificationLevel.UNVERIFIED)
             }
         }
@@ -314,6 +316,8 @@ class WorkSyncWorker(
                 fileService,
                 /* preferenceService = */
                 preferenceService,
+                /* okHttpClient = */
+                okHttpClient,
                 /* lightUrl = */
                 workData.logoLight,
                 /* darkUrl = */

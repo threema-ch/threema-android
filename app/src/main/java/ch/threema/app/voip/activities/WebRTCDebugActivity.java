@@ -36,6 +36,7 @@ import android.widget.Toast;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 import org.webrtc.IceCandidate;
 import org.webrtc.PeerConnection;
@@ -53,16 +54,12 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.asynctasks.SendToSupportBackgroundTask;
 import ch.threema.app.asynctasks.SendToSupportResult;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.TextEntryDialog;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.MessageService;
-import ch.threema.app.services.UserService;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
@@ -75,8 +72,6 @@ import ch.threema.app.voip.PeerConnectionClient;
 import ch.threema.app.voip.util.SdpPatcher;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.ContactModel;
-import ch.threema.data.repositories.ContactModelRepository;
-import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.protobuf.callsignaling.O2OCall;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -88,17 +83,8 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
     private static final Logger logger = LoggingUtil.getThreemaLogger("WebRTCDebugActivity");
     private static final String DIALOG_TAG_SEND_WEBRTC_DEBUG = "swd";
 
-    // Threema services
-    @Nullable
-    private MessageService messageService;
-    @Nullable
-    private ContactService contactService;
-    @Nullable
-    private APIConnector apiConnector;
-    @Nullable
-    private ContactModelRepository contactModelRepository;
-    @Nullable
-    private UserService userService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     @Nullable
     private BackgroundExecutor backgroundExecutor;
@@ -132,30 +118,10 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        // Get services
-        final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager == null) {
-            logger.error("Could not obtain service manager");
+        if (!dependencies.isAvailable()) {
             finish();
             return;
         }
-        try {
-            this.messageService = serviceManager.getMessageService();
-        } catch (Exception e) {
-            logger.error("Could not obtain message service", e);
-            finish();
-            return;
-        }
-        try {
-            this.contactService = serviceManager.getContactService();
-        } catch (Exception e) {
-            logger.error("Could not obtain contact service", e);
-            finish();
-            return;
-        }
-        this.apiConnector = serviceManager.getAPIConnector();
-        this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
-        this.userService = serviceManager.getUserService();
 
         final ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -245,6 +211,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
         this.addToLog("----------------");
 
         // Show settings
+        var preferenceService = dependencies.getPreferenceService();
         this.addToLog("Enabled: calls=" + preferenceService.isVoipEnabled() + " video=" + preferenceService.areVideoCallsEnabled());
         this.addToLog("Settings: aec=" + preferenceService.getAECMode() +
             " video_codec=" + preferenceService.getVideoCodec() +
@@ -461,38 +428,27 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 
     @SuppressLint("StaticFieldLeak")
     private void sendToSupport(@NonNull String caption) {
-        if (
-            contactService == null
-                || messageService == null
-                || userService == null
-                || apiConnector == null
-                || contactModelRepository == null
-        ) {
-            logger.error("Cannot send to support, some services are null");
-            return;
-        }
-
         SendToSupportBackgroundTask sendToSupportTask = new SendToSupportBackgroundTask(
-            userService.getIdentity(),
-            apiConnector,
-            contactModelRepository,
+            dependencies.getUserService().getIdentity(),
+            dependencies.getApiConnector(),
+            dependencies.getContactModelRepository(),
             this
         ) {
             @NonNull
             @Override
             public SendToSupportResult onSupportAvailable(@NonNull ContactModel contactModel) {
                 try {
-                    final ContactMessageReceiver messageReceiver = contactService.createReceiver(
+                    final ContactMessageReceiver messageReceiver = dependencies.getContactService().createReceiver(
                         contactModel
                     );
 
-                    messageService.sendText(clipboardString +
+                    dependencies.getMessageService().sendText(clipboardString +
                         "\n---\n" +
                         caption +
                         "\n---\n" +
                         ConfigUtils.getSupportDeviceInfo() + "\n" +
                         "Threema " + ConfigUtils.getAppVersion() + "\n" +
-                        getMyIdentity(), messageReceiver);
+                        dependencies.getUserService().getIdentity(), messageReceiver);
 
                     return SendToSupportResult.SUCCESS;
                 } catch (Exception e) {

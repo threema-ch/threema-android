@@ -22,8 +22,9 @@
 package ch.threema.app.rating
 
 import androidx.annotation.WorkerThread
-import ch.threema.app.utils.buildRequest
 import ch.threema.base.ThreemaException
+import ch.threema.common.buildRequest
+import ch.threema.common.execute
 import ch.threema.domain.protocol.ServerAddressProvider
 import okhttp3.FormBody
 import okhttp3.OkHttpClient
@@ -50,9 +51,10 @@ class RatingService(
                 )
             }
 
-            val response = okHttpClient.newCall(request).execute()
-            if (!response.isSuccessful) {
-                throw ThreemaException("Failed to create rating (code ${response.code})")
+            okHttpClient.execute(request).use { response ->
+                if (!response.isSuccessful) {
+                    throw ThreemaException("Failed to create rating (code ${response.code})")
+                }
             }
         } catch (e: Exception) {
             throw ThreemaException("Failed to send rating", e)

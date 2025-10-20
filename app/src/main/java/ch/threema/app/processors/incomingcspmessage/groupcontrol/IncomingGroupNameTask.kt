@@ -47,7 +47,7 @@ class IncomingGroupNameTask(
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
         // Run the common group receive steps
         val groupModel = runCommonGroupReceiveSteps(message, handle, serviceManager)
-        val data = groupModel?.data?.value
+        val data = groupModel?.data
         if (groupModel == null || data == null) {
             logger.warn("Discarding group name message because group could not be found")
             return ReceiveStepsResult.DISCARD

@@ -100,7 +100,7 @@
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/advanced_options"
-                style="@style/Threema.MaterialButton.Action.Outline"
+                style="@style/Threema.MaterialButton.Outlined.Primary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"

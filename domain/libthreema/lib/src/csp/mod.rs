@@ -3,11 +3,13 @@ use core::mem;
 
 use cipher::{LoginAckCipher, LoginBoxes, LoginCipher, decrypt_server_challenge_response};
 use const_format::formatcp;
+use data_encoding::HEXLOWER;
+use educe::Educe;
 use frame::OutgoingFrame;
 use handshake_messages::{
     ClientHello, Login, LoginAck, LoginAckData, LoginAckDecoder, LoginData, ServerHelloDecoder,
 };
-use libthreema_macros::{DebugVariantNames, Name, VariantNames};
+use libthreema_macros::{ConstantTimeEq, DebugVariantNames, Name, VariantNames};
 use payload::{EncryptedOutgoingPayload, PayloadDecoder};
 use tracing::{debug, error, trace, warn};
 
@@ -18,7 +20,10 @@ use self::{
     payload::{IncomingPayload, OutgoingPayload},
 };
 use crate::{
-    common::{ClientKey, Cookie, CspDeviceId, PublicKey, ThreemaId},
+    common::{
+        ClientInfo, Cookie, CspDeviceId, ThreemaId,
+        keys::{ClientKey, PublicKey},
+    },
     crypto::x25519,
     utils::{
         bytes::{ByteReaderError, ByteWriterError},
@@ -34,8 +39,8 @@ pub mod payload;
 
 /// An error occurred while running the Chat Server Protocol.
 ///
-/// Note: Errors can occur when using the API incorrectly or when the remote party behaves
-/// incorrectly. None of these errors are considered recoverable.
+/// Note: Errors can occur when using the API incorrectly or when the remote server behaves incorrectly. None
+/// of these errors are considered recoverable.
 ///
 /// When encountering an error:
 ///
@@ -110,7 +115,7 @@ pub enum CspProtocolError {
 
 /// The context containing all parameters needed to initiate the protocol.
 #[derive(Debug)]
-pub struct Context {
+pub struct CspProtocolContext {
     /// The server's permanent public keys.
     ///
     /// The first element is used as the server's primary public key and the remaining keys as
@@ -126,7 +131,7 @@ pub struct Context {
     /// Client info to be sent to the server during the handshake.
     ///
     /// See the protocol specification for the exact format.
-    client_info: String,
+    client_info: ClientInfo,
 
     /// The (optional) device cookie of the client's device
     device_cookie: Option<u16>,
@@ -135,19 +140,20 @@ pub struct Context {
     csp_device_id: Option<CspDeviceId>,
 }
 
-impl Context {
+impl CspProtocolContext {
     /// Initialize and validate a new context.
     ///
     /// The first element in `permanent_server_keys` is used as the server's primary public key and
     /// the remaining keys as fallback secondary keys.
     ///
     /// # Errors
+    ///
     /// Returns an error if `permanent_server_keys` is empty.
     pub fn new(
         permanent_server_keys: Vec<PublicKey>,
         identity: ThreemaId,
         client_key: ClientKey,
-        client_info: String,
+        client_info: ClientInfo,
         device_cookie: Option<u16>,
         csp_device_id: Option<CspDeviceId>,
     ) -> Result<Self, CspProtocolError> {
@@ -169,7 +175,7 @@ impl Context {
 }
 
 /// Temporary client key (TCK)
-#[derive(educe::Educe)]
+#[derive(Educe)]
 #[educe(Debug)]
 struct TemporaryClientKey(#[educe(Debug(method(debug_static_secret)))] x25519::StaticSecret);
 
@@ -186,11 +192,11 @@ struct ClientSequenceNumber(SequenceNumberU64);
 struct ServerSequenceNumber(SequenceNumberU64);
 
 /// Client connection cookie (CCK)
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, ConstantTimeEq)]
 struct ClientCookie(Cookie);
 
 /// Server connection cookie (SCK)
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, ConstantTimeEq)]
 struct ServerCookie(Cookie);
 
 /// The state to await the server hello.
@@ -251,9 +257,8 @@ impl State {
     ///
     /// Returns [`CspProtocolError`] if the `server-hello` or any of its containing parts could not
     /// be decrypted or decoded.
-    #[tracing::instrument(skip_all)]
     fn poll_awaiting_server_hello(
-        context: &Context,
+        context: &CspProtocolContext,
         mut state: AwaitingServerHelloState,
     ) -> Result<(Self, Option<CspProtocolInstruction>), CspProtocolError> {
         // Poll the `server-hello`
@@ -371,18 +376,17 @@ impl State {
         Ok((state, Some(instruction)))
     }
 
-    /// Try to advance the state out of the [`AwaitingLoginAckState`] to
-    /// [`State::PostHandshake`] and return the next instruction to be executed by the client.
+    /// Try to advance the state out of the [`AwaitingLoginAckState`] to [`State::PostHandshake`] and return
+    /// the next instruction to be executed by the client.
     ///
-    /// The login ack message should be contained in the `decoder`.
-    /// Otherwise, return the [`State::AwaitingLoginAck`] again and set the
-    /// [`CspProtocolInstruction`] to all `None` values (reflecting that the caller must just wait).
+    /// The login ack message should be contained in the `decoder`. Otherwise, return the
+    /// [`State::AwaitingLoginAck`] again and set the [`CspProtocolInstruction`] to all `None` values
+    /// (reflecting that the caller must just wait).
     ///
     /// # Errors
-    /// - [`CspProtocolError::DecodingFailed`] if the incoming login ack could not have been decrypted or
-    ///   properly decoded.
-    /// - [`CspProtocolError::EncodingFailed`] if the outgoing login ack could not have been encoded.
-    #[tracing::instrument(skip_all)]
+    ///
+    /// [`CspProtocolError`] if the `login-ack` or any of its containing parts could not be decrypted or
+    /// decoded.
     fn poll_awaiting_login_ack(
         mut state: AwaitingLoginAckState,
     ) -> Result<(Self, Option<CspProtocolInstruction>), CspProtocolError> {
@@ -422,10 +426,8 @@ impl State {
     /// [`CspProtocolInstruction`] to all `None` values (reflecting that the caller must just wait).
     ///
     /// # Errors
-    /// - [`CspProtocolError::IncomingMessagePayloadError`] if the incoming message could not have been
-    ///   properly decoded or if the outgoing message could not have been encrypted.
-    /// - [`CspProtocolError::CryptoError`] if the incoming payload could not have been decrypted.
-    #[tracing::instrument(skip_all)]
+    ///
+    /// - [`CspProtocolError`] if the incoming payload could not be decrypted or decoded.
     fn poll_post_handshake(
         mut state: PostHandshakeState,
     ) -> Result<(Self, Option<CspProtocolInstruction>), CspProtocolError> {
@@ -437,6 +439,7 @@ impl State {
 
         // Decrypt and decode the payload according to its type
         let payload = state.cipher.decrypt_payload(payload)?;
+        trace!(payload = HEXLOWER.encode(&payload), "Raw payload");
         let payload = IncomingPayload::try_from(payload)?;
         debug!(?payload, "Received payload");
 
@@ -524,18 +527,22 @@ pub struct CspProtocolInstruction {
 ///       1. If data has been received from the chat server, add it via [`CspProtocol::add_chunks`].
 ///       2. If a payload is being created, run [`CspProtocol::create_payload`] and handle the resulting
 ///          instruction.
-#[derive(Name, educe::Educe)]
+#[derive(Name, Educe)]
 #[educe(Debug)]
 pub struct CspProtocol {
     #[educe(Debug(ignore))]
-    context: Context,
+    context: CspProtocolContext,
     state: State,
 }
 
 impl CspProtocol {
     /// Initiate a new CSP protocol and also return [`OutgoingFrame`] set to the client hello.
+    ///
+    /// # Panics
+    ///
+    /// If the `client-hello` could not be encoded to a frame.
     #[tracing::instrument(skip_all)]
-    pub fn new(context: Context) -> (Self, OutgoingFrame) {
+    pub fn new(context: CspProtocolContext) -> (Self, OutgoingFrame) {
         debug!("Creating CSP protocol");
 
         // Generate the temporary client key (TCK) and the client cookie (CCK)
@@ -572,7 +579,7 @@ impl CspProtocol {
     /// # Errors
     ///
     /// Returns [`CspProtocolError`] for all possible reasons.
-    #[tracing::instrument]
+    #[tracing::instrument(skip_all, fields(?self))]
     pub fn poll(&mut self) -> Result<Option<CspProtocolInstruction>, CspProtocolError> {
         let poll_result = match mem::replace(
             &mut self.state,
@@ -605,7 +612,7 @@ impl CspProtocol {
     ///
     /// Returns [`CspProtocolError::InvalidState`] if the protocol is in the error state.
     #[tracing::instrument(skip_all, fields(
-        n_chunks = chunks.len(),
+        ?self,
         chunks_byte_length = chunks.iter().map(|chunk| chunk.len()).sum::<usize>(),
     ))]
     pub fn add_chunks(&mut self, chunks: &[&[u8]]) -> Result<(), CspProtocolError> {
@@ -640,7 +647,7 @@ impl CspProtocol {
     /// # Errors
     ///
     /// Returns [`CspProtocolError::InvalidState`] if the protocol is in the error state.
-    #[tracing::instrument]
+    #[tracing::instrument(skip_all, fields(?self))]
     pub fn next_required_length(&self) -> Result<usize, CspProtocolError> {
         let required_length = match &self.state {
             State::AwaitingServerHello(state) => state.decoder.required_length(),
@@ -662,7 +669,7 @@ impl CspProtocol {
     ///
     /// Returns [`CspProtocolError::InvalidState`] if the protocol is not in the post-handshake
     /// state.
-    #[tracing::instrument]
+    #[tracing::instrument(skip_all, fields(?self))]
     pub fn create_payload(
         &mut self,
         payload: &OutgoingPayload,

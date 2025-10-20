@@ -70,7 +70,7 @@
                 android:ellipsize="end"
                 android:maxLines="1"
                 android:text="@string/last_added_contact"
-                android:textAppearance="@style/Threema.Text.Overline"
+                android:textAppearance="@style/Threema.TextAppearance.Overline"
                 android:textSize="13sp"
                 android:textColor="?attr/colorPrimary"
                 app:layout_constraintTop_toTopOf="parent"

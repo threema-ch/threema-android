@@ -29,11 +29,12 @@ import ch.threema.domain.protocol.csp.messages.DeleteMessageData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import java.util.Date
 import kotlinx.serialization.Serializable
 
 class OutgoingContactDeleteMessageTask(
-    private val toIdentity: String,
+    private val toIdentity: Identity,
     private val messageModelId: Int,
     private val messageId: MessageId,
     private val deletedAt: Date,
@@ -62,7 +63,7 @@ class OutgoingContactDeleteMessageTask(
 
     @Serializable
     class OutgoingContactDeleteMessageData(
-        private val toIdentity: String,
+        private val toIdentity: Identity,
         private val messageModelId: Int,
         private val messageId: ByteArray,
         private val deletedAt: Long,

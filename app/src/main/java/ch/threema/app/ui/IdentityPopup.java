@@ -132,14 +132,10 @@ public class IdentityPopup extends DimmingPopupWindow {
         if (getContext() == null) {
             return;
         }
-        if (ConfigUtils.supportsGroupLinks()) {
-            QRScannerUtil.getInstance().initiateGeneralThreemaQrScanner(activityRef.get(), getContext().getString(R.string.qr_scanner_id_hint));
-        } else {
-            Intent intent = new Intent(getContext(), AddContactActivity.class);
-            intent.putExtra(AddContactActivity.EXTRA_ADD_BY_QR, true);
-            if (activityRef.get() != null) {
-                activityRef.get().startActivity(intent);
-            }
+        Intent intent = new Intent(getContext(), AddContactActivity.class);
+        intent.putExtra(AddContactActivity.EXTRA_ADD_BY_QR, true);
+        if (activityRef.get() != null) {
+            activityRef.get().startActivity(intent);
         }
     }
 
@@ -151,11 +147,7 @@ public class IdentityPopup extends DimmingPopupWindow {
             getContext(),
             activityRef.get().getWindow().getDecorView(),
             null
-        ).show(
-            view,
-            null,
-            QRCodeServiceImpl.QR_TYPE_ID
-        );
+        ).show(view, null);
     }
 
     /**

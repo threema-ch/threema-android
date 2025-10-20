@@ -33,7 +33,6 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
-import android.os.Build
 import androidx.core.app.ActivityCompat
 import ch.threema.base.utils.LoggingUtil
 import java.util.concurrent.Executors
@@ -428,14 +427,9 @@ class HeadsetManager(private val context: Context, private val audioManager: Aud
      * Checks whether a wired headset is connected. This is independent of [wiredHeadsetConnected]
      * and queries the audio manager directly.
      */
-    @Suppress("DEPRECATION")
     private fun hasWiredHeadset(audioManager: AudioManager): Boolean {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).any {
-                it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET
-            }
-        } else {
-            audioManager.isWiredHeadsetOn
+        return audioManager.getDevices(AudioManager.GET_DEVICES_OUTPUTS).any {
+            it.type == AudioDeviceInfo.TYPE_WIRED_HEADSET
         }
     }
 

@@ -31,7 +31,7 @@ import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.getEncryptedContactSyncCreate
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectContactSyncCreate")
+private val logger = LoggingUtil.getThreemaLogger("ReflectContactSyncCreateTask")
 
 class ReflectContactSyncCreateTask(
     private val contactModelData: ContactModelData,

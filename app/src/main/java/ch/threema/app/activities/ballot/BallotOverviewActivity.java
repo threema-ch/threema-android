@@ -32,12 +32,15 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.view.ActionMode;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.AppBarLayout;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -45,9 +48,9 @@ import java.util.List;
 
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.adapters.ballot.BallotOverviewListAdapter;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.SelectorDialog;
 import ch.threema.app.exceptions.NotAllowedException;
@@ -55,8 +58,6 @@ import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.listeners.BallotVoteListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.InsetSides;
@@ -67,7 +68,6 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.taskmanager.TriggerSource;
@@ -84,10 +84,8 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
     private static final int SELECTOR_ID_RESULTS = 2;
     private static final int SELECTOR_ID_CLOSE = 3;
 
-    private BallotService ballotService;
-    private ContactService contactService;
-    private GroupService groupService;
-    private String myIdentity;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private MessageReceiver<?> messageReceiver;
     private BallotOverviewListAdapter listAdapter = null;
@@ -150,9 +148,9 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
 
         @Override
         public boolean handle(BallotModel ballotModel) {
-            if (enableBallotListeners && requiredInstances() && messageReceiver != null) {
+            if (enableBallotListeners && messageReceiver != null) {
                 try {
-                    return ballotService.belongsToMe(ballotModel.getId(), messageReceiver);
+                    return dependencies.getBallotService().belongsToMe(ballotModel.getId(), messageReceiver);
                 } catch (NotAllowedException e) {
                     logger.error("Exception", e);
                 }
@@ -174,9 +172,15 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (!dependencies.isAvailable()) {
+            finish();
+        }
+    }
 
-        if (!this.requireInstancesOrExit()) {
-            return;
+    @Override
+    protected boolean initActivity(@Nullable Bundle savedInstanceState) {
+        if (!super.initActivity(savedInstanceState)) {
+            return false;
         }
 
         ActionBar actionBar = getSupportActionBar();
@@ -210,12 +214,13 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
         if (this.messageReceiver == null) {
             logger.error("cannot instantiate receiver");
             finish();
-            return;
+            return false;
         }
 
         this.setupList();
         this.updateList();
 
+        return true;
     }
 
     @Override
@@ -257,12 +262,8 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
     }
 
     private void updateList() {
-        if (!this.requiredInstances()) {
-            return;
-        }
-
         try {
-            this.ballots = this.ballotService.getBallots(new BallotService.BallotFilter() {
+            this.ballots = dependencies.getBallotService().getBallots(new BallotService.BallotFilter() {
                 @Override
                 public MessageReceiver getReceiver() {
                     return messageReceiver;
@@ -283,8 +284,8 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
                 this.listAdapter = new BallotOverviewListAdapter(
                     this,
                     this.ballots,
-                    this.ballotService,
-                    this.contactService,
+                    dependencies.getBallotService(),
+                    dependencies.getContactService(),
                     Glide.with(this)
                 );
 
@@ -312,6 +313,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
                 ArrayList<SelectorDialogItem> items = new ArrayList<>(3);
                 ArrayList<Integer> values = new ArrayList<>(3);
 
+                var myIdentity = dependencies.getUserService().getIdentity();
                 if (BallotUtil.canVote(ballotModel, myIdentity)) {
                     items.add(new SelectorDialogItem(getString(R.string.ballot_vote), R.drawable.ic_vote_outline));
                     values.add(SELECTOR_ID_VOTE);
@@ -343,37 +345,6 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
                 actionMode.finish();
             }
         }
-    }
-
-    @Override
-    protected boolean checkInstances() {
-        return !TestUtil.isEmptyOrNull(this.myIdentity) && TestUtil.required(
-            this.ballotService,
-            this.contactService,
-            this.groupService);
-    }
-
-    @Override
-    protected void instantiate() {
-        if (serviceManager != null) {
-            try {
-                this.ballotService = serviceManager.getBallotService();
-                this.contactService = serviceManager.getContactService();
-                this.groupService = serviceManager.getGroupService();
-                this.myIdentity = serviceManager.getUserService().getIdentity();
-            } catch (Exception e) {
-                logger.error("Exception", e);
-            }
-        }
-    }
-
-    private boolean requireInstancesOrExit() {
-        if (!this.requiredInstances()) {
-            logger.error("Required instances failed");
-            this.finish();
-            return false;
-        }
-        return true;
     }
 
     @Override
@@ -431,9 +402,6 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
     }
 
     private void removeSelectedBallotsDo(SparseBooleanArray checkedItems) {
-        if (!this.requiredInstances()) {
-            return;
-        }
         synchronized (this.ballots) {
             //disable listener
             enableBallotListeners = false;
@@ -443,7 +411,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
                     final int index = checkedItems.keyAt(i);
                     if (index >= 0 && index < this.ballots.size()) {
                         try {
-                            this.ballotService.remove(this.ballots.get(index));
+                            dependencies.getBallotService().remove(this.ballots.get(index));
                         } catch (NotAllowedException e) {
                             LogUtil.exception(e, this);
                             return;
@@ -468,13 +436,14 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
         if (tag.equals(DIALOG_TAG_BALLOT_DELETE)) {
             removeSelectedBallotsDo((SparseBooleanArray) data);
         } else if (tag.equals(AppConstants.CONFIRM_TAG_CLOSE_BALLOT)) {
-            BallotUtil.closeBallot(this, (BallotModel) data, ballotService, MessageId.random(), TriggerSource.LOCAL);
+            BallotUtil.closeBallot(this, (BallotModel) data, dependencies.getBallotService(), MessageId.random(), TriggerSource.LOCAL);
         }
     }
 
     @Override
     public void onClick(String tag, int which, Object data) {
         final BallotModel ballotModel = (BallotModel) data;
+        var myIdentity = dependencies.getUserService().getIdentity();
 
         switch (which) {
             case SELECTOR_ID_VOTE:

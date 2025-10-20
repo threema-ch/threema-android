@@ -54,7 +54,7 @@ import ch.threema.storage.databaseupdate.FSDatabaseUpgradeToVersion4;
 
 import static ch.threema.storage.databaseupdate.DatabaseUpdateKt.getFullDescription;
 
-public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStoreInterface {
+public class SQLDHSessionStore extends PermanentlyCloseableSQLiteOpenHelper implements DHSessionStoreInterface {
     private static final Logger logger = LoggingUtil.getThreemaLogger("SQLDHSessionStore");
 
     public static final String DATABASE_NAME = "threema-fs.db";
@@ -84,16 +84,14 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 
     public SQLDHSessionStore(
         final Context context,
-        final byte[] databaseKey,
+        final byte[] password,
         final String dbName
     ) {
         super(
             context,
             dbName,
-            databaseKey,
-            null,
+            password,
             DATABASE_VERSION,
-            0,
             null,
             new SQLiteDatabaseHook() {
                 @Override
@@ -114,9 +112,9 @@ public class SQLDHSessionStore extends SQLiteOpenHelper implements DHSessionStor
 
     public SQLDHSessionStore(
         final Context context,
-        final byte[] databaseKey
+        final byte[] password
     ) {
-        this(context, databaseKey, DATABASE_NAME);
+        this(context, password, DATABASE_NAME);
     }
 
     @Override

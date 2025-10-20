@@ -31,7 +31,7 @@ import ch.threema.domain.protocol.connection.csp.socket.CspSocket
 import ch.threema.domain.protocol.connection.csp.socket.HostResolver
 import ch.threema.domain.protocol.connection.csp.socket.SocketFactory
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
 
@@ -71,7 +71,7 @@ internal class CspConnectionImpl(
 }
 
 data class CspConnectionConfiguration(
-    override val identityStore: IdentityStoreInterface,
+    override val identityStore: IdentityStore,
     override val serverAddressProvider: ServerAddressProvider,
     override val version: Version,
     override val assertDispatcherContext: Boolean,

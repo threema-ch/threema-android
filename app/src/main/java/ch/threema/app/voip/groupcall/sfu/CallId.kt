@@ -21,14 +21,11 @@
 
 package ch.threema.app.voip.groupcall.sfu
 
-import ch.threema.app.voip.groupcall.PERSONAL
-import ch.threema.app.voip.groupcall.SALT_CALL_ID
-import ch.threema.base.utils.Utils
-import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.app.voip.groupcall.CryptoCallUtils
+import ch.threema.common.toHexString
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
 import ch.threema.storage.models.GroupModel
 import java.nio.charset.StandardCharsets
-import ove.crypto.digest.Blake2b
 
 data class CallId(val bytes: ByteArray) {
     companion object {
@@ -36,23 +33,21 @@ data class CallId(val bytes: ByteArray) {
             return CallId(computeCallId(group, callStartData))
         }
 
-        private fun computeCallId(group: GroupModel, callStartData: GroupCallStartData): ByteArray {
-            val params = Blake2b.Param()
-            params.digestLength = ProtocolDefines.GC_CALL_ID_LENGTH
-            params.setSalt(SALT_CALL_ID.encodeToByteArray())
-            params.setPersonal(PERSONAL.encodeToByteArray())
-            val digest = Blake2b.Digest.newInstance(params)
-            digest.update(group.creatorIdentity.toByteArray(StandardCharsets.UTF_8))
-            digest.update(group.apiGroupId.groupId)
-            digest.update(callStartData.protocolVersion.toByte())
-            digest.update(callStartData.gck)
-            digest.update(callStartData.sfuBaseUrl.encodeToByteArray())
-            return digest.digest()
-        }
+        private fun computeCallId(group: GroupModel, callStartData: GroupCallStartData): ByteArray =
+            CryptoCallUtils.gcBlake2b256(
+                salt = CryptoCallUtils.SALT_CALL_ID,
+                data = (
+                    group.creatorIdentity.toByteArray(StandardCharsets.UTF_8) +
+                        group.apiGroupId.groupId +
+                        callStartData.protocolVersion.toByte() +
+                        callStartData.gck +
+                        callStartData.sfuBaseUrl.encodeToByteArray()
+                    ),
+            )
     }
 
     val hex: String by lazy {
-        Utils.byteArrayToHexString(bytes)
+        bytes.toHexString()
     }
 
     override fun toString(): String {

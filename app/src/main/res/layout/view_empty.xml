@@ -1,31 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<merge xmlns:android="http://schemas.android.com/apk/res/android">
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
-        style="@style/Widget.Material3.CircularProgressIndicator.Medium"
-        android:indeterminate="true"
         android:id="@+id/loading_view"
+        style="@style/Widget.Material3.CircularProgressIndicator.Medium"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:visibility="gone" />
+        android:indeterminate="true"
+        android:visibility="gone"
+        tools:visibility="visible" />
 
     <ImageView
         android:id="@+id/empty_image"
-        android:layout_width="128dp"
-        android:layout_height="128dp"
-        android:layout_marginBottom="16dp"
+        android:layout_width="156dp"
+        android:layout_height="156dp"
+        android:layout_marginBottom="@dimen/grid_unit_x2"
+        android:importantForAccessibility="no"
         android:visibility="gone"
-        android:importantForAccessibility="no" />
+        app:tint="@color/empty_view_icon_tint"
+        tools:src="@drawable/ic_search_outline"
+        tools:visibility="visible" />
 
     <TextView
         android:id="@+id/empty_text"
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:alpha="0.8"
         android:gravity="center_horizontal|center_vertical"
         android:text=""
-        android:textAppearance="@style/Threema.TextAppearance.Emptyview" />
+        android:textAppearance="@style/Threema.TextAppearance.EmptyView"
+        tools:maxLines="5"
+        tools:text="@tools:sample/lorem/random" />
 
 </merge>

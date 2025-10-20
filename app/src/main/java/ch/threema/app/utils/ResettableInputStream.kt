@@ -26,7 +26,7 @@ import androidx.annotation.RequiresApi
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import kotlin.jvm.Throws
+import kotlin.Throws
 
 /**
  * This class allows using an input stream which is normally not resettable (i.e., does not implement `reset()`) in places

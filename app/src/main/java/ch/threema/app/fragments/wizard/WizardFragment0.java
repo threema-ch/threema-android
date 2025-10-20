@@ -48,8 +48,7 @@ public class WizardFragment0 extends WizardFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = Objects.requireNonNull(super.onCreateView(inflater, container, savedInstanceState));
 
         TextView title = rootView.findViewById(R.id.wizard_title);

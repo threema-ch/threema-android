@@ -26,11 +26,8 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -40,12 +37,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
@@ -57,6 +54,7 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.PagerAdapter;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -67,7 +65,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.fragments.mediaviews.AudioViewFragment;
@@ -76,9 +74,8 @@ import ch.threema.app.fragments.mediaviews.ImageViewFragment;
 import ch.threema.app.fragments.mediaviews.MediaPlayerViewFragment;
 import ch.threema.app.fragments.mediaviews.MediaViewFragment;
 import ch.threema.app.fragments.mediaviews.VideoViewFragment;
+import ch.threema.app.mediagallery.MediaGalleryActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.LockableViewPager;
@@ -107,6 +104,11 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
 
     private static final Logger logger = LoggingUtil.getThreemaLogger("MediaViewerActivity");
 
+    {
+        // Always use night mode for this activity. Note that setting it here avoids the activity being recreated.
+        getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+    }
+
     private static final int PERMISSION_REQUEST_SAVE_MESSAGE = 1;
     private static final long LOADING_DELAY = 600;
     public static final int ACTIONBAR_TIMEOUT = 4000;
@@ -123,9 +125,9 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     private AbstractMessageModel currentMessageModel;
     private MessageReceiver currentReceiver;
 
-    private FileService fileService;
-    private MessageService messageService;
-    private ContactService contactService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     private EmojiMarkupUtil emojiMarkupUtil;
 
     private List<AbstractMessageModel> messageModels;
@@ -142,6 +144,9 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (!dependencies.isAvailable()) {
+            finish();
+        }
     }
 
     @Override
@@ -156,19 +161,12 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
 
     @Override
     protected boolean initActivity(Bundle savedInstanceState) {
+        if (!super.initActivity(savedInstanceState)) {
+            return false;
+        }
         logger.debug("initActivity");
-
         showSystemUi();
 
-        if (!super.initActivity(savedInstanceState)) {
-            finish();
-            return false;
-        }
-
-        if (!this.requiredInstances()) {
-            finish();
-            return false;
-        }
         Intent intent = getIntent();
 
         String t = IntentDataUtil.getAbstractMessageType(intent);
@@ -187,9 +185,6 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
         }
         this.actionBar.setDisplayHomeAsUpEnabled(true);
         this.actionBar.setTitle(" ");
-
-        getToolbar().setTitleTextAppearance(this, R.style.Threema_TextAppearance_MediaViewer_Title);
-        getToolbar().setSubtitleTextAppearance(this, R.style.Threema_TextAppearance_MediaViewer_SubTitle);
 
         this.caption = findViewById(R.id.caption);
         ViewCompat.setOnApplyWindowInsetsListener(this.caption, (v, insets) -> {
@@ -211,9 +206,9 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
 
         this.captionContainer = findViewById(R.id.caption_container);
 
-        this.currentMessageModel = IntentDataUtil.getAbstractMessageModel(intent, messageService);
+        this.currentMessageModel = IntentDataUtil.getAbstractMessageModel(intent, dependencies.getMessageService());
         try {
-            this.currentReceiver = messageService.getMessageReceiver(this.currentMessageModel);
+            this.currentReceiver = dependencies.getMessageService().getMessageReceiver(this.currentMessageModel);
         } catch (ThreemaException e) {
             logger.error("Exception", e);
             finish();
@@ -340,10 +335,10 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     }
 
     private void updateActionBarTitle(AbstractMessageModel messageModel) {
-        String title = NameUtil.getDisplayNameOrNickname(this, messageModel, contactService);
+        String title = NameUtil.getDisplayNameOrNickname(this, messageModel, dependencies.getContactService());
         String subtitle = MessageUtil.getDisplayDate(this, messageModel, true);
 
-        logger.debug("show updateActionBarTitle: " + title + " " + subtitle);
+        logger.debug("show updateActionBarTitle: '{}' '{}'", title, subtitle);
 
         if (TestUtil.required(getToolbar(), title, subtitle)) {
             getToolbar().setTitle(title);
@@ -362,7 +357,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     }
 
     private void updateMenus() {
-        boolean visibility = currentMediaFile != null && !AppRestrictionUtil.isShareMediaDisabled(ThreemaApplication.getAppContext());
+        boolean visibility = currentMediaFile != null && !AppRestrictionUtil.isShareMediaDisabled(this);
 
         if (saveMenuItem != null) {
             saveMenuItem.setVisible(visibility);
@@ -427,10 +422,6 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
         shareMenuItem = menu.findItem(R.id.menu_share);
         viewMenuItem = menu.findItem(R.id.menu_view);
 
-        if (getToolbar().getNavigationIcon() != null) {
-            getToolbar().getNavigationIcon().setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN);
-        }
-
         return true;
     }
 
@@ -464,11 +455,11 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
 
     private void saveMedia() {
         AbstractMessageModel messageModel = this.getCurrentMessageModel();
-        if (TestUtil.required(this.fileService, messageModel)) {
+        if (messageModel != null) {
             if (currentMediaFile == null) {
                 Toast.makeText(this, R.string.media_file_not_found, Toast.LENGTH_LONG).show();
             } else {
-                this.fileService.saveMedia(this, null, new CopyOnWriteArrayList<>(Collections.singletonList(messageModel)), true);
+                dependencies.getFileService().saveMedia(this, null, new CopyOnWriteArrayList<>(Collections.singletonList(messageModel)), true);
             }
         }
     }
@@ -490,8 +481,8 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     @Override
     public void onYes(String tag, Object data, String text) {
         AbstractMessageModel messageModel = (AbstractMessageModel) data;
-        Uri shareUri = fileService.copyToShareFile(messageModel, currentMediaFile);
-        messageService.shareMediaMessages(this,
+        Uri shareUri = dependencies.getFileService().copyToShareFile(messageModel, currentMediaFile);
+        dependencies.getMessageService().shareMediaMessages(this,
             new ArrayList<>(Collections.singletonList(messageModel)),
             new ArrayList<>(Collections.singletonList(shareUri)), text);
     }
@@ -502,8 +493,8 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
 
     public void viewMediaInGallery() {
         AbstractMessageModel messageModel = this.getCurrentMessageModel();
-        Uri shareUri = fileService.copyToShareFile(messageModel, currentMediaFile);
-        messageService.viewMediaMessage(this, messageModel, shareUri);
+        Uri shareUri = dependencies.getFileService().copyToShareFile(messageModel, currentMediaFile);
+        dependencies.getMessageService().viewMediaMessage(this, messageModel, shareUri);
     }
 
     private void showGallery() {
@@ -516,7 +507,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
                     mediaGalleryIntent.putExtra(AppConstants.INTENT_DATA_CONTACT, messageModel.getIdentity());
                     break;
                 case MessageReceiver.Type_GROUP:
-                    mediaGalleryIntent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageModel) messageModel).getGroupId());
+                    mediaGalleryIntent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) ((GroupMessageModel) messageModel).getGroupId());
                     break;
                 case MessageReceiver.Type_DISTRIBUTION_LIST:
                     mediaGalleryIntent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageModel) messageModel).getDistributionListId());
@@ -576,27 +567,6 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
         actionBar.show();
         if (this.captionContainer != null && !TestUtil.isBlankOrNull(caption.getText())) {
             this.captionContainer.setVisibility(View.VISIBLE);
-        }
-    }
-
-    @Override
-    protected boolean checkInstances() {
-        return TestUtil.required(this.messageService, this.fileService, this.contactService);
-    }
-
-    @Override
-    protected void instantiate() {
-        try {
-            this.messageService = ThreemaApplication.getServiceManager()
-                .getMessageService();
-
-            this.fileService = ThreemaApplication.getServiceManager()
-                .getFileService();
-
-            this.contactService = ThreemaApplication.getServiceManager()
-                .getContactService();
-        } catch (ThreemaException e) {
-            logger.error("Exception", e);
         }
     }
 
@@ -785,7 +755,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
             fragments.remove(position);
 
             if (position >= 0 && position < a.fragments.length) {
-                if (TestUtil.required(a.fragments[position])) {
+                if (a.fragments[position] != null) {
                     //free memory
                     a.fragments[position].destroy();
 
@@ -811,16 +781,12 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
 
         @Override
         public Parcelable saveState() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                // fix TransactionTooLargeException
-                Bundle bundle = (Bundle) super.saveState();
-                if (bundle != null) {
-                    bundle.putParcelableArray("states", null);
-                }
-                return bundle;
-            } else {
-                return super.saveState();
+            // fix TransactionTooLargeException
+            Bundle bundle = (Bundle) super.saveState();
+            if (bundle != null) {
+                bundle.putParcelableArray("states", null);
             }
+            return bundle;
         }
     }
 

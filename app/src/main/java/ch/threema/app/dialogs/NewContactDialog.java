@@ -28,7 +28,7 @@ import android.text.InputFilter;
 import android.text.InputType;
 import android.view.View;
 
-import com.google.android.material.chip.Chip;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.textfield.TextInputLayout;
 
@@ -119,7 +119,7 @@ public class NewContactDialog extends ThreemaDialogFragment {
         editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_CHARACTERS | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         editText.setFilters(new InputFilter[]{new InputFilter.AllCaps(), new InputFilter.LengthFilter(ProtocolDefines.IDENTITY_LEN)});
 
-        final Chip scanButton = dialogView.findViewById(R.id.scan_button);
+        final MaterialButton scanButton = dialogView.findViewById(R.id.scan_button);
         scanButton.setOnClickListener(v -> {
             // do not dismiss dialog
             logger.info("Scan contact clicked");

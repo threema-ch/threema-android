@@ -25,6 +25,7 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.domain.types.Identity
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -37,7 +38,7 @@ import kotlinx.coroutines.CompletableDeferred
 
 class ExcludedSyncIdentitiesServiceTest {
 
-    private var storedExcludedSyncIdentities: Array<String> = emptyArray()
+    private var storedExcludedSyncIdentities: Array<Identity> = emptyArray()
     private val preferenceServiceMock: PreferenceService = mockk {
         every { setList("identity_list_sync_excluded", any()) } answers {
             storedExcludedSyncIdentities = secondArg()

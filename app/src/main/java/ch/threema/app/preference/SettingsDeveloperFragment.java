@@ -46,7 +46,7 @@ import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
 import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.asynctasks.ContactAvailable;
 import ch.threema.app.asynctasks.PolicyViolation;
-import ch.threema.app.debug.PatternLibraryActivity;
+import ch.threema.app.debug.patternlibrary.PatternLibraryActivity;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
 import ch.threema.app.managers.ServiceManager;
@@ -106,6 +106,10 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
         // Reset reaction tooltip
         getPref(getResources().getString(R.string.preferences__dev_reset_reaction_tooltip_shown))
             .setOnPreferenceClickListener(this::resetReactionTooltipShown);
+
+        // Generate text messages
+        final Preference generateTextMessagesPreference = getPref(R.string.preferences__dev_create_text_messages);
+        generateTextMessagesPreference.setOnPreferenceClickListener(this::generateTextMessages);
 
         // Generate messages with reactions
         final Preference generateReactionsPreference = getPref(R.string.preferences__dev_create_messages_with_reactions);
@@ -193,6 +197,15 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
         } else {
             throw new InvalidEntryException(R.string.invalid_threema_id);
         }
+    }
+
+    @UiThread
+    private boolean generateTextMessages(Preference ignored) {
+        ContentCreator.createTextMessageSpam(
+            ThreemaApplication.requireServiceManager(),
+            getParentFragmentManager()
+        );
+        return true;
     }
 
     @UiThread

@@ -22,6 +22,7 @@
 package ch.threema.app.multidevice.linking
 
 import ch.threema.base.ThreemaException
+import ch.threema.domain.types.Identity
 
 open class DeviceLinkingException : ThreemaException {
     constructor(msg: String) : super(msg)
@@ -36,4 +37,4 @@ class DeviceLinkingInvalidQrCodeException(message: String, cause: Throwable? = n
 
 class DeviceLinkingScannedWebQrCodeException(message: String, cause: Throwable? = null) : DeviceLinkingException(message, cause)
 
-class DeviceLinkingInvalidContact(val identity: String) : DeviceLinkingException("Invalid contact with identity $identity")
+class DeviceLinkingInvalidContact(val identity: Identity) : DeviceLinkingException("Invalid contact with identity $identity")

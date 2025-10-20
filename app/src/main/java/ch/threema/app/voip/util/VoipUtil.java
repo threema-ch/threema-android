@@ -217,7 +217,7 @@ public class VoipUtil {
         boolean useToast,
         boolean launchVideo
     ) {
-        if (!ThreemaFeature.canVoip(contactModel.getFeatureMask()) && !RuntimeUtil.isInTest()) {
+        if (!ThreemaFeature.canVoip(contactModel.getFeatureMask()) && !TestUtil.isInDeviceTest()) {
             if (useToast) {
                 Toast.makeText(ThreemaApplication.getAppContext(), R.string.voip_incompatible, Toast.LENGTH_LONG).show();
             } else {

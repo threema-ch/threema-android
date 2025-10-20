@@ -35,7 +35,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -49,10 +48,11 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.threema.app.R
-import ch.threema.app.activities.MessageUiModel
 import ch.threema.app.compose.common.ThemedText
 import ch.threema.app.compose.common.interop.InteropEmojiConversationTextView
 import ch.threema.app.compose.theme.AppTypography
+import ch.threema.app.compose.theme.color.CustomColors
+import ch.threema.app.messagedetails.MessageUiModel
 import ch.threema.app.ui.CustomTextSelectionCallback
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.common.now
@@ -63,6 +63,7 @@ fun MessageBubble(
     modifier: Modifier = Modifier,
     text: String,
     @StyleRes textAppearanceRes: Int = R.style.Threema_Bubble_Text_Body,
+    messageBodyAlpha: Float = 1f,
     isOutbox: Boolean,
     shouldMarkupText: Boolean = true,
     textSelectionCallback: CustomTextSelectionCallback? = null,
@@ -72,14 +73,14 @@ fun MessageBubble(
     footerContent: @Composable ((contentColor: Color) -> Unit)? = null,
 ) {
     val bubbleColor: Color = if (isOutbox) {
-        MaterialTheme.colorScheme.tertiaryContainer
+        CustomColors.chatBubbleSendContainer
     } else {
-        MaterialTheme.colorScheme.surfaceContainer
+        CustomColors.chatBubbleReceiveContainer
     }
-    val contentColor = if (isOutbox) {
-        MaterialTheme.colorScheme.onTertiaryContainer
+    val contentColor: Color = if (isOutbox) {
+        CustomColors.chatBubbleSendOnContainer
     } else {
-        MaterialTheme.colorScheme.onBackground
+        CustomColors.chatBubbleReceiveOnContainer
     }
     Column(
         modifier = modifier
@@ -94,7 +95,9 @@ fun MessageBubble(
         InteropEmojiConversationTextView(
             text = text,
             textAppearanceRes = textAppearanceRes,
-            contentColor = contentColor,
+            contentColor = contentColor.copy(
+                alpha = messageBodyAlpha,
+            ),
             shouldMarkupText = shouldMarkupText,
             textSelectionCallback = textSelectionCallback,
             isTextSelectable = isTextSelectable,
@@ -141,6 +144,11 @@ fun CompleteMessageBubble(
             } else {
                 R.style.Threema_Bubble_Text_Body
             },
+            messageBodyAlpha = if (isEmptyFileMessageCaption) {
+                0.6f
+            } else {
+                1f
+            },
             footerContent = { contentColor: Color ->
                 MessageBubbleFooter(
                     shouldShowEditedLabel = message.editedAt != null,
@@ -164,6 +172,7 @@ fun DeletedMessageBubble(
     MessageBubble(
         text = stringResource(R.string.message_was_deleted),
         textAppearanceRes = R.style.Threema_Bubble_Text_Body_Deleted,
+        messageBodyAlpha = 0.6f,
         isOutbox = isOutbox,
         onClick = onClick,
         footerContent = { contentColor ->
@@ -240,7 +249,7 @@ fun MessageBubbleFooter(
 
 @Preview
 @Composable
-private fun MessageBubblePreview() {
+private fun MessageBubble_Preview() {
     MessageBubble(
         text = "Lorem ipsum *dolor sit amet*, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam",
         isOutbox = true,

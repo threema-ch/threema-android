@@ -34,17 +34,13 @@ import static ch.threema.app.utils.ExifInterfaceUtils.closeFileDescriptor;
 import static ch.threema.app.utils.ExifInterfaceUtils.closeQuietly;
 import static ch.threema.app.utils.ExifInterfaceUtils.convertToLongArray;
 import static ch.threema.app.utils.ExifInterfaceUtils.copy;
-import static ch.threema.app.utils.ExifInterfaceUtils.parseSubSeconds;
 import static ch.threema.app.utils.ExifInterfaceUtils.startsWith;
 
 import static java.nio.ByteOrder.BIG_ENDIAN;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
 
-import android.annotation.SuppressLint;
 import android.content.res.AssetManager;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.media.MediaDataSource;
 import android.media.MediaMetadataRetriever;
 import android.os.Build;
@@ -62,17 +58,12 @@ import ch.threema.app.utils.ExifInterfaceUtils.Api23Impl;
 import org.slf4j.Logger;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.EOFException;
-import java.io.File;
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,10 +74,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -95,7 +84,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
@@ -4008,79 +3996,6 @@ public class ExifInterface {
     private static final int DATETIME_VALUE_STRING_LENGTH = 19;
 
     /**
-     * Reads Exif tags from the specified image file.
-     *
-     * @param file the file of the image data
-     * @throws NullPointerException if file is null
-     * @throws IOException          if an I/O error occurs while retrieving file descriptor via
-     *                              {@link FileInputStream#getFD()}.
-     */
-    public ExifInterface(@NonNull File file) throws IOException {
-        if (file == null) {
-            throw new NullPointerException("file cannot be null");
-        }
-        initForFilename(file.getAbsolutePath());
-    }
-
-    /**
-     * Reads Exif tags from the specified image file.
-     *
-     * @param filename the name of the file of the image data
-     * @throws NullPointerException if file name is null
-     * @throws IOException          if an I/O error occurs while retrieving file descriptor via
-     *                              {@link FileInputStream#getFD()}.
-     */
-    public ExifInterface(@NonNull String filename) throws IOException {
-        if (filename == null) {
-            throw new NullPointerException("filename cannot be null");
-        }
-        initForFilename(filename);
-    }
-
-    /**
-     * Reads Exif tags from the specified image file descriptor. Attribute mutation is supported
-     * for writable and seekable file descriptors only. This constructor will not rewind the offset
-     * of the given file descriptor. Developers should close the file descriptor after use.
-     *
-     * @param fileDescriptor the file descriptor of the image data
-     * @throws NullPointerException if file descriptor is null
-     * @throws IOException          if an error occurs while duplicating the file descriptor.
-     */
-    public ExifInterface(@NonNull FileDescriptor fileDescriptor) throws IOException {
-        if (fileDescriptor == null) {
-            throw new NullPointerException("fileDescriptor cannot be null");
-        }
-        mAssetInputStream = null;
-        mFilename = null;
-
-        boolean isFdDuped = false;
-        if (Build.VERSION.SDK_INT >= 21 && isSeekableFD(fileDescriptor)) {
-            mSeekableFileDescriptor = fileDescriptor;
-            // Keep the original file descriptor in order to save attributes when it's seekable.
-            // Otherwise, just close the given file descriptor after reading it because the save
-            // feature won't be working.
-            try {
-                fileDescriptor = Api21Impl.dup(fileDescriptor);
-                isFdDuped = true;
-            } catch (Exception e) {
-                throw new IOException("Failed to duplicate file descriptor", e);
-            }
-        } else {
-            mSeekableFileDescriptor = null;
-        }
-        FileInputStream in = null;
-        try {
-            in = new FileInputStream(fileDescriptor);
-            loadAttributes(in);
-        } finally {
-            closeQuietly(in);
-            if (isFdDuped) {
-                closeFileDescriptor(fileDescriptor);
-            }
-        }
-    }
-
-    /**
      * Reads Exif tags from the specified image input stream. Attribute mutation is not supported
      * for input streams. The given input stream will proceed from its current position. Developers
      * should close the input stream after use. This constructor is not intended to be used with
@@ -4107,9 +4022,6 @@ public class ExifInterface {
      */
     public ExifInterface(@NonNull InputStream inputStream, @ExifStreamType int streamType)
         throws IOException {
-        if (inputStream == null) {
-            throw new NullPointerException("inputStream cannot be null");
-        }
         mFilename = null;
 
         mIsExifDataOnly = streamType == STREAM_TYPE_EXIF_DATA_ONLY;
@@ -4130,39 +4042,6 @@ public class ExifInterface {
             }
         }
         loadAttributes(inputStream);
-    }
-
-    /**
-     * Returns whether ExifInterface currently supports reading data from the specified mime type
-     * or not.
-     *
-     * @param mimeType the string value of mime type
-     */
-    public static boolean isSupportedMimeType(@NonNull String mimeType) {
-        if (mimeType == null) {
-            throw new NullPointerException("mimeType shouldn't be null");
-        }
-
-        switch (mimeType.toLowerCase(Locale.ROOT)) {
-            case "image/jpeg":
-            case "image/x-adobe-dng":
-            case "image/x-canon-cr2":
-            case "image/x-nikon-nef":
-            case "image/x-nikon-nrw":
-            case "image/x-sony-arw":
-            case "image/x-panasonic-rw2":
-            case "image/x-olympus-orf":
-            case "image/x-pentax-pef":
-            case "image/x-samsung-srw":
-            case "image/x-fuji-raf":
-            case "image/heic":
-            case "image/heif":
-            case "image/png":
-            case "image/webp":
-                return true;
-            default:
-                return false;
-        }
     }
 
     /**
@@ -4274,30 +4153,6 @@ public class ExifInterface {
 
         try {
             return exifAttribute.getIntValue(mExifByteOrder);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Returns the double value of the tag that is specified as rational or contains a
-     * double-formatted value. If there is no such tag in the image file or the value cannot be
-     * parsed as double, return <var>defaultValue</var>.
-     *
-     * @param tag          the name of the tag.
-     * @param defaultValue the value to return if the tag is not available.
-     */
-    public double getAttributeDouble(@NonNull String tag, double defaultValue) {
-        if (tag == null) {
-            throw new NullPointerException("tag shouldn't be null");
-        }
-        ExifAttribute exifAttribute = getExifAttribute(tag);
-        if (exifAttribute == null) {
-            return defaultValue;
-        }
-
-        try {
-            return exifAttribute.getDoubleValue(mExifByteOrder);
         } catch (NumberFormatException e) {
             return defaultValue;
         }
@@ -4483,13 +4338,6 @@ public class ExifInterface {
     }
 
     /**
-     * Resets the {@link #TAG_ORIENTATION} of the image to be {@link #ORIENTATION_NORMAL}.
-     */
-    public void resetOrientation() {
-        setAttribute(TAG_ORIENTATION, Integer.toString(ORIENTATION_NORMAL));
-    }
-
-    /**
      * Rotates the image by the given degree clockwise. The degree should be a multiple of
      * 90 (e.g, 90, 180, -90, etc.).
      *
@@ -4518,132 +4366,6 @@ public class ExifInterface {
         }
 
         setAttribute(TAG_ORIENTATION, Integer.toString(resultOrientation));
-    }
-
-    /**
-     * Flips the image vertically.
-     */
-    public void flipVertically() {
-        int currentOrientation = getAttributeInt(TAG_ORIENTATION, ORIENTATION_NORMAL);
-        int resultOrientation;
-        switch (currentOrientation) {
-            case ORIENTATION_FLIP_HORIZONTAL:
-                resultOrientation = ORIENTATION_ROTATE_180;
-                break;
-            case ORIENTATION_ROTATE_180:
-                resultOrientation = ORIENTATION_FLIP_HORIZONTAL;
-                break;
-            case ORIENTATION_FLIP_VERTICAL:
-                resultOrientation = ORIENTATION_NORMAL;
-                break;
-            case ORIENTATION_TRANSPOSE:
-                resultOrientation = ORIENTATION_ROTATE_270;
-                break;
-            case ORIENTATION_ROTATE_90:
-                resultOrientation = ORIENTATION_TRANSVERSE;
-                break;
-            case ORIENTATION_TRANSVERSE:
-                resultOrientation = ORIENTATION_ROTATE_90;
-                break;
-            case ORIENTATION_ROTATE_270:
-                resultOrientation = ORIENTATION_TRANSPOSE;
-                break;
-            case ORIENTATION_NORMAL:
-                resultOrientation = ORIENTATION_FLIP_VERTICAL;
-                break;
-            case ORIENTATION_UNDEFINED:
-            default:
-                resultOrientation = ORIENTATION_UNDEFINED;
-                break;
-        }
-        setAttribute(TAG_ORIENTATION, Integer.toString(resultOrientation));
-    }
-
-    /**
-     * Flips the image horizontally.
-     */
-    public void flipHorizontally() {
-        int currentOrientation = getAttributeInt(TAG_ORIENTATION, ORIENTATION_NORMAL);
-        int resultOrientation;
-        switch (currentOrientation) {
-            case ORIENTATION_FLIP_HORIZONTAL:
-                resultOrientation = ORIENTATION_NORMAL;
-                break;
-            case ORIENTATION_ROTATE_180:
-                resultOrientation = ORIENTATION_FLIP_VERTICAL;
-                break;
-            case ORIENTATION_FLIP_VERTICAL:
-                resultOrientation = ORIENTATION_ROTATE_180;
-                break;
-            case ORIENTATION_TRANSPOSE:
-                resultOrientation = ORIENTATION_ROTATE_90;
-                break;
-            case ORIENTATION_ROTATE_90:
-                resultOrientation = ORIENTATION_TRANSPOSE;
-                break;
-            case ORIENTATION_TRANSVERSE:
-                resultOrientation = ORIENTATION_ROTATE_270;
-                break;
-            case ORIENTATION_ROTATE_270:
-                resultOrientation = ORIENTATION_TRANSVERSE;
-                break;
-            case ORIENTATION_NORMAL:
-                resultOrientation = ORIENTATION_FLIP_HORIZONTAL;
-                break;
-            case ORIENTATION_UNDEFINED:
-            default:
-                resultOrientation = ORIENTATION_UNDEFINED;
-                break;
-        }
-        setAttribute(TAG_ORIENTATION, Integer.toString(resultOrientation));
-    }
-
-    /**
-     * Returns if the current image orientation is flipped.
-     *
-     * @see #getRotationDegrees()
-     */
-    public boolean isFlipped() {
-        int orientation = getAttributeInt(TAG_ORIENTATION, ORIENTATION_NORMAL);
-        switch (orientation) {
-            case ORIENTATION_FLIP_HORIZONTAL:
-            case ORIENTATION_TRANSVERSE:
-            case ORIENTATION_FLIP_VERTICAL:
-            case ORIENTATION_TRANSPOSE:
-                return true;
-            default:
-                return false;
-        }
-    }
-
-    /**
-     * Returns the rotation degrees for the current image orientation. If the image is flipped,
-     * i.e., {@link #isFlipped()} returns {@code true}, the rotation degrees will be base on
-     * the assumption that the image is first flipped horizontally (along Y-axis), and then do
-     * the rotation. For example, {@link #ORIENTATION_TRANSPOSE} will be interpreted as flipped
-     * horizontally first, and then rotate 270 degrees clockwise.
-     *
-     * @return The rotation degrees of the image after the horizontal flipping is applied, if any.
-     * @see #isFlipped()
-     */
-    public int getRotationDegrees() {
-        int orientation = getAttributeInt(TAG_ORIENTATION, ORIENTATION_NORMAL);
-        switch (orientation) {
-            case ORIENTATION_ROTATE_90:
-            case ORIENTATION_TRANSVERSE:
-                return 90;
-            case ORIENTATION_ROTATE_180:
-            case ORIENTATION_FLIP_VERTICAL:
-                return 180;
-            case ORIENTATION_ROTATE_270:
-            case ORIENTATION_TRANSPOSE:
-                return 270;
-            case ORIENTATION_UNDEFINED:
-            case ORIENTATION_NORMAL:
-            case ORIENTATION_FLIP_HORIZONTAL:
-            default:
-                return 0;
-        }
     }
 
     /**
@@ -4726,18 +4448,15 @@ public class ExifInterface {
     }
 
     private static boolean isSeekableFD(FileDescriptor fd) {
-        if (Build.VERSION.SDK_INT >= 21) {
-            try {
-                Api21Impl.lseek(fd, 0, OsConstants.SEEK_CUR);
-                return true;
-            } catch (Exception e) {
-                if (DEBUG) {
-                    logger.debug("The file descriptor for the given input is not seekable");
-                }
-                return false;
+        try {
+            Api21Impl.lseek(fd, 0, OsConstants.SEEK_CUR);
+            return true;
+        } catch (Exception e) {
+            if (DEBUG) {
+                logger.debug("The file descriptor for the given input is not seekable");
             }
+            return false;
         }
-        return false;
     }
 
     // Prints out attributes for debugging.
@@ -4750,135 +4469,6 @@ public class ExifInterface {
                     + ", tagValue: '" + tagValue.getStringValue(mExifByteOrder) + "'");
             }
         }
-    }
-
-    /**
-     * Save the tag data into the original image file. This is expensive because it involves
-     * copying all the data from one file to another and deleting the old file and renaming the
-     * other. It's best to use {@link #setAttribute(String, String)} to set all attributes to write
-     * and make a single call rather than multiple calls for each attribute.
-     * <p>
-     * This method is supported for JPEG, PNG, and WebP formats.
-     * <p class="note">
-     * Note: after calling this method, any attempts to obtain range information
-     * from {@link #getAttributeRange(String)} or {@link #getThumbnailRange()}
-     * will throw {@link IllegalStateException}, since the offsets may have
-     * changed in the newly written file.
-     * <p>
-     * For WebP format, the Exif data will be stored as an Extended File Format, and it may not be
-     * supported for older readers.
-     * <p>
-     * For PNG format, the Exif data will be stored as an "eXIf" chunk as per
-     * "Extensions to the PNG 1.2 Specification, Version 1.5.0".
-     */
-    public void saveAttributes() throws IOException {
-        if (!isSupportedFormatForSavingAttributes(mMimeType)) {
-            throw new IOException("ExifInterface only supports saving attributes for JPEG, PNG, "
-                + "and WebP formats.");
-        }
-        if (mSeekableFileDescriptor == null && mFilename == null) {
-            throw new IOException(
-                "ExifInterface does not support saving attributes for the current input.");
-        }
-        if (mHasThumbnail && mHasThumbnailStrips && !mAreThumbnailStripsConsecutive) {
-            throw new IOException("ExifInterface does not support saving attributes when the image "
-                + "file has non-consecutive thumbnail strips");
-        }
-
-        // Remember the fact that we've changed the file on disk from what was
-        // originally parsed, meaning we can't answer range questions
-        mModified = true;
-
-        // Keep the thumbnail in memory
-        mThumbnailBytes = getThumbnail();
-
-        FileInputStream in = null;
-        FileOutputStream out = null;
-        File tempFile;
-        try {
-            // Copy the original file to temporary file.
-            tempFile = File.createTempFile("temp", "tmp");
-            if (mFilename != null) {
-                in = new FileInputStream(mFilename);
-            } else {
-                // mSeekableFileDescriptor will be non-null only for SDK_INT >= 21, but this check
-                // is needed to prevent calling Os.lseek at runtime for SDK < 21.
-                if (Build.VERSION.SDK_INT >= 21) {
-                    Api21Impl.lseek(mSeekableFileDescriptor, 0, OsConstants.SEEK_SET);
-                    in = new FileInputStream(mSeekableFileDescriptor);
-                }
-            }
-            out = new FileOutputStream(tempFile);
-            copy(in, out);
-        } catch (Exception e) {
-            throw new IOException("Failed to copy original file to temp file", e);
-        } finally {
-            closeQuietly(in);
-            closeQuietly(out);
-        }
-
-        in = null;
-        out = null;
-        BufferedInputStream bufferedIn = null;
-        BufferedOutputStream bufferedOut = null;
-        boolean shouldKeepTempFile = false;
-        try {
-            // Save the new file.
-            in = new FileInputStream(tempFile);
-            if (mFilename != null) {
-                out = new FileOutputStream(mFilename);
-            } else {
-                // mSeekableFileDescriptor will be non-null only for SDK_INT >= 21, but this check
-                // is needed to prevent calling Os.lseek at runtime for SDK < 21.
-                if (Build.VERSION.SDK_INT >= 21) {
-                    Api21Impl.lseek(mSeekableFileDescriptor, 0, OsConstants.SEEK_SET);
-                    out = new FileOutputStream(mSeekableFileDescriptor);
-                }
-            }
-            bufferedIn = new BufferedInputStream(in);
-            bufferedOut = new BufferedOutputStream(out);
-            if (mMimeType == IMAGE_TYPE_JPEG) {
-                // Threema-modified: set noExif to true
-                saveJpegAttributes(bufferedIn, bufferedOut, true);
-            } else if (mMimeType == IMAGE_TYPE_PNG) {
-                savePngAttributes(bufferedIn, bufferedOut);
-            } else if (mMimeType == IMAGE_TYPE_WEBP) {
-                saveWebpAttributes(bufferedIn, bufferedOut);
-            }
-        } catch (Exception e) {
-            try {
-                // Restore original file
-                in = new FileInputStream(tempFile);
-                if (mFilename != null) {
-                    out = new FileOutputStream(mFilename);
-                } else {
-                    // mSeekableFileDescriptor will be non-null only for SDK_INT >= 21, but this
-                    // check is needed to prevent calling Os.lseek at runtime for SDK < 21.
-                    if (Build.VERSION.SDK_INT >= 21) {
-                        Api21Impl.lseek(mSeekableFileDescriptor, 0, OsConstants.SEEK_SET);
-                        out = new FileOutputStream(mSeekableFileDescriptor);
-                    }
-                }
-                copy(in, out);
-            } catch (Exception exception) {
-                shouldKeepTempFile = true;
-                throw new IOException("Failed to save new file. Original file is stored in "
-                    + tempFile.getAbsolutePath(), exception);
-            } finally {
-                closeQuietly(in);
-                closeQuietly(out);
-            }
-            throw new IOException("Failed to save new file", e);
-        } finally {
-            closeQuietly(bufferedIn);
-            closeQuietly(bufferedOut);
-            if (!shouldKeepTempFile) {
-                tempFile.delete();
-            }
-        }
-
-        // Discard the thumbnail in memory
-        mThumbnailBytes = null;
     }
 
     /**
@@ -4903,22 +4493,6 @@ public class ExifInterface {
 
         // Discard the thumbnail in memory
         mThumbnailBytes = null;
-    }
-
-    /**
-     * Returns true if the image file has a thumbnail.
-     */
-    public boolean hasThumbnail() {
-        return mHasThumbnail;
-    }
-
-    /**
-     * Returns true if the image file has the given attribute defined.
-     *
-     * @param tag the name of the tag.
-     */
-    public boolean hasAttribute(@NonNull String tag) {
-        return getExifAttribute(tag) != null;
     }
 
     /**
@@ -4963,17 +4537,9 @@ public class ExifInterface {
             } else if (mFilename != null) {
                 in = new FileInputStream(mFilename);
             } else {
-                // mSeekableFileDescriptor will be non-null only for SDK_INT >= 21, but this check
-                // is needed to prevent calling Os.lseek and Os.dup at runtime for SDK < 21.
-                if (Build.VERSION.SDK_INT >= 21) {
-                    newFileDescriptor = Api21Impl.dup(mSeekableFileDescriptor);
-                    Api21Impl.lseek(newFileDescriptor, 0, OsConstants.SEEK_SET);
-                    in = new FileInputStream(newFileDescriptor);
-                }
-            }
-            if (in == null) {
-                // Should not be reached this.
-                throw new FileNotFoundException();
+                newFileDescriptor = Api21Impl.dup(mSeekableFileDescriptor);
+                Api21Impl.lseek(newFileDescriptor, 0, OsConstants.SEEK_SET);
+                in = new FileInputStream(newFileDescriptor);
             }
 
             ByteOrderedDataInputStream inputStream = new ByteOrderedDataInputStream(in);
@@ -4993,457 +4559,6 @@ public class ExifInterface {
             }
         }
         return null;
-    }
-
-    /**
-     * Creates and returns a Bitmap object of the thumbnail image based on the byte array and the
-     * thumbnail compression value, or {@code null} if the compression type is unsupported.
-     */
-    @Nullable
-    public Bitmap getThumbnailBitmap() {
-        if (!mHasThumbnail) {
-            return null;
-        } else if (mThumbnailBytes == null) {
-            mThumbnailBytes = getThumbnailBytes();
-        }
-
-        if (mThumbnailCompression == DATA_JPEG || mThumbnailCompression == DATA_JPEG_COMPRESSED) {
-            return BitmapFactory.decodeByteArray(mThumbnailBytes, 0, mThumbnailLength);
-        } else if (mThumbnailCompression == DATA_UNCOMPRESSED) {
-            int[] rgbValues = new int[mThumbnailBytes.length / 3];
-            byte alpha = (byte) 0xff000000;
-            for (int i = 0; i < rgbValues.length; i++) {
-                rgbValues[i] = alpha + (mThumbnailBytes[3 * i] << 16)
-                    + (mThumbnailBytes[3 * i + 1] << 8) + mThumbnailBytes[3 * i + 2];
-            }
-
-            ExifAttribute imageLengthAttribute =
-                mAttributes[IFD_TYPE_THUMBNAIL].get(TAG_THUMBNAIL_IMAGE_LENGTH);
-            ExifAttribute imageWidthAttribute =
-                mAttributes[IFD_TYPE_THUMBNAIL].get(TAG_THUMBNAIL_IMAGE_WIDTH);
-            if (imageLengthAttribute != null && imageWidthAttribute != null) {
-                int imageLength = imageLengthAttribute.getIntValue(mExifByteOrder);
-                int imageWidth = imageWidthAttribute.getIntValue(mExifByteOrder);
-                return Bitmap.createBitmap(
-                    rgbValues, imageWidth, imageLength, Bitmap.Config.ARGB_8888);
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Returns true if thumbnail image is JPEG Compressed, or false if either thumbnail image does
-     * not exist or thumbnail image is uncompressed.
-     */
-    public boolean isThumbnailCompressed() {
-        if (!mHasThumbnail) {
-            return false;
-        }
-        if (mThumbnailCompression == DATA_JPEG || mThumbnailCompression == DATA_JPEG_COMPRESSED) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Returns the offset and length of thumbnail inside the image file, or
-     * {@code null} if either there is no thumbnail or the thumbnail bytes are stored
-     * non-consecutively.
-     *
-     * @return two-element array, the offset in the first value, and length in
-     * the second, or {@code null} if no thumbnail was found or the thumbnail strips are
-     * not placed consecutively.
-     * @throws IllegalStateException if {@link #saveAttributes()} has been
-     *                               called since the underlying file was initially parsed, since
-     *                               that means offsets may have changed.
-     */
-    @Nullable
-    public long[] getThumbnailRange() {
-        if (mModified) {
-            throw new IllegalStateException(
-                "The underlying file has been modified since being parsed");
-        }
-
-        if (mHasThumbnail) {
-            if (mHasThumbnailStrips && !mAreThumbnailStripsConsecutive) {
-                return null;
-            }
-            return new long[]{mThumbnailOffset + mOffsetToExifData, mThumbnailLength};
-        }
-        return null;
-    }
-
-    /**
-     * Returns the offset and length of the requested tag inside the image file,
-     * or {@code null} if the tag is not contained.
-     *
-     * @return two-element array, the offset in the first value, and length in
-     * the second, or {@code null} if no tag was found.
-     * @throws IllegalStateException if {@link #saveAttributes()} has been
-     *                               called since the underlying file was initially parsed, since
-     *                               that means offsets may have changed.
-     */
-    @Nullable
-    public long[] getAttributeRange(@NonNull String tag) {
-        if (tag == null) {
-            throw new NullPointerException("tag shouldn't be null");
-        }
-        if (mModified) {
-            throw new IllegalStateException(
-                "The underlying file has been modified since being parsed");
-        }
-
-        final ExifAttribute attribute = getExifAttribute(tag);
-        if (attribute != null) {
-            return new long[]{attribute.bytesOffset, attribute.bytes.length};
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Returns the raw bytes for the value of the requested tag inside the image
-     * file, or {@code null} if the tag is not contained.
-     *
-     * @return raw bytes for the value of the requested tag, or {@code null} if
-     * no tag was found.
-     */
-    @Nullable
-    public byte[] getAttributeBytes(@NonNull String tag) {
-        if (tag == null) {
-            throw new NullPointerException("tag shouldn't be null");
-        }
-        final ExifAttribute attribute = getExifAttribute(tag);
-        if (attribute != null) {
-            return attribute.bytes;
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Stores the latitude and longitude value in a float array. The first element is the latitude,
-     * and the second element is the longitude. Returns false if the Exif tags are not available.
-     *
-     * @deprecated Use {@link #getLatLong()} instead.
-     */
-    @Deprecated
-    public boolean getLatLong(float output[]) {
-        double[] latLong = getLatLong();
-        if (latLong == null) {
-            return false;
-        }
-
-        output[0] = (float) latLong[0];
-        output[1] = (float) latLong[1];
-        return true;
-    }
-
-    /**
-     * Gets the latitude and longitude values.
-     * <p>
-     * If there are valid latitude and longitude values in the image, this method returns a double
-     * array where the first element is the latitude and the second element is the longitude.
-     * Otherwise, it returns null.
-     */
-    @Nullable
-    public double[] getLatLong() {
-        String latValue = getAttribute(TAG_GPS_LATITUDE);
-        String latRef = getAttribute(TAG_GPS_LATITUDE_REF);
-        String lngValue = getAttribute(TAG_GPS_LONGITUDE);
-        String lngRef = getAttribute(TAG_GPS_LONGITUDE_REF);
-
-        if (latValue != null && latRef != null && lngValue != null && lngRef != null) {
-            try {
-                double latitude = convertRationalLatLonToDouble(latValue, latRef);
-                double longitude = convertRationalLatLonToDouble(lngValue, lngRef);
-                return new double[]{latitude, longitude};
-            } catch (IllegalArgumentException e) {
-                logger.warn("Latitude/longitude values are not parsable. "
-                    + String.format("latValue=%s, latRef=%s, lngValue=%s, lngRef=%s",
-                    latValue, latRef, lngValue, lngRef));
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Sets the GPS-related information. It will set GPS processing method, latitude and longitude
-     * values, GPS timestamp, and speed information at the same time.
-     * <p>
-     * This method is a No-Op if the location parameter is null.
-     *
-     * @param location the {@link Location} object returned by GPS service.
-     */
-    public void setGpsInfo(@Nullable Location location) {
-        if (location == null) {
-            return;
-        }
-        setAttribute(ExifInterface.TAG_GPS_PROCESSING_METHOD, location.getProvider());
-        setLatLong(location.getLatitude(), location.getLongitude());
-        setAltitude(location.getAltitude());
-        // Location objects store speeds in m/sec. Translates it to km/hr here.
-        setAttribute(TAG_GPS_SPEED_REF, "K");
-        setAttribute(TAG_GPS_SPEED, new Rational(location.getSpeed()
-            * TimeUnit.HOURS.toSeconds(1) / 1000).toString());
-        String[] dateTime = sFormatterPrimary.format(
-            new Date(location.getTime())).split("\\s+", -1);
-        setAttribute(ExifInterface.TAG_GPS_DATESTAMP, dateTime[0]);
-        setAttribute(ExifInterface.TAG_GPS_TIMESTAMP, dateTime[1]);
-    }
-
-    /**
-     * Sets the latitude and longitude values.
-     *
-     * @param latitude  the decimal value of latitude. Must be a valid double value between -90.0 and
-     *                  90.0.
-     * @param longitude the decimal value of longitude. Must be a valid double value between -180.0
-     *                  and 180.0.
-     * @throws IllegalArgumentException If {@code latitude} or {@code longitude} is outside the
-     *                                  specified range.
-     */
-    public void setLatLong(double latitude, double longitude) {
-        if (latitude < -90.0 || latitude > 90.0 || Double.isNaN(latitude)) {
-            throw new IllegalArgumentException("Latitude value " + latitude + " is not valid.");
-        }
-        if (longitude < -180.0 || longitude > 180.0 || Double.isNaN(longitude)) {
-            throw new IllegalArgumentException("Longitude value " + longitude + " is not valid.");
-        }
-        setAttribute(TAG_GPS_LATITUDE_REF, latitude >= 0 ? "N" : "S");
-        setAttribute(TAG_GPS_LATITUDE, convertDecimalDegree(Math.abs(latitude)));
-        setAttribute(TAG_GPS_LONGITUDE_REF, longitude >= 0 ? "E" : "W");
-        setAttribute(TAG_GPS_LONGITUDE, convertDecimalDegree(Math.abs(longitude)));
-    }
-
-    /**
-     * Return the altitude in meters. If the exif tag does not exist, return
-     * <var>defaultValue</var>.
-     *
-     * @param defaultValue the value to return if the tag is not available.
-     */
-    public double getAltitude(double defaultValue) {
-        double altitude = getAttributeDouble(TAG_GPS_ALTITUDE, -1);
-        int ref = getAttributeInt(TAG_GPS_ALTITUDE_REF, -1);
-
-        if (altitude >= 0 && ref >= 0) {
-            return (altitude * ((ref == 1) ? -1 : 1));
-        } else {
-            return defaultValue;
-        }
-    }
-
-    /**
-     * Sets the altitude in meters.
-     */
-    public void setAltitude(double altitude) {
-        String ref = altitude >= 0 ? "0" : "1";
-        setAttribute(TAG_GPS_ALTITUDE, new Rational(Math.abs(altitude)).toString());
-        setAttribute(TAG_GPS_ALTITUDE_REF, ref);
-    }
-
-    /**
-     * Set the date time value.
-     *
-     * @param timeStamp number of milliseconds since Jan. 1, 1970, midnight local time.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    public void setDateTime(@NonNull Long timeStamp) {
-        if (timeStamp == null) {
-            throw new NullPointerException("Timestamp should not be null.");
-        }
-
-        if (timeStamp < 0) {
-            throw new IllegalArgumentException("Timestamp should a positive value.");
-        }
-
-        long subsec = timeStamp % 1000;
-        String subsecString = Long.toString(subsec);
-        for (int i = subsecString.length(); i < 3; i++) {
-            subsecString = "0" + subsecString;
-        }
-        setAttribute(TAG_DATETIME, sFormatterPrimary.format(new Date(timeStamp)));
-        setAttribute(TAG_SUBSEC_TIME, subsecString);
-    }
-
-    /**
-     * Returns parsed {@link ExifInterface#TAG_DATETIME} value as number of milliseconds since
-     * Jan. 1, 1970, midnight local time.
-     *
-     * <p>Note: The return value includes the first three digits (or less depending on the length
-     * of the string) of {@link ExifInterface#TAG_SUBSEC_TIME}.
-     *
-     * @return null if date time information is unavailable or invalid.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    @Nullable
-    public Long getDateTime() {
-        return parseDateTime(getAttribute(TAG_DATETIME),
-            getAttribute(TAG_SUBSEC_TIME),
-            getAttribute(TAG_OFFSET_TIME));
-    }
-
-    /**
-     * Returns parsed {@link ExifInterface#TAG_DATETIME_DIGITIZED} value as number of
-     * milliseconds since Jan. 1, 1970, midnight local time.
-     *
-     * <p>Note: The return value includes the first three digits (or less depending on the length
-     * of the string) of {@link ExifInterface#TAG_SUBSEC_TIME_DIGITIZED}.
-     *
-     * @return null if digitized date time information is unavailable or invalid.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    @Nullable
-    public Long getDateTimeDigitized() {
-        return parseDateTime(getAttribute(TAG_DATETIME_DIGITIZED),
-            getAttribute(TAG_SUBSEC_TIME_DIGITIZED),
-            getAttribute(TAG_OFFSET_TIME_DIGITIZED));
-    }
-
-    /**
-     * Returns parsed {@link ExifInterface#TAG_DATETIME_ORIGINAL} value as number of
-     * milliseconds since Jan. 1, 1970, midnight local time.
-     *
-     * <p>Note: The return value includes the first three digits (or less depending on the length
-     * of the string) of {@link ExifInterface#TAG_SUBSEC_TIME_ORIGINAL}.
-     *
-     * @return null if original date time information is unavailable or invalid.
-     */
-    @RestrictTo(RestrictTo.Scope.LIBRARY)
-    @Nullable
-    public Long getDateTimeOriginal() {
-        return parseDateTime(getAttribute(TAG_DATETIME_ORIGINAL),
-            getAttribute(TAG_SUBSEC_TIME_ORIGINAL),
-            getAttribute(TAG_OFFSET_TIME_ORIGINAL));
-    }
-
-    private static Long parseDateTime(@Nullable String dateTimeString, @Nullable String subSecs,
-                                      @Nullable String offsetString) {
-        if (dateTimeString == null || !NON_ZERO_TIME_PATTERN.matcher(dateTimeString).matches()) {
-            return null;
-        }
-
-        ParsePosition pos = new ParsePosition(0);
-        try {
-            // The exif field is in local time. Parsing it as if it is UTC will yield time
-            // since 1/1/1970 local time
-            Date dateTime = sFormatterPrimary.parse(dateTimeString, pos);
-            if (dateTime == null) {
-                dateTime = sFormatterSecondary.parse(dateTimeString, pos);
-                if (dateTime == null) {
-                    return null;
-                }
-            }
-            long msecs = dateTime.getTime();
-            if (offsetString != null) {
-                String sign = offsetString.substring(0, 1);
-                int hour = Integer.parseInt(offsetString.substring(1, 3));
-                int min = Integer.parseInt(offsetString.substring(4, 6));
-                if (("+".equals(sign) || "-".equals(sign))
-                    && ":".equals(offsetString.substring(3, 4))
-                    && hour <= 14 /* max UTC hour value */) {
-                    msecs += (hour * 60 + min) * 60 * 1000 * ("-".equals(sign) ? 1 : -1);
-                }
-            }
-
-            if (subSecs != null) {
-                msecs += parseSubSeconds(subSecs);
-            }
-            return msecs;
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
-    /**
-     * Returns number of milliseconds since Jan. 1, 1970, midnight UTC.
-     *
-     * @return null if the date time information is not available.
-     */
-    @SuppressLint("AutoBoxing") /* Not a performance-critical call, thus not a big concern. */
-    @Nullable
-    public Long getGpsDateTime() {
-        String date = getAttribute(TAG_GPS_DATESTAMP);
-        String time = getAttribute(TAG_GPS_TIMESTAMP);
-        if (date == null || time == null
-            || (!NON_ZERO_TIME_PATTERN.matcher(date).matches()
-            && !NON_ZERO_TIME_PATTERN.matcher(time).matches())) {
-            return null;
-        }
-
-        String dateTimeString = date + ' ' + time;
-
-        ParsePosition pos = new ParsePosition(0);
-        try {
-            Date dateTime = sFormatterPrimary.parse(dateTimeString, pos);
-            if (dateTime == null) {
-                dateTime = sFormatterSecondary.parse(dateTimeString, pos);
-                if (dateTime == null) {
-                    return null;
-                }
-            }
-            return dateTime.getTime();
-        } catch (IllegalArgumentException e) {
-            return null;
-        }
-    }
-
-    private void initForFilename(String filename) throws IOException {
-        if (filename == null) {
-            throw new NullPointerException("filename cannot be null");
-        }
-        FileInputStream in = null;
-        mAssetInputStream = null;
-        mFilename = filename;
-        try {
-            in = new FileInputStream(filename);
-            if (isSeekableFD(in.getFD())) {
-                mSeekableFileDescriptor = in.getFD();
-            } else {
-                mSeekableFileDescriptor = null;
-            }
-            loadAttributes(in);
-        } finally {
-            closeQuietly(in);
-        }
-    }
-
-    private static double convertRationalLatLonToDouble(String rationalString, String ref) {
-        try {
-            String[] parts = rationalString.split(",", -1);
-
-            String[] pair;
-            pair = parts[0].split("/", -1);
-            double degrees = Double.parseDouble(pair[0].trim())
-                / Double.parseDouble(pair[1].trim());
-
-            pair = parts[1].split("/", -1);
-            double minutes = Double.parseDouble(pair[0].trim())
-                / Double.parseDouble(pair[1].trim());
-
-            pair = parts[2].split("/", -1);
-            double seconds = Double.parseDouble(pair[0].trim())
-                / Double.parseDouble(pair[1].trim());
-
-            double result = degrees + (minutes / 60.0) + (seconds / 3600.0);
-            if ((ref.equals("S") || ref.equals("W"))) {
-                return -result;
-            } else if (ref.equals("N") || ref.equals("E")) {
-                return result;
-            } else {
-                // Not valid
-                throw new IllegalArgumentException();
-            }
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            // Not valid
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private String convertDecimalDegree(double decimalDegree) {
-        long degrees = (long) decimalDegree;
-        long minutes = (long) ((decimalDegree - degrees) * 60.0);
-        long seconds = Math.round((decimalDegree - degrees - minutes / 60.0) * 3600.0 * 1e7);
-        return degrees + "/1," + minutes + "/1," + seconds + "/10000000";
     }
 
     // Checks the type of image file
@@ -5473,10 +4588,13 @@ public class ExifInterface {
 
     /**
      * This method looks at the first 3 bytes to determine if this file is a JPEG file.
-     * See http://www.media.mit.edu/pia/Research/deepview/exif.html, "JPEG format and Marker"
+     * See <a href="http://www.media.mit.edu/pia/Research/deepview/exif.html">"JPEG format and Marker"</a>
      */
     // Threema-modified: make public
-    public static boolean isJpegFormat(byte[] signatureCheckBytes) throws IOException {
+    public static boolean isJpegFormat(byte[] signatureCheckBytes) {
+        if (signatureCheckBytes.length < JPEG_SIGNATURE.length) {
+            return false;
+        }
         for (int i = 0; i < JPEG_SIGNATURE.length; i++) {
             if (signatureCheckBytes[i] != JPEG_SIGNATURE[i]) {
                 return false;
@@ -6516,308 +5634,6 @@ public class ExifInterface {
                     break;
                 }
             }
-        }
-    }
-
-    private void savePngAttributes(InputStream inputStream, OutputStream outputStream)
-        throws IOException {
-        if (DEBUG) {
-            logger.debug("savePngAttributes starting with (inputStream: " + inputStream
-                + ", outputStream: " + outputStream + ")");
-        }
-        ByteOrderedDataInputStream dataInputStream = new ByteOrderedDataInputStream(inputStream);
-        ByteOrderedDataOutputStream dataOutputStream =
-            new ByteOrderedDataOutputStream(outputStream, BIG_ENDIAN);
-
-        // Copy PNG signature bytes
-        copy(dataInputStream, dataOutputStream, PNG_SIGNATURE.length);
-
-        // EXIF chunk can appear anywhere between the first (IHDR) and last (IEND) chunks, except
-        // between IDAT chunks.
-        // Adhering to these rules,
-        //   1) if EXIF chunk did not exist in the original file, it will be stored right after the
-        //      first chunk,
-        //   2) if EXIF chunk existed in the original file, it will be stored in the same location.
-        if (mOffsetToExifData == 0) {
-            // Copy IHDR chunk bytes
-            int ihdrChunkLength = dataInputStream.readInt();
-            dataOutputStream.writeInt(ihdrChunkLength);
-            copy(dataInputStream, dataOutputStream, PNG_CHUNK_TYPE_BYTE_LENGTH
-                + ihdrChunkLength + PNG_CHUNK_CRC_BYTE_LENGTH);
-        } else {
-            // Copy up until the point where EXIF chunk length information is stored.
-            int copyLength = mOffsetToExifData - PNG_SIGNATURE.length
-                - 4 /* PNG EXIF chunk length bytes */
-                - PNG_CHUNK_TYPE_BYTE_LENGTH;
-            copy(dataInputStream, dataOutputStream, copyLength);
-
-            // Skip to the start of the chunk after the EXIF chunk
-            int exifChunkLength = dataInputStream.readInt();
-            dataInputStream.skipFully(PNG_CHUNK_TYPE_BYTE_LENGTH + exifChunkLength
-                + PNG_CHUNK_CRC_BYTE_LENGTH);
-        }
-
-        // Write EXIF data
-        ByteArrayOutputStream exifByteArrayOutputStream = null;
-        try {
-            // A byte array is needed to calculate the CRC value of this chunk which requires
-            // the chunk type bytes and the chunk data bytes.
-            exifByteArrayOutputStream = new ByteArrayOutputStream();
-            ByteOrderedDataOutputStream exifDataOutputStream =
-                new ByteOrderedDataOutputStream(exifByteArrayOutputStream, BIG_ENDIAN);
-
-            // Store Exif data in separate byte array
-            writeExifSegment(exifDataOutputStream);
-            byte[] exifBytes =
-                ((ByteArrayOutputStream) exifDataOutputStream.mOutputStream).toByteArray();
-
-            // Write EXIF chunk data
-            dataOutputStream.write(exifBytes);
-
-            // Write EXIF chunk CRC
-            CRC32 crc = new CRC32();
-            crc.update(exifBytes, 4 /* skip length bytes */, exifBytes.length - 4);
-            dataOutputStream.writeInt((int) crc.getValue());
-        } finally {
-            closeQuietly(exifByteArrayOutputStream);
-        }
-
-        // Copy the rest of the file
-        copy(dataInputStream, dataOutputStream);
-    }
-
-    // A WebP file has a header and a series of chunks.
-    // The header is composed of:
-    //   "RIFF" + File Size + "WEBP"
-    //
-    // The structure of the chunks can be divided largely into two categories:
-    //   1) Contains only image data,
-    //   2) Contains image data and extra data.
-    // In the first category, there is only one chunk: type "VP8" (compression with loss) or "VP8L"
-    // (lossless compression).
-    // In the second category, the first chunk will be of type "VP8X", which contains flags
-    // indicating which extra data exist in later chunks. The proceeding chunks must conform to
-    // the following order based on type (if they exist):
-    //   Color Profile ("ICCP") + Animation Control Data ("ANIM") + Image Data ("VP8"/"VP8L")
-    //   + Exif metadata ("EXIF") + XMP metadata ("XMP")
-    //
-    // And in order to have EXIF data, a WebP file must be of the second structure and thus follow
-    // the following rules:
-    //   1) "VP8X" chunk as the first chunk,
-    //   2) flag for EXIF inside "VP8X" chunk set to 1, and
-    //   3) contain the "EXIF" chunk in the correct order amongst other chunks.
-    //
-    // Based on these rules, this API will support three different cases depending on the contents
-    // of the original file:
-    //   1) "EXIF" chunk already exists
-    //     -> replace it with the new "EXIF" chunk
-    //   2) "EXIF" chunk does not exist and the first chunk is "VP8" or "VP8L"
-    //     -> add "VP8X" before the "VP8"/"VP8L" chunk (with EXIF flag set to 1), and add new
-    //     "EXIF" chunk after the "VP8"/"VP8L" chunk.
-    //   3) "EXIF" chunk does not exist and the first chunk is "VP8X"
-    //     -> set EXIF flag in "VP8X" chunk to 1, and add new "EXIF" chunk at the proper location.
-    //
-    // See https://developers.google.com/speed/webp/docs/riff_container for more details.
-    private void saveWebpAttributes(InputStream inputStream, OutputStream outputStream)
-        throws IOException {
-        if (DEBUG) {
-            logger.debug("saveWebpAttributes starting with (inputStream: " + inputStream
-                + ", outputStream: " + outputStream + ")");
-        }
-        ByteOrderedDataInputStream totalInputStream =
-            new ByteOrderedDataInputStream(inputStream, LITTLE_ENDIAN);
-        ByteOrderedDataOutputStream totalOutputStream =
-            new ByteOrderedDataOutputStream(outputStream, LITTLE_ENDIAN);
-
-        // WebP signature
-        copy(totalInputStream, totalOutputStream, WEBP_SIGNATURE_1.length);
-        // File length will be written after all the chunks have been written
-        totalInputStream.skipFully(WEBP_FILE_SIZE_BYTE_LENGTH + WEBP_SIGNATURE_2.length);
-
-        // Create a separate byte array to calculate file length
-        ByteArrayOutputStream nonHeaderByteArrayOutputStream = null;
-        try {
-            nonHeaderByteArrayOutputStream = new ByteArrayOutputStream();
-            ByteOrderedDataOutputStream nonHeaderOutputStream =
-                new ByteOrderedDataOutputStream(nonHeaderByteArrayOutputStream, LITTLE_ENDIAN);
-
-            if (mOffsetToExifData != 0) {
-                // EXIF chunk exists in the original file
-                // Tested by webp_with_exif.webp
-                int bytesRead = WEBP_SIGNATURE_1.length + WEBP_FILE_SIZE_BYTE_LENGTH
-                    + WEBP_SIGNATURE_2.length;
-                copy(totalInputStream, nonHeaderOutputStream,
-                    mOffsetToExifData - bytesRead - WEBP_CHUNK_TYPE_BYTE_LENGTH
-                        - WEBP_CHUNK_SIZE_BYTE_LENGTH);
-
-                // Skip input stream to the end of the EXIF chunk
-                totalInputStream.skipFully(WEBP_CHUNK_TYPE_BYTE_LENGTH);
-                int exifChunkLength = totalInputStream.readInt();
-                // RIFF chunks have a single padding byte at the end if the declared chunk size is
-                // odd.
-                if (exifChunkLength % 2 != 0) {
-                    exifChunkLength++;
-                }
-                totalInputStream.skipFully(exifChunkLength);
-
-                // Write new EXIF chunk to output stream
-                writeExifSegment(nonHeaderOutputStream);
-            } else {
-                // EXIF chunk does not exist in the original file
-                byte[] firstChunkType = new byte[WEBP_CHUNK_TYPE_BYTE_LENGTH];
-                totalInputStream.readFully(firstChunkType);
-
-                if (Arrays.equals(firstChunkType, WEBP_CHUNK_TYPE_VP8X)) {
-                    // Original file already includes other extra data
-                    int size = totalInputStream.readInt();
-                    // WebP files have a single padding byte at the end if the chunk size is odd.
-                    byte[] data = new byte[(size % 2) == 1 ? size + 1 : size];
-                    totalInputStream.readFully(data);
-
-                    // Set the EXIF flag to 1
-                    data[0] = (byte) (data[0] | (1 << 3));
-
-                    // Retrieve Animation flag--in order to check where EXIF data should start
-                    boolean containsAnimation = ((data[0] >> 1) & 1) == 1;
-
-                    // Write the original VP8X chunk
-                    nonHeaderOutputStream.write(WEBP_CHUNK_TYPE_VP8X);
-                    nonHeaderOutputStream.writeInt(size);
-                    nonHeaderOutputStream.write(data);
-
-                    // Animation control data is composed of 1 ANIM chunk and multiple ANMF
-                    // chunks and since the image data (VP8/VP8L) chunks are included in the ANMF
-                    // chunks, EXIF data should come after the last ANMF chunk.
-                    // Also, because there is no value indicating the amount of ANMF chunks, we need
-                    // to keep iterating through chunks until we either reach the end of the file or
-                    // the XMP chunk (if it exists).
-                    // Tested by webp_with_anim_without_exif.webp
-                    if (containsAnimation) {
-                        copyChunksUpToGivenChunkType(totalInputStream, nonHeaderOutputStream,
-                            WEBP_CHUNK_TYPE_ANIM, null);
-
-                        while (true) {
-                            byte[] type = new byte[WEBP_CHUNK_TYPE_BYTE_LENGTH];
-                            boolean animationFinished = false;
-                            try {
-                                totalInputStream.readFully(type);
-                                animationFinished = !Arrays.equals(type, WEBP_CHUNK_TYPE_ANMF);
-                            } catch (EOFException e) {
-                                animationFinished = true;
-                            }
-                            if (animationFinished) {
-                                writeExifSegment(nonHeaderOutputStream);
-                                break;
-                            }
-                            copyWebPChunk(totalInputStream, nonHeaderOutputStream, type);
-                        }
-                    } else {
-                        // Skip until we find the VP8 or VP8L chunk
-                        copyChunksUpToGivenChunkType(totalInputStream, nonHeaderOutputStream,
-                            WEBP_CHUNK_TYPE_VP8, WEBP_CHUNK_TYPE_VP8L);
-                        writeExifSegment(nonHeaderOutputStream);
-                    }
-                } else if (Arrays.equals(firstChunkType, WEBP_CHUNK_TYPE_VP8)
-                    || Arrays.equals(firstChunkType, WEBP_CHUNK_TYPE_VP8L)) {
-                    int size = totalInputStream.readInt();
-                    int bytesToRead = size;
-                    // WebP files have a single padding byte at the end if the chunk size is odd.
-                    if (size % 2 == 1) {
-                        bytesToRead += 1;
-                    }
-
-                    // Retrieve image width/height
-                    int widthAndHeight = 0;
-                    int width = 0;
-                    int height = 0;
-                    boolean alpha = false;
-                    // Save VP8 frame data for later
-                    byte[] vp8Frame = new byte[3];
-
-                    if (Arrays.equals(firstChunkType, WEBP_CHUNK_TYPE_VP8)) {
-                        totalInputStream.readFully(vp8Frame);
-
-                        // Check signature
-                        byte[] vp8Signature = new byte[3];
-                        totalInputStream.readFully(vp8Signature);
-                        if (!Arrays.equals(WEBP_VP8_SIGNATURE, vp8Signature)) {
-                            throw new IOException("Error checking VP8 signature");
-                        }
-
-                        // Retrieve image width/height
-                        widthAndHeight = totalInputStream.readInt();
-                        width = (widthAndHeight << 18) >> 18;
-                        height = (widthAndHeight << 2) >> 18;
-                        bytesToRead -= (vp8Frame.length + vp8Signature.length + 4);
-                    } else if (Arrays.equals(firstChunkType, WEBP_CHUNK_TYPE_VP8L)) {
-                        // Check signature
-                        byte vp8lSignature = totalInputStream.readByte();
-                        if (vp8lSignature != WEBP_VP8L_SIGNATURE) {
-                            throw new IOException("Error checking VP8L signature");
-                        }
-
-                        // Retrieve image width/height
-                        widthAndHeight = totalInputStream.readInt();
-                        // VP8L stores 14-bit 'width - 1' and 'height - 1' values. See "RIFF Header"
-                        // of "WebP Lossless Bitstream Specification".
-                        width = (widthAndHeight & 0x3FFF) + 1;  // Read bits 0 - 13
-                        height = ((widthAndHeight & 0xFFFC000) >>> 14) + 1;  // Read bits 14 - 27
-                        // Retrieve alpha bit 28
-                        alpha = (widthAndHeight & 1 << 28) != 0;
-                        bytesToRead -= (1 /* VP8L signature */ + 4);
-                    }
-
-                    // Create VP8X with Exif flag set to 1
-                    nonHeaderOutputStream.write(WEBP_CHUNK_TYPE_VP8X);
-                    nonHeaderOutputStream.writeInt(WEBP_CHUNK_TYPE_VP8X_DEFAULT_LENGTH);
-                    byte[] data = new byte[WEBP_CHUNK_TYPE_VP8X_DEFAULT_LENGTH];
-                    // ALPHA flag
-                    if (alpha) {
-                        data[0] = (byte) (data[0] | (1 << 4));
-                    }
-                    // EXIF flag
-                    data[0] = (byte) (data[0] | (1 << 3));
-                    // VP8X stores Width - 1 and Height - 1 values
-                    width -= 1;
-                    height -= 1;
-                    data[4] = (byte) width;
-                    data[5] = (byte) (width >> 8);
-                    data[6] = (byte) (width >> 16);
-                    data[7] = (byte) height;
-                    data[8] = (byte) (height >> 8);
-                    data[9] = (byte) (height >> 16);
-                    nonHeaderOutputStream.write(data);
-
-                    // Write VP8 or VP8L data
-                    nonHeaderOutputStream.write(firstChunkType);
-                    nonHeaderOutputStream.writeInt(size);
-                    if (Arrays.equals(firstChunkType, WEBP_CHUNK_TYPE_VP8)) {
-                        nonHeaderOutputStream.write(vp8Frame);
-                        nonHeaderOutputStream.write(WEBP_VP8_SIGNATURE);
-                        nonHeaderOutputStream.writeInt(widthAndHeight);
-                    } else if (Arrays.equals(firstChunkType, WEBP_CHUNK_TYPE_VP8L)) {
-                        nonHeaderOutputStream.write(WEBP_VP8L_SIGNATURE);
-                        nonHeaderOutputStream.writeInt(widthAndHeight);
-                    }
-                    copy(totalInputStream, nonHeaderOutputStream, bytesToRead);
-
-                    // Write EXIF chunk
-                    writeExifSegment(nonHeaderOutputStream);
-                }
-            }
-
-            // Copy the rest of the file
-            copy(totalInputStream, nonHeaderOutputStream);
-
-            // Write file length + second signature
-            totalOutputStream.writeInt(nonHeaderByteArrayOutputStream.size()
-                + WEBP_SIGNATURE_2.length);
-            totalOutputStream.write(WEBP_SIGNATURE_2);
-            nonHeaderByteArrayOutputStream.writeTo(totalOutputStream);
-        } catch (Exception e) {
-            throw new IOException("Failed to save WebP file", e);
-        } finally {
-            closeQuietly(nonHeaderByteArrayOutputStream);
         }
     }
 

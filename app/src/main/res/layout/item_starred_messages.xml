@@ -105,11 +105,12 @@
                 android:layout_marginLeft="4dp"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="2dp"
-                android:background="?attr/colorTertiaryContainer"
+                android:background="?attr/colorSecondary"
                 android:clickable="false"
                 android:contentDescription="@string/attach_picture"
                 android:visibility="gone"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium"
+                tools:visibility="visible" />
 
         </RelativeLayout>
 

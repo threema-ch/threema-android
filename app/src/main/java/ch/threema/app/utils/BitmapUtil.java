@@ -243,17 +243,12 @@ public class BitmapUtil {
         BitmapFactory.Options options;
         int sourceImageWidth, sourceImageHeight;
 
-        final Uri fixedImageUri = FileUtil.getFixedContentUri(context, imageUri);
-        if (fixedImageUri == null) {
-            return null;
-        }
-
         ThumbnailUtils.Size targetSize;
         try {
             try {
                 try {
-                    measure = context.getContentResolver().openInputStream(fixedImageUri);
-                    data = context.getContentResolver().openInputStream(fixedImageUri);
+                    measure = context.getContentResolver().openInputStream(imageUri);
+                    data = context.getContentResolver().openInputStream(imageUri);
                 } catch (FileNotFoundException | SecurityException | IllegalStateException e) {
                     logger.error("Exception", e);
                     return null;

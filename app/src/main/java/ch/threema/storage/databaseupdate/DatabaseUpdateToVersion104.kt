@@ -22,20 +22,17 @@
 package ch.threema.storage.databaseupdate
 
 import android.content.Context
-import androidx.preference.PreferenceManager
-import ch.threema.app.stores.PreferenceStore
-import ch.threema.storage.fieldExists
+import ch.threema.domain.types.Identity
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class DatabaseUpdateToVersion104(
-    private val db: SQLiteDatabase,
+    private val sqLiteDatabase: SQLiteDatabase,
     private val context: Context,
 ) : DatabaseUpdate {
     override fun run() {
         addUserStateColumn()
 
-        val myIdentity = PreferenceManager.getDefaultSharedPreferences(context)
-            .getString(PreferenceStore.PREFS_IDENTITY, null)
+        val myIdentity = getMyIdentity(context)
             ?: // In case there is no identity, there is also no data in the database and we can
             // skip the following steps.
             return
@@ -50,15 +47,15 @@ internal class DatabaseUpdateToVersion104(
         val field = "userState"
 
         // Add field
-        if (!db.fieldExists(table, field)) {
-            db.execSQL("ALTER TABLE `$table` ADD COLUMN `$field` INTEGER DEFAULT 0 NOT NULL")
+        if (!sqLiteDatabase.fieldExists(table, field)) {
+            sqLiteDatabase.execSQL("ALTER TABLE `$table` ADD COLUMN `$field` INTEGER DEFAULT 0 NOT NULL")
         }
     }
 
-    private fun initializeUserStateColumn(myIdentity: String) {
+    private fun initializeUserStateColumn(myIdentity: Identity) {
         // The default value is 0 (member) and we set all groups where the user is no member anymore
         // to 2 (left). We cannot (yet) distinguish 1 (kicked) from 2 (left) at this point.
-        db.execSQL(
+        sqLiteDatabase.execSQL(
             """
                 UPDATE m_group
                 SET userState = 2
@@ -72,12 +69,12 @@ internal class DatabaseUpdateToVersion104(
         )
     }
 
-    private fun removeUserFromGroupMembers(myIdentity: String) {
+    private fun removeUserFromGroupMembers(myIdentity: Identity) {
         // Ensure that the user is not part of any groups' member list. From this point on, we do
         // never store the user in the member list even if the user is a member of the group. This
         // is because we now have the user state which becomes the new single source of truth
         // regarding the user's group membership.
-        db.execSQL(
+        sqLiteDatabase.execSQL(
             """
             DELETE FROM group_member
             WHERE identity = ?

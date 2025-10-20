@@ -40,7 +40,6 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.ReceiverModel;
 
 public class AvatarListItemUtil {
 
@@ -60,12 +59,18 @@ public class AvatarListItemUtil {
                 ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
                     ThreemaApplication.getAppContext().getString(R.string.mime_contact),
                     NameUtil.getDisplayNameOrNickname(conversationModel.getContact(), true)));
-            contactService.loadAvatarIntoImage(
-                conversationModel.getContact(),
-                avatarView,
-                AvatarOptions.PRESET_DEFAULT_FALLBACK,
-                requestManager
-            );
+            ContactModel contact = conversationModel.getContact();
+            String identity = contact != null
+                ? contact.getIdentity()
+                : null;
+            if (identity != null) {
+                contactService.loadAvatarIntoImage(
+                    identity,
+                    avatarView,
+                    AvatarOptions.PRESET_DEFAULT_FALLBACK,
+                    requestManager
+                );
+            }
         } else if (conversationModel.isGroupConversation()) {
             holder.avatarView.setContentDescription(
                 ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
@@ -95,35 +100,35 @@ public class AvatarListItemUtil {
         holder.avatarView.setBadgeVisible(isWork);
     }
 
-    public static <M extends ReceiverModel> void loadAvatar(
-        final M model,
-        final AvatarService<M> avatarService,
+    public static <S> void loadAvatar(
+        final S subject,
+        final AvatarService<S> avatarService,
         AvatarListItemHolder holder,
         @NonNull RequestManager requestManager
     ) {
 
         //do nothing
-        if (!TestUtil.required(model, avatarService, holder) || holder.avatarView == null) {
+        if (!TestUtil.required(subject, avatarService, holder) || holder.avatarView == null) {
             return;
         }
 
-        if (model instanceof ContactModel) {
-            holder.avatarView.setBadgeVisible(((ContactService) avatarService).showBadge((ContactModel) model));
+        if (subject instanceof String) {
+            holder.avatarView.setBadgeVisible(((ContactService) avatarService).showBadge((String) subject));
         } else {
             holder.avatarView.setBadgeVisible(false);
         }
 
         AvatarOptions options;
-        if (model instanceof ContactModel) {
+        if (subject instanceof String) {
             options = AvatarOptions.PRESET_DEFAULT_FALLBACK;
-        } else if (model instanceof GroupModel) {
+        } else if (subject instanceof GroupModel) {
             options = AvatarOptions.PRESET_DEFAULT_FALLBACK;
         } else {
             options = AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE;
         }
 
         avatarService.loadAvatarIntoImage(
-            model,
+            subject,
             holder.avatarView.getAvatarView(),
             options,
             requestManager

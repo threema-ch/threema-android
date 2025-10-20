@@ -24,7 +24,7 @@ package ch.threema.domain.protocol.connection.csp.socket
 import ch.threema.base.ThreemaException
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.connection.csp.CspConnectionConfiguration
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import java.net.Inet4Address
 import java.net.Inet6Address
 import java.net.InetSocketAddress
@@ -36,7 +36,7 @@ import kotlin.concurrent.withLock
 class ChatServerAddressProviderImpl(
     configuration: CspConnectionConfiguration,
 ) : ChatServerAddressProvider {
-    private val identityStore: IdentityStoreInterface = configuration.identityStore
+    private val identityStore: IdentityStore = configuration.identityStore
     private val serverAddressProvider: ServerAddressProvider = configuration.serverAddressProvider
     private val hostResolver: HostResolver = configuration.hostResolver
     private val ipv6 = configuration.ipv6
@@ -105,8 +105,7 @@ class ChatServerAddressProviderImpl(
     private fun getServerHost(): String {
         val serverNamePrefix = serverAddressProvider.getChatServerNamePrefix(ipv6)
         val serverHost = if (serverNamePrefix.isNotEmpty()) {
-            val serverGroup =
-                if (serverAddressProvider.getChatServerUseServerGroups()) identityStore.serverGroup else "."
+            val serverGroup = if (serverAddressProvider.getChatServerUseServerGroups()) identityStore.getServerGroup() else "."
             "$serverNamePrefix$serverGroup"
         } else {
             ""

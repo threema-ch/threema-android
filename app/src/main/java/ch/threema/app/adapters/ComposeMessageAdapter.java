@@ -119,7 +119,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
     @NonNull
     private ConversationListFilter convListFilter = new ConversationListFilter();
     public ListView listView;
-    private int groupId;
+    private long groupId;
     private final EmojiMarkupUtil emojiMarkupUtil = EmojiMarkupUtil.getInstance();
     @Nullable
     private CharSequence currentConstraint = null;
@@ -335,7 +335,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
         }
     }
 
-    public void setGroupId(int groupId) {
+    public void setGroupId(long groupId) {
         this.groupId = groupId;
     }
 

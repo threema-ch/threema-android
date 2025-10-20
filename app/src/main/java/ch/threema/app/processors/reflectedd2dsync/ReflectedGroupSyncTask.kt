@@ -32,6 +32,7 @@ import ch.threema.app.services.FileService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.AppVersionProvider
+import ch.threema.app.utils.ExifInterface
 import ch.threema.app.utils.GroupUtil
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.base.crypto.SymmetricEncryptionService
@@ -47,6 +48,7 @@ import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.Common.Blob
 import ch.threema.protobuf.Common.DeltaImage
@@ -205,7 +207,7 @@ class ReflectedGroupSyncTask(
             (group.memberIdentities.identitiesList + groupModel.groupIdentity.creatorIdentity)
                 .filter { it != myIdentity }
                 .toSet()
-        val oldMembers = groupModel.data.value?.otherMembers ?: run {
+        val oldMembers = groupModel.data?.otherMembers ?: run {
             logger.error("Group model data is null")
             return
         }
@@ -338,7 +340,7 @@ class ReflectedGroupSyncTask(
     }
 
     private fun getArchivedConversationModel(localGroupDatabaseId: Long): ConversationModel? {
-        return conversationService.getArchived(null).find { it.group?.id?.toLong() == localGroupDatabaseId }
+        return conversationService.getArchived().find { it.group?.id?.toLong() == localGroupDatabaseId }
     }
 
     /**
@@ -346,7 +348,7 @@ class ReflectedGroupSyncTask(
      */
     private fun notifyDeprecatedOnNewMemberListeners(
         groupIdentity: GroupIdentity,
-        newIdentity: String,
+        newIdentity: Identity,
     ) {
         ListenerManager.groupListeners.handle { it.onNewMember(groupIdentity, newIdentity) }
     }
@@ -356,7 +358,7 @@ class ReflectedGroupSyncTask(
      */
     private fun notifyDeprecatedOnMemberLeaveListeners(
         groupIdentity: GroupIdentity,
-        leftIdentity: String,
+        leftIdentity: Identity,
     ) {
         ListenerManager.groupListeners.handle { it.onMemberLeave(groupIdentity, leftIdentity) }
     }
@@ -366,7 +368,7 @@ class ReflectedGroupSyncTask(
      */
     private fun notifyDeprecatedOnMemberKickedListeners(
         groupIdentity: GroupIdentity,
-        kickedIdentity: String,
+        kickedIdentity: Identity,
     ) {
         ListenerManager.groupListeners.handle { it.onMemberKicked(groupIdentity, kickedIdentity) }
     }
@@ -392,6 +394,10 @@ class ReflectedGroupSyncTask(
         )
         when (blobLoadingResult) {
             is ReflectedBlobDownloader.BlobLoadingResult.Success -> {
+                if (!ExifInterface.isJpegFormat(blobLoadingResult.blobBytes)) {
+                    logger.warn("Received group profile picture that is not a jpeg")
+                }
+
                 fileService.writeGroupAvatar(groupModel, blobLoadingResult.blobBytes)
                 ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
                 ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(groupModel))

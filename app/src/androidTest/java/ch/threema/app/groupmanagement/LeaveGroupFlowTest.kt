@@ -331,7 +331,7 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
 
         groupModelRepository.persistRemovedGroup(groupModel.groupIdentity)
-        assertNull(groupModel.data.value)
+        assertNull(groupModel.data)
 
         assertUnsuccessfulLeave(
             groupModel,
@@ -347,7 +347,7 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
 
         groupModelRepository.persistRemovedGroup(groupModel.groupIdentity)
-        assertNull(groupModel.data.value)
+        assertNull(groupModel.data)
 
         assertUnsuccessfulLeave(
             groupModel,
@@ -363,7 +363,7 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
 
         groupModelRepository.persistRemovedGroup(groupModel.groupIdentity)
-        assertNull(groupModel.data.value)
+        assertNull(groupModel.data)
 
         assertUnsuccessfulLeave(
             groupModel,
@@ -379,7 +379,7 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
 
         groupModelRepository.persistRemovedGroup(groupModel.groupIdentity)
-        assertNull(groupModel.data.value)
+        assertNull(groupModel.data)
 
         assertUnsuccessfulLeave(
             groupModel,
@@ -417,8 +417,8 @@ class LeaveGroupFlowTest : GroupFlowTest() {
             runGroupLeave(groupModel, intent, reflectionExpectation),
         )
         when (intent) {
-            GroupLeaveIntent.LEAVE -> assertEquals(UserState.LEFT, groupModel.data.value?.userState)
-            GroupLeaveIntent.LEAVE_AND_REMOVE -> assertNull(groupModel.data.value)
+            GroupLeaveIntent.LEAVE -> assertEquals(UserState.LEFT, groupModel.data?.userState)
+            GroupLeaveIntent.LEAVE_AND_REMOVE -> assertNull(groupModel.data)
         }
     }
 
@@ -427,11 +427,11 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         intent: GroupLeaveIntent,
         reflectionExpectation: ReflectionExpectation,
     ) {
-        val groupModelDataBefore = groupModel.data.value
+        val groupModelDataBefore = groupModel.data
         assertIs<GroupFlowResult.Failure>(
             runGroupLeave(groupModel, intent, reflectionExpectation),
         )
-        val groupModelDataAfter = groupModel.data.value
+        val groupModelDataAfter = groupModel.data
         // Assert that the group model has not changed
         assertEquals(groupModelDataBefore, groupModelDataAfter)
     }
@@ -441,7 +441,7 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         intent: GroupLeaveIntent,
         reflectionExpectation: ReflectionExpectation,
     ): GroupFlowResult {
-        val groupModelData = groupModel.data.value
+        val groupModelData = groupModel.data
 
         // Prepare task manager and group flow dispatcher
         val taskManager = ControlledTaskManager(

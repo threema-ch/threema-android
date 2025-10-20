@@ -22,9 +22,7 @@
 package ch.threema.app.compose.conversation
 
 import android.content.Context
-import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
-import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -46,18 +44,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -66,39 +74,46 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
-import ch.threema.app.compose.common.Avatar
+import ch.threema.app.compose.common.ResolvableString
+import ch.threema.app.compose.common.ResolvedString
 import ch.threema.app.compose.common.SpacerHorizontal
-import ch.threema.app.compose.common.buttons.ButtonPrimarySmall
+import ch.threema.app.compose.common.ThemedText
+import ch.threema.app.compose.common.buttons.ButtonPrimaryDense
+import ch.threema.app.compose.common.list.swipe.ListItemSwipeContainer
+import ch.threema.app.compose.common.list.swipe.ListItemSwipeFeature
+import ch.threema.app.compose.common.list.swipe.ListItemSwipeFeatureState
 import ch.threema.app.compose.common.text.conversation.ConversationText
 import ch.threema.app.compose.common.text.conversation.ConversationTextDefaults
 import ch.threema.app.compose.common.text.conversation.MentionFeature
-import ch.threema.app.compose.common.text.conversation.ThreemaTextPreviewProvider
+import ch.threema.app.compose.common.text.conversation.PreviewParameterProviderConversationText
+import ch.threema.app.compose.conversation.models.ConversationListItemUiModel
+import ch.threema.app.compose.conversation.models.ConversationNameStyle
+import ch.threema.app.compose.conversation.models.ConversationUiModel
+import ch.threema.app.compose.conversation.models.GroupCallUiModel
+import ch.threema.app.compose.conversation.models.INACTIVE_CONTACT_ALPHA
+import ch.threema.app.compose.conversation.models.IconInfo
+import ch.threema.app.compose.conversation.models.UnreadState
+import ch.threema.app.compose.preview.PreviewLightAndDarkMode
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.GridUnit
-import ch.threema.app.drafts.DraftManager
-import ch.threema.app.messagereceiver.ContactMessageReceiver
-import ch.threema.app.messagereceiver.GroupMessageReceiver
-import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.preference.service.PreferenceService.EmojiStyle
 import ch.threema.app.preference.service.PreferenceService.EmojiStyle_ANDROID
-import ch.threema.app.services.AvatarCacheService
-import ch.threema.app.services.ContactService
-import ch.threema.app.services.ConversationCategoryService
-import ch.threema.app.services.DistributionListService
-import ch.threema.app.services.GroupService
-import ch.threema.app.services.RingtoneService
 import ch.threema.app.utils.MessageUtil
-import ch.threema.app.utils.NameUtil
-import ch.threema.app.utils.StateBitmapUtil
-import ch.threema.domain.models.IdentityState
+import ch.threema.app.voip.groupcall.LocalGroupId
+import ch.threema.app.voip.groupcall.localGroupId
+import ch.threema.app.voip.groupcall.sfu.CallId
+import ch.threema.common.emptyByteArray
+import ch.threema.common.now
+import ch.threema.common.toHMMSS
+import ch.threema.domain.types.ConversationUID
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.ConversationModel
 import ch.threema.storage.models.DistributionListModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.GroupModel
@@ -108,267 +123,238 @@ import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.ReceiverModel
 import java.util.Date
 import java.util.Locale
+import kotlin.random.Random
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
-/**
- *  Not yet implemented:
- *  - Ongoing group call state
- *  - Typing indicator
- */
+private val listItemContainerColor: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = MaterialTheme.colorScheme.background
+
+private val listItemShape: Shape = RoundedCornerShape(
+    size = GridUnit.x1,
+)
+
 @Composable
 fun ConversationListItem(
     modifier: Modifier = Modifier,
-    conversationModel: ConversationModel,
-    contactService: ContactService,
-    groupService: GroupService,
-    distributionListService: DistributionListService,
-    conversationCategoryService: ConversationCategoryService,
-    avatarCacheService: AvatarCacheService,
-    ringtoneService: RingtoneService,
-    preferenceService: PreferenceService,
-    isChecked: Boolean,
-    onClick: (ConversationModel) -> Unit,
-    onLongClick: (ConversationModel) -> Unit,
-    onClickJoinCall: () -> Unit,
+    conversationListItemUiModel: ConversationListItemUiModel,
+    identityNameProvider: (Identity) -> ResolvableString?,
+    ownIdentity: Identity,
+    @EmojiStyle emojiStyle: Int,
+    onClick: (ConversationUiModel) -> Unit,
+    onLongClick: (ConversationUiModel) -> Unit,
+    onClickJoinOrOpenGroupCall: (LocalGroupId) -> Unit,
+    swipeFeatureStartToEnd: ListItemSwipeFeature.StartToEnd<ConversationUID>? = null,
+    swipeFeatureEndToStart: ListItemSwipeFeature.EndToStart<ConversationUID>? = null,
 ) {
-    val context = LocalContext.current
-
+    val conversationUiModel: ConversationUiModel = conversationListItemUiModel.model
+    val context: Context = LocalContext.current
     val lastUpdateAt: String? = remember(
-        conversationModel.latestMessage,
+        key1 = conversationUiModel.latestMessage,
     ) {
-        MessageUtil.getDisplayDate(context, conversationModel.latestMessage, false)
+        MessageUtil.getDisplayDate(context, conversationUiModel.latestMessage, false)
     }
 
-    val draft: String? = DraftManager.getMessageDraft(conversationModel.messageReceiver.uniqueIdString)
-        ?.takeIf(String::isNotBlank)
-
-    ConversationListItemContent(
-        modifier = modifier,
-        ownIdentity = contactService.me.identity,
-        identityNameProvider = { identity ->
-            if (identity == ContactService.ALL_USERS_PLACEHOLDER_ID) {
-                context.getString(R.string.all)
-            } else {
-                NameUtil.getDisplayNameOrNickname(identity, contactService)
-            }
-        },
-        avatarContent = {
-            AvatarAsyncCheckable(
-                avatarCacheService = avatarCacheService,
-                receiverModel = conversationModel.receiverModel,
-                contentDescription = getAvatarContentDescription(
-                    context = context,
-                    receiverModel = conversationModel.receiverModel,
-                    groupService = groupService,
-                    distributionListService = distributionListService,
-                ),
-                fallbackIcon = when {
-                    conversationModel.isGroupConversation -> R.drawable.ic_group
-                    conversationModel.isDistributionListConversation -> R.drawable.ic_distribution_list
-                    else -> R.drawable.ic_contact
-                },
-                showWorkBadge = conversationModel.contact?.let(contactService::showBadge) ?: false,
-                isChecked = isChecked,
-            )
-        },
-        conversationName = conversationModel.messageReceiver.displayName,
-        conversationNameStyle = ConversationNameStyle.forConversationModel(conversationModel),
-        latestMessage = conversationModel.latestMessage,
-        groupMessageSender = getGroupMessageSenderOrNull(
-            contactService = contactService,
-            conversation = conversationModel,
-            conversationHasOwnDraft = draft != null,
-            context = context,
-        ),
-        lastUpdateAt = lastUpdateAt,
-        deliveryIcon = getLatestMessageStateIcon(conversationModel),
-        unreadState = when {
-            conversationModel.hasUnreadMessage() -> UnreadState.Messages(conversationModel.unreadCount)
-            conversationModel.isUnreadTagged -> UnreadState.JustMarked
-            else -> null
-        },
-        isPinned = conversationModel.isPinTagged,
-        isPrivate = conversationCategoryService.isPrivateChat(
-            conversationModel.messageReceiver.uniqueIdString,
-        ),
-        hasOngoingCall = false,
-        draft = draft,
-        muteStatusIcon = getMuteStatusIconResOrNull(conversationModel, ringtoneService),
-        emojiStyle = preferenceService.emojiStyle,
-        onClick = {
-            onClick(conversationModel)
-        },
-        onLongClick = {
-            onLongClick(conversationModel)
-        },
-        onClickJoinCall = onClickJoinCall,
+    val swipeToDismissBoxState: SwipeToDismissBoxState = rememberMySwipeToDismissBoxState(
+        swipeFeatureStartToEnd = swipeFeatureStartToEnd,
+        swipeFeatureEndToStart = swipeFeatureEndToStart,
+        conversationUiModel = conversationUiModel,
     )
-}
 
-private fun getLatestMessageStateIcon(
-    conversationModel: ConversationModel,
-): IconInfo? {
-    val conversationIconRes: Int? = conversationModel.getConversationIconRes()
-
-    if (conversationIconRes != null) {
-        @StringRes
-        val contentDescription: Int? = when {
-            conversationModel.isContactConversation -> R.string.state_sent
-            conversationModel.isGroupConversation -> {
-                if (conversationModel.groupModel?.isNotesGroup() == true) {
-                    R.string.notes
+    SwipeToDismissBox(
+        modifier = modifier,
+        state = swipeToDismissBoxState,
+        gesturesEnabled = swipeFeatureStartToEnd != null || swipeFeatureEndToStart != null,
+        enableDismissFromStartToEnd = swipeFeatureStartToEnd != null,
+        enableDismissFromEndToStart = swipeFeatureEndToStart != null,
+        backgroundContent = {
+            // This swipeToDismissBoxState has a fixed progress of 1f when transitioning back to the settled state after thumb release.
+            // Setting 0.1f in this case prevents our color animation in ListItemSwipeContainer to show its flashy end color in this state
+            val swipeProgress: Float =
+                if (swipeToDismissBoxState.progress != 1f || swipeToDismissBoxState.targetValue != SwipeToDismissBoxValue.Settled) {
+                    swipeToDismissBoxState.progress
                 } else {
-                    R.string.prefs_group_notifications
+                    0.1f
                 }
+
+            when (swipeToDismissBoxState.dismissDirection) {
+                SwipeToDismissBoxValue.StartToEnd -> swipeFeatureStartToEnd?.let {
+                    ListItemSwipeContainer(
+                        swipeFeature = swipeFeatureStartToEnd,
+                        containerColorSettled = listItemContainerColor,
+                        shape = listItemShape,
+                        swipeProgress = swipeProgress,
+                    )
+                }
+
+                SwipeToDismissBoxValue.EndToStart -> swipeFeatureEndToStart?.let {
+                    ListItemSwipeContainer(
+                        swipeFeature = swipeFeatureEndToStart,
+                        containerColorSettled = listItemContainerColor,
+                        shape = listItemShape,
+                        swipeProgress = swipeProgress,
+                    )
+                }
+
+                SwipeToDismissBoxValue.Settled -> {}
             }
-
-            conversationModel.isDistributionListConversation -> R.string.distribution_list
-            else -> null
-        }
-
-        return IconInfo(
-            icon = conversationIconRes,
-            contentDescription = contentDescription,
-        )
-    }
-
-    return conversationModel.latestMessage?.let { latestMessageModel ->
-
-        if (!MessageUtil.showStatusIcon(latestMessageModel)) {
-            return@let null
-        }
-        val messageState: MessageState = latestMessageModel.state
-            ?: return@let null
-
-        val stateBitmapUtil = StateBitmapUtil.getInstance()
-            ?: return@let null
-
-        val stateIconRes: Int = stateBitmapUtil.getStateDrawable(messageState)
-            ?: return@let null
-
-        val stateIconContentDescriptionRes: Int? = stateBitmapUtil.getStateDescription(messageState)
-
-        @ColorInt
-        val tintOverride: Int? = when (messageState) {
-            MessageState.SENDFAILED, MessageState.FS_KEY_MISMATCH -> stateBitmapUtil.warningColor
-            else -> null
-        }
-
-        return@let IconInfo(
-            icon = stateIconRes,
-            contentDescription = stateIconContentDescriptionRes,
-            tintOverride = tintOverride,
-        )
-    }
-}
-
-@Stable
-data class IconInfo(
-    @DrawableRes val icon: Int,
-    @StringRes val contentDescription: Int?,
-    @ColorInt val tintOverride: Int? = null,
-)
-
-private fun getAvatarContentDescription(
-    context: Context,
-    receiverModel: ReceiverModel,
-    groupService: GroupService,
-    distributionListService: DistributionListService,
-): String? =
-    when (receiverModel) {
-        is ContactModel -> context.getString(
-            R.string.edit_type_content_description,
-            context.getString(R.string.mime_contact),
-            NameUtil.getDisplayNameOrNickname(receiverModel, true),
-        )
-
-        is GroupModel -> context.getString(
-            R.string.edit_type_content_description,
-            ThreemaApplication.getAppContext().getString(R.string.group),
-            NameUtil.getDisplayName(receiverModel, groupService),
-        )
-
-        is DistributionListModel -> context.getString(
-            R.string.edit_type_content_description,
-            context.getString(R.string.distribution_list),
-            NameUtil.getDisplayName(receiverModel, distributionListService),
-        )
-
-        else -> null
-    }
-
-@DrawableRes
-private fun getMuteStatusIconResOrNull(
-    conversationModel: ConversationModel,
-    ringtoneService: RingtoneService,
-): Int? {
-    var iconRes: Int? = null
-    val messageReceiver = conversationModel.messageReceiver
-    if (messageReceiver is ContactMessageReceiver) {
-        iconRes = messageReceiver.contact.currentNotificationTriggerPolicyOverride().iconResRightNow
-    } else if (messageReceiver is GroupMessageReceiver) {
-        iconRes = messageReceiver.group.currentNotificationTriggerPolicyOverride().iconResRightNow
-    }
-    if (
-        iconRes == null &&
-        ringtoneService.hasCustomRingtone(conversationModel.messageReceiver.uniqueIdString) &&
-        ringtoneService.isSilent(conversationModel.messageReceiver.uniqueIdString, conversationModel.isGroupConversation)
+        },
     ) {
-        iconRes = R.drawable.ic_notifications_off_filled
+        ConversationListItemContent(
+            ownIdentity = ownIdentity,
+            identityNameProvider = identityNameProvider,
+            avatarContent = {
+                AvatarContentBuilder(
+                    conversationUiModel = conversationUiModel,
+                    isChecked = conversationListItemUiModel.isChecked,
+                )
+            },
+            conversationName = conversationUiModel.conversationName,
+            conversationNameStyle = conversationUiModel.conversationNameStyle,
+            latestMessage = conversationUiModel.latestMessage,
+            groupMessageSenderName = when (conversationUiModel) {
+                is ConversationUiModel.GroupConversation -> conversationUiModel.latestMessageSenderName
+                else -> null
+            },
+            lastUpdateAt = lastUpdateAt,
+            deliveryIcon = conversationUiModel.latestMessageStateIcon,
+            unreadState = conversationUiModel.unreadState,
+            isPinned = conversationUiModel.isPinned,
+            isPrivate = conversationUiModel.isPrivate,
+            groupCall = when (conversationUiModel) {
+                is ConversationUiModel.GroupConversation -> conversationUiModel.groupCall
+                else -> null
+            },
+            draft = conversationUiModel.draft,
+            muteStatusIcon = conversationUiModel.muteStatusIcon,
+            emojiStyle = emojiStyle,
+            isTyping = when (conversationUiModel) {
+                is ConversationUiModel.ContactConversation -> conversationUiModel.isTyping
+                else -> false
+            },
+            onClick = {
+                onClick(conversationUiModel)
+            },
+            onLongClick = {
+                onLongClick(conversationUiModel)
+            },
+            onClickJoinOrOpenGroupCall = {
+                if (conversationUiModel is ConversationUiModel.GroupConversation) {
+                    onClickJoinOrOpenGroupCall(
+                        conversationUiModel.receiverModel.localGroupId,
+                    )
+                }
+            },
+        )
     }
-    return iconRes
 }
 
 /**
- *  @return A string in the form of `Bob:` **if** the [conversation] is a group conversation, otherwise `null`.
+ *  Depending on [swipeFeatureStartToEnd] and [swipeFeatureEndToStart], a [SwipeToDismissBoxState] will be created.
+ *
+ *  If no gesture is enabled, the default implementation of [rememberSwipeToDismissBoxState] is returned.
  */
-private fun getGroupMessageSenderOrNull(
-    contactService: ContactService,
-    conversation: ConversationModel,
-    conversationHasOwnDraft: Boolean,
-    context: Context,
-): String? {
-    if (
-        conversation.isGroupConversation &&
-        conversation.latestMessage != null &&
-        conversation.latestMessage?.type != MessageType.GROUP_CALL_STATUS &&
-        !conversationHasOwnDraft
-    ) {
-        val senderName = NameUtil.getShortName(context, conversation.latestMessage, contactService)
-        return "$senderName:"
-    } else {
-        return null
-    }
+@Composable
+private fun rememberMySwipeToDismissBoxState(
+    swipeFeatureStartToEnd: ListItemSwipeFeature.StartToEnd<ConversationUID>?,
+    swipeFeatureEndToStart: ListItemSwipeFeature.EndToStart<ConversationUID>?,
+    conversationUiModel: ConversationUiModel,
+): SwipeToDismissBoxState {
+    val isSwipeFeatureEnabled: Boolean = swipeFeatureStartToEnd != null || swipeFeatureEndToStart != null
+    val hapticFeedback: HapticFeedback = LocalHapticFeedback.current
+    return rememberSwipeToDismissBoxState(
+        confirmValueChange = if (isSwipeFeatureEnabled) {
+            { swipeToDismissBoxValue ->
+                when (swipeToDismissBoxValue) {
+                    SwipeToDismissBoxValue.StartToEnd -> swipeFeatureStartToEnd?.let { gesture ->
+                        gesture.hapticFeedback?.let(hapticFeedback::performHapticFeedback)
+                        gesture.onSwipe(conversationUiModel.conversationUID)
+                    }
+
+                    SwipeToDismissBoxValue.EndToStart -> swipeFeatureEndToStart?.let { gesture ->
+                        gesture.hapticFeedback?.let(hapticFeedback::performHapticFeedback)
+                        gesture.onSwipe(conversationUiModel.conversationUID)
+                    }
+
+                    SwipeToDismissBoxValue.Settled -> {}
+                }
+                // Return false here to prevent this item from disappearing directly by the SwipeToDismissBox
+                false
+            }
+        } else {
+            { swipeToDismissBoxValue -> false }
+        },
+        positionalThreshold = { totalDistance ->
+            totalDistance * ListItemSwipeFeature.SWIPE_TRIGGER_FROM_PERCENT
+        },
+    )
+}
+
+@Composable
+private fun AvatarContentBuilder(
+    conversationUiModel: ConversationUiModel,
+    isChecked: Boolean,
+) {
+    AvatarAsyncCheckable(
+        receiverModel = conversationUiModel.receiverModel,
+        contentDescription = conversationUiModel.receiverDisplayName?.let {
+            getAvatarContentDescription(
+                context = LocalContext.current,
+                receiverModel = conversationUiModel.receiverModel,
+                receiverDisplayName = conversationUiModel.receiverDisplayName ?: "",
+            )
+        },
+        fallbackIcon = when (conversationUiModel) {
+            is ConversationUiModel.ContactConversation -> R.drawable.ic_contact
+            is ConversationUiModel.GroupConversation -> R.drawable.ic_group
+            is ConversationUiModel.DistributionListConversation -> R.drawable.ic_distribution_list
+        },
+        showWorkBadge = when (conversationUiModel) {
+            is ConversationUiModel.ContactConversation -> conversationUiModel.showWorkBadge
+            else -> false
+        },
+        isChecked = isChecked,
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ConversationListItemContent(
     modifier: Modifier = Modifier,
-    ownIdentity: String,
-    identityNameProvider: (String) -> String,
+    ownIdentity: Identity,
+    identityNameProvider: (Identity) -> ResolvableString?,
     avatarContent: @Composable () -> Unit,
     conversationName: String,
     conversationNameStyle: ConversationNameStyle,
     latestMessage: AbstractMessageModel?,
-    groupMessageSender: String?,
+    groupMessageSenderName: ResolvableString?,
     lastUpdateAt: String?,
     deliveryIcon: IconInfo?,
     unreadState: UnreadState?,
     isPinned: Boolean,
     isPrivate: Boolean,
-    hasOngoingCall: Boolean,
+    groupCall: GroupCallUiModel?,
     draft: String?,
     muteStatusIcon: Int?,
     @EmojiStyle emojiStyle: Int,
+    isTyping: Boolean,
     onClick: () -> Unit,
     onLongClick: () -> Unit,
-    onClickJoinCall: () -> Unit,
+    onClickJoinOrOpenGroupCall: () -> Unit,
 ) {
     Box(
         modifier = modifier
             .height(IntrinsicSize.Min)
             .clip(
-                RoundedCornerShape(GridUnit.x0_5),
+                shape = listItemShape,
+            )
+            .background(
+                color = listItemContainerColor,
             )
             .combinedClickable(
                 onClick = onClick,
@@ -400,7 +386,7 @@ private fun ConversationListItemContent(
                         conversationNameStyle = conversationNameStyle,
                         isPinned = isPinned,
                         unreadState = unreadState,
-                        hasOngoingCall = hasOngoingCall,
+                        groupCall = groupCall,
                         muteStatusIcon = muteStatusIcon,
                         emojiStyle = emojiStyle,
                     )
@@ -408,27 +394,34 @@ private fun ConversationListItemContent(
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(
-                                min = dimensionResource(R.dimen.listitem_min_height_second_line),
+                                min = 24.dp,
                             ),
                         ownIdentity = ownIdentity,
                         identityNameProvider = identityNameProvider,
                         latestMessage = latestMessage,
-                        groupMessageSender = groupMessageSender,
+                        groupMessageSenderName = groupMessageSenderName,
                         isPrivate = isPrivate,
-                        hasOngoingCall = hasOngoingCall,
+                        groupCall = groupCall,
                         lastUpdateAt = lastUpdateAt,
                         deliveryIcon = deliveryIcon,
                         unreadState = unreadState,
                         draft = draft,
                         emojiStyle = emojiStyle,
+                        isTyping = isTyping,
                     )
                 }
 
-                if (hasOngoingCall) {
-                    ButtonPrimarySmall(
+                if (groupCall != null) {
+                    ButtonPrimaryDense(
                         modifier = Modifier.padding(horizontal = GridUnit.x1_5),
-                        onClick = onClickJoinCall,
-                        text = stringResource(R.string.voip_gc_join_call),
+                        onClick = onClickJoinOrOpenGroupCall,
+                        text = stringResource(
+                            if (groupCall.isJoined) {
+                                R.string.voip_gc_open_call
+                            } else {
+                                R.string.voip_gc_join_call
+                            },
+                        ),
                     )
                 }
             }
@@ -465,22 +458,15 @@ private fun FirstLine(
     conversationNameStyle: ConversationNameStyle,
     isPinned: Boolean,
     unreadState: UnreadState?,
-    hasOngoingCall: Boolean,
+    groupCall: GroupCallUiModel?,
     @DrawableRes muteStatusIcon: Int?,
     @EmojiStyle emojiStyle: Int,
 ) {
-    val fontWeightConversationName: FontWeight = remember(unreadState) {
-        when {
-            unreadState != null -> FontWeight.SemiBold
-            else -> FontWeight.Normal
-        }
-    }
-
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (muteStatusIcon != null && !hasOngoingCall) {
+        if (muteStatusIcon != null && groupCall == null) {
             Icon(
                 modifier = Modifier.size(
                     with(LocalDensity.current) {
@@ -500,20 +486,22 @@ private fun FirstLine(
                 )
                 .weight(1f)
                 .alpha(
-                    if (conversationNameStyle.dimAlpha) .4f else 1f,
+                    if (conversationNameStyle.dimAlpha) INACTIVE_CONTACT_ALPHA else 1f,
                 ),
             rawInput = conversationName,
             textStyle = MaterialTheme.typography.bodyLarge.copy(
-                fontWeight = fontWeightConversationName,
+                fontWeight = if (unreadState != null) FontWeight.SemiBold else FontWeight.Normal,
                 textDecoration = if (conversationNameStyle.strikethrough) TextDecoration.LineThrough else TextDecoration.None,
             ),
+            color = LocalContentColor.current,
             maxLines = 1,
             emojiSettings = ConversationTextDefaults.EmojiSettings.copy(
                 style = emojiStyle,
             ),
             mentionFeature = MentionFeature.Off,
+            markupEnabled = false,
         )
-        if (isPinned && !hasOngoingCall) {
+        if (isPinned && groupCall == null) {
             SpacerHorizontal(GridUnit.x0_5)
             Image(
                 modifier = Modifier.size(GridUnit.x3),
@@ -521,7 +509,7 @@ private fun FirstLine(
                 contentDescription = null,
             )
         }
-        if (unreadState != null && !hasOngoingCall) {
+        if (unreadState != null && groupCall == null) {
             SpacerHorizontal(GridUnit.x0_5)
             UnreadCounter(
                 unreadState = unreadState,
@@ -533,25 +521,31 @@ private fun FirstLine(
 @Composable
 private fun SecondLine(
     modifier: Modifier,
-    ownIdentity: String,
-    identityNameProvider: (String) -> String,
+    ownIdentity: Identity,
+    identityNameProvider: (Identity) -> ResolvableString?,
     latestMessage: AbstractMessageModel?,
-    groupMessageSender: String?,
+    groupMessageSenderName: ResolvableString?,
     isPrivate: Boolean,
-    hasOngoingCall: Boolean,
+    groupCall: GroupCallUiModel?,
     lastUpdateAt: String?,
     deliveryIcon: IconInfo?,
     unreadState: UnreadState?,
     draft: String?,
     @EmojiStyle emojiStyle: Int,
+    isTyping: Boolean,
 ) {
     if (isPrivate) {
         SecondLinePrivate(
             modifier = modifier,
             unreadState = unreadState,
         )
-    } else if (hasOngoingCall) {
+    } else if (groupCall != null) {
         SecondLineOngoingGroupCall(
+            modifier = modifier,
+            groupCall = groupCall,
+        )
+    } else if (isTyping) {
+        SecondLineTyping(
             modifier = modifier,
         )
     } else if (draft != null) {
@@ -566,7 +560,7 @@ private fun SecondLine(
         SecondLineDefault(
             modifier = modifier,
             latestMessage = latestMessage,
-            groupMessageSender = groupMessageSender,
+            groupMessageSenderName = groupMessageSenderName,
             lastUpdateAt = lastUpdateAt,
             deliveryIcon = deliveryIcon,
             unreadState = unreadState,
@@ -582,12 +576,13 @@ private fun SecondLinePrivate(
     modifier: Modifier,
     unreadState: UnreadState?,
 ) {
-    Text(
+    ThemedText(
         modifier = modifier,
         text = stringResource(R.string.private_chat_subject),
         style = MaterialTheme.typography.bodyMedium.copy(
             fontWeight = if (unreadState != null) FontWeight.SemiBold else FontWeight.Normal,
         ),
+        color = LocalContentColor.current,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
     )
@@ -596,10 +591,40 @@ private fun SecondLinePrivate(
 @Composable
 private fun SecondLineOngoingGroupCall(
     modifier: Modifier,
+    groupCall: GroupCallUiModel,
 ) {
-    Text(
+    var callDuration: Duration by remember(
+        key1 = groupCall.id,
+        key2 = groupCall.startedAt,
+        key3 = groupCall.processedAt,
+    ) {
+        mutableStateOf(groupCall.getCallDurationNow())
+    }
+    LaunchedEffect(
+        key1 = groupCall.id,
+        key2 = groupCall.startedAt,
+        key3 = groupCall.processedAt,
+    ) {
+        launch {
+            while (isActive) {
+                delay(1.seconds)
+                callDuration += 1.seconds
+            }
+        }
+    }
+
+    ThemedText(
         modifier = modifier,
-        text = stringResource(R.string.voip_gc_ongoing_call),
+        text = buildString {
+            append(callDuration.toHMMSS())
+            append(" | ")
+            append(
+                stringResource(
+                    id = if (groupCall.isJoined) R.string.voip_gc_in_call else R.string.voip_gc_ongoing_call,
+                ),
+            )
+        },
+        color = LocalContentColor.current,
         style = MaterialTheme.typography.bodyMedium,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
@@ -611,8 +636,8 @@ private fun SecondLineDraft(
     modifier: Modifier,
     draft: String,
     @EmojiStyle emojiStyle: Int,
-    ownIdentity: String,
-    identityNameProvider: (String) -> String,
+    ownIdentity: Identity,
+    identityNameProvider: (Identity) -> ResolvableString?,
 ) {
     Row(
         modifier = modifier,
@@ -631,14 +656,14 @@ private fun SecondLineDraft(
                 ownIdentity = ownIdentity,
                 identityNameProvider = identityNameProvider,
             ),
+            markupEnabled = true,
         )
         SpacerHorizontal(GridUnit.x1)
-        Text(
+        ThemedText(
             modifier = Modifier.widthIn(max = 150.dp),
             text = stringResource(R.string.draft).uppercase(Locale.getDefault()),
-            style = MaterialTheme.typography.bodySmall.copy(
-                color = Color.Red,
-            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = Color.Red,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
@@ -646,15 +671,27 @@ private fun SecondLineDraft(
 }
 
 @Composable
+private fun SecondLineTyping(
+    modifier: Modifier,
+) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TypingIndicator()
+    }
+}
+
+@Composable
 private fun SecondLineDefault(
     modifier: Modifier,
     latestMessage: AbstractMessageModel?,
-    groupMessageSender: String?,
+    groupMessageSenderName: ResolvableString?,
     lastUpdateAt: String?,
     deliveryIcon: IconInfo?,
     unreadState: UnreadState?,
-    ownIdentity: String,
-    identityNameProvider: (String) -> String,
+    ownIdentity: Identity,
+    identityNameProvider: (Identity) -> ResolvableString?,
     @EmojiStyle emojiStyle: Int,
 ) {
     val context = LocalContext.current
@@ -677,21 +714,23 @@ private fun SecondLineDefault(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        if (groupMessageSender != null) {
+        if (groupMessageSenderName != null) {
             val fontWeightSender: FontWeight = when {
                 unreadState != null -> FontWeight.SemiBold
                 else -> FontWeight.Normal
             }
             ConversationText(
-                rawInput = groupMessageSender,
+                rawInput = groupMessageSenderName.get(context),
                 textStyle = MaterialTheme.typography.bodyMedium.copy(
                     fontWeight = fontWeightSender,
                 ),
+                color = LocalContentColor.current,
                 maxLines = 1,
                 emojiSettings = ConversationTextDefaults.EmojiSettings.copy(
                     style = emojiStyle,
                 ),
                 mentionFeature = MentionFeature.Off,
+                markupEnabled = false,
             )
             SpacerHorizontal(GridUnit.x0_5)
         }
@@ -748,9 +787,10 @@ private fun SecondLineDefault(
 
         if (lastUpdateAt != null) {
             SpacerHorizontal(GridUnit.x1)
-            Text(
+            ThemedText(
                 text = lastUpdateAt,
                 style = MaterialTheme.typography.bodySmall,
+                color = LocalContentColor.current,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -771,834 +811,426 @@ private fun SecondLineDefault(
     }
 }
 
-sealed interface UnreadState {
-    data class Messages(val count: Long) : UnreadState
-    data object JustMarked : UnreadState
-}
-
-private data class ConversationNameStyle(
-    val strikethrough: Boolean = false,
-    val dimAlpha: Boolean = false,
-) {
-    companion object {
-        fun inactiveContact() = ConversationNameStyle(
-            strikethrough = false,
-            dimAlpha = true,
+private fun getAvatarContentDescription(
+    context: Context,
+    receiverModel: ReceiverModel,
+    receiverDisplayName: String,
+): String? =
+    when (receiverModel) {
+        is ContactModel -> context.getString(
+            R.string.edit_type_content_description,
+            context.getString(R.string.mime_contact),
+            receiverDisplayName,
         )
 
-        fun invalidContact() = ConversationNameStyle(
-            strikethrough = true,
-            dimAlpha = false,
+        is GroupModel -> context.getString(
+            R.string.edit_type_content_description,
+            context.getString(R.string.group),
+            receiverDisplayName,
         )
 
-        fun groupNotAMemberOf() = ConversationNameStyle(
-            strikethrough = true,
-            dimAlpha = false,
+        is DistributionListModel -> context.getString(
+            R.string.edit_type_content_description,
+            context.getString(R.string.distribution_list),
+            receiverDisplayName,
         )
 
-        fun forConversationModel(conversationModel: ConversationModel): ConversationNameStyle =
-            if (conversationModel.isContactConversation) {
-                conversationModel.contact?.let { contact ->
-                    when (contact.state) {
-                        IdentityState.INACTIVE -> inactiveContact()
-                        IdentityState.INVALID -> invalidContact()
-                        else -> null
-                    }
-                } ?: ConversationNameStyle()
-            } else {
-                if (conversationModel.groupModel?.isMember() == false) {
-                    groupNotAMemberOf()
-                } else {
-                    ConversationNameStyle()
-                }
-            }
+        else -> null
     }
-}
 
-@Composable
-private fun AvatarForPreview() {
-    Avatar(
-        avatar = null,
-        contentDescription = null,
-        fallbackIcon = R.drawable.ic_group,
-        showWorkBadge = false,
+private class PreviewProviderContactConversationListItemItemUiModel : PreviewParameterProvider<ConversationListItemUiModel> {
+
+    private companion object {
+
+        fun createContactConversationListItemUiModel(
+            receiverIdentity: Identity = "00000000",
+            receiverDisplayName: String = "Contact Name",
+            conversationName: String = "Contact Name",
+            conversationNameStyle: ConversationNameStyle = ConversationNameStyle(),
+            draft: String? = null,
+            latestMessage: AbstractMessageModel? = MessageModel().apply {
+                this.type = MessageType.TEXT
+                this.body = "Contact message body"
+                this.createdAt = Date()
+                this.postedAt = Date()
+            },
+            latestMessageStateIcon: IconInfo? = IconInfo(
+                icon = R.drawable.ic_reply_filled,
+                contentDescription = null,
+            ),
+            unreadState: UnreadState? = null,
+            isPinned: Boolean = false,
+            isPrivate: Boolean = false,
+            muteStatusIcon: Int? = null,
+            isChecked: Boolean = false,
+            showWorkBadge: Boolean = false,
+            isTyping: Boolean = false,
+        ) = ConversationListItemUiModel(
+            model = ConversationUiModel.ContactConversation(
+                conversationUID = "0",
+                receiverModel = ContactModel.createUnchecked(receiverIdentity, Random.nextBytes(32)),
+                receiverDisplayName = receiverDisplayName,
+                conversationName = conversationName,
+                conversationNameStyle = conversationNameStyle,
+                draft = draft,
+                latestMessage = latestMessage,
+                latestMessageStateIcon = latestMessageStateIcon,
+                unreadState = unreadState,
+                isPinned = isPinned,
+                isPrivate = isPrivate,
+                muteStatusIcon = muteStatusIcon,
+                showWorkBadge = showWorkBadge,
+                isTyping = isTyping,
+            ),
+            isChecked = isChecked,
+        )
+    }
+
+    override val values: Sequence<ConversationListItemUiModel> = sequenceOf(
+        createContactConversationListItemUiModel(
+            latestMessage = null,
+            latestMessageStateIcon = null,
+        ),
+        createContactConversationListItemUiModel(
+            showWorkBadge = true,
+        ),
+        createContactConversationListItemUiModel(
+            isTyping = true,
+        ),
+        createContactConversationListItemUiModel(
+            unreadState = UnreadState.Messages(
+                count = 5,
+            ),
+        ),
+        createContactConversationListItemUiModel(
+            isPinned = true,
+        ),
+        createContactConversationListItemUiModel(
+            isPrivate = true,
+            isTyping = true,
+        ),
+        createContactConversationListItemUiModel(
+            unreadState = UnreadState.Messages(
+                count = 5,
+            ),
+            isPinned = true,
+            isPrivate = true,
+        ),
+        createContactConversationListItemUiModel(
+            conversationNameStyle = ConversationNameStyle.inactiveContact(),
+        ),
+        createContactConversationListItemUiModel(
+            conversationNameStyle = ConversationNameStyle.invalidContact(),
+        ),
+        createContactConversationListItemUiModel(
+            draft = "This message is just a draft and is maybe sent in the future",
+        ),
+        createContactConversationListItemUiModel(
+            muteStatusIcon = R.drawable.ic_do_not_disturb_filled,
+        ),
+        createContactConversationListItemUiModel(
+            latestMessage = MessageModel().apply {
+                type = MessageType.TEXT
+                body = null
+                deletedAt = Date()
+            },
+        ),
+        createContactConversationListItemUiModel(
+            latestMessage = MessageModel().apply {
+                type = MessageType.TEXT
+                body = "Contact message body"
+                state = MessageState.FS_KEY_MISMATCH
+            },
+            latestMessageStateIcon = IconInfo(
+                icon = R.drawable.ic_baseline_key_off_24,
+                contentDescription = null,
+                tintOverride = Color.Red.toArgb(),
+            ),
+        ),
+        createContactConversationListItemUiModel(
+            isChecked = true,
+        ),
     )
 }
 
-@Preview
-@Composable
-private fun Preview() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Group Name \uD83C\uDF36",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = GroupMessageModel().apply {
-                    this.type = MessageType.TEXT
-                    this.body = "\uD83D\uDE35\u200D\uD83D\uDCAB"
-                },
-                groupMessageSender = "Alice:",
-                lastUpdateAt = "Vor 4 Tagen",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
+private class PreviewProviderGroupConversationListItemUiModel : PreviewParameterProvider<ConversationListItemUiModel> {
+
+    private companion object {
+        fun createGroupConversationListItemUiModel(
+            receiverDisplayName: String = "Group Name",
+            conversationName: String = "Group Name",
+            conversationNameStyle: ConversationNameStyle = ConversationNameStyle(),
+            draft: String? = null,
+            latestMessage: AbstractMessageModel? = GroupMessageModel().apply {
+                this.type = MessageType.TEXT
+                this.body = "Group message body"
+            },
+            latestMessageStateIcon: IconInfo? = IconInfo(
+                icon = R.drawable.ic_reply_filled,
+                contentDescription = null,
+            ),
+            latestMessageSenderName: ResolvableString? = ResolvedString("Alice:"),
+            unreadState: UnreadState? = null,
+            isPinned: Boolean = false,
+            isPrivate: Boolean = false,
+            muteStatusIcon: Int? = null,
+            groupCall: GroupCallUiModel? = null,
+            isChecked: Boolean = false,
+        ) = ConversationListItemUiModel(
+            model = ConversationUiModel.GroupConversation(
+                conversationUID = "0",
+                receiverModel = GroupModel(),
+                receiverDisplayName = receiverDisplayName,
+                conversationName = conversationName,
+                conversationNameStyle = conversationNameStyle,
+                draft = draft,
+                latestMessage = latestMessage,
+                latestMessageStateIcon = latestMessageStateIcon,
+                latestMessageSenderName = latestMessageSenderName,
+                unreadState = unreadState,
+                isPinned = isPinned,
+                isPrivate = isPrivate,
+                muteStatusIcon = muteStatusIcon,
+                groupCall = groupCall,
+            ),
+            isChecked = isChecked,
+        )
     }
+
+    override val values: Sequence<ConversationListItemUiModel> = sequenceOf(
+        createGroupConversationListItemUiModel(
+            latestMessage = null,
+            latestMessageSenderName = null,
+            latestMessageStateIcon = null,
+        ),
+        createGroupConversationListItemUiModel(),
+        createGroupConversationListItemUiModel(
+            latestMessage = GroupMessageModel().apply {
+                type = MessageType.TEXT
+                body = "Hey @[01234567] @[0123ABCD]"
+            },
+        ),
+        createGroupConversationListItemUiModel(
+            conversationNameStyle = ConversationNameStyle.groupNotAMemberOf(),
+        ),
+        createGroupConversationListItemUiModel(
+            isPinned = true,
+        ),
+        createGroupConversationListItemUiModel(
+            unreadState = UnreadState.Messages(
+                count = 5,
+            ),
+        ),
+        createGroupConversationListItemUiModel(
+            isPinned = true,
+            unreadState = UnreadState.Messages(
+                count = 5,
+            ),
+            isPrivate = true,
+        ),
+        createGroupConversationListItemUiModel(
+            groupCall = GroupCallUiModel(
+                id = CallId(emptyByteArray()),
+                groupId = LocalGroupId(0),
+                startedAt = now().time - (1000L * 30L),
+                processedAt = now().time - (1000L * 30L),
+                isJoined = false,
+            ),
+        ),
+        createGroupConversationListItemUiModel(
+            groupCall = GroupCallUiModel(
+                id = CallId(emptyByteArray()),
+                groupId = LocalGroupId(0),
+                startedAt = now().time - (1000L * 30L),
+                processedAt = now().time - (1000L * 30L),
+                isJoined = true,
+            ),
+        ),
+        createGroupConversationListItemUiModel(
+            groupCall = GroupCallUiModel(
+                id = CallId(emptyByteArray()),
+                groupId = LocalGroupId(0),
+                startedAt = now().time - (1000L * 30L),
+                processedAt = now().time - (1000L * 30L),
+                isJoined = false,
+            ),
+            isPinned = true,
+        ),
+        createGroupConversationListItemUiModel(
+            groupCall = GroupCallUiModel(
+                id = CallId(emptyByteArray()),
+                groupId = LocalGroupId(0),
+                startedAt = now().time - (1000L * 30L),
+                processedAt = now().time - (1000L * 30L),
+                isJoined = false,
+            ),
+            unreadState = UnreadState.Messages(
+                count = 5,
+            ),
+        ),
+        createGroupConversationListItemUiModel(
+            groupCall = GroupCallUiModel(
+                id = CallId(emptyByteArray()),
+                groupId = LocalGroupId(0),
+                startedAt = now().time - (1000L * 30L),
+                processedAt = now().time - (1000L * 30L),
+                isJoined = false,
+            ),
+            isPrivate = true,
+        ),
+        createGroupConversationListItemUiModel(
+            groupCall = GroupCallUiModel(
+                id = CallId(emptyByteArray()),
+                groupId = LocalGroupId(0),
+                startedAt = now().time - (1000L * 30L),
+                processedAt = now().time - (1000L * 30L),
+                isJoined = false,
+            ),
+            isPinned = true,
+            muteStatusIcon = R.drawable.ic_dnd_mention_grey600_24dp,
+            unreadState = UnreadState.Messages(
+                count = 5,
+            ),
+        ),
+        createGroupConversationListItemUiModel(
+            isChecked = true,
+        ),
+    )
 }
 
-@Preview
-@Composable
-private fun Preview_Unread() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Vorname Nachname",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "3:15 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = UnreadState.Messages(5L),
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
+private class PreviewProviderDistributionListConversationListItemUiModel :
+    PreviewParameterProvider<ConversationListItemUiModel> {
+
+    private companion object {
+        fun createDistributionListConversationListItemUiModel(
+            receiverDisplayName: String = "Distribution List",
+            conversationName: String = "Distribution List",
+            conversationNameStyle: ConversationNameStyle = ConversationNameStyle(),
+            draft: String? = null,
+            latestMessage: AbstractMessageModel? = GroupMessageModel().apply {
+                this.type = MessageType.TEXT
+                this.body = "Distribution list message"
+            },
+            latestMessageStateIcon: IconInfo? = IconInfo(
+                icon = R.drawable.ic_distribution_list_filled,
+                contentDescription = null,
+            ),
+            unreadState: UnreadState? = null,
+            isPinned: Boolean = false,
+            isPrivate: Boolean = false,
+            muteStatusIcon: Int? = null,
+            isChecked: Boolean = false,
+        ) = ConversationListItemUiModel(
+            model = ConversationUiModel.DistributionListConversation(
+                conversationUID = "0",
+                receiverModel = DistributionListModel(),
+                receiverDisplayName = receiverDisplayName,
+                conversationName = conversationName,
+                conversationNameStyle = conversationNameStyle,
+                draft = draft,
+                latestMessage = latestMessage,
+                latestMessageStateIcon = latestMessageStateIcon,
+                unreadState = unreadState,
+                isPinned = isPinned,
+                isPrivate = isPrivate,
+                muteStatusIcon = muteStatusIcon,
+            ),
+            isChecked = isChecked,
+        )
     }
+
+    override val values: Sequence<ConversationListItemUiModel> = sequenceOf(
+        createDistributionListConversationListItemUiModel(
+            latestMessage = null,
+        ),
+        createDistributionListConversationListItemUiModel(),
+        createDistributionListConversationListItemUiModel(
+            isPinned = true,
+        ),
+        createDistributionListConversationListItemUiModel(
+            isPrivate = true,
+        ),
+        createDistributionListConversationListItemUiModel(
+            unreadState = UnreadState.Messages(
+                count = 16,
+            ),
+        ),
+        createDistributionListConversationListItemUiModel(
+            unreadState = UnreadState.Messages(
+                count = 16,
+            ),
+            isPinned = true,
+            isPrivate = true,
+        ),
+        createDistributionListConversationListItemUiModel(
+            isChecked = true,
+        ),
+    )
 }
 
-@Preview
 @Composable
-private fun Preview_Pinned() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Vorname Nachname",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "3:15 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = null,
-                isPinned = true,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
+@PreviewLightAndDarkMode
+private fun Preview_ContactConversation(
+    @PreviewParameter(PreviewProviderContactConversationListItemItemUiModel::class)
+    conversationListItemUiModel: ConversationListItemUiModel,
+) = Preview(
+    conversationListItemUiModel = conversationListItemUiModel,
+)
 
-@Preview
 @Composable
-private fun Preview_Pinned_Unread() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Vorname Nachname",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "3:15 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = UnreadState.Messages(1000L),
-                isPinned = true,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
+@PreviewLightAndDarkMode
+private fun Preview_GroupConversation(
+    @PreviewParameter(PreviewProviderGroupConversationListItemUiModel::class)
+    conversationListItemUiModel: ConversationListItemUiModel,
+) = Preview(
+    conversationListItemUiModel = conversationListItemUiModel,
+)
 
-@Preview
 @Composable
-private fun Preview_KickedGroup() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Group kicked",
-                conversationNameStyle = ConversationNameStyle.groupNotAMemberOf(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_group_filled,
-                    contentDescription = null,
-                ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
+@PreviewLightAndDarkMode
+private fun Preview_DistributionListConversation(
+    @PreviewParameter(PreviewProviderDistributionListConversationListItemUiModel::class)
+    conversationListItemUiModel: ConversationListItemUiModel,
+) = Preview(
+    conversationListItemUiModel = conversationListItemUiModel,
+)
 
-@Preview
 @Composable
-private fun Preview_InactiveContact() {
+private fun Preview(conversationListItemUiModel: ConversationListItemUiModel) {
     ThreemaThemePreview {
         Surface(
             color = MaterialTheme.colorScheme.background,
             contentColor = MaterialTheme.colorScheme.onBackground,
         ) {
-            ConversationListItemContent(
+            ConversationListItem(
+                modifier = Modifier,
+                conversationListItemUiModel = conversationListItemUiModel,
+                identityNameProvider = PreviewParameterProviderConversationText.mentionedIdentityNameProviderPreviewImpl,
                 ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Inactive Contact",
-                conversationNameStyle = ConversationNameStyle.inactiveContact(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
                 emojiStyle = EmojiStyle_ANDROID,
                 onClick = {},
                 onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_InvalidContact() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Invalid Contact",
-                conversationNameStyle = ConversationNameStyle.invalidContact(),
-                groupMessageSender = null,
-                latestMessage = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
+                onClickJoinOrOpenGroupCall = {},
+                swipeFeatureStartToEnd = ListItemSwipeFeature.StartToEnd(
+                    onSwipe = {},
+                    hapticFeedback = null,
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary,
+                    state = ListItemSwipeFeatureState(
+                        icon = R.drawable.ic_new_feature,
+                        text = "Swipe start to end",
+                    ),
                 ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_Private() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Vorname Nachname",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
+                swipeFeatureEndToStart = ListItemSwipeFeature.EndToStart(
+                    onSwipe = {},
+                    hapticFeedback = null,
+                    containerColor = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.onSecondary,
+                    state = ListItemSwipeFeatureState(
+                        icon = R.drawable.ic_new_feature,
+                        text = "Swipe end to start",
+                    ),
                 ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = true,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_GroupCall() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Gruppe mit Calls",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_group_filled,
-                    contentDescription = null,
-                ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = true,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_GroupCall_Max() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Gruppe mit Callssssssssssssssssssssss",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_group_filled,
-                    contentDescription = null,
-                ),
-                unreadState = UnreadState.Messages(150L),
-                isPinned = true,
-                isPrivate = true,
-                hasOngoingCall = true,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_Draft() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Chat mit Draft",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_group_filled,
-                    contentDescription = null,
-                ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = "Noch nicht geschickt kjahsdkjhaskjhdkjashdkjhasjkhd",
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_Draft_Max() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Chat mit Draft",
-                conversationNameStyle = ConversationNameStyle.inactiveContact(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = UnreadState.Messages(5L),
-                isPinned = true,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = "Noch nicht geschickt",
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_Draft_Call() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Group mit Draft",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = UnreadState.Messages(5L),
-                isPinned = true,
-                isPrivate = false,
-                hasOngoingCall = true,
-                draft = "Noch nicht geschickt",
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_Muted() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Muted Chat",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = R.drawable.ic_dnd_mention_grey600_24dp,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_Muted_Call() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Muted Chat",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = true,
-                draft = null,
-                muteStatusIcon = R.drawable.ic_dnd_mention_grey600_24dp,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_Muted_Max() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Muted Chat Max",
-                conversationNameStyle = ConversationNameStyle.groupNotAMemberOf(),
-                latestMessage = null,
-                groupMessageSender = null,
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_group_filled,
-                    contentDescription = null,
-                ),
-                unreadState = UnreadState.Messages(8L),
-                isPinned = true,
-                isPrivate = true,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = R.drawable.ic_dnd_mention_grey600_24dp,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_Group() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Ganz normale Gruppe",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = GroupMessageModel().apply {
-                    type = MessageType.TEXT
-                    body = "Schau mal mein Name"
-                },
-                groupMessageSender = "\uD83C\uDF36:",
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_mark_read,
-                    contentDescription = null,
-                ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_Deleted() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Deleted Message",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = MessageModel().apply {
-                    type = MessageType.TEXT
-                    body = null
-                    deletedAt = Date()
-                },
-                groupMessageSender = "\uD83C\uDF36:",
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_SendFailed() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "FS Key Mismatch",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = MessageModel().apply {
-                    type = MessageType.TEXT
-                    body = "Hi"
-                    state = MessageState.FS_KEY_MISMATCH
-                },
-                groupMessageSender = "Ich:",
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_baseline_key_off_24,
-                    contentDescription = null,
-                    tintOverride = colorResource(R.color.material_red).toArgb(),
-                ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun Preview_Mentions() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Deleted Message",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = GroupMessageModel().apply {
-                    type = MessageType.TEXT
-                    body = "Hey @[01234567] @[0123ABCD]"
-                },
-                groupMessageSender = "Bob:",
-                lastUpdateAt = "4:36 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = null,
-                isPinned = false,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = null,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
-            )
-        }
-    }
-}
-
-@Preview(fontScale = 2.0f)
-@Composable
-private fun Preview_Scale() {
-    ThreemaThemePreview {
-        Surface(
-            color = MaterialTheme.colorScheme.background,
-            contentColor = MaterialTheme.colorScheme.onBackground,
-        ) {
-            ConversationListItemContent(
-                ownIdentity = "01234567",
-                identityNameProvider = ThreemaTextPreviewProvider.mentionedIdentityNameProviderPreviewImpl,
-                avatarContent = { AvatarForPreview() },
-                conversationName = "Scaled Up Conversation",
-                conversationNameStyle = ConversationNameStyle(),
-                latestMessage = GroupMessageModel().apply {
-                    type = MessageType.TEXT
-                    body = "Hey @[01234567] @[0123ABCD]"
-                },
-                groupMessageSender = "A:",
-                lastUpdateAt = "4:25 PM",
-                deliveryIcon = IconInfo(
-                    icon = R.drawable.ic_reply_filled,
-                    contentDescription = null,
-                ),
-                unreadState = UnreadState.Messages(
-                    count = 1000L,
-                ),
-                isPinned = true,
-                isPrivate = false,
-                hasOngoingCall = false,
-                draft = null,
-                muteStatusIcon = R.drawable.ic_dnd_mention_black_18dp,
-                emojiStyle = EmojiStyle_ANDROID,
-                onClick = {},
-                onLongClick = {},
-                onClickJoinCall = {},
             )
         }
     }

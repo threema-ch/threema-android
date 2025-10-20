@@ -142,17 +142,15 @@ public class EmojiEditText extends ThreemaEditText {
 
     private final TextWatcher textLengthWatcher = new SimpleTextWatcher() {
         @Override
-        public void afterTextChanged(Editable s) {
-            if (s != null) {
-                String text = s.toString();
-                String cropped = Utils.truncateUTF8String(text, maxByteSize);
+        public void afterTextChanged(@NonNull Editable editable) {
+            String text = editable.toString();
+            String cropped = Utils.truncateUTF8String(text, maxByteSize);
 
-                if (!TestUtil.compare(text, cropped == null ? "" : cropped)) {
-                    setText(currentText);
-                    setSelection(currentText.length());
-                } else {
-                    currentText = text;
-                }
+            if (!TestUtil.compare(text, cropped)) {
+                setText(currentText);
+                setSelection(currentText.length());
+            } else {
+                currentText = text;
             }
         }
     };

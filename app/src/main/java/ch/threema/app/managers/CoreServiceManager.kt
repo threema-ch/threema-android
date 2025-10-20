@@ -22,11 +22,12 @@
 package ch.threema.app.managers
 
 import ch.threema.app.multidevice.MultiDeviceManager
-import ch.threema.app.stores.IdentityStore
-import ch.threema.app.stores.PreferenceStoreInterface
+import ch.threema.app.stores.EncryptedPreferenceStore
+import ch.threema.app.stores.PreferenceStore
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.domain.models.AppVersion
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.DatabaseService
@@ -50,7 +51,12 @@ interface CoreServiceManager {
     /**
      * The preference store
      */
-    val preferenceStore: PreferenceStoreInterface
+    val preferenceStore: PreferenceStore
+
+    /**
+     * The preference store for data that needs to be encrypted at rest
+     */
+    val encryptedPreferenceStore: EncryptedPreferenceStore
 
     /**
      * The task archiver. Note that this must only be used to load the persisted tasks when the

@@ -27,12 +27,11 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import ch.threema.app.R
-import ch.threema.app.stores.PreferenceStoreInterface
-import java.util.HashMap
+import ch.threema.app.stores.PreferenceStore
 
 class NotificationPreferenceServiceImpl(
     private val context: Context,
-    private val preferenceStore: PreferenceStoreInterface,
+    private val preferenceStore: PreferenceStore,
 ) : NotificationPreferenceService {
     override fun isMasterKeyNewMessageNotifications(): Boolean =
         preferenceStore.getBoolean(getKeyName(R.string.preferences__masterkey_notification_newmsg))
@@ -101,10 +100,10 @@ class NotificationPreferenceServiceImpl(
     }
 
     override fun getLegacyRingtones(): Map<String, String?> =
-        preferenceStore.getStringHashMap(getKeyName(R.string.preferences__individual_ringtones), false)
+        preferenceStore.getMap(getKeyName(R.string.preferences__individual_ringtones))
 
     override fun setLegacyRingtones(ringtones: Map<String, String?>) {
-        preferenceStore.saveStringHashMap(getKeyName(R.string.preferences__individual_ringtones), HashMap(ringtones), false)
+        preferenceStore.save(getKeyName(R.string.preferences__individual_ringtones), ringtones)
     }
 
     override fun getDisableSmartReplies(): Boolean =
@@ -113,7 +112,7 @@ class NotificationPreferenceServiceImpl(
     private fun getKeyName(@StringRes resourceId: Int): String =
         context.getString(resourceId)
 
-    private fun PreferenceStoreInterface.getRingtoneUri(@StringRes ringtoneKey: Int): Uri? =
+    private fun PreferenceStore.getRingtoneUri(@StringRes ringtoneKey: Int): Uri? =
         getString(getKeyName(ringtoneKey))
             .takeUnless { it.isNullOrBlank() }
             ?.takeUnless { it == ServicesConstants.PREFERENCES_NULL }

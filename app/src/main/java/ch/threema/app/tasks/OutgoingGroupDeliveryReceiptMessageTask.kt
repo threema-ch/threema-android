@@ -28,15 +28,16 @@ import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import java.util.Date
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupDeliverReceiptMessageTask")
+private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupDeliveryReceiptMessageTask")
 
 class OutgoingGroupDeliveryReceiptMessageTask(
     private val messageModelId: Int,
     private val receiptType: Int,
-    private val recipientIdentities: Set<String>,
+    private val recipientIdentities: Set<Identity>,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingGroupDeliveryReceiptMessageTask"
@@ -78,7 +79,7 @@ class OutgoingGroupDeliveryReceiptMessageTask(
     class OutgoingGroupDeliveryReceiptMessageData(
         private val messageModelId: Int,
         private val receiptType: Int,
-        private val recipientIdentities: Set<String>,
+        private val recipientIdentities: Set<Identity>,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutgoingGroupDeliveryReceiptMessageTask(

@@ -28,12 +28,13 @@ import ch.threema.app.services.ContactService
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.domain.types.Identity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 private val logger = LoggingUtil.getThreemaLogger("ResendGroupMessageDialog")
 
 class ResendGroupMessageDialog(
-    private val rejectedIdentities: Set<String>,
+    private val rejectedIdentities: Set<Identity>,
     private val contactService: ContactService,
     private val callback: ResendMessageCallback,
 ) : ThreemaDialogFragment() {
@@ -64,7 +65,7 @@ class ResendGroupMessageDialog(
 
     companion object {
         fun getInstance(
-            rejectedIdentities: Set<String>,
+            rejectedIdentities: Set<Identity>,
             contactService: ContactService,
             resendMessageCallback: ResendMessageCallback,
         ): ResendGroupMessageDialog {

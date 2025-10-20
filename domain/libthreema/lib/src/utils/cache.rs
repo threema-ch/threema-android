@@ -13,7 +13,6 @@ use crate::utils::time::Instant;
 pub(crate) struct TimedCache<K, V, const EXPIRES_AT_S: u64>(HashMap<K, (Instant, V)>);
 impl<K: Hash + Eq, V, const EXPIRES_AT_S: u64> TimedCache<K, V, EXPIRES_AT_S> {
     /// Creates a new `TimedCache` with the specified lifespan.
-    #[cfg_attr(not(test), expect(dead_code, reason = "Will use later"))]
     pub(crate) fn new(inner: HashMap<K, (Instant, V)>) -> Self {
         Self(inner)
     }

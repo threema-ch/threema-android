@@ -3,7 +3,6 @@
   ~ All rights reserved.
   -->
 <network-security-config>
-    <!-- Official Android N API -->
     <base-config cleartextTrafficPermitted="false">
         <trust-anchors>
             <certificates src="system" />
@@ -24,14 +23,6 @@
             <pin digest="SHA-256">2Vpy8qUQCqc2+Lg6BgRO8G6e6vh7NmvVHTljfwP/Pfk=</pin>
             <pin digest="SHA-256">KKBJHJn1PQSdNTmoAfhxqWTO61r8O8bPi/JeGtP/6gg=</pin>
         </pin-set>
-        <!-- TrustKit Android API -->
-        <!-- Enforce pinning validation -->
-        <trustkit-config
-            enforcePinning="true"
-            disableDefaultReportUri="true">
-            <!-- Reporting URL for pin validation reports -->
-            <report-uri>https://3ma.ch/pinreport</report-uri>
-        </trustkit-config>
     </domain-config>
     <domain-config cleartextTrafficPermitted="false">
         <!--
@@ -47,14 +38,6 @@
             <pin digest="SHA-256">oD0JGdy32wZtoUT4n9ac3HLOgEosnx2kq+qaJnmtsQk=</pin>
             <pin digest="SHA-256">j4n4RTr0MLfQ3gBmONIFreXDq5/Kkb2oquVTmq0n5pI=</pin>
         </pin-set>
-        <!-- TrustKit Android API -->
-        <!-- Enforce pinning validation -->
-        <trustkit-config
-            enforcePinning="true"
-            disableDefaultReportUri="true">
-            <!-- Reporting URL for pin validation reports -->
-            <report-uri>https://3ma.ch/pinreport</report-uri>
-        </trustkit-config>
     </domain-config>
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">sfu.threema.ch</domain>
@@ -64,14 +47,6 @@
             <pin digest="SHA-256">F82gDLif130AsVx454ZsMxPGl9EpzB5LqY39CzVKWDQ=</pin>
             <pin digest="SHA-256">Jo4Re5X+mksn/Ankgrnov07caZwkkT8NezJMQf1i8cI=</pin>
         </pin-set>
-        <!-- TrustKit Android API -->
-        <!-- Enforce pinning validation -->
-        <trustkit-config
-            enforcePinning="true"
-            disableDefaultReportUri="true">
-            <!-- Reporting URL for pin validation reports -->
-            <report-uri>https://3ma.ch/pinreport</report-uri>
-        </trustkit-config>
     </domain-config>
     <domain-config cleartextTrafficPermitted="false">
         <domain includeSubdomains="true">test.threema.ch</domain>
@@ -80,13 +55,5 @@
             <pin digest="SHA-256">/mH2CVdSxVBMuKiRHplBP2GTFWs/l+KXHriAxRFNsaw=</pin>
             <pin digest="SHA-256">bmsGGaIGEs1HWAUIE082NSPYTURvChScDmE7PjL+5RQ=</pin>
         </pin-set>
-        <!-- TrustKit Android API -->
-        <!-- Enforce pinning validation -->
-        <trustkit-config
-            enforcePinning="true"
-            disableDefaultReportUri="true">
-            <!-- Reporting URL for pin validation reports -->
-            <report-uri>https://3ma.ch/pinreport</report-uri>
-        </trustkit-config>
     </domain-config>
 </network-security-config>

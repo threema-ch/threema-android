@@ -21,10 +21,13 @@
 
 package ch.threema.app.activities
 
+import android.content.Context
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.domain.types.Identity
 
 private val logger = LoggingUtil.getThreemaLogger("BlockedIdentitiesActivity")
 
@@ -42,11 +45,11 @@ class BlockedIdentitiesActivity : IdentityListActivity() {
                 return blockedIdentitiesService.getAllBlockedIdentities()
             }
 
-            override fun addIdentity(identity: String) {
+            override fun addIdentity(identity: Identity) {
                 blockedIdentitiesService.blockIdentity(identity)
             }
 
-            override fun removeIdentity(identity: String) {
+            override fun removeIdentity(identity: Identity) {
                 blockedIdentitiesService.unblockIdentity(identity)
             }
         }
@@ -62,5 +65,9 @@ class BlockedIdentitiesActivity : IdentityListActivity() {
 
     override fun getTitleText(): String {
         return this.getString(R.string.prefs_title_blocked_contacts)
+    }
+
+    companion object {
+        fun createIntent(context: Context) = buildActivityIntent<BlockedIdentitiesActivity>(context)
     }
 }

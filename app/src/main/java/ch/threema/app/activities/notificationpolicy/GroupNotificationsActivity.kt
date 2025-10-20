@@ -23,14 +23,15 @@ package ch.threema.app.activities.notificationpolicy
 
 import android.os.Bundle
 import android.view.View
-import androidx.annotation.UiThread
 import ch.threema.app.AppConstants
-import ch.threema.app.ThreemaApplication
+import ch.threema.app.services.RingtoneService
 import ch.threema.app.utils.GroupUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
+import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.GroupModelRepository
+import org.koin.android.ext.android.inject
 
 private val logger = LoggingUtil.getThreemaLogger("GroupNotificationsActivity")
 
@@ -39,20 +40,15 @@ class GroupNotificationsActivity : NotificationsActivity() {
         logScreenVisibility(logger)
     }
 
-    private companion object {
-        const val GROUP_ID_NOT_PASSED = -1
+    private val ringtoneService: RingtoneService by inject()
+    private val groupModelRepository: GroupModelRepository by inject()
+
+    private val localGroupId by lazy {
+        intent.getLongExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, GROUP_ID_NOT_PASSED)
     }
 
-    private val groupModelRepository: GroupModelRepository by lazy {
-        ThreemaApplication.requireServiceManager().modelRepositories.groups
-    }
-
-    private val localGroupId: Int by lazy {
-        intent.getIntExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, GROUP_ID_NOT_PASSED)
-    }
-
-    private val groupModel: ch.threema.data.models.GroupModel? by lazy {
-        groupModelRepository.getByLocalGroupDbId(localGroupId.toLong())
+    private val groupModel: GroupModel? by lazy {
+        groupModelRepository.getByLocalGroupDbId(localGroupId)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,11 +70,6 @@ class GroupNotificationsActivity : NotificationsActivity() {
         super.refreshSettings()
     }
 
-    @UiThread
-    override fun updateUI() {
-        super.updateUI()
-    }
-
     override fun setupButtons() {
         super.setupButtons()
         radioSilentExceptMentions.visibility = View.VISIBLE
@@ -89,17 +80,21 @@ class GroupNotificationsActivity : NotificationsActivity() {
     }
 
     override fun isMutedRightNow(): Boolean {
-        val currentGroupModelData = groupModel?.data?.value ?: return false
+        val currentGroupModelData = groupModel?.data ?: return false
         return currentGroupModelData.currentNotificationTriggerPolicyOverride.muteAppliesRightNow
     }
 
     override fun isMutedExceptMentions(): Boolean {
-        val currentGroupModelData = groupModel?.data?.value ?: return false
+        val currentGroupModelData = groupModel?.data ?: return false
         return currentGroupModelData.currentNotificationTriggerPolicyOverride is NotificationTriggerPolicyOverride.MutedIndefiniteExceptMentions
     }
 
     override fun getNotificationTriggerPolicyOverrideValue(): Long? {
-        val currentGroupModelData = groupModel?.data?.value ?: return null
+        val currentGroupModelData = groupModel?.data ?: return null
         return currentGroupModelData.notificationTriggerPolicyOverride
+    }
+
+    private companion object {
+        const val GROUP_ID_NOT_PASSED = -1L
     }
 }

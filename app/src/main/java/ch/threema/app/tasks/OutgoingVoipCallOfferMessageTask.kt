@@ -27,10 +27,11 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.types.Identity
 
 class OutgoingVoipCallOfferMessageTask(
     private val voipCallOfferData: VoipCallOfferData,
-    private val toIdentity: String,
+    private val toIdentity: Identity,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
     private val voipStateService by lazy { serviceManager.voipStateService }

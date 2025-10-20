@@ -30,7 +30,6 @@ class DatabaseUpdaterTest {
     private val updater = DatabaseUpdater(
         context = mockk(),
         database = mockk(),
-        databaseService = mockk(),
     )
 
     @Test
@@ -46,6 +45,13 @@ class DatabaseUpdaterTest {
 
         assertTrue(updates.isNotEmpty())
         assertTrue(updates.all { it.getVersion() >= 103 })
+    }
+
+    @Test
+    fun `no database updates newer than database version`() {
+        val updates = updater.getUpdates(oldVersion = 0)
+
+        assertTrue(updates.none { it.getVersion() > DatabaseUpdater.VERSION })
     }
 
     @Test

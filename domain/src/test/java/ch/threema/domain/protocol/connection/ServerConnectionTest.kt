@@ -21,10 +21,10 @@
 
 package ch.threema.domain.protocol.connection
 
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.NonceCounter
-import ch.threema.base.crypto.ThreemaKDF
 import ch.threema.domain.protocol.ServerAddressProvider
-import com.neilalexander.jnacl.NaCl
+import ch.threema.libthreema.blake2bMac256
 import java.io.ByteArrayInputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -36,20 +36,19 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.test.runTest
-import ove.crypto.digest.Blake2b
 
 internal abstract class ServerConnectionTest {
     private companion object {
-        private val skPublicPrimary = ByteArray(NaCl.PUBLICKEYBYTES)
-        private val skSecretPrimary = ByteArray(NaCl.SECRETKEYBYTES)
-        private val skPublicAlt = ByteArray(NaCl.PUBLICKEYBYTES)
-        private val skSecretAlt = ByteArray(NaCl.SECRETKEYBYTES)
+        private val skPublicPrimary = ByteArray(NaCl.PUBLIC_KEY_BYTES)
+        private val skSecretPrimary = ByteArray(NaCl.SECRET_KEY_BYTES)
+        private val skPublicAlt = ByteArray(NaCl.PUBLIC_KEY_BYTES)
+        private val skSecretAlt = ByteArray(NaCl.SECRET_KEY_BYTES)
         private val random = SecureRandom()
 
         init {
-            NaCl.genkeypair(skPublicPrimary, skSecretPrimary)
-            NaCl.genkeypair(skPublicAlt, skSecretAlt)
-            NaCl.genkeypair(TestIdentityStore.ckPublic, TestIdentityStore.ckSecret)
+            NaCl.generateKeypairInPlace(skPublicPrimary, skSecretPrimary)
+            NaCl.generateKeypairInPlace(skPublicAlt, skSecretAlt)
+            NaCl.generateKeypairInPlace(TestIdentityStore.ckPublic, TestIdentityStore.ckSecret)
         }
     }
 
@@ -154,7 +153,10 @@ internal abstract class ServerConnectionTest {
 
     private fun sendServerHello() {
         val serverHelloNaCl = NaCl(skSecret, tckPublic)
-        val serverHello = serverHelloNaCl.encrypt(tskPublic + cck, serverNonce.nextNonce())
+        val serverHello = serverHelloNaCl.encrypt(
+            data = tskPublic + cck,
+            nonce = serverNonce.nextNonce(),
+        )
         testSocket.write(sck + serverHello)
     }
 
@@ -166,7 +168,10 @@ internal abstract class ServerConnectionTest {
     private fun expectLoginBox(): Int {
         // expect `login`
         val loginBox = testSocket.read(144)
-        val loginBoxDecrypted = kClientServer.decrypt(loginBox, clientNonce.nextNonce())
+        val loginBoxDecrypted = kClientServer.decrypt(
+            data = loginBox,
+            nonce = clientNonce.nextNonce(),
+        )
         assertNotNull(loginBoxDecrypted)
         val decryptedLoginStream = ByteArrayInputStream(loginBoxDecrypted)
 
@@ -190,10 +195,20 @@ internal abstract class ServerConnectionTest {
         assertContentEquals(ByteArray(24), reserved1)
 
         // read vouch
-        val ss1 = NaCl(skSecret, TestIdentityStore.ckPublic).precomputed
-        val ss2 = NaCl(tskSecret, TestIdentityStore.ckPublic).precomputed
-        val vouchKey = ThreemaKDF("3ma-csp").deriveKey("v2", ss1 + ss2)
-        val expectedVouch = Blake2b.Mac.newInstance(vouchKey, 32).digest(sck + tckPublic)
+        val ss1 = NaCl(skSecret, TestIdentityStore.ckPublic).sharedSecret
+        val ss2 = NaCl(tskSecret, TestIdentityStore.ckPublic).sharedSecret
+        val vouchKey = blake2bMac256(
+            key = ss1 + ss2,
+            personal = "3ma-csp".encodeToByteArray(),
+            salt = "v2".encodeToByteArray(),
+            data = byteArrayOf(),
+        )
+        val expectedVouch = blake2bMac256(
+            key = vouchKey,
+            personal = byteArrayOf(),
+            salt = byteArrayOf(),
+            data = sck + tckPublic,
+        )
         val vouch = decryptedLoginStream.readNBytes(32)
         assertContentEquals(expectedVouch, vouch)
 
@@ -210,12 +225,18 @@ internal abstract class ServerConnectionTest {
     private fun expectExtensionBox(length: Int) {
         // read extension box
         val extensionBox = testSocket.read(length)
-        val extensionBoxDecrypted = kClientServer.decrypt(extensionBox, clientNonce.nextNonce())
+        val extensionBoxDecrypted = kClientServer.decrypt(
+            data = extensionBox,
+            nonce = clientNonce.nextNonce(),
+        )
         assertNotNull(extensionBoxDecrypted)
     }
 
     private fun sendLoginAck() {
-        val reservedBox = kClientServer.encrypt(ByteArray(16), serverNonce.nextNonce())
+        val reservedBox = kClientServer.encrypt(
+            data = ByteArray(16),
+            nonce = serverNonce.nextNonce(),
+        )
         testSocket.write(reservedBox)
     }
 
@@ -224,9 +245,9 @@ internal abstract class ServerConnectionTest {
         this.skSecret = skSecret
         sck = ByteArray(16)
         random.nextBytes(sck)
-        tskPublic = ByteArray(NaCl.PUBLICKEYBYTES)
-        tskSecret = ByteArray(NaCl.SECRETKEYBYTES)
-        NaCl.genkeypair(tskPublic, tskSecret)
+        tskPublic = ByteArray(NaCl.PUBLIC_KEY_BYTES)
+        tskSecret = ByteArray(NaCl.SECRET_KEY_BYTES)
+        NaCl.generateKeypairInPlace(tskPublic, tskSecret)
         serverNonce = NonceCounter(sck)
     }
 

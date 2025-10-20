@@ -24,31 +24,27 @@ package ch.threema.app.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ch.threema.app.ThreemaApplication
 import ch.threema.storage.DatabaseService
-import ch.threema.storage.factories.ServerMessageModelFactory
 
-class ServerMessageViewModel : ViewModel() {
-    private val serverMessageModelFactory: ServerMessageModelFactory?
+class ServerMessageViewModel(
+    databaseService: DatabaseService,
+) : ViewModel() {
+    private val serverMessageModelFactory = databaseService.serverMessageModelFactory
 
     private val serverMessage = MutableLiveData<String?>()
     fun getServerMessage(): LiveData<String?> = serverMessage
 
     init {
-        val serviceManager = ThreemaApplication.getServiceManager()
-        val databaseService: DatabaseService? = serviceManager?.databaseService
-        serverMessageModelFactory = databaseService?.serverMessageModelFactory
-
-        serverMessage.postValue(serverMessageModelFactory?.popServerMessageModel()?.message)
+        serverMessage.postValue(serverMessageModelFactory.popServerMessageModel()?.message)
     }
 
     fun markServerMessageAsRead() {
         // Delete currently shown message from database if the same message arrived again in the
         // meantime.
         serverMessage.value?.let {
-            serverMessageModelFactory?.delete(it)
+            serverMessageModelFactory.delete(it)
         }
         // Post the next message. If it is null, then no server message is available
-        serverMessage.postValue(serverMessageModelFactory?.popServerMessageModel()?.message)
+        serverMessage.postValue(serverMessageModelFactory.popServerMessageModel()?.message)
     }
 }

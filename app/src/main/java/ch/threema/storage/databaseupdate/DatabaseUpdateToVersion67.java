@@ -21,20 +21,24 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+
+import androidx.annotation.NonNull;
+
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 /**
  * Add a messageFlags field
  */
 public class DatabaseUpdateToVersion67 implements DatabaseUpdate {
     public static final int VERSION = 67;
+
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion67(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion67(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 

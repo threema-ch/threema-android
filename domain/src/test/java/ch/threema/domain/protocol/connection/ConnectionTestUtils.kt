@@ -21,6 +21,7 @@
 
 package ch.threema.domain.protocol.connection
 
+import ch.threema.base.crypto.NaCl
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.csp.socket.ChatServerAddressProvider
@@ -33,9 +34,9 @@ import ch.threema.domain.protocol.urls.BlobUrl
 import ch.threema.domain.protocol.urls.DeviceGroupUrl
 import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
+import ch.threema.domain.types.Identity
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
-import com.neilalexander.jnacl.NaCl
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.PipedInputStream
@@ -44,11 +45,11 @@ import java.net.InetSocketAddress
 import java.net.Socket
 import java.net.SocketAddress
 
-internal class TestIdentityStore : IdentityStoreInterface {
+internal class TestIdentityStore : IdentityStore {
     companion object {
         const val CLIENT_IDENTITY = "ABCD1234"
-        val ckPublic = ByteArray(NaCl.PUBLICKEYBYTES)
-        val ckSecret = ByteArray(NaCl.SECRETKEYBYTES)
+        val ckPublic = ByteArray(NaCl.PUBLIC_KEY_BYTES)
+        val ckSecret = ByteArray(NaCl.SECRET_KEY_BYTES)
 
         private val cache: MutableMap<ByteArray, NaCl> = mutableMapOf()
 
@@ -60,23 +61,29 @@ internal class TestIdentityStore : IdentityStoreInterface {
         plaintext: ByteArray,
         nonce: ByteArray,
         receiverPublicKey: ByteArray,
-    ): ByteArray {
-        return getFromCache(receiverPublicKey).encrypt(plaintext, nonce)
-    }
+    ): ByteArray =
+        getFromCache(receiverPublicKey)
+            .encrypt(
+                data = plaintext,
+                nonce = nonce,
+            )
 
     override fun decryptData(
         ciphertext: ByteArray,
         nonce: ByteArray,
         senderPublicKey: ByteArray,
-    ): ByteArray {
-        return getFromCache(senderPublicKey).decrypt(ciphertext, nonce)
-    }
+    ): ByteArray =
+        getFromCache(senderPublicKey)
+            .decrypt(
+                data = ciphertext,
+                nonce = nonce,
+            )
 
     override fun calcSharedSecret(publicKey: ByteArray): ByteArray {
-        return getFromCache(publicKey).precomputed
+        return getFromCache(publicKey).sharedSecret
     }
 
-    override fun getIdentity(): String {
+    override fun getIdentity(): Identity {
         return CLIENT_IDENTITY
     }
 
@@ -91,11 +98,18 @@ internal class TestIdentityStore : IdentityStoreInterface {
     override fun getPublicNickname(): String = "Test"
 
     override fun storeIdentity(
-        identity: String,
+        identity: Identity,
         serverGroup: String,
-        publicKey: ByteArray,
         privateKey: ByteArray,
     ) {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun setPublicNickname(publicNickname: String) {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun clear() {
         MUST_NOT_BE_CALLED()
     }
 }

@@ -31,10 +31,8 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.hardware.display.DisplayManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.text.format.DateUtils
 import android.util.Rational
@@ -68,11 +66,11 @@ import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
 import androidx.core.util.Consumer
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.asFlow
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import ch.threema.app.AppConstants
@@ -99,6 +97,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private val logger = LoggingUtil.getThreemaLogger("CameraFragment")
 
@@ -107,7 +106,7 @@ class CameraFragment : Fragment() {
         logScreenVisibility(logger)
     }
 
-    private lateinit var viewModel: CameraFragmentViewModel
+    private val viewModel: CameraViewModel by viewModel()
 
     private var displayId: Int = -1
     private var preview: Preview? = null
@@ -328,9 +327,6 @@ class CameraFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-
-        val viewModel: CameraFragmentViewModel by viewModels()
-        this.viewModel = viewModel
 
         check(activity is CameraCallback) { "Activity does not implement CameraCallback." }
         cameraCallback = activity as CameraCallback?
@@ -725,6 +721,17 @@ class CameraFragment : Fragment() {
         val shutterButton: ShutterButtonView = controls!!.findViewById(R.id.camera_capture_button)
         shutterButton.setVideoEnable(cameraConfiguration?.videoEnable ?: false)
         shutterButton.setShutterButtonListener(object : ShutterButtonListener {
+            /**
+             * Some android devices, e.g. pixel devices, support wide angle recordings with their camera. This is controlled with the zoom level. A
+             * linear zoom of 0.0 indicates the maximum angle, whereas the value 1.0 indicates maximum zoom. The camera is initialized with a zoom
+             * value between 0.0 and 1.0. If there is a wide angle available, the initial zoom level is higher than 0.0.
+             *
+             * As for most recordings we just want the default zoom level, we start with the default zoom level. However, if the user starts zooming
+             * in now, we only start applying the zoom once the initial zoom level is reached. Otherwise it jumps to 0.0 immediately after the user
+             * moves the zoom slider up.
+             */
+            private var initialZoomLevelReached = false
+
             override fun onRecordStart() {
                 if (ConfigUtils.requestAudioPermissions(
                         requireActivity(),
@@ -743,6 +750,16 @@ class CameraFragment : Fragment() {
             }
 
             override fun onZoomChanged(zoomFactor: Float) {
+                // In case the initial zoom level has not been reached, we skip applying the zoom factor. Otherwise the zoom value would jump
+                // initially.
+                if (!initialZoomLevelReached) {
+                    val initialZoomLevel = camera?.cameraInfo?.zoomState?.value?.linearZoom ?: return
+                    if (zoomFactor < initialZoomLevel) {
+                        return
+                    }
+                    initialZoomLevelReached = true
+                }
+
                 camera?.cameraControl?.setLinearZoom(zoomFactor)
                 val zoomView: ZoomView = controls.findViewById(R.id.zoom_view)
                 zoomView.setZoomFactor(zoomFactor)
@@ -785,18 +802,13 @@ class CameraFragment : Fragment() {
 
                             override fun onImageSaved(output: ImageCapture.OutputFileResults) {
                                 // Display flash animation to indicate that photo was captured
-                                // We can only change the foreground Drawable using API level 23+ API
                                 previewView?.let {
                                     it.post {
                                         if (isAdded && !isDetached) {
-                                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                it.foreground = ColorDrawable(Color.WHITE)
-                                            }
+                                            it.foreground = Color.WHITE.toDrawable()
                                             it.postDelayed({
                                                 if (isAdded && !isDetached) {
-                                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                        it.foreground = null
-                                                    }
+                                                    it.foreground = null
                                                     progressBar?.visibility = View.VISIBLE
                                                 }
                                             }, 50L)
@@ -945,7 +957,6 @@ class CameraFragment : Fragment() {
         if (hasFlash() && imageCapture?.flashMode == ImageCapture.FLASH_MODE_ON) {
             camera?.cameraControl?.enableTorch(true)
         }
-        camera?.cameraControl?.setLinearZoom(0F)
 
         // Create output options object which contains file + metadata
         val pendingRecording = videoCapture?.output?.prepareRecording(

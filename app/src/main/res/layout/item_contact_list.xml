@@ -61,12 +61,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:importantForAccessibility="no"
-        android:text="A"
         android:textAppearance="@style/Threema.Material.Header.Big.Text"
         android:textColor="@null"
         app:layout_constraintBottom_toBottomOf="@id/avatar_view"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@id/avatar_view" />
+        app:layout_constraintTop_toTopOf="@id/avatar_view"
+        tools:text="A" />
 
     <ch.threema.app.emojis.EmojiTextView
         android:id="@+id/contact_text_bottom_left"
@@ -90,8 +90,8 @@
         android:id="@+id/contact_text_top_left"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
         android:layout_marginLeft="12dp"
+        android:layout_marginEnd="32dp"
         android:ellipsize="end"
         android:minHeight="@dimen/listitem_min_height_first_line"
         android:singleLine="true"
@@ -132,7 +132,8 @@
         android:id="@+id/verification_level"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="visible"
+        android:adjustViewBounds="true"
+        android:maxHeight="@dimen/grid_unit_x1"
         app:layout_constraintBottom_toBottomOf="@id/contact_text_top_left"
         app:layout_constraintEnd_toStartOf="@id/blocked_contact"
         app:layout_constraintTop_toTopOf="@id/contact_text_top_left"

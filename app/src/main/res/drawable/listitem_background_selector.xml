@@ -7,11 +7,11 @@
     <item>
         <selector>
             <item
-                android:state_activated="true"
-                android:drawable="@drawable/list_pressed_holo" />
+                android:drawable="@drawable/list_pressed_holo"
+                android:state_activated="true" />
             <item
-                android:state_checked="true"
-                android:drawable="@color/list_item_background_checked" />
+                android:drawable="@color/list_item_background_checked"
+                android:state_checked="true" />
             <item android:drawable="@android:color/transparent" />
         </selector>
     </item>

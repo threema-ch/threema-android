@@ -25,8 +25,6 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteException;
 
-import com.neilalexander.jnacl.NaCl;
-
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -36,6 +34,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.crypto.NaCl;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
@@ -194,7 +193,7 @@ public class ContactModelFactory extends ModelFactory {
             logger.error("Cannot add a contact with an invalid identity: {}", contactModel.getIdentity());
             return false;
         }
-        if (contactModel.getPublicKey().length != NaCl.PUBLICKEYBYTES) {
+        if (contactModel.getPublicKey().length != NaCl.PUBLIC_KEY_BYTES) {
             logger.error("Cannot add a contact with a public key of length {}", contactModel.getPublicKey());
             return false;
         }
@@ -231,7 +230,7 @@ public class ContactModelFactory extends ModelFactory {
         contentValues.put(ContactModel.COLUMN_STATE, contactModel.getState().toString());
         contentValues.put(ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY, contactModel.getAndroidContactLookupKey());
         contentValues.put(ContactModel.COLUMN_FEATURE_MASK, contactModel.getFeatureMask());
-        contentValues.put(ContactModel.COLUMN_ID_COLOR_INDEX, contactModel.getIdColorIndex());
+        contentValues.put(ContactModel.COLUMN_ID_COLOR_INDEX, contactModel.getIdColor().getColorIndex());
         contentValues.put(ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES, contactModel.getLocalAvatarExpires() != null ?
             contactModel.getLocalAvatarExpires().getTime()
             : null);

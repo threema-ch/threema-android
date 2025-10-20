@@ -50,20 +50,13 @@ import androidx.transition.Fade;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
 
-import org.slf4j.Logger;
-
 import ch.threema.app.R;
-import ch.threema.base.utils.LoggingUtil;
 
 public class AnimationUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AnimationUtil");
-
     public static void expand(final View v, final Runnable onFinishRunnable, final boolean willChangeBounds) {
         v.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
         final int targetHeight = v.getMeasuredHeight();
 
-        // Older versions of android (pre API 21) cancel animations for views with a height of 0.
-        v.getLayoutParams().height = 1;
         v.setVisibility(View.VISIBLE);
         Animation a = new Animation() {
             @Override
@@ -283,19 +276,6 @@ public class AnimationUtil {
         theLayout.startAnimation(animation);
     }
 
-    public static void zoomInAnimate(View view) {
-        if (view.getVisibility() != View.VISIBLE) {
-            view.setVisibility(View.VISIBLE);
-            AnimationSet animation = new AnimationSet(true);
-            Animation scale = new ScaleAnimation(0.0f, 1.0f, 0.0f, 1.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-
-            animation.addAnimation(scale);
-            animation.setInterpolator(new LinearInterpolator());
-            animation.setDuration(100);
-            view.startAnimation(animation);
-        }
-    }
-
     public static void zoomOutAnimate(final View view) {
         AnimationSet animation = new AnimationSet(true);
         Animation scale = new ScaleAnimation(1.0f, 0.0f, 1.0f, 0.0f, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
@@ -421,10 +401,6 @@ public class AnimationUtil {
         }
     }
 
-    public static void slideDown(@NonNull Context context, @NonNull View v) {
-        slideDown(context, v, null);
-    }
-
     public static void slideDown(@NonNull Context context, @NonNull View v, @Nullable Runnable onEndRunnable) {
         Animation a = AnimationUtils.loadAnimation(context, R.anim.slide_down);
         if (a != null) {
@@ -445,10 +421,8 @@ public class AnimationUtil {
                 });
             }
             a.reset();
-            if (v != null) {
-                v.clearAnimation();
-                v.startAnimation(a);
-            }
+            v.clearAnimation();
+            v.startAnimation(a);
         }
     }
 

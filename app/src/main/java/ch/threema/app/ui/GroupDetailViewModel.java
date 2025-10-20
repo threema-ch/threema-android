@@ -36,12 +36,10 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.GroupDetailAdapter;
 import ch.threema.app.services.ContactService;
 import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
-import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
 public class GroupDetailViewModel extends ViewModel {
@@ -61,9 +59,12 @@ public class GroupDetailViewModel extends ViewModel {
     private boolean hasMemberChanges = false;
     private boolean hasAvatarChanges = false;
 
-    public GroupDetailViewModel(SavedStateHandle savedStateHandle) throws MasterKeyLockedException {
+    public GroupDetailViewModel(
+        SavedStateHandle savedStateHandle,
+        @NonNull ContactService contactService
+    ) {
         savedState = savedStateHandle;
-        this.contactService = ThreemaApplication.requireServiceManager().getContactService();
+        this.contactService = contactService;
         this.groupMembers = new MutableLiveData<>() {
             @Nullable
             @Override

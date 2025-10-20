@@ -1,12 +1,11 @@
 //! Commonly used macros of libthreema.
-
 use convert_case::{Case, Casing as _};
 use proc_macro::TokenStream;
-use quote::{format_ident, quote};
+use quote::{ToTokens as _, format_ident, quote};
 use syn::{
-    self, Data, DeriveInput, Expr, Fields, Ident, Variant,
+    self, Data, DeriveInput, Expr, Fields, Ident, ItemStruct, LitInt, LitStr, Variant,
     parse::{Parse, ParseStream},
-    parse_macro_input,
+    parse_macro_input, parse_quote,
     punctuated::Punctuated,
 };
 
@@ -103,6 +102,7 @@ pub fn derive_variant_names(input: TokenStream) -> TokenStream {
     // Parse the input tokens into a syntax tree.
     let input = parse_macro_input!(input as DeriveInput);
     let enum_name = input.ident;
+    let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
 
     // Map each variant to its literal identifier name
     let const_variants = match &input.data {
@@ -137,7 +137,7 @@ pub fn derive_variant_names(input: TokenStream) -> TokenStream {
 
     // Implement for the enum
     let expanded = quote! {
-        impl #enum_name {
+        impl #impl_generics #enum_name #type_generics #where_clause {
             #(#const_variants)*
 
             /// Get the variant name of `self`.
@@ -193,7 +193,7 @@ pub fn derive_debug_variant_names(input: TokenStream) -> TokenStream {
     // Parse the input tokens into a syntax tree.
     let input = parse_macro_input!(input as DeriveInput);
 
-    // Ensure its an enum
+    // Ensure it's an enum
     #[expect(clippy::unimplemented, reason = "Only applicable to enums")]
     if !matches!(input.data, Data::Enum(..)) {
         unimplemented!()
@@ -202,8 +202,9 @@ pub fn derive_debug_variant_names(input: TokenStream) -> TokenStream {
     // Implement `Debug` for the enum
     let name = input.ident;
     let literal_name = name.to_string();
+    let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
     let expanded = quote! {
-        impl std::fmt::Debug for #name {
+        impl #impl_generics std::fmt::Debug for #name #type_generics #where_clause {
             fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 write!(formatter, "{}::{}", #literal_name, self.variant_name())
             }
@@ -239,7 +240,7 @@ impl Parse for Arrays {
 /// ```
 #[proc_macro]
 pub fn concat_fixed_bytes(tokens: TokenStream) -> TokenStream {
-    let input = syn::parse_macro_input!(tokens as Arrays).0.into_iter();
+    let input = parse_macro_input!(tokens as Arrays).0.into_iter();
     let indices = input.clone().enumerate();
     let arrays: Vec<Expr> = input.collect();
     let field_length_parameters: Vec<Ident> = indices
@@ -257,7 +258,8 @@ pub fn concat_fixed_bytes(tokens: TokenStream) -> TokenStream {
             #(#field_names: #arrays,)*
         };
         unsafe {
-            core::mem::transmute(concatenated_arrays)
+            let concatenated_bytes = core::mem::transmute(concatenated_arrays);
+            concatenated_bytes
         }
     }};
 
@@ -265,8 +267,187 @@ pub fn concat_fixed_bytes(tokens: TokenStream) -> TokenStream {
     TokenStream::from(expanded)
 }
 
+/// Annotates a `prost::Message` in the following way:
+///
+/// ## `padding` fields
+///
+/// These fields will be marked as deprecated to discourage direct usage of it. Furthermore, the padding tag
+/// will be extracted and made available on the message as a `PADDING_TAG` const. See the
+/// `ProtobufPaddedMessage` trait.
+#[proc_macro_attribute]
+pub fn protobuf_annotations(_attribute: TokenStream, input: TokenStream) -> TokenStream {
+    fn annotate_protobuf_message(mut message: ItemStruct) -> syn::Result<TokenStream> {
+        let mut padding_tag: Option<LitInt> = None;
+
+        for field in &mut message.fields {
+            let Some(name) = field.ident.as_ref() else {
+                continue;
+            };
+
+            // Process `padding` fields so that we can use `ProtobufPaddedMessage` on them easily
+            if name == "padding" {
+                // Look for the tag value in `#[prost(..., tag = "<tag-value>")]`
+                for attribute in &field.attrs {
+                    if !attribute.path().is_ident("prost") {
+                        continue;
+                    }
+                    attribute.parse_nested_meta(|meta| {
+                        let value: LitStr = meta.value()?.parse()?;
+                        if meta.path.is_ident("tag") {
+                            padding_tag = Some(value.parse()?);
+                        }
+                        Ok(())
+                    })?;
+                }
+
+                // Ensure nobody uses the field directly by deprecating it
+                field.attrs.push(parse_quote! {
+                    #[deprecated(note = "Use ProtobufPaddedMessage trait to generate padding")]
+                });
+            }
+        }
+
+        let message_name = message.ident.clone();
+        let mut output = message.into_token_stream();
+
+        // Add any padding tag value as a const to the message
+        if let Some(padding_tag) = padding_tag {
+            output.extend(quote! {
+                impl #message_name {
+                    /// Tag value of the padding of this message.
+                    pub const PADDING_TAG: u32 = #padding_tag;
+                }
+            });
+        }
+
+        Ok(output.into())
+    }
+    annotate_protobuf_message(parse_macro_input!(input as ItemStruct))
+        .unwrap_or_else(|error| error.into_compile_error().into())
+}
+
+/// Implements [`subtle::ConstantTimeEq`] for named and unnamed structs.
+///
+/// Moreover, this derives [`PartialEq`] and [`Eq`] using constant time comparison.
+///
+/// Note: All fields must implement [`subtle::ConstantTimeEq`].
+///
+/// The proc macro was adapted from <https://github.com/dalek-cryptography/subtle/pull/111>
+///
+/// # Examples
+///
+/// Given the following:
+///
+/// ```
+/// use libthreema_macros::ConstantTimeEq;
+///
+/// #[derive(ConstantTimeEq)]
+/// struct MyStruct {
+///     first_field: [u8; 32],
+///     second_field: u64,
+/// }
+/// ```
+///
+/// the derive macro expands it to:
+///
+/// ```
+/// struct MyStruct {
+///     first_field: [u8; 32],
+///     second_field: u64,
+/// }
+///
+/// impl ::subtle::ConstantTimeEq for MyStruct {
+///     #[inline]
+///     fn ct_eq(&self, other: &Self) -> ::subtle::Choice {
+///         use ::subtle::ConstantTimeEq as _;
+///         return { self.first_field }.ct_eq(&{ other.first_field })
+///             & { self.second_field }.ct_eq(&{ other.second_field });
+///     }
+/// }
+/// impl PartialEq<Self> for MyStruct {
+///     #[inline]
+///     fn eq(&self, other: &Self) -> bool {
+///         use ::subtle::ConstantTimeEq as _;
+///         bool::from(self.ct_eq(other))
+///     }
+/// }
+/// impl Eq for MyStruct {}
+/// ```
+#[proc_macro_derive(ConstantTimeEq)]
+pub fn constant_time_eq(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+
+    #[expect(
+        clippy::unimplemented,
+        reason = "Only applicable to named and unnamed structs"
+    )]
+    let Data::Struct(data_struct) = input.data else {
+        unimplemented!()
+    };
+
+    let constant_time_eq_stream = match &data_struct.fields {
+        Fields::Named(fields_named) => {
+            let mut token_stream = quote! {};
+            let mut fields = fields_named.named.iter().peekable();
+            while let Some(field) = fields.next() {
+                let ident = &field.ident;
+                token_stream.extend(quote! { {self.#ident}.ct_eq(&{other.#ident}) });
+
+                if fields.peek().is_some() {
+                    token_stream.extend(quote! { & });
+                }
+            }
+            token_stream
+        },
+        Fields::Unnamed(unnamed_fields) => {
+            let mut token_stream = quote! {};
+            let mut fields = unnamed_fields.unnamed.iter().enumerate().peekable();
+            while let Some(field) = fields.next() {
+                let index = syn::Index::from(field.0);
+                token_stream.extend(quote! { {self.#index}.ct_eq(&{other.#index}) });
+
+                if fields.peek().is_some() {
+                    token_stream.extend(quote! { & });
+                }
+            }
+            token_stream
+        },
+        #[expect(clippy::unimplemented, reason = "Not applicable to unit-like structs")]
+        Fields::Unit => unimplemented!(),
+    };
+
+    let name = &input.ident;
+    let (impl_generics, type_generics, where_clause) = input.generics.split_for_impl();
+    let expanded = quote! {
+        impl #impl_generics ::subtle::ConstantTimeEq for #name #type_generics #where_clause {
+            #[inline]
+            fn ct_eq(&self, other: &Self) -> ::subtle::Choice {
+                use ::subtle::ConstantTimeEq as _;
+                return #constant_time_eq_stream
+            }
+        }
+
+        impl #impl_generics PartialEq<Self> for #name #type_generics #where_clause {
+            #[inline]
+            fn eq(&self, other: &Self) -> bool{
+                use ::subtle::ConstantTimeEq as _;
+                bool::from(self.ct_eq(other))
+            }
+        }
+        impl #impl_generics Eq for #name #type_generics #where_clause {}
+    };
+
+    TokenStream::from(expanded)
+}
+
+// Avoids dependencies to be picked up by the linter.
+mod external_crate_false_positives {
+    use subtle as _;
+}
+
 // Avoids test dependencies to be picked up by the linter.
 #[cfg(test)]
-mod external_crate_false_positives {
+mod external_crate_false_positives_test_feature {
+    use rstest as _;
     use trybuild as _;
 }

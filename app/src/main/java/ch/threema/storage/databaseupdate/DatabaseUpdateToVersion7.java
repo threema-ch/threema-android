@@ -27,8 +27,6 @@ import android.os.Environment;
 
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import org.slf4j.Logger;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
@@ -36,13 +34,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
-import ch.threema.base.utils.LoggingUtil;
-
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 public class DatabaseUpdateToVersion7 implements DatabaseUpdate {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion7");
-
     private final Context context;
     private final SQLiteDatabase sqLiteDatabase;
 
@@ -106,13 +100,11 @@ public class DatabaseUpdateToVersion7 implements DatabaseUpdate {
                 for (File ftm : fileIndex.get(id)) {
                     String postFix = ftm.getName().substring(String.valueOf(id).length() + 2);
                     File newFileToMerge = new File(appPath.getPath() + "/." + uid + "-" + postFix);
-                    if (!ftm.renameTo(newFileToMerge)) {
-                        logger.debug("Unable to rename file");
-                    }
+                    ftm.renameTo(newFileToMerge);
                 }
             }
 
-            sqLiteDatabase.rawExecSQL("UPDATE message SET uid = '" + uid + "' WHERE id = " + String.valueOf(id));
+            sqLiteDatabase.rawExecSQL("UPDATE message SET uid = '" + uid + "' WHERE id = " + id);
         }
         messages.close();
     }

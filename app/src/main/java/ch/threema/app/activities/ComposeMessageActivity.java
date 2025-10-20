@@ -23,8 +23,6 @@ package ch.threema.app.activities;
 
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
@@ -32,15 +30,16 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentManager;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import ch.threema.app.R;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.fragments.ComposeMessageFragment;
-import ch.threema.app.fragments.MessageSectionFragment;
+import ch.threema.app.fragments.ConversationsFragment;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.SettingsActivity;
-import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
@@ -58,8 +57,11 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
     private static final int ID_HIDDEN_CHECK_ON_CREATE = 9292;
     private static final String DIALOG_TAG_HIDDEN_NOTICE = "hidden";
 
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     private ComposeMessageFragment composeMessageFragment;
-    private MessageSectionFragment messageSectionFragment;
+    private ConversationsFragment conversationsFragment;
 
     private Intent currentIntent;
     private int savedSoftInputMode;
@@ -73,14 +75,12 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
         getWindow().setAllowEnterTransitionOverlap(true);
         getWindow().setAllowReturnTransitionOverlap(true);
+        this.currentIntent = getIntent();
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
         if (finishAndRestartLaterIfNotReady(this)) {
             return;
         }
-
-        this.currentIntent = getIntent();
-        this.initActivity(savedInstanceState);
 
         ViewExtensionsKt.applyDeviceInsetsAsPadding(
             findViewById(R.id.appbar),
@@ -100,9 +100,9 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
 
         if (findViewById(R.id.messages) != null) {
             // add messages fragment in tablet layout
-            if (messageSectionFragment == null) {
-                messageSectionFragment = new MessageSectionFragment();
-                getSupportFragmentManager().beginTransaction().add(R.id.messages, messageSectionFragment, MESSAGES_FRAGMENT_TAG).commit();
+            if (conversationsFragment == null) {
+                conversationsFragment = new ConversationsFragment();
+                getSupportFragmentManager().beginTransaction().add(R.id.messages, conversationsFragment, MESSAGES_FRAGMENT_TAG).commit();
             }
         }
 
@@ -131,7 +131,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
     private void getFragments() {
         FragmentManager fragmentManager = getSupportFragmentManager();
         composeMessageFragment = (ComposeMessageFragment) fragmentManager.findFragmentByTag(COMPOSE_FRAGMENT_TAG);
-        messageSectionFragment = (MessageSectionFragment) fragmentManager.findFragmentByTag(MESSAGES_FRAGMENT_TAG);
+        conversationsFragment = (ConversationsFragment) fragmentManager.findFragmentByTag(MESSAGES_FRAGMENT_TAG);
     }
 
     @Override
@@ -161,8 +161,8 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
     protected void handleOnBackPressed() {
         logger.info("handleOnBackPressed");
         if (ConfigUtils.isTabletLayout()) {
-            if (messageSectionFragment != null) {
-                if (messageSectionFragment.onBackPressed()) {
+            if (conversationsFragment != null) {
+                if (conversationsFragment.onBackPressed()) {
                     return;
                 }
             }
@@ -219,7 +219,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
                 super.onActivityResult(requestCode, resultCode, intent);
 
                 if (resultCode == RESULT_OK) {
-                    serviceManager.getScreenLockService().setAuthenticated(true);
+                    dependencies.getSystemScreenLockService().setAuthenticated(true);
                     if (composeMessageFragment != null) {
                         getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
                         // mark conversation as read as soon as it's unhidden
@@ -233,7 +233,7 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
                 super.onActivityResult(requestCode, resultCode, intent);
 
                 if (resultCode == RESULT_OK) {
-                    serviceManager.getScreenLockService().setAuthenticated(true);
+                    dependencies.getSystemScreenLockService().setAuthenticated(true);
                     if (composeMessageFragment != null) {
                         getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
                         composeMessageFragment.onNewIntent(this.currentIntent);
@@ -262,15 +262,9 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
             return false;
         }
 
-        if (serviceManager == null) {
-            logger.error("Service manager is null");
-            return false;
-        }
-
-        ConversationCategoryService conversationCategoryService = serviceManager.getConversationCategoryService();
-        if (conversationCategoryService.isPrivateChat(messageReceiver.getUniqueIdString())) {
-            if (preferenceService != null && ConfigUtils.hasProtection(preferenceService)) {
-                HiddenChatUtil.launchLockCheckDialog(this, null, preferenceService, requestCode);
+        if (dependencies.getConversationCategoryService().isPrivateChat(messageReceiver.getUniqueIdString())) {
+            if (ConfigUtils.hasProtection(dependencies.getPreferenceService())) {
+                HiddenChatUtil.launchLockCheckDialog(this, null, dependencies.getPreferenceService(), requestCode);
             } else {
                 GenericAlertDialog.newInstance(R.string.hide_chat, R.string.hide_chat_enter_message_explain, R.string.set_lock, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_HIDDEN_NOTICE);
             }

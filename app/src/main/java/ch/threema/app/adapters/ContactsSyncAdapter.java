@@ -30,8 +30,6 @@ import android.os.Bundle;
 
 import org.slf4j.Logger;
 
-import java.util.Set;
-
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
@@ -40,7 +38,7 @@ import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
 public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSyncAdapter");

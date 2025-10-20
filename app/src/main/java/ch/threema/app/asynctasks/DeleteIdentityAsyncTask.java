@@ -24,6 +24,7 @@ package ch.threema.app.asynctasks;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -32,7 +33,6 @@ import java.io.IOException;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentManager;
-import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -47,6 +47,8 @@ import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.onprem.OnPremConfigStore;
+import ch.threema.localcrypto.MasterKeyFileProvider;
 import ch.threema.storage.DatabaseNonceStore;
 import ch.threema.storage.DatabaseService;
 
@@ -78,8 +80,10 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
     @Override
     protected Exception doInBackground(Void... params) {
         try {
+            var context = ThreemaApplication.getAppContext();
+
             // clear push token
-            PushService.deleteToken(ThreemaApplication.getAppContext());
+            PushService.deleteToken(context);
 
             serviceManager.getThreemaSafeService().unschedulePeriodicUpload();
             serviceManager.getMessageService().removeAll();
@@ -94,7 +98,7 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
             serviceManager.getBallotService().removeAll();
             serviceManager.getPreferenceService().clear();
             serviceManager.getFileService().removeAllAvatars();
-            serviceManager.getWallpaperService().removeAll(ThreemaApplication.getAppContext(), true);
+            serviceManager.getWallpaperService().removeAll(context, true);
             ShortcutUtil.deleteAllShareTargetShortcuts();
             ShortcutUtil.deleteAllPinnedShortcuts();
 
@@ -113,20 +117,18 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
                 DisconnectContext.byUs(DisconnectContext.REASON_SESSION_DELETED));
             SessionWakeUpServiceImpl.clear();
 
-            try {
-                ThreemaApplication.getMasterKey().setPassphrase(null);
-            } catch (Exception e) {
-                //
+            File masterKeyFile = MasterKeyFileProvider.getVersion2MasterKeyFile(context);
+            File databaseFile = DatabaseService.getDatabaseFile(context);
+            File nonceDatabaseFile = DatabaseNonceStore.getDatabaseFile(context);
+            File backupFile = DatabaseService.getDatabaseBackupFile(context);
+            File cacheDirectory = context.getCacheDir();
+            File externalCacheDirectory = context.getExternalCacheDir();
+            OnPremConfigStore onPremConfigStore = KoinJavaComponent.getOrNull(OnPremConfigStore.class);
+            if (onPremConfigStore != null) {
+                onPremConfigStore.reset();
             }
 
-            File aesFile = new File(ThreemaApplication.getAppContext().getFilesDir(), AppConstants.AES_KEY_FILE);
-            File databaseFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseService.DEFAULT_DATABASE_NAME_V4);
-            File nonceDatabaseFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseNonceStore.DATABASE_NAME_V4);
-            File backupFile = ThreemaApplication.getAppContext().getDatabasePath(DatabaseService.DEFAULT_DATABASE_NAME_V4 + DatabaseService.DATABASE_BACKUP_EXT);
-            File cacheDirectory = ThreemaApplication.getAppContext().getCacheDir();
-            File externalCacheDirectory = ThreemaApplication.getAppContext().getExternalCacheDir();
-
-            secureDelete(aesFile);
+            secureDelete(masterKeyFile);
             secureDelete(databaseFile);
             secureDelete(nonceDatabaseFile);
             secureDelete(backupFile);
@@ -134,7 +136,7 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
             secureDelete(externalCacheDirectory);
 
             if (PassphraseService.isRunning()) {
-                PassphraseService.stop(ThreemaApplication.getAppContext());
+                PassphraseService.stop(context);
             }
 
             if (interrupted) {
@@ -184,7 +186,7 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
         );
     }
 
-    private void secureDelete(File file) {
+    private void secureDelete(@Nullable File file) {
         try {
             SecureDeleteUtil.secureDelete(file);
         } catch (IOException e) {

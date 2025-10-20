@@ -26,7 +26,6 @@ import ch.threema.app.R
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder
-import ch.threema.app.utils.TestUtil
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.status.GroupStatusDataModel
 import ch.threema.storage.models.data.status.GroupStatusDataModel.GroupStatusType.CREATED
@@ -52,7 +51,7 @@ class GroupStatusAdapterDecorator(
     override fun configureChatMessage(holder: ComposeMessageHolder, position: Int) {
         val statusDataModel = messageModel.groupStatusData ?: return
         val statusText = getStatusText(statusDataModel, userService, contactService, context)
-        if (showHide(holder.bodyTextView, !TestUtil.isEmptyOrNull(statusText))) {
+        if (showHide(holder.bodyTextView, !statusText.isNullOrEmpty())) {
             holder.bodyTextView.text = statusText
         }
         setOnClickListener({

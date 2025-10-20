@@ -51,6 +51,7 @@ import ch.threema.app.utils.MessageUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
+import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 
 public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
@@ -183,11 +184,13 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
                     sender = conversationModel.messageReceiver.getDisplayName();
 
                     if (conversationModel.isContactConversation()) {
-                        avatar = contactService.getAvatar(conversationModel.getContact(), false);
-                        extras.putString(AppConstants.INTENT_DATA_CONTACT, conversationModel.getContact().getIdentity());
+                        ContactModel contact = conversationModel.getContact();
+                        String identity = contact != null ? contact.getIdentity() : null;
+                        avatar = contactService.getAvatar(identity, false);
+                        extras.putString(AppConstants.INTENT_DATA_CONTACT, identity);
                     } else if (conversationModel.isGroupConversation()) {
                         avatar = groupService.getAvatar(conversationModel.getGroup(), false);
-                        extras.putInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, conversationModel.getGroup().getId());
+                        extras.putLong(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, conversationModel.getGroup().getId());
                     } else if (conversationModel.isDistributionListConversation()) {
                         avatar = distributionListService.getAvatar(conversationModel.getDistributionList(), false);
                         extras.putLong(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, conversationModel.getDistributionList().getId());

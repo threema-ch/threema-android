@@ -23,13 +23,9 @@ package ch.threema.app.services.license;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import ch.threema.domain.models.LicenseCredentials;
 
-public interface LicenseService<T extends LicenseService.Credentials> {
-    /**
-     * Holder of the credential values
-     */
-    interface Credentials {
-    }
+public interface LicenseService<T extends LicenseCredentials> {
 
     /**
      * Validate by credentials
@@ -67,5 +63,6 @@ public interface LicenseService<T extends LicenseService.Credentials> {
      *
      * @return null or the saved credentials
      */
+    @Nullable
     T loadCredentials();
 }

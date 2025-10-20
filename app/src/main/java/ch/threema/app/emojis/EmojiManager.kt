@@ -34,9 +34,8 @@ import java8.util.concurrent.CompletableFuture
 import kotlin.concurrent.Volatile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("EmojiManager")
+private val logger = LoggingUtil.getThreemaLogger("EmojiManager")
 
 class EmojiManager private constructor(context: Context) {
 
@@ -52,9 +51,9 @@ class EmojiManager private constructor(context: Context) {
      * @return [EmojiDrawable] or `null` if no asset exists for the passed [emojiSequence]
      */
     fun getEmojiDrawableAsync(emojiSequence: String?): EmojiDrawable? =
-        EmojiParser.parseAt(emojiSequence, 0)?.let {
-            getEmojiDrawableAsync(it.coords)
-        }
+        emojiSequence
+            ?.let { EmojiParser.parseAt(emojiSequence, 0) }
+            ?.let { getEmojiDrawableAsync(it.coords) }
 
     /**
      * Loads the [EmojiDrawable] asynchronously for the passed sprite coordinates.

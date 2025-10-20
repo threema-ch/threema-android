@@ -21,27 +21,33 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import ch.threema.storage.DatabaseService;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
+
+import androidx.annotation.NonNull;
 
 public class DatabaseUpdateToVersion21 implements DatabaseUpdate {
 
-    private final DatabaseService databaseService;
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion21(DatabaseService databaseService, SQLiteDatabase sqLiteDatabase) {
-        this.databaseService = databaseService;
+    public DatabaseUpdateToVersion21(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 
     @Override
     public void run() throws SQLException {
-        for (String s : this.databaseService.getOutgoingGroupSyncRequestLogModelFactory().getStatements()) {
-            this.sqLiteDatabase.execSQL(s);
+        for (String statement : getStatements()) {
+            sqLiteDatabase.execSQL(statement);
         }
+    }
+
+    private String[] getStatements() {
+        return new String[]{
+            "CREATE TABLE `m_group_request_sync_log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiGroupId` VARCHAR , `creatorIdentity` VARCHAR , `lastRequest` VARCHAR )",
+            "CREATE UNIQUE INDEX `apiGroupIdAndCreatorGroupRequestSyncLogModel` ON `m_group_request_sync_log` ( `apiGroupId`, `creatorIdentity` );"
+        };
     }
 
     @Override

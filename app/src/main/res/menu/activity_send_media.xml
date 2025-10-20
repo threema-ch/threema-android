@@ -11,7 +11,7 @@
             android:icon="@drawable/ic_magic_wand_white_24dp"
             android:orderInCategory="10"
             android:title="@string/edit"
-            app:iconTint="@android:color/white"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always" />
 
         <item
@@ -20,7 +20,7 @@
             android:icon="@drawable/ic_flip_outline"
             android:orderInCategory="30"
             android:title="@string/flip"
-            app:iconTint="@android:color/white"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always" />
 
         <item
@@ -29,7 +29,7 @@
             android:icon="@drawable/ic_outline_rotate_90_degrees_ccw_24"
             android:orderInCategory="50"
             android:title="@string/rotate"
-            app:iconTint="@android:color/white"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always" />
 
         <item
@@ -38,7 +38,7 @@
             android:icon="@drawable/ic_crop_outline"
             android:orderInCategory="65"
             android:title="@string/crop"
-            app:iconTint="@android:color/white"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always" />
     </group>
 
@@ -49,7 +49,7 @@
             android:icon="@drawable/ic_edit_file_name"
             android:orderInCategory="75"
             android:title="Edit filename"
-            app:iconTint="@android:color/white"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always" />
     </group>
 
@@ -59,7 +59,7 @@
         android:icon="@drawable/ic_settings_outline_24dp"
         android:orderInCategory="80"
         android:title="@string/prefs_image_size"
-        app:iconTint="@android:color/white"
+        app:iconTint="?attr/colorControlNormal"
         app:showAsAction="always" />
 
 </menu>

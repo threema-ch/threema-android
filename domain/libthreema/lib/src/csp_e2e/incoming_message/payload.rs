@@ -1,10 +1,15 @@
 use core::str::{self, Utf8Error};
 
+use educe::Educe;
+
 use crate::{
-    common::{MessageId, Nonce, ThreemaId, ThreemaIdError},
+    common::{MessageFlags, MessageId, Nonce, ThreemaId, ThreemaIdError},
     crypto::salsa20,
     csp::payload::MessageWithMetadataBox,
-    utils::bytes::{ByteReader as _, ByteReaderError, EncryptedDataRangeReader as _, OwnedVecByteReader},
+    utils::{
+        bytes::{ByteReader as _, ByteReaderError, EncryptedDataRangeReader as _, OwnedVecByteReader},
+        debug::debug_slice_length,
+    },
 };
 
 /// An error occurred while decoding an incoming message payload.
@@ -13,10 +18,6 @@ pub(super) enum IncomingMessagePayloadError {
     /// Decoding the message failed.
     #[error("Decoding message failed: {0}")]
     DecodingFailed(#[from] ByteReaderError),
-
-    /// Invalid sender identity encountered.
-    #[error("Invalid sender identity: {0}")]
-    InvalidSenderIdentity(#[source] ThreemaIdError),
 
     /// Invalid receiver identity encountered.
     #[error("Invalid receiver identity: {0}")]
@@ -31,25 +32,12 @@ pub(super) enum IncomingMessagePayloadError {
     InvalidMessage,
 }
 
-/// Message flags which were/are transmitted to the server.
-#[expect(dead_code, reason = "Will use later")]
-pub(super) struct MessageFlags(pub(super) u8);
-#[rustfmt::skip]
-#[expect(dead_code, reason = "Will use later")]
-impl MessageFlags {
-    pub(super) const SEND_PUSH_NOTIFICATION:u8 =      0b_0000_0001;
-    pub(super) const NO_SERVER_QUEUING: u8 =          0b_0000_0010;
-    pub(super) const NO_SERVER_ACKNOWLEDGEMENT: u8 =  0b_0000_0100;
-    // Reserved:                                      0b_0000_1000
-    // Reserved (formerly _group message marker_):    0b_0001_0000
-    pub(super) const SHORT_LIVED_SERVER_QUEUING: u8 = 0b_0010_0000;
-    // Reserved:                                      0b_0100_0000
-    pub(super) const NO_DELIVERY_RECEIPTS: u8 =       0b_1000_0000;
-}
-
 /// The fully decoded `message-with-metadata-box` message.
+#[derive(Educe)]
+#[educe(Debug)]
 pub(super) struct DecodedMessageWithMetadataBox {
     /// Raw bytes of the payload
+    #[educe(Debug(method(debug_slice_length)))]
     pub(super) bytes: Vec<u8>,
 
     /// The sender's Threema ID.
@@ -68,32 +56,41 @@ pub(super) struct DecodedMessageWithMetadataBox {
     pub(super) legacy_created_at: u32,
 
     /// Message flags.
-    #[expect(dead_code, reason = "Will use later")]
     pub(super) flags: MessageFlags,
+
+    /// Legacy sender nickname (nickname from metadata should be preferred).
     pub(super) legacy_sender_nickname: Option<String>,
+
+    /// Encrypted metadata box.
     pub(super) metadata: Option<salsa20::EncryptedDataRange>,
+
+    /// Nonce for both the contained message and the metadata box.
     pub(super) nonce: Nonce,
+
+    /// Encrypted contained message.
     pub(super) message_container: salsa20::EncryptedDataRange,
 }
 impl TryFrom<MessageWithMetadataBox> for DecodedMessageWithMetadataBox {
     type Error = IncomingMessagePayloadError;
 
     fn try_from(payload: MessageWithMetadataBox) -> Result<Self, Self::Error> {
-        let mut reader = OwnedVecByteReader::new(payload.message_bytes);
+        let mut reader = OwnedVecByteReader::new(payload.bytes);
 
-        // Decode and validate sender and receiver identities
-        let sender_identity = ThreemaId::try_from(reader.read_fixed::<{ ThreemaId::LENGTH }>()?.as_slice())
-            .map_err(IncomingMessagePayloadError::InvalidSenderIdentity)?;
+        // Skip sender identity
+        reader.skip(ThreemaId::LENGTH)?;
+
+        // Decode receiver identity
         let receiver_identity = ThreemaId::try_from(reader.read_fixed::<{ ThreemaId::LENGTH }>()?.as_slice())
             .map_err(IncomingMessagePayloadError::InvalidReceiverIdentity)?;
 
         // Skip the message ID (we already have it)
         reader.skip(MessageId::LENGTH)?;
 
-        // Decode legacy _created at_ timestamp, flags and reserved bytes
+        // Decode legacy _created at_ timestamp
         let legacy_created_at = reader.read_u32_le()?;
-        let flags = MessageFlags(reader.read_u8()?);
-        reader.skip(1)?;
+
+        // Skip flags (we already have it) and reserved bytes
+        reader.skip(2)?;
 
         // Decode metadata length
         let metadata_length = reader.read_u16_le()?;
@@ -142,18 +139,67 @@ impl TryFrom<MessageWithMetadataBox> for DecodedMessageWithMetadataBox {
         )?;
 
         // Done
-        let message_bytes = reader.expect_consumed()?;
+        let bytes = reader.expect_consumed()?;
         Ok(DecodedMessageWithMetadataBox {
-            bytes: message_bytes,
-            sender_identity,
+            bytes,
+            sender_identity: payload.sender_identity,
             receiver_identity,
-            id: payload.message_id,
+            id: payload.id,
             legacy_created_at,
-            flags,
+            flags: payload.flags,
             legacy_sender_nickname,
             metadata,
             nonce,
             message_container,
         })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use assert_matches::assert_matches;
+    use data_encoding::HEXLOWER;
+
+    use crate::{
+        common::{MessageFlags, MessageId, Nonce, ThreemaId},
+        csp::payload::MessageWithMetadataBox,
+        csp_e2e::incoming_message::payload::DecodedMessageWithMetadataBox,
+        utils::bytes::OwnedVecByteReader,
+    };
+
+    #[test]
+    fn valid_message() -> anyhow::Result<()> {
+        let message = HEXLOWER.decode(
+            b"\
+                304441354d453736304850543945574489aa9a7eaff77d96cb7327680100340000000000\
+                00000000000000000000000000000000000000000000000000000000439039d79074fa4a0d0961d6\
+                51af57b94b7245c4c686733aab55b7f2b049fa3a8a5fec982eaa27d37557beaadd802cfc2703d849\
+                b2d718b0db179e3e3bcdbf3c2be997490a0349f2e4fbaa43712e263aab0c2c4a920182f01f810df0\
+                63363191b26c2c6404c0e84e73a3e005e327589702878e259642e1cf3b29e36db1c6a258f55ea73c\
+                842fddafffd76a3057c0c13b6881bccc6522a0edee793f586fcb9ec5b398eb3be0af1a8c6111fe46\
+                3ed25d916e66bea54955ca3398e27cbae25bfb6c16e26f326ecf8a4ba81aef9312b59f612b9e3355\
+                de6c14c0434dc195e0a03462fc95d836a7bca74bda61d59be8489a9fdd9e626e7cb7324ac0724b0a\
+                42168a5bea525eaef17d3bf13bbd8551ab8c85f5892fa6ba9c32e01343c3bc8ed2ad59f54411de08\
+                9b193dca452b9699dafe34d124dfe521a956cce4adf58902a4c7b8bcf3d4548848dd2f1bee",
+        )?;
+        let message = MessageWithMetadataBox::decode(OwnedVecByteReader::new(message))?;
+        let message = DecodedMessageWithMetadataBox::try_from(message)?;
+
+        assert_eq!(message.bytes.len(), 393);
+        assert_eq!(message.sender_identity, ThreemaId::try_from("0DA5ME76")?);
+        assert_eq!(message.receiver_identity, ThreemaId::try_from("0HPT9EWD")?);
+        assert_eq!(message.id, MessageId::from_hex("89aa9a7eaff77d96")?);
+        assert_eq!(message.legacy_created_at, 1747416011);
+        assert_eq!(message.flags, MessageFlags(MessageFlags::SEND_PUSH_NOTIFICATION));
+        assert_eq!(message.legacy_sender_nickname, None);
+        let metadata = assert_matches!(message.metadata, Some(metadata) => metadata);
+        assert_eq!(metadata.data, 64..100);
+        assert_eq!(
+            message.nonce,
+            Nonce::from_hex("b2d718b0db179e3e3bcdbf3c2be997490a0349f2e4fbaa43")?,
+        );
+        assert_eq!(message.message_container.data, 140..377);
+
+        Ok(())
     }
 }

@@ -23,10 +23,10 @@ package ch.threema.base.crypto
 
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.SecureRandomUtil
-import com.neilalexander.jnacl.NaCl
+import ch.threema.domain.types.Identity
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
-import kotlin.jvm.Throws
+import kotlin.Throws
 
 private val logger = LoggingUtil.getThreemaLogger("NonceStore")
 
@@ -75,7 +75,7 @@ class NonceFactory(
     fun next(scope: NonceScope): Nonce {
         return sequence {
             while (true) {
-                val nonce = Nonce(nonceProvider.next(NaCl.NONCEBYTES))
+                val nonce = Nonce(nonceProvider.next(NaCl.NONCE_BYTES))
                 yield(nonce)
             }
         }
@@ -111,8 +111,8 @@ class NonceFactory(
         nonceStore.insertHashedNonces(scope, nonces)
 
     /**
-     * Insert the hashed nonces. Note that byte arrays of length [NaCl.NONCEBYTES] will be hashed with HMAC-SHA256 using the [identity] as the key
-     * before being inserted if [identity] is not null. Nonces with a different length than 32 or [NaCl.NONCEBYTES] bytes will be discarded.
+     * Insert the hashed nonces. Note that byte arrays of length [NaCl.NONCE_BYTES] will be hashed with HMAC-SHA256 using the [identity] as the key
+     * before being inserted if [identity] is not null. Nonces with a different length than 32 or [NaCl.NONCE_BYTES] bytes will be discarded.
      *
      * @throws NoSuchAlgorithmException if the algorithm is not available on the device
      * @throws InvalidKeyException if the [identity] is not null and not suitable as key
@@ -120,7 +120,7 @@ class NonceFactory(
      * @return true if all nonces were inserted successfully and false if at least one nonce was skipped
      */
     @Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
-    fun insertHashedNoncesJava(scope: NonceScope, nonces: List<ByteArray>, identity: String?): Boolean {
+    fun insertHashedNoncesJava(scope: NonceScope, nonces: List<ByteArray>, identity: Identity?): Boolean {
         val sanitizedNonceHashes = nonces.toHashedNonces(identity)
         insertHashedNonces(scope, sanitizedNonceHashes.filterNotNull())
         return !sanitizedNonceHashes.contains(null)
@@ -128,15 +128,15 @@ class NonceFactory(
 
     /**
      * Converts the byte arrays to hashed nonces. If the length already matches 32 bytes, then we assume that it is already a hashed nonce. If the
-     * length is [NaCl.NONCEBYTES], we first hash it if [identity] is not null.
+     * length is [NaCl.NONCE_BYTES], we first hash it if [identity] is not null.
      *
      * @throws NoSuchAlgorithmException if the algorithm is not available on the device
      * @throws InvalidKeyException if the [identity] is not null and not suitable as key
      */
-    private fun List<ByteArray>.toHashedNonces(identity: String?): List<HashedNonce?> = map { nonceBytes ->
+    private fun List<ByteArray>.toHashedNonces(identity: Identity?): List<HashedNonce?> = map { nonceBytes ->
         when (nonceBytes.size) {
             32 -> HashedNonce(nonceBytes)
-            NaCl.NONCEBYTES -> {
+            NaCl.NONCE_BYTES -> {
                 if (identity != null) {
                     Nonce(nonceBytes).hashNonce(identity)
                 } else {

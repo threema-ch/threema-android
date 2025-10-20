@@ -23,22 +23,21 @@ package ch.threema.app.adapters.decorators;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import ch.threema.app.R;
-import ch.threema.app.activities.MessageDetailsActivity;
 import ch.threema.app.emojis.EmojiConversationTextView;
-import ch.threema.app.fragments.ComposeMessageFragment;
+import ch.threema.app.messagedetails.MessageDetailsActivity;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
-import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.QuoteUtil;
@@ -60,7 +59,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
-    protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
+    protected void configureChatMessage(@NonNull final ComposeMessageHolder holder, final int position) {
         if (holder.bodyTextView != null) {
             holder.bodyTextView.setMovementMethod(LinkMovementMethod.getInstance());
             String messageText = this.getMessageModel().getBody();
@@ -90,9 +89,9 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
                                 R.drawable.bubble_fade_recv_selector);
                     }
                     holder.readOnButton.setOnClickListener(view -> {
-                        Intent intent = new Intent(helper.getFragment().getContext(), MessageDetailsActivity.class);
-                        IntentDataUtil.append(this.getMessageModel(), intent);
-                        helper.getFragment().startActivity(intent);
+                        helper.getFragment().startActivity(
+                            MessageDetailsActivity.createIntent(helper.getFragment().getContext(), getMessageModel())
+                        );
                     });
                     isTruncated = true;
                 } else {
@@ -102,7 +101,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
             }
 
             LinkifyUtil.getInstance().linkify(
-                (ComposeMessageFragment) helper.getFragment(),
+                helper.getFragment(),
                 holder.bodyTextView,
                 this.getMessageModel(),
                 true,
@@ -128,7 +127,7 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
 
     @Nullable
     private QuoteUtil.QuoteContent configureQuote(final ComposeMessageHolder holder, final AbstractMessageModel messageModel) {
-        QuoteUtil.QuoteContent content = QuoteUtil.getQuoteContent(
+        final @Nullable QuoteUtil.QuoteContent content = QuoteUtil.getQuoteContent(
             messageModel,
             this.helper.getMessageReceiver(),
             false,
@@ -139,65 +138,70 @@ public class TextChatAdapterDecorator extends ChatAdapterDecorator {
             this.helper.getFileService()
         );
 
-        if (content != null) {
-            if (holder.secondaryTextView instanceof EmojiConversationTextView) {
-                ((EmojiConversationTextView) holder.secondaryTextView).setFade(
-                    TestUtil.isEmptyOrNull(filterString) &&
-                        content.quotedText != null &&
-                        content.quotedText.length() > helper.getMaxQuoteTextLength());
-                holder.secondaryTextView.setText(
-                    formatTextString(content.quotedText, this.filterString, helper.getMaxQuoteTextLength() + 8),
-                    TextView.BufferType.SPANNABLE);
+        if (content == null) {
+            return null;
+        }
+
+        if (holder.secondaryTextView instanceof EmojiConversationTextView) {
+            ((EmojiConversationTextView) holder.secondaryTextView).setFade(
+                TestUtil.isEmptyOrNull(filterString) && content.quotedText.length() > helper.getMaxQuoteTextLength()
+            );
+            holder.secondaryTextView.setText(
+                formatTextString(content.quotedText, this.filterString, helper.getMaxQuoteTextLength() + 8),
+                TextView.BufferType.SPANNABLE
+            );
+        }
+
+        final @Nullable ContactModel contactModel = this.helper.getContactService().getByIdentity(content.identity);
+        if (contactModel != null) {
+            if (holder.tertiaryTextView != null) {
+                holder.tertiaryTextView.setText(NameUtil.getQuoteName(contactModel, this.getUserService()));
+                holder.tertiaryTextView.setVisibility(View.VISIBLE);
             }
 
-            ContactModel contactModel = this.helper.getContactService().getByIdentity(content.identity);
-            if (contactModel != null) {
-                if (holder.tertiaryTextView != null) {
-                    holder.tertiaryTextView.setText(NameUtil.getQuoteName(contactModel, this.getUserService()));
-                    holder.tertiaryTextView.setVisibility(View.VISIBLE);
-                }
-
-                int barColor = ConfigUtils.getAccentColor(getContext());
-
+            if (holder.quoteBar != null) {
+                // Use the default quote bar color-state-list and maybe replace it with an identity specific static color
+                @NonNull ColorStateList barColor = getContext().getColorStateList(R.color.bubble_quote_bar_default_colorstatelist);
                 if (!helper.getMyIdentity().equals(content.identity)) {
                     if (getMessageModel() instanceof GroupMessageModel) {
                         if (this.identityColors != null && this.identityColors.containsKey(content.identity)) {
-                            barColor = this.identityColors.get(content.identity);
+                            final @Nullable @ColorInt Integer identityColor = this.identityColors.get(content.identity);
+                            if (identityColor != null) {
+                                barColor = ColorStateList.valueOf(identityColor);
+                            }
                         }
                     } else {
-                        barColor = contactModel.getThemedColor(getContext());
+                        barColor = ColorStateList.valueOf(contactModel.getIdColor().getThemedColor(getContext()));
                     }
                 }
-                if (holder.quoteBar != null) {
-                    holder.quoteBar.setBackgroundColor(barColor);
-                    holder.quoteBar.setVisibility(View.VISIBLE);
-                }
+                holder.quoteBar.setBackgroundTintList(barColor);
+                holder.quoteBar.setVisibility(View.VISIBLE);
+            }
+        } else {
+            if (holder.tertiaryTextView != null) {
+                holder.tertiaryTextView.setVisibility(View.GONE);
+            }
+            holder.quoteBar.setVisibility(View.GONE);
+        }
+
+        holder.bodyTextView.setText(formatTextString(content.bodyText, this.filterString, helper.getMaxBubbleTextLength() + 8));
+        holder.bodyTextView.setVisibility(View.VISIBLE);
+
+        if (holder.quoteThumbnail != null) {
+            if (content.thumbnail != null) {
+                holder.quoteThumbnail.setImageBitmap(content.thumbnail);
+                holder.quoteThumbnail.setVisibility(View.VISIBLE);
             } else {
-                if (holder.tertiaryTextView != null) {
-                    holder.tertiaryTextView.setVisibility(View.GONE);
-                }
-                holder.quoteBar.setVisibility(View.GONE);
+                holder.quoteThumbnail.setVisibility(View.GONE);
             }
+        }
 
-            holder.bodyTextView.setText(formatTextString(content.bodyText, this.filterString, helper.getMaxBubbleTextLength() + 8));
-            holder.bodyTextView.setVisibility(View.VISIBLE);
-
-            if (holder.quoteThumbnail != null) {
-                if (content.thumbnail != null) {
-                    holder.quoteThumbnail.setImageBitmap(content.thumbnail);
-                    holder.quoteThumbnail.setVisibility(View.VISIBLE);
-                } else {
-                    holder.quoteThumbnail.setVisibility(View.GONE);
-                }
-            }
-
-            if (holder.quoteTypeImage != null) {
-                if (content.icon != null) {
-                    holder.quoteTypeImage.setImageResource(content.icon);
-                    holder.quoteTypeImage.setVisibility(View.VISIBLE);
-                } else {
-                    holder.quoteTypeImage.setVisibility(View.GONE);
-                }
+        if (holder.quoteTypeImage != null) {
+            if (content.icon != null) {
+                holder.quoteTypeImage.setImageResource(content.icon);
+                holder.quoteTypeImage.setVisibility(View.VISIBLE);
+            } else {
+                holder.quoteTypeImage.setVisibility(View.GONE);
             }
         }
         return content;

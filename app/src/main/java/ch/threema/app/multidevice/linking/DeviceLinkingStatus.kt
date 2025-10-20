@@ -21,7 +21,7 @@
 
 package ch.threema.app.multidevice.linking
 
-import ch.threema.base.utils.toHexString
+import ch.threema.common.toHexString
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 

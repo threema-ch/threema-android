@@ -1,7 +1,7 @@
 [package]
 name = "libthreema"
 version = "0.1.0"
-description = "One library to bind them all"
+description = "A suite of protocol implementations, utilities and FFI bindings tailored for Threema clients"
 authors = ["Threema GmbH"]
 license = "AGPL-3.0-only"
 readme = "../README.md"
@@ -18,16 +18,17 @@ crate-type = ["lib", "staticlib", "cdylib"]
 workspace = true
 
 [dependencies]
-argon2 = { version = "0.5", default-features = false, features = ["alloc"] }
 aead = { version = "0.5", default-features = false, features = [
     "alloc",
     "rand_core",
     "std",
 ] }
+argon2 = { version = "0.5", default-features = false, features = ["alloc"] }
 blake2 = { version = "0.10", default-features = false, features = [
     "std",
     # "zeroize",
 ] }
+chacha20 = { version = "0.9", features = ["zeroize"] }
 chacha20poly1305 = { version = "0.10", default-features = false, features = [
     "alloc",
 ] }
@@ -37,14 +38,18 @@ crypto_secretbox = { version = "0.1", default-features = false, features = [
     "alloc",
     "salsa20",
 ] }
-data-encoding = "2.6"
+data-encoding = "2"
 digest = "0.10"
 duplicate = "2"
+ed25519-dalek = "2"
 educe = { version = "0.6", default-features = false, features = ["Debug"] }
+form_urlencoded = "1"
 hmac = { version = "0.12", default-features = false }
+itertools = "0.14"
 libthreema-macros = { path = "../macros" }
 pbkdf2 = "0.12"
-prost = "0.13"
+poly1305 = { version = "0.8", default-features = false, features = ["zeroize"] }
+prost = "0.14"
 rand = "0.8"
 regex = "1"
 salsa20 = { version = "0.10", default-features = false, features = [
@@ -53,13 +58,14 @@ salsa20 = { version = "0.10", default-features = false, features = [
 ] }
 scrypt = { version = "0.11", default-features = false }
 serde = { version = "1", features = ["alloc", "derive"] }
-serde_repr = "0.1"
 serde_json = "1"
+serde_repr = "0.1"
 sha2 = { version = "0.10", default-features = false, features = [
     "std",
     # "zeroize",
 ] }
 strum = { version = "0.27", features = ["derive"] }
+subtle = { version = "2", features = ["const-generics"] }
 thiserror = "2"
 tracing = "0.1"
 x25519-dalek = { version = "2", features = [
@@ -76,14 +82,20 @@ uniffi = { version = "0.29", optional = true }
 getrandom = { version = "0.2", features = ["js"], optional = true }
 js-sys = { version = "0.3", optional = true }
 serde_bytes = { version = "0.11", optional = true }
-tsify-next = { version = "0.5", features = ["js"], optional = true }
+tsify = { version = "0.5", features = ["js"], optional = true }
 wasm-bindgen = { version = "0.2", optional = true }
 web-time = { version = "1", optional = true }
 # CLI
-clap = { version = "4", features = ["derive"], optional = true }
+anyhow = { version = "1", optional = true }
+clap = { version = "4", features = ["cargo", "derive"], optional = true }
+reqwest = { version = "0.12", optional = true }
 
 [dev-dependencies]
 anyhow = "1"
+assert_matches = "1.5"
+derive_builder = "0.20"
+rstest = "0.26"
+rstest_reuse = "0.7"
 tokio = { version = "1", default-features = false, features = [
     "io-util",
     "macros",
@@ -94,29 +106,53 @@ tokio = { version = "1", default-features = false, features = [
     "sync",
     "time",
 ] }
+tracing-subscriber = "0.3"
 
 [build-dependencies]
-prost-build = "0.13"
+prost-build = "0.14"
 # Bindings: UniFFI
 uniffi = { version = "0.29", features = ["build"], optional = true }
 
 [features]
+slow_tests = []
 uniffi = ["dep:tracing-subscriber", "dep:uniffi"]
 wasm = [
     "dep:getrandom",
     "dep:js-sys",
     "dep:serde_bytes",
     "dep:tracing-subscriber",
-    "dep:tsify-next",
+    "dep:tsify",
     "dep:wasm-bindgen",
     "dep:web-time",
 ]
-cli = ["dep:tracing-subscriber", "dep:clap"]
+cli = ["dep:tracing-subscriber", "dep:anyhow", "dep:clap", "dep:reqwest"]
 
 [[example]]
-name = "csp"
+name = "csp-e2e-receive"
+path = "examples/bin/csp_e2e_receive.rs"
 required-features = ["cli"]
 
 [[example]]
-name = "d2d_rendezvous"
+name = "csp-login"
+path = "examples/bin/csp_login.rs"
+required-features = ["cli"]
+
+[[example]]
+name = "csp-ping-pong"
+path = "examples/bin/csp_ping_pong.rs"
+required-features = ["cli"]
+
+[[example]]
+name = "d2d-rendezvous"
+path = "examples/bin/d2d_rendezvous.rs"
+required-features = ["cli"]
+
+[[example]]
+name = "identity-create"
+path = "examples/bin/identity_create.rs"
+required-features = ["cli"]
+
+[[example]]
+name = "remote-secret"
+path = "examples/bin/remote_secret.rs"
 required-features = ["cli"]

@@ -12,6 +12,6 @@
         android:gravity="left"
         android:maxLines="1"
         android:text="Text"
-        android:textAppearance="@style/Threema.Text.Overline" />
+        android:textAppearance="@style/Threema.TextAppearance.Overline" />
 
 </FrameLayout>

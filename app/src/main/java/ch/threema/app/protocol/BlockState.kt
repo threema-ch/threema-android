@@ -26,6 +26,7 @@ import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.GroupService
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.stores.ContactStore
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 
 /**
@@ -60,7 +61,7 @@ enum class BlockState(private val isBlocked: Boolean) {
 }
 
 fun runIdentityBlockedSteps(
-    identity: String,
+    identity: Identity,
     contactModelRepository: ContactModelRepository,
     contactStore: ContactStore,
     groupService: GroupService,
@@ -82,7 +83,7 @@ fun runIdentityBlockedSteps(
     val contactModel = contactModelRepository.getByIdentity(identity)
         ?: return BlockState.IMPLICITLY_BLOCKED
 
-    if (contactModel.data.value?.acquaintanceLevel == AcquaintanceLevel.DIRECT) {
+    if (contactModel.data?.acquaintanceLevel == AcquaintanceLevel.DIRECT) {
         return BlockState.NOT_BLOCKED
     }
 

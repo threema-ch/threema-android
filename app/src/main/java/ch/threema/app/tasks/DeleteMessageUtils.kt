@@ -88,7 +88,7 @@ private fun runCommonDeleteMessageReceiveSteps(
 
     // 3. If the `message` is not deletable because of its type, discard the message and abort these
     //    steps.
-    if (!MessageUtil.canDeleteRemotely(message.type)) {
+    if (!MessageUtil.doesMessageTypeAllowRemoteDeletion(message.type)) {
         logger.warn("Delete Message: Message of type {} cannot be deleted", message.type)
         return null
     }

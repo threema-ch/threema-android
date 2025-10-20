@@ -22,6 +22,8 @@
 package ch.threema.app.startup
 
 import app.cash.turbine.test
+import ch.threema.app.startup.models.AppSystem
+import ch.threema.app.startup.models.SystemStatus
 import ch.threema.app.systemupdates.SystemUpdateState
 import ch.threema.common.stateFlowOf
 import ch.threema.storage.DatabaseState
@@ -30,19 +32,30 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 
 class AppStartupMonitorImplTest {
     @Test
-    fun `not ready if not initialized`() = runTest {
+    fun `not ready before onServiceManagerReady is called`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
 
         assertEquals(
+            mapOf(
+                AppSystem.REMOTE_SECRET to SystemStatus.UNKNOWN,
+                AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
+                AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
+            ),
+            appStartupMonitor.observeSystems().first(),
+        )
+        assertEquals(
             setOf(
-                AppStartupMonitor.AppSystem.SYSTEM_UPDATES,
-                AppStartupMonitor.AppSystem.DATABASE_UPDATES,
+                AppSystem.SERVICE_MANAGER,
             ),
             appStartupMonitor.observePendingSystems().first(),
         )
@@ -50,17 +63,26 @@ class AppStartupMonitorImplTest {
     }
 
     @Test
-    fun `database not ready and system updates not done`() = runTest {
+    fun `service manager ready after onServiceManagerReady is called, database and system updates not ready`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.init(
+        appStartupMonitor.onServiceManagerReady(
             databaseStateFlow = stateFlowOf(DatabaseState.INIT),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.INIT),
         )
 
         assertEquals(
+            mapOf(
+                AppSystem.REMOTE_SECRET to SystemStatus.READY,
+                AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                AppSystem.SYSTEM_UPDATES to SystemStatus.PENDING,
+                AppSystem.DATABASE_UPDATES to SystemStatus.PENDING,
+            ),
+            appStartupMonitor.observeSystems().first(),
+        )
+        assertEquals(
             setOf(
-                AppStartupMonitor.AppSystem.SYSTEM_UPDATES,
-                AppStartupMonitor.AppSystem.DATABASE_UPDATES,
+                AppSystem.SYSTEM_UPDATES,
+                AppSystem.DATABASE_UPDATES,
             ),
             appStartupMonitor.observePendingSystems().first(),
         )
@@ -68,16 +90,25 @@ class AppStartupMonitorImplTest {
     }
 
     @Test
-    fun `database ready but system updates not done`() = runTest {
+    fun `database and service manager ready but system updates not done`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.init(
+        appStartupMonitor.onServiceManagerReady(
             databaseStateFlow = stateFlowOf(DatabaseState.READY),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.INIT),
         )
 
         assertEquals(
+            mapOf(
+                AppSystem.REMOTE_SECRET to SystemStatus.READY,
+                AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                AppSystem.SYSTEM_UPDATES to SystemStatus.PENDING,
+                AppSystem.DATABASE_UPDATES to SystemStatus.READY,
+            ),
+            appStartupMonitor.observeSystems().first(),
+        )
+        assertEquals(
             setOf(
-                AppStartupMonitor.AppSystem.SYSTEM_UPDATES,
+                AppSystem.SYSTEM_UPDATES,
             ),
             appStartupMonitor.observePendingSystems().first(),
         )
@@ -87,14 +118,23 @@ class AppStartupMonitorImplTest {
     @Test
     fun `database not ready but system updates done`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.init(
+        appStartupMonitor.onServiceManagerReady(
             databaseStateFlow = stateFlowOf(DatabaseState.PREPARING),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.READY),
         )
 
         assertEquals(
+            mapOf(
+                AppSystem.REMOTE_SECRET to SystemStatus.READY,
+                AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                AppSystem.SYSTEM_UPDATES to SystemStatus.READY,
+                AppSystem.DATABASE_UPDATES to SystemStatus.PENDING,
+            ),
+            appStartupMonitor.observeSystems().first(),
+        )
+        assertEquals(
             setOf(
-                AppStartupMonitor.AppSystem.DATABASE_UPDATES,
+                AppSystem.DATABASE_UPDATES,
             ),
             appStartupMonitor.observePendingSystems().first(),
         )
@@ -102,13 +142,22 @@ class AppStartupMonitorImplTest {
     }
 
     @Test
-    fun `database ready and system updates done`() = runTest {
+    fun `everything is ready`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.init(
+        appStartupMonitor.onServiceManagerReady(
             databaseStateFlow = stateFlowOf(DatabaseState.READY),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.READY),
         )
 
+        assertEquals(
+            mapOf(
+                AppSystem.REMOTE_SECRET to SystemStatus.READY,
+                AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                AppSystem.SYSTEM_UPDATES to SystemStatus.READY,
+                AppSystem.DATABASE_UPDATES to SystemStatus.READY,
+            ),
+            appStartupMonitor.observeSystems().first(),
+        )
         assertEquals(
             emptySet(),
             appStartupMonitor.observePendingSystems().first(),
@@ -117,22 +166,138 @@ class AppStartupMonitorImplTest {
     }
 
     @Test
-    fun `not ready after reset`() = runTest {
+    fun `not ready after onServiceManagerDestroyed is called`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.init(
+        appStartupMonitor.onServiceManagerReady(
             databaseStateFlow = stateFlowOf(DatabaseState.READY),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.READY),
         )
-        appStartupMonitor.reset()
+        appStartupMonitor.onServiceManagerDestroyed()
 
         assertEquals(
+            mapOf(
+                AppSystem.REMOTE_SECRET to SystemStatus.UNKNOWN,
+                AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
+                AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
+            ),
+            appStartupMonitor.observeSystems().first(),
+        )
+        assertEquals(
             setOf(
-                AppStartupMonitor.AppSystem.SYSTEM_UPDATES,
-                AppStartupMonitor.AppSystem.DATABASE_UPDATES,
+                AppSystem.SERVICE_MANAGER,
             ),
             appStartupMonitor.observePendingSystems().first(),
         )
         assertFalse(appStartupMonitor.isReady())
+    }
+
+    @Test
+    fun `observing systems`() = runTest {
+        val databaseStateFlow = MutableStateFlow(DatabaseState.INIT)
+        val systemUpdateState = MutableStateFlow(SystemUpdateState.INIT)
+        val appStartupMonitor = AppStartupMonitorImpl()
+
+        appStartupMonitor.observeSystems().test {
+            expectItem(
+                mapOf(
+                    AppSystem.REMOTE_SECRET to SystemStatus.UNKNOWN,
+                    AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                    AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
+                    AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
+                ),
+            )
+
+            launch {
+                appStartupMonitor.whileFetchingRemoteSecret {
+                    delay(1.seconds)
+                }
+            }
+            expectItem(
+                mapOf(
+                    AppSystem.REMOTE_SECRET to SystemStatus.PENDING,
+                    AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                    AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
+                    AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
+                ),
+            )
+            expectItem(
+                mapOf(
+                    AppSystem.REMOTE_SECRET to SystemStatus.READY,
+                    AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                    AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
+                    AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
+                ),
+            )
+
+            appStartupMonitor.onServiceManagerReady(
+                databaseStateFlow = databaseStateFlow,
+                systemUpdateStateFlow = systemUpdateState,
+            )
+            expectItem(
+                mapOf(
+                    AppSystem.REMOTE_SECRET to SystemStatus.READY,
+                    AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                    AppSystem.SYSTEM_UPDATES to SystemStatus.PENDING,
+                    AppSystem.DATABASE_UPDATES to SystemStatus.PENDING,
+                ),
+            )
+
+            databaseStateFlow.value = DatabaseState.READY
+            expectItem(
+                mapOf(
+                    AppSystem.REMOTE_SECRET to SystemStatus.READY,
+                    AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                    AppSystem.SYSTEM_UPDATES to SystemStatus.PENDING,
+                    AppSystem.DATABASE_UPDATES to SystemStatus.READY,
+                ),
+            )
+
+            systemUpdateState.value = SystemUpdateState.READY
+            expectItem(
+                mapOf(
+                    AppSystem.REMOTE_SECRET to SystemStatus.READY,
+                    AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                    AppSystem.SYSTEM_UPDATES to SystemStatus.READY,
+                    AppSystem.DATABASE_UPDATES to SystemStatus.READY,
+                ),
+            )
+
+            appStartupMonitor.onServiceManagerDestroyed()
+            expectItem(
+                mapOf(
+                    AppSystem.REMOTE_SECRET to SystemStatus.UNKNOWN,
+                    AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                    AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
+                    AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
+                ),
+            )
+
+            val databaseStateFlow2 = MutableStateFlow(DatabaseState.PREPARING)
+            val systemUpdateState2 = MutableStateFlow(SystemUpdateState.READY)
+            appStartupMonitor.onServiceManagerReady(
+                databaseStateFlow = databaseStateFlow2,
+                systemUpdateStateFlow = systemUpdateState2,
+            )
+            expectItem(
+                mapOf(
+                    AppSystem.REMOTE_SECRET to SystemStatus.READY,
+                    AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                    AppSystem.SYSTEM_UPDATES to SystemStatus.READY,
+                    AppSystem.DATABASE_UPDATES to SystemStatus.PENDING,
+                ),
+            )
+
+            databaseStateFlow2.value = DatabaseState.READY
+            expectItem(
+                mapOf(
+                    AppSystem.REMOTE_SECRET to SystemStatus.READY,
+                    AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                    AppSystem.SYSTEM_UPDATES to SystemStatus.READY,
+                    AppSystem.DATABASE_UPDATES to SystemStatus.READY,
+                ),
+            )
+        }
     }
 
     @Test
@@ -144,63 +309,107 @@ class AppStartupMonitorImplTest {
         appStartupMonitor.observePendingSystems().test {
             expectItem(
                 setOf(
-                    AppStartupMonitor.AppSystem.DATABASE_UPDATES,
-                    AppStartupMonitor.AppSystem.SYSTEM_UPDATES,
+                    AppSystem.SERVICE_MANAGER,
                 ),
             )
 
-            appStartupMonitor.init(
+            launch {
+                appStartupMonitor.whileFetchingRemoteSecret {
+                    delay(1.seconds)
+                }
+            }
+            expectItem(
+                setOf(
+                    AppSystem.REMOTE_SECRET,
+                    AppSystem.SERVICE_MANAGER,
+                ),
+            )
+            expectItem(
+                setOf(
+                    AppSystem.SERVICE_MANAGER,
+                ),
+            )
+
+            appStartupMonitor.onServiceManagerReady(
                 databaseStateFlow = databaseStateFlow,
                 systemUpdateStateFlow = systemUpdateState,
             )
-
-            databaseStateFlow.value = DatabaseState.READY
-            expectItem(setOf(AppStartupMonitor.AppSystem.SYSTEM_UPDATES))
-
-            systemUpdateState.value = SystemUpdateState.READY
-            expectItem(emptySet())
-
-            appStartupMonitor.reset()
             expectItem(
                 setOf(
-                    AppStartupMonitor.AppSystem.DATABASE_UPDATES,
-                    AppStartupMonitor.AppSystem.SYSTEM_UPDATES,
+                    AppSystem.SYSTEM_UPDATES,
+                    AppSystem.DATABASE_UPDATES,
+                ),
+            )
+
+            databaseStateFlow.value = DatabaseState.READY
+            expectItem(
+                setOf(
+                    AppSystem.SYSTEM_UPDATES,
+                ),
+            )
+
+            systemUpdateState.value = SystemUpdateState.READY
+            expectItem(
+                emptySet(),
+            )
+
+            appStartupMonitor.onServiceManagerDestroyed()
+            expectItem(
+                setOf(
+                    AppSystem.SERVICE_MANAGER,
                 ),
             )
 
             val databaseStateFlow2 = MutableStateFlow(DatabaseState.PREPARING)
             val systemUpdateState2 = MutableStateFlow(SystemUpdateState.READY)
-            appStartupMonitor.init(
+            appStartupMonitor.onServiceManagerReady(
                 databaseStateFlow = databaseStateFlow2,
                 systemUpdateStateFlow = systemUpdateState2,
             )
-            expectItem(setOf(AppStartupMonitor.AppSystem.DATABASE_UPDATES))
+            expectItem(
+                setOf(
+                    AppSystem.DATABASE_UPDATES,
+                ),
+            )
 
             databaseStateFlow2.value = DatabaseState.READY
-            expectItem(emptySet())
+            expectItem(
+                emptySet(),
+            )
         }
     }
 
     @Test
     fun `error reporting`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.init(
+        appStartupMonitor.onServiceManagerReady(
             databaseStateFlow = stateFlowOf(DatabaseState.READY),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.READY),
         )
         assertFalse(appStartupMonitor.hasErrors())
 
-        appStartupMonitor.reportAppStartupError(AppStartupMonitor.AppStartupError("TEST1"))
-        appStartupMonitor.reportAppStartupError(AppStartupMonitor.AppStartupError("TEST2"))
+        appStartupMonitor.reportUnexpectedAppStartupError("TEST1")
+        appStartupMonitor.reportAppStartupError(AppStartupError.FailedToFetchRemoteSecret)
+        appStartupMonitor.reportUnexpectedAppStartupError("TEST2")
 
         assertTrue(appStartupMonitor.hasErrors())
         assertEquals(
             setOf(
-                AppStartupMonitor.AppStartupError("TEST1"),
-                AppStartupMonitor.AppStartupError("TEST2"),
+                AppStartupError.Unexpected("TEST1"),
+                AppStartupError.FailedToFetchRemoteSecret,
+                AppStartupError.Unexpected("TEST2"),
             ),
             appStartupMonitor.observeErrors().first(),
         )
         assertFalse(appStartupMonitor.isReady())
+
+        appStartupMonitor.clearTemporaryStartupErrors()
+        assertEquals(
+            setOf(
+                AppStartupError.Unexpected("TEST1"),
+                AppStartupError.Unexpected("TEST2"),
+            ),
+            appStartupMonitor.observeErrors().first(),
+        )
     }
 }

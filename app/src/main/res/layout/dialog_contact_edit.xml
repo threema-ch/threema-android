@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingTop="@dimen/dialog_margin_below_title"
-    android:paddingLeft="@dimen/edittext_padding"
-    android:paddingRight="@dimen/edittext_padding"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingLeft="@dimen/edittext_padding"
+    android:paddingTop="@dimen/dialog_margin_below_title"
+    android:paddingRight="@dimen/edittext_padding">
 
     <ch.threema.app.ui.AvatarEditView
         android:id="@+id/avatar_edit_view"
@@ -18,15 +18,15 @@
         android:visibility="visible" />
 
     <LinearLayout
-        android:orientation="vertical"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent">
+        android:orientation="vertical">
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/firstname_layout"
-            android:hint="@string/first_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/first_name"
             app:endIconMode="clear_text">
 
             <ch.threema.app.emojis.EmojiEditText
@@ -34,14 +34,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:capitalize="words"
-                android:textColor="?attr/colorOnBackground"
-                android:textStyle="normal"
-                android:singleLine="true"
-                android:nextFocusRight="@+id/last_name"
-                android:maxLines="1"
-                android:inputType="textPersonName|textCapWords"
                 android:imeOptions="actionNext"
-                android:maxLength="50">
+                android:inputType="textPersonName|textCapWords"
+                android:maxLength="50"
+                android:maxLines="1"
+                android:nextFocusRight="@+id/last_name"
+                android:singleLine="true"
+                android:textColor="?attr/colorOnBackground"
+                android:textStyle="normal">
 
                 <requestFocus />
             </ch.threema.app.emojis.EmojiEditText>
@@ -50,9 +50,9 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/lastname_layout"
-            android:hint="@string/last_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:hint="@string/last_name"
             app:endIconMode="clear_text">
 
             <ch.threema.app.emojis.EmojiEditText
@@ -60,14 +60,14 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:capitalize="words"
-                android:textColor="?attr/colorOnBackground"
-                android:textStyle="normal"
-                android:singleLine="true"
-                android:nextFocusRight="@+id/first_name"
-                android:maxLines="1"
-                android:inputType="textPersonName|textCapWords"
                 android:imeOptions="actionNext"
-                android:maxLength="50" />
+                android:inputType="textPersonName|textCapWords"
+                android:maxLength="50"
+                android:maxLines="1"
+                android:nextFocusRight="@+id/first_name"
+                android:singleLine="true"
+                android:textColor="?attr/colorOnBackground"
+                android:textStyle="normal" />
 
         </com.google.android.material.textfield.TextInputLayout>
 

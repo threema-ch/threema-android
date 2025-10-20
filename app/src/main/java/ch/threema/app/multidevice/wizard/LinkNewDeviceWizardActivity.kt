@@ -24,12 +24,12 @@ package ch.threema.app.multidevice.wizard
 import android.animation.Animator
 import android.animation.ObjectAnimator
 import android.app.Activity
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.viewModels
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -49,6 +49,7 @@ import ch.threema.app.multidevice.wizard.steps.LinkNewDevicePFSInfoFragment
 import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceResultFragment
 import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceScanQrFragment
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -57,6 +58,7 @@ import com.google.android.material.bottomsheet.BottomSheetDragHandleView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import java.lang.ref.WeakReference
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceWizardActivity")
 
@@ -66,7 +68,7 @@ class LinkNewDeviceWizardActivity : ThreemaActivity() {
     }
 
     private var currentFragment: Fragment? = null
-    private val viewModel: LinkNewDeviceWizardViewModel by viewModels()
+    private val viewModel: LinkNewDeviceWizardViewModel by viewModel()
 
     private var reallyCancelDialog: WeakReference<AlertDialog>? = null
 
@@ -296,5 +298,9 @@ class LinkNewDeviceWizardActivity : ThreemaActivity() {
             onAvailable(peekHeight.coerceAtLeast(0))
             windowInsets
         }
+    }
+
+    companion object {
+        fun createIntent(context: Context) = buildActivityIntent<LinkNewDeviceWizardActivity>(context)
     }
 }

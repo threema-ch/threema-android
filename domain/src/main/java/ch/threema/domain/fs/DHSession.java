@@ -21,27 +21,28 @@
 
 package ch.threema.domain.fs;
 
-import com.neilalexander.jnacl.NaCl;
+import ch.threema.base.crypto.NaCl;
 
 import org.slf4j.Logger;
 
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.crypto.ThreemaKDF;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataMessage;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
+import ch.threema.libthreema.CryptoException;
+import ch.threema.libthreema.LibthreemaKt;
 import ch.threema.protobuf.csp.e2e.fs.Encapsulated;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 import ch.threema.protobuf.csp.e2e.fs.VersionRange;
-import ove.crypto.digest.Blake2b;
 
 /**
  * ECDH key exchange and ratcheting session for forward security
@@ -56,10 +57,16 @@ public class DHSession {
 
     public static final Version SUPPORTED_VERSION_MIN = Version.V1_0;
     public static final Version SUPPORTED_VERSION_MAX = Version.V1_2;
-    public static final VersionRange SUPPORTED_VERSION_RANGE = VersionRange.newBuilder()
+
+    private static final VersionRange SUPPORTED_VERSION_RANGE = VersionRange.newBuilder()
         .setMin(SUPPORTED_VERSION_MIN.getNumber())
         .setMax(SUPPORTED_VERSION_MAX.getNumber())
         .build();
+
+    // We use a getter here instead of making [SUPPORTED_VERSION_RANGE] public, so that we can override it in tests
+    public static VersionRange getSupportedVersionRange() {
+        return SUPPORTED_VERSION_RANGE;
+    }
 
     public enum State {
         /**
@@ -262,40 +269,41 @@ public class DHSession {
      * Create a new DHSession as an initiator, using a new random session ID and
      * a new random private key.
      */
-    public DHSession(@NonNull Contact contact, @NonNull IdentityStoreInterface identityStoreInterface) {
+    public DHSession(@NonNull Contact contact, @NonNull IdentityStore identityStore) {
         this.id = new DHSessionId();
-        this.myIdentity = identityStoreInterface.getIdentity();
+        this.myIdentity = identityStore.getIdentity();
         this.peerIdentity = contact.getIdentity();
 
-        this.myEphemeralPublicKey = new byte[NaCl.PUBLICKEYBYTES];
-        this.myEphemeralPrivateKey = new byte[NaCl.SECRETKEYBYTES];
-        NaCl.genkeypair(this.myEphemeralPublicKey, this.myEphemeralPrivateKey);
+        this.myEphemeralPublicKey = new byte[NaCl.PUBLIC_KEY_BYTES];
+        this.myEphemeralPrivateKey = new byte[NaCl.SECRET_KEY_BYTES];
+        NaCl.generateKeypairInPlace(myEphemeralPublicKey, myEphemeralPrivateKey);
 
-        byte[] dhStaticStatic = identityStoreInterface.calcSharedSecret(contact.getPublicKey());
-        byte[] dhStaticEphemeral = new NaCl(myEphemeralPrivateKey, contact.getPublicKey()).getPrecomputed();
+        byte[] dhStaticStatic = identityStore.calcSharedSecret(contact.getPublicKey());
+        byte[] dhStaticEphemeral = new NaCl(myEphemeralPrivateKey, contact.getPublicKey()).sharedSecret;
         this.initKDF2DH(dhStaticStatic, dhStaticEphemeral, false);
     }
 
     /**
      * Create a new DHSession as a responder.
      */
-    public DHSession(@NonNull DHSessionId id,
-                     @NonNull VersionRange peerSupportedVersionRange,
-                     byte[] peerEphemeralPublicKey,
-                     Contact contact,
-                     IdentityStoreInterface identityStoreInterface) throws BadMessageException {
-        final Version negotiatedVersion = DHSession.negotiateMajorAndMinorVersion(
-            SUPPORTED_VERSION_RANGE, peerSupportedVersionRange);
+    public DHSession(
+        @NonNull DHSessionId id,
+        @NonNull VersionRange peerSupportedVersionRange,
+        byte[] peerEphemeralPublicKey,
+        Contact contact,
+        IdentityStore identityStore
+    ) throws BadMessageException {
+        final Version negotiatedVersion = DHSession.negotiateMajorAndMinorVersion(getSupportedVersionRange(), peerSupportedVersionRange);
 
-        if (peerEphemeralPublicKey.length != NaCl.SECRETKEYBYTES) {
+        if (peerEphemeralPublicKey.length != NaCl.SECRET_KEY_BYTES) {
             throw new BadMessageException("Invalid peer ephemeral public key length");
         }
 
         this.id = id;
-        this.myIdentity = identityStoreInterface.getIdentity();
+        this.myIdentity = identityStore.getIdentity();
         this.peerIdentity = contact.getIdentity();
 
-        this.myEphemeralPublicKey = completeKeyExchange(peerEphemeralPublicKey, contact, identityStoreInterface);
+        this.myEphemeralPublicKey = completeKeyExchange(peerEphemeralPublicKey, contact, identityStore);
         this.current4DHVersions = DHVersions.negotiated(negotiatedVersion);
     }
 
@@ -697,7 +705,7 @@ public class DHSession {
         @NonNull VersionRange peerSupportedVersionRange,
         byte[] peerEphemeralPublicKey,
         @NonNull Contact contact,
-        @NonNull IdentityStoreInterface identityStoreInterface
+        @NonNull IdentityStore identityStore
     ) throws DHSession.MissingEphemeralPrivateKeyException, BadMessageException {
         // Note: This mitigates accepting twice because we remove the ephemeral private key after the first accept.
         if (myEphemeralPrivateKey == null) {
@@ -705,14 +713,13 @@ public class DHSession {
         }
 
         // Determine negotiated version
-        final Version negotiatedVersion = DHSession.negotiateMajorAndMinorVersion(
-            SUPPORTED_VERSION_RANGE, peerSupportedVersionRange);
+        final Version negotiatedVersion = DHSession.negotiateMajorAndMinorVersion(getSupportedVersionRange(), peerSupportedVersionRange);
 
         // Derive 4DH root key
-        byte[] dhStaticStatic = identityStoreInterface.calcSharedSecret(contact.getPublicKey());
-        byte[] dhStaticEphemeral = new NaCl(myEphemeralPrivateKey, contact.getPublicKey()).getPrecomputed();
-        byte[] dhEphemeralStatic = identityStoreInterface.calcSharedSecret(peerEphemeralPublicKey);
-        byte[] dhEphemeralEphemeral = new NaCl(myEphemeralPrivateKey, peerEphemeralPublicKey).getPrecomputed();
+        byte[] dhStaticStatic = identityStore.calcSharedSecret(contact.getPublicKey());
+        byte[] dhStaticEphemeral = new NaCl(myEphemeralPrivateKey, contact.getPublicKey()).sharedSecret;
+        byte[] dhEphemeralStatic = identityStore.calcSharedSecret(peerEphemeralPublicKey);
+        byte[] dhEphemeralEphemeral = new NaCl(myEphemeralPrivateKey, peerEphemeralPublicKey).sharedSecret;
         this.initKDF4DH(dhStaticStatic, dhStaticEphemeral, dhEphemeralStatic, dhEphemeralEphemeral);
 
         // Validation complete, update state
@@ -737,28 +744,67 @@ public class DHSession {
     }
 
     protected void initKDF2DH(byte[] dhStaticStatic, byte[] dhStaticEphemeral, boolean peer) {
-        // We can feed the combined 64 bytes directly into BLAKE2b
-        ThreemaKDF kdf = new ThreemaKDF(KDF_PERSONAL);
-        if (peer) {
-            byte[] peerK0 = kdf.deriveKey(KE_SALT_2DH_PREFIX + peerIdentity, Utils.concatByteArrays(dhStaticStatic, dhStaticEphemeral));
-            this.peerRatchet2DH = new KDFRatchet(1, peerK0);
-        } else {
-            byte[] myK0 = kdf.deriveKey(KE_SALT_2DH_PREFIX + myIdentity, Utils.concatByteArrays(dhStaticStatic, dhStaticEphemeral));
-            this.myRatchet2DH = new KDFRatchet(1, myK0);
+        try {
+            // We can feed the combined 64 bytes directly into BLAKE2b
+            if (peer) {
+                byte[] peerK0 = LibthreemaKt.blake2bMac256(
+                    Utils.concatByteArrays(dhStaticStatic, dhStaticEphemeral),
+                    KDF_PERSONAL.getBytes(StandardCharsets.UTF_8),
+                    (KE_SALT_2DH_PREFIX + peerIdentity).getBytes(StandardCharsets.UTF_8),
+                    new byte[0]
+                );
+                this.peerRatchet2DH = new KDFRatchet(1, peerK0);
+            } else {
+                byte[] myK0 = LibthreemaKt.blake2bMac256(
+                    Utils.concatByteArrays(dhStaticStatic, dhStaticEphemeral),
+                    KDF_PERSONAL.getBytes(StandardCharsets.UTF_8),
+                    (KE_SALT_2DH_PREFIX + myIdentity).getBytes(StandardCharsets.UTF_8),
+                    new byte[0]
+                );
+                this.myRatchet2DH = new KDFRatchet(1, myK0);
+            }
+        } catch (CryptoException cryptoException) {
+            logger.error("Failed to compute blake2b hash", cryptoException);
+            throw new Error("Failed to compute blake2b hash", cryptoException);
         }
     }
 
-    protected void initKDF4DH(byte[] dhStaticStatic, byte[] dhStaticEphemeral, byte[] dhEphemeralStatic, byte[] dhEphemeralEphemeral) {
-        // The combined 128 bytes need to be hashed with plain BLAKE2b (512 bit output) first
-        Blake2b.Digest digest = Blake2b.Digest.newInstance();
-        byte[] intermediateHash = digest.digest(Utils.concatByteArrays(dhStaticStatic, dhStaticEphemeral, dhEphemeralStatic, dhEphemeralEphemeral));
+    protected void initKDF4DH(
+        byte[] dhStaticStatic,
+        byte[] dhStaticEphemeral,
+        byte[] dhEphemeralStatic,
+        byte[] dhEphemeralEphemeral
+    ) {
+        try {
+            // The combined 128 bytes need to be hashed with plain BLAKE2b (512 bit output) first
+            byte[] intermediateHash = LibthreemaKt.blake2bMac512(
+                null,
+                new byte[0],
+                new byte[0],
+                Utils.concatByteArrays(dhStaticStatic, dhStaticEphemeral, dhEphemeralStatic, dhEphemeralEphemeral)
+            );
 
-        ThreemaKDF kdf = new ThreemaKDF(KDF_PERSONAL);
-        byte[] myK = kdf.deriveKey(KE_SALT_4DH_PREFIX + myIdentity, intermediateHash);
-        byte[] peerK = kdf.deriveKey(KE_SALT_4DH_PREFIX + peerIdentity, intermediateHash);
+            byte[] myK = LibthreemaKt.blake2bMac256(
+                intermediateHash,
+                KDF_PERSONAL.getBytes(StandardCharsets.UTF_8),
+                (KE_SALT_4DH_PREFIX + myIdentity).getBytes(StandardCharsets.UTF_8),
+                new byte[0]
+            );
 
-        this.myRatchet4DH = new KDFRatchet(1, myK);
-        this.peerRatchet4DH = new KDFRatchet(1, peerK);
+            byte[] peerK = LibthreemaKt.blake2bMac256(
+                intermediateHash,
+                KDF_PERSONAL.getBytes(StandardCharsets.UTF_8),
+                (KE_SALT_4DH_PREFIX + peerIdentity).getBytes(StandardCharsets.UTF_8),
+                new byte[0]
+            );
+
+            this.myRatchet4DH = new KDFRatchet(1, myK);
+            this.peerRatchet4DH = new KDFRatchet(1, peerK);
+
+        } catch (CryptoException cryptoException) {
+            logger.error("Failed to compute blake2b hash", cryptoException);
+            throw new Error("Failed to compute blake2b hash", cryptoException);
+        }
     }
 
     protected void setMyRatchet2DH(@Nullable KDFRatchet myRatchet2DH) {
@@ -820,19 +866,23 @@ public class DHSession {
         return negotiatedVersion;
     }
 
-    private byte[] completeKeyExchange(byte[] peerEphemeralPublicKey, Contact contact, IdentityStoreInterface identityStoreInterface) {
-        byte[] myEphemeralPublicKeyLocal = new byte[NaCl.PUBLICKEYBYTES];
-        byte[] myEphemeralPrivateKeyLocal = new byte[NaCl.SECRETKEYBYTES];
-        NaCl.genkeypair(myEphemeralPublicKeyLocal, myEphemeralPrivateKeyLocal);
+    private byte[] completeKeyExchange(
+        byte[] peerEphemeralPublicKey,
+        Contact contact,
+        IdentityStore identityStore
+    ) {
+        byte[] myEphemeralPublicKeyLocal = new byte[NaCl.PUBLIC_KEY_BYTES];
+        byte[] myEphemeralPrivateKeyLocal = new byte[NaCl.SECRET_KEY_BYTES];
+        NaCl.generateKeypairInPlace(myEphemeralPublicKeyLocal, myEphemeralPrivateKeyLocal);
 
         // Derive 2DH root key
-        byte[] dhStaticStatic = identityStoreInterface.calcSharedSecret(contact.getPublicKey());
-        byte[] dhStaticEphemeral = identityStoreInterface.calcSharedSecret(peerEphemeralPublicKey);
+        byte[] dhStaticStatic = identityStore.calcSharedSecret(contact.getPublicKey());
+        byte[] dhStaticEphemeral = identityStore.calcSharedSecret(peerEphemeralPublicKey);
         this.initKDF2DH(dhStaticStatic, dhStaticEphemeral, true);
 
         // Derive 4DH root key
-        byte[] dhEphemeralStatic = new NaCl(myEphemeralPrivateKeyLocal, contact.getPublicKey()).getPrecomputed();
-        byte[] dhEphemeralEphemeral = new NaCl(myEphemeralPrivateKeyLocal, peerEphemeralPublicKey).getPrecomputed();
+        byte[] dhEphemeralStatic = new NaCl(myEphemeralPrivateKeyLocal, contact.getPublicKey()).sharedSecret;
+        byte[] dhEphemeralEphemeral = new NaCl(myEphemeralPrivateKeyLocal, peerEphemeralPublicKey).sharedSecret;
         this.initKDF4DH(dhStaticStatic, dhStaticEphemeral, dhEphemeralStatic, dhEphemeralEphemeral);
 
         // myPrivateKey is not needed anymore at this point

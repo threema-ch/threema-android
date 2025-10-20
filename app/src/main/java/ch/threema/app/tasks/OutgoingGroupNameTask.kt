@@ -27,13 +27,14 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupNameMessage
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
 class OutgoingGroupNameTask(
     override val groupId: GroupId,
-    override val creatorIdentity: String,
+    override val creatorIdentity: Identity,
     private val groupName: String,
-    override val recipientIdentities: Set<String>,
+    override val recipientIdentities: Set<Identity>,
     messageId: MessageId?,
     serviceManager: ServiceManager,
 ) : OutgoingCspGroupControlMessageTask(serviceManager) {
@@ -54,9 +55,9 @@ class OutgoingGroupNameTask(
     @Serializable
     class OutgoingGroupNameData(
         private val groupId: ByteArray,
-        private val creatorIdentity: String,
+        private val creatorIdentity: Identity,
         private val groupName: String,
-        private val receiverIdentities: Set<String>,
+        private val receiverIdentities: Set<Identity>,
         private val messageId: ByteArray,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =

@@ -55,7 +55,8 @@ import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.localcrypto.MasterKey;
+
+import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
 
 @WorkerThread
 public class SessionWakeUpServiceImpl implements SessionWakeUpService {
@@ -86,10 +87,6 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
     @Nullable
     private ServiceManager serviceManager = null;
 
-    // Master key. Do not access this directly, use getMasterKey instead.
-    @Nullable
-    private final MasterKey masterKey;
-
     // Queue of pending wakeups. Do not access this directly, use getPendingWakeUps instead.
     private final Queue<PendingWakeup> pendingWakeUps = new ArrayDeque<>();
 
@@ -97,7 +94,7 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
     @NonNull
     public synchronized static SessionWakeUpService getInstance() {
         if (instance == null) {
-            instance = new SessionWakeUpServiceImpl(ThreemaApplication.getMasterKey());
+            instance = new SessionWakeUpServiceImpl();
         }
         return instance;
     }
@@ -108,37 +105,23 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
     }
 
     @AnyThread
-    private SessionWakeUpServiceImpl(@Nullable MasterKey masterKey) {
-        this.masterKey = masterKey;
-    }
+    private SessionWakeUpServiceImpl() {}
 
     @NonNull
     private Queue<PendingWakeup> getPendingWakeUps() {
         return this.pendingWakeUps;
     }
 
-    @AnyThread
-    @Nullable
-    private MasterKey getMasterKey() {
-        return this.masterKey;
-    }
-
     private Context getContext() {
         return ThreemaApplication.getAppContext();
     }
 
-    /**
-     * Returns true if...
-     * <p>
-     * - the service manager is available, and
-     * - the master key is available.
-     */
     @AnyThread
     private synchronized boolean isAvailable() {
         if (this.serviceManager == null) {
             this.serviceManager = ThreemaApplication.getServiceManager();
         }
-        return this.serviceManager != null && this.getMasterKey() != null;
+        return this.serviceManager != null;
     }
 
     /**
@@ -152,8 +135,8 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
      */
     @NonNull
     private SessionService getSessionService() throws ThreemaException {
-        if (!this.isAvailable()) {
-            throw new ThreemaException("Service manager or master key unavailable");
+        if (!isAvailable()) {
+            throw new ThreemaException("Service manager unavailable");
         }
         return Objects.requireNonNull(serviceManager).getWebClientServiceManager().getSessionService();
     }
@@ -167,7 +150,7 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
     ) {
         logger.info("Attempting to resume session (public-key={}, version={}, affiliation={})",
             publicKeySha256String, version, affiliationId);
-        if (!this.isAvailable()) {
+        if (!isAvailable()) {
             logger.error("Service unavailable");
             return;
         }
@@ -198,8 +181,7 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
         }
 
         // Handle locked master key
-        final MasterKey masterKey = this.getMasterKey();
-        if (masterKey != null && masterKey.isLocked()) {
+        if (getMasterKeyManager().isLocked()) {
             logger.warn("Master key is locked, scheduling wakeup");
             manager.getHandler().post(new Runnable() {
                 @Override
@@ -352,7 +334,7 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
     @Override
     @AnyThread
     public synchronized void processPendingWakeupsAsync() {
-        if (!this.isAvailable()) {
+        if (!isAvailable()) {
             logger.error("Service unavailable");
             return;
         }
@@ -396,8 +378,7 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
             }
 
             // Try a wakeup
-            final MasterKey masterKey = this.getMasterKey();
-            if (masterKey != null && masterKey.isLocked()) {
+            if (getMasterKeyManager().isLocked()) {
                 logger.error("Cannot wake up {}, master key is locked", pending.publicKeySha256String);
                 failed.add(pending);
                 continue;

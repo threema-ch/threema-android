@@ -24,46 +24,53 @@ package ch.threema.app.services;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 
 import org.slf4j.Logger;
 
 import java.lang.ref.WeakReference;
 
-import ch.threema.app.ThreemaApplication;
+import androidx.annotation.NonNull;
 import ch.threema.app.activities.PinLockActivity;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.BiometricUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.localcrypto.MasterKey;
+import ch.threema.localcrypto.MasterKeyProvider;
+
+import static ch.threema.app.di.DIJavaCompat.getServiceManagerOrNull;
 
 public class ActivityService {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ActivityService");
+
     private final Context context;
     private final LockAppService lockAppService;
     private final PreferenceService preferenceService;
+    @NonNull
+    private final MasterKeyProvider masterKeyProvider;
+
     private WeakReference<Activity> currentActivityReference = new WeakReference<>(null);
 
-    public ActivityService(final Context context, LockAppService lockAppService, PreferenceService preferenceService) {
+    public ActivityService(
+        final Context context,
+        LockAppService lockAppService,
+        PreferenceService preferenceService,
+        @NonNull MasterKeyProvider masterKeyProvider
+    ) {
         this.context = context;
         this.lockAppService = lockAppService;
         this.preferenceService = preferenceService;
+        this.masterKeyProvider = masterKeyProvider;
 
-        this.lockAppService.addOnLockAppStateChanged(new LockAppService.OnLockAppStateChanged() {
-            @Override
-            public boolean changed(final boolean locked) {
-                handLockedState(locked);
-                return false;
-            }
+        this.lockAppService.addOnLockAppStateChanged(locked -> {
+            handleLockedState(locked);
+            return false;
         });
     }
 
-    private synchronized void handLockedState(final boolean locked) {
-        logger.debug("handLockedState currentActivity: " + currentActivityReference.get());
+    private synchronized void handleLockedState(final boolean locked) {
+        logger.debug("handleLockedState currentActivity: " + currentActivityReference.get());
 
-        MasterKey masterKey = ThreemaApplication.getMasterKey();
-        if (masterKey.isLocked()) {
+        if (masterKeyProvider.isLocked()) {
             return;
         }
 
@@ -75,13 +82,12 @@ public class ActivityService {
 
                 if (locked) {
                     if (currentActivityReference.get() != null) {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-                            (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_SYSTEM) ||
-                                preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_BIOMETRIC))) {
+                        if (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_SYSTEM) ||
+                                preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_BIOMETRIC)) {
                             BiometricUtil.showUnlockDialog(currentActivityReference.get(), false, 0, null);
                         } else {
                             try {
-                                Intent intent = new Intent(context, PinLockActivity.class);
+                                Intent intent = PinLockActivity.createIntent(context);
                                 currentActivityReference.get().startActivity(intent);
                                 currentActivityReference.get().overridePendingTransition(0, 0);
                             } catch (Exception x) {
@@ -99,7 +105,7 @@ public class ActivityService {
 
         if (this.lockAppService.checkLock()) {
             if (this.timeLocking()) {
-                this.handLockedState(true);
+                this.handleLockedState(true);
             }
         }
     }
@@ -136,7 +142,7 @@ public class ActivityService {
 
     public static boolean activityResumed(Activity currentActivity) {
         logger.debug("*** App ActivityResumed");
-        var serviceManager = ThreemaApplication.getServiceManager();
+        var serviceManager = getServiceManagerOrNull();
         if (serviceManager != null) {
             serviceManager.getActivityService().resume(currentActivity);
             return true;
@@ -146,7 +152,7 @@ public class ActivityService {
 
     public static void activityPaused(Activity pausedActivity) {
         logger.debug("*** App ActivityPaused");
-        var serviceManager = ThreemaApplication.getServiceManager();
+        var serviceManager = getServiceManagerOrNull();
         if (serviceManager != null) {
             serviceManager.getActivityService().pause(pausedActivity);
         }
@@ -154,14 +160,14 @@ public class ActivityService {
 
     public static void activityDestroyed(Activity destroyedActivity) {
         logger.debug("*** App ActivityDestroyed");
-        var serviceManager = ThreemaApplication.getServiceManager();
+        var serviceManager = getServiceManagerOrNull();
         if (serviceManager != null) {
             serviceManager.getActivityService().destroy(destroyedActivity);
         }
     }
 
     public static void activityUserInteract(Activity interactedActivity) {
-        var serviceManager = ThreemaApplication.getServiceManager();
+        var serviceManager = getServiceManagerOrNull();
         if (serviceManager != null) {
             serviceManager.getActivityService().userInteract(interactedActivity);
         }

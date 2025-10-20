@@ -28,6 +28,7 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
@@ -37,7 +38,7 @@ import java.util.Date
 // TODO(ANDR-2998): Notification sound policy override
 data class DbContact(
     /** The contact identity string. Must be 8 characters long. */
-    val identity: String,
+    val identity: Identity,
     /** The 32-byte public key of the contact. */
     val publicKey: ByteArray,
     /** Timestamp when this contact was added to the contact list. */
@@ -48,8 +49,8 @@ data class DbContact(
     val lastName: String,
     /** Public nickname. */
     val nickname: String?,
-    /** Color index (0-255). */
-    val colorIndex: UByte,
+    /** Color index. */
+    val colorIndex: Int,
     /** Verification level. */
     val verificationLevel: VerificationLevel,
     /** Threema Work verification level. */
@@ -85,7 +86,7 @@ data class DbContact(
 
 data class DbGroup(
     /** The group creator identity string. Must be 8 characters long. */
-    val creatorIdentity: String,
+    val creatorIdentity: Identity,
     /**
      * The group id of the group. It is the hex string representation of the group id as little
      * endian byte array.
@@ -102,7 +103,7 @@ data class DbGroup(
     /** Is archived flag. */
     val isArchived: Boolean,
     /** The color index. */
-    val colorIndex: UByte,
+    val colorIndex: Int,
     /** The group description. */
     val groupDescription: String?,
     /** The group description changed timestamp. */
@@ -142,7 +143,7 @@ data class DbEmojiReaction(
     /** The row id of the message this reaction refers to - see [ch.threema.storage.models.AbstractMessageModel.COLUMN_ID] */
     val messageId: Int,
     /** The identity of the person who reacted. This may differ from the sender of the message */
-    val senderIdentity: String,
+    val senderIdentity: Identity,
     /** The emoji codepoint sequence of the reaction. This can never be empty */
     val emojiSequence: String,
     /** Timestamp when the reaction was locally created. */

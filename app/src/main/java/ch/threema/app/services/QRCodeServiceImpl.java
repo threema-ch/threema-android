@@ -29,17 +29,16 @@ import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
-import com.neilalexander.jnacl.NaCl;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import ch.threema.base.crypto.NaCl;
 
 import org.slf4j.Logger;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 import java.util.HashMap;
 
-import androidx.annotation.IntDef;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.base.utils.Utils;
@@ -47,29 +46,19 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class QRCodeServiceImpl implements QRCodeService {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("QRCodeService");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("QRCodeServiceImpl");
 
-    @Retention(RetentionPolicy.SOURCE)
-    @IntDef({QR_TYPE_ANY, QR_TYPE_ID, QR_TYPE_ID_EXPORT, QR_TYPE_WEB, QR_TYPE_GROUP_LINK})
-    public @interface QRCodeColor {
-    }
-
-    public static final int QR_TYPE_ANY = 0x00000000;
-    public static final int QR_TYPE_ID = 0xff4caf50; // green
-    public static final int QR_TYPE_ID_EXPORT = 0xffffeb3b; // yellow
-    public static final int QR_TYPE_WEB = 0xff2196f3; // blue
-    public static final int QR_TYPE_GROUP_LINK = 0xfff44336; // red
-
-    private final static int QR_CODE_QUIET_ZONE_SIZE = 4; // https://www.qrcode.com/en/howto/code.html
+    // https://www.qrcode.com/en/howto/code.html
+    private final static int QR_CODE_QUIET_ZONE_SIZE = 4;
 
     private final UserService userService;
     public final static String CONTENT_PREFIX = "3mid:";
-    public final static String ID_SCHEME = "3mid";
 
     public QRCodeServiceImpl(UserService userService) {
         this.userService = userService;
     }
 
+    @NonNull
     private String getUserQRCodeString() {
         return CONTENT_PREFIX + this.userService.getIdentity() + "," +
             Utils.byteArrayToHexString(this.userService.getPublicKey());
@@ -79,7 +68,7 @@ public class QRCodeServiceImpl implements QRCodeService {
     public QRCodeContentResult getResult(String content) {
         if (!TestUtil.isEmptyOrNull(content)) {
             final String[] pieces = content.substring(CONTENT_PREFIX.length()).split(",");
-            if (pieces.length >= 2 && pieces[0].length() == ProtocolDefines.IDENTITY_LEN && pieces[1].length() == NaCl.PUBLICKEYBYTES * 2) {
+            if (pieces.length >= 2 && pieces[0].length() == ProtocolDefines.IDENTITY_LEN && pieces[1].length() == NaCl.PUBLIC_KEY_BYTES * 2) {
                 return new QRCodeContentResult() {
                     @Override
                     public String getIdentity() {
@@ -109,15 +98,15 @@ public class QRCodeServiceImpl implements QRCodeService {
      *
      * @param contents     String to render
      * @param unicode      Whether the string contains unicode characters
-     * @param addQuietZone If a quiet zone margin should be added around the resulting QR code
      * @return a BitMatrix of the QR code
      */
-    private BitMatrix renderQR(String contents, boolean unicode, boolean addQuietZone) {
+    @Nullable
+    private BitMatrix renderQR(String contents, boolean unicode) {
         BarcodeFormat barcodeFormat = BarcodeFormat.QR_CODE;
 
         QRCodeWriter barcodeWriter = new QRCodeWriter();
         HashMap<EncodeHintType, Object> hints = new HashMap<>(2);
-        hints.put(EncodeHintType.MARGIN, addQuietZone ? QRCodeServiceImpl.QR_CODE_QUIET_ZONE_SIZE : 0);
+        hints.put(EncodeHintType.MARGIN, QRCodeServiceImpl.QR_CODE_QUIET_ZONE_SIZE);
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.Q);
 
         if (unicode) {
@@ -137,19 +126,14 @@ public class QRCodeServiceImpl implements QRCodeService {
      *
      * @param raw         String to render as a QR code
      * @param unicode     Whether the string contains unicode characters
-     * @param borderColor Color of a border indicating the QR code purpose / type
-     * @return
      */
     @Override
-    public Bitmap getRawQR(String raw, boolean unicode, @QRCodeColor int borderColor) {
+    public Bitmap getRawQR(String raw, boolean unicode) {
         if (this.userService.hasIdentity()) {
-            BitMatrix matrix;
-
-            if (raw != null && !raw.isEmpty()) {
-                matrix = this.renderQR(raw, unicode, true);
-            } else {
-                matrix = this.renderQR(getUserQRCodeString(), unicode, true);
-            }
+            var content = raw != null && !raw.isEmpty()
+                ? raw
+                : getUserQRCodeString();
+            BitMatrix matrix = renderQR(content, unicode);
 
             if (matrix != null) {
                 final int WHITE = 0xFFFFFFFF;
@@ -157,7 +141,6 @@ public class QRCodeServiceImpl implements QRCodeService {
 
                 int width = matrix.getWidth();
                 int height = matrix.getHeight();
-                int qrCodeTypeBorderSize = 1;
                 int[] pixels = new int[width * height];
 
                 for (int y = 0; y < height; y++) {
@@ -167,15 +150,8 @@ public class QRCodeServiceImpl implements QRCodeService {
                     }
                 }
 
-                Bitmap bitmap;
-                if (ConfigUtils.showQRCodeTypeBorders()) {
-                    bitmap = Bitmap.createBitmap(matrix.getWidth() + (qrCodeTypeBorderSize * 2), matrix.getHeight() + (qrCodeTypeBorderSize * 2), Bitmap.Config.RGB_565);
-                    bitmap.eraseColor(borderColor);
-                    bitmap.setPixels(pixels, 0, width, qrCodeTypeBorderSize, qrCodeTypeBorderSize, width, height);
-                } else {
-                    bitmap = Bitmap.createBitmap(matrix.getWidth(), matrix.getHeight(), Bitmap.Config.RGB_565);
-                    bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
-                }
+                final Bitmap bitmap = Bitmap.createBitmap(matrix.getWidth(), matrix.getHeight(), Bitmap.Config.RGB_565);
+                bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
                 return bitmap;
             }
 
@@ -185,6 +161,6 @@ public class QRCodeServiceImpl implements QRCodeService {
 
     @Override
     public Bitmap getUserQRCode() {
-        return this.getRawQR(null, false, QR_TYPE_ID);
+        return this.getRawQR(null, false);
     }
 }

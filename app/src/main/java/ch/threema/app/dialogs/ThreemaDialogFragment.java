@@ -25,6 +25,7 @@ import android.os.Bundle;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
@@ -36,7 +37,7 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 public class ThreemaDialogFragment extends DialogFragment {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaDialogFragment");
 
-    protected Object object;
+    protected @Nullable Object object;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -99,8 +100,8 @@ public class ThreemaDialogFragment extends DialogFragment {
         }
     }
 
-    public ThreemaDialogFragment setData(Object o) {
-        object = o;
+    public ThreemaDialogFragment setData(@NonNull Object data) {
+        this.object = data;
         return this;
     }
 }

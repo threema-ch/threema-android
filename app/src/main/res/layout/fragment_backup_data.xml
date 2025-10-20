@@ -59,7 +59,7 @@
 
                     <TextView
                         android:id="@+id/empty_text"
-                        style="@style/Threema.TextAppearance.Emptyview"
+                        style="@style/Threema.TextAppearance.EmptyView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_marginTop="@dimen/grid_unit_x4"
@@ -97,7 +97,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/data_backup_last_date"
-                            android:textAppearance="@style/Threema.Text.Overline" />
+                            android:textAppearance="@style/Threema.TextAppearance.Overline" />
 
                         <TextView
                             android:id="@+id/last_backup_date"
@@ -140,7 +140,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/data_backup_save_path"
-                        android:textAppearance="@style/Threema.Text.Overline" />
+                        android:textAppearance="@style/Threema.TextAppearance.Overline" />
 
                     <TextView
                         android:id="@+id/backup_path"
@@ -172,7 +172,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/info"
-                    style="@style/Threema.MaterialButton.Action.Outline"
+                    style="@style/Threema.MaterialButton.Outlined.Primary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/safe_learn_more_button"
@@ -184,7 +184,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/restore"
-                    style="@style/Threema.MaterialButton.Action.Outline"
+                    style="@style/Threema.MaterialButton.Outlined.Primary"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"

@@ -21,8 +21,10 @@
 
 package ch.threema.app.webviews
 
+import android.content.Context
 import ch.threema.app.R
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 
@@ -36,4 +38,13 @@ class PrivacyPolicyActivity : SimpleWebViewActivity() {
     override fun getWebViewTitle() = R.string.privacy_policy
 
     override fun getWebViewUrl() = ConfigUtils.getPrivacyPolicyURL(this)
+
+    companion object {
+        @JvmStatic
+        fun createIntent(context: Context, forceDarkTheme: Boolean = false) = buildActivityIntent<PrivacyPolicyActivity>(context) {
+            if (forceDarkTheme) {
+                putExtra(FORCE_DARK_THEME, true)
+            }
+        }
+    }
 }

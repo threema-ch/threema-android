@@ -1,14 +1,13 @@
 [versions]
 activityCompose = "1.10.1"
-androidGradle = "8.9.0"
-androidImageCropper = "4.5.0"
+androidGradle = "8.12.3"
+androidImageCropper = "4.6.0"
 androidx_activity = "1.10.1"
 androidx_annotation = "1.9.1"
 androidx_appcompat = "1.7.0"
 androidx_biometric = "1.1.0"
-androidx_camera = "1.4.1"
-androidx_compose = "2.8.7"
-androidx_composeBom = "2025.03.00"
+androidx_camera = "1.5.0"
+androidx_composeBom = "2025.06.01"
 androidx_concurrentFutures = "1.2.0"
 androidx_constraintlayout = "2.2.1"
 androidx_core = "1.15.0"
@@ -16,6 +15,7 @@ androidx_espresso = "3.6.1"
 androidx_fragment = "1.8.6"
 androidx_junit = "1.2.1"
 androidx_lifecycle = "2.8.7"
+androidx_lifecycleCompose = "2.8.7"
 androidx_lifecycleExtensions = "2.2.0"
 androidx_media = "1.7.0"
 androidx_mmedia3 = "1.7.1"
@@ -47,25 +47,25 @@ firebaseMessaging = "24.1.0"
 gestureViews = "2.8.3"
 glide = "4.16.0" # Glide 4.15+ does not work on API 21
 hmsPush = "6.3.0.304"
-jacksonCore = "2.14.3" # Note: Any newer version breaks the compatibility with API versions older than 26. If we use a newer version of jackson core, the webclient does not work anymore on android 7 (and older).
-jna = "5.13.0" # Note: when updating this version, we need to include the libjnidispatch.so of the same version for each ABI in app/libs/. Note that the description in the readme files in app/libs/ files should be updated when this version is changed. The libjnidispatch.so files can be found in the jna.aar file: https://github.com/java-native-access/jna/tree/master/dist
+jacksonCore = "2.14.3" # Note: Any newer version breaks the compatibility with API versions older than 26. If we use a newer version of jackson core, the webclient does not work anymore on android 7.
+jna = "5.18.1" # Note: when updating this version, we need to include the libjnidispatch.so of the same version for each ABI in app/libs/. Note that the description in the readme files in app/libs/ files should be updated when this version is changed. The libjnidispatch.so files can be found in the jna.aar file: https://github.com/java-native-access/jna/tree/master/dist
 json = "20250107"
 junit = "4.13.2"
-kotlin = "2.1.0"
+koin = "4.1.1"
+kotlin = "2.2.20"
 kotlinx_coroutines = "1.10.1"
 kotlinx_serializationJson = "1.6.3"
-ksp = "2.1.0-1.0.29" # must be kept in sync with kotlin version, see https://github.com/google/ksp/releases
+ksp = "2.2.20-2.0.3" # must be kept in sync with kotlin version, see https://github.com/google/ksp/releases
 ktlint = "12.2.0"
 leakcanary = "2.14"
 libphonenumber = "9.0.1"
-maplibre = "11.0.1"
+lintApi = "31.13.0"
+maplibre = "11.11.0"
 material = "1.12.0"
-mockito = "2.0.9"
-mockitoCore = "4.8.1"
 mockk = "1.14.0"
 msgpackCore = "0.8.24"
 nvWebsocketClient = "2.9"
-okhttp3 = "4.12.0"
+okhttp3 = "5.1.0"
 opencsv = "2.3"
 playServices = "18.6.0"
 protobufKotlinLite = "4.30.2"
@@ -74,18 +74,17 @@ saltyrtcClient = "0.14.2"
 saltyrtcTaskWebrtc = "0.18.1"
 slf4j = "2.0.17"
 sonarqube = "4.4.1.3373"
-sqlcipherAndroid = "4.9.0"
+sqlcipherAndroid = "4.10.0"
 stem = "2.12.0"
 streamsupportCfuture = "1.7.4"
 streamsupportFlow = "1.7.4"
 subsamplingScaleImageView = "3.10.0"
 taptargetview = "1.13.3"
-trustkit = "1.1.5"
 turbine = "1.2.0"
 uiautomator = "2.3.0"
 webrtcAndroid = "134.0.0"
 zip4j = "2.11.5"
-zxing = "3.3.3" # zxing 3.4 crashes on API < 24
+zxing = "3.5.3"
 
 [libraries]
 android-gradle = { module = "com.android.tools.build:gradle", version.ref = "androidGradle" }
@@ -112,10 +111,10 @@ androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensi
 androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx_lifecycle" }
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx_lifecycle" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx_lifecycle" }
-androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx_compose" }
+androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx_lifecycleCompose" }
 androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "androidx_lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx_lifecycle" }
-androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx_compose" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx_lifecycleCompose" }
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx_lifecycle" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }
 androidx-materialIconsExtended = { module = "androidx.compose.material:material-icons-extended" }
@@ -161,6 +160,13 @@ jackson-core = { module = "com.fasterxml.jackson.core:jackson-core", version.ref
 jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 json = { module = "org.json:json", version.ref = "json" }
 junit = { module = "junit:junit", version.ref = "junit" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android" }
+koin-androidCompat = { module = "io.insert-koin:koin-android-compat" }
+koin-compose = { module = "io.insert-koin:koin-androidx-compose" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-test = { module = "io.insert-koin:koin-test" }
+koin-test-junit4 = { module = "io.insert-koin:koin-test-junit4" }
 kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk7", version.ref = "kotlin" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -170,20 +176,16 @@ kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx_serializationJson" }
 leakcanary = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanary" }
 libphonenumber = { module = "com.googlecode.libphonenumber:libphonenumber", version.ref = "libphonenumber" }
+lint-api = { module = "com.android.tools.lint:lint-api", version.ref = "lintApi" }
 maplibre = { module = "org.maplibre.gl:android-sdk", version.ref = "maplibre" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
-mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockitoCore" }
-mockito-powermock-api = { module = "org.powermock:powermock-api-mockito2", version.ref = "mockito" }
-mockito-powermock-junit4 = { module = "org.powermock:powermock-module-junit4", version.ref = "mockito" }
-mockito-powermock-junit4Rule = { module = "org.powermock:powermock-module-junit4-rule", version.ref = "mockito" }
-mockito-powermock-junit4RuleAgent = { module = "org.powermock:powermock-module-junit4-rule-agent", version.ref = "mockito" }
-mockito-powermock-reflect = { module = "org.powermock:powermock-reflect", version.ref = "mockito" }
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockkAndroid = { module = "io.mockk:mockk-android", version.ref = "mockk" }
 msgpack-core = { module = "org.msgpack:msgpack-core", version.ref = "msgpackCore" }
 nvWebsocket-client = { module = "com.neovisionaries:nv-websocket-client", version.ref = "nvWebsocketClient" }
 okhttp3 = { module = "com.squareup.okhttp3:okhttp" }
 okhttp3-bom = { module = "com.squareup.okhttp3:okhttp-bom", version.ref = "okhttp3" }
+okhttp3-coroutines = { module = "com.squareup.okhttp3:okhttp-coroutines" }
 okhttp3-loggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor" }
 opencsv = { module = "net.sf.opencsv:opencsv", version.ref = "opencsv" }
 playServices-base = { module = "com.google.android.gms:play-services-base", version.ref = "playServices" }
@@ -197,7 +199,6 @@ streamsupport-cfuture = { module = "net.sourceforge.streamsupport:streamsupport-
 streamsupport-flow = { module = "net.sourceforge.streamsupport:streamsupport-flow", version.ref = "streamsupportFlow" }
 subsamplingScaleImageView = { module = "com.davemorrissey.labs:subsampling-scale-image-view-androidx", version.ref = "subsamplingScaleImageView" }
 taptargetview = { module = "com.getkeepsafe.taptargetview:taptargetview", version.ref = "taptargetview" }
-trustkit = { module = "com.datatheorem.android.trustkit:trustkit", version.ref = "trustkit" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }
 webrtcAndroid = { module = "ch.threema:webrtc-android", version.ref = "webrtcAndroid" }
 zip4j = { module = "net.lingala.zip4j:zip4j", version.ref = "zip4j" }

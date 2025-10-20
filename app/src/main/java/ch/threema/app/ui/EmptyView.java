@@ -22,7 +22,6 @@
 package ch.threema.app.ui;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -35,9 +34,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
-import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
@@ -68,8 +65,12 @@ public class EmptyView extends LinearLayout {
         setGravity(Gravity.CENTER);
         int paddingPx = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 16, context.getResources().getDisplayMetrics());
         setPadding(paddingPx, parentOffset, paddingPx, 0);
-        setLayoutParams(new ListView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT));
+        setLayoutParams(
+            new ListView.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+        );
 
         LayoutInflater.from(context).inflate(R.layout.view_empty, this, true);
         setVisibility(View.GONE);
@@ -87,14 +88,12 @@ public class EmptyView extends LinearLayout {
         this.emptyText.setText(label);
     }
 
-    public void setup(@StringRes int labelRes, @DrawableRes int imageRes, @Nullable @ColorInt Integer imageTint) {
+    public void setup(@StringRes int labelRes, @DrawableRes int imageRes) {
         this.emptyImageView.setImageResource(imageRes);
-        if (imageTint != null) {
-            this.emptyImageView.setColorFilter(imageTint, PorterDuff.Mode.SRC_IN);
-        }
         this.emptyImageView.setVisibility(VISIBLE);
         this.emptyText.setText(labelRes);
     }
+
 
     public void setColorsInt(@ColorInt int background, @ColorInt int foreground) {
         this.setBackgroundColor(background);

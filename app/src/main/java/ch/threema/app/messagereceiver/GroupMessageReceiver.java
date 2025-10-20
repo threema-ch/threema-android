@@ -37,7 +37,6 @@ import java.util.UUID;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.AppConstants;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.multidevice.MultiDeviceManager;
@@ -54,7 +53,6 @@ import ch.threema.app.tasks.OutgoingLocationMessageTask;
 import ch.threema.app.tasks.OutgoingPollSetupMessageTask;
 import ch.threema.app.tasks.OutgoingPollVoteGroupMessageTask;
 import ch.threema.app.tasks.OutgoingTextMessageTask;
-import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.GroupFeatureSupport;
 import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.NameUtil;
@@ -497,7 +495,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
             group.getApiGroupId()
         );
         if (groupModel != null) {
-            GroupModelData groupModelData = groupModel.getData().getValue();
+            GroupModelData groupModelData = groupModel.getData();
             if (groupModelData != null) {
                 return NameUtil.getDisplayName(groupModelData, contactModelRepository, contactService);
             }
@@ -514,7 +512,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
 
     @Override
     public void prepareIntent(Intent intent) {
-        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, group.getId());
+        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) group.getId());
     }
 
     @Override
@@ -607,7 +605,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
             return Reactions_NONE;
         }
 
-        GroupModelData groupModelData = groupModel.getData().getValue();
+        GroupModelData groupModelData = groupModel.getData();
 
         if (groupModelData == null) {
             logger.warn("Group model data is null");
@@ -664,7 +662,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
             logger.error("Cannot get feature support: Group model is null");
             return new GroupFeatureSupport(feature, List.of());
         }
-        GroupModelData groupModelData = groupModel.getData().getValue();
+        GroupModelData groupModelData = groupModel.getData();
         if (groupModelData == null) {
             logger.error("Cannot get feature support: Group model data is null");
             return new GroupFeatureSupport(feature, List.of());

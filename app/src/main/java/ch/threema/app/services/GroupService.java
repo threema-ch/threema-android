@@ -42,6 +42,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.utils.GroupFeatureSupport;
+import ch.threema.data.datatypes.IdColor;
 import ch.threema.base.ThreemaException;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.models.GroupModelData;
@@ -67,7 +68,7 @@ import ch.threema.storage.models.access.GroupAccessModel;
 public interface GroupService extends AvatarService<GroupModel> {
 
     /**
-     * Group state note yet determined
+     * Group state not yet determined
      */
     int UNDEFINED = 0;
     /**
@@ -131,6 +132,17 @@ public interface GroupService extends AvatarService<GroupModel> {
      */
     @Nullable
     GroupModel getById(int groupId);
+
+    /**
+     * Get the group with the local group id.
+     *
+     * @param groupId the group id
+     * @return the group model of the requested group, or null if not available
+     */
+    @Nullable
+    default GroupModel getById(long groupId) {
+        return getById((int) groupId);
+    }
 
     /**
      * Get the group by api group id and creator identity from the given abstract group message.
@@ -248,7 +260,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 
     /**
      * Get a string where the group members' display names are concatenated and separated by a
-     * comma. This includes the group creator (except in orphaned groups).
+     * comma. This includes the group creator.
      *
      * @param groupModel the group model
      * @return a string of all members names, including the group creator
@@ -258,7 +270,7 @@ public interface GroupService extends AvatarService<GroupModel> {
 
     /**
      * Get a string where the group members' display names are concatenated and separated by a
-     * comma. This includes the group creator (except in orphaned groups) and the user (if member).
+     * comma. This includes the group creator and the user (if member).
      *
      * @param groupModel the group model
      * @return a string of all members names, including the group creator
@@ -312,19 +324,6 @@ public interface GroupService extends AvatarService<GroupModel> {
     boolean isGroupMember(@NonNull GroupModel groupModel, @NonNull String identity);
 
     /**
-     * Check whether the group is orphaned or not. In an orphaned group, the group creator is not a
-     * member. Additionally, the user must not be the creator, otherwise it is a dissolved group.
-     * Legacy groups where no members are stored, are orphaned if the user is not the creator.
-     * Otherwise it is a dissolved group. Note that for legacy groups there is no need to
-     * distinguish between orphaned or dissolved, as we do not provide an option to clone the group
-     * anyway because the former members are not known.
-     *
-     * @param groupModel the group model
-     * @return true if the group is orphaned, false otherwise
-     */
-    boolean isOrphanedGroup(@NonNull GroupModel groupModel);
-
-    /**
      * Count members in a group. This includes the group creator and the user.
      *
      * @param groupModel the group model
@@ -342,8 +341,7 @@ public interface GroupService extends AvatarService<GroupModel> {
     boolean isNotesGroup(@NonNull GroupModel groupModel);
 
     /**
-     * Get the number of other members in the group (including the group creator). Note that in
-     * orphaned groups, this may return zero even if the user is not the creator. To check for notes
+     * Get the number of other members in the group (including the group creator). To check for notes
      * groups use {@link #isNotesGroup(GroupModel)}.
      *
      * @param model the group model
@@ -352,13 +350,13 @@ public interface GroupService extends AvatarService<GroupModel> {
     int countMembersWithoutUser(@NonNull GroupModel model);
 
     /**
-     * Get a map from the group member identity to its id color index.
+     * Get a map from the group member identity to its id color.
      *
      * @param model the group model
-     * @return a map with the ID color indices of the members
+     * @return a map with the ID colors of the members
      */
     @NonNull
-    Map<String, Integer> getGroupMemberIDColorIndices(@NonNull ch.threema.data.models.GroupModel model);
+    Map<String, IdColor> getGroupMemberIDColors(@NonNull ch.threema.data.models.GroupModel model);
 
     /**
      * Send a group sync request for the group id to the creator.

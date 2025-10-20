@@ -22,13 +22,12 @@
 package ch.threema.storage.databaseupdate
 
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.storage.fieldExists
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 private val logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion94")
 
 internal class DatabaseUpdateToVersion94(
-    private val db: SQLiteDatabase,
+    private val sqLiteDatabase: SQLiteDatabase,
 ) : DatabaseUpdate {
     override fun run() {
         val table = "contacts"
@@ -38,24 +37,24 @@ internal class DatabaseUpdateToVersion94(
         dropField(table, "isSynchronized")
 
         // Migrate "isHidden" to "acquaintanceLevel"
-        if (!db.fieldExists(table, "acquaintanceLevel")) {
+        if (!sqLiteDatabase.fieldExists(table, "acquaintanceLevel")) {
             // Values: 0: Direct, 1: Group
             logger.info("Renaming $table.isHidden to acquaintanceLevel")
-            db.execSQL("ALTER TABLE `$table` RENAME COLUMN `isHidden` TO `acquaintanceLevel`")
+            sqLiteDatabase.execSQL("ALTER TABLE `$table` RENAME COLUMN `isHidden` TO `acquaintanceLevel`")
         }
 
         // Add "syncState" field
         // Values: 0: Initial, 1: Imported, 2: Custom
-        if (!db.fieldExists(table, "syncState")) {
+        if (!sqLiteDatabase.fieldExists(table, "syncState")) {
             logger.info("Adding $table.syncState")
-            db.execSQL("ALTER TABLE `$table` ADD COLUMN `syncState` INTEGER NOT NULL DEFAULT 0")
+            sqLiteDatabase.execSQL("ALTER TABLE `$table` ADD COLUMN `syncState` INTEGER NOT NULL DEFAULT 0")
         }
     }
 
     private fun dropField(table: String, field: String) {
-        if (db.fieldExists(table, field)) {
+        if (sqLiteDatabase.fieldExists(table, field)) {
             logger.info("Removing $field field from table $table")
-            db.execSQL("ALTER TABLE `$table` DROP COLUMN `$field`")
+            sqLiteDatabase.execSQL("ALTER TABLE `$table` DROP COLUMN `$field`")
         }
     }
 

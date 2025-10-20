@@ -105,8 +105,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="@string/profile_picture_and_nickname"
-                    android:textAppearance="@style/Threema.Text.Overline"
-                    android:textColor="?attr/colorPrimary"
+                    android:textAppearance="@style/Threema.TextAppearance.SectionTitle"
                     app:layout_constraintStart_toStartOf="@+id/my_id"
                     app:layout_constraintTop_toBottomOf="@id/my_id"
                     tools:layout_conversion_absoluteHeight="16dp"
@@ -121,8 +120,7 @@
                     android:ellipsize="end"
                     android:singleLine="true"
                     android:text="@string/title_mythreemaid"
-                    android:textAppearance="@style/Threema.Text.Overline"
-                    android:textColor="?attr/colorPrimary"
+                    android:textAppearance="@style/Threema.TextAppearance.SectionTitle"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -175,8 +173,8 @@
                     android:layout_height="wrap_content"
                     android:ellipsize="end"
                     android:singleLine="true"
-                    android:text="ABCDEFGH"
-                    android:textSize="18sp"
+                    tools:text="ABCDEFGH"
+                    android:textSize="16sp"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toBottomOf="@+id/my_id_qr"
                     app:layout_constraintStart_toStartOf="@+id/my_id_title"
@@ -191,7 +189,7 @@
                     android:layout_marginEnd="8dp"
                     android:layout_marginTop="16dp"
                     android:gravity="center|start"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     app:layout_constraintEnd_toStartOf="@id/profile_edit"
                     app:layout_constraintStart_toStartOf="@+id/profilepictitle"
                     app:layout_constraintTop_toBottomOf="@+id/avatar_edit_view"
@@ -226,8 +224,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/account_links"
-                    android:textAppearance="@style/Threema.Text.Overline"
-                    android:textColor="?attr/colorPrimary" />
+                    android:textAppearance="@style/Threema.TextAppearance.SectionTitle" />
 
                 <RelativeLayout
                     android:id="@+id/linked_mobile_layout"
@@ -269,15 +266,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/linked_mobile"
-                            android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
-                            android:textColor="@null" />
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
 
                         <TextView
                             android:id="@+id/linked_mobile"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""
-                            android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+                            android:alpha="0.8"
+                            android:textAppearance="@style/Threema.TextAppearance.SectionContent"
                             android:textColor="@null" />
 
                     </LinearLayout>
@@ -324,19 +320,17 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/linked_email"
-                            android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                             android:textColor="@null" />
-                        <!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
 
 
                         <TextView
                             android:id="@+id/linked_email"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text=""
-                            android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+                            android:alpha="0.8"
+                            android:textAppearance="@style/Threema.TextAppearance.SectionContent"
                             android:textColor="@null" />
-                        <!-- textColor="@null" -> https://stackoverflow.com/a/45198884 -->
 
 
                     </LinearLayout>
@@ -360,8 +354,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/backup_and_delete"
-                    android:textAppearance="@style/Threema.Text.Overline"
-                    android:textColor="?attr/colorPrimary" />
+                    android:textAppearance="@style/Threema.TextAppearance.SectionTitle" />
 
                 <RelativeLayout
                     android:id="@+id/revocation_key_layout"
@@ -394,7 +387,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/revocation_key_title"
-                            android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                             android:textColor="@null" />
 
                         <TextView
@@ -402,7 +395,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/revocation_key_not_set"
-                            android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+                            android:alpha="0.8"
+                            android:textAppearance="@style/Threema.TextAppearance.SectionContent"
                             android:textColor="@null" />
 
                     </LinearLayout>
@@ -440,7 +434,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/backup_title"
-                            android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                             android:textColor="@null" />
 
                         <TextView
@@ -448,7 +442,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/backup_sum"
-                            android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+                            android:alpha="0.8"
+                            android:textAppearance="@style/Threema.TextAppearance.SectionContent"
                             android:textColor="@null" />
 
                     </LinearLayout>
@@ -486,7 +481,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="@string/delete_id_title"
-                            android:textAppearance="@style/Threema.TextAppearance.List.FirstLine"
+                            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
                             android:textColor="@null" />
 
                         <TextView
@@ -495,7 +490,8 @@
                             android:layout_height="wrap_content"
                             android:ellipsize="end"
                             android:text="@string/delete_id_sum"
-                            android:textAppearance="@style/Threema.TextAppearance.List.SecondLine"
+                            android:alpha="0.8"
+                            android:textAppearance="@style/Threema.TextAppearance.SectionContent"
                             android:textColor="@null" />
 
                     </LinearLayout>

@@ -22,9 +22,9 @@
 package ch.threema.data.repositories
 
 import android.database.sqlite.SQLiteException
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.emojis.EmojiUtil
 import ch.threema.app.managers.CoreServiceManager
+import ch.threema.app.services.MessageService
 import ch.threema.app.utils.ThrowingConsumer
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
@@ -35,10 +35,12 @@ import ch.threema.data.models.EmojiReactionsModel
 import ch.threema.data.models.toDataType
 import ch.threema.data.storage.DbEmojiReaction
 import ch.threema.data.storage.EmojiReactionsDao
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
+import org.koin.mp.KoinPlatform
 
 private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsRepository")
 
@@ -47,10 +49,10 @@ class EmojiReactionsRepository(
     private val emojiReactionDao: EmojiReactionsDao,
     private val coreServiceManager: CoreServiceManager,
 ) {
-    private val myIdentity by lazy { coreServiceManager.identityStore.identity }
+    private val myIdentity by lazy { coreServiceManager.identityStore.getIdentity()!! }
 
     // TODO(ANDR-3325): Remove message service
-    private val messageService by lazy { ThreemaApplication.requireServiceManager().messageService }
+    private val messageService: MessageService by KoinPlatform.getKoin().inject()
 
     /**
      * Get all reactions for a message, including reactions from the old ack/dec system
@@ -74,7 +76,7 @@ class EmojiReactionsRepository(
      * Returns an empty list if there are no reactions
      */
     fun safeGetReactionsByMessage(messageModel: AbstractMessageModel): List<EmojiReactionData> {
-        return getReactionsByMessage(messageModel)?.data?.value ?: emptyList()
+        return getReactionsByMessage(messageModel)?.data ?: emptyList()
     }
 
     fun deleteAllReactionsForMessage(messageModel: AbstractMessageModel) {
@@ -170,14 +172,14 @@ class EmojiReactionsRepository(
 
     private fun createEmojiReactionData(
         messageModel: AbstractMessageModel,
-        senderIdentity: String,
+        senderIdentity: Identity,
         emojiSequence: String,
     ): EmojiReactionData {
         return EmojiReactionData(
             messageModel.id,
             senderIdentity,
             emojiSequence,
-            messageModel.createdAt!!,
+            messageModel.createdAt!!.toInstant(),
         )
     }
 
@@ -195,7 +197,7 @@ class EmojiReactionsRepository(
     @Throws(EmojiReactionEntryCreateException::class, IllegalStateException::class)
     fun createEntry(
         targetMessage: AbstractMessageModel,
-        senderIdentity: String,
+        senderIdentity: Identity,
         emojiSequence: String,
     ) {
         synchronized(cache) {
@@ -242,7 +244,7 @@ class EmojiReactionsRepository(
     @Throws(EmojiReactionEntryRemoveException::class, IllegalStateException::class)
     fun removeEntry(
         targetMessage: AbstractMessageModel,
-        senderIdentity: String,
+        senderIdentity: Identity,
         emojiSequence: String,
     ) {
         synchronized(cache) {

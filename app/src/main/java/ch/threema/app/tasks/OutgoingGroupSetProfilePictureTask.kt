@@ -26,6 +26,7 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.ApiService
 import ch.threema.app.utils.BitmapUtil
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
@@ -33,7 +34,7 @@ import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage
-import com.neilalexander.jnacl.NaCl
+import ch.threema.domain.types.Identity
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.security.SecureRandom
@@ -43,8 +44,8 @@ private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupSetProfilePictur
 
 class OutgoingGroupSetProfilePictureTask(
     override val groupId: GroupId,
-    override val creatorIdentity: String,
-    override val recipientIdentities: Set<String>,
+    override val creatorIdentity: Identity,
+    override val recipientIdentities: Set<Identity>,
     private val groupPhoto: Bitmap,
     messageId: MessageId?,
     serviceManager: ServiceManager,
@@ -105,13 +106,13 @@ fun tryUploadingGroupPhoto(picture: ByteArray, apiService: ApiService): GroupPho
 
 private fun uploadGroupPhoto(picture: ByteArray, apiService: ApiService): GroupPhotoUploadResult {
     val rnd = SecureRandom()
-    val encryptionKey = ByteArray(NaCl.SYMMKEYBYTES)
+    val encryptionKey = ByteArray(NaCl.SYMM_KEY_BYTES)
     rnd.nextBytes(encryptionKey)
 
     val encryptedData = NaCl.symmetricEncryptData(
-        picture,
-        encryptionKey,
-        ProtocolDefines.GROUP_PHOTO_NONCE,
+        data = picture,
+        key = encryptionKey,
+        nonce = ProtocolDefines.GROUP_PHOTO_NONCE,
     )
     val blobUploader = apiService.createUploader(
         /* data = */

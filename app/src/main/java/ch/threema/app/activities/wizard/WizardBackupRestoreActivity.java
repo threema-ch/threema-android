@@ -34,6 +34,7 @@ import android.text.method.LinkMovementMethod;
 import android.view.View;
 import android.widget.TextView;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -46,23 +47,17 @@ import androidx.annotation.UiThread;
 import androidx.core.content.ContextCompat;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ThreemaAppCompatActivity;
 import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.backuprestore.csv.RestoreService;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ActivityService;
-import ch.threema.app.services.FileService;
-import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.services.UserService;
-import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
@@ -88,11 +83,9 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 
     public static final int REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS = 541;
 
-    private ThreemaSafeMDMConfig safeMDMConfig;
-    private FileService fileService;
-    private UserService userService;
-    private PreferenceService preferenceService;
-    private NotificationPreferenceService notificationPreferenceService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     private File backupFile;
     private String backupPassword;
 
@@ -113,6 +106,11 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
+        if (!dependencies.isAvailable()) {
+            finish();
+            return;
+        }
+
         // directly forward to ID restore activity
         Intent intent = getIntent();
         if (intent.hasExtra(AppConstants.INTENT_DATA_ID_BACKUP) &&
@@ -122,7 +120,6 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
                 intent.getStringExtra(AppConstants.INTENT_DATA_ID_BACKUP_PW));
         }
 
-        initServices();
         initLayout();
 
         cleanTempDirectories();
@@ -146,23 +143,6 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         super.onUserInteraction();
     }
 
-    private void initServices() {
-        this.safeMDMConfig = ThreemaSafeMDMConfig.getInstance();
-
-        try {
-            ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-            if (serviceManager != null) {
-                fileService = serviceManager.getFileService();
-                userService = serviceManager.getUserService();
-                preferenceService = serviceManager.getPreferenceService();
-                notificationPreferenceService = serviceManager.getNotificationPreferenceService();
-            }
-        } catch (Exception e) {
-            logger.error("Exception ", e);
-            finish();
-        }
-    }
-
     private void initLayout() {
         setContentView(R.layout.activity_backup_restore);
 
@@ -180,7 +160,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         backupSubtitle.setMovementMethod(LinkMovementMethod.getInstance());
 
         final @NonNull WizardButtonXml safeBackupButtonCompose = findViewById(R.id.safe_backup_compose);
-        if (ConfigUtils.isWorkRestricted() && safeMDMConfig.isRestoreDisabled()) {
+        if (ConfigUtils.isWorkRestricted() && dependencies.getThreemaSafeMDMConfig().isRestoreDisabled()) {
             safeBackupButtonCompose.setVisibility(View.GONE);
         } else {
             safeBackupButtonCompose.setOnClickListener(v -> {
@@ -203,13 +183,11 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
     }
 
     private void cleanTempDirectories() {
-        if (fileService != null) {
-            RuntimeUtil.runOnWorkerThread(() -> {
-                // Clean the temp directories to ensure that any backup files
-                // from previous restore attempts are deleted.
-                fileService.cleanTempDirs();
-            });
-        }
+        RuntimeUtil.runOnWorkerThread(() -> {
+            // Clean the temp directories to ensure that any backup files
+            // from previous restore attempts are deleted.
+            dependencies.getFileService().cleanTempDirs();
+        });
     }
 
     private void restoreSafe() {
@@ -229,18 +207,18 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
     }
 
     private void restoreBackup(final Uri uri) {
-        if (!ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme()) && this.fileService != null) {
+        if (!ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme())) {
             // copy "file" to cache directory first
             GenericProgressDialog.newInstance(R.string.importing_files, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING_BACKUP);
 
             new Thread(() -> {
                 final File file;
-                final File externalFile = fileService.copyUriToTempFile(uri, "backup_restore", ".zip", true);
+                final File externalFile = dependencies.getFileService().copyUriToTempFile(uri, "backup_restore", ".zip", true);
                 if (externalFile != null) {
                     file = externalFile;
                 } else {
                     logger.warn("Could not copy the backup file to temp file; trying to copy it to internal storage instead.");
-                    file = fileService.copyUriToTempFile(uri, "backup_restore", ".zip", false);
+                    file = dependencies.getFileService().copyUriToTempFile(uri, "backup_restore", ".zip", false);
                 }
 
                 RuntimeUtil.runOnUiThread(() -> {
@@ -338,7 +316,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 
     @Override
     public void onNo(String tag, Object data) {
-        if (safeMDMConfig.isRestoreDisabled()) {
+        if (dependencies.getThreemaSafeMDMConfig().isRestoreDisabled()) {
             finish();
         }
     }
@@ -351,7 +329,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         this.backupPassword = text;
 
         // If the notification permission is already granted, then start the restore directly
-        if (ConfigUtils.requestNotificationPermission(this, permissionLauncher, preferenceService)) {
+        if (ConfigUtils.requestNotificationPermission(this, permissionLauncher, dependencies.getPreferenceService())) {
             logger.info("Password was entered and permission granted, starting restore");
             startRestore();
         }
@@ -359,7 +337,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 
     @Override
     public void onNo(String tag) {
-        if (safeMDMConfig.isRestoreDisabled()) {
+        if (dependencies.getThreemaSafeMDMConfig().isRestoreDisabled()) {
             finish();
         }
     }
@@ -369,7 +347,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
     protected void onActivityResult(int requestCode, int resultCode, Intent resultData) {
         if (resultCode != RESULT_OK) {
             if (requestCode != REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS && requestCode != ThreemaActivity.ACTIVITY_ID_BACKUP_PICKER) {
-                if (safeMDMConfig.isRestoreDisabled()) {
+                if (dependencies.getThreemaSafeMDMConfig().isRestoreDisabled()) {
                     finish();
                 }
             }
@@ -378,7 +356,15 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         switch (requestCode) {
             case REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS:
                 logger.info("Opening restore file picker");
-                FileUtil.selectFile(WizardBackupRestoreActivity.this, null, new String[]{MimeUtil.MIME_TYPE_ZIP}, ThreemaActivity.ACTIVITY_ID_BACKUP_PICKER, false, 0, fileService.getBackupPath().getPath());
+                FileUtil.selectFile(
+                    WizardBackupRestoreActivity.this,
+                    null,
+                    new String[]{MimeUtil.MIME_TYPE_ZIP},
+                    ThreemaActivity.ACTIVITY_ID_BACKUP_PICKER,
+                    false,
+                    0,
+                    dependencies.getFileService().getBackupPath().getPath()
+                );
                 break;
 
             case ThreemaActivity.ACTIVITY_ID_RESTORE_KEY:
@@ -407,9 +393,9 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
     }
 
     private void startNextWizard() {
-        if (this.userService.hasIdentity()) {
+        if (dependencies.getUserService().hasIdentity()) {
             logger.info("Starting wizard");
-            this.notificationPreferenceService.setWizardRunning(true);
+            dependencies.getNotificationPreferenceService().setWizardRunning(true);
             startActivity(new Intent(this, WizardBaseActivity.class));
             overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
             finish();

@@ -7,100 +7,106 @@
 
     <include layout="@layout/background_new_wizard" />
 
-    <LinearLayout
+    <ScrollView
         android:id="@+id/content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="@dimen/wizard_contents_padding_horizontal"
-        android:paddingVertical="@dimen/wizard_contents_padding">
-
-        <TextView
-            android:id="@+id/safe_restore_title"
-            style="@style/WizardTitleText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:text="@string/safe_restore" />
-
-        <TextView
-            android:id="@+id/safe_restore_subtitle"
-            style="@style/WizardSmallText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
-            android:gravity="center_horizontal"
-            android:text="@string/safe_restore_enter_id" />
-
-        <TextView
-            android:id="@+id/forgot_id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="4dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:gravity="right"
-            android:text="@string/forgot_your_id"
-            android:textColor="@color/md_theme_dark_primary"
-            android:textSize="14sp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/safe_id_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:hintAnimationEnabled="false"
-            app:hintEnabled="false">
-
-            <ch.threema.app.ui.ThreemaTextInputEditText
-                android:id="@+id/safe_edit_id"
-                style="@style/WizardEditText"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:hint="@string/safe_threema_id"
-                android:imeOptions="actionDone"
-                android:inputType="textWebEditText"
-                android:singleLine="true">
-
-            </ch.threema.app.ui.ThreemaTextInputEditText>
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <ch.threema.app.activities.wizard.components.WizardButtonXml
-            android:id="@+id/advanced_options_compose"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:wizardButton_style="wizardButton_inverse"
-            app:wizardButton_text="@string/safe_advanced_options" />
+        android:background="@android:color/transparent"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/wizard_contents_padding"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
-            <ch.threema.app.activities.wizard.components.WizardButtonXml
-                android:id="@+id/cancel_compose"
+            <TextView
+                android:id="@+id/safe_restore_title"
+                style="@style/WizardTitleText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="@string/safe_restore" />
+
+            <TextView
+                android:id="@+id/safe_restore_subtitle"
+                style="@style/WizardSmallText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/grid_unit_x2"
+                android:gravity="center_horizontal"
+                android:text="@string/safe_restore_enter_id" />
+
+            <TextView
+                android:id="@+id/forgot_id"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="8dp"
-                android:layout_weight="1"
+                android:layout_marginTop="@dimen/grid_unit_x3"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="end"
+                android:text="@string/forgot_your_id"
+                android:textColor="@color/md_theme_dark_primary"
+                android:textSize="14sp" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/safe_id_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_unit_x0_5"
+                app:hintAnimationEnabled="false"
+                app:hintEnabled="false">
+
+                <ch.threema.app.ui.ThreemaTextInputEditText
+                    android:id="@+id/safe_edit_id"
+                    style="@style/WizardEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/safe_threema_id"
+                    android:imeOptions="actionDone"
+                    android:inputType="textWebEditText"
+                    android:singleLine="true">
+
+                </ch.threema.app.ui.ThreemaTextInputEditText>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <ch.threema.app.activities.wizard.components.WizardButtonXml
+                android:id="@+id/advanced_options_compose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/grid_unit_x2"
                 app:wizardButton_style="wizardButton_inverse"
-                app:wizardButton_text="@string/cancel" />
+                app:wizardButton_text="@string/safe_advanced_options" />
 
-            <ch.threema.app.activities.wizard.components.WizardButtonXml
-                android:id="@+id/safe_restore_button_compose"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_weight="1"
-                app:wizardButton_text="@string/restore" />
+                android:layout_marginTop="@dimen/wizard_contents_padding"
+                android:orientation="horizontal">
+
+                <ch.threema.app.activities.wizard.components.WizardButtonXml
+                    android:id="@+id/cancel_compose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/grid_unit_x1"
+                    android:layout_weight="1"
+                    app:wizardButton_style="wizardButton_inverse"
+                    app:wizardButton_text="@string/cancel" />
+
+                <ch.threema.app.activities.wizard.components.WizardButtonXml
+                    android:id="@+id/safe_restore_button_compose"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/grid_unit_x1"
+                    android:layout_weight="1"
+                    app:wizardButton_text="@string/restore" />
+
+            </LinearLayout>
 
         </LinearLayout>
 
-    </LinearLayout>
+    </ScrollView>
 
 </FrameLayout>

@@ -82,25 +82,26 @@ class OutgoingGroupDisbandTask(
         val multiDeviceProperties = multiDeviceManager.propertiesProvider.get()
 
         handle.createTransaction(
-            multiDeviceProperties.keys,
-            MdD2D.TransactionScope.Scope.GROUP_SYNC,
-            TRANSACTION_TTL_MAX,
-        ) {
-            val groupModelData = groupModelRepository.getByGroupIdentity(groupIdentity)?.data?.value
-            if (groupModelData != null) {
-                // If the group exists, then the user state must be left
-                val isLeft = groupModelData.userState == GroupModel.UserState.LEFT
+            keys = multiDeviceProperties.keys,
+            scope = MdD2D.TransactionScope.Scope.GROUP_SYNC,
+            ttl = TRANSACTION_TTL_MAX,
+            precondition = {
+                val groupModelData = groupModelRepository.getByGroupIdentity(groupIdentity)?.data
+                if (groupModelData != null) {
+                    // If the group exists, then the user state must be left
+                    val isLeft = groupModelData.userState == GroupModel.UserState.LEFT
 
-                if (!isLeft) {
-                    logger.error("A major group state inconsistency detected: group must be left")
+                    if (!isLeft) {
+                        logger.error("A major group state inconsistency detected: group must be left")
+                    }
+
+                    isLeft
+                } else {
+                    // It is fine if the group does not exist
+                    true
                 }
-
-                isLeft
-            } else {
-                // It is fine if the group does not exist
-                true
-            }
-        }.execute {
+            },
+        ).execute {
             sendEmptySetupMessages(handle)
         }
     }

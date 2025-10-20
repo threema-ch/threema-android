@@ -12,7 +12,7 @@
 ☂️|geopende paraplu|kleding|open paraplu|paraplu|regen|weer
 ☃️|koud|sneeuwpop|weer
 ☄️|komeet|ruimte|vuurbal
-☑️|✓|check|gedaan|klaar|symbool|teken|to-do|vak|vinkje in vak|wit vinkje in grijs vak
+☑️|✓|check|klaar|stem|uit|vak|vinkje
 ☔|druppels|kleding|paraplu met regendruppels|regen|weer
 ☕|café|cafeïne|chai|drank|drinken|koffie|ochtend|stomen|thee|warm
 ☘️|iers|klavertjedrie|plant
@@ -66,28 +66,28 @@
 〰️|golvend|interpunctie|streepje
 ㊗️|gefeliciteerd|ideogram|japans|knop
 ㊙️|geheim|ideogram|japans|knop
-😀|gezicht|grappig|grijns|grijnzend gezicht|lachend gezicht met open ogen|leuk|smiley
-😃|gaaf|gezicht|grappig|grijnzend gezicht met grote ogen|haha|lachend gezicht met open mond|leuk|mond|open|smiley
-😄|gelukkig|gezicht|grijns|grijnzen|lachen|lol|mond|ogen|oog|open
-😁|gezicht|glimlach|grappig|grijns|grijnzend gezicht met lachende ogen|lachende ogen|leuk|oog|smiley|stralend gezicht met lachende ogen
-😆|dichtgeknepen ogen|gelukkig|gesloten|gezicht|glimlachend|grijnzen|hahaha|lachen|lol|mond|ogen|open|rofl
-😅|gestrest|gezicht|grijnzen|koud|lachen|mond|neerslachtig|nerveus|open|opgewonden|stress|zweet
-🤣|gelukkig|gezicht|grappig|haha|hehe|hilarisch|huilen|lachen|lmao|lol|roflmao|rollen|traan|vloer|vreugde
-😂|gelukkig|gevoelens|gezicht|grappig|haha|hehe|hilarisch|huilen|lachen|lmao|lol|roflmao|traan|vreugde
-🙂|enigszins lachend gezicht|gezicht|glimlach|lach|smiley|tevreden
+😀|blij|fijn|gezicht|glimlachen|grijns|grijnzend|lachen|leuk|tanden|vrolijk
+😃|blij|gaaf|gezicht|glimlachen|grijns|grijnzend|groot|joepie|lach|mond|ogen|open|tanden
+😄|blij|gezicht|glimlachen|grijns|grijnzend|lachen|lol|mond|ogen|oog|open
+😁|blij|fijn|gezicht|glimlachen|grijns|grijnzend|lach|ogen|oog|stralend|tanden
+😆|blij|gesloten|gezicht|glimlachen|grijnzend|hahaha|lachen|lol|mond|ogen|open|rofl|scheelzien
+😅|gestrest|gezicht|glimlachen|grijnzend|koud|lach|mond|neerslachtig|nerveus|open|opgewonden|stress|zweet
+🤣|blij|gezicht|grappig|haha|hehe|hilarisch|huilen|lachen|lmao|lol|roflmao|rollen|traan|vloer|vreugde
+😂|blij|gevoelens|gezicht|grappig|haha|hehe|hilarisch|huilen|lachen|lmao|lol|roflmao|traan|vreugde
+🙂|blij|enigszins|gezicht|glimlachen|lach
 🙃|gezicht|glimlach|hehe|omgekeerd
-🫠|heet|oplossen|smeltend gezicht|smiley|verdwijnen|vloeibaar|warm
-😉|flirten|gezicht|knipogend gezicht|knipoog|sexy|smiley|zwoel
-😊|blosjes|blozen|gezicht|glimlach|lachend gezicht met lachende ogen|oog|rode wangen|smiley
-😇|aureool|engel|fantasie|gezegend|gezicht|glimlach|halo|heilig|lach met halo|lachend gezicht met halo|onschuldig|smiley|stralenkrans
-🥰|crush|dol|gezicht|hartjes|jou|lachen|liefde|romantiek
+🫠|beschaamd|gezicht|haha|heet|lol|oplossen|sarcasme|sarcastisch|smelten|verdwijnen|vloeibaar|warm
+😉|flirten|gezicht|hartenbreker|knipogen|knipoogt|plagerij|sexy|zwoel
+😊|blozen|gelukkig|gezicht|glimlachen|ogen|oog|tevreden
+😇|blij|elfje|engelachtig|engelen|fantasie|geest|gezegend|gezicht|glimlachen|onschuldig|sprookje|stralenkrans|verhaal|vredig
+🥰|3|crush|dol|gezicht|glimlachen|hartjes|hou van jou|jou|liefde|romantiek
 😍|gevoelens|gezicht|hartjesogen|kussen|lach|liefde|oog|romantiek|schatje
 🤩|gezicht|grijnzend|lach|ogen|opgewonden|sterren als ogen|sterren in de ogen|wauw
 😘|flirten|gezicht dat kus toeblaast|hartje|kusje blazen|kussen|romantiek|smiley|xoxo|zoen
 😗|afspraakje|date|gezicht|hou van jou|hvj|kussend gezicht|smiley|xoxo|zoen
 ☺️|blij|gezicht|lachen|omtrek|ontspannen
 😚|blosjes|blozen|gesloten ogen|gezicht|kussend gezicht met gesloten ogen|kussend gezicht met ogen dicht|oog|rode wangen|smiley|zoen
-😙|gezicht|glimlachen|hou van jou|hvj|kus en lach|kussend gezicht met lachende ogen|lachende ogen|oog|smiley
+😙|143|afspraakje|daten|flirten|gesloten|gezicht|ik hou van je|kussend|lachen|liefde|nacht|ogen|oog
 🥲|aangedaan|blij|dankbaar|enigszins lachend|gelukkig|lachend gezicht met traan|opgelucht|smiley|traan|trots
 😋|genieten|gezicht|glimlach|jammie|lachend gezicht dat lippen likt|lekker|mmm|smiley|smullen
 😛|gezicht met uitgestoken tong en open ogen|grapje|grappig|ontdeugend|smiley|tong uitsteken|uitgesteken tong
@@ -123,6 +123,7 @@
 😪|gezicht|huilen|slaap|slaperig gezicht|smiley|traan
 🤤|gezicht|kwijlend
 😴|bedtijd|dutje|gapen|gezicht|moe|slaap lekker|slapend gezicht|smiley|vermoeid|welterusten|zzz
+🫩|gezicht met wallen onder de ogen|moe|slaperig|uitgeput
 😷|besmet|doktersmasker|gezicht met doktersmasker|gezicht met masker|koud|masker|medicijn|medisch masker|smiley|virus|ziek
 🤒|gezicht met thermometer|niet lekker|thermometer|ziek
 🤕|gewond|gezicht met hoofdverband|pijn|verband|verwonding
@@ -183,7 +184,7 @@
 🤖|gezicht|monster|robot
 😺|dier|gezicht|grijnzen|kat|lachen|mond|open
 😸|dier|gezicht|grijns|grijnzend kattengezicht met lachende ogen|grijnzende kat met lachende ogen|kat|lach|oog|vrolijk
-😹|dier|gelukstranen|gezicht|grappig|hilarisch|kat met tranen van vreugde|kattengezicht met tranen van geluk|lachen|smiley|traan|tranen|vreugdetranen
+😹|dier|gezicht|kat|lachen|lol|traan|tranen|vreugde
 😻|dier|gezicht|hartjesogen|kat|lachen|liefde|oog
 😼|gezicht|gniffelende kat|grimas|ironische lach|kattenkwaad|lach|ondeugend kattengezicht|smiley|spottend
 😽|dier|gezicht|kat|kussend kattengezicht met gesloten ogen|kussende kat|oog|smiley
@@ -341,7 +342,7 @@
 👨‍⚕️|arts|gezondheidszorg|man|therapeut|verpleger|werknemer
 👩‍⚕️|arts|gezondheidszorg|therapeute|verpleegster|vrouw|werknemer
 🧑‍🎓|scholier|student
-👨‍🎓|scholier|student|vrouw
+👨‍🎓|man|scholier|student
 👩‍🎓|scholier|student|vrouw
 🧑‍🏫|docent|leraar|professor
 👨‍🏫|docent|instructeur|leraar|man|professor
@@ -551,15 +552,16 @@
 👪|gezin|kind
 🧑‍🧑‍🧒|gezin|kind|volwassene
 🧑‍🧑‍🧒‍🧒|gezin|kind|volwassene
-🧑‍🧒|gezin: volwassene, kind|kind
-🧑‍🧒‍🧒|gezin: volwassene, kind, kind|kind
+🧑‍🧒|gezin|kind|volwassene
+🧑‍🧒‍🧒|gezin|kind|volwassene
 👣|afdruk|blote voeten|kleding|lopen|onderweg|voetafdrukken
-🐵|aap|apengezicht|dier|gezicht
-🐒|aap|dier
+🫆|forensisch|identiteit|veiligheid|vingerafdruk
+🐵|aap|banaan|dier|gezicht
+🐒|aap|banaan|dier
 🦍|dier|gorilla
 🦧|aap|dier|orang-oetang
-🐶|dier|gezicht|hondengezicht|huisdier|viervoeter
-🐕|dier|hond|huisdier|viervoeter
+🐶|dier|gezicht|hond|huisdier|puppy’s|schattig
+🐕|dieren|honden|huisdier
 🦮|blind|dier|geleide|hond|toegankelijkheid
 🐕‍🦺|assistentie|dier|hond|hulp|toegankelijkheid
 🐩|dier|hond|pluizig|poedel
@@ -567,33 +569,33 @@
 🦊|dier|gezicht|vos
 🦝|dier|nieuwsgierig|sluw|wasbeer
 🐱|dier|gezicht|huisdier|kat|kitten
-🐈|dier|huisdier|kat|kitten
+🐈|dieren|huisdier|katten|kitten
 🐈‍⬛|dier|halloween|katachtig|miauw|pech|zwart
-🦁|brul|dier|gezicht|horoscoop|leeuwengezicht|leo|simba|sterrenbeeld
-🐯|dier|gezicht|roofdier|tijgergezicht
-🐅|dier|roofdier|tijger
-🐆|dier|luipaard|panter|roofdier
-🐴|dier|gezicht|paardengezicht
+🦁|alfa|brul|dier|gezicht|leeuw|leo|manen|orde|safari|sterk|sterrenbeeld
+🐯|dier|gezicht|groot|kat|roofdier|tijger
+🐅|dierentuin|groot|kat|roofdier|tijger
+🐆|dierentuin|groot|kat|luipaard|roofdier
+🐴|boerderij|dier|dressuur|gezicht|paarden
 🫎|dier|eland|gewei|zoogdier
 🫏|dier|ezel|grauwtje|koppig|muildier|pakezel|zoogdier
-🐎|dier|paard|racen|racepaard|renpaard|ruitersport
+🐎|boerderij|dier|paard|racen|renpaard|ruitersport
 🦄|eenhoorn|gezicht
 🦓|dier|streep|zebra
 🦌|dier|hert
 🦬|bizon|buffel|dier|kudde|wisent
-🐮|boe|dier|gezicht|koeiengezicht
-🐂|dier|horoscoop|os|sterrenbeeld|stier|taurus
-🐃|buffel|dier|waterbuffel
-🐄|boe|dier|koe|melk
-🐷|dier|gezicht|varkensgezicht
-🐖|big|dier|varken|zeug
+🐮|boerderij|dier|gezicht|koe|melk
+🐂|boerderij|dieren|os|sterrenbeeld|stier|taurus
+🐃|buffel|dierentuin|water
+🐄|boerderij|dieren|koe|melk
+🐷|boerderij|dier|gezicht|spek|varken
+🐖|boerderij|dier|spek|varken|zeug
 🐗|dier|varken|zwijn
 🐽|gezicht|neus|varkensneus
-🐏|aries|dier|horoscoop|mannelijk|ram|schaap|sterrenbeeld
-🐑|blaten|dier|ooi|ram|schaap|vrouwelijk
-🐐|bok|dier|geit|horoscoop|steenbok|sterrenbeeld
-🐪|bult|dier|dromedaris|kameel met één bult|woestijn
-🐫|bult|dier|kameel met twee bulten|vervoermiddel|woestijn
+🐏|aries|dierentuin|horens|mannelijk|ram|schaap|sterrenbeeld
+🐑|blaten|boerderij|dier|lam|ooi|schaap|vrouwelijk|wollig
+🐐|boerderij|capricorn|dier|geit|melk|sterrenbeeld
+🐪|bult|dier|dromedaris|één|kameel|woestijn
+🐫|bult|dier|dromedaris|kameel|twee bulten|woestijn
 🦙|alpaca|dier|guanaco|lama|vicuña|wol
 🦒|dier|giraffe|vlekken
 🐘|dier|olifant
@@ -601,7 +603,7 @@
 🦏|dier|neushoorn
 🦛|dier|hippopotamus|nijlpaard
 🐭|dier|gezicht|muis
-🐁|dier|knaagdier|muis
+🐁|dieren|muis
 🐀|dier|rat
 🐹|dier|gezicht|hamster|huisdier
 🐰|dier|gezicht|huisdier|konijn
@@ -610,9 +612,9 @@
 🦫|bever|dam|dier|tanden
 🦔|dier|egel|stekelig
 🦇|dier|vampier|vleermuis
-🐻|beer|berengezicht|dier|gezicht|knuffel
+🐻|beer|dier|gezicht|grizzly|grommen|honing
 🐻‍❄️|beer|ijsbeer|noordpool|wit
-🐨|australië|beer|dier|down under|koala
+🐨|australië|beer|buideldier|dier|down|gezicht|koala|under
 🐼|bamboe|dier|gezicht|panda
 🦥|luiaard|traag
 🦦|dier|otter|speels|vissen
@@ -651,61 +653,67 @@
 🐉|dier|draak|ridders|sprookje
 🦕|brachiosaurus|brontosaurus|dinosaurus|diplodocus|sauropode
 🦖|dinosaurus|rex|t-rex|tyrannosaurus
-🐳|dier|gezicht|spuitende walvis|spuitgat|walvis
-🐋|dier|vis|walvis
-🐬|dier|dolfijn|flipper
+🐳|dier|gezicht|oceaan|spuitend|strand|walvis
+🐋|dier|oceaan|strand|walvis
+🐬|dier|dolfijn|flipper|oceaan|strand
 🦭|dier|leeuw|oceaan|zeehond
-🐟|dier|horoscoop|sterrenbeeld|vissen
-🐠|dier|tropische vis|vis
+🐟|dier|eten|pisces|sterrenbeeld|vissen
+🐠|dier|tropisch|vissen
 🐡|dier|kogelvis|vis
 🦈|dier|haai|vis
-🐙|dier|oceaan|octopus|zee
+🐙|dier|oceaan|octopus|wezen
 🐚|dier|schelp|spiraal|strand|zee
 🪸|klimaat|koraal|oceaan|rif|verandering|zee
-🪼|au|branden|gelei|kwal|oceaan|ongewerveld|stekel|tentakels|zee
+🪼|aquarium|au|beet|branden|dier|gelei|kwal|leven|oceaan|ongewerveld|plankton|stekel|tentakels|zee
+🦀|dierenriem|krab|kreeft
+🦞|bisque|dier|kreeft|scharen|zeevruchten
+🦐|garnaal|klein|schaaldier|voedsel
+🦑|dier|inktvis|voedsel|weekdier
+🦪|duiken|oester|parel
 🐌|dier|escargot|naaktslak|natuur|slak|tuin
 🦋|insect|mooi|vlinder
-🐛|beestje|dier|insect|rups
-🐜|dier|insect|mier
-🐝|bij|dier|hommel|honingbij|insect|wesp
+🐛|beestje|dier|insect|tuin
+🐜|dier|insect|mier|tuin
+🐝|bij|dier|hommel|honingbij|insect|lente|natuur
 🪲|beestje|dier|insect|kever
-🐞|dier|insect|kever|lieveheersbeestje
+🐞|dier|insect|kever|lieveheersbeestje|natuur|tuin
 🦗|dier|insect|krekel|orthoptera|sprinkhaan
 🪳|bakkerstor|dier|insect|kakkerlak|plaag
-🕷️|dier|geleedpotigen|insect|spin
+🕷️|dier|insect|spin
 🕸️|spinnenweb|web
-🦂|dier|horoscoop|schorpioen|scorpio|sterrenbeeld
+🦂|schorpioen|scorpio|scorpius|sterrenbeeld
 🦟|beet|insect|koorts|malaria|mug|ongedierte|virus|ziekte
 🪰|dier|insect|made|ongedierte|rottend|vlieg|ziekte
 🪱|dier|parasiet|regenworm|ringworm|worm
 🦠|amoebe|bacteriën|microbe|virus|wetenschap
 💐|afspraakje|bedankt|beterschap|bloem|boeket|date|jubileum|romantiek|verjaardag
-🌸|bloem|bloesem|kersenbloesem|plant
-💮|bloemenstempel|witte bloem
+🌸|bloem|bloesem|kers|lente|plant|voorjaar
+💮|bloem|wit
 🪷|bloem|boeddhisme|hindoeïsme|lotus|puurheid|rust|schoonheid|sereen|vrede
 🏵️|plant|rozet
-🌹|bloem|liefde|plant|roos|valentijn
+🌹|bloem|elegant|liefde|plant|rood|roos|schoonheid|valentijn
 🥀|bloem|sterven|verwelkt
 🌺|bloem|hibiscus|plant
-🌻|bloem|plant|zonnebloem
+🌻|bloem|buiten|plant|zonnebloem
 🌼|bloem|bloesem|boterbloem|paardenbloem|plant
-🌷|bloem|plant|tulp
+🌷|bloem|bloesem|groei|plant|tulp
 🪻|bloem|hyacint|lavendel|leeuwenbek|lupine|vlinderbloemige
 🌱|jong|plant|spruit|stekje|zaailing
 🪴|decor|groeien|huis|plant|potplant|verzorgen
-🌲|boom|dennenboom|naaldboom|plant|spar
-🌳|bladeren verliezen|boom die bladeren verliest|bos|loof verliezen|loofboom
-🌴|boom|palmboom|plant|tropisch|vakantie
-🌵|cactus|droogte|plant|woestijn
-🌾|aar|graan|plant|rijstaar|rijstplant
+🌲|boom|bos|dennenboom|kerst|naaldboom
+🌳|boom|bos|groen|habitat|loofboom|verliezen
+🌴|boom|palm|plant|strand|tropisch
+🌵|cactus|droogte|natuur|plant|woestijn
+🌾|aar|graan|granen|plant|rijstaar
 🌿|blad|kruid|plant
-🍀|4|blad|geluk|klavertjevier|plant|vier
+🍀|4|blad|geluk|iers|klavertjevier|plant|vier
 🍁|blad|esdoorn|vallend
 🍂|blad|gevallen|herfst|vallend
 🍃|blad|blazen|fladderen|wind
 🪹|leeg|nestelen|tak|thuis
 🪺|eieren|nestelen|tak|vogel
 🍄|paddenstoel|schimmel|zwam
+🪾|boomstam|dood|droogte|hout|kaal|leeg|takken|winter|zonder bladeren
 🍇|dionysus|druif|druiven|fruit
 🍈|fruit|kanteloep|meloen
 🍉|fruit|watermeloen
@@ -744,6 +752,7 @@
 🫚|bier|gemberwortel|specerij|wortel
 🫛|bonen|dop|edamame|erwtendop|groente|peulvrucht
 🍄‍🟫|bruine paddenstoel|bruine paddestoel|champignon|eten|groente|natuur|paddenstoel|paddo|pizza|schimmel|shiitake
+🫜|biet|groente|raap|tuin|wortel
 🍞|brood|eten|koolhydraten|tarwe|voedsel
 🥐|brood|croissant|eten|frans|ontbijt|voedsel
 🥖|brood|eten|frans|stokbrood
@@ -767,10 +776,10 @@
 🫔|eten|mexicaans|pamonha|tamale|verpakt
 🥙|eten|falafel|gevuld|gyros|kebab|pitabrood
 🧆|falafel|gehaktbal|kikkererwt
-🥚|ei|eten|voedsel
+🥚|ei|ontbijt|voedsel
 🍳|bakken|ei|gemakkelijk|koken|ontbijt|pan|restaurant|spiegelei
 🥘|braadpan|eten|ondiep|paella|pan
-🍲|eenpansgerecht|eten|stoofschotel|voedsel
+🍲|pan|soep|stoofschotel|voedsel
 🫕|chocolade|eten|fondue|gesmolten|kaas|pot|ski
 🥣|cornflakes|eten|kom met lepel|muesli|ontbijtgranen|pap|soep|voedsel
 🥗|eten|groen|salade
@@ -795,11 +804,6 @@
 🥟|dumpling|empanada|gyōza|jiaozi|pierogi|potsticker
 🥠|geluk|koekje|profetie
 🥡|afhaalmaaltijd|bezorgen|doggybag|eten|oesteremmer|stokjes|voedsel
-🦀|dierenriem|krab|kreeft
-🦞|bisque|dier|kreeft|scharen|zeevruchten
-🦐|garnaal|klein|schaaldier|voedsel
-🦑|dier|inktvis|voedsel|weekdier
-🦪|duiken|oester|parel
 🍦|dessert|eten|ijs|restaurant|room|softijs|zoet
 🍧|dessert|geschaafd|ijs|restaurant|zoet
 🍨|dessert|eten|ijs|restaurant|room|zoet
@@ -1201,9 +1205,10 @@
 🎻|instrument|muziekinstrument|stradivarius|viool
 🪕|banjo|besnaard|instrument|muziek|snaarinstrument|spelen
 🥁|drummen|drumsticks|muziekinstrument|trommelen|trommelstokken
-🪘|beat|bongo|conga|dansen|drummen|hoge trom|ritme|trommelen|voorwerp
+🪘|beat|conga|hoog|instrument|ritme|trom
 🪇|instrument|muziek|percussie|ratelen|sambaballen|schudden
 🪈|blokfluit|dwarsfluit|fluit|houtblazer|muziek|pijperfluit
+🪉|cupido|harp|instrument|liefde|muziek|orkestra
 📱|bellen|communicatie|mobiele telefoon|smartphone|telefoon
 📲|bellen|mobiel met pijl|mobiele telefoon|ontvangen|pijl|smartphone|telefoon
 ☎️|rode telefoon met hoorn|telefoon|vaste telefoon
@@ -1334,6 +1339,7 @@
 🧰|doos|gereedschapskist|kist|monteur|rode kist
 🧲|aantrekkingskracht|hoefijzer|magneet|magnetisch|positief negatief|uvormig
 🪜|klimmen|ladder|omhoog|omlaag|sport|trede|voorwerp
+🪏|gat|graven|schep|schop|spade
 🧪|chemicus|experiment|laboratorium|reageerbuis|scheikunde|scheikundige|wetenschap
 🧫|bacterie|bacteriën|biologe|biologie|bioloog|cultuur|kweek|laboratorium|petrischaal
 🧬|biologe|bioloog|dna|evolutie|genetica|genetisch|leven
@@ -1383,25 +1389,25 @@
 🪪|beveiliging|id-kaart|identificatie|identiteitskaart|legitimatiebewijs|overheid|vergunning
 🏧|atm|automaat|bank|geld|pinautomaat|pinnen
 🚮|afval|prullenbak|teken|vuilnisbak
-🚰|drinkwatersymbool|kraan met glas|kraanwater
+🚰|drinkbaar|water
 ♿|handicap|rolstoel|symbool|toegang
-🚹|heren-wc|herensymbool|herentoilet|mannen|symbool|toilet|wc
-🚺|dames-wc|damessymbool|damestoilet|symbool|toilet|vrouwen|wc
-🚻|toiletsymbool|toiletten|unisex|wc
+🚹|heren|man|plee|toilet|urinoir|wc
+🚺|dames|plee|toilet|vrouw|wc
+🚻|plee|toilet|wc
 🚼|baby|symbool|verschonen
 🚾|toilet|wasgelegenheid|water|wc
 🛂|controle|paspoort
-🛃|douane|vliegveld
-🛄|aangekomen|bagage afhalen|bagage ophalen|bagageband|koffer|reizen|vliegveld
+🛃|douane|inpakken
+🛄|aangekomen|bagage|ingecheckt|inpakken|klaar|koffer|ophalen|reisje|reizen|tassen|vliegtuig
 🛅|achtergelaten|bagage|kluisje|koffer
 ⚠️|voorzichtig|waarschuwing
 🚸|kinderen|oversteekplaats|verkeer|voetganger
-⛔|geen toegang|nee|symbool|verboden toegang
+⛔|belemmerd|doorgang|geen|ingang|mislukt|niet|toegang|verboden|verkeer
 🚫|nee|niet|roken|toegang|verboden
 🚳|fietsen|nee|niet|verboden
 🚭|nee|niet|roken|verboden
 🚯|geen|niet|verboden|zwerfvuil
-🚱|drinken verboden|geen drinkwater|niet drinkbaar|niet drinken|water
+🚱|droog|geen drinkwater|niet drinkbaar|verboden|water
 🚷|nee|niet|verboden|voetgangers
 📵|mobiel|nee|niet|telefoons|verboden
 🔞|18|achttien|beperking|één|leeftijd|minderjarig|nee|niet|verboden
@@ -1418,13 +1424,13 @@
 🔛|on!|pijl|teken
 🔜|onderweg|pijl|soon|zo terug
 🔝|omhoog|pijl|top
-🛐|bidden|gebedsruimte|geloof|religie|tempel
+🛐|bidden|godsdienst|plaats|religie
 ⚛️|atheïst|atoom|symbool
 🕉️|hindoeïsme|om|religie
 ☯️|leven|moeilijk|religie|taoist|totaal|yang|yin en yang
-✝️|christelijk kruis|christendom|geloof|kruis|religie
-☪️|geloof|islam|moslim|ramadan|religie|wassende maan en ster
-☮️|hippie|peace|symbool|vredessymbool|vredesteken
+✝️|christelijk|christus|kruis|latijns|religie
+☪️|islam|moslim|ramadan|religie|ster|wassende maan
+☮️|helend|symbool|vrede|vredig
 🕎|hannuka|jodendom|joods|kandelaar|menora|religie
 🔯|geluk|jodendom|joods|met stip|ster|zespuntig
 🪯|khanda|religie|sikh
@@ -1444,10 +1450,10 @@
 ⏯️|driehoek|knop|pauzeren|pijl|rechts|spelen
 ◀️|achteruit|driehoek|knop|links|pijl
 ⏪|dubbele pijl links|knop voor versneld terugspoelen|links|pijl|terugspoelen
-⏮️|driehoek|dubbele pijl naar links|knop voor vorig nummer|knop voor vorige nummer|pijl|vorige nummer|vorige scène
+⏮️|driehoek|knop|laatste|nummer|pijl|scène|vorige
 🔼|knop|omhoog|pijl|rood
 ⏫|dubbel|knop|omhoog|pijl|snel
-🔽|driehoek|knop voor omlaag|omlaag|pijl|rood
+🔽|beneden|knop|omlaag|pijl|rood
 ⏬|dubbel|knop|omlaag|pijl|snel
 ⏸️|dubbel|knop|pauze|streep|verticaal
 ⏹️|knop voor stoppen|stoppen|vierkant
@@ -1470,21 +1476,22 @@
 ⚜️|fleur-de-lis|ridders
 🔱|anker|drietand|embleem|gereedschap|poseidon|schip
 📛|badge|kaartje|naamkaartje
-🔰|beginner|blad|chevron|groen en geel|japans ideogram voor beginner|japans symbool voor beginner|onderscheiding
-⭕|cirkel|groot|grote rode cirkel|lege rode cirkel|o|rood
+🔰|beginner|blad|chevron|geel|gereedschap|groen|japans|symbool
+⭕|cirkel|groot|hol|o|rood|vet
 ❌|×|annuleren|kruis|teken|vermenigvuldigen|vermenigvuldiging|x
-❎|×|knop voor kruis|kruis|teken|vermenigvuldigen|vierkant|wit kruis in groen vak|x
+❎|×|knop|kruis|teken|vermenigvuldigen|vermenigvuldiging|vierkant|x
 ➰|gedraaid|gekrulde lus|lus
 ➿|dubbel|krullend|lus
 〽️|markering|rolwisselingsmarkering|teken
+🫟|druppel|geknoei|gemors|gespat|holi|inkt|verf|vlek|vloeistof
 🔠|abcd|hoofdletters|invoeren|latijns|letters
 🔡|abcd|invoeren|kleine letters|latijns|letters
 🔢|1234|cijfers|invoeren
 🔣|&|%|♪|〒|invoeren|symbolen
 🔤|abc|alfabet|invoeren|latijns|letters
-🅰️|a-knop|bloedgroep
-🆎|ab|bloedgroep
-🅱️|b-knop|bloedgroep
+🅰️|bloed|groep|knop
+🆎|ab|bloed|groep|knop
+🅱️|bloed|groep|knop
 🆑|cl|knop
 🆒|cool|knop
 🆓|free|knop
@@ -1492,7 +1499,7 @@
 Ⓜ️|cirkel|in cirkel|m
 🆕|knop|new
 🆖|knop|ng
-🅾️|bloedgroep|o-knop
+🅾️|bloed|groep|knop|o
 🆗|knop|oké
 🅿️|knop|parkeren
 🆘|help|knop|sos
@@ -1524,19 +1531,19 @@
 ⚪|cirkel|geometrisch|wit
 🟥|kaart|penalty|rood|vierkant
 🟧|oranje|vierkant
-🟨|geel|gele kaart|kaart|kleur|penalty|vierkant
+🟨|geel|kaart|penalty|vierkant
 🟩|groen|vierkant
 🟦|blauw|vierkant
 🟪|paars|vierkant
 🟫|bruin|vierkant
 ⬛|geometrisch|groot|vierkant|zwart
-⬜|geometrisch|groot wit vierkant|vierkant|vorm
+⬜|geometrisch|groot|vierkant|wit
 ◼️|geometrisch|middelgroot|vierkant|zwart
 ◻️|middelgroot|vierkant|wit
-◾|geometrisch|klein tot middelgroot zwart vierkant|middelgroot zwart vierkant|redelijk klein zwart vierkant|vierkant|vorm
+◾|geometrisch|klein tot middelgroot|vierkant|zwart
 ◽|geometrisch|klein tot middelgroot|vierkant|wit
 ▪️|geometrisch|klein|vierkant|zwart
-▫️|geometrisch|klein wit vierkant|vierkant|vorm
+▫️|geometrisch|klein|vierkant|wit
 🔶|diamant|geometrisch|groot|oranje
 🔷|blauw|diamant|geometrisch|groot
 🔸|diamant|geometrisch|klein|oranje
@@ -1805,3 +1812,4 @@
 🏴󠁧󠁢󠁥󠁮󠁧󠁿|engeland
 🏴󠁧󠁢󠁳󠁣󠁴󠁿|schotland
 🏴󠁧󠁢󠁷󠁬󠁳󠁿|wales
+🇨🇶|sark

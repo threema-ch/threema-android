@@ -24,6 +24,8 @@ package ch.threema.domain.fs;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
+import ch.threema.base.ThreemaException;
+
 public class KDFRatchetTest {
 
     private static final byte[] INITIAL_CHAIN_KEY = new byte[]{(byte) 0x42, (byte) 0x1e, (byte) 0x73, (byte) 0xcf, (byte) 0x32, (byte) 0x47, (byte) 0x85, (byte) 0xde, (byte) 0xe4, (byte) 0xc4, (byte) 0x83, (byte) 0x0f, (byte) 0x2e, (byte) 0xfb, (byte) 0xb8, (byte) 0xcd, (byte) 0x4b, (byte) 0x25, (byte) 0x8e, (byte) 0xd8, (byte) 0x52, (byte) 0x0a, (byte) 0x60, (byte) 0x8a, (byte) 0x6c, (byte) 0xe3, (byte) 0x40, (byte) 0xaa, (byte) 0xa7, (byte) 0x40, (byte) 0x00, (byte) 0x24};
@@ -41,7 +43,7 @@ public class KDFRatchetTest {
     }
 
     @Test
-    public void testTurnMany() throws KDFRatchet.RatchetRotationException {
+    public void testTurnMany() throws ThreemaException {
         KDFRatchet ratchet = new KDFRatchet(0, INITIAL_CHAIN_KEY);
         ratchet.turnUntil(100);
 

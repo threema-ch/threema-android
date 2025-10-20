@@ -28,6 +28,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.getEncryptedIncomingContactMessageUpdateReadEnvelope
+import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
 private val logger = LoggingUtil.getThreemaLogger("OutboundIncomingContactMessageUpdateReadTask")
@@ -35,7 +36,7 @@ private val logger = LoggingUtil.getThreemaLogger("OutboundIncomingContactMessag
 class OutboundIncomingContactMessageUpdateReadTask(
     private val messageIds: Set<MessageId>,
     private val timestamp: Long,
-    private val recipientIdentity: String,
+    private val recipientIdentity: Identity,
     serviceManager: ServiceManager,
 ) : OutboundD2mMessageTask<Unit>, PersistableTask {
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
@@ -77,7 +78,7 @@ class OutboundIncomingContactMessageUpdateReadTask(
     data class OutboundIncomingContactMessageUpdateReadData(
         private val messageIds: Set<ByteArray>,
         private val timestamp: Long,
-        private val recipientIdentity: String,
+        private val recipientIdentity: Identity,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutboundIncomingContactMessageUpdateReadTask(

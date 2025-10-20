@@ -23,8 +23,10 @@
         android:layout_weight="1.0"
         android:alpha="0.6"
         android:ellipsize="end"
+        android:gravity="center_vertical"
         android:maxLines="1"
         android:text="@string/edited"
+        android:textColor="@color/bubble_receive_text_colorstatelist"
         android:visibility="gone"
         tools:visibility="visible" />
 
@@ -48,7 +50,9 @@
         android:layout_gravity="bottom"
         android:alpha="0.6"
         android:ellipsize="none"
+        android:gravity="center_vertical"
         android:singleLine="true"
+        android:textColor="@color/bubble_receive_text_colorstatelist"
         tools:text="11.11.2024" />
 
     <ImageView
@@ -66,13 +70,15 @@
 
     <ImageView
         android:id="@+id/star_icon"
-        android:layout_width="18dp"
-        android:layout_height="18dp"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
         android:layout_gravity="center_vertical"
+        android:layout_marginStart="@dimen/grid_unit_x0_5"
+        android:alpha="0.6"
         android:contentDescription="@string/starred_message"
-        android:padding="3dp"
         android:visibility="gone"
-        app:srcCompat="@drawable/ic_star_golden_24dp"
+        app:srcCompat="@drawable/ic_star_filled"
+        app:tint="@color/bubble_receive_text_colorstatelist"
         tools:visibility="visible" />
 
 </LinearLayout>

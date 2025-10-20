@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/web_sessions_switch_frame_height"
         android:outlineProvider="none"
-        app:cardBackgroundColor="?attr/colorTertiaryContainer"
+        app:cardBackgroundColor="?attr/colorSurfaceContainerHigh"
         app:cardCornerRadius="0dp"
         app:cardElevation="4dp"
         app:contentPaddingBottom="8dp"
@@ -28,9 +28,9 @@
             android:layout_width="wrap_content"
             android:layout_height="@dimen/web_sessions_switch_frame_height"
             android:layout_gravity="center_vertical|left"
-            android:textColor="?attr/colorOnTertiaryContainer"
             android:gravity="center_vertical"
-            android:text="@string/threema_safe" />
+            android:text="@string/threema_safe"
+            android:textColor="?attr/colorOnSurface" />
 
         <ch.threema.app.ui.SilentSwitchCompat
             android:id="@+id/switch_button"
@@ -184,7 +184,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/threema_safe_change_password"
-                    style="@style/Threema.MaterialButton.Action.Outline"
+                    style="@style/Threema.MaterialButton.Outlined.Primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@id/backup_result_label"
@@ -238,7 +238,7 @@
 
                 <TextView
                     android:id="@+id/empty_text"
-                    style="@style/Threema.TextAppearance.Emptyview"
+                    style="@style/Threema.TextAppearance.EmptyView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
@@ -252,7 +252,7 @@
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/info"
-                    style="@style/Threema.MaterialButton.Action.Outline"
+                    style="@style/Threema.MaterialButton.Outlined.Primary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"

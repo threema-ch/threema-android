@@ -58,8 +58,8 @@ quan arribi el primer missatge.</string>
     <string name="prefs_sum_notification_sound">Predeterminat del sistema</string>
     <string name="prefs_vibrate">Vibrar</string>
     <string name="prefs_sum_vibrate">Vibrar quan es rebi un missatge</string>
-    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
-    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_light">Blanca</string>
     <string name="prefs_title_wallpaper">Seleccionar fons de pantalla</string>
     <string name="prefs_sum_wallpaper">Seleccionar imatge per al fons</string>
@@ -94,6 +94,7 @@ quan arribi el primer missatge.</string>
     <string name="next">Següent</string>
     <string name="finish">Acabar</string>
     <string name="please_wait">Espereu…</string>
+    <!-- Text shown when a task which shows a loading spinner takes longer than expected (e.g. creating a group) -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Creant la vostra ID de ${app_name_short}</string>
     <string name="wizard1_sync_contacts">Sincronitzant contactes</string>
@@ -210,7 +211,6 @@ de continuar.</string>
     <string name="code_invalid">El codi que heu entrat no és vàlid.</string>
     <string name="try_again">Tornar a intentar</string>
     <string name="decoding_message">Desxifrant Missatge</string>
-    <string name="invalid_barcode">Tipus de codi de barres no vàlid</string>
     <string name="expired_barcode">Aquest codi ha caducat. Torneu a escanejar-lo directament des de l\'aplicació de l\'altre usuari.</string>
     <string name="pending">Pendent</string>
     <string name="unlinking_email">Desenllaçant correu electrònic</string>
@@ -279,7 +279,8 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="restore_data_password_msg">Entreu la contrasenya que vau utilitzar per crear aquesta còpia de seguretat.</string>
     <string name="backup_data_media">Incloure fitxers multimèdia grans (vídeo, documents, fotos de mida original)</string>
     <string name="backup_data_new">Crear còpia de les dades</string>
-    <string name="pinentry_enter_pin">Entreu el vostre %s PIN per continuar</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinentry_enter_pin">Entreu el vostre ${app_name} PIN per continuar</string>
     <string name="pinentry_wrong_pin">PIN incorrecte</string>
     <string name="prefs_sum_security_pin">Bloquejar l\'accés a la IU</string>
     <string name="prefs_title_pin_switch">Bloqueig d\'aplicació</string>
@@ -688,7 +689,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="wait_one_minute">Espereu almenys 10 minuts per tal que arribi l\'SMS abans de demanar una trucada.</string>
     <string name="backup_id">ID exportada</string>
     <string name="backup_data">Còpia de les dades</string>
-    <string name="really_leave_group_admin_message">Sou administrador d\'aquest grup. Si en sortiu quedarà orfe. Els altres membres podran continuar xatejant però no s\'hi podran tornar a fer canvis.</string>
     <string name="action_delete_group">Eliminar grup</string>
     <string name="delete_my_group_message">Voleu eliminar aquest grup completament? Tots els missatges s\'esborraran i els membres restants no podran utilitzar més aquest grup.</string>
     <string name="error_out_of_memory">No hi ha prou memòria per completar aquesta acció</string>
@@ -767,7 +767,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="battery_optimizations_explain">L\'optimització de la bateria evita que %1$s treballi correctament quan el vostre telèfon es posa en mode repòs. Desactiveu l\'optimització de la bateria per %2$s.</string>
     <string name="battery_optimizations_disable_guide">Seleccioneu «Totes les aplicacions» al menú desplegable</string>
     <string name="battery_optimizations_disable_guide_ctd">Cerqueu %s a la llista i desactiveu l\'optimització</string>
-    <string name="battery_optimizations_disable_confirm">Voleu mantenir l\'optimització de la bateria activada per %1$s? %2$s no funcionarà correctament.</string>
     <string name="enter_text_hint">Entreu el text</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_explain_text">Si canvieu o perdeu el vostre dispositiu, ningú podrà restaurar la vostra ID de ${app_name_short} ni els vostres xats si no disposeu d\'una còpia. Guardeu les vostres dades utilitzant les opcions de còpia apropiades.</string>
@@ -1037,6 +1036,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="safe_configure_server_credentials_title">Autenticació (opcional)</string>
     <string name="username_hint">Nom d\'usuari</string>
     <string name="server_hint">Servidor</string>
+    <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
     <string name="lock_option_biometric">Biomètric</string>
     <string name="biometric_enter_authentication">Cal autenticar-vos per desbloquejar</string>
     <string name="biometric_authentication_failed">Error en l\'autenticació</string>
@@ -1096,9 +1096,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="backup_data_no_permission">No es pot escriure en aquest directori. Escolliu-ne un altre.</string>
     <string name="prefs_sum_show_unread_badge">Mostrar insígnies a les pestanyes de navegació inferiors</string>
     <string name="prefs_title_show_unread_badge">Insígnies</string>
-    <string name="pinning_not_trusted">Error de Fixació de Certificat. Comproveu si \"Entrust Root Certification Authority - G2\" està instal·lada i activada a l\'emmagatzematge de credencials del vostre dispositiu.</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="pinning_failed">Error de Fixació de Certificat. Possible atac \"Man-in-the-middle\". Si teniu un bloquejador d\'anuncis, filtre de contingut, o aplicació de tallafocs instal·lades com \"AdGuard\", desactiveu-los per a ${app_name}.</string>
     <string name="open_myid_popup">Obrir la finestra emergent d\'accés ràpid</string>
     <string name="logo">Logo / Desplaçar a dalt</string>
     <string name="quote_subj_end">Fi de la cita</string>
@@ -1243,58 +1240,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="set_backup_path">Definir camí de còpia</string>
     <string name="set_backup_path_intro">A la pantalla següent seleccioneu la carpeta on s\'emmagatzemaran les còpies.</string>
     <string name="discard_changes_title">Descartar els canvis</string>
-    <string name="group_join_request_message_info"><![CDATA[Escriviu un missatge curt a l\'administrador del grup <b>%1$s</b> especificant perquè voleu unir-vos a <b>%2$s</b>.]]></string>
-    <string name="group_join_request">Petició d\'accés al grup</string>
-    <string name="group_join_request_for">Petició d\'accés al grup per a %s</string>
-    <string name="group_link_default_name">Enllaç sense nom</string>
-    <string name="group_link_share">Enllaç de compartició de grup</string>
-    <string name="group_request_incoming_dialog_title">Petició de %s</string>
     <string name="accept">Acceptar</string>
-    <string name="reject">Rebutjar</string>
-    <string name="group_request_already_sent"><![CDATA[Ja teniu una petició de grup oberta per a <b>%s</b> a través d\'aquest enllaç i resta pendent una resposta de l\'administrador de grup. Cliqueu a la petició de la llista si voleu intentar de tornar-la a enviar.]]></string>
-    <string name="group_link_none">Encara no s\'ha generat un enllaç</string>
-    <string name="group_request_confirm_send"><![CDATA[Esteu a punt d\'enviar una petició de grup per a <b>%1$s</b> a l\'administrador <b>%2$s</b>. Si l\'enllaç no està invalidat, sereu afegit automàticament al grup tan aviat com el dispositiu de l\'administrador rebi la vostra petició.]]></string>
-    <string name="sent_to">Enviada a: %s</string>
-    <string name="sent_on">Enviada: %s</string>
-    <string name="group_response">Resposta a accés a grup</string>
-    <string name="group_response_accepted">La vostra petició de grup per a %s ha estat acceptada</string>
-    <string name="group_response_full">La vostra petició de grup per a %s s\'ha rebutjat perquè el grup està complet</string>
-    <string name="group_response_rejected">La vostra petició de grup per a %s s\'ha rebutjat</string>
-    <string name="group_link_expiration_none">Sense restriccions</string>
-    <string name="group_request_hint">Ei! Sóc jo…</string>
-    <string name="group_request_send_title">Enviar Petició d\'Accés a Grup</string>
-    <string name="group_request_message_empty">El missatge de la petició de grup no pot ser buit</string>
-    <string name="group_requests_all_title">Totes les peticions de grup</string>
-    <string name="group_requests_none_outgoing">No hi ha peticions de grup enviades. Les peticions es poden enviar a través dels enllaços de grup creats per l\'administrador del grup.</string>
-    <string name="notification_channel_group_join_response">Notificació per a resposta d\'accés a grup</string>
-    <string name="group_qr_code_title">Codi QR de grup</string>
-    <string name="group_link_qr_desc"><![CDATA[Compartiu aquest enllaç de grup amb gent amb qui us agradaria accedir al grup: <b>%s</b>.]]></string>
-    <string name="new_group_link_success">Nou Enllaç afegit</string>
-    <string name="link_administration_off_explain">Aquest enllaç ja ha estat configurat i compartit prèviament, ara no és possible canviar aquesta propietat. Genereu un nou enllaç amb la propietat que necessiteu.</string>
-    <string name="group_link_update_success">Enllaç actualitzat correctament</string>
-    <string name="no_group_links">No hi ha enllaços de grup. Per crear-ne un, cliqueu al botó d\'afegir a baix a la dreta o activeu l\'enllaç predeterminat a la vista de detalls del grup.</string>
-    <string name="group_links_overview_title">Enllaços de grup per a %s</string>
-    <string name="group_link_invalid">Caducats</string>
-    <string name="group_link_valid">Vàlids</string>
-    <string name="open_group_requests_chips_title">Peticions de grup obertes</string>
-    <string name="all_open_group_requests">Totes les peticions de grup</string>
-    <string name="no_incoming_group_requests">Cap petició de grup entrant. Aquestes se us poden enviar a través d\'enllaços de grup els quals podeu administrar en la vista de detalls del grup si en sou l\'administrador.</string>
-    <string name="received_on">Rebuda el %s</string>
-    <string name="group_request_state_full">Grup complet</string>
-    <string name="group_request_state_rejected">Rebutjades</string>
-    <string name="group_request_state_expired">Caducades</string>
-    <string name="group_request_state_pending">Pendents</string>
-    <string name="group_request_state_accepted">Acceptades</string>
-    <string name="open_group_requests_show">Mostrar peticions d\'accés</string>
-    <string name="open_group_requests_hide">Amagar peticions d\'accés</string>
-    <string name="group_request_link_already_deleted">Enllaç de grup mentre s\'elimina</string>
-    <string name="incoming_group_request_no_message">Enviat a través d\'un enllaç obert… cap missatge</string>
-    <string name="group_request_received_through">A través de l\'enllaç: %s</string>
-    <string name="reaccept">Reacceptar</string>
-    <string name="group_link_edit_expiration_date">Editar data de caducitat</string>
-    <string name="group_link_show_qr">Mostrar codi QR</string>
-    <string name="group_link_rename">Renombrar</string>
-    <string name="group_link_rename_tag">Nom nou</string>
     <string name="tap_here_for_more">Toqueu aquí per a més informació</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="another_connection_instructions"><![CDATA[El servidor ha detectat dues o més connexions des de diversos dispositius a la mateixa ID de ${app_name_short}.
@@ -1316,20 +1262,7 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <string name="download_failed">Error en la descàrrega. Codi d\'error: %d</string>
     <string name="edit_answer">Editar la resposta</string>
     <string name="share_media">Compartir amb una altra aplicació…</string>
-    <string name="group_link_administered">Administrada</string>
-    <string name="group_link_open">Oberta</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="group_link_share_message">Uniu-vos al meu grup ${app_name_short} a través del següent enllaç!: %s</string>
-    <string name="group_link_bottom_sheet_title">Enllaç de grup</string>
-    <string name="group_link_bottom_sheet_desc">Compartiu aquest enllaç amb gent que vulgueu que s\'uneixi al grup. Tingueu en compte les opcions de sota.</string>
-    <string name="group_link_bottom_sheet_link_title">Enllaç</string>
-    <string name="group_link_properties_title">Propietats de l\'enllaç</string>
-    <string name="group_link_property_administration_title">Confirmació manual</string>
-    <string name="group_link_property_administration_desc">Si s\'activa, rebreu les peticions dins el xat de grup, les quals podreu acceptar o rebutjar</string>
-    <string name="group_link_property_expiration_title">Data de caducitat</string>
-    <string name="group_link_property_expiration_desc">L\'enllaç caduca després de la data configurada.</string>
     <string name="group_image">Imatge de grup</string>
-    <string name="add_group_link">Afegir membres a través de l\'enllaç de grup</string>
     <string name="miui_battery_optimization">Desactiveu \"l\'optimització de la bateria\" per %s per realitzar aquesta tasca. Com que Xiaomi no permet a les aplicacions cridar aquesta pantalla de configuració directament, ho haureu de fer manualment a la configuració del vostre telèfon. Contacteu amb l\'assistència de Xiaomi si necessiteu suport desactivant l\'optimització de la bateria.</string>
     <string name="forward_captions">Incloure captures</string>
     <string name="importing_files_failed">No es pot importar el fitxer de còpia. Assegureu-vos que hi ha prou espai disponible a la memòria interna.</string>
@@ -1345,28 +1278,12 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <string name="prefs_title_reset_receipts">Netejar configuracions individuals</string>
     <string name="prefs_sum_reset_receipts">Restablir les configuracions específiques del contacte per confirmacions i indicador d\'escriptura a les predeterminades</string>
     <string name="reset_successful">Correctament restablertes a predeterminades</string>
-    <string name="group_link_add">Afegir Enllaç de Grup</string>
-    <string name="group_requests_show_menu_title">Mostrar peticions d\'accés obertes</string>
-    <string name="group_request_show_all">Mostrar totes les peticions de grup</string>
-    <string name="group_links_manage_menu">Gestionar enllaços de grup</string>
-    <string name="group_request_sent_menu">Peticions de grup enviades</string>
-    <string name="really_delete_group_link_title">Enllaç d\'eliminació de grup</string>
-    <string name="qr_scan_result_dialog_title">Resultat escaneig QR</string>
-    <string name="scan_failure_dialog_title">Escaneig fallit</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="no_threema_qr_info">Aquest no és un codi QR específic de ${app_name_short}. El contingut descodificat és:</string>
-    <string name="default_group_link">Enllaç de grup predeterminat</string>
-    <string name="default_link_name">Enllaç predeterminat</string>
-    <string name="reset_default_group_link">Restablir enllaç de grup predeterminat</string>
-    <string name="resend">Reenviar</string>
-    <string name="group_request_already_sent_title">Petició ja enviada</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Escanegeu el codi QR d\'un contacte per verificar la seva identitat. Per mostrar el codi, demaneu al contacte que toqui la foto de perfil a la cantonada de dalt a l\'esquerra de la pantalla d\'inici de ${app_name_short}.</string>
     <string name="enable_storage_access_for_media">Activar l\'accés a l\'emmagatzematge per veure fotos i vídeos del vostre dispositiu</string>
     <string name="take_me_there">Porteu-m\'hi…</string>
-    <string name="notification_channel_group_join_request">Canal de notificacions per peticions de grup rebudes</string>
-    <string name="reset_default_group_link_title">Restablir info d\'enllaç predeterminada</string>
-    <string name="reset_default_group_link_desc">L\'enllaç compartit anteriorment deixarà de ser vàlid i les peticions a través de l\'enllaç antic seran rebutjades automàticament amb una resposta de caducades.</string>
     <string name="custom">altres</string>
     <string name="show_public_key">Mostrar la clau pública</string>
     <string name="public_key_for">Clau pública de %s</string>
@@ -1442,10 +1359,6 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <!-- Title of warning message that informs the user that their app is no longer supported. -->
-    <!-- Details of warning message that informs the user that their app is no longer supported. -->
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- accessibility -->
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1460,6 +1373,7 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <!-- Instruction text for the user directory search -->
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <!-- Message that is shown when the user wants to share an invalid file. -->
@@ -1467,6 +1381,19 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <!-- Title shown in "About" screen above item that indicates whether the DualLock (a.k.a. "Remote Secret") feature is currently activated. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacte</item>
         <item quantity="other">%d contactes</item>

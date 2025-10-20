@@ -29,6 +29,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.getEncryptedIncomingGroupMessageUpdateReadEnvelope
+import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
 private val logger = LoggingUtil.getThreemaLogger("OutboundIncomingGroupMessageUpdateReadTask")
@@ -37,7 +38,7 @@ class OutboundIncomingGroupMessageUpdateReadTask(
     private val messageIds: Set<MessageId>,
     private val timestamp: Long,
     private val groupId: GroupId,
-    private val creatorIdentity: String,
+    private val creatorIdentity: Identity,
     serviceManager: ServiceManager,
 ) : OutboundD2mMessageTask<Unit>, PersistableTask {
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
@@ -82,7 +83,7 @@ class OutboundIncomingGroupMessageUpdateReadTask(
         private val messageIds: Set<ByteArray>,
         private val timestamp: Long,
         private val groupId: ByteArray,
-        private val creatorIdentity: String,
+        private val creatorIdentity: Identity,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             OutboundIncomingGroupMessageUpdateReadTask(

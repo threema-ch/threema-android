@@ -21,26 +21,15 @@
 
 package ch.threema.storage.models;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import org.slf4j.Logger;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.Objects;
 
-import ch.threema.app.utils.ColorUtil;
-import ch.threema.app.utils.ConfigUtils;
-import ch.threema.base.utils.LoggingUtil;
+import ch.threema.data.datatypes.IdColor;
 import ch.threema.base.utils.Utils;
 
 public class DistributionListModel implements ReceiverModel {
-    private final static Logger logger = LoggingUtil.getThreemaLogger("DistributionListModel");
-
     public static final int DISTRIBUTIONLIST_NAME_MAX_LENGTH_BYTES = 256;
 
     public static final String TABLE = "distribution_list";
@@ -56,7 +45,7 @@ public class DistributionListModel implements ReceiverModel {
     private Date createdAt;
     private @Nullable Date lastUpdate;
     private boolean isArchived, isAdHocDistributionList;
-    private int colorIndex = -1;
+    private IdColor idColor = IdColor.invalid();
 
     // dummy class
     public @Nullable String getName() {
@@ -74,6 +63,8 @@ public class DistributionListModel implements ReceiverModel {
 
     public DistributionListModel setId(long id) {
         this.id = id;
+        // Invalidate id color as it might have changed
+        this.idColor = IdColor.invalid();
         return this;
     }
 
@@ -132,36 +123,11 @@ public class DistributionListModel implements ReceiverModel {
         return this.isAdHocDistributionList();
     }
 
-    public int getThemedColor(@NonNull Context context) {
-        if (ConfigUtils.isTheDarkSide(context)) {
-            return getColorDark();
-        } else {
-            return getColorLight();
+    public IdColor getIdColor() {
+        if (!idColor.isValid()) {
+            idColor = IdColor.ofDistributionList(id);
         }
-    }
-
-    public int getColorLight() {
-        if (colorIndex < 0) {
-            computeColorIndex();
-        }
-        return ColorUtil.getInstance().getIDColorLight(colorIndex);
-    }
-
-    public int getColorDark() {
-        if (colorIndex < 0) {
-            computeColorIndex();
-        }
-        return ColorUtil.getInstance().getIDColorDark(colorIndex);
-    }
-
-    private void computeColorIndex() {
-        try {
-            byte[] idBytes = new byte[]{(byte) (id >>> 56), (byte) (id >>> 48), (byte) (id >>> 40), (byte) (id >>> 32), (byte) (id >>> 24), (byte) (id >>> 16), (byte) (id >>> 8), (byte) id};
-            byte firstByte = MessageDigest.getInstance("SHA-256").digest(idBytes)[0];
-            colorIndex = ColorUtil.getInstance().getIDColorIndex(firstByte);
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("Could not hash the distribution list to determine color", e);
-        }
+        return idColor;
     }
 
     @Override

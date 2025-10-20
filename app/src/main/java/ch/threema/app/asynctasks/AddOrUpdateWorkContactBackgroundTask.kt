@@ -23,14 +23,14 @@ package ch.threema.app.asynctasks
 
 import androidx.annotation.WorkerThread
 import ch.threema.app.services.license.LicenseService
-import ch.threema.app.services.license.UserCredentials
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.executor.BackgroundTask
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.common.now
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
-import ch.threema.data.models.ContactModelData.Companion.getIdColorIndex
 import ch.threema.data.repositories.ContactCreateException
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.ContactSyncState
@@ -38,12 +38,13 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.UserCredentials
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.work.WorkContact
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import com.neilalexander.jnacl.NaCl
 import kotlinx.coroutines.runBlocking
 
 private val logger = LoggingUtil.getThreemaLogger("AddOrUpdateWorkContactBackgroundTask")
@@ -62,7 +63,7 @@ open class AddOrUpdateWorkContactBackgroundTask(
     /**
      * The user's identity.
      */
-    private val myIdentity: String,
+    private val myIdentity: Identity,
     /**
      * The contact model repository.
      */
@@ -89,7 +90,7 @@ open class AddOrUpdateWorkContactBackgroundTask(
             return null
         }
 
-        if (workContact.publicKey.size != NaCl.PUBLICKEYBYTES) {
+        if (workContact.publicKey.size != NaCl.PUBLIC_KEY_BYTES) {
             // Ignore work contact with invalid public key
             logger.warn(
                 "Work contact has invalid public key of size {}",
@@ -126,7 +127,7 @@ open class AddOrUpdateWorkContactBackgroundTask(
                         firstName = workContact.firstName ?: "",
                         lastName = workContact.lastName ?: "",
                         nickname = null,
-                        colorIndex = getIdColorIndex(workContact.threemaId),
+                        idColor = IdColor.ofIdentity(workContact.threemaId),
                         verificationLevel = VerificationLevel.SERVER_VERIFIED,
                         workVerificationLevel = WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
                         // TODO(ANDR-3159): Fetch identity type
@@ -157,7 +158,7 @@ open class AddOrUpdateWorkContactBackgroundTask(
     }
 
     private fun updateContact(contactModel: ContactModel) {
-        val currentContactModelData: ContactModelData = contactModel.data.value ?: run {
+        val currentContactModelData: ContactModelData = contactModel.data ?: run {
             logger.error("Contact has already been deleted")
             return
         }
@@ -200,8 +201,8 @@ open class AddOrUpdateWorkContactBackgroundTask(
  * This task does not do anything if it is not a work build.
  */
 class AddOrUpdateWorkIdentityBackgroundTask(
-    private val identity: String,
-    private val myIdentity: String,
+    private val identity: Identity,
+    private val myIdentity: Identity,
     private val licenseService: LicenseService<*>,
     private val apiConnector: APIConnector,
     private val contactModelRepository: ContactModelRepository,

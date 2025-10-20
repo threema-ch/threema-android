@@ -83,6 +83,7 @@
     <string name="voip_gc_waiting_for_participants">Очікування на учасників</string>
     <string name="voip_gc_participant_avatar_description">Фото профілю учасника</string>
     <string name="voip_gc_participant_mute_status_description">Стан мікрофона учасника</string>
+    <string name="voip_gc_participant_screen_share_status_description">Учасник демонструє екран</string>
     <string name="voip_gc_notification_new_call_public">Розпочато новий груповий виклик</string>
     <string name="voip_gc_open_call">Відкрити</string>
     <string name="voip_gc_call_started">Груповий виклик розпочато</string>
@@ -92,6 +93,7 @@
     <string name="voip_gc_call_error">Виклик зупинено через помилку</string>
     <string name="voip_gc_call_start_error">Не вдалося почати груповий виклик</string>
     <string name="voip_gc_call_already_ended">Груповий виклик уже завершено</string>
+    <string name="voip_gc_screen_sharing_not_supported">Демонстрація екрана наразі доступна лише на ПК.</string>
     <string name="voip_gc_call_full_generic">Максимальна кількість учасників: до цього групового виклику не може приєднатися більше людей.</string>
     <string name="voip_gc_call_full_n">Ви не можете приєднатися до цього групового виклику, оскільки досягнуто ліміту учасників (%1$d).</string>
     <plurals name="n_participants_in_call">

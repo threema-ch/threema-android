@@ -21,6 +21,7 @@
 
 package ch.threema.domain.protocol.taskmanager
 
+import ch.threema.base.crypto.NaCl
 import ch.threema.domain.helpers.InMemoryContactStore
 import ch.threema.domain.helpers.InMemoryIdentityStore
 import ch.threema.domain.models.Contact
@@ -53,7 +54,6 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManagerImpl
 import ch.threema.domain.taskmanager.awaitReflectAck
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
-import com.neilalexander.jnacl.NaCl
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -98,12 +98,12 @@ class BypassTest {
 
     init {
         val contactStore = InMemoryContactStore().apply {
-            addContact(Contact("01234567", ByteArray(NaCl.PUBLICKEYBYTES)))
+            addContact(Contact("01234567", ByteArray(NaCl.PUBLIC_KEY_BYTES)))
         }
 
-        val privateKey = ByteArray(NaCl.SECRETKEYBYTES)
-        val publicKey = ByteArray(NaCl.PUBLICKEYBYTES)
-        NaCl.genkeypair(publicKey, privateKey)
+        val privateKey = ByteArray(NaCl.SECRET_KEY_BYTES)
+        val publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES)
+        NaCl.generateKeypairInPlace(publicKey, privateKey)
 
         val identityStore = InMemoryIdentityStore("TESTTEST", "group", privateKey, "Nickname")
 
@@ -129,7 +129,7 @@ class BypassTest {
             text = "Text"
         }
         val encodedMessageBytes =
-            messageCoder.encode(textMessage, ByteArray(NaCl.NONCEBYTES)).makeBinary()
+            messageCoder.encode(textMessage, ByteArray(NaCl.NONCE_BYTES)).makeBinary()
 
         val expectation: Map<InboundL4Message, MessageAction> = mapOf(
             CspContainer(

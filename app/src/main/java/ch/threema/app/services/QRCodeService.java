@@ -36,7 +36,7 @@ public interface QRCodeService {
 
     QRCodeContentResult getResult(String content);
 
-    Bitmap getRawQR(String raw, boolean unicode, @QRCodeServiceImpl.QRCodeColor int borderColor);
+    Bitmap getRawQR(String raw, boolean unicode);
 
     Bitmap getUserQRCode();
 }

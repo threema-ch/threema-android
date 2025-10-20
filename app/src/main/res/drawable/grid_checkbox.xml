@@ -3,7 +3,7 @@
     <item android:drawable="@drawable/shape_grid_checkbox_selected" />
     <item>
         <inset
-            android:drawable="@drawable/ic_done_white_24dp"
+            android:drawable="@drawable/ic_check"
             android:insetRight="3dp"
             android:insetTop="3dp"
             android:insetLeft="3dp"

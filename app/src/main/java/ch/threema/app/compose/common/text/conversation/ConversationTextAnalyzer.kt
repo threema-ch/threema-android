@@ -25,17 +25,19 @@ import ch.threema.app.compose.common.text.conversation.ConversationTextAnalyzer.
 import ch.threema.app.emojis.EmojiParser
 import ch.threema.app.emojis.SpriteCoordinates
 import ch.threema.app.services.ContactService
+import ch.threema.domain.types.Identity
 
 object ConversationTextAnalyzer {
 
     private const val MENTION_SEARCH_REGEX = "@\\[([0-9A-Z*@]{8})]"
 
     /**
-     * @param items The list of all found emojis and mentions. It will preserve the order of occurrences from the given input string.
+     * @param items A map of all found emojis and mentions. They key is the character index from the input string where the characters for
+     * the [SearchResult] begin (inclusive).
      * @param containsOnlyEmojis Is true when the only contents of input string are emoji characters. Will be false if the input is empty.
      */
     data class Result(
-        val items: List<SearchResult>,
+        val items: Map<Int, SearchResult>,
         val containsOnlyEmojis: Boolean,
     ) {
 
@@ -59,7 +61,7 @@ object ConversationTextAnalyzer {
 
             data class Mention(
                 override val startIndex: Int,
-                val identity: String,
+                val identity: Identity,
             ) : SearchResult {
 
                 /**
@@ -72,37 +74,38 @@ object ConversationTextAnalyzer {
             }
         }
 
-        val emojis: List<SearchResult.Emoji>
-            get() = items.filterIsInstance<SearchResult.Emoji>()
-
         internal companion object {
             val blank
                 get() = Result(
-                    items = emptyList(),
+                    items = emptyMap(),
                     containsOnlyEmojis = false,
                 )
         }
     }
 
     /**
-     *  Searches for every emoji and mention in the given [rawInput]. The result will contain a list of all found items in the **exact
-     *  order** they occurred in the input.
+     *  Searches for every [SearchResult.Emoji] and [SearchResult.Mention] in the given [rawInput]. The result will contain a map of all found items.
+     *  The key of this map is the index in the input string where the [SearchResult] character sequence begins (inclusive).
      */
     fun analyze(
         rawInput: String,
         searchMentions: Boolean,
-    ): Result =
+    ): Result {
         if (rawInput.isBlank()) {
-            Result.blank
-        } else {
-            val emojis: List<SearchResult> = searchEmojis(rawInput)
-            val mentions: List<SearchResult> = if (searchMentions) searchMentions(rawInput) else emptyList()
-            val items: List<SearchResult> = (emojis + mentions).sortedBy(SearchResult::startIndex)
-            Result(
-                items = items,
-                containsOnlyEmojis = emojis.isNotEmpty() && emojis.sumOf(SearchResult::length) == rawInput.length,
-            )
+            return Result.blank
         }
+        val emojis: Map<Int, SearchResult> = searchEmojis(rawInput).associateBy(SearchResult::startIndex)
+        val mentions: Map<Int, SearchResult> = if (searchMentions) {
+            searchMentions(rawInput).associateBy(SearchResult::startIndex)
+        } else {
+            emptyMap()
+        }
+        val items: Map<Int, SearchResult> = emojis.plus(mentions)
+        return Result(
+            items = items,
+            containsOnlyEmojis = emojis.isNotEmpty() && emojis.values.sumOf(SearchResult::length) == rawInput.length,
+        )
+    }
 
     private fun searchEmojis(rawInput: String): List<SearchResult> {
         if (rawInput.isBlank()) {

@@ -22,7 +22,7 @@
 package ch.threema.app.preference.service
 
 import ch.threema.app.multidevice.MultiDeviceManager
-import ch.threema.app.stores.PreferenceStoreInterface
+import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.PersistableTask
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.taskmanager.Task
@@ -39,11 +39,11 @@ private val logger = LoggingUtil.getThreemaLogger("SynchronizedSetting")
 sealed class SynchronizedSetting<T>(
     @JvmField
     val preferenceKey: String,
-    private val preferenceStore: PreferenceStoreInterface,
+    private val preferenceStore: PreferenceStore,
     private val multiDeviceManager: MultiDeviceManager,
     private val taskManager: TaskManager,
-    private val getValue: PreferenceStoreInterface.(preferenceKey: String) -> T,
-    private val setValue: PreferenceStoreInterface.(preferenceKey: String, value: T) -> Unit,
+    private val getValue: PreferenceStore.(preferenceKey: String) -> T,
+    private val setValue: PreferenceStore.(preferenceKey: String, value: T) -> Unit,
 ) {
     private val stateFlow: MutableStateFlow<T> = MutableStateFlow(preferenceStore.getValue(preferenceKey))
 

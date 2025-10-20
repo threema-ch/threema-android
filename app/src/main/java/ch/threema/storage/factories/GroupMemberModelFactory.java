@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import ch.threema.data.datatypes.IdColor;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
@@ -189,19 +190,19 @@ public class GroupMemberModelFactory extends ModelFactory {
         return null;
     }
 
-    public Map<String, Integer> getIDColorIndices(long groupId) {
+    public Map<String, IdColor> getIDColors(long groupId) {
         Cursor c = getReadableDatabase().rawQuery("SELECT c." + ContactModel.COLUMN_IDENTITY + ", c." + ContactModel.COLUMN_ID_COLOR_INDEX +
             " FROM " + GroupMemberModel.TABLE + " gm " +
             "INNER JOIN " + ContactModel.TABLE + " c " +
-            "	ON c." + ContactModel.COLUMN_IDENTITY + " = gm." + GroupMemberModel.COLUMN_IDENTITY + " " +
+            "ON c." + ContactModel.COLUMN_IDENTITY + " = gm." + GroupMemberModel.COLUMN_IDENTITY + " " +
             "WHERE gm." + GroupMemberModel.COLUMN_GROUP_ID + " = ? AND LENGTH(c." + ContactModel.COLUMN_IDENTITY + ") > 0 AND LENGTH(c." + ContactModel.COLUMN_ID_COLOR_INDEX + ") > 0", new String[]{
             String.valueOf(groupId)
         });
-        Map<String, Integer> colors = new HashMap<>();
+        Map<String, IdColor> colors = new HashMap<>();
         if (c != null) {
             try {
                 while (c.moveToNext()) {
-                    colors.put(c.getString(0), c.getInt(1));
+                    colors.put(c.getString(0), new IdColor(c.getInt(1)));
                 }
             } finally {
                 c.close();

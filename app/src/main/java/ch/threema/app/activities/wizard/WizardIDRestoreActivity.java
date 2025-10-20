@@ -23,11 +23,9 @@ package ch.threema.app.activities.wizard;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputType;
@@ -35,6 +33,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
@@ -42,9 +41,9 @@ import androidx.annotation.Nullable;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.components.WizardButtonXml;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
-import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.ui.SpacingValues;
@@ -74,32 +73,28 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
     private boolean passwordOK = false;
     private boolean idOK = false;
     private WizardButtonXml nextButtonCompose;
-    final private int BACKUP_STRING_LENGTH = 99;
+    private final int BACKUP_V1_STRING_LENGTH = 99;
+    private final int BACKUP_V2_STRING_LENGTH = 129;
+
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
+        if (!dependencies.isAvailable()) {
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_wizard_restore_id);
 
         ViewExtensionsKt.applyDeviceInsetsAsPadding(
             findViewById(R.id.content),
-            InsetSides.top(),
-            new SpacingValues(
-                R.dimen.wizard_contents_padding,
-                R.dimen.wizard_contents_padding_horizontal,
-                null,
-                R.dimen.wizard_contents_padding_horizontal
-            )
-        );
-
-        ViewExtensionsKt.applyDeviceInsetsAsPadding(
-            findViewById(R.id.buttons),
-            InsetSides.bottom(),
-            new SpacingValues(
-                null,
-                R.dimen.wizard_contents_padding_horizontal,
+            InsetSides.all(),
+            SpacingValues.symmetric(
                 R.dimen.wizard_contents_padding,
                 R.dimen.wizard_contents_padding_horizontal
             )
@@ -112,8 +107,9 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
         backupIdText.setRawInputType(InputType.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_CAP_CHARACTERS);
         backupIdText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {
-                idOK = s.length() > 0 && s.toString().trim().length() == BACKUP_STRING_LENGTH;
+            public void afterTextChanged(@NonNull Editable editable) {
+                int trimmedLength = editable.toString().trim().length();
+                idOK = trimmedLength == BACKUP_V1_STRING_LENGTH || trimmedLength == BACKUP_V2_STRING_LENGTH;
                 setRestoreButtonEnabled(idOK && passwordOK);
             }
         });
@@ -121,8 +117,8 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
         passwordEditText = findViewById(R.id.restore_password);
         passwordEditText.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {
-                passwordOK = s.length() >= MIN_PW_LENGTH_ID_EXPORT_LEGACY;
+            public void afterTextChanged(@NonNull Editable editable) {
+                passwordOK = editable.length() >= MIN_PW_LENGTH_ID_EXPORT_LEGACY;
                 setRestoreButtonEnabled(idOK && passwordOK);
             }
         });
@@ -155,7 +151,7 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
     }
 
     public void scanQR() {
-        QRScannerUtil.getInstance().initiateScan(this, null, QRCodeServiceImpl.QR_TYPE_ID_EXPORT);
+        QRScannerUtil.getInstance().initiateScan(this, null);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -176,11 +172,11 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
             @Override
             protected RestoreResult doInBackground(Void... params) {
                 try {
-                    ServerConnection connection = serviceManager.getConnection();
+                    ServerConnection connection = dependencies.getServerConnection();
                     if (connection.isRunning()) {
                         connection.stop();
                     }
-                    if (serviceManager.getUserService().restoreIdentity(backupString, password)) {
+                    if (dependencies.getUserService().restoreIdentity(backupString, password)) {
                         return RestoreResult.success();
                     }
                 } catch (InterruptedException e) {
@@ -200,7 +196,7 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 
                 if (result.isSuccess()) {
                     // ID successfully restored from ID backup - cancel reminder
-                    serviceManager.getPreferenceService().incrementIDBackupCount();
+                    dependencies.getPreferenceService().incrementIDBackupCount();
                     setResult(RESULT_OK);
                     finish();
                 } else {
@@ -214,36 +210,26 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         String scanResult = QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent);
         if (scanResult != null) {
-            if (scanResult.length() == BACKUP_STRING_LENGTH) {
+            int scanResultLength = scanResult.length();
+            if (scanResultLength == BACKUP_V1_STRING_LENGTH || scanResultLength == BACKUP_V2_STRING_LENGTH) {
                 backupIdText.setText(scanResult);
                 backupIdText.invalidate();
             } else {
-                logger.error(getString(R.string.invalid_barcode), this);
+                logger.error(getString(R.string.invalid_threema_qr_code), this);
             }
         }
         super.onActivityResult(requestCode, resultCode, intent);
     }
 
     @Override
-    protected boolean enableOnBackPressedCallback() {
-        // Override the behavior of WizardBackgroundActivity to allow normal back navigation
-        return false;
-    }
-
-    @TargetApi(Build.VERSION_CODES.M)
-    @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case PERMISSION_REQUEST_CAMERA:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    scanQR();
-                } else if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
-                    ConfigUtils.showPermissionRationale(this, findViewById(R.id.top_view), R.string.permission_camera_qr_required);
-                }
-                break;
-            default:
-                break;
+        if (requestCode == PERMISSION_REQUEST_CAMERA) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                scanQR();
+            } else if (!shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
+                ConfigUtils.showPermissionRationale(this, findViewById(R.id.top_view), R.string.permission_camera_qr_required);
+            }
         }
     }
 

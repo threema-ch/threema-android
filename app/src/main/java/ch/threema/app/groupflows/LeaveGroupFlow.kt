@@ -78,7 +78,7 @@ class LeaveGroupFlow(
 
     private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
 
-    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.identity }
+    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentity()!! }
 
     override fun runInBackground(): GroupFlowResult {
         logger.info("Running leave group flow with intent {}", intent)
@@ -88,7 +88,7 @@ class LeaveGroupFlow(
             return GroupFlowResult.Failure.Other
         }
 
-        val groupModelData = groupModel.data.value
+        val groupModelData = groupModel.data
         if (groupModelData == null) {
             logger.error("Cannot leave deleted group")
             return GroupFlowResult.Failure.Other

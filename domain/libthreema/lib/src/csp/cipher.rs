@@ -1,16 +1,18 @@
 use tracing::{debug, warn};
 
 use super::{
-    ClientCookie, ClientSequenceNumber, Context, CspProtocolError, Extensions, ServerCookie,
+    ClientCookie, ClientSequenceNumber, CspProtocolContext, CspProtocolError, Extensions, ServerCookie,
     ServerSequenceNumber, TemporaryClientKey, TemporaryServerKey,
     handshake_messages::{LoginAck, LoginData, ServerChallengeResponse},
     payload::{IncomingPayload, OutgoingPayload},
 };
 use crate::{
-    common::{ClientKey, Nonce, PublicKey},
+    common::{
+        Nonce,
+        keys::{ClientKey, PublicKey},
+    },
     crypto::{
         aead::{self, AeadInPlace as _},
-        blake2b::Blake2bMac256,
         cipher::KeyInit as _,
         digest::{MAC_256_LENGTH, Mac as _},
         salsa20::XSalsa20Poly1305,
@@ -23,7 +25,7 @@ use crate::{
 /// Try all permanent server keys of `context`, and returns an error iff none of them could be used
 /// to decrypt the `server-challenge-response`.
 pub(super) fn decrypt_server_challenge_response(
-    context: &Context,
+    context: &CspProtocolContext,
     temporary_client_key: &TemporaryClientKey,
     server_cookie: &ServerCookie,
     server_sequence_number: &mut ServerSequenceNumber,
@@ -88,14 +90,13 @@ impl VouchCipher {
         permanent_server_key: &PublicKey,
         server_cookie: &ServerCookie,
     ) -> [u8; MAC_256_LENGTH] {
-        // Obtain the CSP authentication secret (aka Vouch Key)
+        // Obtain the CSP authentication secret (aka _vouch key_)
         let vouch_key =
             client_key.derive_csp_authentication_key(permanent_server_key, &self.temporary_server_key.0);
 
-        // Compute the vouch from the vouch key and server_cookie ||
-        // temporary_client_key_public
-        Blake2bMac256::new_with_salt_and_personal(Some(&vouch_key.0), &[], &[])
-            .expect("Blake2bMac256 failed")
+        // Compute the vouch from the vouch key and server_cookie || temporary_client_key_public
+        vouch_key
+            .0
             .chain_update(server_cookie.0.0)
             .chain_update(self.temporary_client_key_public.as_bytes())
             .finalize()

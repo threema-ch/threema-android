@@ -53,7 +53,7 @@ import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
 import ch.threema.domain.stores.ContactStore
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.PassiveTaskCodec
 import ch.threema.domain.taskmanager.awaitOutgoingMessageAck
@@ -61,6 +61,7 @@ import ch.threema.domain.taskmanager.awaitReflectAck
 import ch.threema.domain.taskmanager.getEncryptedOutgoingMessageEnvelope
 import ch.threema.domain.taskmanager.getEncryptedOutgoingMessageUpdateSentEnvelope
 import ch.threema.domain.taskmanager.toCspMessage
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel
 import java.util.Date
@@ -89,7 +90,7 @@ fun String.toBasicContact(
     contactModelRepository: ContactModelRepository,
     contactStore: ContactStore,
     apiConnector: APIConnector,
-) = contactModelRepository.getByIdentity(this)?.data?.value?.toBasicContact()
+) = contactModelRepository.getByIdentity(this)?.data?.toBasicContact()
     ?: contactStore.getCachedContact(this)
     ?: fetchContactModel(apiConnector)
 
@@ -135,7 +136,7 @@ sealed interface OutgoingCspMessageCreator {
     /**
      * Create a generic message that can be used to be reflected.
      */
-    fun createGenericMessage(myIdentity: String): AbstractMessage
+    fun createGenericMessage(myIdentity: Identity): AbstractMessage
 
     /**
      * Create an abstract message containing all the message type specific information. Any
@@ -151,7 +152,7 @@ sealed interface OutgoingCspMessageCreator {
      *
      *  Note that each call of this method must return a new instance of the message.
      */
-    fun createAbstractMessage(fromIdentity: String, toIdentity: String): AbstractMessage
+    fun createAbstractMessage(fromIdentity: Identity, toIdentity: Identity): AbstractMessage
 }
 
 /**
@@ -169,7 +170,7 @@ class OutgoingCspContactMessageCreator(
     /**
      * The identity of the recipient contact.
      */
-    private val identity: String,
+    private val identity: Identity,
     /**
      * This should create the contact message with all message type specific attributes set. Note
      * that the following fields should not be set, as they will get overridden by these utils:
@@ -181,12 +182,12 @@ class OutgoingCspContactMessageCreator(
      */
     private val createContactMessage: () -> AbstractMessage,
 ) : OutgoingCspMessageCreator {
-    override fun createGenericMessage(myIdentity: String) =
+    override fun createGenericMessage(myIdentity: Identity) =
         // We need to set the 'toIdentity' here because the conversation is determined based on this
         // message when reflecting it.
         createAbstractMessage(myIdentity, identity)
 
-    override fun createAbstractMessage(fromIdentity: String, toIdentity: String): AbstractMessage {
+    override fun createAbstractMessage(fromIdentity: Identity, toIdentity: Identity): AbstractMessage {
         return createContactMessage().also {
             // Check that this message creator is only used for contact messages
             if (it is AbstractGroupMessage) {
@@ -276,15 +277,15 @@ class OutgoingCspGroupMessageCreator(
         createAbstractGroupMessage,
     )
 
-    override fun createGenericMessage(myIdentity: String): AbstractMessage =
+    override fun createGenericMessage(myIdentity: Identity): AbstractMessage =
         // We do not need to set a 'toIdentity' in case of a generic message as this message will
         // never be sent. In case of a group message it is sufficient if it contains the correct
         // group identity.
         createAbstractMessage(myIdentity, "")
 
     override fun createAbstractMessage(
-        fromIdentity: String,
-        toIdentity: String,
+        fromIdentity: Identity,
+        toIdentity: Identity,
     ): AbstractGroupMessage {
         return createGroupMessage().also {
             it.messageId = messageId
@@ -329,7 +330,7 @@ class OutgoingCspMessageHandle(
 private fun OutgoingCspMessageHandle.toOutgoingCspMessageSender(
     services: OutgoingCspMessageServices,
 ): OutgoingCspMessageSender {
-    val myIdentity = services.identityStore.identity
+    val myIdentity = services.identityStore.getIdentity()!!
     val genericMessage = messageCreator.createGenericMessage(myIdentity)
     val filteredReceivers = receivers
         .filter { it.identity != myIdentity }
@@ -369,7 +370,7 @@ private class OutgoingCspMessageSender(
     private val addForwardSecurityStateInfo: (stateMap: Map<String, ForwardSecurityMode>) -> Unit,
     multiDeviceManager: MultiDeviceManager,
     private val forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor,
-    private val identityStore: IdentityStoreInterface,
+    private val identityStore: IdentityStore,
     private val contactStore: ContactStore,
     private val nonceFactory: NonceFactory,
 ) {
@@ -476,7 +477,7 @@ private class OutgoingCspMessageSender(
                 val result = forwardSecurityMessageProcessor.runFsEncapsulationSteps(
                     receiver,
                     messageCreator.createAbstractMessage(
-                        identityStore.identity,
+                        identityStore.getIdentity()!!,
                         receiver.identity,
                     ),
                     nonce,
@@ -570,7 +571,7 @@ private class OutgoingCspMessageSender(
 
 data class OutgoingCspMessageServices(
     val forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor,
-    val identityStore: IdentityStoreInterface,
+    val identityStore: IdentityStore,
     val userService: UserService,
     val contactStore: ContactStore,
     val contactService: ContactService,
@@ -719,7 +720,7 @@ private fun runProfilePictureDistributionSteps(
         return null
     }
 
-    val contactModelData = contactModel.data.value ?: run {
+    val contactModelData = contactModel.data ?: run {
         logger.info("{}: Contact {} has been deleted", prefix, receiverIdentity)
         return null
     }

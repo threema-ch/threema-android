@@ -34,6 +34,7 @@ import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.clearDatabaseAndCaches
 import ch.threema.app.utils.AppVersionProvider
 import ch.threema.data.TestDatabaseService
+import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.repositories.ModelRepositories
@@ -47,6 +48,7 @@ import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.stores.ContactStore
+import ch.threema.domain.types.Identity
 import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupMemberModel
@@ -88,6 +90,7 @@ class IdentityBlockedStepsTest {
             version = AppVersionProvider.appVersion,
             databaseService = databaseService,
             preferenceStore = serviceManager.preferenceStore,
+            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
             taskManager = TestTaskManager(UnusedTaskCodec()),
         )
         contactModelRepository = ModelRepositories(coreServiceManager).contacts
@@ -99,6 +102,7 @@ class IdentityBlockedStepsTest {
         blockUnknownPreferenceService = object : PreferenceServiceImpl(
             ThreemaApplication.getAppContext(),
             serviceManager.preferenceStore,
+            serviceManager.encryptedPreferenceStore,
             coreServiceManager.taskManager,
             coreServiceManager.multiDeviceManager,
             coreServiceManager.nonceFactory,
@@ -111,6 +115,7 @@ class IdentityBlockedStepsTest {
         noBlockPreferenceService = object : PreferenceServiceImpl(
             ThreemaApplication.getAppContext(),
             serviceManager.preferenceStore,
+            serviceManager.encryptedPreferenceStore,
             coreServiceManager.taskManager,
             coreServiceManager.multiDeviceManager,
             coreServiceManager.nonceFactory,
@@ -216,7 +221,7 @@ class IdentityBlockedStepsTest {
     }
 
     private fun runIdentityBlockedSteps(
-        identity: String,
+        identity: Identity,
         preferenceService: PreferenceService,
     ) = runIdentityBlockedSteps(
         identity,
@@ -236,7 +241,7 @@ class IdentityBlockedStepsTest {
                 firstName = "",
                 lastName = "",
                 nickname = "",
-                colorIndex = 0u,
+                idColor = IdColor(0),
                 verificationLevel = VerificationLevel.UNVERIFIED,
                 workVerificationLevel = WorkVerificationLevel.NONE,
                 identityType = IdentityType.NORMAL,
@@ -264,7 +269,7 @@ class IdentityBlockedStepsTest {
                 firstName = "",
                 lastName = "",
                 nickname = "",
-                colorIndex = 0u,
+                idColor = IdColor(0),
                 verificationLevel = VerificationLevel.UNVERIFIED,
                 workVerificationLevel = WorkVerificationLevel.NONE,
                 identityType = IdentityType.NORMAL,
@@ -292,7 +297,7 @@ class IdentityBlockedStepsTest {
                 firstName = "",
                 lastName = "",
                 nickname = "",
-                colorIndex = 0u,
+                idColor = IdColor(0),
                 verificationLevel = VerificationLevel.UNVERIFIED,
                 workVerificationLevel = WorkVerificationLevel.NONE,
                 identityType = IdentityType.NORMAL,
@@ -320,7 +325,7 @@ class IdentityBlockedStepsTest {
                 firstName = "",
                 lastName = "",
                 nickname = "",
-                colorIndex = 0u,
+                idColor = IdColor(0),
                 verificationLevel = VerificationLevel.UNVERIFIED,
                 workVerificationLevel = WorkVerificationLevel.NONE,
                 identityType = IdentityType.NORMAL,

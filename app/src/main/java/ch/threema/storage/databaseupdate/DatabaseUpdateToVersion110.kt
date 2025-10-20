@@ -22,20 +22,21 @@
 package ch.threema.storage.databaseupdate
 
 import android.database.Cursor
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.LoggingUtil
-import com.neilalexander.jnacl.NaCl
+import ch.threema.domain.types.Identity
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 private val logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion110")
 
 class DatabaseUpdateToVersion110(
-    private val db: SQLiteDatabase,
+    private val sqLiteDatabase: SQLiteDatabase,
 ) : DatabaseUpdate {
     override fun run() {
         // Get all problematic identities that have a public key with invalid length and that are invalid.
-        val problematicIdentities = db.query(
+        val problematicIdentities = sqLiteDatabase.query(
             "SELECT `identity` FROM `contacts` WHERE length(cast(publicKey as blob)) != ? AND state = ?",
-            arrayOf(NaCl.PUBLICKEYBYTES, "INVALID"),
+            arrayOf(NaCl.PUBLIC_KEY_BYTES, "INVALID"),
         ).toIdentities()
 
         // We can delete contacts if there are no 1:1 messages. Contacts where group messages still exist can be deleted as the group messages can
@@ -45,7 +46,7 @@ class DatabaseUpdateToVersion110(
 
         deletableIdentities.forEach { identityToDelete ->
             // Remove the contact from any groups.
-            val numberOfGroups = db.delete(
+            val numberOfGroups = sqLiteDatabase.delete(
                 table = "group_member",
                 whereClause = "identity = ?",
                 whereArgs = arrayOf(identityToDelete),
@@ -53,7 +54,7 @@ class DatabaseUpdateToVersion110(
             logger.info("Removed contact {} from {} groups", identityToDelete, numberOfGroups)
 
             // Remove it also from distribution lists
-            val numberOfDistributionLists = db.delete(
+            val numberOfDistributionLists = sqLiteDatabase.delete(
                 table = "distribution_list_member",
                 whereClause = "identity = ?",
                 whereArgs = arrayOf(identityToDelete),
@@ -61,7 +62,7 @@ class DatabaseUpdateToVersion110(
             logger.info("Removed contact {} from {} distribution lists", identityToDelete, numberOfDistributionLists)
 
             // Remove the contact itself
-            db.delete(
+            sqLiteDatabase.delete(
                 table = "contacts",
                 whereClause = "identity = ?",
                 whereArgs = arrayOf(identityToDelete),
@@ -75,7 +76,7 @@ class DatabaseUpdateToVersion110(
         }
     }
 
-    private fun Cursor.toIdentities(): Set<String> {
+    private fun Cursor.toIdentities(): Set<Identity> {
         val identities = mutableSetOf<String>()
         val identityColumnIndex = getColumnIndexOrThrow("identity")
         while (moveToNext()) {
@@ -84,8 +85,8 @@ class DatabaseUpdateToVersion110(
         return identities
     }
 
-    private fun hasOneToOneMessages(identity: String): Boolean {
-        val cursor = db.query("SELECT EXISTS(SELECT 1 FROM message WHERE identity = ?)", arrayOf(identity))
+    private fun hasOneToOneMessages(identity: Identity): Boolean {
+        val cursor = sqLiteDatabase.query("SELECT EXISTS(SELECT 1 FROM message WHERE identity = ?)", arrayOf(identity))
         return cursor.moveToFirst() && cursor.getInt(0) == 1
     }
 

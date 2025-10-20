@@ -134,8 +134,8 @@
         <attr name="barMinHeight" format="dimension" />
         <attr name="barWidth" format="dimension" />
         <attr name="spaceWidth" format="dimension" />
-        <attr name="barColor" format="color" />
-        <attr name="barColorActivated" format="color" />
+        <attr name="colorBar" format="color" />
+        <attr name="colorBarProgress" format="color" />
     </declare-styleable>
 
     <declare-styleable name="WizardButtonXmlWrapper">
@@ -145,8 +145,6 @@
         </attr>
         <attr name="wizardButton_text" format="reference" />
         <attr name="wizardButton_trailingIcon" format="reference" />
-        <attr name="wizardButton_colorPrimary" format="reference" />
-        <attr name="wizardButton_colorOnPrimary" format="reference" />
     </declare-styleable>
 
 </resources>

@@ -111,7 +111,8 @@ import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupModel;
 import ch.threema.localcrypto.MasterKey;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
+import ch.threema.localcrypto.MasterKeyProvider;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
 
@@ -133,7 +134,8 @@ public class FileServiceImpl implements FileService {
     private final Context context;
     @NonNull
     private final AppDirectoryProvider appDirectoryProvider;
-    private final MasterKey masterKey;
+    @NonNull
+    private final MasterKeyProvider masterKeyProvider;
     @NonNull
     private final PreferenceService preferenceService;
     private final File imagePath;
@@ -148,7 +150,7 @@ public class FileServiceImpl implements FileService {
     public FileServiceImpl(
         @NonNull Context c,
         @NonNull AppDirectoryProvider appDirectoryProvider,
-        @NonNull MasterKey masterKey,
+        @NonNull MasterKeyProvider masterKeyProvider,
         @NonNull PreferenceService preferenceService,
         @NonNull NotificationPreferenceService notificationPreferenceService,
         @NonNull AvatarCacheService avatarCacheService
@@ -156,7 +158,7 @@ public class FileServiceImpl implements FileService {
         this.context = c;
         this.appDirectoryProvider = appDirectoryProvider;
         this.preferenceService = preferenceService;
-        this.masterKey = masterKey;
+        this.masterKeyProvider = masterKeyProvider;
         this.avatarCacheService = avatarCacheService;
 
         String mediaPathPrefix = Environment.getExternalStorageDirectory() + "/" + BuildConfig.MEDIA_PATH + "/";
@@ -182,6 +184,11 @@ public class FileServiceImpl implements FileService {
         if (!ConfigUtils.supportsNotificationChannels()) {
             updateLegacyRingtoneIfInvalid(context.getContentResolver(), notificationPreferenceService);
         }
+    }
+
+    @NonNull
+    private MasterKey getMasterKey() throws MasterKeyLockedException {
+        return masterKeyProvider.getMasterKey();
     }
 
     private static void updateLegacyRingtoneIfInvalid(
@@ -500,15 +507,10 @@ public class FileServiceImpl implements FileService {
     @Override
     public boolean decryptFileToFile(File from, File to) {
         try (InputStream is = new FileInputStream(from); FileOutputStream fos = new FileOutputStream(to)) {
-            int result = 0;
-
-            try (CipherOutputStream cos = masterKey.getCipherOutputStream(fos)) {
-                if (cos != null) {
-                    result = IOUtils.copy(is, cos);
-                }
+            try (CipherOutputStream cos = getMasterKey().getCipherOutputStream(fos)) {
+                int result = IOUtils.copy(is, cos);
+                return result > 0;
             }
-
-            return (result > 0);
         } catch (Exception e) {
             logger.error("Exception", e);
         }
@@ -602,7 +604,7 @@ public class FileServiceImpl implements FileService {
     public CipherInputStream getDecryptedMessageStream(AbstractMessageModel messageModel) throws Exception {
         File file = this.getMessageFile(messageModel);
         if (file != null && file.exists()) {
-            return masterKey.getCipherInputStream(new FileInputStream(file));
+            return getMasterKey().getCipherInputStream(new FileInputStream(file));
         }
         return null;
     }
@@ -611,7 +613,7 @@ public class FileServiceImpl implements FileService {
     public CipherInputStream getDecryptedMessageThumbnailStream(AbstractMessageModel messageModel) throws Exception {
         File thumbnailFile = this.getMessageThumbnail(messageModel);
         if (thumbnailFile != null && thumbnailFile.exists()) {
-            return masterKey.getCipherInputStream(new FileInputStream(thumbnailFile));
+            return getMasterKey().getCipherInputStream(new FileInputStream(thumbnailFile));
         }
         return null;
     }
@@ -774,7 +776,7 @@ public class FileServiceImpl implements FileService {
         }
 
         if (FileUtil.isFilePresent(messageFile)) {
-            try (CipherInputStream cis = masterKey.getCipherInputStream(new FileInputStream(messageFile))) {
+            try (CipherInputStream cis = getMasterKey().getCipherInputStream(new FileInputStream(messageFile))) {
                 copyMediaFileIntoPublicDirectory(cis, mediaFilename, MimeUtil.getMimeTypeFromMessageModel(messageModel));
             }
         } else {
@@ -870,7 +872,7 @@ public class FileServiceImpl implements FileService {
     ) {
         boolean success = false;
 
-        if (this.masterKey.isLocked()) {
+        if (masterKeyProvider.isLocked()) {
             return false;
         }
 
@@ -893,7 +895,7 @@ public class FileServiceImpl implements FileService {
                 success = writeFile(inputStream, messageFile);
             }
         } catch (Exception e) {
-            logger.error("Exception", e);
+            logger.error("Exception while writing conversation media", e);
         }
 
         if (success) {
@@ -964,7 +966,7 @@ public class FileServiceImpl implements FileService {
     private InputStream getGroupAvatarStream(long groupDatabaseId) throws IOException, MasterKeyLockedException {
         File f = this.getGroupAvatarFile(groupDatabaseId);
         if (f.exists()) {
-            return masterKey.getCipherInputStream(new FileInputStream(f));
+            return getMasterKey().getCipherInputStream(new FileInputStream(f));
         }
 
         return null;
@@ -995,11 +997,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Nullable
-    private Bitmap getGroupAvatar(long groupDatabaseId) throws IOException, MasterKeyLockedException {
-        if (this.masterKey.isLocked()) {
-            throw new MasterKeyLockedException("no masterkey or locked");
-        }
-
+    private Bitmap getGroupAvatar(long groupDatabaseId) {
         return decryptBitmapFromFile(this.getGroupAvatarFile(groupDatabaseId));
     }
 
@@ -1072,32 +1070,23 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public boolean writeAndroidDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws IOException, MasterKeyLockedException {
+    public void writeAndroidDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws IOException, MasterKeyLockedException {
         boolean success = this.writeFile(avatarFile, this.getAndroidContactAvatarFile(identity));
         if (success) {
             avatarCacheService.reset(identity);
         }
-        return success;
     }
 
     @Override
     @Nullable
     public Bitmap getUserDefinedProfilePicture(@NonNull String identity) throws IOException, MasterKeyLockedException {
-        if (this.masterKey.isLocked()) {
-            throw new MasterKeyLockedException("no masterkey or locked");
-        }
-
         return decryptBitmapFromFile(this.getContactAvatarFile(identity));
     }
 
     @Override
     @Nullable
     public Bitmap getAndroidDefinedProfilePicture(@NonNull ContactModel contactModel) throws Exception {
-        if (this.masterKey.isLocked()) {
-            throw new MasterKeyLockedException("no masterkey or locked");
-        }
-
-        ContactModelData contactModelData = contactModel.getData().getValue();
+        ContactModelData contactModelData = contactModel.getData();
         if (contactModelData == null) {
             logger.error("Contact model data is null");
             return null;
@@ -1124,7 +1113,7 @@ public class FileServiceImpl implements FileService {
     public InputStream getUserDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
         File f = this.getContactAvatarFile(identity);
         if (f != null && f.exists() && f.length() > 0) {
-            return masterKey.getCipherInputStream(new FileInputStream(f));
+            return getMasterKey().getCipherInputStream(new FileInputStream(f));
         }
 
         return null;
@@ -1135,31 +1124,24 @@ public class FileServiceImpl implements FileService {
     public InputStream getContactDefinedProfilePictureStream(@NonNull String identity) throws IOException, MasterKeyLockedException {
         File f = this.getContactPhotoFile(identity);
         if (f != null && f.exists() && f.length() > 0) {
-            return masterKey.getCipherInputStream(new FileInputStream(f));
+            return getMasterKey().getCipherInputStream(new FileInputStream(f));
         }
         return null;
     }
 
     @Override
     @Nullable
-    public Bitmap getContactDefinedProfilePicture(@NonNull String identity) throws IOException, MasterKeyLockedException {
-        if (this.masterKey.isLocked()) {
-            throw new MasterKeyLockedException("no masterkey or locked");
-        }
-
+    public Bitmap getContactDefinedProfilePicture(@NonNull String identity) {
         return decryptBitmapFromFile(this.getContactPhotoFile(identity));
     }
 
     @Nullable
-    private Bitmap decryptBitmapFromFile(@Nullable File file) throws IOException, MasterKeyLockedException {
+    private Bitmap decryptBitmapFromFile(@Nullable File file) {
         if (file != null && file.exists()) {
-            InputStream inputStream = masterKey.getCipherInputStream(new FileInputStream(file));
-            if (inputStream != null) {
-                try (inputStream) {
-                    return BitmapFactory.decodeStream(inputStream);
-                } catch (Exception e) {
-                    logger.error("Exception", e);
-                }
+            try (InputStream inputStream = getMasterKey().getCipherInputStream(new FileInputStream(file)))  {
+                return BitmapFactory.decodeStream(inputStream);
+            } catch (Exception e) {
+                logger.error("Exception", e);
             }
         }
         return null;
@@ -1214,15 +1196,15 @@ public class FileServiceImpl implements FileService {
     private boolean writeFile(@NonNull InputStream inputStream, @NonNull File file) throws IOException, MasterKeyLockedException {
         try (
             FileOutputStream fileOutputStream = new FileOutputStream(file);
-            CipherOutputStream cipherOutputStream = masterKey.getCipherOutputStream(fileOutputStream)
+            CipherOutputStream cipherOutputStream = getMasterKey().getCipherOutputStream(fileOutputStream)
         ) {
             IOUtils.copy(inputStream, cipherOutputStream);
             return true;
         } catch (OutOfMemoryError e) {
             throw new IOException("Out of memory", e);
-        } catch (FileNotFoundException e) {
-            logger.error("Unable to save file to {}", file.getAbsolutePath(), e);
-            throw new FileNotFoundException(e.getMessage());
+        } catch (IOException e) {
+            FileUtil.logExternalStorageState(file);
+            throw e;
         }
     }
 
@@ -1233,7 +1215,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull ResettableInputStream thumbnail) throws Exception {
-        if (this.masterKey.isLocked()) {
+        if (masterKeyProvider.isLocked()) {
             throw new Exception("no masterkey or locked");
         }
 
@@ -1282,7 +1264,7 @@ public class FileServiceImpl implements FileService {
             }
         }
 
-        if (this.masterKey.isLocked()) {
+        if (masterKeyProvider.isLocked()) {
             throw new Exception("no masterkey or locked");
         }
 
@@ -1302,7 +1284,7 @@ public class FileServiceImpl implements FileService {
             // Get cipher input streams
             BufferedInputStream bis = null;
             try {
-                CipherInputStream cis = masterKey.getCipherInputStream(fis);
+                CipherInputStream cis = getMasterKey().getCipherInputStream(fis);
 
                 bis = new BufferedInputStream(cis);
                 BitmapFactory.Options options = new BitmapFactory.Options();
@@ -1508,7 +1490,7 @@ public class FileServiceImpl implements FileService {
 
             try {
                 File file;
-                if (model.getType() == MessageType.FILE && model.getFileData() != null) {
+                if (model.getType() == MessageType.FILE) {
                     file = getDecryptedMessageFile(model, model.getFileData().getFileName());
                 } else {
                     file = getDecryptedMessageFile(model);

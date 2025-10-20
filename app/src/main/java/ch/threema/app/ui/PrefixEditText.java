@@ -26,6 +26,8 @@ import android.text.Editable;
 import android.text.Selection;
 import android.util.AttributeSet;
 
+import androidx.annotation.NonNull;
+
 public class PrefixEditText extends ThreemaTextInputEditText {
     String prefix = "";
 
@@ -51,18 +53,18 @@ public class PrefixEditText extends ThreemaTextInputEditText {
 
         addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {
-                if (prefix != null && s.toString().startsWith(prefix + prefix)) {
-                    setText(s.subSequence(prefix.length(), s.length()));
-                    setSelection(s.length() - prefix.length());
+            public void afterTextChanged(@NonNull Editable editable) {
+                if (prefix != null && editable.toString().startsWith(prefix + prefix)) {
+                    setText(editable.subSequence(prefix.length(), editable.length()));
+                    setSelection(editable.length() - prefix.length());
                 } else {
-                    if (!s.toString().startsWith(prefix)) {
+                    if (!editable.toString().startsWith(prefix)) {
                         String cleanString;
                         String deletedPrefix = prefix.substring(0, prefix.length() - 1);
-                        if (s.toString().startsWith(deletedPrefix)) {
-                            cleanString = s.toString().replaceAll(deletedPrefix, "");
+                        if (editable.toString().startsWith(deletedPrefix)) {
+                            cleanString = editable.toString().replaceAll(deletedPrefix, "");
                         } else {
-                            cleanString = s.toString().replaceAll(prefix, "");
+                            cleanString = editable.toString().replaceAll(prefix, "");
                         }
                         setText(prefix + cleanString);
                         setSelection(prefix.length());

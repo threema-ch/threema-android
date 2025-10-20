@@ -105,7 +105,6 @@ import java8.util.concurrent.CompletableFuture;
 
 import static ch.threema.app.notifications.NotificationIDs.INCOMING_CALL_NOTIFICATION_ID;
 import static ch.threema.app.ThreemaApplication.getAppContext;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 import static ch.threema.app.voip.activities.CallActivity.EXTRA_ACCEPT_INCOMING_CALL;
 import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CALL_ID;
@@ -687,7 +686,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
             this.appContext,
             -IdUtil.getTempId(contact),
             answerIntent,
-            PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT | PENDING_INTENT_FLAG_IMMUTABLE
+            PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE
         );
         this.acceptIntent = accept;
 
@@ -701,7 +700,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
             this.appContext,
             -IdUtil.getTempId(contact),
             rejectIntent,
-            PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT | PENDING_INTENT_FLAG_IMMUTABLE);
+            PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
         final ContactMessageReceiver messageReceiver = this.contactService.createReceiver(contact);
 
@@ -1458,7 +1457,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         @NonNull PendingIntent reject,
         final VoipCallOfferMessage msg) {
         final long timestamp = System.currentTimeMillis();
-        final Bitmap avatar = this.contactService.getAvatar(contact, false);
+        final Bitmap avatar = this.contactService.getAvatar(contact.getIdentity(), false);
         final PendingIntent inCallPendingIntent = createLaunchPendingIntent(contact.getIdentity(), msg);
         Notification notification = null;
 
@@ -1574,7 +1573,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         // and clicks the notification's expanded view.  It's also used to
         // launch the InCallActivity immediately when when there's an incoming
         // call (see the "fullScreenIntent" field below).
-        return PendingIntent.getActivity(appContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+        return PendingIntent.getActivity(appContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
     }
 
     /**

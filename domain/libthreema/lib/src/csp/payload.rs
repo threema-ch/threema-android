@@ -1,4 +1,5 @@
 //! Payloads exchanged during the post-handshake state.
+use educe::Educe;
 use libthreema_macros::{DebugVariantNames, Name, VariantNames};
 use tracing::error;
 
@@ -7,9 +8,10 @@ use super::{
     frame::{FrameEncoder, OutgoingFrame},
 };
 use crate::{
-    common::{CspDeviceId, MessageId, ThreemaId},
+    common::{CspDeviceId, MessageFlags, MessageId, ThreemaId},
     utils::{
         bytes::{ByteReader, ByteWriter, OwnedVecByteReader, OwnedVecByteWriter},
+        debug::debug_slice_length,
         frame::{FrameDelimiter as _, U16LittleEndianDelimiter, VariableLengthFrameDecoder},
     },
 };
@@ -40,44 +42,60 @@ impl EchoPayload {
 ///
 /// Note: Only the message ID will be decoded, so that it can be acknowledged at need. The E2E layer
 /// is responsible for decoding the rest of the message bytes.
-#[derive(Name)]
+#[derive(Educe, Name)]
+#[educe(Debug)]
 pub struct MessageWithMetadataBox {
+    /// The sender's Threema ID.
+    pub sender_identity: ThreemaId,
+
     /// The ID of the message
-    pub message_id: MessageId,
+    pub id: MessageId,
+
+    /// Message flags of the message
+    pub flags: MessageFlags,
 
     /// Raw bytes of the payload
-    pub message_bytes: Vec<u8>,
+    #[educe(Debug(method(debug_slice_length)))]
+    pub bytes: Vec<u8>,
 }
 impl MessageWithMetadataBox {
-    fn decode(mut reader: OwnedVecByteReader) -> Result<Self, CspProtocolError> {
-        let message_id = reader
-            .run_at(
-                (ThreemaId::LENGTH * 2)
-                    .try_into()
-                    .expect("ThreemaId::LENGTH * 2 must be isize"),
-                |mut payload| Ok(MessageId(payload.read_u64_le()?)),
-            )
+    pub(crate) fn decode(mut reader: OwnedVecByteReader) -> Result<Self, CspProtocolError> {
+        // Decode the sender's identity, message ID and flags
+        let (sender_identity, message_id, flags) = reader
+            .run(|reader| {
+                let sender_identity = reader.read_fixed::<{ ThreemaId::LENGTH }>()?;
+                reader.skip(ThreemaId::LENGTH)?;
+                let message_id = MessageId(reader.read_u64_le()?);
+                reader.skip(4)?;
+                let message_flags = MessageFlags(reader.read_u8()?);
+                Ok((sender_identity, message_id, message_flags))
+            })
             .map_err(|error| CspProtocolError::DecodingFailed {
                 name: Self::NAME,
                 source: error,
             })?;
-        let message_bytes = reader.read_remaining_owned();
+
+        let bytes = reader.into_inner();
         Ok(Self {
-            message_id,
-            message_bytes,
+            sender_identity: ThreemaId::try_from(sender_identity.as_ref()).map_err(|error| {
+                CspProtocolError::InvalidMessage {
+                    name: Self::NAME,
+                    cause: error.to_string(),
+                }
+            })?,
+            id: message_id,
+            flags,
+            bytes,
         })
     }
 
     fn length(&self) -> usize {
-        self.message_bytes.len()
+        self.bytes.len()
     }
 
     fn encode_into(&self, writer: &mut impl ByteWriter) -> Result<(), CspProtocolError> {
         writer
-            .run(|writer| {
-                writer.skip(ThreemaId::LENGTH * 2)?;
-                writer.write_u64_le(self.message_id.0)
-            })
+            .write(&self.bytes)
             .map_err(|error| CspProtocolError::EncodingFailed {
                 name: Self::NAME,
                 source: error,
@@ -86,9 +104,9 @@ impl MessageWithMetadataBox {
 }
 
 /// Acknowledges that a message has been received.
-#[derive(Name)]
+#[derive(Debug, Name)]
 pub struct MessageAck {
-    /// Identity of the sender for an incoming message
+    /// Identity of the sender (for an incoming message) or the receiver (for an outgoing message)
     pub identity: ThreemaId,
 
     /// Refers to the message id of the acknowledged message.
@@ -99,10 +117,10 @@ impl MessageAck {
 
     fn decode(reader: impl ByteReader) -> Result<Self, CspProtocolError> {
         let (identity, message_id) = reader
-            .run_owned(|mut payload| {
-                let identity = payload.read_fixed::<{ ThreemaId::LENGTH }>()?;
-                let message_id = payload.read_u64_le()?;
-                let _ = payload.expect_consumed()?;
+            .run_owned(|mut reader| {
+                let identity = reader.read_fixed::<{ ThreemaId::LENGTH }>()?;
+                let message_id = reader.read_u64_le()?;
+                let _ = reader.expect_consumed()?;
                 Ok((identity, message_id))
             })
             .map_err(|error| CspProtocolError::DecodingFailed {
@@ -135,11 +153,37 @@ impl MessageAck {
 }
 
 /// APNs server type
-pub enum APNsServerType {
+#[derive(Clone, Copy)]
+pub enum ApnsServerType {
     /// Production server of the APNs service.
     Production,
     /// Development server of the APNs service.
     Development,
+}
+
+#[derive(Clone, Copy)]
+#[repr(u8)]
+enum PushNotificationTokenType {
+    None = 0x00,
+    // LegacyApnsProduction = 0x01,
+    // LegacyApnsDevelopment = 0x02,
+    // LegacyApnsProductionWithContentAvailable = 0x03,
+    // LegacyApnsDevelopmentWithContentAvailable = 0x04,
+    ApnsProductionWithMutableContent = 0x05,
+    ApnsDevelopmentWithMutableContent = 0x06,
+    Fcm = 0x11,
+    Hms = 0x13,
+}
+impl PushNotificationTokenType {
+    const LENGTH: usize = 1;
+}
+impl From<ApnsServerType> for PushNotificationTokenType {
+    fn from(r#type: ApnsServerType) -> Self {
+        match r#type {
+            ApnsServerType::Production => Self::ApnsProductionWithMutableContent,
+            ApnsServerType::Development => Self::ApnsDevelopmentWithMutableContent,
+        }
+    }
 }
 
 /// Sets (or clears) the push notification token on the server.
@@ -150,52 +194,92 @@ pub enum PushNotificationToken {
 
     /// Set an APNs push notification token
     ///
-    /// Note: For readers with legacy knowledge, this is the one with the `mutable-content` key. No
-    /// other variants are in use by modern clients.
-    APNs {
+    /// Note: For readers with legacy knowledge, this is the one with the `mutable-content` key and the
+    /// encryption key. No other variants are in use by modern clients.
+    Apns {
         /// APNs server type
-        r#type: APNsServerType,
-        /// APNs token
+        r#type: ApnsServerType,
+        /// Bundle ID of the app (e.g. `ch.threema.iapp` for consumer)
+        bundle_id: String,
+        /// Payload encryption key (XSalsa20)
+        encryption_key: [u8; 32],
+        /// APNs device token
         token: Vec<u8>,
     },
 
     /// Set an FCM push notification token
-    FCM(Vec<u8>),
+    Fcm(String),
 
     /// Set an HMS push notification token
-    HMS(Vec<u8>),
+    Hms {
+        /// App ID (e.g. `103713829` for consumer)
+        app_id: String,
+        /// HMS push token
+        token: String,
+    },
 }
 impl PushNotificationToken {
+    // Decoding messages is awkward as the separated binary data may contain a pipe delimiter, making the
+    // delimiter totally useless. Still, we need it for legacy reasons...
+    const AWKWARD_DELIMITER: &'static [u8; 1] = b"|";
+
     fn length(&self) -> usize {
-        1_usize.saturating_add(match self {
+        PushNotificationTokenType::LENGTH.saturating_add(match self {
             PushNotificationToken::Clear => 0,
-            PushNotificationToken::APNs { token, .. }
-            | PushNotificationToken::FCM(token)
-            | PushNotificationToken::HMS(token) => token.len(),
+            PushNotificationToken::Apns {
+                bundle_id,
+                encryption_key,
+                token,
+                ..
+            } => token
+                .len()
+                .saturating_add(Self::AWKWARD_DELIMITER.len())
+                .saturating_add(bundle_id.len())
+                .saturating_add(Self::AWKWARD_DELIMITER.len())
+                .saturating_add(encryption_key.len()),
+            PushNotificationToken::Fcm(token) => token.len(),
+            PushNotificationToken::Hms { app_id, token } => app_id
+                .len()
+                .saturating_add(Self::AWKWARD_DELIMITER.len())
+                .saturating_add(token.len()),
         })
     }
 
     fn encode_into(&self, writer: &mut impl ByteWriter) -> Result<(), CspProtocolError> {
-        let (token_type, token_data) = match self {
-            PushNotificationToken::Clear => (0x00, None),
-            PushNotificationToken::APNs { r#type: scope, token } => (
-                match scope {
-                    APNsServerType::Production => 0x05,
-                    APNsServerType::Development => 0x06,
-                },
-                Some(token),
-            ),
-            PushNotificationToken::FCM(token) => (0x11, Some(token)),
-            PushNotificationToken::HMS(token) => (0x13, Some(token)),
-        };
         writer
-            .run(|writer| {
-                writer.write_u8(token_type)?;
-                if let Some(token_data) = token_data {
-                    writer.write(token_data)
-                } else {
-                    Ok(())
-                }
+            .run(|writer| match self {
+                PushNotificationToken::Clear => writer.write_u8(PushNotificationTokenType::None as u8),
+                PushNotificationToken::Apns {
+                    r#type,
+                    bundle_id,
+                    encryption_key,
+                    token,
+                } => {
+                    writer.write_u8(PushNotificationTokenType::from(*r#type) as u8)?;
+
+                    // Note: We're lucky here since we only need to encode it. But if you need to decode,
+                    // well... because both `encryption_key` and `token` are binary, it can contain a pipe
+                    // delimiter, making the delimiter totally useless. You'll have to split off the 32 byte
+                    // `encryption_key` and the delimiter from the end, then seek backwards for the next
+                    // delimiter to be able to distinguish the `token` from the `bundle_id`.
+                    writer.write(token)?;
+                    writer.write(Self::AWKWARD_DELIMITER)?;
+                    writer.write(bundle_id.as_bytes())?;
+                    writer.write(Self::AWKWARD_DELIMITER)?;
+                    writer.write(encryption_key)
+                },
+                PushNotificationToken::Fcm(token) => {
+                    writer.write_u8(PushNotificationTokenType::Fcm as u8)?;
+
+                    writer.write(token.as_bytes())
+                },
+                PushNotificationToken::Hms { app_id, token } => {
+                    writer.write_u8(PushNotificationTokenType::Hms as u8)?;
+
+                    writer.write(app_id.as_bytes())?;
+                    writer.write(Self::AWKWARD_DELIMITER)?;
+                    writer.write(token.as_bytes())
+                },
             })
             .map_err(|error| CspProtocolError::EncodingFailed {
                 name: Self::NAME,
@@ -436,6 +520,42 @@ impl TryFrom<Vec<u8>> for IncomingPayload {
             IncomingPayloadType::CloseError => Self::CloseError(CloseError::decode(reader)?),
             IncomingPayloadType::Alert => Self::ServerAlert(ServerAlert::decode(reader)?),
         })
+    }
+}
+
+#[cfg(test)]
+mod incoming_payload_tests {
+    use data_encoding::HEXLOWER;
+
+    use super::IncomingPayload;
+    use crate::common::{MessageFlags, MessageId, ThreemaId};
+
+    #[test]
+    fn valid_message() -> anyhow::Result<()> {
+        let payload = HEXLOWER.decode(
+            b"\
+                02000000304441354d453736304850543945574489aa9a7eaff77d96cb7327680100340000000000\
+                00000000000000000000000000000000000000000000000000000000439039d79074fa4a0d0961d6\
+                51af57b94b7245c4c686733aab55b7f2b049fa3a8a5fec982eaa27d37557beaadd802cfc2703d849\
+                b2d718b0db179e3e3bcdbf3c2be997490a0349f2e4fbaa43712e263aab0c2c4a920182f01f810df0\
+                63363191b26c2c6404c0e84e73a3e005e327589702878e259642e1cf3b29e36db1c6a258f55ea73c\
+                842fddafffd76a3057c0c13b6881bccc6522a0edee793f586fcb9ec5b398eb3be0af1a8c6111fe46\
+                3ed25d916e66bea54955ca3398e27cbae25bfb6c16e26f326ecf8a4ba81aef9312b59f612b9e3355\
+                de6c14c0434dc195e0a03462fc95d836a7bca74bda61d59be8489a9fdd9e626e7cb7324ac0724b0a\
+                42168a5bea525eaef17d3bf13bbd8551ab8c85f5892fa6ba9c32e01343c3bc8ed2ad59f54411de08\
+                9b193dca452b9699dafe34d124dfe521a956cce4adf58902a4c7b8bcf3d4548848dd2f1bee",
+        )?;
+        let payload = IncomingPayload::try_from(payload)?;
+        let IncomingPayload::MessageWithMetadataBox(message) = payload else {
+            panic!("Expected IncomingPayload::MessageWithMetadataBox");
+        };
+
+        assert_eq!(message.sender_identity, ThreemaId::try_from("0DA5ME76")?);
+        assert_eq!(message.id, MessageId::from_hex("89aa9a7eaff77d96")?);
+        assert_eq!(message.flags, MessageFlags(MessageFlags::SEND_PUSH_NOTIFICATION));
+        assert_eq!(message.bytes.len(), 397);
+
+        Ok(())
     }
 }
 

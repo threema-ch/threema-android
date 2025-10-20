@@ -1,11 +1,12 @@
+use educe::Educe;
 use libthreema_macros::{Name, concat_fixed_bytes};
 
 use super::{
-    ClientCookie, Context, CspProtocolError, ServerCookie, TemporaryServerKey,
+    ClientCookie, CspProtocolContext, CspProtocolError, ServerCookie, TemporaryServerKey,
     frame::{FrameEncoder, OutgoingFrame},
 };
 use crate::{
-    common::{Cookie, CspDeviceId, PublicKey, ThreemaId},
+    common::{ClientInfo, Cookie, CspDeviceId, ThreemaId, keys::PublicKey},
     crypto::{digest::MAC_256_LENGTH, salsa20, x25519},
     utils::{
         bytes::{ByteReader as _, ByteWriter, OwnedVecByteWriter, SliceByteReader},
@@ -123,7 +124,7 @@ impl Features {
 #[derive(Name)]
 enum Extension {
     /// Client info extension payload
-    ClientInfo(String),
+    ClientInfo(ClientInfo),
 
     /// CSP device ID extension payload
     CspDeviceId(CspDeviceId),
@@ -139,6 +140,7 @@ impl Extension {
     fn encode_into(&self, writer: &mut impl ByteWriter) -> Result<(), CspProtocolError> {
         match self {
             Extension::ClientInfo(client_info) => {
+                let client_info = client_info.to_semicolon_separated();
                 let client_info = client_info.as_bytes();
                 Self::encode_header(
                     writer,
@@ -209,7 +211,7 @@ impl Extensions {
     const ENCRYPTION_OVERHEAD_LENGTH: usize = salsa20::TAG_LENGTH;
 
     /// Create a set of extensions of all necessary extensions from the provided context.
-    pub(super) fn new(context: &Context) -> Self {
+    pub(super) fn new(context: &CspProtocolContext) -> Self {
         // Set the supported features and client info
         let mut extensions = vec![
             Extension::SupportedFeatures(Features(
@@ -249,7 +251,7 @@ impl Extensions {
 }
 
 /// Login data of the client.
-#[derive(educe::Educe, Name)]
+#[derive(Educe, Name)]
 #[educe(Debug)]
 pub(super) struct LoginData {
     pub(super) identity: ThreemaId,
@@ -301,7 +303,7 @@ impl LoginData {
 const LOGIN_DATA_BOX_LENGTH: usize = LoginData::LENGTH + { salsa20::TAG_LENGTH };
 
 /// Login request from the client.
-#[derive(Name, educe::Educe)]
+#[derive(Name, Educe)]
 #[educe(Debug)]
 pub(super) struct Login {
     /// The encrypted [`LoginData`].

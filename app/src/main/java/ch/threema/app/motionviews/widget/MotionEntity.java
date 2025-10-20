@@ -259,11 +259,11 @@ public abstract class MotionEntity implements ActionEntity {
         line.lineTo(destPoints[8], destPoints[9]);
         canvas.drawPath(line, borderPaint);
 
-/*
-		canvas.drawLines(destPoints, 0, 8, borderPaint);
-		//noinspection Range
-		canvas.drawLines(destPoints, 2, 8, borderPaint);
-*/
+        /*
+        canvas.drawLines(destPoints, 0, 8, borderPaint);
+        //noinspection Range
+        canvas.drawLines(destPoints, 2, 8, borderPaint);
+        */
     }
 
     @NonNull

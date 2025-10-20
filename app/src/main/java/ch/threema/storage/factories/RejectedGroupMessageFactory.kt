@@ -21,10 +21,13 @@
 
 package ch.threema.storage.factories
 
-import android.content.ContentValues
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.types.Identity
 import ch.threema.storage.DatabaseService
+import ch.threema.storage.buildContentValues
+import ch.threema.storage.runDelete
+import ch.threema.storage.runQuery
 
 class RejectedGroupMessageFactory(databaseService: DatabaseService) :
     ModelFactory(databaseService, "rejected_group_messages") {
@@ -36,10 +39,10 @@ class RejectedGroupMessageFactory(databaseService: DatabaseService) :
 
     fun insertMessageReject(
         rejectedMessageId: MessageId,
-        rejectedIdentity: String,
+        rejectedIdentity: Identity,
         groupDatabaseId: Long,
     ) {
-        val contentValues = ContentValues().apply {
+        val contentValues = buildContentValues {
             put(COLUMN_MESSAGE_ID, rejectedMessageId.toString())
             put(COLUMN_REJECTED_IDENTITY, rejectedIdentity)
             put(COLUMN_GROUP_ID, groupDatabaseId)
@@ -51,16 +54,10 @@ class RejectedGroupMessageFactory(databaseService: DatabaseService) :
         messageId: MessageId,
         groupModel: GroupModel,
     ): Set<String> {
-        val selection = "$COLUMN_MESSAGE_ID=? AND $COLUMN_GROUP_ID=?"
-        val selectionArgs = arrayOf(messageId.toString(), groupModel.getDatabaseId().toString())
-        readableDatabase.query(
-            tableName,
-            null,
-            selection,
-            selectionArgs,
-            null,
-            null,
-            null,
+        readableDatabase.runQuery(
+            table = tableName,
+            selection = "$COLUMN_MESSAGE_ID=? AND $COLUMN_GROUP_ID=?",
+            selectionArgs = arrayOf(messageId.toString(), groupModel.getDatabaseId().toString()),
         ).use {
             val rejectedIdentities = mutableSetOf<String>()
             val rejectedIdentityColumnIndex = it.getColumnIndexOrThrow(COLUMN_REJECTED_IDENTITY)
@@ -73,26 +70,30 @@ class RejectedGroupMessageFactory(databaseService: DatabaseService) :
 
     fun removeMessageReject(
         rejectedMessageId: MessageId,
-        rejectedIdentity: String,
+        rejectedIdentity: Identity,
         groupModel: GroupModel,
     ) {
-        val whereClause =
-            "$COLUMN_MESSAGE_ID=? AND $COLUMN_REJECTED_IDENTITY=? AND $COLUMN_GROUP_ID=?"
-        val whereArgs =
-            arrayOf(rejectedMessageId.toString(), rejectedIdentity, groupModel.getDatabaseId())
-        writableDatabase.delete(tableName, whereClause, whereArgs)
+        writableDatabase.runDelete(
+            table = tableName,
+            whereClause = "$COLUMN_MESSAGE_ID=? AND $COLUMN_REJECTED_IDENTITY=? AND $COLUMN_GROUP_ID=?",
+            whereArgs = arrayOf(rejectedMessageId.toString(), rejectedIdentity, groupModel.getDatabaseId()),
+        )
     }
 
     fun removeAllMessageRejectsInGroup(group: GroupModel) {
-        val whereClause = "$COLUMN_GROUP_ID=?"
-        val whereArgs = arrayOf(group.getDatabaseId())
-        writableDatabase.delete(tableName, whereClause, whereArgs)
+        writableDatabase.runDelete(
+            table = tableName,
+            whereClause = "$COLUMN_GROUP_ID=?",
+            whereArgs = arrayOf(group.getDatabaseId()),
+        )
     }
 
-    fun removeMessageRejectByGroupAndIdentity(group: GroupModel, identity: String) {
-        val whereClause = "$COLUMN_REJECTED_IDENTITY=? AND $COLUMN_GROUP_ID=?"
-        val whereArgs = arrayOf(identity, group.getDatabaseId())
-        writableDatabase.delete(tableName, whereClause, whereArgs)
+    fun removeMessageRejectByGroupAndIdentity(group: GroupModel, identity: Identity) {
+        writableDatabase.runDelete(
+            table = tableName,
+            whereClause = "$COLUMN_REJECTED_IDENTITY=? AND $COLUMN_GROUP_ID=?",
+            whereArgs = arrayOf(identity, group.getDatabaseId()),
+        )
     }
 
     override fun getStatements(): Array<String> = arrayOf(

@@ -1,5 +1,4 @@
 //! Debug-related utilities.
-
 use core::fmt;
 
 use data_encoding::HEXLOWER;
@@ -9,6 +8,10 @@ use crate::crypto::x25519;
 /// Formatter to format a slice to its length
 pub(crate) fn debug_slice_length<T>(slice: &[T], formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
     write!(formatter, "length={}", slice.len())
+}
+
+pub(crate) fn debug_str_redacted(field: &str, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+    formatter.write_str(&"*".repeat(field.len()))
 }
 
 /// Formatter to format bytes as hex

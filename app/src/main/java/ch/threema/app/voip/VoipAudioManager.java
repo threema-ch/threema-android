@@ -120,12 +120,13 @@ public class VoipAudioManager {
         public void onReceive(Context context, Intent intent) {
             int state = intent.getIntExtra("state", STATE_UNPLUGGED);
             int microphone = intent.getIntExtra("microphone", HAS_NO_MIC);
-            String name = intent.getStringExtra("name");
-            logger.debug("WiredHeadsetReceiver.onReceive" + AppRTCUtils.getThreadInfo() + ": "
-                + "a=" + intent.getAction() + ", s="
-                + (state == STATE_UNPLUGGED ? "unplugged" : "plugged") + ", m="
-                + (microphone == HAS_MIC ? "mic" : "no mic") + ", n=" + name + ", sb="
-                + isInitialStickyBroadcast());
+            logger.debug(
+                "WiredHeadsetReceiver.onReceive {}: s={}, m={}, sb={}",
+                AppRTCUtils.getThreadInfo(),
+                state == STATE_UNPLUGGED ? "unplugged" : "plugged",
+                microphone == HAS_MIC ? "mic" : "no mic",
+                isInitialStickyBroadcast()
+            );
             hasWiredHeadset = (state == STATE_PLUGGED);
             updateAudioDeviceState();
         }
@@ -220,30 +221,11 @@ public class VoipAudioManager {
                     case AudioManager.AUDIOFOCUS_LOSS:
                         typeOfChange = "AUDIOFOCUS_LOSS";
                         logger.info("Audio Focus loss");
-
-                        /* ignore complete loss as this will break the use case of watching videos during a call */
-						/* TODO: Currently disabled because of side effects
-						VoipListenerManager.audioManagerListener.handle(new ListenerManager.HandleListener<VoipAudioManagerListener>() {
-							@Override
-							public void handle(VoipAudioManagerListener listener) {
-								listener.onAudioFocusLost(false);
-							}
-						});
-						*/
                         break;
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
                         logger.info("Audio Focus loss transient");
 
                         typeOfChange = "AUDIOFOCUS_LOSS_TRANSIENT";
-                        /* if we lose the audio focus temporarily (e.g. if a Signal call comes in), we mute the call */
-						/* TODO: Currently disabled because of side effects
-						VoipListenerManager.audioManagerListener.handle(new ListenerManager.HandleListener<VoipAudioManagerListener>() {
-							@Override
-							public void handle(VoipAudioManagerListener listener) {
-								listener.onAudioFocusLost(true);
-							}
-						});
-						 */
                         break;
                     case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
                         logger.info("Audio Focus loss transient can duck");
@@ -361,7 +343,7 @@ public class VoipAudioManager {
     public void selectAudioDevice(AudioDevice device) {
         ThreadUtils.checkIsOnMainThread();
         if (!this.audioDevices.contains(device)) {
-            logger.error("Can not select " + device + " from available " + this.audioDevices);
+            logger.error("Cannot select audio device, as it is not available in {}", this.audioDevices);
         }
         this.userSelectedAudioDevice = device;
         this.updateAudioDeviceState();

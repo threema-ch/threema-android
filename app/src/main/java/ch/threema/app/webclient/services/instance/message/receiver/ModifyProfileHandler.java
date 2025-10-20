@@ -21,9 +21,6 @@
 
 package ch.threema.app.webclient.services.instance.message.receiver;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
@@ -37,9 +34,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.dialogs.ContactEditDialog;
+import ch.threema.app.profilepicture.CheckedProfilePicture;
 import ch.threema.app.services.UserService;
-import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
@@ -119,7 +115,7 @@ public class ModifyProfileHandler extends MessageReceiver {
 
             if (data.containsKey(FIELD_AVATAR)) {
                 final Value value = data.get(FIELD_AVATAR);
-                if (value.isNilValue()) {
+                if (value == null || value.isNilValue()) {
                     this.processAvatar(null);
                 } else {
                     final byte[] avatar = value.asBinaryValue().asByteArray();
@@ -127,7 +123,7 @@ public class ModifyProfileHandler extends MessageReceiver {
                 }
             }
         } catch (ModifyProfileException e) {
-            logger.error("Profile was not updated (" + e.errorCode + ")", e);
+            logger.error("Profile was not updated ({})", e.errorCode, e);
             this.sendConfirmActionFailure(this.responseDispatcher, temporaryId, e.errorCode);
         }
 
@@ -155,31 +151,12 @@ public class ModifyProfileHandler extends MessageReceiver {
             return;
         }
 
-        // Validate bytes
-        if (avatarBytes.length == 0) {
-            logger.warn("Avatar bytes are empty");
+        CheckedProfilePicture profilePicture = CheckedProfilePicture.getOrConvertFromBytes(avatarBytes);
+        if (profilePicture != null) {
+            userService.setUserProfilePicture(profilePicture, TriggerSource.LOCAL);
+        } else {
+            logger.warn("Could not set user profile picture as the provided bytes are not valid");
             throw new ModifyProfileException(Protocol.ERROR_INVALID_AVATAR);
-        }
-
-        // Decode avatar
-        final Bitmap avatar = BitmapFactory
-            .decodeByteArray(avatarBytes, 0, avatarBytes.length);
-
-        // Resize to max allowed size
-        final Bitmap resized = BitmapUtil.resizeBitmap(
-            avatar,
-            ContactEditDialog.CONTACT_AVATAR_WIDTH_PX,
-            ContactEditDialog.CONTACT_AVATAR_HEIGHT_PX
-        );
-
-        // Set the avatar
-        try {
-            final byte[] converted = BitmapUtil
-                .bitmapToByteArray(resized, Bitmap.CompressFormat.PNG, 100);
-            userService.setUserProfilePicture(converted, TriggerSource.LOCAL);
-        } catch (Exception e) {
-            logger.error("Could not update own avatar", e);
-            throw new ModifyProfileException(Protocol.ERROR_INTERNAL);
         }
     }
 

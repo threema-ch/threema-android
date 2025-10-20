@@ -32,7 +32,7 @@ import androidx.work.Operation
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitServiceManagerWithTimeout
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
@@ -49,6 +49,7 @@ import ch.threema.domain.models.IdentityType
 import ch.threema.domain.protocol.api.APIConnector
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
+import org.koin.core.component.KoinComponent
 
 private val logger = LoggingUtil.getThreemaLogger("ContactUpdateWorker")
 
@@ -59,7 +60,7 @@ private val logger = LoggingUtil.getThreemaLogger("ContactUpdateWorker")
 class ContactUpdateWorker(
     private val context: Context,
     workerParameters: WorkerParameters,
-) : CoroutineWorker(context, workerParameters) {
+) : CoroutineWorker(context, workerParameters), KoinComponent {
     override suspend fun doWork(): Result {
         val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
             ?: return Result.failure()
@@ -284,7 +285,7 @@ class ContactUpdateWorker(
             newFeatureMask: Long?,
         ) {
             try {
-                val data = contactModel.data.value ?: return
+                val data = contactModel.data ?: return
 
                 // Only update the state if it is a valid state change. Note that changing to null is
                 // not allowed and will not result in any change.

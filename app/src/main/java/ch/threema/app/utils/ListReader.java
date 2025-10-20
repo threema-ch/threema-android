@@ -27,9 +27,6 @@ import java.util.Map;
 
 import ch.threema.base.utils.Utils;
 
-/**
- * Convert Json to X and X to Json
- */
 public class ListReader {
 
     private final List<Object> list;
@@ -37,11 +34,6 @@ public class ListReader {
 
     public ListReader(List<Object> list) {
         this.list = list;
-    }
-
-    public ListReader rewind() {
-        this.pos = 0;
-        return this;
     }
 
     public String nextString() {

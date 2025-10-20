@@ -1,1 +1,8 @@
-- Fixed a bug with the mapping of 👍/👎 emoji reactions to the legacy “agree”/“disagree” reactions
+- Android 5 and 6 are no longer supported
+- Increased the Android SDK level to 35 (Android 15)
+- Support for 16 KB page sizes
+- Support for emoji v16.0
+- Use “libthreema” for cryptographic operations
+- Fixed a bug that could occur when recording a video
+- Various color and UI improvements
+- Various improvements and bug fixes

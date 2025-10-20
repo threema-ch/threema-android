@@ -35,7 +35,6 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
@@ -86,9 +85,7 @@ public class FileMessagePlayer extends MessagePlayer {
     protected void open(final File decryptedFile) {
         if (this.isReceiverMatch(this.currentMessageReceiver)) {
             RuntimeUtil.runOnUiThread(() -> {
-                final String mimeType = getMessageModel().getFileData().getMimeType();
-
-                if (!TestUtil.isEmptyOrNull(mimeType) && decryptedFile.exists()) {
+                if (decryptedFile.exists()) {
                     final @NonNull FileDataModel fileData = getMessageModel().getFileData();
                     if (!FileUtil.isImageFile(fileData) && !FileUtil.isVideoFile(fileData)) {
                         messageService.viewMediaMessage(

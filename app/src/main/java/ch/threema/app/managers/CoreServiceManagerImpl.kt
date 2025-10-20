@@ -24,13 +24,14 @@ package ch.threema.app.managers
 import ch.threema.app.multidevice.MultiDeviceManagerImpl
 import ch.threema.app.services.ServerMessageService
 import ch.threema.app.services.ServerMessageServiceImpl
-import ch.threema.app.stores.IdentityStore
-import ch.threema.app.stores.PreferenceStoreInterface
+import ch.threema.app.stores.EncryptedPreferenceStore
+import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.TaskArchiverImpl
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.DeviceCookieManagerImpl
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.domain.models.AppVersion
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TaskManagerConfiguration
 import ch.threema.domain.taskmanager.TaskManagerProvider
@@ -45,7 +46,8 @@ import ch.threema.storage.DatabaseService
 class CoreServiceManagerImpl(
     override val version: AppVersion,
     override val databaseService: DatabaseService,
-    override val preferenceStore: PreferenceStoreInterface,
+    override val preferenceStore: PreferenceStore,
+    override val encryptedPreferenceStore: EncryptedPreferenceStore,
     override val identityStore: IdentityStore,
     private val nonceDatabaseStoreProvider: () -> DatabaseNonceStore,
 ) : CoreServiceManager {
@@ -62,7 +64,7 @@ class CoreServiceManagerImpl(
      * passed to it.
      */
     override val deviceCookieManager: DeviceCookieManagerImpl by lazy {
-        DeviceCookieManagerImpl(preferenceStore, databaseService)
+        DeviceCookieManagerImpl(encryptedPreferenceStore, databaseService)
     }
 
     /**
@@ -93,6 +95,7 @@ class CoreServiceManagerImpl(
     override val multiDeviceManager: MultiDeviceManagerImpl by lazy {
         MultiDeviceManagerImpl(
             preferenceStore,
+            encryptedPreferenceStore,
             serverMessageService,
             version,
         )

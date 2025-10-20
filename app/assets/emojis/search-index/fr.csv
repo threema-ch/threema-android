@@ -79,8 +79,8 @@
 🫠|disparaître|fondre|gêne|liquéfié|liquide|sarcasme|se dissoudre|visage qui fond
 😉|blague|clin d’œil|émoticône|flirter|plaisanter|sexy|visage faisant un clin d’œil|visage clignant d’un œil
 😊|content|émoticône|heureux|œil|rougir|satisfait|sourire|visage qui rougit|visage souriant avec yeux rieurs|visage souriant avec yeux souriants|yeux|visage souriant les yeux plissés
-😇|ange|angélique|auréole|béni|bible|émoticône|heureux|innocent|paix|sourire|spirituel|visage souriant avec auréole|visage souriant avec une auréole|visage qui sourit avec une auréole
-🥰|adorer|aimer|amoureuse|amoureux|béguin|coeurs|cœurs|j’adore|je t’aime|romance|smiley avec 3 coeurs|sourire|visage souriant avec cœurs
+😇|ange|angélique|auréole|béni|bible|émoticône|heureux|innocent|paix|sourire|spirituel|visage souriant avec auréole|visage qui sourit avec une auréole
+🥰|adorer|aimer|béguin|coeur|cœurs|j’adore|je t’aime|smiley avec 3 coeurs|sourire|visage souriant avec cœurs|amoureuse|amoureux
 😍|amoureux|cœur|émoticône|œil|romantique|sourire|visage souriant avec yeux en forme de cœur|yeux|visage souriant aux yeux en forme de cœur
 🤩|étoiles dans les yeux|grand sourire|heureux|pressé|surexcité|tête avec étoiles|visage avec des étoiles à la place des yeux|wow|yeux|large sourire|visage aux yeux en forme d’étoiles
 😘|amour|baiser|bise|bisou et cœur|bonjour|bonne nuit|cœur|embrasser|émoticône|je t’aime|visage envoyant un bisou|visage qui fait une bise avec un cœur|visage envoyant un baiser
@@ -113,7 +113,7 @@
 😒|bizarre|blasé|émoticône|énervé|fâché|jaloux|pas content|peu importe|visage qui s’ennuie|contrarié|désabusé|résigné
 🙄|agacé|émoticône|excédé|incrédulité|roulement|visage qui lève les yeux au ciel|visage qui roule des yeux|visage roulant des yeux|yeux|roule des yeux
 😬|dents|émoticône|gêné|grimace|rien|sourire|visage grimaçant
-😮‍💨|chuchoter|découragé|déçu|ennuyé|expiration|exténué|fatigué|siffler|souffler|soulagement|soupir|sursaut|visage expirant
+😮‍💨|chuchoter|découragé|déçu|expiration|exténué|fatigué|siffler|souffler|soulagement|soupir|sursaut|visage expirant
 🤥|émoticône|mensonge|menteur|pinocchio|visage de menteur|visage dont le nez s’allonge
 🫨|choc|étourdi|fou|omg|ouah|panique|secoué|surprenant|tremblement de terre|vibration|visage secoué
 🙂‍↔️|non|secouer|tête secouée horizontalement
@@ -123,6 +123,7 @@
 😪|émoticône|fatigué|larme|pleurer|sommeil|triste|visage endormi|endormi
 🤤|baver|délicieux|émoticône|mmh|visage qui bave|saliver
 😴|bonne nuit|coucher|dormir|émoticône|endormi|fatigué|sieste|sommeil|visage somnolent|zzz
+🫩|ensommeilé|épuisé|fatigué|sommeil|visage avec des valises sous les yeux|cernes|endormi|las|poches|somnolent|tard|valises|yeux
 😷|bactéries|dentiste|docteur|émoticône|germes|malade|masque chirurgical|médecin|rhume|visage avec masque|froid|médical
 🤒|indisposé|malade|thermomètre|visage avec thermomètre
 🤕|aïe|bandage|blessure|bobo|émoticône|pansement|tête avec un bandage|visage avec bandage autour de la tête|blessé|visage bandé
@@ -148,7 +149,7 @@
 😮|bouche bée|bouche ouverte|choqué|émoticône|épaté|incroyable|omd|oubli|surpris|visage avec bouche ouverte|visage avec la bouche ouverte|visage étonné|compassion|visage épaté
 😯|émoticône|incroyable|omd|sans voix|stupéfait|stupeur|surpris|visage à la bouche ouverte|visage ébahi|visage sans voix|ébahi
 😲|choc|choqué|émoticône|étonné|impossible|incroyable|omd|stupéfait|visage|surpris
-😳|chaud|comment|ébahi|émoticône|étonné|gêné|hébété|impressionné|incrédule|incroyable|quoi|rouge|rougissant|stupéfait|visage qui rougit|wow
+😳|chaud|comment|ébahi|émoticône|étonné|gêné|impressionné|incrédule|incroyable|quoi|rouge|visage qui rougit|rougissant|stupéfait|wow
 🥺|embarrassé|excuse|gros yeux|pardon|pitié|s’il te plaît|supplication|supplie|visage implorant|yeux de chiens battus|implorant|yeux de chiot
 🥹|admiration|ému|fierté|gratitude|larmes de joie|pleurs|retenir ses larmes|triste|visage retenant ses larmes
 😦|bouche|déçu|effrayé|émoticône|ouverte|peur|pris au dépourvu|surpris|visage déçu avec bouche ouverte|visage mécontent avec bouche ouverte|béante|renfrogné
@@ -210,7 +211,7 @@
 💛|amour|cœur jaune|sentiment|jaune
 💚|amour|cœur|sentiment|vert
 💙|amour|cœur bleu|sentiment|bleu
-🩵|143|aimer|amour|bleu ciel|bleu clair|bleu sarcelle|cœur bleu clair|cyan|émotion|jtm|mignon|spécial
+🩵|143|aimer|amour|bleu ciel|bleu clair|cœur bleu clair|cyan|émotion|jtm|mignon|spécial
 💜|amour|cœur|sentiment|violet
 🤎|brun|cœur|marron
 🖤|cœur|noir
@@ -554,6 +555,7 @@
 🧑‍🧒|enfant|famille : adulte, enfant|famille monoparentale
 🧑‍🧒‍🧒|enfant|famille : adulte, enfant, enfant|famille monoparentale
 👣|empreintes|pieds nus|traces de pas|pas
+🫆|dermatoglyphe|données biométriques|empreinte digitale|identité|sécurité
 🐵|animal|georges le petit curieux|singe|sourire|tête de singe|visage
 🐒|animal|primate|singe
 🦍|animal|gorille|primate
@@ -663,6 +665,11 @@
 🐚|animal|conque|coquillage|coquille en spirale|mer|plage|spirale
 🪸|corail|océan|réchauffement climatique|récif
 🪼|aïe|animal|aquarium|brûlure|gélatineux|invertébré|marin|méduse|mer|mou|océan|piqûre|plancton|tentacules|vie marine
+🦀|animal|astrologie|cancer|crabe|horoscope|mer|pinces|plage|zodiaque
+🦞|animal|bisque|fruit de mer|fruits de mer|homard|pinces
+🦐|aliment|crevette|crustacé|fruits de mer|nourriture
+🦑|aliment|animal|calamar|encornet|mollusque|nourriture
+🦪|coquillage|coquille|huître|mollusque|perle
 🐌|animal|escargot|jardin|lentement|nature
 🦋|animal|insecte|mignon|papillon|printemps
 🐛|animal|chenille|insecte|jardin
@@ -706,6 +713,7 @@
 🪹|branches|faire son nid|maison|nid vide
 🪺|branches|faire son nid|nid avec œufs|oiseau
 🍄|champignon vénéneux|mario|plante|vénéneux
+🪾|arbre sans feuille|aride|hiver|sécheresse|bois|branches|dénudé|dépouillé|mort|sans feuille|tronc
 🍇|fruit|nourriture|raisin
 🍈|fruit|melon
 🍉|fruit|pastèque|melon d’eau
@@ -744,6 +752,7 @@
 🫚|bière|épice|gingembre|naturel|racine de gingembre|santé
 🫛|cosse de petits pois|edamame|fève|haricot|légume|légumineuse|pois|soja
 🍄‍🟫|automne|brun|cèpe|champignon|fongus|marron|nature|nourriture
+🫜|betterave|jardin|légume|navet|racine|nourriture|radis|salade|végétarien
 🍞|miche|nourriture|pain de mie|baguette
 🥐|croissant|nourriture|pain|petit-déjeuner|viennoiserie
 🥖|baguette|nourriture|pain
@@ -792,14 +801,9 @@
 🍥|croquette de poisson|narutomaki|nourriture|poisson|restaurant|gâteau au poisson|pâté de poisson|surimi avec décoration
 🥮|automne|festival|gâteau de lune|moon cake|yuèbǐng
 🍡|bonbons|brochette de bonbons|dango|dessert|japonais|nourriture|sucré
-🥟|boulette de pâte|dumpling|empanada|gyoza|gyōza|jiaozi|pierogi|potsticker|ravioli
+🥟|boulette de pâte|dumpling|empanada|gyoza|jiaozi|pierogi|potsticker|ravioli|gyōza
 🥠|biscuit chinois|nourriture|prophétie
 🥡|baguettes|boîte à emporter|carton|chinois|nourriture à emporter
-🦀|animal|astrologie|cancer|crabe|horoscope|mer|pinces|plage|zodiaque
-🦞|animal|bisque|fruit de mer|fruits de mer|homard|pinces
-🦐|aliment|crevette|crustacé|fruits de mer|nourriture
-🦑|aliment|animal|calamar|encornet|mollusque|nourriture
-🦪|coquillage|coquille|huître|mollusque|perle
 🍦|cornet de glace|dessert|glace italienne|nourriture|sucré|crème glacée molle
 🍧|coupe de glace|crème glacée|dessert|glace|granité|nourriture|restaurant|sucré|pilée
 🍨|coupe de glace|crème glacée|dessert|glace|nourriture|restaurant|sucré
@@ -885,7 +889,7 @@
 🗽|liberté|new york|statue de la liberté|voyage
 ⛪|bâtiment|chapelle|chrétien|croix|église|religion|voyage
 🕌|islam|mosquée|musulmane|religion|voyage
-🛕|bouddhisme|hindou|pagode|religion|stūpa|temple bouddhiste
+🛕|bouddhisme|hindou|pagode|religion|stupa|temple bouddhiste
 🕍|judaïsme|juif|juive|religion|synagogue|temple|voyage
 ⛩️|religion|sanctuaire shinto|shinto|voyage
 🕋|islam|kaaba|musulmane|religion|voyage
@@ -1040,13 +1044,13 @@
 🌫️|brouillard|brume|fog|météo|nuage
 🌬️|météo|nuage|souffle|vent avec visage|visage du vent
 🌀|cyclone|spirale|tourbillon|typhon|vertige|ouragan
-🌈|arc-en-ciel|bisexuelle|gay pride|homosexuelle|lesbienne|lgbtqia|météo|nature|orgueil|pluie|transgenre
+🌈|arc-en-ciel|bisexuelle|gay pride|homosexuelle|lesbienne|lgbtqia|météo|nature|pluie|transgenre
 🌂|météo|parapluie fermé|pluie|fermé|vêtement
 ⛱️|météo|parapluie au sol|parasol sur le sol|plage|pluie|soleil|voyage
 ⚡|courant|danger|éclair|électricité|haute tension|nature|orage|symbole haute tension|tension|vitesse|électrocuter
 ⛄|bonhomme de neige sans flocons|bonhomme de neige sans neige|froid|neige|sans
 🔥|allumer|brûler|chaud|feu|flamme|fournaise|incendie|outil
-💧|bande dessinée|bd|eau|froid|goutte d’eau|larme|météo|nature|pluie|sueurs froides|tristesse|gouttelette
+💧|bd|eau|froid|goutte d’eau|larme|météo|nature|pluie|sueurs froides|tristesse|bande dessinée|gouttelette
 🌊|eau|kanagawa|lame|large|marée|mer|nature|océan|remous|rouleau|surf|vague
 🎃|citrouille|halloween|lanterne
 🎄|arbre|fêtes|guirlandes|noël|sapin de noël|célébration
@@ -1204,6 +1208,7 @@
 🪘|battement|conga|djembé|instrument|musique|percussions|rythme|tambour
 🪇|cha cha cha|danser|fête|hochet|instrument|maracas|musique|percussion|secouer
 🪈|bois|fanfare|fifre|flûte à bec|flûtiste|instrument|musique|orchestre|piccolo
+🪉|amour|cupidon|harpe|instrument|musique|orchestre
 📱|communication|smartphone|téléphone portable|téléphone cellulaire
 📲|appel entrant|communication|recevoir un appel|smartphone|téléphone portable avec une flèche|téléphone cellulaire précédé par une flèche
 ☎️|téléphone rouge
@@ -1334,6 +1339,7 @@
 🧰|boîte à outils|caisse à outils|coffre|mécanique|mécano|outils
 🧲|aimanter|attirer|attraction|fer à cheval|magnet|magnétique|positif négatif
 🪜|ascension|barreau|échelle|échelon|escabeau|grimper|monter
+🪏|bêche|creuser|pelle|trou
 🧪|chimie|chimiste|expérience|expérimentation|laboratoire|réaction|sciences|tube à essai
 🧫|bactérie|bactériologie|biologie|biologiste|boîte de petri|boîte de pétri|culture|laboratoire|micro-organismes|microbiologie|science
 🧬|adn|biologie|biologiste|évolution|gène|génétique|science|vie
@@ -1477,6 +1483,7 @@
 ➰|bouclette
 ➿|boucle|double boucle
 〽️|alternance|symbole|marque
+🫟|éclaboussure|holi|peinture|tache|dégât|encre|liquide|renversé
 🔠|abcd|alphabet latin|lettres latines|majuscules|saisie en lettres majuscules|latin
 🔡|abcd|alphabet latin|lettres latines|minuscules|saisie de lettres minuscules|latin
 🔢|1234|chiffres|saisie de chiffres|nombres

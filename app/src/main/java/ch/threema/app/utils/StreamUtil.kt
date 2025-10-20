@@ -56,21 +56,17 @@ fun getFromUri(context: Context, uri: Uri?): InputStream? {
         val intTmpPath: String
 
         try {
-            tmpPath =
-                ThreemaApplication.getServiceManager()!!.fileService.tempPath.absolutePath
-            intTmpPath =
-                ThreemaApplication.getServiceManager()!!.fileService.intTmpPath.absolutePath
+            val fileService = ThreemaApplication.requireServiceManager().fileService
+            tmpPath = fileService.tempPath.absolutePath
+            intTmpPath = fileService.intTmpPath.absolutePath
             appPath = context.applicationInfo.dataDir
         } catch (e: Exception) {
             return null
         }
 
-        inputStream = if (TestUtil.required(filePath, appPath, tmpPath)) {
+        inputStream = if (filePath != null) {
             // do not allow sending of files from local directories - but allow tmp dir
-            if (!filePath!!.startsWith(appPath) || filePath.startsWith(tmpPath) || filePath.startsWith(
-                    intTmpPath,
-                )
-            ) {
+            if (!filePath.startsWith(appPath) || filePath.startsWith(tmpPath) || filePath.startsWith(intTmpPath)) {
                 FileInputStream(filePath)
             } else {
                 throw FileNotFoundException("File on private directory")

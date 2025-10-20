@@ -37,7 +37,7 @@ class EmojiService(
     private val searchIndex: EmojiSearchIndex,
     private val recentEmojis: EmojiRecent,
 ) {
-    private val preferredDiversities = preferenceService.diverseEmojiPrefs
+    private val preferredDiversities = preferenceService.diverseEmojiPrefs.toMutableMap()
 
     fun addToRecentEmojis(emojiSequence: String) {
         recentEmojis.add(emojiSequence)
@@ -116,7 +116,7 @@ class EmojiService(
 
     @WorkerThread
     private fun searchEmojis(term: String): List<EmojiInfo> {
-        return searchIndex.search(getLanguageCode(), term).map {
+        val results = searchIndex.search(getLanguageCode(), term).map {
             val (diversities, diversityFlag) = if (it.diversities?.isEmpty() != false) {
                 Pair(null, EmojiSpritemap.DIVERSITY_NONE)
             } else {
@@ -129,6 +129,17 @@ class EmojiService(
                 EmojiSpritemap.DISPLAY_YES,
             )
         }
+        if (results.isEmpty() && EmojiUtil.isFullyQualifiedEmoji(term)) {
+            return listOf(
+                EmojiInfo(
+                    term,
+                    EmojiSpritemap.DIVERSITY_NONE,
+                    null,
+                    EmojiSpritemap.DISPLAY_YES,
+                ),
+            )
+        }
+        return results
     }
 
     private fun getRecentEmojiSequences(): List<String> {

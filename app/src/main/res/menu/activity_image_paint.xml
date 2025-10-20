@@ -11,7 +11,7 @@
             android:icon="@drawable/ic_undo_outline"
             android:orderInCategory="50"
             android:title="@string/undo"
-            app:iconTint="?attr/colorOnSurface"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always" />
 
     </group>
@@ -24,7 +24,7 @@
             android:icon="@drawable/ic_outline_face_retouching_off"
             android:orderInCategory="52"
             android:title="@string/blur_faces"
-            app:iconTint="?attr/colorOnSurface"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always">
 
             <menu>
@@ -34,7 +34,7 @@
                     android:icon="@drawable/ic_outline_blur_on_24"
                     android:orderInCategory="40"
                     android:title="@string/blur"
-                    app:iconTint="?attr/colorOnSurface"
+                    app:iconTint="?attr/colorControlNormal"
                     app:showAsAction="always" />
 
                 <item
@@ -43,7 +43,7 @@
                     android:icon="@drawable/ic_mood_outline"
                     android:orderInCategory="60"
                     android:title="@string/smiley"
-                    app:iconTint="@android:color/white"
+                    app:iconTint="?attr/colorControlNormal"
                     app:showAsAction="always" />
 
             </menu>
@@ -57,7 +57,7 @@
             android:icon="@drawable/ic_brush"
             android:orderInCategory="55"
             android:title="@string/draw"
-            app:iconTint="?attr/colorOnSurface"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always">
 
             <menu>
@@ -67,7 +67,7 @@
                     android:icon="@drawable/ic_brush"
                     android:orderInCategory="40"
                     android:title="@string/brush"
-                    app:iconTint="?attr/colorOnSurface"
+                    app:iconTint="?attr/colorControlNormal"
                     app:showAsAction="never" />
 
                 <item
@@ -76,7 +76,7 @@
                     android:icon="@drawable/ic_pencil_outline"
                     android:orderInCategory="60"
                     android:title="@string/pencil"
-                    app:iconTint="?attr/colorOnSurface"
+                    app:iconTint="?attr/colorControlNormal"
                     app:showAsAction="never" />
 
                 <item
@@ -85,7 +85,7 @@
                     android:icon="@drawable/ic_ink_highlighter_outline"
                     android:orderInCategory="80"
                     android:title="@string/highlighter"
-                    app:iconTint="?attr/colorOnSurface"
+                    app:iconTint="?attr/colorControlNormal"
                     app:showAsAction="never" />
 
             </menu>
@@ -98,7 +98,7 @@
             android:icon="@drawable/ic_mood_outline"
             android:orderInCategory="60"
             android:title="@string/stickers"
-            app:iconTint="?attr/colorOnSurface"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always" />
 
         <item
@@ -107,7 +107,7 @@
             android:icon="@drawable/ic_font_download_outline"
             android:orderInCategory="65"
             android:title="@string/text"
-            app:iconTint="?attr/colorOnSurface"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always" />
 
         <item
@@ -117,7 +117,7 @@
             android:orderInCategory="70"
             android:title="@string/palette"
             android:visible="true"
-            app:iconTint="?attr/colorOnSurface"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always" />
 
         <item
@@ -127,7 +127,7 @@
             android:orderInCategory="75"
             android:title="@string/background_color"
             android:visible="false"
-            app:iconTint="?attr/colorOnSurface"
+            app:iconTint="?attr/colorControlNormal"
             app:showAsAction="always" />
 
     </group>
@@ -139,7 +139,7 @@
         android:orderInCategory="80"
         android:title="@string/flip"
         android:visible="false"
-        app:iconTint="?attr/colorOnSurface"
+        app:iconTint="?attr/colorControlNormal"
         app:showAsAction="ifRoom" />
 
     <item
@@ -149,7 +149,7 @@
         android:orderInCategory="85"
         android:title="@string/rotate"
         android:visible="false"
-        app:iconTint="?attr/colorOnSurface"
+        app:iconTint="?attr/colorControlNormal"
         app:showAsAction="ifRoom" />
 
     <item
@@ -159,7 +159,7 @@
         android:orderInCategory="90"
         android:title="@string/crop"
         android:visible="false"
-        app:iconTint="?attr/colorOnSurface"
+        app:iconTint="?attr/colorControlNormal"
         app:showAsAction="ifRoom" />
 
 </menu>

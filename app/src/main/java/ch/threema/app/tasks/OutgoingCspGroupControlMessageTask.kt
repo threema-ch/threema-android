@@ -31,6 +31,7 @@ import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.types.Identity
 import java.util.Date
 
 abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager) :
@@ -40,9 +41,9 @@ abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager
     private val apiConnector by lazy { serviceManager.apiConnector }
 
     protected abstract val messageId: MessageId
-    protected abstract val creatorIdentity: String
+    protected abstract val creatorIdentity: Identity
     protected abstract val groupId: GroupId
-    protected abstract val recipientIdentities: Set<String>
+    protected abstract val recipientIdentities: Set<Identity>
     protected open val date: Date = Date()
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {

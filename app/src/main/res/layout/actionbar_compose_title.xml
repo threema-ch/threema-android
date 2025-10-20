@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/title_container"
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
@@ -19,8 +20,8 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_alignWithParentIfMissing="true"
+        android:layout_centerVertical="true"
         android:layout_toRightOf="@id/avatar_view"
         android:orientation="vertical">
 
@@ -30,10 +31,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:ellipsize="end"
+            android:includeFontPadding="false"
             android:singleLine="true"
             android:textAppearance="@style/Threema.TextAppearance.Toolbar.Title"
-            android:text="Title"
-            android:includeFontPadding="false" />
+            tools:text="Title" />
 
         <FrameLayout
             android:layout_width="wrap_content"
@@ -46,8 +47,11 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="1dp"
+                android:adjustViewBounds="true"
+                android:maxHeight="@dimen/grid_unit_x1"
+                android:visibility="gone"
                 app:srcCompat="@drawable/ic_verification_none"
-                android:visibility="gone" />
+                tools:visibility="visible" />
 
             <ch.threema.app.emojis.EmojiTextView
                 android:id="@+id/subtitle_text"
@@ -55,7 +59,6 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:singleLine="true"
-                android:text="Subtitle"
                 android:textAppearance="@style/Threema.TextAppearance.Toolbar.SubTitle"
                 android:visibility="gone" />
 

@@ -21,10 +21,7 @@
 
 package ch.threema.storage.models;
 
-import android.content.Context;
 import android.text.format.DateUtils;
-
-import com.neilalexander.jnacl.NaCl;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -34,16 +31,13 @@ import org.slf4j.Logger;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
+import ch.threema.app.utils.TextUtil;
+import ch.threema.data.datatypes.IdColor;
+import ch.threema.base.crypto.NaCl;
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.utils.ColorUtil;
-import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.BasicContact;
@@ -137,7 +131,7 @@ public class ContactModel extends Contact implements ReceiverModel {
     private IdentityState state;
     private String androidContactId;
     private long featureMask;
-    private int colorIndex = -1;
+    private @NonNull IdColor idColor = IdColor.invalid();
     private boolean isWork, isRestored, isArchived;
     private AcquaintanceLevel acquaintanceLevel = AcquaintanceLevel.DIRECT;
     private Date localAvatarExpires, dateCreated;
@@ -158,7 +152,7 @@ public class ContactModel extends Contact implements ReceiverModel {
     /**
      * Create a contact model with the given identity and public key. Note that this method does not
      * check that the identity is a valid string or that the public key contains
-     * {@link com.neilalexander.jnacl.NaCl.PUBLICKEYBYTES} bytes.
+     * {@link NaCl.PUBLIC_KEY_BYTES} bytes.
      * This method should only be used when constructing a contact model from the database as it may
      * contain invalid data. Use {@link #create(String, byte[])} whenever creating a new contact.
      */
@@ -167,7 +161,7 @@ public class ContactModel extends Contact implements ReceiverModel {
         if (identity.length() != ProtocolDefines.IDENTITY_LEN) {
             logger.warn("Creating contact with invalid identity: {}", identity);
         }
-        if (publicKey.length != NaCl.PUBLICKEYBYTES) {
+        if (publicKey.length != NaCl.PUBLIC_KEY_BYTES) {
             logger.warn("Creating contact {} with invalid public key of length {}", identity, publicKey.length);
         }
         return new ContactModel(identity, publicKey);
@@ -182,7 +176,7 @@ public class ContactModel extends Contact implements ReceiverModel {
         if (identity.length() != ProtocolDefines.IDENTITY_LEN) {
             throw new IllegalArgumentException("Invalid identity: " + identity);
         }
-        if (publicKey.length != NaCl.PUBLICKEYBYTES) {
+        if (publicKey.length != NaCl.PUBLIC_KEY_BYTES) {
             throw new IllegalArgumentException("Invalid public key of length " + publicKey.length);
         }
 
@@ -230,14 +224,6 @@ public class ContactModel extends Contact implements ReceiverModel {
         return this;
     }
 
-    public int getThemedColor(@NonNull Context context) {
-        if (ConfigUtils.isTheDarkSide(context)) {
-            return getColorDark();
-        } else {
-            return getColorLight();
-        }
-    }
-
     /**
      * Call this to set id color index. If this has not been called or the value is negative and the
      * color is being accessed, the hash will be recomputed to get the color index.
@@ -246,71 +232,22 @@ public class ContactModel extends Contact implements ReceiverModel {
      * @return this contact model
      */
     public ContactModel setIdColorIndex(int colorIndex) {
-        this.colorIndex = colorIndex;
+        this.idColor = new IdColor(colorIndex);
         return this;
     }
 
     /**
-     * Get the id color index. If the value is not initialized, this object will be updated and the
+     * Get the id color. If the value is not initialized, this object will be updated and the
      * computed value will be returned.
      *
-     * @return the id color index of the contact
+     * @return the id color of the contact
      */
-    public int getIdColorIndex() {
-        if (this.colorIndex < 0) {
-            initializeIdColor();
+    @NonNull
+    public IdColor getIdColor() {
+        if (!this.idColor.isValid()) {
+            idColor = IdColor.ofIdentity(getIdentity());
         }
-        return colorIndex;
-    }
-
-    /**
-     * Compute the sha 256 hash of this identity and set the color index accordingly.
-     */
-    public void initializeIdColor() {
-        int firstByte = computeIdColorFirstByte();
-        if (firstByte < 0) {
-            colorIndex = -1;
-        } else {
-            colorIndex = ColorUtil.getInstance().getIDColorIndex((byte) firstByte);
-        }
-    }
-
-    /**
-     * Get the first byte of the id color hash. If there was an error computing the hash, a negative value is returned.
-     *
-     * @return the first byte of the id color hash
-     */
-    private int computeIdColorFirstByte() {
-        try {
-            return ((int) MessageDigest.getInstance("SHA-256").digest(getIdentity().getBytes(StandardCharsets.UTF_8))[0]) & 0xFF;
-        } catch (NoSuchAlgorithmException e) {
-            logger.error("Could not find hashing algorithm for id color", e);
-            return -1;
-        }
-    }
-
-    /**
-     * Get the light variant of the id color.
-     *
-     * @return the light id color
-     */
-    public int getColorLight() {
-        if (colorIndex < 0) {
-            initializeIdColor();
-        }
-        return ColorUtil.getInstance().getIDColorLight(colorIndex);
-    }
-
-    /**
-     * Get the dark variant of the id color.
-     *
-     * @return the dark id color
-     */
-    public int getColorDark() {
-        if (colorIndex < 0) {
-            initializeIdColor();
-        }
-        return ColorUtil.getInstance().getIDColorDark(colorIndex);
+        return idColor;
     }
 
     public long getFeatureMask() {
@@ -583,7 +520,7 @@ public class ContactModel extends Contact implements ReceiverModel {
             this.publicNickName,
             this.verificationLevel,
             this.androidContactId,
-            this.colorIndex,
+            this.idColor,
             this.state,
             this.featureMask,
             this.localAvatarExpires,
@@ -676,9 +613,9 @@ public class ContactModel extends Contact implements ReceiverModel {
         final @NonNull String contactTextBottomLeft = getContactListItemTextBottomLeft();
         final @NonNull String contactTextBottomRight = getContactListItemTextBottomRight();
 
-        return TestUtil.matchesConversationSearch(filterQuery, contactTextTopLeft) ||
-            TestUtil.matchesConversationSearch(filterQuery, contactTextBottomLeft) ||
-            TestUtil.matchesConversationSearch(filterQuery, contactTextBottomRight) ||
+        return TextUtil.matchesQueryDiacriticInsensitive(contactTextTopLeft, filterQuery) ||
+            TextUtil.matchesQueryDiacriticInsensitive(contactTextBottomLeft, filterQuery) ||
+            TextUtil.matchesQueryDiacriticInsensitive(contactTextBottomRight, filterQuery) ||
             (getIdentity().toUpperCase().contains(filterQuery.toUpperCase()));
     }
 }

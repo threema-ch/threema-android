@@ -23,16 +23,17 @@ package ch.threema.app.workers
 
 import android.content.Context
 import androidx.work.*
-import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitServiceManagerWithTimeout
 import ch.threema.base.utils.LoggingUtil
 import kotlin.time.Duration.Companion.seconds
+import org.koin.core.component.KoinComponent
 
 private val logger = LoggingUtil.getThreemaLogger("ConnectivityChangeWorker")
 
 class ConnectivityChangeWorker(
     context: Context,
     workerParameters: WorkerParameters,
-) : CoroutineWorker(context, workerParameters) {
+) : CoroutineWorker(context, workerParameters), KoinComponent {
 
     override suspend fun doWork(): Result {
         val networkState = inputData.getString(EXTRA_NETWORK_STATE)

@@ -20,9 +20,13 @@
  */
 
 import com.android.build.gradle.internal.api.ApkVariantOutputImpl
+import com.android.build.gradle.internal.tasks.factory.dependsOn
+import config.BuildFeatureFlags
 import config.PublicKeys
 import config.setProductNames
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.kotlin.dsl.lintChecks
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import utils.*
 
 plugins {
@@ -47,7 +51,7 @@ if (gradle.startParameter.taskRequests.toString().contains("Hms")) {
 /**
  * Only use the scheme "<major>.<minor>.<patch>" for the appVersion
  */
-val appVersion = "6.1.3"
+val appVersion = "6.2.0"
 
 /**
  * betaSuffix with leading dash (e.g. `-beta1`).
@@ -56,7 +60,7 @@ val appVersion = "6.1.3"
  */
 val betaSuffix = ""
 
-val defaultVersionCode = 1087
+val defaultVersionCode = 1095
 
 /**
  * Map with keystore paths (if found).
@@ -74,7 +78,7 @@ android {
     //       make sure to adjust them in `scripts/Dockerfile` as well!
     compileSdk = 35
     buildToolsVersion = "35.0.0"
-    ndkVersion = "25.2.9519653"
+    ndkVersion = "28.2.13676358"
 
     defaultConfig {
         // https://developer.android.com/training/testing/espresso/setup#analytics
@@ -82,9 +86,8 @@ android {
             put("notAnnotation", "ch.threema.app.DangerousTest")
             put("disableAnalytics", "true")
         }
-        minSdk = 21
-        //noinspection OldTargetApi
-        targetSdk = 34
+        minSdk = 24
+        targetSdk = 35
         vectorDrawables.useSupportLibrary = true
         applicationId = "ch.threema.app"
         testApplicationId = "$applicationId.test"
@@ -143,15 +146,13 @@ android {
 
         stringArrayBuildConfigField("ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS", emptyArray())
         booleanBuildConfigField("MD_SYNC_DISTRIBUTION_LISTS", false)
-        booleanBuildConfigField("EDIT_MESSAGES_ENABLED", true)
-        booleanBuildConfigField("DELETE_MESSAGES_ENABLED", true)
-        booleanBuildConfigField("AVAILABILITY_STATUS_ENABLED", false)
+        booleanBuildConfigField("AVAILABILITY_STATUS_ENABLED", BuildFeatureFlags["availability_status"] ?: false)
+        booleanBuildConfigField("REMOTE_SECRETS_SUPPORTED", BuildFeatureFlags["remote_secrets"] ?: false)
 
         // config fields for action URLs / deep links
         stringBuildConfigField("uriScheme", "threema")
         stringBuildConfigField("actionUrl", "go.threema.ch")
         stringBuildConfigField("contactActionUrl", "threema.id")
-        stringBuildConfigField("groupLinkActionUrl", "threema.group")
 
         // The OPPF url must be null in the default config. Do not change this.
         stringBuildConfigField("PRESET_OPPF_URL", null)
@@ -159,7 +160,6 @@ android {
         with(manifestPlaceholders) {
             put("uriScheme", "threema")
             put("contactActionUrl", "threema.id")
-            put("groupLinkActionUrl", "threema.group")
             put("actionUrl", "go.threema.ch")
             put("callMimeType", "vnd.android.cursor.item/vnd.$applicationId.call")
         }
@@ -275,6 +275,10 @@ android {
             stringBuildConfigField("DIRECTORY_SERVER_URL", "https://apip.test.threema.ch/")
             stringBuildConfigField("DIRECTORY_SERVER_IPV6_URL", "https://ds-apip.test.threema.ch/")
             stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
+            stringBuildConfigField("BLOB_SERVER_URL", "https://blobp-{blobIdPrefix}.test.threema.ch")
+            stringBuildConfigField("BLOB_SERVER_IPV6_URL", "https://ds-blobp-{blobIdPrefix}.test.threema.ch")
+            stringBuildConfigField("BLOB_SERVER_URL_UPLOAD", "https://blobp-upload.test.threema.ch/upload")
+            stringBuildConfigField("BLOB_SERVER_IPV6_URL_UPLOAD", "https://ds-blobp-upload.test.threema.ch/upload")
             stringBuildConfigField("AVATAR_FETCH_URL", "https://avatar.test.threema.ch/")
             stringBuildConfigField("APP_RATING_URL", "https://test.threema.com/app-rating/android/{rating}")
             stringBuildConfigField("MAP_STYLES_URL", "https://map.test.threema.ch/styles/threema/style.json")
@@ -305,6 +309,10 @@ android {
             stringBuildConfigField("WORK_SERVER_URL", "https://apip-work.test.threema.ch/")
             stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.test.threema.ch/")
             stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
+            stringBuildConfigField("BLOB_SERVER_URL", "https://blobp-{blobIdPrefix}.test.threema.ch")
+            stringBuildConfigField("BLOB_SERVER_IPV6_URL", "https://ds-blobp-{blobIdPrefix}.test.threema.ch")
+            stringBuildConfigField("BLOB_SERVER_URL_UPLOAD", "https://blobp-upload.test.threema.ch/upload")
+            stringBuildConfigField("BLOB_SERVER_IPV6_URL_UPLOAD", "https://ds-blobp-upload.test.threema.ch/upload")
             stringBuildConfigField("AVATAR_FETCH_URL", "https://avatar.test.threema.ch/")
             stringBuildConfigField("APP_RATING_URL", "https://test.threema.com/app-rating/android-work/{rating}")
             stringBuildConfigField("MAP_STYLES_URL", "https://map.test.threema.ch/styles/threema/style.json")
@@ -394,6 +402,10 @@ android {
             stringBuildConfigField("WORK_SERVER_URL", "https://apip-work.test.threema.ch/")
             stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.test.threema.ch/")
             stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
+            stringBuildConfigField("BLOB_SERVER_URL", "https://blobp-{blobIdPrefix}.test.threema.ch")
+            stringBuildConfigField("BLOB_SERVER_IPV6_URL", "https://ds-blobp-{blobIdPrefix}.test.threema.ch")
+            stringBuildConfigField("BLOB_SERVER_URL_UPLOAD", "https://blobp-upload.test.threema.ch/upload")
+            stringBuildConfigField("BLOB_SERVER_IPV6_URL_UPLOAD", "https://ds-blobp-upload.test.threema.ch/upload")
             stringBuildConfigField("AVATAR_FETCH_URL", "https://avatar.test.threema.ch/")
             stringBuildConfigField("APP_RATING_URL", "https://test.threema.com/app-rating/android-work/{rating}")
             stringBuildConfigField("MAP_STYLES_URL", "https://map.test.threema.ch/styles/threema/style.json")
@@ -519,6 +531,8 @@ android {
             assets.srcDirs("assets")
             jniLibs.srcDirs("libs")
             res.srcDir("src/main/res-rendezvous")
+            java.srcDir("./build/generated/source/protobuf/main/java")
+            java.srcDir("./build/generated/source/protobuf/main/kotlin")
         }
 
         // Based on Google services
@@ -574,7 +588,6 @@ android {
     buildTypes {
         debug {
             isDebuggable = true
-            isJniDebuggable = false
             ndk {
                 debugSymbolLevel = "FULL"
             }
@@ -587,7 +600,6 @@ android {
         }
         release {
             isDebuggable = false
-            isJniDebuggable = false
             isMinifyEnabled = true
             isShrinkResources = false // Caused inconsistencies between local and CI builds
             vcsInfo.include = false // For reproducible builds independent from git history
@@ -621,12 +633,6 @@ android {
             }
 
             // Note: Libre release is signed with HSM, no config here
-        }
-    }
-
-    externalNativeBuild {
-        ndkBuild {
-            path("jni/Android.mk")
         }
     }
 
@@ -678,7 +684,7 @@ android {
             }
             // By default, local unit tests throw an exception any time the code you are testing tries to access
             // Android platform APIs (unless you mock Android dependencies yourself or with a testing
-            // framework like Mockito). However, you can enable the following property so that the test
+            // framework like Mockk). However, you can enable the following property so that the test
             // returns either null or zero when accessing platform APIs, rather than throwing an exception.
             isReturnDefaultValues = true
         }
@@ -720,7 +726,7 @@ android {
         error.addAll(setOf("Wakelock", "TextViewEdits", "ResourceAsColor"))
         // Set the severity of the given issues to fatal (which means they will be
         // checked during release builds (even if the lint target is not included)
-        fatal.addAll(setOf("NewApi", "InlinedApi"))
+        fatal.addAll(setOf("NewApi", "InlinedApi", "LoggerName"))
         ignoreWarnings = false
         // if true, don't include source code lines in the error output
         noLines = false
@@ -740,6 +746,11 @@ android {
         compose = true
         buildConfig = true
     }
+}
+
+composeCompiler {
+    includeSourceInformation = true
+    stabilityConfigurationFiles.add(rootProject.layout.projectDirectory.file("stability_config.conf"))
 }
 
 // Only build relevant buildType / flavor combinations
@@ -766,6 +777,14 @@ dependencies {
 
     implementation(project(":domain"))
     implementation(project(":common"))
+    lintChecks(project(":lint-rules"))
+
+    // Dependency Injection
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidCompat)
+    implementation(libs.koin.compose)
+    testImplementation(libs.koin.test)
+    testImplementation(libs.koin.test.junit4)
 
     implementation(libs.sqlcipher.android)
 
@@ -777,7 +796,6 @@ dependencies {
     implementation(libs.commonsText)
     implementation(libs.slf4j.api)
     implementation(libs.androidImageCropper)
-    implementation(libs.trustkit)
     implementation(libs.fastscroll)
     implementation(libs.ezVcard)
     implementation(libs.gestureViews)
@@ -878,11 +896,6 @@ dependencies {
     testImplementation(project(":test-helpers"))
     androidTestImplementation(project(":test-helpers"))
 
-    testImplementation(libs.mockito.powermock.api)
-    testImplementation(libs.mockito.powermock.junit4RuleAgent)
-    testImplementation(libs.mockito.powermock.junit4Rule)
-    testImplementation(libs.mockito.powermock.junit4)
-
     testImplementation(libs.mockk)
     androidTestImplementation(libs.mockkAndroid)
 
@@ -917,7 +930,6 @@ dependencies {
     }
     androidTestImplementation(libs.androidx.test.uiautomator)
     androidTestImplementation(libs.androidx.test.core)
-    androidTestImplementation(libs.mockito.core)
     androidTestImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.kotlinx.coroutines.test)
 
@@ -997,7 +1009,7 @@ cargo {
     features {
         defaultAnd(arrayOf("uniffi"))
     }
-    extraCargoBuildArguments = listOf("--lib", "--target-dir", "$projectDir/build/generated/source/libthreema")
+    extraCargoBuildArguments = listOf("--lib", "--target-dir", "$projectDir/build/generated/source/libthreema", "--locked")
     verbose = false
 }
 
@@ -1029,6 +1041,14 @@ androidStem {
     includeLocalizedOnlyTemplates = true
 }
 
+tasks.register<Exec>("compileProto") {
+    group = "build"
+    description = "generate class bindings from protobuf files in the 'protobuf' directory"
+    workingDir(project.projectDir)
+    commandLine("./compile-proto.sh")
+}
+project.tasks.preBuild.dependsOn("compileProto")
+
 tasks.withType<Test> {
     // Necessary to load the dynamic libthreema library in unit tests
     systemProperty("jna.library.path", "${project.projectDir}/../domain/libthreema/target/release")
@@ -1038,16 +1058,16 @@ tasks.withType<Test> {
 // See https://medium.com/stepstone-tech/how-to-capture-screenshots-for-failed-ui-tests-9927eea6e1e4
 val reportsDirectory = "${layout.buildDirectory}/reports/androidTests/connected"
 val screenshotsDirectory = "/sdcard/testfailures/screenshots/"
-val clearScreenshotsTask = task<Exec>("clearScreenshots") {
+val clearScreenshotsTask = tasks.register<Exec>("clearScreenshots") {
     executable = android.adbExecutable.toString()
     args("shell", "rm", "-r", screenshotsDirectory)
 }
-val createScreenshotsDirectoryTask = task<Exec>("createScreenshotsDirectory") {
+val createScreenshotsDirectoryTask = tasks.register<Exec>("createScreenshotsDirectory") {
     group = "reporting"
     executable = android.adbExecutable.toString()
     args("shell", "mkdir", "-p", screenshotsDirectory)
 }
-val fetchScreenshotsTask = task<Exec>("fetchScreenshots") {
+val fetchScreenshotsTask = tasks.register<Exec>("fetchScreenshots") {
     group = "reporting"
     executable = android.adbExecutable.toString()
     args("pull", "$screenshotsDirectory.", reportsDirectory)
@@ -1060,5 +1080,18 @@ val fetchScreenshotsTask = task<Exec>("fetchScreenshots") {
 tasks.whenTaskAdded {
     if (name == "connectedDebugAndroidTest") {
         finalizedBy(fetchScreenshotsTask)
+    }
+}
+
+// Let the compose compiler generate stability reports
+tasks.withType<KotlinCompile>().configureEach {
+    compilerOptions {
+        val composeCompilerReportsPath = "${project.layout.buildDirectory.get().dir("compose_conpiler").asFile.absolutePath}/reports"
+        freeCompilerArgs.addAll(
+            listOf(
+                "-P",
+                "plugin:androidx.compose.compiler.plugins.kotlin:reportsDestination=$composeCompilerReportsPath",
+            ),
+        )
     }
 }

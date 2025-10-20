@@ -37,7 +37,6 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.ConversationCategoryService
-import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.LoggingUtil
 import kotlin.random.Random
 
@@ -105,7 +104,7 @@ class ForwardSecurityNotificationManager(
             // Use unique request code to prevent that pending intent extras are overridden
             messageReceiver.uniqueIdString.hashCode(),
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
     }
 

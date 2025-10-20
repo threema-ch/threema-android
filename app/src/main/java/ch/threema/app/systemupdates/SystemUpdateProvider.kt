@@ -23,24 +23,7 @@ package ch.threema.app.systemupdates
 
 import android.content.Context
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.systemupdates.updates.SystemUpdate
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion12
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion14
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion31
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion39
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion40
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion42
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion43
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion46
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion48
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion53
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion54
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion55
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion63
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion64
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion66
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion72
-import ch.threema.app.systemupdates.updates.SystemUpdateToVersion91
+import ch.threema.app.systemupdates.updates.*
 
 class SystemUpdateProvider(
     private val context: Context,
@@ -66,7 +49,7 @@ class SystemUpdateProvider(
             add(SystemUpdateToVersion42(context, serviceManager))
         }
         if (oldVersion < 43) {
-            add(SystemUpdateToVersion43(context, serviceManager))
+            add(SystemUpdateToVersion43(serviceManager))
         }
         if (oldVersion < 46) {
             add(SystemUpdateToVersion46(serviceManager))
@@ -98,11 +81,23 @@ class SystemUpdateProvider(
         if (oldVersion < SystemUpdateToVersion91.VERSION) {
             add(SystemUpdateToVersion91(context))
         }
+        if (oldVersion < SystemUpdateToVersion110.VERSION) {
+            add(SystemUpdateToVersion110(serviceManager))
+        }
+        if (oldVersion < SystemUpdateToVersion111.VERSION) {
+            add(SystemUpdateToVersion111(serviceManager))
+        }
+        if (oldVersion < SystemUpdateToVersion112.VERSION) {
+            add(SystemUpdateToVersion112(serviceManager))
+        }
+        if (oldVersion < SystemUpdateToVersion113.VERSION) {
+            add(SystemUpdateToVersion113(serviceManager))
+        }
     }
 
     fun getVersion() = VERSION
 
     companion object {
-        const val VERSION = 109
+        const val VERSION = SystemUpdateToVersion113.VERSION
     }
 }

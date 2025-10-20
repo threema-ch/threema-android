@@ -37,7 +37,7 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.webclient.exceptions.ConversionException;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
 /**
  * A converter converts arbitrary data to MessagePack representation.

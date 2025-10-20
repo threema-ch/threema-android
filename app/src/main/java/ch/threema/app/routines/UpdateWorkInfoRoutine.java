@@ -25,6 +25,7 @@ import android.content.Context;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -33,12 +34,12 @@ import ch.threema.app.restrictions.AppRestrictionService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceUser;
-import ch.threema.app.services.license.UserCredentials;
+import ch.threema.domain.models.UserCredentials;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 
 /***
  * Send (only in work build) the infos to the work info resource
@@ -46,18 +47,28 @@ import ch.threema.domain.stores.IdentityStoreInterface;
 public class UpdateWorkInfoRoutine implements Runnable {
     private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateWorkInfoRoutine");
 
+    @NonNull
     private final APIConnector apiConnector;
-    private final IdentityStoreInterface identityStore;
+    @NonNull
+    private final IdentityStore identityStore;
+    @Nullable
     private final DeviceService deviceService;
-    private final LicenseService licenseService;
+    @NonNull
+    private final LicenseService<?> licenseService;
+    @NonNull
     private final Context context;
 
     public UpdateWorkInfoRoutine(
+        @NonNull
         Context context,
+        @NonNull
         APIConnector apiConnector,
-        IdentityStoreInterface identityStore,
+        @NonNull
+        IdentityStore identityStore,
+        @Nullable
         DeviceService deviceService,
-        LicenseService licenseService
+        @NonNull
+        LicenseService<?> licenseService
     ) {
         this.context = context;
         this.apiConnector = apiConnector;
@@ -77,9 +88,22 @@ public class UpdateWorkInfoRoutine implements Runnable {
             logger.info("Update work info");
 
             UserCredentials userCredentials = ((LicenseServiceUser) this.licenseService).loadCredentials();
+            boolean hasIdentity = identityStore.getIdentity() != null;
 
-            if (userCredentials == null) {
-                logger.error("no credentials found");
+            if (userCredentials == null && hasIdentity) {
+                // In case we have no credentials but an identity, we should log an error and abort
+                // this routine.
+                logger.error("Cannot run update work info routine due to missing credentials");
+                return;
+            } else if (userCredentials == null) {
+                // In case there is no identity and no credentials, the app is very likely not set
+                // up and this routine can safely be skipped.
+                logger.info("Skipping update work info routine as there are no credentials yet");
+                return;
+            } else if (!hasIdentity) {
+                // If there are credentials but no identity, we skip this routine as we need an
+                // identity for this routine.
+                logger.info("Skipping update work info routine as there is no identity");
                 return;
             }
 

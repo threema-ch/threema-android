@@ -61,12 +61,14 @@ import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.notification.NotificationServiceImpl;
 import ch.threema.app.services.PollingHelper;
 import ch.threema.app.services.RingtoneService;
-import ch.threema.app.stores.PreferenceStore;
+import ch.threema.app.stores.PreferenceStoreImpl;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.ContactModel;
 import ch.threema.protobuf.d2d.sync.MdD2DSync;
+
+import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
 
 public class PushUtil {
     private static final Logger logger = LoggingUtil.getThreemaLogger("PushUtil");
@@ -164,7 +166,7 @@ public class PushUtil {
         Context appContext = ThreemaApplication.getAppContext();
         PollingHelper pollingHelper = new PollingHelper(appContext, "fcm");
 
-        if (ConfigUtils.isBackgroundDataRestricted(appContext, true)) {
+        if (ConfigUtils.isBackgroundDataRestricted(appContext)) {
             logger.warn("Network blocked (background data disabled?)");
             // The same message may arrive twice (due to a network change). so we simply ignore messages that we were unable to fetch due to a blocked network
             // Simply schedule a poll when the device is back online
@@ -189,12 +191,10 @@ public class PushUtil {
             (int) DateUtils.MINUTE_IN_MILLIS
         );
 
-        PreferenceStore preferenceStore = new PreferenceStore(appContext, null);
+        PreferenceStoreImpl preferenceStore = new PreferenceStoreImpl(appContext);
         NotificationPreferenceService preferenceService = new NotificationPreferenceServiceImpl(appContext, preferenceStore);
 
-        if (ThreemaApplication.getMasterKey().isLocked() &&
-            preferenceService.isMasterKeyNewMessageNotifications()) {
-
+        if (getMasterKeyManager().isLocked() && preferenceService.isMasterKeyNewMessageNotifications()) {
             displayAdHocNotification();
         }
 
@@ -212,11 +212,7 @@ public class PushUtil {
         if (serviceManager != null) {
             notificationService = serviceManager.getNotificationService();
         } else {
-            // Because the master key is locked, there is no preference service object.
-            // We need to create one for ourselves so that we can read the user's notification prefs
-            // (which are unencrypted).
-            //create a temporary service class (with some implementations) to use the showMasterKeyLockedNewMessageNotification
-            PreferenceStore ps = new PreferenceStore(appContext, ThreemaApplication.getMasterKey());
+            PreferenceStoreImpl ps = new PreferenceStoreImpl(appContext);
             NotificationPreferenceService p = new NotificationPreferenceServiceImpl(appContext, ps);
 
             notificationService = new NotificationServiceImpl(

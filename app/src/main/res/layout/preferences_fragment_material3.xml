@@ -63,8 +63,7 @@
             <FrameLayout
                 android:id="@android:id/list_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:targetApi="n" />
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -26,15 +26,26 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.kotlin.stdlib)
-    implementation(libs.kotlinx.coroutines.core)
+    // Standard libraries
+    api(libs.kotlin.stdlib)
+    api(libs.kotlinx.coroutines.core)
 
+    // Dependency injection
+    api(project.dependencies.platform(libs.koin.bom))
+    api(libs.koin.core)
+
+    // HTTP
+    api(platform(libs.okhttp3.bom))
+    api(libs.okhttp3)
+    api(libs.okhttp3.coroutines)
+    api(libs.okhttp3.loggingInterceptor)
+
+    // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.kotlin.test)
     testImplementation(libs.turbine)
-
     testImplementation(project(":test-helpers"))
 }
 

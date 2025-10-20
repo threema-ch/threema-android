@@ -22,13 +22,12 @@
 package ch.threema.storage.databaseupdate
 
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.storage.fieldExists
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 private val logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion89")
 
 internal class DatabaseUpdateToVersion89(
-    private val db: SQLiteDatabase,
+    private val sqLiteDatabase: SQLiteDatabase,
 ) : DatabaseUpdate {
 
     override fun run() {
@@ -37,9 +36,9 @@ internal class DatabaseUpdateToVersion89(
 
         // Add field
         for (table in tables) {
-            if (!db.fieldExists(table, field)) {
+            if (!sqLiteDatabase.fieldExists(table, field)) {
                 logger.info("Adding $field field to table $table")
-                db.execSQL("ALTER TABLE `$table` ADD COLUMN `$field` INTEGER")
+                sqLiteDatabase.execSQL("ALTER TABLE `$table` ADD COLUMN `$field` INTEGER")
             }
         }
 
@@ -56,7 +55,7 @@ internal class DatabaseUpdateToVersion89(
         // Note that in a previous version of the update script (that has been applied for most
         // users), all message types have been used to determine the last update flag leading to
         // some chat reordering.
-        db.execSQL(
+        sqLiteDatabase.execSQL(
             """
             UPDATE contacts
             SET lastUpdate = tmp.lastUpdate FROM (
@@ -78,7 +77,7 @@ internal class DatabaseUpdateToVersion89(
         // a previous version of the update script (that has been applied for most users), all
         // message types have been used to determine the last update flag leading to some chat
         // reordering.
-        db.execSQL(
+        sqLiteDatabase.execSQL(
             """
             UPDATE m_group
             SET lastUpdate = tmp.lastUpdate FROM (
@@ -93,7 +92,7 @@ internal class DatabaseUpdateToVersion89(
 
         // Set lastUpdate for groups without messages.
         // `createdAt` is stored in localtime and therefore needs to be converted to UTC.
-        db.execSQL(
+        sqLiteDatabase.execSQL(
             """
             UPDATE m_group
             SET lastUpdate = strftime('%s', createdAt, 'utc') * 1000
@@ -106,7 +105,7 @@ internal class DatabaseUpdateToVersion89(
         logger.info("Calculate lastUpdate for distribution lists")
 
         // Set lastUpdate to the create date of the latest message if present
-        db.execSQL(
+        sqLiteDatabase.execSQL(
             """
             UPDATE distribution_list
             SET lastUpdate = tmp.lastUpdate FROM (
@@ -121,7 +120,7 @@ internal class DatabaseUpdateToVersion89(
 
         // Set lastUpdate for distribution lists without messages.
         // `createdAt` is stored in localtime and therefore needs to be converted to UTC.
-        db.execSQL(
+        sqLiteDatabase.execSQL(
             """
             UPDATE distribution_list
             SET lastUpdate = strftime('%s', createdAt, 'utc') * 1000

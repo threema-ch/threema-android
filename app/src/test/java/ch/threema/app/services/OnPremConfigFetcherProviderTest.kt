@@ -32,10 +32,11 @@ import kotlin.test.assertSame
 
 class OnPremConfigFetcherProviderTest {
     @Test
-    fun `fetcher is stored in cache`() {
+    fun `fetcher is stored in in-memory cache`() {
         val preferenceServiceMock = mockPreferenceService()
         val provider = OnPremConfigFetcherProvider(
             preferenceService = preferenceServiceMock,
+            onPremConfigStore = mockk(),
             okHttpClient = mockk(),
             trustedPublicKeys = emptyArray(),
         )
@@ -47,10 +48,11 @@ class OnPremConfigFetcherProviderTest {
     }
 
     @Test
-    fun `cache is invalidated when server url changes`() {
+    fun `in-memory cache is invalidated when server url changes`() {
         val preferenceServiceMock = mockPreferenceService()
         val provider = OnPremConfigFetcherProvider(
             preferenceService = preferenceServiceMock,
+            onPremConfigStore = mockk(),
             okHttpClient = mockk(),
             trustedPublicKeys = emptyArray(),
         )
@@ -63,10 +65,11 @@ class OnPremConfigFetcherProviderTest {
     }
 
     @Test
-    fun `cache is invalidated when username changes`() {
+    fun `in-memory cache is invalidated when username changes`() {
         val preferenceServiceMock = mockPreferenceService()
         val provider = OnPremConfigFetcherProvider(
             preferenceService = preferenceServiceMock,
+            onPremConfigStore = mockk(),
             okHttpClient = mockk(),
             trustedPublicKeys = emptyArray(),
         )
@@ -79,10 +82,11 @@ class OnPremConfigFetcherProviderTest {
     }
 
     @Test
-    fun `cache is invalidated when password changes`() {
+    fun `in-memory cache is invalidated when password changes`() {
         val preferenceServiceMock = mockPreferenceService()
         val provider = OnPremConfigFetcherProvider(
             preferenceService = preferenceServiceMock,
+            onPremConfigStore = mockk(),
             okHttpClient = mockk(),
             trustedPublicKeys = emptyArray(),
         )
@@ -100,6 +104,7 @@ class OnPremConfigFetcherProviderTest {
             preferenceService = mockk {
                 every { onPremServer } returns null
             },
+            onPremConfigStore = mockk(),
             okHttpClient = mockk(),
             trustedPublicKeys = emptyArray(),
         )

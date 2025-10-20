@@ -30,13 +30,14 @@ import ch.threema.domain.protocol.csp.messages.ReactionMessageData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.csp.e2e.Reaction.ActionCase
 import com.google.protobuf.ByteString
 import java.util.Date
 import kotlinx.serialization.Serializable
 
 class OutgoingContactReactionMessageTask(
-    private val toIdentity: String,
+    private val toIdentity: Identity,
     private val messageModelId: Int,
     private val messageId: MessageId,
     private val actionCase: ActionCase,
@@ -83,7 +84,7 @@ class OutgoingContactReactionMessageTask(
 
     @Serializable
     class OutgoingContactReactionMessageData(
-        private val toIdentity: String,
+        private val toIdentity: Identity,
         private val messageModelId: Int,
         private val messageId: ByteArray,
         private val actionCase: ActionCase,

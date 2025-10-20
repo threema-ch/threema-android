@@ -36,14 +36,16 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintWidth_default="percent"
-        app:layout_constraintWidth_percent="@dimen/wizard_title_width_percent" />
+        app:layout_constraintWidth_percent="@dimen/wizard_title_width_percent"
+        tools:text="Threema Safe" />
 
     <ViewStub
         android:id="@+id/stub_content"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:inflatedId="@+id/layout_content"
         android:layout="@layout/stub_dummy"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@id/wizard_title" />

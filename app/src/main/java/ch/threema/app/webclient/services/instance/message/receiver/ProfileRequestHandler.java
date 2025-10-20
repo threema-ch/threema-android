@@ -104,7 +104,7 @@ public class ProfileRequestHandler extends MessageReceiver {
         final String identity = this.userService.getIdentity();
         final byte[] publicKey = this.userService.getPublicKey();
         final String nickname = this.userService.getPublicNickname();
-        final Bitmap avatarBitmap = this.contactService.getAvatar(this.contactService.getMe(), true);
+        final Bitmap avatarBitmap = this.contactService.getAvatar(identity, true);
         byte[] avatar = null;
         if (avatarBitmap != null) {
             avatar = BitmapUtil.bitmapToByteArray(avatarBitmap, Protocol.FORMAT_AVATAR, Protocol.QUALITY_AVATAR_HIRES);

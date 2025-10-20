@@ -22,6 +22,7 @@
 package ch.threema.app.preference
 
 import android.annotation.SuppressLint
+import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.AsyncTask
 import android.os.Build
@@ -48,6 +49,8 @@ import ch.threema.app.webviews.LicenseActivity
 import ch.threema.app.webviews.PrivacyPolicyActivity
 import ch.threema.app.webviews.TermsOfServiceActivity
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.localcrypto.MasterKeyManager
+import org.koin.android.ext.android.inject
 
 private val logger = LoggingUtil.getThreemaLogger("SettingsAboutFragment")
 
@@ -59,8 +62,9 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
 
     private var aboutCounter = 0
 
-    private val preferenceService: PreferenceService = requirePreferenceService()
-    private val licenseService: LicenseService<*> = requireLicenceService()
+    private val preferenceService: PreferenceService by inject()
+    private val licenseService: LicenseService<*> by inject()
+    private val masterKeyManager: MasterKeyManager by inject()
 
     override fun initializePreferences() {
         initLicensePref()
@@ -79,7 +83,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     private fun initLicensePref() {
         val licensePreference = getPref<Preference>(R.string.preferences__licenses)
         licensePreference.onClick {
-            startActivity(Intent(context, LicenseActivity::class.java))
+            startActivity(LicenseActivity.createIntent(requireContext()))
         }
     }
 
@@ -89,7 +93,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             privacyPolicyPreference.isVisible = false
         } else {
             privacyPolicyPreference.onClick {
-                startActivity(Intent(context, PrivacyPolicyActivity::class.java))
+                startActivity(PrivacyPolicyActivity.createIntent(requireContext()))
             }
         }
     }
@@ -100,7 +104,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             licensePreference.isVisible = false
         } else {
             licensePreference.onClick {
-                startActivity(Intent(context, TermsOfServiceActivity::class.java))
+                startActivity(TermsOfServiceActivity.createIntent(requireContext()))
             }
         }
     }
@@ -109,7 +113,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         val licensePreference = getPref<Preference>(R.string.preferences__eula)
         if (BuildFlavor.current.licenseType == BuildFlavor.LicenseType.GOOGLE) {
             licensePreference.onClick {
-                startActivity(Intent(context, EulaActivity::class.java))
+                startActivity(EulaActivity.createIntent(requireContext()))
             }
         } else {
             licensePreference.isVisible = false
@@ -179,8 +183,9 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     private fun initServerConfigSection() {
         val shouldShowServer = ConfigUtils.isOnPremBuild()
         val shouldShowUsername = shouldShowUsername()
+        val shouldShowRemoteSecretActivated = masterKeyManager.isProtectedWithRemoteSecret() == true
 
-        if (!shouldShowServer && !shouldShowUsername) {
+        if (!shouldShowServer && !shouldShowUsername && !shouldShowRemoteSecretActivated) {
             getPref<Preference>(R.string.preferences__server_config).isVisible = false
             return
         }
@@ -199,6 +204,15 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
                     serverConfigPreference.summary = getServerInfo()
                 }
                 serverConfigPreference.isVisible = shouldShowServer
+            }
+
+        getPref<Preference>(R.string.preferences__remote_secret_activated)
+            .let { remoteSecretPreference ->
+                if (shouldShowRemoteSecretActivated) {
+                    remoteSecretPreference.onClick(::onRemoteSecretClicked)
+                } else {
+                    remoteSecretPreference.isVisible = false
+                }
             }
     }
 
@@ -242,6 +256,15 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         if (BuildConfig.DEBUG) {
             append(" Commit ")
             append(BuildConfig.GIT_HASH)
+        }
+    }
+
+    private fun onRemoteSecretClicked() {
+        try {
+            val learnMoreUrl = getString(R.string.remote_secret_learn_more_url).toUri()
+            startActivity(Intent(Intent.ACTION_VIEW, learnMoreUrl))
+        } catch (e: ActivityNotFoundException) {
+            logger.warn("No activity found to open Remote Secret learn more URL")
         }
     }
 

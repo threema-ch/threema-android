@@ -22,14 +22,15 @@
 package ch.threema.domain.helpers;
 
 import androidx.annotation.NonNull;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 
-import com.neilalexander.jnacl.NaCl;
+import ch.threema.base.crypto.NaCl;
+import ch.threema.libthreema.CryptoException;
 
 /**
  * An in-memory identity store, used for testing.
  */
-public class InMemoryIdentityStore implements IdentityStoreInterface {
+public class InMemoryIdentityStore implements IdentityStore {
     private String identity;
     private String serverGroup;
     private byte[] publicKey;
@@ -39,7 +40,11 @@ public class InMemoryIdentityStore implements IdentityStoreInterface {
     public InMemoryIdentityStore(String identity, String serverGroup, byte[] privateKey, String publicNickname) {
         this.identity = identity;
         this.serverGroup = serverGroup;
-        this.publicKey = NaCl.derivePublicKey(privateKey);
+        try {
+            this.publicKey = NaCl.derivePublicKey(privateKey);
+        } catch (CryptoException e) {
+            throw new RuntimeException(e);
+        }
         this.privateKey = privateKey;
         this.publicNickname = publicNickname;
     }
@@ -47,19 +52,27 @@ public class InMemoryIdentityStore implements IdentityStoreInterface {
     @Override
     public byte[] encryptData(@NonNull byte[] plaintext, @NonNull byte[] nonce, @NonNull byte[] receiverPublicKey) {
         NaCl nacl = new NaCl(privateKey, receiverPublicKey);
-        return nacl.encrypt(plaintext, nonce);
+        try {
+            return nacl.encrypt(plaintext, nonce);
+        } catch (CryptoException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public byte[] decryptData(@NonNull byte[] ciphertext, @NonNull byte[] nonce, @NonNull byte[] senderPublicKey) {
         NaCl nacl = new NaCl(privateKey, senderPublicKey);
-        return nacl.decrypt(ciphertext, nonce);
+        try {
+            return nacl.decrypt(ciphertext, nonce);
+        } catch (CryptoException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public byte[] calcSharedSecret(@NonNull byte[] publicKey) {
         NaCl nacl = new NaCl(privateKey, publicKey);
-        return nacl.getPrecomputed();
+        return nacl.sharedSecret;
     }
 
     @Override
@@ -92,15 +105,28 @@ public class InMemoryIdentityStore implements IdentityStoreInterface {
     }
 
     @Override
+    public void setPublicNickname(@NonNull String publicNickname) {
+        throw new RuntimeException("not implemented");
+    }
+
+    @Override
     public void storeIdentity(
         @NonNull String identity,
         @NonNull String serverGroup,
-        @NonNull byte[] publicKey,
         @NonNull byte[] privateKey
     ) {
         this.identity = identity;
         this.serverGroup = serverGroup;
-        this.publicKey = publicKey;
+        try {
+            this.publicKey = NaCl.derivePublicKey(privateKey);
+        } catch (CryptoException e) {
+            throw new RuntimeException(e);
+        }
         this.privateKey = privateKey;
+    }
+
+    @Override
+    public void clear() {
+        throw new RuntimeException("not implemented");
     }
 }

@@ -28,6 +28,7 @@ import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import kotlinx.serialization.Serializable
 
@@ -60,7 +61,7 @@ class FSRefreshStepsTask(
 
     @Serializable
     class FSRefreshStepsTaskData(
-        private val contactIdentities: Collection<String>,
+        private val contactIdentities: Collection<Identity>,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
             val contactService = serviceManager.contactService

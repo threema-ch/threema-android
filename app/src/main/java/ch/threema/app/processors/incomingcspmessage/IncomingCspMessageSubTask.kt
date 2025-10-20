@@ -52,8 +52,6 @@ import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupRe
 import ch.threema.app.processors.incomingcspmessage.fs.IncomingEmptyTask
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.IncomingGroupCallControlTask
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.IncomingGroupDeleteProfilePictureTask
-import ch.threema.app.processors.incomingcspmessage.groupcontrol.IncomingGroupJoinRequestTask
-import ch.threema.app.processors.incomingcspmessage.groupcontrol.IncomingGroupJoinResponseMessage
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.IncomingGroupLeaveTask
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.IncomingGroupNameTask
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.IncomingGroupSetProfilePictureTask
@@ -93,8 +91,6 @@ import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage
 import ch.threema.domain.protocol.csp.messages.ballot.PollVoteMessage
 import ch.threema.domain.protocol.csp.messages.file.FileMessage
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
-import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage
-import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
 import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage
 import ch.threema.domain.protocol.csp.messages.location.LocationMessage
@@ -105,7 +101,6 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
-import okhttp3.internal.toHexString
 
 abstract class IncomingCspMessageSubTask<T : AbstractMessage?>(
     protected val message: T,
@@ -124,7 +119,7 @@ abstract class IncomingCspMessageSubTask<T : AbstractMessage?>(
         // Check that the message and the trigger source is a valid combination
         if (message != null && !message.reflectIncoming() && triggerSource == TriggerSource.SYNC) {
             throw IllegalStateException(
-                "An incoming message of type ${message.type.toHexString()} has been received as reflected that should not have been reflected",
+                "An incoming message of type ${Integer.toHexString(message.type)} has been received as reflected that should not have been reflected",
             )
         }
 
@@ -239,19 +234,6 @@ fun getSubTaskFromMessage(
     is PollVoteMessage -> IncomingContactPollVoteTask(message, triggerSource, serviceManager)
     is GroupPollSetupMessage -> IncomingGroupPollSetupTask(message, triggerSource, serviceManager)
     is GroupPollVoteMessage -> IncomingGroupPollVoteTask(message, triggerSource, serviceManager)
-
-    // Check if message is a group join message
-    is GroupJoinRequestMessage -> IncomingGroupJoinRequestTask(
-        message,
-        triggerSource,
-        serviceManager,
-    )
-
-    is GroupJoinResponseMessage -> IncomingGroupJoinResponseMessage(
-        message,
-        triggerSource,
-        serviceManager,
-    )
 
     // Check if message is a call message
     is VoipCallOfferMessage -> IncomingCallOfferTask(message, triggerSource, serviceManager)

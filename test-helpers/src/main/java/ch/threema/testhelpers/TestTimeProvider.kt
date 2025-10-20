@@ -25,8 +25,8 @@ import ch.threema.common.TimeProvider
 import java.time.Instant
 import kotlin.time.Duration
 
-class TestTimeProvider : TimeProvider {
-    private var timestamp = 0L
+class TestTimeProvider(initialTimestamp: Long = 0L) : TimeProvider {
+    private var timestamp = initialTimestamp
 
     override fun get(): Instant = Instant.ofEpochMilli(timestamp)
 

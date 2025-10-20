@@ -27,8 +27,10 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.tasks.ReflectContactSyncUpdateImmediateTask.ReflectContactProfilePicture
+import ch.threema.app.utils.ExifInterface
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.app.utils.contentEquals
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.blob.BlobLoader
 import ch.threema.domain.protocol.blob.BlobScope
@@ -37,7 +39,6 @@ import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.taskmanager.catchAllExceptNetworkException
-import com.neilalexander.jnacl.NaCl
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingSetProfilePictureTask")
 
@@ -68,7 +69,7 @@ class IncomingSetProfilePictureTask(
         val blobLoader: BlobLoader = this.apiService.createLoader(message.blobId)
 
         // Download blob and throw exception if there is no blob
-        val encryptedBlob: ByteArray = {
+        val blob: ByteArray = {
             blobLoader.load(
                 // since its an incoming message, always use the public scope
                 BlobScope.Public,
@@ -77,26 +78,30 @@ class IncomingSetProfilePictureTask(
             logger.error("Could not download profile picture", it)
             // TODO(ANDR-2869): We should act differently depending on the cause of the failure
             throw it
+        }?.also { encryptedBlob ->
+            NaCl.symmetricDecryptDataInPlace(
+                encryptedBlob,
+                message.encryptionKey,
+                ProtocolDefines.CONTACT_PHOTO_NONCE,
+            )
         } ?: throw IllegalStateException("Profile picture blob is null")
-
-        NaCl.symmetricDecryptDataInplace(
-            encryptedBlob,
-            message.encryptionKey,
-            ProtocolDefines.CONTACT_PHOTO_NONCE,
-        )
 
         // Note that we do reflect the profile picture even if it did not change. This allows the
         // other devices to remove the blob from the blob mirror.
         reflectProfilePicture(handle)
 
+        if (!ExifInterface.isJpegFormat(blob)) {
+            logger.warn("Received a profile picture that is not a jpeg")
+        }
+
         if (fileService.getContactDefinedProfilePictureStream(identity)
-                .contentEquals(encryptedBlob)
+                .contentEquals(blob)
         ) {
             logger.info("Profile picture did not change")
             return ReceiveStepsResult.SUCCESS
         }
 
-        this.fileService.writeContactDefinedProfilePicture(identity, encryptedBlob)
+        this.fileService.writeContactDefinedProfilePicture(identity, blob)
         ListenerManager.contactListeners.handle { listener: ContactListener ->
             listener.onAvatarChanged(identity)
         }

@@ -179,23 +179,6 @@ public class Utils extends Converter {
             return receiver;
         }
 
-        public int getColor() throws ConversionException {
-            try {
-                switch (this.receiverType) {
-                    case MessageReceiver.Type_CONTACT:
-                        return ((ContactModel) this.model).getColorLight();
-                    case MessageReceiver.Type_GROUP:
-                        return ((GroupModel) this.model).getColorLight();
-                    case MessageReceiver.Type_DISTRIBUTION_LIST:
-                        return ((DistributionListModel) this.model).getColorLight();
-                    default:
-                        throw typeException();
-                }
-            } catch (NullPointerException e) {
-                throw new ConversionException(e);
-            }
-        }
-
         public byte[] getAvatar(boolean highResolution) throws ConversionException {
             return getAvatar(highResolution, null);
         }
@@ -213,7 +196,7 @@ public class Utils extends Converter {
                 } else {
                     switch (this.receiverType) {
                         case MessageReceiver.Type_CONTACT:
-                            bitmap = getContactService().getAvatar((ContactModel) this.model, highResolution, false);
+                            bitmap = getContactService().getAvatar(((ContactModel) this.model).getIdentity(), highResolution, false);
                             break;
                         case MessageReceiver.Type_GROUP:
                             bitmap = getGroupService().getAvatar((GroupModel) this.model, highResolution);
@@ -269,7 +252,7 @@ public class Utils extends Converter {
             }
         }
 
-        private ConversionException typeException() throws ConversionException {
+        private ConversionException typeException() {
             return typeException(String.valueOf(this.receiverType));
         }
     }

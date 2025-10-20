@@ -124,7 +124,7 @@ public class AvatarOptions {
     @Override
     public String toString() {
         return String.format(
-            "'highRes=%s; defaultAvatarPolicy=%s; disableCache=%s; darkerBackground=%s'",
+            "'highRes=%s defaultAvatarPolicy=%s disableCache=%s darkerBackground=%s'",
             this.highRes,
             this.defaultAvatarPolicy,
             this.disableCache,

@@ -271,12 +271,18 @@ class Connected internal constructor(
     ) {
         GroupCallThreadUtil.assertDispatcherThread()
 
+        var screenShareActivated = false
+
         logger.debug("Received capture state from {}: {}", sender.id, captureState)
         when (captureState) {
             is P2PMessageContent.CaptureState.Camera -> sender.cameraActive = captureState.active
             is P2PMessageContent.CaptureState.Microphone -> sender.microphoneActive = captureState.active
+            is P2PMessageContent.CaptureState.Screen -> {
+                screenShareActivated = !sender.screenShareActive && captureState.active
+                sender.screenShareActive = captureState.active
+            }
         }
-        call.updateCaptureStates()
+        call.updateCaptureStates(screenShareActivated)
     }
 
     @WorkerThread
@@ -389,6 +395,7 @@ class Connected internal constructor(
             val microphoneState = P2PMessageContent.CaptureState.Microphone(true)
             sendP2PMessage { contexts.createP2PMessage(microphoneState) }
         }
+        // TODO(ANDR-4127): send capture state for screensharing if active
     }
 
     @WorkerThread

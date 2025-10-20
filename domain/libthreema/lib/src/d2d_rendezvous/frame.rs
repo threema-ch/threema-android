@@ -1,6 +1,5 @@
 //! Incoming/Outgoing frame utilities.
-use core::fmt;
-
+use educe::Educe;
 use libthreema_macros::Name;
 
 use crate::utils::{
@@ -11,7 +10,7 @@ use crate::utils::{
 const HEADER_LENGTH: usize = 4;
 
 /// An incoming frame
-#[derive(educe::Educe)]
+#[derive(Educe)]
 #[educe(Debug)]
 pub struct IncomingFrame(#[educe(Debug(method(debug_slice_length)))] pub Vec<u8>);
 
@@ -29,18 +28,9 @@ impl FrameDecoder {
 /// An outgoing frame.
 ///
 /// TODO(LIB-30): Simplify
-#[derive(Name)]
-pub struct OutgoingFrame(pub(super) Vec<u8>);
-
-impl fmt::Debug for OutgoingFrame {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter
-            .debug_struct(Self::NAME)
-            .field("length", &(self.0.len().saturating_add(HEADER_LENGTH)))
-            .finish()
-    }
-}
-
+#[derive(Educe, Name)]
+#[educe(Debug)]
+pub struct OutgoingFrame(#[educe(Debug(method(debug_slice_length)))] pub(super) Vec<u8>);
 impl OutgoingFrame {
     /// Encode the frame to bytes (header bytes, followed by the payload).
     ///

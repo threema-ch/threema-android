@@ -167,7 +167,7 @@ class GroupResyncFlowTest : GroupFlowTest() {
         groupModel: GroupModel,
         setupConfig: SetupConfig,
     ): GroupFlowResult {
-        val groupModelData = groupModel.data.value
+        val groupModelData = groupModel.data
 
         // Prepare task manager and group flow dispatcher
         val taskManager = ControlledTaskManager(

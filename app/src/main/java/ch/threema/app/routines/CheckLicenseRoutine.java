@@ -26,6 +26,7 @@ import android.content.ReceiverCallNotAllowedException;
 
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.licensing.StoreLicenseCheck;
@@ -37,7 +38,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 
 /**
  * Checking the License of current Threema and send a not allowed broadcast
@@ -45,19 +46,33 @@ import ch.threema.domain.stores.IdentityStoreInterface;
 public class CheckLicenseRoutine implements Runnable {
     private static final Logger logger = LoggingUtil.getThreemaLogger("CheckLicenseRoutine");
 
+    @NonNull
     private final Context context;
+    @NonNull
     private final APIConnector apiConnector;
+    @NonNull
     private final UserService userService;
+    @NonNull
     private final DeviceService deviceService;
-    private final LicenseService licenseService;
-    private final IdentityStoreInterface identityStore;
+    @NonNull
+    private final LicenseService<?> licenseService;
+    @NonNull
+    private final IdentityStore identityStore;
 
-    public CheckLicenseRoutine(Context context,
-                               APIConnector apiConnector,
-                               UserService userService,
-                               DeviceService deviceService,
-                               LicenseService licenseService,
-                               IdentityStoreInterface identityStore) {
+    public CheckLicenseRoutine(
+        @NonNull
+        Context context,
+        @NonNull
+        APIConnector apiConnector,
+        @NonNull
+        UserService userService,
+        @NonNull
+        DeviceService deviceService,
+        @NonNull
+        LicenseService<?> licenseService,
+        @NonNull
+        IdentityStore identityStore
+    ) {
         this.context = context;
         this.apiConnector = apiConnector;
         this.userService = userService;
@@ -100,7 +115,7 @@ public class CheckLicenseRoutine implements Runnable {
             userService.setCredentials(licenseService.loadCredentials());
 
             if (licenseService instanceof LicenseServiceThreema && BuildFlavor.getCurrent().getMaySelfUpdate()) {
-                LicenseServiceThreema licenseServiceThreema = (LicenseServiceThreema) licenseService;
+                LicenseServiceThreema<?> licenseServiceThreema = (LicenseServiceThreema<?>) licenseService;
                 if (licenseServiceThreema.getUpdateMessage() != null && !licenseServiceThreema.isUpdateMessageShown()) {
                     try {
                         LocalBroadcastManager.getInstance(this.context).sendBroadcast(
@@ -126,11 +141,6 @@ public class CheckLicenseRoutine implements Runnable {
                     this.licenseService
                 )).run();
             }
-        }
-    }
-
-    public interface StoreLicenseChecker {
-        static void checkLicense() {
         }
     }
 }

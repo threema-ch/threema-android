@@ -28,9 +28,10 @@ import androidx.work.Configuration;
 
 import org.slf4j.Logger;
 
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.PollingHelper;
 import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
 
 public class ReConnectJobService extends JobService {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ReConnectJobService");
@@ -57,7 +58,7 @@ public class ReConnectJobService extends JobService {
                 }
 
                 if (!isStopped) {
-                    boolean success = pollingHelper.poll(true) || ThreemaApplication.getMasterKey().isLocked();
+                    boolean success = pollingHelper.poll(true) || getMasterKeyManager().isLocked();
 
                     if (!isStopped) {
                         try {

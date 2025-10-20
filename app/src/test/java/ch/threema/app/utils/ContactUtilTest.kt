@@ -23,6 +23,7 @@ package ch.threema.app.utils
 
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.FileService
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import io.mockk.every
 import io.mockk.mockk
@@ -229,5 +230,5 @@ class ContactUtilTest {
         )
     }
 
-    private fun createModel(identity: String) = ContactModel.create(identity, ByteArray(32))
+    private fun createModel(identity: Identity) = ContactModel.create(identity, ByteArray(32))
 }

@@ -28,6 +28,7 @@ import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.csp.e2e.fs.Terminate.Cause
 import kotlinx.serialization.Serializable
 
@@ -47,7 +48,7 @@ class DeleteAndTerminateFSSessionsTask(
 
     @Serializable
     class DeleteAndTerminateFSSessionsTaskData(
-        private val identity: String,
+        private val identity: Identity,
         private val cause: Cause,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {

@@ -52,7 +52,7 @@ class RemoveGroupFlow(
     override fun runInBackground(): GroupFlowResult {
         logger.info("Running remove group flow")
 
-        if (groupModel.data.value?.isMember == true) {
+        if (groupModel.data?.isMember == true) {
             logger.error("Cannot remove group where the user is still a member")
             return GroupFlowResult.Failure.Other
         }

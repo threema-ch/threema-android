@@ -26,32 +26,15 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnDetachedFromWindow
 import androidx.core.view.isVisible
 import ch.threema.app.R
-import ch.threema.app.activities.MessageDetailsUiModel
-import ch.threema.app.activities.MessageTimestampsUiModel
-import ch.threema.app.activities.toUiModel
-import ch.threema.app.compose.message.CombinedMessageDetailsList
 import ch.threema.app.compose.message.MessageBubble
 import ch.threema.app.compose.theme.ThreemaTheme
 import ch.threema.app.dialogs.loadingtimeout.LoadingWithTimeoutDialogScreen
+import ch.threema.app.messagedetails.toUiModel
 import ch.threema.app.webclient.activities.MultiDeviceBanner
 import ch.threema.storage.models.AbstractMessageModel
 import kotlin.time.Duration.Companion.seconds
 
 object ComposeJavaBridge {
-    fun setContentMessageDetails(
-        composeView: ComposeView,
-        messageTimestampsUiModel: MessageTimestampsUiModel,
-        messageDetailsUiModel: MessageDetailsUiModel,
-    ) {
-        composeView.setContent {
-            ThreemaTheme {
-                CombinedMessageDetailsList(
-                    messageTimestampsUiModel,
-                    messageDetailsUiModel,
-                )
-            }
-        }
-    }
 
     fun setEditModeMessageBubble(
         composeView: ComposeView,

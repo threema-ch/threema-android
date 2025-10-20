@@ -50,15 +50,13 @@ import java.util.concurrent.ExecutionException;
 import ch.threema.app.R;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.utils.AvatarConverterUtil;
-import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.domain.models.GroupId;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.ReceiverModel;
+import ch.threema.data.datatypes.IdColor;
 import java8.util.function.Supplier;
 
 /**
@@ -70,9 +68,9 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
     /**
      * The mapping of identities to "states". If the number is changed, the next time the avatar of this identity is accessed, it will be loaded
-     * from the database.To invalidate all contact caches clear this map.
+     * from the database.To invalidate all identity caches clear this map.
      */
-    private final Map<String, Long> contactAvatarStates = new HashMap<>();
+    private final Map<String, Long> identityAvatarStates = new HashMap<>();
 
     /**
      * The mapping of group IDs to "states". If the number is changed, the next time the group avatar is accessed, it will be loaded
@@ -84,7 +82,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
     private final Context context;
 
-    private final VectorDrawableCompat contactPlaceholder;
+    private final VectorDrawableCompat identityPlaceholder;
     private final VectorDrawableCompat groupPlaceholder;
     private final VectorDrawableCompat distributionListPlaceholder;
 
@@ -95,15 +93,15 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
     public AvatarCacheServiceImpl(Context context) {
         this.context = context;
 
-        this.contactPlaceholder = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_contact, null);
+        this.identityPlaceholder = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_contact, null);
         this.groupPlaceholder = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_group, null);
         this.distributionListPlaceholder = VectorDrawableCompat.create(context.getResources(), R.drawable.ic_distribution_list, null);
         this.avatarSizeSmall = context.getResources().getDimensionPixelSize(R.dimen.avatar_size_small);
 
         // Use dark theme default gray for placeholder
-        int color = ColorUtil.COLOR_GRAY_DARK;
-        if (contactPlaceholder != null) {
-            AvatarConverterUtil.getAvatarBitmap(contactPlaceholder, color, avatarSizeSmall);
+        int color = IdColor.invalid().getColorDark();
+        if (identityPlaceholder != null) {
+            AvatarConverterUtil.getAvatarBitmap(identityPlaceholder, color, avatarSizeSmall);
         }
         if (groupPlaceholder != null) {
             AvatarConverterUtil.getAvatarBitmap(groupPlaceholder, color, avatarSizeSmall);
@@ -115,21 +113,21 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
     @AnyThread
     @Override
-    public @Nullable Bitmap getContactAvatar(@Nullable final ContactModel contactModel, @NonNull AvatarOptions options) {
+    public @Nullable Bitmap getIdentityAvatar(@Nullable final String identity, @NonNull AvatarOptions options) {
         return getBitmapInWorkerThread(
-            () -> this.getAvatar(contactModel, options)
+            () -> this.getAvatar(identity, options)
         );
     }
 
     @AnyThread
     @Override
-    public void loadContactAvatarIntoImage(
-        @NonNull ContactModel model,
+    public void loadIdentityAvatarIntoImage(
+        @NonNull String identity,
         @NonNull ImageView imageView,
         @NonNull AvatarOptions options,
         @NonNull RequestManager requestManager
     ) {
-        loadBitmap(new ContactAvatarConfig(model, options), contactPlaceholder, imageView, requestManager);
+        loadBitmap(new IdentityAvatarConfig(identity, options), identityPlaceholder, imageView, requestManager);
     }
 
     @AnyThread
@@ -170,16 +168,10 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
         loadBitmap(new DistributionListAvatarConfig(model, options), distributionListPlaceholder, imageView, requestManager);
     }
 
-    @AnyThread
-    @Override
-    public void reset(@NonNull ContactModel contactModel) {
-        reset(contactModel.getIdentity());
-    }
-
     @Override
     public void reset(@NonNull String identity) {
-        synchronized (this.contactAvatarStates) {
-            this.contactAvatarStates.put(identity, System.currentTimeMillis());
+        synchronized (this.identityAvatarStates) {
+            this.identityAvatarStates.put(identity, System.currentTimeMillis());
         }
     }
 
@@ -202,8 +194,8 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
     @AnyThread
     @Override
     public void clear() {
-        synchronized (this.contactAvatarStates) {
-            contactAvatarStates.clear();
+        synchronized (this.identityAvatarStates) {
+            identityAvatarStates.clear();
         }
         synchronized (this.groupAvatarStates) {
             groupAvatarStates.clear();
@@ -212,8 +204,8 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
     }
 
     @WorkerThread
-    private @Nullable Bitmap getAvatar(@Nullable ContactModel contactModel, AvatarOptions options) {
-        return getBitmap(new ContactAvatarConfig(contactModel, options));
+    private @Nullable Bitmap getAvatar(@Nullable String identity, AvatarOptions options) {
+        return getBitmap(new IdentityAvatarConfig(identity, options));
     }
 
     @WorkerThread
@@ -227,14 +219,14 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
     }
 
     @WorkerThread
-    private @Nullable <M extends ReceiverModel> Bitmap getBitmap(@NonNull AvatarConfig<M> config) {
-        logger.debug("loading avatar for config {} hires = {}", config.state, config.options.highRes);
+    private @Nullable <S> Bitmap getBitmap(@NonNull AvatarConfig<S> config) {
+        logger.debug("Getting avatar for config {} with state {}", config.options, config.state);
         try {
             RequestBuilder<Bitmap> requestBuilder = Glide.with(context)
                 .asBitmap()
                 .load(config)
                 .diskCacheStrategy(DiskCacheStrategy.NONE);
-            if (config.model == null || config.options.disableCache || config.options.highRes) {
+            if (config.subject == null || config.options.disableCache || config.options.highRes) {
                 requestBuilder = requestBuilder.skipMemoryCache(true);
             }
             if (!config.options.highRes) {
@@ -253,13 +245,13 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
     }
 
     @AnyThread
-    private <M extends ReceiverModel> void loadBitmap(
-        @NonNull AvatarConfig<M> config,
+    private <S> void loadBitmap(
+        @NonNull AvatarConfig<S> config,
         @Nullable Drawable placeholder,
         @NonNull ImageView view,
         @NonNull RequestManager requestManager
     ) {
-        logger.debug("loading avatar for config {} highRes = {}", config.state, config.options.highRes);
+        logger.debug("Loading avatar for config {} with state = {}", config.options, config.state);
         try {
             RequestBuilder<Bitmap> requestBuilder = requestManager
                 .asBitmap()
@@ -267,7 +259,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
                 .placeholder(placeholder)
                 .transition(BitmapTransitionOptions.withCrossFade(factory))
                 .diskCacheStrategy(DiskCacheStrategy.NONE);
-            if (config.model == null || config.options.disableCache || config.options.highRes) {
+            if (config.subject == null || config.options.disableCache || config.options.highRes) {
                 requestBuilder = requestBuilder.skipMemoryCache(true);
             }
             if (!config.options.highRes) {
@@ -284,27 +276,27 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
     /**
      * This class is used as a identifier for glide. Based on its hashcode, the objects can be cached in different resolutions.
      */
-    public static abstract class AvatarConfig<M extends ReceiverModel> {
+    public static abstract class AvatarConfig<S> {
 
         @Nullable
-        final M model;
+        final S subject;
         @NonNull
         private final AvatarOptions options;
         private final long state;
 
-        private AvatarConfig(@Nullable M model, @NonNull AvatarOptions options) {
-            this.model = model;
+        private AvatarConfig(@Nullable S subject, @NonNull AvatarOptions options) {
+            this.subject = subject;
             this.options = options;
             this.state = getAvatarState();
         }
 
         /**
-         * Get the model of this identifier.
+         * Get the subject of this configuration.
          *
-         * @return the contact model
+         * @return the subject
          */
-        public @Nullable M getModel() {
-            return model;
+        public @Nullable S getSubject() {
+            return subject;
         }
 
         /**
@@ -320,11 +312,11 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
         abstract long getAvatarState();
 
-        abstract @NonNull String getModelDebugString();
+        abstract @NonNull String getSubjectDebugString();
 
         /**
          * The hash code of this class is based only on the parameters that change the actual result, e.g., the resolution,
-         * the default options and of course the contact, group, or distribution list. The state does not affect the hashcode
+         * the default options and of course the identity, group, or distribution list. The state does not affect the hashcode
          * and must be used as signature.
          *
          * @return the hash code of the object
@@ -343,9 +335,9 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
             if (obj instanceof AvatarConfig) {
                 @SuppressWarnings("rawtypes") AvatarConfig other = (AvatarConfig) obj;
 
-                boolean equalModels = this.model == other.model;
-                if (!equalModels && this.model != null) {
-                    equalModels = this.model.equals(other.model);
+                boolean equalModels = this.subject == other.subject;
+                if (!equalModels && this.subject != null) {
+                    equalModels = this.subject.equals(other.subject);
                 }
 
                 return equalModels && this.options.equals(other.options);
@@ -356,51 +348,50 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
         @NonNull
         @Override
         public String toString() {
-            return "'" + getModelDebugString() + "' " + options;
+            return "'" + getSubjectDebugString() + "' " + options;
         }
     }
 
     /**
-     * This class stores information about the access of a contact avatar. Every object of this class
+     * This class stores information to access an avatar belonging to a threema identity. Every object of this class
      * with the same hashcode references the same image and can therefore be cached by glide.
      */
-    public class ContactAvatarConfig extends AvatarConfig<ContactModel> {
+    public class IdentityAvatarConfig extends AvatarConfig<String> {
 
-        // TODO(ANDR-4021): This class needs a way to represent the user itself, or there needs to be another AvatarConfig that does that
-        private ContactAvatarConfig(@Nullable ContactModel model, @NonNull AvatarOptions options) {
-            super(model, options);
+        private IdentityAvatarConfig(@Nullable String identity, @NonNull AvatarOptions options) {
+            super(identity, options);
         }
 
         @Override
         int getHashCode() {
-            if (model != null) {
-                return model.getIdentity().hashCode();
+            if (subject != null) {
+                return subject.hashCode();
             }
             return -1;
         }
 
         @Override
         long getAvatarState() {
-            if (this.model == null) {
+            if (this.subject == null) {
                 // we don't use the cache for default avatars
                 return System.currentTimeMillis();
             }
 
-            Long state = contactAvatarStates.get(this.model.getIdentity());
+            Long state = identityAvatarStates.get(this.subject);
             if (state != null) {
                 return state;
             }
             long newState = System.currentTimeMillis();
-            synchronized (contactAvatarStates) {
-                contactAvatarStates.put(this.model.getIdentity(), newState);
+            synchronized (identityAvatarStates) {
+                identityAvatarStates.put(subject, newState);
             }
             return newState;
         }
 
         @NonNull
         @Override
-        String getModelDebugString() {
-            return model != null ? model.getIdentity() : "null";
+        String getSubjectDebugString() {
+            return subject != null ? subject : "null";
         }
     }
 
@@ -415,34 +406,34 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
         @Override
         int getHashCode() {
-            if (model != null) {
-                return model.getApiGroupId().hashCode();
+            if (subject != null) {
+                return subject.getApiGroupId().hashCode();
             }
             return -2;
         }
 
         @Override
         long getAvatarState() {
-            if (this.model == null) {
+            if (this.subject == null) {
                 // if the group model is null, then a default avatar is wanted and therefore it does not make a big difference if it is loaded from cache or not
                 return 0;
             }
 
-            Long state = groupAvatarStates.get(this.model.getApiGroupId().hashCode());
+            Long state = groupAvatarStates.get(this.subject.getApiGroupId().hashCode());
             if (state != null) {
                 return state;
             }
             long newState = System.currentTimeMillis();
             synchronized (groupAvatarStates) {
-                groupAvatarStates.put(this.model.getApiGroupId().hashCode(), newState);
+                groupAvatarStates.put(this.subject.getApiGroupId().hashCode(), newState);
             }
             return newState;
         }
 
         @NonNull
         @Override
-        String getModelDebugString() {
-            return model != null ? model.getCreatorIdentity() + "/" + model.getApiGroupId() : "null";
+        String getSubjectDebugString() {
+            return subject != null ? subject.getCreatorIdentity() + "/" + subject.getApiGroupId() : "null";
         }
     }
 
@@ -457,8 +448,8 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
         @Override
         int getHashCode() {
-            if (model != null) {
-                return (int) model.getId();
+            if (subject != null) {
+                return (int) subject.getId();
             }
             return -3;
         }
@@ -470,8 +461,8 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
         @NonNull
         @Override
-        String getModelDebugString() {
-            return model != null ? String.valueOf(model.getId()) : "null";
+        String getSubjectDebugString() {
+            return subject != null ? String.valueOf(subject.getId()) : "null";
         }
     }
 

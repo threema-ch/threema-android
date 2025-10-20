@@ -26,12 +26,13 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.stores.PreferenceStoreInterface
+import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.GroupUtil
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.data.models.ContactModel
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.d2d.sync.MdD2DSync
 import java.lang.ref.WeakReference
 
@@ -39,7 +40,7 @@ private val logger = LoggingUtil.getThreemaLogger("ConversationCategoryServiceIm
 
 class ConversationCategoryServiceImpl(
     preferenceService: PreferenceService,
-    preferenceStore: PreferenceStoreInterface,
+    preferenceStore: PreferenceStore,
     private val multiDeviceManager: MultiDeviceManager,
     private val taskCreator: TaskCreator,
 ) : ConversationCategoryService {
@@ -74,7 +75,7 @@ class ConversationCategoryServiceImpl(
     }
 
     @Synchronized
-    private fun removePrivateMarkFromContactChat(identity: String) {
+    private fun removePrivateMarkFromContactChat(identity: Identity) {
         val uniqueIdentifier = UniqueIdentifier.fromContactIdentity(identity)
         if (!privateChatsCache.isPrivateChat(uniqueIdentifier)) {
             logger.warn("Chat with {} hasn't been marked as private", identity)
@@ -214,7 +215,7 @@ class ConversationCategoryServiceImpl(
         privateChatsCache.invalidate()
     }
 
-    private fun reflectContact(identity: String, isPrivateChat: Boolean) {
+    private fun reflectContact(identity: Identity, isPrivateChat: Boolean) {
         if (multiDeviceManager.isMultiDeviceActive) {
             taskCreator.scheduleReflectContactConversationCategory(identity, isPrivateChat)
         }
@@ -231,7 +232,7 @@ class ConversationCategoryServiceImpl(
 
     private class PrivateChatsCache(
         private val preferenceService: PreferenceService,
-        private val preferenceStore: PreferenceStoreInterface,
+        private val preferenceStore: PreferenceStore,
     ) {
         private var privateChatsCache: WeakReference<MutableSet<String>> = WeakReference(null)
 
@@ -276,14 +277,14 @@ class ConversationCategoryServiceImpl(
 
         @Synchronized
         private fun getFromPreferences(): MutableSet<String> {
-            if (preferenceStore.containsKey(LEGACY_PREF_LIST_NAME, false)) {
+            if (preferenceStore.containsKey(LEGACY_PREF_LIST_NAME)) {
                 logger.info("Migrating private chats preference from '{}' to '{}'", LEGACY_PREF_LIST_NAME, PREF_LIST_NAME)
                 // Previously, the conversation category (private chats) were saved with a deadline list service that used a map for storing the
                 // property. The map used the unique id string as key and always had -1 as value, as it was never possible to mark a chat as private
                 // for a limited time.
-                val privateChatUniqueIdentifiers = preferenceService.getStringHashMap(LEGACY_PREF_LIST_NAME, false).keys.toMutableSet()
+                val privateChatUniqueIdentifiers = preferenceService.getStringMap(LEGACY_PREF_LIST_NAME).keys.toMutableSet()
                 preferenceService.setListQuietly(PREF_LIST_NAME, privateChatUniqueIdentifiers.toTypedArray(), false)
-                preferenceStore.remove(LEGACY_PREF_LIST_NAME, false)
+                preferenceStore.remove(LEGACY_PREF_LIST_NAME)
                 return privateChatUniqueIdentifiers
             }
 
@@ -294,7 +295,7 @@ class ConversationCategoryServiceImpl(
     @JvmInline
     private value class UniqueIdentifier(val uniqueId: String) {
         companion object {
-            fun fromContactIdentity(identity: String): UniqueIdentifier {
+            fun fromContactIdentity(identity: Identity): UniqueIdentifier {
                 return UniqueIdentifier(ContactUtil.getUniqueIdString(identity))
             }
 

@@ -111,7 +111,7 @@ public class DeleteGroupHandler extends MessageReceiver {
             return;
         }
 
-        final GroupModelData groupModelData = group.getData().getValue();
+        final GroupModelData groupModelData = group.getData();
         if (groupModelData == null) {
             logger.error("Group model data is null");
             this.failed(temporaryId, Protocol.ERROR_INVALID_GROUP);

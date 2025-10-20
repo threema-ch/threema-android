@@ -39,6 +39,7 @@ import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.types.Identity
 import java.util.Date
 
 private val logger = LoggingUtil.getThreemaLogger("IncomingGroupMessageUtils")
@@ -49,7 +50,7 @@ private val logger = LoggingUtil.getThreemaLogger("IncomingGroupMessageUtils")
  */
 suspend fun runCommonGroupReceiveSteps(
     groupIdentity: GroupIdentity,
-    fromIdentity: String,
+    fromIdentity: Identity,
     handle: ActiveTaskCodec,
     serviceManager: ServiceManager,
 ): GroupModel? = runCommonGroupReceiveSteps(
@@ -81,9 +82,9 @@ suspend fun runCommonGroupReceiveSteps(
  * returned, this indicates that the message should be discarded.
  */
 suspend fun runCommonGroupReceiveSteps(
-    creatorIdentity: String,
+    creatorIdentity: Identity,
     groupId: GroupId,
-    fromIdentity: String,
+    fromIdentity: Identity,
     handle: ActiveTaskCodec,
     serviceManager: ServiceManager,
 ): GroupModel? {
@@ -92,7 +93,7 @@ suspend fun runCommonGroupReceiveSteps(
 
     // Look up the group
     val group = serviceManager.modelRepositories.groups.getByCreatorIdentityAndId(creatorIdentity, groupId)
-    val groupModelData = group?.data?.value
+    val groupModelData = group?.data
 
     // If the group could not be found
     if (groupModelData == null) {
@@ -176,9 +177,9 @@ suspend fun runCommonGroupReceiveSteps(
     return group
 }
 
-private fun getContactForIdentity(identity: String, serviceManager: ServiceManager): BasicContact =
+private fun getContactForIdentity(identity: Identity, serviceManager: ServiceManager): BasicContact =
     serviceManager.contactStore.getCachedContact(identity)
-        ?: serviceManager.modelRepositories.contacts.getByIdentity(identity)?.data?.value?.toBasicContact()
+        ?: serviceManager.modelRepositories.contacts.getByIdentity(identity)?.data?.toBasicContact()
         ?: throw IllegalStateException("Could not get cached contact for identity $identity")
 
 suspend fun runGroupSyncRequestSteps(

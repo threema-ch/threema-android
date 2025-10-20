@@ -30,24 +30,29 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.LinearLayoutCompat
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.emojireactions.EmojiReactionsButton.OnEmojiReactionButtonClickListener
 import ch.threema.app.messagereceiver.MessageReceiver
+import ch.threema.app.services.UserService
 import ch.threema.data.models.EmojiReactionData
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.AbstractMessageModel
 import kotlin.math.roundToInt
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class EmojiReactionGroup :
     LinearLayoutCompat,
     OnEmojiReactionButtonClickListener,
     SelectEmojiButton.OnSelectEmojiButtonClickListener,
-    MoreReactionsButton.OnMoreReactionsButtonClickListener {
+    MoreReactionsButton.OnMoreReactionsButtonClickListener,
+    KoinComponent {
+    private val userService: UserService by inject()
+
     private var messageModel: AbstractMessageModel? = null
     private var buttonInfoList: List<ButtonInfo> = emptyList()
     private var bubbleView: View? = null
     private var messageReceiver: MessageReceiver<*>? = null
     var onEmojiReactionGroupClickListener: OnEmojiReactionGroupClickListener? = null
-    private val userService = ThreemaApplication.requireServiceManager().userService
     private var reactions: List<EmojiReactionData> = emptyList()
     var firstReactionButton: View? = null
         private set
@@ -98,7 +103,7 @@ class EmojiReactionGroup :
                 return
             }
 
-            val newButtonInfoList: List<ButtonInfo> = reactions.toButtonInfos(ownIdentity = userService.identity)
+            val newButtonInfoList: List<ButtonInfo> = reactions.toButtonInfos(ownIdentity = userService.identity!!)
 
             if (newButtonInfoList != buttonInfoList) {
                 var allowedWidth: Int = if (messageBubbleWidth * 2 > listViewWidth) {
@@ -152,7 +157,7 @@ class EmojiReactionGroup :
         }
     }
 
-    private fun List<EmojiReactionData>.toButtonInfos(ownIdentity: String): List<ButtonInfo> =
+    private fun List<EmojiReactionData>.toButtonInfos(ownIdentity: Identity): List<ButtonInfo> =
         if (isNotEmpty()) {
             groupingBy { it.emojiSequence }
                 .eachCount()

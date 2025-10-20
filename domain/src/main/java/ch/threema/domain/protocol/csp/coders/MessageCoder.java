@@ -88,10 +88,6 @@ import ch.threema.domain.protocol.csp.messages.file.FileMessage;
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityData;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityEnvelopeMessage;
-import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestData;
-import ch.threema.domain.protocol.csp.messages.group.GroupJoinRequestMessage;
-import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseData;
-import ch.threema.domain.protocol.csp.messages.group.GroupJoinResponseMessage;
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage;
@@ -99,7 +95,7 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
 import ch.threema.domain.stores.ContactStore;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.protobuf.csp.e2e.MessageMetadata;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
@@ -109,13 +105,13 @@ public class MessageCoder {
     private static final Logger logger = LoggingUtil.getThreemaLogger("MessageCoder");
 
     private final @NonNull ContactStore contactStore;
-    private final @NonNull IdentityStoreInterface identityStore;
+    private final @NonNull IdentityStore identityStore;
 
     /**
      * @param contactStore  contact store to use for retrieving keys
      * @param identityStore identity store to use for encryption
      */
-    public MessageCoder(@NonNull ContactStore contactStore, @NonNull IdentityStoreInterface identityStore) {
+    public MessageCoder(@NonNull ContactStore contactStore, @NonNull IdentityStore identityStore) {
         this.contactStore = contactStore;
         this.identityStore = identityStore;
     }
@@ -604,20 +600,6 @@ public class MessageCoder {
 
             case ProtocolDefines.MSGTYPE_GROUP_BALLOT_VOTE: {
                 message = GroupPollVoteMessage.fromByteArray(data, 1, realDataLength - 1);
-                break;
-            }
-
-            case ProtocolDefines.MSGTYPE_GROUP_JOIN_REQUEST: {
-                final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
-                final GroupJoinRequestData groupJoinRequestData = GroupJoinRequestData.fromProtobuf(protobufPayload);
-                message = new GroupJoinRequestMessage(groupJoinRequestData);
-                break;
-            }
-
-            case ProtocolDefines.MSGTYPE_GROUP_JOIN_RESPONSE: {
-                final byte[] protobufPayload = Arrays.copyOfRange(data, 1, realDataLength);
-                final GroupJoinResponseData groupJoinResponseData = GroupJoinResponseData.fromProtobuf(protobufPayload);
-                message = new GroupJoinResponseMessage(groupJoinResponseData);
                 break;
             }
 

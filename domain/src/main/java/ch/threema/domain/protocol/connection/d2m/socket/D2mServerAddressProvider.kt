@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.connection.d2m.socket
 
-import ch.threema.base.utils.toHexString
+import ch.threema.common.toHexString
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.protobuf.d2m.MdD2M
 import com.google.protobuf.ByteString

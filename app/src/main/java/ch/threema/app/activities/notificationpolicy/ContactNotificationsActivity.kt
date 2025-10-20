@@ -24,12 +24,14 @@ package ch.threema.app.activities.notificationpolicy
 import android.os.Bundle
 import android.view.View
 import ch.threema.app.AppConstants
-import ch.threema.app.ThreemaApplication
+import ch.threema.app.services.RingtoneService
 import ch.threema.app.utils.ContactUtil
-import ch.threema.app.utils.TestUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.data.models.ContactModel
 import ch.threema.data.repositories.ContactModelRepository
+import ch.threema.domain.types.Identity
+import org.koin.android.ext.android.inject
 
 private val logger = LoggingUtil.getThreemaLogger("ContactNotificationsActivity")
 
@@ -38,22 +40,21 @@ class ContactNotificationsActivity : NotificationsActivity() {
         logScreenVisibility(logger)
     }
 
-    private val contactModelRepository: ContactModelRepository by lazy {
-        ThreemaApplication.requireServiceManager().modelRepositories.contacts
-    }
+    private val ringtoneService: RingtoneService by inject()
+    private val contactModelRepository: ContactModelRepository by inject()
 
-    private val contactIdentity: String? by lazy {
+    private val contactIdentity: Identity? by lazy {
         intent.getStringExtra(AppConstants.INTENT_DATA_CONTACT)
     }
 
-    private val contactModel: ch.threema.data.models.ContactModel? by lazy {
+    private val contactModel: ContactModel? by lazy {
         contactIdentity?.let(contactModelRepository::getByIdentity)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (TestUtil.isEmptyOrNull(contactIdentity) || contactModel == null) {
+        if (contactIdentity.isNullOrEmpty() || contactModel == null) {
             finish()
             return
         }
@@ -81,7 +82,7 @@ class ContactNotificationsActivity : NotificationsActivity() {
     }
 
     override fun isMutedRightNow(): Boolean {
-        val currentContactModelData = contactModel?.data?.value ?: return false
+        val currentContactModelData = contactModel?.data ?: return false
         return currentContactModelData.currentNotificationTriggerPolicyOverride.muteAppliesRightNow
     }
 
@@ -89,7 +90,7 @@ class ContactNotificationsActivity : NotificationsActivity() {
     override fun isMutedExceptMentions(): Boolean = false
 
     override fun getNotificationTriggerPolicyOverrideValue(): Long? {
-        val currentContactModelData = contactModel?.data?.value ?: return null
+        val currentContactModelData = contactModel?.data ?: return null
         return currentContactModelData.notificationTriggerPolicyOverride
     }
 }

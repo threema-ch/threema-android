@@ -46,6 +46,12 @@ interface GroupCallController {
     val captureStateUpdates: Flow<Unit>
 
     /**
+     * Emits [Unit] when any participant started sharing a screen.
+     */
+    // TODO(ANDR-4127): Remove
+    val screenShareActivated: Flow<Unit>
+
+    /**
      * A completable that completes when the call has been left (or ended exceptionally).
      *
      * This will complete right when the call end has been initiated. The call will be ended in a
@@ -79,6 +85,8 @@ interface GroupCallController {
     var microphoneActive: Boolean
 
     var cameraActive: Boolean
+
+    // TODO(ANDR-4127): add screenShareActive
 
     @UiThread
     suspend fun flipCamera()

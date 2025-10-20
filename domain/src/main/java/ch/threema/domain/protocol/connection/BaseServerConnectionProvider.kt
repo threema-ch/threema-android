@@ -74,7 +74,7 @@ object BaseServerConnectionProvider {
         val addressProvider = D2mServerAddressProvider(
             configuration.serverAddressProvider,
             configuration.multiDevicePropertyProvider.get().keys.dgid,
-            configuration.identityStore.serverGroup,
+            configuration.identityStore.getServerGroup()!!,
         )
 
         val socket = D2mSocket(

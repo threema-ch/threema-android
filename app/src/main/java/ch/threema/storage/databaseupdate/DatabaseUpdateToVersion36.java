@@ -21,30 +21,27 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import ch.threema.storage.models.ContactModel;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import androidx.annotation.NonNull;
 
-/**
- * add caption field to normal, group and distribution list message models
- */
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
+
 public class DatabaseUpdateToVersion36 implements DatabaseUpdate {
 
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion36(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion36(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 
     @Override
     public void run() throws SQLException {
-        if (!fieldExists(this.sqLiteDatabase, ContactModel.TABLE, ContactModel.COLUMN_IS_WORK)) {
-            sqLiteDatabase.rawExecSQL("ALTER TABLE " + ContactModel.TABLE
-                + " ADD COLUMN " + ContactModel.COLUMN_IS_WORK + " TINYINT DEFAULT 0");
+        if (!fieldExists(this.sqLiteDatabase, "contacts", "isWork")) {
+            sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN isWork TINYINT DEFAULT 0");
         }
     }
 

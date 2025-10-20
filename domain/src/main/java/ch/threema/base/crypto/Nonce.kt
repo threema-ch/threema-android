@@ -21,21 +21,21 @@
 
 package ch.threema.base.crypto
 
-import com.neilalexander.jnacl.NaCl
+import ch.threema.domain.types.Identity
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 /**
- * A nonce that consists of [NaCl.NONCEBYTES] bytes.
+ * A nonce that consists of [NaCl.NONCE_BYTES] bytes.
  *
- * @throws IllegalArgumentException if [bytes] does not contain [NaCl.NONCEBYTES] bytes
+ * @throws IllegalArgumentException if [bytes] does not contain [NaCl.NONCE_BYTES] bytes
  */
 @JvmInline
 value class Nonce(val bytes: ByteArray) {
     init {
-        require(bytes.size == NaCl.NONCEBYTES)
+        require(bytes.size == NaCl.NONCE_BYTES)
     }
 
     /**
@@ -47,7 +47,7 @@ value class Nonce(val bytes: ByteArray) {
      * @throws NoSuchAlgorithmException if the algorithm is not available on the device
      * @throws InvalidKeyException if the [identity] is not suitable as key
      */
-    fun hashNonce(identity: String) = HashedNonce.getFromNonce(this, identity)
+    fun hashNonce(identity: Identity) = HashedNonce.getFromNonce(this, identity)
 }
 
 /**
@@ -68,7 +68,7 @@ value class HashedNonce(val bytes: ByteArray) {
          * @throws NoSuchAlgorithmException if the algorithm is not available on the device
          * @throws InvalidKeyException if the [identity] is not suitable as key
          */
-        fun getFromNonce(nonce: Nonce, identity: String): HashedNonce {
+        fun getFromNonce(nonce: Nonce, identity: Identity): HashedNonce {
             val mac = Mac.getInstance("HmacSHA256")
             mac.init(SecretKeySpec(identity.encodeToByteArray(), "HmacSHA256"))
             return HashedNonce(mac.doFinal(nonce.bytes))

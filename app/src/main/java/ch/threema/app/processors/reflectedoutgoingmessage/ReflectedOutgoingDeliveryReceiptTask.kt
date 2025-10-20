@@ -45,7 +45,7 @@ internal class ReflectedOutgoingDeliveryReceiptTask(
 ) {
     private val messageService by lazy { serviceManager.messageService }
     private val notificationService by lazy { serviceManager.notificationService }
-    private val myIdentity by lazy { serviceManager.identityStore.identity }
+    private val myIdentity by lazy { serviceManager.identityStore.getIdentity()!! }
 
     override fun processOutgoingMessage() {
         logger.info("Processing reflected outgoing delivery receipt")

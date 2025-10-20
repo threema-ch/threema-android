@@ -48,8 +48,6 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 
 import org.slf4j.Logger;
 
-import java.util.Date;
-
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -186,11 +184,11 @@ public class BackupDataFragment extends Fragment implements
             pathTextView.setText(getDirectoryName(backupUri));
         }
 
-        Date backupDate = preferenceService.getLastDataBackupDate();
-        if (backupDate != null) {
+        var backupTimestamp = preferenceService.getLastDataBackupTimestamp();
+        if (backupTimestamp != null) {
             this.fragmentView.findViewById(R.id.last_backup_layout).setVisibility(View.VISIBLE);
             this.fragmentView.findViewById(R.id.intro_layout).setVisibility(View.GONE);
-            ((TextView) this.fragmentView.findViewById(R.id.last_backup_date)).setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), backupDate.getTime()));
+            ((TextView) this.fragmentView.findViewById(R.id.last_backup_date)).setText(LocaleUtil.formatTimeStampStringAbsolute(getContext(), backupTimestamp));
         } else {
             this.fragmentView.findViewById(R.id.last_backup_layout).setVisibility(View.GONE);
             this.fragmentView.findViewById(R.id.intro_layout).setVisibility(View.VISIBLE);

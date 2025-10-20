@@ -21,15 +21,20 @@
 
 package ch.threema.base.crypto;
 
-import com.neilalexander.jnacl.NaCl;
+import org.slf4j.Logger;
 
 import java.security.SecureRandom;
 
 import androidx.annotation.Nullable;
+import ch.threema.base.utils.LoggingUtil;
+import ch.threema.libthreema.CryptoException;
 
 public class SymmetricEncryptionService {
+
+    private static final Logger logger = LoggingUtil.getThreemaLogger("SymmetricEncryptionService");
+
     public byte[] generateSymmetricKey() {
-        final byte[] encryptionKey = new byte[NaCl.SYMMKEYBYTES];
+        final byte[] encryptionKey = new byte[NaCl.SYMM_KEY_BYTES];
         new SecureRandom().nextBytes(encryptionKey);
         return encryptionKey;
     }
@@ -39,11 +44,10 @@ public class SymmetricEncryptionService {
      * Encryption takes place inplace in order to save memory. Therefore, the original array will
      * be modified and serves as output of the decryption result.
      *
-     * @param io input and output data; will be modified
-     * @return true when decryption was successful, false otherwise
+     * @param data input and output data; will be modified
      */
-    public boolean decryptInplace(byte[] io, byte[] key, byte[] nonce) {
-        return NaCl.symmetricDecryptDataInplace(io, key, nonce);
+    public void decryptInplace(byte[] data, byte[] key, byte[] nonce) throws IllegalArgumentException, CryptoException {
+        NaCl.symmetricDecryptDataInPlace(data, key, nonce);
     }
 
     /**
@@ -52,7 +56,12 @@ public class SymmetricEncryptionService {
      * @return the decrypted data or {@code null} if decryption failed
      */
     public @Nullable byte[] decrypt(byte[] data, byte[] key, byte[] nonce) {
-        return NaCl.symmetricDecryptData(data, key, nonce);
+        try {
+            return NaCl.symmetricDecryptData(data, key, nonce);
+        } catch (CryptoException cryptoException) {
+            logger.error("Failed to decrypt data", cryptoException);
+            return null;
+        }
     }
 
     /**
@@ -65,7 +74,7 @@ public class SymmetricEncryptionService {
      * @return The encrypted data alongside the used symmetric encryption key
      */
     public SymmetricEncryptionResult encryptInplace(byte[] data, byte[] nonce) {
-        byte[] key = generateSymmetricKey();
+        final byte[] key = generateSymmetricKey();
         return encryptInplace(data, key, nonce);
     }
 
@@ -78,8 +87,13 @@ public class SymmetricEncryptionService {
      * @return The encrypted data alongside the used symmetric encryption key
      */
     public SymmetricEncryptionResult encryptInplace(byte[] data, byte[] key, byte[] nonce) {
-        NaCl.symmetricEncryptDataInplace(data, key, nonce);
-        return new SymmetricEncryptionResult(data, key);
+        try {
+            NaCl.symmetricEncryptDataInPlace(data, key, nonce);
+            return new SymmetricEncryptionResult(data, key);
+        } catch (IllegalArgumentException | CryptoException exception) {
+            logger.error("Failed to encrypt data in-place", exception);
+            return new SymmetricEncryptionResult(new byte[]{}, key);
+        }
     }
 
     /**
@@ -89,7 +103,13 @@ public class SymmetricEncryptionService {
      * @return The encrypted data alongside the used symmetric encryption key
      */
     public SymmetricEncryptionResult encrypt(byte[] data, byte[] key, byte[] nonce) {
-        final byte[] encrypted = NaCl.symmetricEncryptData(data, key, nonce);
+        byte[] encrypted;
+        try {
+            encrypted = NaCl.symmetricEncryptData(data, key, nonce);
+        } catch (CryptoException cryptoException) {
+            logger.error("Failed to encrypt data", cryptoException);
+            encrypted = new byte[]{};
+        }
         return new SymmetricEncryptionResult(encrypted, key);
     }
 }

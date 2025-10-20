@@ -30,11 +30,10 @@ import com.google.android.vending.licensing.LicenseCheckerCallback;
 import org.slf4j.Logger;
 
 import ch.threema.app.ThreemaLicensePolicy;
-import ch.threema.app.routines.CheckLicenseRoutine;
 import ch.threema.app.services.UserService;
 import ch.threema.base.utils.LoggingUtil;
 
-public class StoreLicenseCheck implements CheckLicenseRoutine.StoreLicenseChecker {
+public class StoreLicenseCheck {
     private static final Logger logger = LoggingUtil.getThreemaLogger("StoreLicenseCheck");
 
     private static final String LICENSE_PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAqJArbOQT3Vi2KUEbyk+xq+DSsowwIYoudh3miXC7DmR6SVL6ji7XG8C+hmtR6t+Ytar64z87xgTPiEPiuyyg6/fp8ALRLAjM2FmZadSS4hSpvmJKb2ViFyUmcCJ8MoZ2QPxA+SVGZFdwIwwXdHPx2xUQw6ftyx0EF0hvF4nwHLvq89p03QtiPnIb0A3MOEXsq88xu2xAUge/BTvRWo0gWTtIJhTdZXY2CSib5d/G45xca0DKgOECAaMxVbFhE5jSyS+qZvUN4tABgDKBiEPuuzBBaHVt/m7MQoqoM6kcNrozACmIx6UdwWbkK3Isa9Xo9g3Yy6oc9Mp/9iKXwco4vwIDAQAB";

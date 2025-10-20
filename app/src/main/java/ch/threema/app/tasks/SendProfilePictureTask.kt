@@ -26,6 +26,7 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import kotlinx.serialization.Serializable
 
@@ -36,7 +37,7 @@ private val logger = LoggingUtil.getThreemaLogger("SendProfilePictureTask")
  * the given contact. Note that this task does not check when the profile picture has been sent the
  * last time.
  */
-class SendProfilePictureTask(private val toIdentity: String, serviceManager: ServiceManager) :
+class SendProfilePictureTask(private val toIdentity: Identity, serviceManager: ServiceManager) :
     OutgoingProfilePictureTask(serviceManager) {
     override val type: String = "SendProfilePictureTask"
 
@@ -57,7 +58,7 @@ class SendProfilePictureTask(private val toIdentity: String, serviceManager: Ser
     override fun serialize(): SerializableTaskData = SendProfilePictureData(toIdentity)
 
     @Serializable
-    data class SendProfilePictureData(private val toIdentity: String) : SerializableTaskData {
+    data class SendProfilePictureData(private val toIdentity: Identity) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             SendProfilePictureTask(toIdentity, serviceManager)
     }

@@ -39,7 +39,9 @@ import ch.threema.app.services.MessageService;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.data.models.ContactModel;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupModel;
+import ch.threema.data.models.GroupModelData;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
@@ -265,14 +267,18 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
     default NotificationTriggerPolicyOverride getNotificationTriggerPolicyOverrideOrNull() {
         if (this instanceof ContactMessageReceiver) {
             final @Nullable ContactModel contactModel = ((ContactMessageReceiver) this).getContactModel();
-            return contactModel != null
-                ? contactModel.getData().getValue().getCurrentNotificationTriggerPolicyOverride()
-                : null;
+            if (contactModel != null) {
+                ContactModelData contactModelData = contactModel.getData();
+                return contactModelData != null ? contactModelData.getCurrentNotificationTriggerPolicyOverride() : null;
+            }
+            return null;
         } else if (this instanceof GroupMessageReceiver) {
             final @Nullable GroupModel groupModel = ((GroupMessageReceiver) this).getGroupModel();
-            return groupModel != null
-                ? groupModel.getData().getValue().getCurrentNotificationTriggerPolicyOverride()
-                : null;
+            if (groupModel != null) {
+                GroupModelData groupModelData = groupModel.getData();
+                return groupModelData != null ? groupModelData.getCurrentNotificationTriggerPolicyOverride() : null;
+            }
+            return null;
         } else {
             return null;
         }

@@ -29,6 +29,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.annotation.UiThread
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
 import ch.threema.app.glide.AvatarOptions
@@ -104,6 +105,9 @@ class GroupCallParticipantsAdapter(
         private val microphoneMuted: ImageView =
             itemView.findViewById(R.id.participant_microphone_muted)
         private var subscribeCameraJob: Job? = null
+
+        private val screenShareActive: ImageView =
+            itemView.findViewById(R.id.participant_screen_share_active)
 
         private val eglBaseContext = eglBase.eglBaseContext
 
@@ -184,11 +188,8 @@ class GroupCallParticipantsAdapter(
             logger.trace("UpdateCaptureState for {}", participant)
             participant?.let {
                 itemView.post {
-                    microphoneMuted.visibility = if (it.microphoneActive) {
-                        View.GONE
-                    } else {
-                        View.VISIBLE
-                    }
+                    microphoneMuted.isVisible = !it.microphoneActive
+                    screenShareActive.isVisible = it.screenShareActive
                 }
 
                 updateCameraSubscription()
@@ -321,7 +322,7 @@ class GroupCallParticipantsAdapter(
         holder.avatar.post {
             if (participant is NormalParticipant) {
                 contactService.loadAvatarIntoImage(
-                    participant.contactModel,
+                    participant.identity,
                     holder.avatar,
                     AVATAR_OPTIONS,
                     requestManager,

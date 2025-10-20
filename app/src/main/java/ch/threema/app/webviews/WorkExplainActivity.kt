@@ -21,9 +21,11 @@
 
 package ch.threema.app.webviews
 
+import android.content.Context
 import android.os.Bundle
 import ch.threema.app.R
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 
@@ -52,5 +54,8 @@ class WorkExplainActivity : SimpleWebViewActivity() {
 
     companion object {
         private const val WORK_PACKAGE_NAME = "ch.threema.app.work"
+
+        @JvmStatic
+        fun createIntent(context: Context) = buildActivityIntent<WorkExplainActivity>(context)
     }
 }

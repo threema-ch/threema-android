@@ -42,6 +42,7 @@ import java.util.concurrent.ExecutionException;
 
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -125,7 +126,7 @@ public class PushService extends FirebaseMessagingService {
     public static boolean playServicesInstalled(Context context) {
         GoogleApiAvailability apiAvailability = com.google.android.gms.common.GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable(context);
-        return RuntimeUtil.isInTest() || (resultCode == ConnectionResult.SUCCESS);
+        return TestUtil.isInDeviceTest() || (resultCode == ConnectionResult.SUCCESS);
     }
 
     /**

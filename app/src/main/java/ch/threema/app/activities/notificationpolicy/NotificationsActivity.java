@@ -32,23 +32,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.core.app.NotificationChannelCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.google.android.material.button.MaterialButton;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.materialswitch.MaterialSwitch;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.work.OneTimeWorkRequest;
@@ -56,24 +55,18 @@ import androidx.work.OutOfQuotaPolicy;
 import androidx.work.WorkManager;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.RingtoneSelectorDialog;
 import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.preference.SettingsActivity;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.GroupService;
-import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.services.RingtoneService;
 import ch.threema.app.services.ServicesConstants;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.workers.ShareTargetUpdateWorker;
@@ -82,7 +75,7 @@ import ch.threema.base.utils.LoggingUtil;
 import static ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE;
 import static ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE_EXCEPT_MENTIONS;
 
-public abstract class NotificationsActivity extends ThreemaActivity implements View.OnClickListener, ShowOnceDialog.ShowOnceDialogClickListener, RingtoneSelectorDialog.RingtoneSelectorDialogClickListener {
+public abstract class NotificationsActivity extends ThreemaActivity implements ShowOnceDialog.ShowOnceDialogClickListener, RingtoneSelectorDialog.RingtoneSelectorDialogClickListener {
 
     private static final Logger logger = LoggingUtil.getThreemaLogger("NotificationsActivity");
 
@@ -90,6 +83,10 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
     private static final String DIALOG_TAG_RINGTONE_SELECTOR = "drs";
     private static final String DIALOG_TAG_INDIVIDUAL_CONFIRM = "individual_confirm";
     protected static final int MUTE_INDEX_INDEFINITE = -1;
+
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     protected TextView textSoundCustom, textSoundDefault;
     protected RadioButton
         radioSoundDefault,
@@ -99,12 +96,8 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
         radioSilentExceptMentions,
         radioSoundCustom,
         radioSoundNone;
-    private MaterialButton plusButton, minusButton;
+    private MaterialCardView plusButton, minusButton;
     private ScrollView parentLayout;
-    protected RingtoneService ringtoneService;
-    protected ContactService contactService;
-    protected GroupService groupService;
-    protected PreferenceService preferenceService;
     protected MaterialSwitch notificationSettingsSwitch;
     protected TextView individualSettingsText;
     protected Uri defaultRingtone, selectedRingtone, backupSoundCustom;
@@ -142,11 +135,11 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        if (!this.requiredInstances()) {
+        super.onCreate(savedInstanceState);
+        if (!dependencies.isAvailable()) {
+            finish();
             return;
         }
-
-        super.onCreate(savedInstanceState);
 
         chatName = getIntent().getStringExtra(AppConstants.INTENT_DATA_TEXT);
 
@@ -160,14 +153,14 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
             InsetSides.all()
         );
 
-        loopViewGroup(parentLayout);
+        setClickListeners();
         ViewGroup topLayout = (ViewGroup) parentLayout.getParent();
         plusButton = findViewById(R.id.duration_plus);
         minusButton = findViewById(R.id.duration_minus);
         Button doneButton = findViewById(R.id.done_button);
 
         if (ConfigUtils.isWorkBuild()) {
-            findViewById(R.id.work_life_warning).setVisibility(preferenceService.isAfterWorkDNDEnabled() ? View.VISIBLE : View.GONE);
+            findViewById(R.id.work_life_warning).setVisibility(dependencies.getPreferenceService().isAfterWorkDNDEnabled() ? View.VISIBLE : View.GONE);
         }
 
         if (ConfigUtils.supportsNotificationChannels()) {
@@ -241,22 +234,6 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
         super.onDestroy();
     }
 
-    private void loopViewGroup(@NonNull ViewGroup group) {
-        for (int i = 0; i < group.getChildCount(); i++) {
-            View v = group.getChildAt(i);
-            if (v instanceof ViewGroup) {
-                loopViewGroup((ViewGroup) v);
-            } else {
-                if (v instanceof RadioButton ||
-                    v instanceof ImageView ||
-                    v instanceof TextView
-                ) {
-                    v.setOnClickListener(this);
-                }
-            }
-        }
-    }
-
     private int findNextHigherMuteIndex(double hours) {
         for (int i = muteTimerValuesInHours.length - 1; i >= 0; i--) {
             if (muteTimerValuesInHours[i] < hours) {
@@ -281,7 +258,9 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 
     protected void enablePlusMinus(boolean enable) {
         plusButton.setEnabled(enable);
+        plusButton.setAlpha(enable ? 1.0f : 0.2f);
         minusButton.setEnabled(enable);
+        minusButton.setAlpha(enable ? 1.0f : 0.2f);
     }
 
     @UiThread
@@ -333,7 +312,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
         }
 
         // SOUND
-        if (ringtoneService.hasCustomRingtone(uid)) {
+        if (dependencies.getRingtoneService().hasCustomRingtone(uid)) {
             if (selectedRingtone == null || selectedRingtone.toString().equals(ServicesConstants.PREFERENCES_NULL)) {
                 // silent ringtone selected
                 radioSoundNone.setChecked(true);
@@ -376,41 +355,72 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
         }
     }
 
-    @Override
-    public void onClick(@NonNull View view) {
-        @IdRes final int clickedViewId = view.getId();
-        if (clickedViewId == R.id.radio_sound_default) {
-            ringtoneService.removeCustomRingtone(this.uid);
-        } else if (clickedViewId == R.id.radio_sound_custom || clickedViewId == R.id.text_sound) {
+    public void setClickListeners() {
+
+        parentLayout.findViewById(R.id.radio_sound_default).setOnClickListener(v -> {
+            dependencies.getRingtoneService().removeCustomRingtone(this.uid);
+            refreshSettings();
+        });
+
+        parentLayout.findViewById(R.id.radio_sound_custom).setOnClickListener(v -> {
             pickRingtone(this.uid);
-        } else if (clickedViewId == R.id.radio_sound_none) {
-            ringtoneService.setRingtone(this.uid, null);
-        } else if (clickedViewId == R.id.radio_silent_off) {
+            refreshSettings();
+        });
+
+        parentLayout.findViewById(R.id.text_sound).setOnClickListener(v -> {
+            pickRingtone(this.uid);
+            refreshSettings();
+        });
+
+        parentLayout.findViewById(R.id.radio_sound_none).setOnClickListener(v -> {
+            dependencies.getRingtoneService().setRingtone(this.uid, null);
+            refreshSettings();
+        });
+
+        parentLayout.findViewById(R.id.radio_silent_off).setOnClickListener(v -> {
             onSettingChanged(null);
-        } else if (clickedViewId == R.id.radio_silent_unlimited) {
+            refreshSettings();
+        });
+
+        parentLayout.findViewById(R.id.radio_silent_unlimited).setOnClickListener(v -> {
             onSettingChanged(DEADLINE_INDEFINITE);
-        } else if (clickedViewId == R.id.radio_silent_limited) {
+            refreshSettings();
+        });
+
+        parentLayout.findViewById(R.id.radio_silent_limited).setOnClickListener(v -> {
             if (mutedTimerIndex < 0) {
                 mutedTimerIndex = 0;
             }
             final @NonNull Long muteUntilUtcMillis = muteTimerValuesInHours[mutedTimerIndex] * DateUtils.HOUR_IN_MILLIS + System.currentTimeMillis();
             onSettingChanged(muteUntilUtcMillis);
-        } else if (clickedViewId == R.id.radio_silent_except_mentions) {
+            refreshSettings();
+        });
+
+        parentLayout.findViewById(R.id.radio_silent_except_mentions).setOnClickListener(v -> {
             onSettingChanged(DEADLINE_INDEFINITE_EXCEPT_MENTIONS);
-        } else if (clickedViewId == R.id.duration_plus) {
+            refreshSettings();
+        });
+
+        parentLayout.findViewById(R.id.duration_plus).setOnClickListener(v -> {
             mutedTimerIndex = Math.min(mutedTimerIndex + 1, muteTimerValuesInHours.length - 1);
             final @NonNull Long muteUntilUtcMillis = muteTimerValuesInHours[mutedTimerIndex] * DateUtils.HOUR_IN_MILLIS + System.currentTimeMillis();
             onSettingChanged(muteUntilUtcMillis);
-        } else if (clickedViewId == R.id.duration_minus) {
+            refreshSettings();
+        });
+
+        parentLayout.findViewById(R.id.duration_minus).setOnClickListener(v -> {
             mutedTimerIndex = Math.max(mutedTimerIndex - 1, 0);
             final @NonNull Long muteUntilUtcMillis = muteTimerValuesInHours[mutedTimerIndex] * DateUtils.HOUR_IN_MILLIS + System.currentTimeMillis();
             onSettingChanged(muteUntilUtcMillis);
-        } else if (clickedViewId == R.id.prefs_button) {
+            refreshSettings();
+        });
+
+        parentLayout.findViewById(R.id.prefs_button).setOnClickListener(v -> {
             Intent intent = new Intent(this, SettingsActivity.class);
             intent.putExtra(SettingsActivity.EXTRA_SHOW_NOTIFICATION_FRAGMENT, true);
             ringtoneSettingsLauncher.launch(intent);
-        }
-        refreshSettings();
+            refreshSettings();
+        });
     }
 
     protected void setupButtons() {
@@ -428,7 +438,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
     }
 
     protected void pickRingtone(String uniqueId) {
-        Uri existingUri = this.ringtoneService.getRingtoneFromUniqueId(uniqueId);
+        Uri existingUri = dependencies.getRingtoneService().getRingtoneFromUniqueId(uniqueId);
         if (existingUri != null && existingUri.getPath() != null && existingUri.getPath().equals(ServicesConstants.PREFERENCES_NULL)) {
             existingUri = null;
         }
@@ -436,7 +446,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
             existingUri = backupSoundCustom;
         }
 
-        Uri defaultUri = this.ringtoneService.getDefaultContactRingtone();
+        Uri defaultUri = dependencies.getRingtoneService().getDefaultContactRingtone();
 
         try {
             Intent intent = RingtoneUtil.getRingtonePickerIntent(RingtoneManager.TYPE_NOTIFICATION, existingUri == null ? defaultUri : existingUri, defaultUri);
@@ -455,32 +465,6 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
         AnimationUtil.circularObscure(parentLayout, animCenterLocation[0], animCenterLocation[1], false, this::finish);
     }
 
-    @Override
-    protected boolean checkInstances() {
-        return TestUtil.required(
-            this.contactService,
-            this.groupService,
-            this.ringtoneService,
-            this.preferenceService
-        ) && super.checkInstances();
-    }
-
-    @Override
-    protected void instantiate() {
-        super.instantiate();
-
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager != null) {
-            try {
-                this.contactService = serviceManager.getContactService();
-                this.groupService = serviceManager.getGroupService();
-                this.ringtoneService = serviceManager.getRingtoneService();
-                this.preferenceService = serviceManager.getPreferenceService();
-            } catch (Exception e) {
-                LogUtil.exception(e, this);
-            }
-        }
-    }
 
     @Override
     protected boolean enableOnBackPressedCallback() {
@@ -500,7 +484,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements V
 
     @Override
     public void onRingtoneSelected(String tag, @NonNull Uri ringtone) {
-        ringtoneService.setRingtone(uid, ringtone);
+        dependencies.getRingtoneService().setRingtone(uid, ringtone);
         backupSoundCustom = ringtone;
         refreshSettings();
     }

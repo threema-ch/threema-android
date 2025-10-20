@@ -26,12 +26,14 @@ import android.content.SharedPreferences
 import android.database.Cursor
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
-import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE
-import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE_EXCEPT_MENTIONS
-import ch.threema.app.utils.ContactUtil
-import ch.threema.app.utils.GroupUtil
+import ch.threema.base.utils.Base32
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.storage.fieldExists
+import ch.threema.domain.types.Identity
+import ch.threema.storage.databaseupdate.DatabaseUpdateToVersion107.Companion.DEADLINE_INDEFINITE
+import ch.threema.storage.databaseupdate.DatabaseUpdateToVersion107.Companion.DEADLINE_INDEFINITE_EXCEPT_MENTIONS
+import ch.threema.storage.runTransaction
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import org.json.JSONArray
 import org.json.JSONException
@@ -82,7 +84,7 @@ internal class DatabaseUpdateToVersion107(
         // Result is a map of <Identity, PolicyOverride>
         val contactIdentitiesWithPolicyOverrideValues = HashMap<String, Long>()
         allExistingContactIdentities.forEach { identity ->
-            val contactUniqueIdString: String = ContactUtil.getUniqueIdString(identity)
+            val contactUniqueIdString: String = getContactUniqueIdString(identity)
             uniqueReceiverIdsWithPolicyOverrideValues[contactUniqueIdString]?.let { policyOverrideValue ->
                 contactIdentitiesWithPolicyOverrideValues[identity] = policyOverrideValue
             }
@@ -108,7 +110,7 @@ internal class DatabaseUpdateToVersion107(
         // Result is a map of <GroupDbId, PolicyOverride> for the groups
         val groupDbIdsWithPolicyOverrideValues = HashMap<Long, Long>()
         allExistingGroupsDbIds.forEach { groupDbId: Long ->
-            val groupUniqueIdString: String = GroupUtil.getUniqueIdString(groupDbId)
+            val groupUniqueIdString: String = getGroupUniqueIdString(groupDbId)
             uniqueReceiverIdsWithPolicyOverrideValues[groupUniqueIdString]?.let { policyOverrideValue ->
                 groupDbIdsWithPolicyOverrideValues[groupDbId] = policyOverrideValue
             }
@@ -137,7 +139,7 @@ internal class DatabaseUpdateToVersion107(
      *  - When user taps `On` or activates the mute for a specific time, then the entry will result in `list_muted_chats`.
      *  - Only one entry for one group will exist at a time between these two managed lists
      *
-     *  @return A map where the unique-receiver-id (`MessageReceiver.getUniqueIdString`) maps to utc timestamps in milliseconds.
+     *  @return A map where the unique-receiver-id (getGroupUniqueIdString) maps to utc timestamps in milliseconds.
      *  The values can also be one of the special cases [DEADLINE_INDEFINITE] or [DEADLINE_INDEFINITE_EXCEPT_MENTIONS].
      */
     private fun readExistingMutedOverrideSettings(prefs: SharedPreferences): Map<String, Long> {
@@ -225,26 +227,23 @@ internal class DatabaseUpdateToVersion107(
         if (contactIdentitiesWithPolicyOverrideValues.isEmpty() && groupDbIdsWithPolicyOverrideValues.isEmpty()) {
             return
         }
-
-        sqLiteDatabase.beginTransaction()
         try {
-            contactIdentitiesWithPolicyOverrideValues.forEach { (identity, policyOverrideValue) ->
-                sqLiteDatabase.rawExecSQL(
-                    "UPDATE `contacts` SET notificationTriggerPolicyOverride = $policyOverrideValue WHERE identity = '$identity';",
-                )
-                logger.info("Stored notification-trigger-policy-override value of {} for contact with identity {}", policyOverrideValue, identity)
+            sqLiteDatabase.runTransaction {
+                contactIdentitiesWithPolicyOverrideValues.forEach { (identity, policyOverrideValue) ->
+                    rawExecSQL(
+                        "UPDATE `contacts` SET notificationTriggerPolicyOverride = $policyOverrideValue WHERE identity = '$identity';",
+                    )
+                    logger.info("Stored notification-trigger-policy-override value of {} for contact with identity {}", policyOverrideValue, identity)
+                }
+                groupDbIdsWithPolicyOverrideValues.forEach { (groupDbId, policyOverrideValue) ->
+                    rawExecSQL(
+                        "UPDATE `m_group` SET notificationTriggerPolicyOverride = $policyOverrideValue WHERE id = $groupDbId;",
+                    )
+                    logger.info("Stored notification-trigger-policy-override value of {} for group with db-id {}", policyOverrideValue, groupDbId)
+                }
             }
-            groupDbIdsWithPolicyOverrideValues.forEach { (groupDbId, policyOverrideValue) ->
-                sqLiteDatabase.rawExecSQL(
-                    "UPDATE `m_group` SET notificationTriggerPolicyOverride = $policyOverrideValue WHERE id = $groupDbId;",
-                )
-                logger.info("Stored notification-trigger-policy-override value of {} for group with db-id {}", policyOverrideValue, groupDbId)
-            }
-            sqLiteDatabase.setTransactionSuccessful()
         } catch (exception: Exception) {
             logger.error("Failure while updating notificationTriggerPolicyOverride cells", exception)
-        } finally {
-            sqLiteDatabase.endTransaction()
         }
     }
 
@@ -252,10 +251,32 @@ internal class DatabaseUpdateToVersion107(
 
     override fun getVersion() = VERSION
 
+    private fun getContactUniqueIdString(identity: Identity?): String =
+        if (identity != null) {
+            getUniqueIdString("c-$identity")
+        } else {
+            ""
+        }
+
+    private fun getGroupUniqueIdString(groupId: Long): String =
+        getUniqueIdString("g-$groupId")
+
+    private fun getUniqueIdString(value: String): String =
+        try {
+            val messageDigest = MessageDigest.getInstance("SHA-256")
+            messageDigest.update(value.toByteArray())
+            Base32.encode(messageDigest.digest())
+        } catch (_: NoSuchAlgorithmException) {
+            ""
+        }
+
     companion object {
         const val VERSION = 107
 
         private const val LEGACY_PREFS_KEY_LIST_MUTED_CHATS = "list_muted_chats"
         private const val LEGACY_PREFS_KEY_LIST_MENTION_ONLY = "list_mention_only"
+
+        const val DEADLINE_INDEFINITE: Long = -1
+        const val DEADLINE_INDEFINITE_EXCEPT_MENTIONS: Long = -2
     }
 }

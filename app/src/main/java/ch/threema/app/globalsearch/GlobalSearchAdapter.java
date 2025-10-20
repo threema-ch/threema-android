@@ -67,7 +67,6 @@ import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.CheckableRelativeLayout;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
-import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.GroupUtil;
@@ -92,7 +91,7 @@ import static ch.threema.app.utils.MessageUtilKt.getUiContentColor;
 
 public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final Logger logger = LoggingUtil.getThreemaLogger("GlobalSearchAdapter");
-    private static final String FLOW_CHARACTER = "\u25BA\uFE0E";
+    private static final String FLOW_CHARACTER = "\u25BA\uFE0E"; // "►"
 
     private GroupService groupService;
     private ContactService contactService;
@@ -109,7 +108,6 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final @LayoutRes int itemLayout;
     private final ColorStateList colorStateListSend, colorStateListReceive;
     private final @NonNull RequestManager requestManager;
-    private final boolean appUsesDynamicColors;
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView titleView;
@@ -134,7 +132,6 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             avatarListItemHolder = new AvatarListItemHolder();
             avatarListItemHolder.avatarView = avatarView;
-            avatarListItemHolder.avatarLoadingAsyncTask = null;
         }
 
         protected boolean getHasBubbleBackground() {
@@ -164,8 +161,6 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         this.colorStateListSend = ContextCompat.getColorStateList(context, R.color.bubble_send_colorstatelist);
         this.colorStateListReceive = ContextCompat.getColorStateList(context, R.color.bubble_receive_colorstatelist);
-
-        this.appUsesDynamicColors = ColorUtil.areDynamicColorsCurrentlyApplied(context);
     }
 
     @NonNull
@@ -226,14 +221,14 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                     viewHolder.titleView.setText(getTitle((GroupMessageModel) messageModel, groupModel));
                 } else {
-                    final ContactModel contactModel = this.contactService.getByIdentity(messageModel.getIdentity());
                     AvatarListItemUtil.loadAvatar(
-                        messageModel.isOutbox() ? contactService.getMe() : contactModel,
+                        messageModel.getIdentity(),
                         contactService,
                         viewHolder.avatarListItemHolder,
                         requestManager
                     );
 
+                    final ContactModel contactModel = this.contactService.getByIdentity(messageModel.getIdentity());
                     viewHolder.titleView.setText(getTitle(messageModel, contactModel));
                 }
                 viewHolder.dateView.setText(LocaleUtil.formatDateRelative(messageModel.getCreatedAt().getTime()));
@@ -244,7 +239,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 } else if (messageModel.getType() == MessageType.BALLOT) {
                     viewHolder.thumbnailView.setImageResource(R.drawable.ic_outline_rule);
                     viewHolder.thumbnailView.setVisibility(View.VISIBLE);
-                    setupPlaceholder(viewHolder, messageModel);
+                    setupPlaceholder(viewHolder);
                 } else {
                     viewHolder.thumbnailView.setVisibility(View.GONE);
                 }
@@ -271,7 +266,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             ((CheckableRelativeLayout) viewHolder.itemView).setChecked(checkedItems.get(position));
         } else {
             // Covers the case of data not being ready yet.
-            viewHolder.titleView.setText("No data");
+            viewHolder.titleView.setText("");
             viewHolder.dateView.setText("");
             viewHolder.snippetView.setText("");
         }
@@ -301,7 +296,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    private String getTitle(AbstractMessageModel messageModel, ContactModel contactModel) {
+    private String getTitle(@NonNull AbstractMessageModel messageModel, @Nullable ContactModel contactModel) {
         String name = NameUtil.getDisplayNameOrNickname(context, messageModel, contactService);
         return messageModel.isOutbox() ?
             name + " " + FLOW_CHARACTER + " " + NameUtil.getDisplayNameOrNickname(contactModel, true) :
@@ -335,7 +330,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             .addListener(new RequestListener<>() {
                 @Override
                 public boolean onLoadFailed(@Nullable GlideException e, Object model, @NonNull Target<Bitmap> target, boolean isFirstResource) {
-                    setupPlaceholder(viewHolder, messageModel);
+                    setupPlaceholder(viewHolder);
                     return false;
                 }
 
@@ -349,36 +344,20 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             .into(viewHolder.thumbnailView);
     }
 
-    private void setupPlaceholder(@NonNull ViewHolder viewHolder, @NonNull AbstractMessageModel messageModel) {
-        viewHolder.thumbnailView.setBackgroundColor(getThumbnailViewBackgroundColor(messageModel));
-        viewHolder.thumbnailView.setColorFilter(getThumbnailViewIconTintColor(messageModel), PorterDuff.Mode.SRC_IN);
+    private void setupPlaceholder(@NonNull ViewHolder viewHolder) {
+        viewHolder.thumbnailView.setBackgroundColor(getThumbnailViewBackgroundColor());
+        viewHolder.thumbnailView.setColorFilter(getThumbnailViewIconTintColor(), PorterDuff.Mode.SRC_IN);
         viewHolder.thumbnailView.setScaleType(ImageView.ScaleType.CENTER);
     }
 
     @ColorInt
-    private int getThumbnailViewBackgroundColor(@NonNull AbstractMessageModel messageModel) {
-        if (shouldApplyDynamicColorsToMessageItemView(messageModel)) {
-            return ConfigUtils.getColorFromAttribute(context, R.attr.colorPrimary);
-        } else {
-            return context.getResources().getColor(
-                ColorUtil.shouldUseDarkVariant(context)
-                    ? R.color.md_theme_dark_tertiaryContainer
-                    : R.color.md_theme_light_tertiaryContainer
-            );
-        }
+    private int getThumbnailViewBackgroundColor() {
+        return ConfigUtils.getColorFromAttribute(context, R.attr.colorSecondary);
     }
 
     @ColorInt
-    private int getThumbnailViewIconTintColor(@NonNull AbstractMessageModel messageModel) {
-        if (shouldApplyDynamicColorsToMessageItemView(messageModel)) {
-            return ConfigUtils.getColorFromAttribute(context, R.attr.colorOnPrimary);
-        } else {
-            return context.getResources().getColor(
-                ColorUtil.shouldUseDarkVariant(context)
-                    ? R.color.md_theme_dark_onTertiaryContainer
-                    : R.color.md_theme_light_onTertiaryContainer
-            );
-        }
+    private int getThumbnailViewIconTintColor() {
+        return ConfigUtils.getColorFromAttribute(context, R.attr.colorOnSecondary);
     }
 
     /**
@@ -425,7 +404,12 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private void setSnippetToTextView(@NonNull AbstractMessageModel messageModel, ViewHolder viewHolder) {
         CharSequence snippetText = null;
-        switch (messageModel.getType()) {
+        MessageType type = messageModel.getType();
+        if (type == null) {
+            logger.warn("Message type is null");
+            return;
+        }
+        switch (type) {
             case FILE:
                 // fallthrough
             case IMAGE:
@@ -525,19 +509,6 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     public void onQueryChanged(String queryText) {
         this.queryString = queryText;
-    }
-
-    /**
-     * We only want to apply dynamic colors if the current item view is used to
-     * render an outbox message <strong>and</strong> they are enabled by the
-     * threema setting. This workaround is necessary because we actually use
-     * different color references when this returns true.
-     */
-    private boolean shouldApplyDynamicColorsToMessageItemView(@NonNull AbstractMessageModel messageModel) {
-        if (!appUsesDynamicColors) {
-            return false;
-        }
-        return messageModel.isOutbox();
     }
 
     public interface OnClickItemListener {

@@ -1,1 +1,8 @@
-- Behebung eines Fehlers bei der Zuordnung von 👍/👎-Emoji-Reaktionen zu den früheren «zustimmen»/«ablehnen»-Reaktionen
+- Android 5 und 6 werden nicht mehr unterstützt
+- Anhebung des Android-SDK-Levels auf 35 (Android 15)
+- Unterstützung für Seitengrössen von 16 KB
+- Unterstützung von Emoji v16.0
+- Verwendung von «libthreema» für kryptografische Vorgänge
+- Behebung eines Fehlers bei der Aufnahme von Videos
+- Verschiedene Farb- und UI-Verbesserungen
+- Verbesserungen und Behebung verschiedener Fehler

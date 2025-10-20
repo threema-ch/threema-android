@@ -38,6 +38,7 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
@@ -45,12 +46,12 @@ import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.home.HomeActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.fragments.wizard.WizardFragment1;
-import ch.threema.app.services.UserService;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SimpleTextWatcher;
@@ -77,8 +78,8 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
     private static final String DIALOG_TAG_UNSAFE_PASSWORD = "unsafe";
     private static final String DIALOG_TAG_UNSAFE_PASSWORD_WORK = "unsafework";
 
-    private ThreemaSafeService threemaSafeService;
-    private UserService userService;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private EditText password1, password2;
     private String safePassword = null;
@@ -106,20 +107,15 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
     @SuppressLint("SetTextI18n")
     @Override
     protected boolean initActivity(Bundle savedInstanceState) {
-        super.initActivity(savedInstanceState);
+        if (!super.initActivity(savedInstanceState)) {
+            return false;
+        }
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar == null) {
             return false;
         }
         actionBar.setDisplayHomeAsUpEnabled(true);
-
-        try {
-            threemaSafeService = ThreemaApplication.getServiceManager().getThreemaSafeService();
-            userService = ThreemaApplication.getServiceManager().getUserService();
-        } catch (Exception e) {
-            return false;
-        }
 
         Intent intent = getIntent();
 
@@ -159,7 +155,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
         nextButton.setEnabled(false);
         nextButton.setVisibility(View.VISIBLE);
 
-        this.serverInfo = preferenceService.getThreemaSafeServerInfo();
+        this.serverInfo = dependencies.getPreferenceService().getThreemaSafeServerInfo();
 
         if (ConfigUtils.isWorkRestricted()) {
             ThreemaSafeMDMConfig safeMDMConfig = ThreemaSafeMDMConfig.getInstance();
@@ -208,7 +204,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 
                 @Override
                 protected Boolean doInBackground(Void... voids) {
-                    masterkey = threemaSafeService.deriveMasterKey(safePassword, userService.getIdentity());
+                    masterkey = dependencies.getThreemaSafeService().deriveMasterKey(safePassword, dependencies.getUserService().getIdentity());
 
                     if (!TextUtil.checkBadPassword(ThreemaSafeConfigureActivity.this, safePassword)) {
                         if (updatePasswordOnly) {
@@ -244,7 +240,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
                 }
             }.execute();
         } else {
-            threemaSafeService.storeMasterKey(new byte[0]);
+            dependencies.getThreemaSafeService().storeMasterKey(new byte[0]);
             finish();
         }
     }
@@ -252,7 +248,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
     @WorkerThread
     private boolean deleteExistingBackup() {
         try {
-            threemaSafeService.deleteBackup();
+            dependencies.getThreemaSafeService().deleteBackup();
             return true;
         } catch (ThreemaException e) {
             logger.error("Exception", e);
@@ -261,15 +257,16 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
     }
 
     private void storeKeyAndFinish(byte[] masterkey) {
+        var threemaSafeService = dependencies.getThreemaSafeService();
         threemaSafeService.storeMasterKey(masterkey);
-        preferenceService.setThreemaSafeServerInfo(serverInfo);
+        dependencies.getPreferenceService().setThreemaSafeServerInfo(serverInfo);
         threemaSafeService.setEnabled(true);
         threemaSafeService.uploadNow(true);
 
         if (updatePasswordOnly) {
-            Toast.makeText(ThreemaApplication.getAppContext(), R.string.safe_password_updated, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.safe_password_updated, Toast.LENGTH_LONG).show();
         } else {
-            Toast.makeText(ThreemaApplication.getAppContext(), R.string.safe_activated, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.safe_activated, Toast.LENGTH_LONG).show();
         }
 
         if (openHomeActivity) {
@@ -284,11 +281,11 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
         }
 
         @Override
-        public void afterTextChanged(@NonNull Editable s) {
+        public void afterTextChanged(@NonNull Editable editable) {
             boolean passwordOk = getPasswordOK(password1.getText().toString(), password2.getText().toString());
 
             if (passwordOk) {
-                safePassword = s.toString();
+                safePassword = editable.toString();
                 nextButton.setEnabled(true);
             } else {
                 safePassword = null;

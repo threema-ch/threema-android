@@ -801,17 +801,18 @@ payload: &payload
           `outer-type` and `outer-message` and the associated conversation to
           other devices and wait for reflection acknowledgement.² If this fails,
           exceptionally abort these steps and the connection.³
-      23. _Acknowledge_ the message.⁴
-      24. If the properties associated to `type` do not require sending
-          automatic delivery receipts or `flags` contains the _no
-          automatic delivery receipts_ (`0x80`) flag, abort these steps.
-      25. Run the _Bundled Messages Send Steps_ with the following properties:
+      23. If the properties associated to `inner-type` require sending
+          automatic delivery receipts and `flags` does not contain the _no
+          automatic delivery receipts_ (`0x80`) flag, schedule a persistent task
+          to run the _Bundled Messages Send Steps_ with the following
+          properties:
           - `id` being a random message ID,
           - `created-at` set to the current timestamp,
           - `receivers` set to `contact`,
           - to construct a [`delivery-receipt`](ref:e2e.delivery-receipt)
             message with status _received_ (`0x01`) and the respective
             `message-id`.
+      24. _Acknowledge_ the message.
 
       ¹: Note that the `nickname` of `MessageMetadata` may be undefined (leading
       to no changes) or defined but explicitly empty (leading to the nickname of
@@ -828,11 +829,6 @@ payload: &payload
       side effects have been applied. Otherwise, if the receive process is
       interrupted and another device takes over, it would discard the message as
       a duplicate.
-
-      ⁴: Because the message is already acknowledged towards the server here,
-      the following steps may not get executed at all if the connection drops
-      or the execution fails. All following steps must therefore be
-      non-critical.
 
       The following steps are defined as _Acknowledge_ steps for an incoming
       message:
@@ -940,8 +936,6 @@ payload: &payload
           - `0x00`: No push
           - `0x01`: APNs Production
           - `0x02`: APNs Development
-          - `0x03`: APNs Production with `content-available` key
-          - `0x04`: APNs Development with `content-available` key
           - `0x05`: APNs Production with `mutable-content` key
           - `0x06`: APNs Development with `mutable-content` key
           - `0x11`: FCM with empty payload
@@ -1690,24 +1684,24 @@ e2e: &e2e
         1. Mark the group as _left_.
         2. Persist the previous member setup so that the group can be cloned.
         3. Run the _Rejected Messages Refresh Steps_ for the group.
-    9.  If the `intent` is to _disband and remove_, remove the group and all
+    9.  Let `group` be a snapshot of the current group state.
+    10. If the `intent` is to _disband and remove_, remove the group and all
         associated messages from storage.
-    10. Let `message-id` be a random message ID.
-    11. Schedule a persistent task to run the following steps:
+    11. Let `message-id` be a random message ID.
+    12. Schedule a persistent task to run the following steps:
         1. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
            precondition:
            1. If the group exists and is not marked as _left_, log an error that
               a major group state inconsistency has been detected¹ and abort
               these steps.
-        2. Let `group` be a snapshot of the current group state.
-        3. Run the _Bundled Messages Send Steps_ with the following properties:
+        2. Run the _Bundled Messages Send Steps_ with the following properties:
            - `id` set to `message-id`,
            - `created-at` set to the current timestamp,
            - `receivers` set to `group.members`,
            - to construct a [`group-setup`](ref:e2e.group-setup) (wrapped by
              [`group-creator-container`](ref:e2e.group-creator-container)) with
              an empty members set.
-        4. (MD) Commit the transaction and await acknowledgement.
+        3. (MD) Commit the transaction and await acknowledgement.
 
     ¹: Disbanding a group as the creator makes the group strictly non-reusable.
 
@@ -1735,22 +1729,36 @@ e2e: &e2e
         1. Mark the group as _left_.
         2. Persist the previous member setup so that the group can be cloned.
         3. Run the _Rejected Messages Refresh Steps_ for the group.
-    9.  If the `intent` is to _leave and remove_, remove the group and all
+    9.  Let `group` be a snapshot of the current group state.
+    10. If the `intent` is to _leave and remove_, remove the group and all
         associated messages from storage.
-    10. Let `message-id` be a random message ID.
-    11. Schedule a persistent task to run the following steps:
+    11. Let `message-id` be a random message ID.
+    12. Schedule a persistent task to run the following steps:
         1. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
            precondition:
            1. If the group exists and is not marked as _left_, log a warning
               that a group sync race occurred and abort these steps.
-        2. Let `group` be a snapshot of the current group state.
-        3. Run the _Bundled Messages Send Steps_ with the following properties:
+        2. Run the _Bundled Messages Send Steps_ with the following properties:
            - `id` set to `message-id`,
            - `created-at` set to the current timestamp,
            - `receivers` set to `group.members`,
            - to construct a [`group-leave`](ref:e2e.group-leave) (wrapped by
              [`group-member-container`](ref:e2e.group-member-container))
-        4. (MD) Commit the transaction and await acknowledgement.
+        3. (MD) Commit the transaction and await acknowledgement.
+
+    #### Remove Group
+
+    The following steps must be invoked when the user intends to remove a group
+    that is marked as _left_.
+
+    1. If the group is not marked as _left_, log an error and abort these steps.
+    2. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+       precondition:
+       1. If the group does not exist or the group is not marked as _left_, log
+          a warning and abort these steps.
+    3. (MD) Reflect a `GroupSync.Delete` for this group.
+    4. (MD) Commit the transaction and await acknowledgement.
+    5. Remove the group and all associated messages from storage.
 
     #### Group Resync
 
@@ -2303,7 +2311,7 @@ e2e: &e2e
 
     Since messages have a strict maximum size limitation, large binary blobs
     are uploaded to the blob server. Blobs currently have a maximum size of
-    50 MiB.
+    100 MiB.
 
     When Multi-Device is activated, all Blobs must be downloaded via the
     respective Blob Mirror unless explicitly stated otherwise.
@@ -3665,11 +3673,14 @@ e2e: &e2e
           - Description (`'n'`): Choice description in form of a string.
           - Sort key (`'o'`, DEPRECATED): Set this to the index of the choice
             object within the _choices_ list.
-          - Participant votes (`'r'`): A list of indices referring to the
-            index of the participant (as defined in the _participants_ list)
-            that cast a vote for this choice. This field must only be present
-            if the poll is being _closed_. In display mode _summary_ this
-            should be an empty list and must be ignored by the receiver.
+          - Participant votes (`'r'`): A list of votes for this choice in the
+            same order as the `participants` (i.e. mapped by their associated
+            index). The integer `0` indicates that the participant did not vote
+            for this choice. Any integer value other than `0` indicates that the
+            participant voted for this choice. Must be of same length as
+            `participants`. This field must only be present if the poll is being
+            _closed_. In display mode _summary_ this should be an empty list and
+            must be ignored by the receiver.
           - Total amount of votes (`'t'`): The total amount of votes for this
             choice. This field must only be present if the poll is being
             _closed_. In display mode _normal_ this field should not be

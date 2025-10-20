@@ -49,7 +49,7 @@ public class ConnectionIndicatorUtil {
 
     @UiThread
     public void updateConnectionIndicator(View connectionIndicator, ConnectionState connectionState) {
-        if (TestUtil.required(connectionIndicator)) {
+        if (connectionIndicator != null) {
             if (connectionState == ConnectionState.CONNECTED) {
                 connectionIndicator.setBackgroundColor(this.orange);
             } else if (connectionState == ConnectionState.LOGGEDIN) {

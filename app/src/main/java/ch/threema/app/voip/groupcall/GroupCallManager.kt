@@ -24,10 +24,13 @@ package ch.threema.app.voip.groupcall
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import ch.threema.app.voip.CallAudioManager
+import ch.threema.app.voip.groupcall.sfu.CallId
 import ch.threema.app.voip.groupcall.sfu.GroupCallController
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.GroupModel
+import kotlinx.coroutines.flow.Flow
 
 @JvmInline
 value class LocalGroupId(val id: Int)
@@ -110,12 +113,12 @@ interface GroupCallManager {
      * Note: There can only be ONE call (be it 1:1 or be it GroupCall) at any time! If there is another
      * ongoing call the other call must be ended.
      *
-     * @param group The group in which the call should be joined
+     * @param localGroupId The group in which the call should be joined
      *
      * @return The [GroupCallController] of the joined call or `null` if no call is running in this group
      */
     @WorkerThread
-    suspend fun joinCall(group: GroupModel): GroupCallController?
+    suspend fun joinCall(localGroupId: LocalGroupId): GroupCallController?
 
     /**
      * Join a GroupCall. This may be a call that has to be created yet or a call
@@ -159,6 +162,12 @@ interface GroupCallManager {
      */
     @AnyThread
     fun isJoinedCall(call: GroupCallDescription): Boolean
+
+    /**
+     * @return true if the call with the passed callId is currently joined
+     */
+    @AnyThread
+    fun isJoinedCall(callId: CallId): Boolean
 
     @AnyThread
     fun hasJoinedCall(groupId: LocalGroupId): Boolean
@@ -205,7 +214,12 @@ interface GroupCallManager {
      */
     @AnyThread
     fun removeGroupCallParticipants(
-        identities: Set<String>,
+        identities: Set<Identity>,
         groupModel: ch.threema.data.models.GroupModel,
     )
+
+    /**
+     *  Creates a *cold* [Flow] that provides every change to the currently running calls
+     */
+    fun watchRunningCalls(): Flow<Map<CallId, GroupCallDescription>>
 }

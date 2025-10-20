@@ -23,11 +23,11 @@ package ch.threema.app.compose.common.text
 
 import ch.threema.app.compose.common.text.conversation.ConversationTextAnalyzer
 import ch.threema.app.compose.common.text.conversation.ConversationTextAnalyzer.Result
+import ch.threema.domain.types.Identity
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
-import kotlin.test.assertTrue
+import kotlin.test.assertNotNull
 
 class ConversationTextAnalyzerTest {
 
@@ -37,13 +37,13 @@ class ConversationTextAnalyzerTest {
         val rawInput = "Hey you, could you please send me the file?"
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = false,
         )
 
         // assert
-        assertTrue(searchResult.items.isEmpty())
+        assertAnalyzeResult(result, itemCount = 0)
     }
 
     @Test
@@ -52,15 +52,15 @@ class ConversationTextAnalyzerTest {
         val rawInput = "\u2764" // ❤
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = false,
         )
 
         // assert
-        assertTrue(searchResult.items.size == 1)
-        assertEquals(0, searchResult.emojis.first().startIndex)
-        assertEquals(1, searchResult.emojis.first().length)
+        assertAnalyzeResult(result, itemCount = 1) {
+            assertEmoji(startsAtIndex = 0, ofLength = 1)
+        }
     }
 
     @Test
@@ -69,15 +69,15 @@ class ConversationTextAnalyzerTest {
         val rawInput = "\uD83D\uDC95" // 💕
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = false,
         )
 
         // assert
-        assertTrue(searchResult.items.size == 1)
-        assertEquals(0, searchResult.emojis.first().startIndex)
-        assertEquals(2, searchResult.emojis.first().length)
+        assertAnalyzeResult(result, itemCount = 1) {
+            assertEmoji(startsAtIndex = 0, ofLength = 2)
+        }
     }
 
     @Test
@@ -86,15 +86,15 @@ class ConversationTextAnalyzerTest {
         val rawInput = "\uD83D\uDC68\u200D\u2764\uFE0F\u200D\uD83D\uDC68" // 👨‍❤️‍👨
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = false,
         )
 
         // assert
-        assertTrue(searchResult.items.size == 1)
-        assertEquals(0, searchResult.emojis.first().startIndex)
-        assertEquals(8, searchResult.emojis.first().length)
+        assertAnalyzeResult(result, itemCount = 1) {
+            assertEmoji(startsAtIndex = 0, ofLength = 8)
+        }
     }
 
     @Test
@@ -103,17 +103,16 @@ class ConversationTextAnalyzerTest {
         val rawInput = "\uD83C\uDFD4\uD83D\uDC95" // 🏔💕
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = false,
         )
 
         // assert
-        assertTrue(searchResult.items.size == 2)
-        assertEquals(0, searchResult.emojis[0].startIndex)
-        assertEquals(2, searchResult.emojis[0].length)
-        assertEquals(2, searchResult.emojis[1].startIndex)
-        assertEquals(2, searchResult.emojis[1].length)
+        assertAnalyzeResult(result, itemCount = 2) {
+            assertEmoji(startsAtIndex = 0, ofLength = 2)
+            assertEmoji(startsAtIndex = 2, ofLength = 2)
+        }
     }
 
     @Test
@@ -124,19 +123,17 @@ class ConversationTextAnalyzerTest {
             "Hey look at this mountain \uD83C\uDFD4, the double hearts \uD83D\uDC95 and this old-school heart emoji \u2764. Cool right? Trademark: ™"
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = false,
         )
 
         // assert
-        assertTrue(searchResult.items.size == 3)
-        assertEquals(26, searchResult.emojis[0].startIndex)
-        assertEquals(2, searchResult.emojis[0].length)
-        assertEquals(48, searchResult.emojis[1].startIndex)
-        assertEquals(2, searchResult.emojis[1].length)
-        assertEquals(83, searchResult.emojis[2].startIndex)
-        assertEquals(1, searchResult.emojis[2].length)
+        assertAnalyzeResult(result, itemCount = 3) {
+            assertEmoji(startsAtIndex = 26, ofLength = 2)
+            assertEmoji(startsAtIndex = 48, ofLength = 2)
+            assertEmoji(startsAtIndex = 83, ofLength = 1)
+        }
     }
 
     @Test
@@ -145,19 +142,15 @@ class ConversationTextAnalyzerTest {
         val rawInput = "@[0123ABCD]"
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = true,
         )
 
         // assert
-        val actualMentions = searchResult.items.map { it as Result.SearchResult.Mention }
-        assertContentEquals(
-            listOf(
-                Result.SearchResult.Mention(startIndex = 0, identity = "0123ABCD"),
-            ),
-            actualMentions,
-        )
+        assertAnalyzeResult(result, itemCount = 1) {
+            assertMention(startsAtIndex = 0, forIdentity = "0123ABCD")
+        }
     }
 
     @Test
@@ -166,21 +159,17 @@ class ConversationTextAnalyzerTest {
         val rawInput = "@[0123ABCD]@[3210DCBA]@[@@@@@@@@]"
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = true,
         )
 
         // assert
-        val actualMentions = searchResult.items.map { it as Result.SearchResult.Mention }
-        assertContentEquals(
-            listOf(
-                Result.SearchResult.Mention(startIndex = 0, identity = "0123ABCD"),
-                Result.SearchResult.Mention(startIndex = 11, identity = "3210DCBA"),
-                Result.SearchResult.Mention(startIndex = 22, identity = "@@@@@@@@"),
-            ),
-            actualMentions,
-        )
+        assertAnalyzeResult(result, itemCount = 3) {
+            assertMention(startsAtIndex = 0, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 11, forIdentity = "3210DCBA")
+            assertMention(startsAtIndex = 22, forIdentity = "@@@@@@@@")
+        }
     }
 
     @Test
@@ -189,22 +178,18 @@ class ConversationTextAnalyzerTest {
         val rawInput = " @[0123ABCD]  @[3210DCBA]  @[@@@@@@@@]  @[*0123456]"
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = true,
         )
 
         // assert
-        val actualMentions = searchResult.items.map { it as Result.SearchResult.Mention }
-        assertContentEquals(
-            listOf(
-                Result.SearchResult.Mention(startIndex = 1, identity = "0123ABCD"),
-                Result.SearchResult.Mention(startIndex = 14, identity = "3210DCBA"),
-                Result.SearchResult.Mention(startIndex = 27, identity = "@@@@@@@@"),
-                Result.SearchResult.Mention(startIndex = 40, identity = "*0123456"),
-            ),
-            actualMentions,
-        )
+        assertAnalyzeResult(result, itemCount = 4) {
+            assertMention(startsAtIndex = 1, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 14, forIdentity = "3210DCBA")
+            assertMention(startsAtIndex = 27, forIdentity = "@@@@@@@@")
+            assertMention(startsAtIndex = 40, forIdentity = "*0123456")
+        }
     }
 
     @Test
@@ -214,19 +199,15 @@ class ConversationTextAnalyzerTest {
         val rawInput = "@[0123ABCD], @[SHORT] and @[@@@@@@@@@] could you please send me the file?"
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = true,
         )
 
         // assert
-        val actualMentions = searchResult.items.map { it as Result.SearchResult.Mention }
-        assertContentEquals(
-            listOf(
-                Result.SearchResult.Mention(startIndex = 0, identity = "0123ABCD"),
-            ),
-            actualMentions,
-        )
+        assertAnalyzeResult(result, itemCount = 1) {
+            assertMention(startsAtIndex = 0, forIdentity = "0123ABCD")
+        }
     }
 
     @Test
@@ -235,21 +216,17 @@ class ConversationTextAnalyzerTest {
         val rawInput = "Text @[0123ABCD] text @[@@@@@@@@] text @[*0123456] Prefix"
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = true,
         )
 
         // assert
-        val actualMentions = searchResult.items.map { it as Result.SearchResult.Mention }
-        assertContentEquals(
-            listOf(
-                Result.SearchResult.Mention(startIndex = 5, identity = "0123ABCD"),
-                Result.SearchResult.Mention(startIndex = 22, identity = "@@@@@@@@"),
-                Result.SearchResult.Mention(startIndex = 39, identity = "*0123456"),
-            ),
-            actualMentions,
-        )
+        assertAnalyzeResult(result, itemCount = 3) {
+            assertMention(startsAtIndex = 5, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 22, forIdentity = "@@@@@@@@")
+            assertMention(startsAtIndex = 39, forIdentity = "*0123456")
+        }
     }
 
     @Test
@@ -258,13 +235,13 @@ class ConversationTextAnalyzerTest {
         val rawInput = "Could you please send me the file?"
 
         // act
-        val searchResult = ConversationTextAnalyzer.analyze(
+        val result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = true,
         )
 
         // assert
-        assertTrue(searchResult.items.isEmpty())
+        assertAnalyzeResult(result, itemCount = 0)
     }
 
     @Test
@@ -273,21 +250,16 @@ class ConversationTextAnalyzerTest {
         val rawInput = "Start \uD83C\uDF36 mid @[0123ABCD] end."
 
         // act
-        val searchResult: Result = ConversationTextAnalyzer.analyze(
+        val result: Result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = true,
         )
 
         // assert
-        assertEquals(2, searchResult.items.size)
-        assertEquals(
-            6,
-            (searchResult.items[0] as Result.SearchResult.Emoji).startIndex,
-        )
-        assertEquals(
-            Result.SearchResult.Mention(startIndex = 13, identity = "0123ABCD"),
-            searchResult.items[1],
-        )
+        assertAnalyzeResult(result, itemCount = 2) {
+            assertEmoji(startsAtIndex = 6, ofLength = 2)
+            assertMention(startsAtIndex = 13, forIdentity = "0123ABCD")
+        }
     }
 
     @Test
@@ -296,27 +268,16 @@ class ConversationTextAnalyzerTest {
         val rawInput = "Start @[0123ABCD] mid \uD83C\uDF36 end."
 
         // act
-        val searchResult: Result = ConversationTextAnalyzer.analyze(
+        val result: Result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = true,
         )
 
         // assert
-        assertEquals(2, searchResult.items.size)
-        assertIs<Result.SearchResult.Mention>(searchResult.items[0])
-        assertIs<Result.SearchResult.Emoji>(searchResult.items[1])
-        assertEquals(
-            Result.SearchResult.Mention(startIndex = 6, identity = "0123ABCD"),
-            searchResult.items[0],
-        )
-        assertEquals(
-            22,
-            (searchResult.items[1] as Result.SearchResult.Emoji).startIndex,
-        )
-        assertEquals(
-            2,
-            (searchResult.items[1] as Result.SearchResult.Emoji).length,
-        )
+        assertAnalyzeResult(result, itemCount = 2) {
+            assertMention(startsAtIndex = 6, forIdentity = "0123ABCD")
+            assertEmoji(startsAtIndex = 22, ofLength = 2)
+        }
     }
 
     @Test
@@ -327,20 +288,21 @@ class ConversationTextAnalyzerTest {
             "mentions here @[0123ABCD] @[0123ABCD] ending it with \uD83D\uDC9A."
 
         // act
-        val searchResult: Result = ConversationTextAnalyzer.analyze(
+        val result: Result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = true,
         )
 
         // assert
-        assertEquals(7, searchResult.items.size)
-        assertIs<Result.SearchResult.Emoji>(searchResult.items[0])
-        assertIs<Result.SearchResult.Mention>(searchResult.items[1])
-        assertIs<Result.SearchResult.Emoji>(searchResult.items[2])
-        assertIs<Result.SearchResult.Emoji>(searchResult.items[3])
-        assertIs<Result.SearchResult.Mention>(searchResult.items[4])
-        assertIs<Result.SearchResult.Mention>(searchResult.items[5])
-        assertIs<Result.SearchResult.Emoji>(searchResult.items[6])
+        assertAnalyzeResult(result, itemCount = 7) {
+            assertEmoji(startsAtIndex = 6, ofLength = 1)
+            assertMention(startsAtIndex = 8, forIdentity = "0123ABCD")
+            assertEmoji(startsAtIndex = 33, ofLength = 2)
+            assertEmoji(startsAtIndex = 36, ofLength = 2)
+            assertMention(startsAtIndex = 62, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 74, forIdentity = "0123ABCD")
+            assertEmoji(startsAtIndex = 101, ofLength = 2)
+        }
     }
 
     @Test
@@ -350,20 +312,21 @@ class ConversationTextAnalyzerTest {
         val rawInput = "Start @[0123ABCD]\uD83C\uDF36@[0123ABCD]\uD83C\uDF36\uD83C\uDF36@[0123ABCD]@[0123ABCD] end."
 
         // act
-        val searchResult: Result = ConversationTextAnalyzer.analyze(
+        val result: Result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = true,
         )
 
         // assert
-        assertEquals(7, searchResult.items.size)
-        assertIs<Result.SearchResult.Mention>(searchResult.items[0])
-        assertIs<Result.SearchResult.Emoji>(searchResult.items[1])
-        assertIs<Result.SearchResult.Mention>(searchResult.items[2])
-        assertIs<Result.SearchResult.Emoji>(searchResult.items[3])
-        assertIs<Result.SearchResult.Emoji>(searchResult.items[4])
-        assertIs<Result.SearchResult.Mention>(searchResult.items[5])
-        assertIs<Result.SearchResult.Mention>(searchResult.items[6])
+        assertAnalyzeResult(result, itemCount = 7) {
+            assertMention(startsAtIndex = 6, forIdentity = "0123ABCD")
+            assertEmoji(startsAtIndex = 17, ofLength = 2)
+            assertMention(startsAtIndex = 19, forIdentity = "0123ABCD")
+            assertEmoji(startsAtIndex = 30, ofLength = 2)
+            assertEmoji(startsAtIndex = 32, ofLength = 2)
+            assertMention(startsAtIndex = 34, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 45, forIdentity = "0123ABCD")
+        }
     }
 
     @Test
@@ -372,16 +335,42 @@ class ConversationTextAnalyzerTest {
         val rawInput = "Start \uD83C\uDF36 mid @[0123ABCD] end."
 
         // act
-        val searchResult: Result = ConversationTextAnalyzer.analyze(
+        val result: Result = ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = false,
         )
 
         // assert
-        assertEquals(1, searchResult.items.size)
-        assertEquals(
-            6,
-            (searchResult.items[0] as Result.SearchResult.Emoji).startIndex,
-        )
+        assertAnalyzeResult(result, itemCount = 1) {
+            assertEmoji(startsAtIndex = 6, ofLength = 2)
+        }
+    }
+
+    companion object {
+
+        private fun assertAnalyzeResult(result: Result, itemCount: Int, assertItems: Result.() -> Unit = {}) {
+            assertEquals(itemCount, result.items.size)
+            result.assertItems()
+        }
+
+        /**
+         *  @param startsAtIndex Inclusive
+         */
+        private fun Result.assertEmoji(startsAtIndex: Int, ofLength: Int) {
+            val emoji: Result.SearchResult? = this.items[startsAtIndex]
+            assertNotNull(emoji, "No emoji result item found at index $startsAtIndex")
+            assertIs<Result.SearchResult.Emoji>(emoji)
+            assertEquals(ofLength, emoji.length)
+        }
+
+        /**
+         *  @param startsAtIndex Inclusive
+         */
+        private fun Result.assertMention(startsAtIndex: Int, forIdentity: Identity) {
+            val mention: Result.SearchResult? = items[startsAtIndex]
+            assertNotNull(mention, "No mention result item found at index $startsAtIndex")
+            assertIs<Result.SearchResult.Mention>(mention)
+            assertEquals(forIdentity, mention.identity)
+        }
     }
 }

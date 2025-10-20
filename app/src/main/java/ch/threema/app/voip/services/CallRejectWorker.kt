@@ -25,15 +25,17 @@ import android.content.Context
 import androidx.work.CoroutineWorker
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
-import ch.threema.app.ThreemaApplication.Companion.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitServiceManagerWithTimeout
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.voip.activities.CallActivity
 import ch.threema.app.voip.util.VoipUtil
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import kotlin.time.Duration.Companion.seconds
+import org.koin.core.component.KoinComponent
 
 const val KEY_CALL_ID = "call_id"
 const val KEY_CONTACT_IDENTITY = "contact_identity"
@@ -48,7 +50,7 @@ class RejectIntentServiceWorker(
     appContext: Context,
     workerParams: WorkerParameters,
 ) :
-    CoroutineWorker(appContext, workerParams) {
+    CoroutineWorker(appContext, workerParams), KoinComponent {
     /**
      * Performs the call reject.
      */
@@ -91,7 +93,7 @@ class RejectIntentServiceWorker(
     private fun rejectCallTimeout(
         serviceManager: ServiceManager,
         callId: Long,
-        contactIdentity: String,
+        contactIdentity: Identity,
         rejectReason: Byte,
     ): Result {
         val currentCallState = serviceManager.voipStateService.callState
@@ -130,7 +132,7 @@ class RejectIntentServiceWorker(
 fun rejectCall(
     serviceManager: ServiceManager,
     callId: Long,
-    contactIdentity: String,
+    contactIdentity: Identity,
     rejectReason: Byte,
 ): ListenableWorker.Result {
     val voipStateService = serviceManager.voipStateService

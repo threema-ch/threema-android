@@ -22,8 +22,8 @@
             android:paddingRight="24dp">
 
             <TextView
-                style="@style/MaterialAlertDialog.Material3.Body.Text"
                 android:id="@+id/message"
+                style="@style/Threema.MaterialAlertDialog.Body.Style"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -38,7 +38,7 @@
                 android:checked="false"
                 android:enabled="true"
                 android:text="@string/dont_show_again"
-                android:textAppearance="@style/Threema.TextAppearance.BodyMedium" />
+                android:textAppearance="@style/Threema.TextAppearance.Dialog.Body" />
 
         </LinearLayout>
     </ScrollView>

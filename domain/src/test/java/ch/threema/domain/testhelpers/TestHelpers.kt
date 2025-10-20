@@ -35,7 +35,9 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException
 import ch.threema.domain.stores.ContactStore
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
+import ch.threema.domain.types.Identity
+import ch.threema.testhelpers.MUST_NOT_BE_CALLED
 
 object TestHelpers {
     const val MY_IDENTITY = "TESTTEST"
@@ -43,23 +45,23 @@ object TestHelpers {
     @JvmStatic
     val noopContactStore: ContactStore
         get() = object : ContactStore {
-            override fun getContactForIdentity(identity: String): Contact {
+            override fun getContactForIdentity(identity: Identity): Contact {
                 return Contact(identity, ByteArray(256))
             }
 
             override fun addCachedContact(contact: BasicContact) {}
-            override fun getCachedContact(identity: String) = null
-            override fun getContactForIdentityIncludingCache(identity: String): Contact {
+            override fun getCachedContact(identity: Identity) = null
+            override fun getContactForIdentityIncludingCache(identity: Identity): Contact {
                 return getContactForIdentity(identity)
             }
 
             override fun addContact(contact: Contact) {}
-            override fun isSpecialContact(identity: String) = false
+            override fun isSpecialContact(identity: Identity) = false
         }
 
     @JvmStatic
-    val noopIdentityStore: IdentityStoreInterface
-        get() = object : IdentityStoreInterface {
+    val noopIdentityStore: IdentityStore
+        get() = object : IdentityStore {
             override fun encryptData(
                 plaintext: ByteArray,
                 nonce: ByteArray,
@@ -80,7 +82,7 @@ object TestHelpers {
                 return ByteArray(32)
             }
 
-            override fun getIdentity(): String {
+            override fun getIdentity(): Identity {
                 return MY_IDENTITY
             }
 
@@ -101,11 +103,18 @@ object TestHelpers {
             }
 
             override fun storeIdentity(
-                identity: String,
+                identity: Identity,
                 serverGroup: String,
-                publicKey: ByteArray,
                 privateKey: ByteArray,
             ) {
+            }
+
+            override fun setPublicNickname(publicNickname: String) {
+                MUST_NOT_BE_CALLED()
+            }
+
+            override fun clear() {
+                MUST_NOT_BE_CALLED()
             }
         }
 

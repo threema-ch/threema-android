@@ -22,7 +22,7 @@
 package ch.threema.app.startup
 
 import android.app.Activity
-import ch.threema.app.ThreemaApplication
+import org.koin.android.ext.android.get
 
 /**
  * Checks whether the app still needs to get ready (e.g. by wrapping up database migrations) before the
@@ -34,7 +34,7 @@ import ch.threema.app.ThreemaApplication
  * Once the app is ready, the calling activity will be recreated.
  */
 fun Activity.finishAndRestartLaterIfNotReady(): Boolean {
-    if (ThreemaApplication.getAppStartupMonitor().isReady()) {
+    if (get<AppStartupMonitor>().isReady()) {
         return false
     }
 

@@ -34,7 +34,6 @@ import android.graphics.Rect;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcel;
-import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
@@ -80,6 +79,8 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.localcrypto.MasterKey;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
+import ch.threema.localcrypto.MasterKeyProvider;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.function.Supplier;
 import kotlin.jvm.functions.Function0;
@@ -96,14 +97,26 @@ public class WallpaperServiceImpl implements WallpaperService {
     private final Context context;
     private final PreferenceService preferenceService;
     private final FileService fileService;
-    private final MasterKey masterKey;
+    @NonNull
+    private final MasterKeyProvider masterKeyProvider;
     private File wallpaperCropFile;
 
-    public WallpaperServiceImpl(Context context, FileService fileService, PreferenceService preferenceService, MasterKey masterKey) {
+    public WallpaperServiceImpl(
+        Context context,
+        FileService fileService,
+        PreferenceService preferenceService,
+        @NonNull
+        MasterKeyProvider masterKeyProvider
+    ) {
         this.context = context;
         this.preferenceService = preferenceService;
         this.fileService = fileService;
-        this.masterKey = masterKey;
+        this.masterKeyProvider = masterKeyProvider;
+    }
+
+    @NonNull
+    private MasterKey getMasterKey() throws MasterKeyLockedException {
+        return masterKeyProvider.getMasterKey();
     }
 
     /**
@@ -180,7 +193,7 @@ public class WallpaperServiceImpl implements WallpaperService {
                     File wallpaperFile = new File(path);
                     if (wallpaperFile.exists()) {
                         // decode file
-                        try (FileInputStream fis = new FileInputStream(wallpaperFile); CipherInputStream cis = masterKey.getCipherInputStream(fis)) {
+                        try (FileInputStream fis = new FileInputStream(wallpaperFile); CipherInputStream cis = getMasterKey().getCipherInputStream(fis)) {
                             bitmap = BitmapFactory.decodeStream(cis, null, options);
                         } catch (Exception e) {
                             logger.error("Exception", e);
@@ -193,7 +206,7 @@ public class WallpaperServiceImpl implements WallpaperService {
                     if (!TestUtil.isEmptyOrNull(path)) {
                         File wallpaperFile = new File(path);
                         if (wallpaperFile.exists()) {
-                            try (FileInputStream fis = new FileInputStream(wallpaperFile); CipherInputStream cis = masterKey.getCipherInputStream(fis)) {
+                            try (FileInputStream fis = new FileInputStream(wallpaperFile); CipherInputStream cis = getMasterKey().getCipherInputStream(fis)) {
                                 bitmap = BitmapFactory.decodeStream(cis, null, options);
                             } catch (Exception e) {
                                 //
@@ -523,16 +536,27 @@ public class WallpaperServiceImpl implements WallpaperService {
             width -= rectangle.top;
         }
 
+        CropImageActivity.CropImageParameters cropImageParameters =
+            getCropImageParameters(imageUri, width, height);
+
+        launcher.launch(CropImageActivity.createIntent(activity, cropImageParameters));
+    }
+
+    private CropImageActivity.CropImageParameters getCropImageParameters(Uri imageUri, int width, int height) {
         int y = Math.max(width, height);
         int x = Math.min(width, height);
 
-        Intent intent = new Intent(activity, CropImageActivity.class);
-        intent.setData(imageUri);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri);
-        intent.putExtra(CropImageActivity.EXTRA_MAX_X, x);
-        intent.putExtra(CropImageActivity.EXTRA_MAX_Y, y);
-        intent.putExtra(CropImageActivity.EXTRA_ASPECT_X, x);
-        intent.putExtra(CropImageActivity.EXTRA_ASPECT_Y, y);
-        launcher.launch(intent);
+        CropImageActivity.CropImageParameters cropImageParameters =
+            new CropImageActivity.CropImageParameters(
+                /* sourceUri = */
+                imageUri,
+                /* saveUri = */
+                imageUri
+            );
+        cropImageParameters.setAspectX(x);
+        cropImageParameters.setAspectY(y);
+        cropImageParameters.setMaxWidth(x);
+        cropImageParameters.setMaxHeight(y);
+        return cropImageParameters;
     }
 }

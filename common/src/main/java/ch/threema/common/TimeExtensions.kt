@@ -39,3 +39,18 @@ operator fun Instant.minus(other: Instant): Duration = (toEpochMilli() - other.t
 operator fun Instant.plus(duration: Duration): Instant = Instant.ofEpochMilli(toEpochMilli() + duration.inWholeMilliseconds)
 
 operator fun Instant.minus(duration: Duration): Instant = Instant.ofEpochMilli(toEpochMilli() - duration.inWholeMilliseconds)
+
+fun Instant.toDate() = Date.from(this)
+
+/**
+ *  If the duration exceeds one hour, a string in the form of `h:mm:ss` will be returned. If not, it will just return `mm:ss`.
+ */
+fun Duration.toHMMSS(): String {
+    val hours: Long = this.inWholeHours
+    val minutes: Long = (this.inWholeMinutes % 60)
+    val seconds: Long = (this.inWholeSeconds % 60)
+    return when {
+        hours > 0 -> "%d:%02d:%02d".format(hours, minutes, seconds)
+        else -> "%02d:%02d".format(minutes, seconds)
+    }
+}

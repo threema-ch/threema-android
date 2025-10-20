@@ -31,6 +31,7 @@ import ch.threema.domain.protocol.csp.messages.ballot.BallotDataChoice
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId
 import ch.threema.domain.protocol.csp.messages.ballot.BallotSetupInterface
 import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ballot.BallotChoiceModel
 import ch.threema.storage.models.ballot.BallotModel
 
@@ -94,7 +95,7 @@ private fun handleReflectedOutgoingOpenPoll(
 
 private fun handleReflectedOutgoingClosedPoll(
     ballotId: BallotId,
-    ballotCreatorIdentity: String?,
+    ballotCreatorIdentity: Identity?,
     ballotService: BallotService,
     messageId: MessageId,
 ) {

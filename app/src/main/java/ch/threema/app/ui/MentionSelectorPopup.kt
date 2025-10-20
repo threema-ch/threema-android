@@ -51,9 +51,9 @@ import ch.threema.app.utils.AnimationUtil
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.NameUtil
-import ch.threema.app.utils.TestUtil
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.models.IdentityState
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
@@ -83,7 +83,7 @@ class MentionSelectorPopup(
             dismiss()
         }
 
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+        override fun onTextChanged(text: CharSequence, start: Int, before: Int, count: Int) {
             try {
                 if (count == 0 && start == 0) { // @ at first position is deleted
                     editText?.post { this.run() }
@@ -91,8 +91,8 @@ class MentionSelectorPopup(
                 }
 
                 // if spacebar or newline is added, escape the mention popup.
-                val last = s[start - 1]
-                if (count == 0 && (' ' == last || '\n' == last) || count == 1 && (' ' == s[start] || '\n' == s[start])) {
+                val last = text[start - 1]
+                if (count == 0 && (' ' == last || '\n' == last) || count == 1 && (' ' == text[start] || '\n' == text[start])) {
                     editText?.post { this.run() }
                 }
             } catch (e: IndexOutOfBoundsException) {
@@ -101,27 +101,27 @@ class MentionSelectorPopup(
             }
         }
 
-        override fun afterTextChanged(s: Editable) {
-            if (TextUtils.isEmpty(s)) { // if text field is completely empty
+        override fun afterTextChanged(editable: Editable) {
+            if (TextUtils.isEmpty(editable)) { // if text field is completely empty
                 editText?.post { this.run() }
-            } else if (s.toString() != filterText) {
+            } else if (editable.toString() != filterText) {
                 val filterTextAfterAtChar: String?
                 var spacePosition = -1
                 try {
-                    filterTextAfterAtChar = s.toString().substring(filterStart)
-                    if (!TestUtil.isEmptyOrNull(filterTextAfterAtChar)) {
+                    filterTextAfterAtChar = editable.toString().substring(filterStart)
+                    if (filterTextAfterAtChar.isNotEmpty()) {
                         spacePosition = filterTextAfterAtChar.indexOf(" ")
                         if (spacePosition == -1) {
                             spacePosition = filterTextAfterAtChar.indexOf("\n")
                         }
                     }
-                } catch (e: IndexOutOfBoundsException) {
+                } catch (_: IndexOutOfBoundsException) {
                     //
                 }
                 filterText = if (spacePosition != -1) {
-                    s.toString().substring(0, filterStart + spacePosition)
+                    editable.toString().substring(0, filterStart + spacePosition)
                 } else {
-                    s.toString()
+                    editable.toString()
                 }
                 updateList(false)
                 updateRecyclerViewDimensions()
@@ -241,12 +241,12 @@ class MentionSelectorPopup(
     }
 
     private fun updateList(init: Boolean): MentionSelectorAdapter? {
-        val groupModelData = groupModel.data.value ?: run {
+        val groupModelData = groupModel.data ?: run {
             return null
         }
 
         var groupContacts = contactService.getByIdentities(
-            groupModelData.getAllMembers(userService.identity).toList(),
+            groupModelData.getAllMembers(userService.identity!!).toList(),
         )
         val isSortingFirstName = preferenceService.isContactListSortingFirstName
 
@@ -330,6 +330,6 @@ class MentionSelectorPopup(
     }
 
     interface MentionSelectorListener {
-        fun onContactSelected(identity: String?, length: Int, insertPosition: Int)
+        fun onContactSelected(identity: Identity?, length: Int, insertPosition: Int)
     }
 }

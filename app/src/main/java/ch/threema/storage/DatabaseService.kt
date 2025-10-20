@@ -27,6 +27,7 @@ import androidx.annotation.OpenForTesting
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.common.DispatcherProvider
 import ch.threema.storage.databaseupdate.*
+import ch.threema.storage.factories.AppTaskPersistenceFactory
 import ch.threema.storage.factories.BallotChoiceModelFactory
 import ch.threema.storage.factories.BallotModelFactory
 import ch.threema.storage.factories.BallotVoteModelFactory
@@ -42,20 +43,18 @@ import ch.threema.storage.factories.GroupBallotModelFactory
 import ch.threema.storage.factories.GroupCallModelFactory
 import ch.threema.storage.factories.GroupEditHistoryEntryModelFactory
 import ch.threema.storage.factories.GroupEmojiReactionModelFactory
-import ch.threema.storage.factories.GroupInviteModelFactory
 import ch.threema.storage.factories.GroupMemberModelFactory
 import ch.threema.storage.factories.GroupMessageModelFactory
 import ch.threema.storage.factories.GroupModelFactory
 import ch.threema.storage.factories.IdentityBallotModelFactory
-import ch.threema.storage.factories.IncomingGroupJoinRequestModelFactory
 import ch.threema.storage.factories.IncomingGroupSyncRequestLogModelFactory
 import ch.threema.storage.factories.MessageModelFactory
-import ch.threema.storage.factories.OutgoingGroupJoinRequestModelFactory
 import ch.threema.storage.factories.OutgoingGroupSyncRequestLogModelFactory
 import ch.threema.storage.factories.RejectedGroupMessageFactory
 import ch.threema.storage.factories.ServerMessageModelFactory
 import ch.threema.storage.factories.TaskArchiveFactory
 import ch.threema.storage.factories.WebClientSessionModelFactory
+import java.io.File
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
@@ -63,7 +62,6 @@ import net.zetetic.database.DatabaseErrorHandler
 import net.zetetic.database.sqlcipher.SQLiteConnection
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
-import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
 private val logger = LoggingUtil.getThreemaLogger("DatabaseService")
 
@@ -72,22 +70,16 @@ open class DatabaseService
 @JvmOverloads
 constructor(
     private val context: Context,
-    databaseName: String?,
-    databaseKey: String,
+    databaseName: String? = DEFAULT_DATABASE_NAME_V4,
+    password: ByteArray,
     onDatabaseCorrupted: () -> Unit = {},
     private val dispatcherProvider: DispatcherProvider = DispatcherProvider.default,
-) : SQLiteOpenHelper(
-    context,
-    databaseName,
-    databaseKey,
-    /* factory = */
-    null,
-    /* version = */
-    DatabaseUpdater.VERSION,
-    /* minimumSupportedVersion = */
-    0,
-    /* errorHandler = */
-    DatabaseErrorHandler { sqLiteDatabase: SQLiteDatabase, exception: SQLiteException ->
+) : PermanentlyCloseableSQLiteOpenHelper(
+    context = context,
+    name = databaseName,
+    password = password,
+    version = DatabaseUpdater.VERSION,
+    errorHandler = DatabaseErrorHandler { sqLiteDatabase: SQLiteDatabase, exception: SQLiteException ->
         logger.error("Database corrupted", exception)
 
         // close database
@@ -100,8 +92,7 @@ constructor(
         }
         onDatabaseCorrupted()
     },
-    /* databaseHook = */
-    object : SQLiteDatabaseHook {
+    databaseHook = object : SQLiteDatabaseHook {
         override fun preKey(connection: SQLiteConnection) {
             connection.executeForString("PRAGMA cipher_log_level = NONE;", emptyArray(), null)
             connection.execute("PRAGMA cipher_default_kdf_iter = 1;", emptyArray(), null)
@@ -111,8 +102,7 @@ constructor(
             connection.execute("PRAGMA kdf_iter = 1;", emptyArray(), null)
         }
     },
-    /* enableWriteAheadLogging = */
-    true,
+    enableWriteAheadLogging = true,
 ) {
     private val _databaseState = MutableStateFlow(DatabaseState.INIT)
     val databaseState = _databaseState.asStateFlow()
@@ -168,15 +158,6 @@ constructor(
     val conversationTagFactory: ConversationTagFactory by lazy {
         ConversationTagFactory(this)
     }
-    val groupInviteModelFactory: GroupInviteModelFactory by lazy {
-        GroupInviteModelFactory(this)
-    }
-    val outgoingGroupJoinRequestModelFactory: OutgoingGroupJoinRequestModelFactory by lazy {
-        OutgoingGroupJoinRequestModelFactory(this)
-    }
-    val incomingGroupJoinRequestModelFactory: IncomingGroupJoinRequestModelFactory by lazy {
-        IncomingGroupJoinRequestModelFactory(this)
-    }
     val groupCallModelFactory: GroupCallModelFactory by lazy {
         GroupCallModelFactory(this)
     }
@@ -185,6 +166,9 @@ constructor(
     }
     val taskArchiveFactory: TaskArchiveFactory by lazy {
         TaskArchiveFactory(this)
+    }
+    val appTaskPersistenceFactory: AppTaskPersistenceFactory by lazy {
+        AppTaskPersistenceFactory(this)
     }
     val rejectedGroupMessageFactory: RejectedGroupMessageFactory by lazy {
         RejectedGroupMessageFactory(this)
@@ -209,9 +193,13 @@ constructor(
         private set
 
     override fun onConfigure(db: SQLiteDatabase) {
-        _databaseState.value = DatabaseState.PREPARING
         oldVersion = db.version.takeUnless { it == 0 }
         db.execSQL("PRAGMA foreign_keys = ON;")
+        _databaseState.value = if (oldVersion == DatabaseUpdater.VERSION) {
+            DatabaseState.READY
+        } else {
+            DatabaseState.PREPARING
+        }
         super.onConfigure(db)
     }
 
@@ -234,12 +222,10 @@ constructor(
             groupBallotModelFactory,
             webClientSessionModelFactory,
             conversationTagFactory,
-            groupInviteModelFactory,
-            incomingGroupJoinRequestModelFactory,
-            outgoingGroupJoinRequestModelFactory,
             groupCallModelFactory,
             serverMessageModelFactory,
             taskArchiveFactory,
+            appTaskPersistenceFactory,
             rejectedGroupMessageFactory,
             contactEditHistoryEntryModelFactory,
             groupEditHistoryEntryModelFactory,
@@ -255,7 +241,7 @@ constructor(
     override fun onUpgrade(sqLiteDatabase: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         logger.info("onUpgrade, version {} -> {}", oldVersion, newVersion)
 
-        DatabaseUpdater(context, sqLiteDatabase, this)
+        DatabaseUpdater(context, sqLiteDatabase)
             .getUpdates(oldVersion)
             .forEach(::runDatabaseUpdate)
     }
@@ -277,13 +263,21 @@ constructor(
 
     @Throws(DatabaseUpdateException::class, DatabaseDowngradeException::class)
     suspend fun migrateIfNeeded(): Unit = withContext(dispatcherProvider.io) {
-        // Run a trivial query to trigger the DB migration, if one is needed
-        writableDatabase.rawQuery("SELECT NULL").close()
+        // Open a writeable database, which will trigger the DB migrations, if there are any
+        writableDatabase
         _databaseState.value = DatabaseState.READY
     }
 
     companion object {
-        const val DEFAULT_DATABASE_NAME_V4 = "threema4.db"
-        const val DATABASE_BACKUP_EXT = ".backup"
+        private const val DEFAULT_DATABASE_NAME_V4 = "threema4.db"
+        private const val DATABASE_BACKUP_EXT = ".backup"
+
+        @JvmStatic
+        fun getDatabaseFile(context: Context): File =
+            context.getDatabasePath(DEFAULT_DATABASE_NAME_V4)
+
+        @JvmStatic
+        fun getDatabaseBackupFile(context: Context): File =
+            context.getDatabasePath(DEFAULT_DATABASE_NAME_V4 + DATABASE_BACKUP_EXT)
     }
 }

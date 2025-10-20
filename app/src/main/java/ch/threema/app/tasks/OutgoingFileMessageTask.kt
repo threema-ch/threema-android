@@ -32,6 +32,7 @@ import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.media.FileDataModel
 import kotlinx.serialization.Serializable
@@ -42,7 +43,7 @@ class OutgoingFileMessageTask(
     private val messageModelId: Int,
     @MessageReceiverType
     private val receiverType: Int,
-    private val recipientIdentities: Set<String>,
+    private val recipientIdentities: Set<Identity>,
     private val thumbnailBlobId: ByteArray?,
     serviceManager: ServiceManager,
 ) : OutgoingCspMessageTask(serviceManager) {
@@ -160,7 +161,7 @@ class OutgoingFileMessageTask(
         private val messageModelId: Int,
         @MessageReceiverType
         private val receiverType: Int,
-        private val recipientIdentities: Set<String>,
+        private val recipientIdentities: Set<Identity>,
         private val thumbnailBlobId: ByteArray?,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =

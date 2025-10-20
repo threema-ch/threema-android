@@ -21,13 +21,11 @@
 
 package ch.threema.app.preference;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.text.InputType;
@@ -53,19 +51,21 @@ import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
-import ch.threema.app.activities.UnlockMasterKeyActivity;
+import ch.threema.app.passphrase.PassphraseUnlockActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
+import ch.threema.app.dialogs.ThreemaDialogFragment;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ConversationCategoryService;
-import ch.threema.app.services.PassphraseService;
 import ch.threema.app.utils.BiometricUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.Toaster;
 import ch.threema.base.utils.LoggingUtil;
 
+import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
 import static ch.threema.app.preference.service.PreferenceService.LockingMech_NONE;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
@@ -90,6 +90,10 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
     private static final String DIALOG_TAG_PASSWORD_REMINDER_PASSPHRASE = "eminpass";
 
     private static final int ID_ENABLE_SYSTEM_LOCK = 7780;
+    private static final int ACTIVITY_ID_CHANGE_PASSPHRASE_UNLOCK = 20032;
+    private static final int ACTIVITY_ID_SET_PASSPHRASE = 20013;
+    private static final int ACTIVITY_ID_CHANGE_PASSPHRASE = 20014;
+    private static final int ACTIVITY_ID_RESET_PASSPHRASE = 20015;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -120,21 +124,16 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
         uiLockSwitchPreference.setChecked(preferenceService.isAppLockEnabled());
 
         CharSequence[] entries = lockMechanismPreference.getEntries();
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            // remove system screen lock option
-            lockMechanismPreference.setEntries(Arrays.copyOf(entries, 2));
+        if (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_BIOMETRIC)) {
+            if (!BiometricUtil.isHardwareSupported(getContext())) {
+                preferenceService.setLockMechanism(LockingMech_NONE);
+                // remove biometric option
+                lockMechanismPreference.setEntries(Arrays.copyOf(entries, 3));
+            }
         } else {
-            if (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_BIOMETRIC)) {
-                if (!BiometricUtil.isHardwareSupported(getContext())) {
-                    preferenceService.setLockMechanism(LockingMech_NONE);
-                    // remove biometric option
-                    lockMechanismPreference.setEntries(Arrays.copyOf(entries, 3));
-                }
-            } else {
-                if (!BiometricUtil.isHardwareSupported(getContext())) {
-                    // remove biometric option
-                    lockMechanismPreference.setEntries(Arrays.copyOf(entries, 3));
-                }
+            if (!BiometricUtil.isHardwareSupported(getContext())) {
+                // remove biometric option
+                lockMechanismPreference.setEntries(Arrays.copyOf(entries, 3));
             }
         }
 
@@ -240,9 +239,8 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
             @Override
             public boolean onPreferenceClick(@NonNull Preference preference) {
                 if (MessageDigest.isEqual(preference.getKey().getBytes(), getResources().getString(R.string.preferences__masterkey_passphrase).getBytes())) {
-                    Intent intent = new Intent(getActivity(), UnlockMasterKeyActivity.class);
-                    intent.putExtra(AppConstants.INTENT_DATA_PASSPHRASE_CHECK, true);
-                    startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_CHANGE_PASSPHRASE_UNLOCK);
+                    Intent intent = PassphraseUnlockActivity.createIntent(requireContext(), true, true);
+                    startActivityForResult(intent, ACTIVITY_ID_CHANGE_PASSPHRASE_UNLOCK);
 
                 }
                 return false;
@@ -250,11 +248,8 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
         });
 
         masterkeySwitchPreference = findPreference(getResources().getString(R.string.preferences__masterkey_switch));
+        masterkeySwitchPreference.setChecked(getMasterKeyManager().isProtectedWithPassphrase());
 
-        //fix wrong state
-        if (masterkeySwitchPreference != null && masterkeySwitchPreference.isChecked() != ThreemaApplication.getMasterKey().isProtected()) {
-            masterkeySwitchPreference.setChecked(ThreemaApplication.getMasterKey().isProtected());
-        }
         setMasterKeyPreferenceText();
 
         masterkeySwitchPreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -263,9 +258,8 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
 
                 if (((TwoStatePreference) preference).isChecked() != newCheckedValue) {
                     if (!newCheckedValue) {
-                        Intent intent = new Intent(getActivity(), UnlockMasterKeyActivity.class);
-                        intent.putExtra(AppConstants.INTENT_DATA_PASSPHRASE_CHECK, true);
-                        startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_RESET_PASSPHRASE);
+                        Intent intent = PassphraseUnlockActivity.createIntent(requireContext(), true, true);
+                        startActivityForResult(intent, ACTIVITY_ID_RESET_PASSPHRASE);
 
                         setMasterKeyPreferenceText();
                     } else {
@@ -363,40 +357,48 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
                     }
                     updateLockPreferences();
                     break;
-                case ThreemaActivity.ACTIVITY_ID_RESET_PASSPHRASE:
-                    //reset here directly
-                    try {
-                        ThreemaApplication.getMasterKey().setPassphrase(null);
-                    } catch (Exception e) {
-                        logger.error("Exception", e);
+                case ACTIVITY_ID_RESET_PASSPHRASE:
+                    var passphrase = PassphraseUnlockActivity.getPassphrase(data);
+                    if (passphrase != null) {
+                        RuntimeUtil.runOnWorkerThread(() -> {
+                            try {
+                                getMasterKeyManager().removePassphrase(passphrase);
+                            } catch (Exception e) {
+                                logger.error("Failed to remove passphrase", e);
+                                new Toaster(requireContext()).showToast(R.string.an_error_occurred);
+                            }
+                        });
+                    } else {
+                        logger.error("Passphrase not received, cannot remove");
                     }
                     break;
-                case ThreemaActivity.ACTIVITY_ID_CHANGE_PASSPHRASE_UNLOCK:
-                    startChangePassphraseActivity();
+                case ACTIVITY_ID_CHANGE_PASSPHRASE_UNLOCK:
+                    var oldPassphrase = PassphraseUnlockActivity.getPassphrase(data);
+                    if (oldPassphrase != null) {
+                        startChangePassphraseActivity(oldPassphrase);
+                    } else {
+                        logger.error("Passphrase not received, cannot change");
+                    }
                     break;
-                case ThreemaActivity.ACTIVITY_ID_SET_PASSPHRASE:
-                case ThreemaActivity.ACTIVITY_ID_CHANGE_PASSPHRASE:
+                case ACTIVITY_ID_SET_PASSPHRASE:
+                case ACTIVITY_ID_CHANGE_PASSPHRASE:
                     //do not handle event
                     setMasterKeyPreferenceText();
                     break;
                 default:
                     super.onActivityResult(requestCode, resultCode, data);
             }
-
-            // TODO
-            /* show/hide persistent notification */
-            PassphraseService.start(requireActivity().getApplicationContext());
         } else {
             switch (requestCode) {
                 case ThreemaActivity.ACTIVITY_ID_CHECK_LOCK:
                     requireScreenLockService().setAuthenticated(false);
                     requireActivity().onBackPressed();
                     break;
-                case ThreemaActivity.ACTIVITY_ID_SET_PASSPHRASE:
+                case ACTIVITY_ID_SET_PASSPHRASE:
                     //only switch back on set
                     masterkeySwitchPreference.setChecked(false);
                     break;
-                case ThreemaActivity.ACTIVITY_ID_RESET_PASSPHRASE:
+                case ACTIVITY_ID_RESET_PASSPHRASE:
                     //only switch back on set
                     masterkeySwitchPreference.setChecked(true);
                     break;
@@ -422,22 +424,19 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
         dialogFragment.show(getParentFragmentManager(), ID_DIALOG_PIN);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     private void setSystemScreenLock() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            KeyguardManager keyguardManager = (KeyguardManager) requireActivity().getSystemService(Context.KEYGUARD_SERVICE);
-            if (keyguardManager.isDeviceSecure()) {
-                BiometricUtil.showUnlockDialog(null, this, true, ID_ENABLE_SYSTEM_LOCK, PreferenceService.LockingMech_SYSTEM);
-            } else {
-                Snackbar snackbar = Snackbar.make(fragmentView, R.string.no_lockscreen_set, Snackbar.LENGTH_LONG);
-                snackbar.setAction(R.string.configure, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
-                    }
-                });
-                snackbar.show();
-            }
+        KeyguardManager keyguardManager = (KeyguardManager) requireActivity().getSystemService(Context.KEYGUARD_SERVICE);
+        if (keyguardManager.isDeviceSecure()) {
+            BiometricUtil.showUnlockDialog(null, this, true, ID_ENABLE_SYSTEM_LOCK, PreferenceService.LockingMech_SYSTEM);
+        } else {
+            Snackbar snackbar = Snackbar.make(fragmentView, R.string.no_lockscreen_set, Snackbar.LENGTH_LONG);
+            snackbar.setAction(R.string.configure, new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(Settings.ACTION_SECURITY_SETTINGS));
+                }
+            });
+            snackbar.show();
         }
     }
 
@@ -493,12 +492,8 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
         dialog.show(getParentFragmentManager(), DIALOG_TAG_PASSWORD_REMINDER_PASSPHRASE);
     }
 
-    private void startChangePassphraseActivity() {
-        setPassphrase();
-    }
-
-    private void setPassphrase() {
-        DialogFragment dialogFragment = PasswordEntryDialog.newInstance(
+    private void startChangePassphraseActivity(@Nullable char[] oldPassphrase) {
+        ThreemaDialogFragment dialogFragment = PasswordEntryDialog.newInstance(
             R.string.masterkey_passphrase_title,
             R.string.masterkey_passphrase_summary,
             R.string.masterkey_passphrase_hint,
@@ -508,13 +503,16 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
             R.string.masterkey_passphrase_again_summary,
             0, 0, PasswordEntryDialog.ForgotHintType.NONE);
         dialogFragment.setTargetFragment(this, 0);
+        dialogFragment.setData(oldPassphrase);
         dialogFragment.show(getParentFragmentManager(), ID_DIALOG_PASSPHRASE);
     }
 
     private void setMasterKeyPreferenceText() {
-        masterkeyPreference.setSummary(ThreemaApplication.getMasterKey().isProtected() ?
-            getString(R.string.click_here_to_change_passphrase) :
-            getString(R.string.prefs_masterkey_passphrase));
+        masterkeyPreference.setSummary(
+            getMasterKeyManager().isProtectedWithPassphrase()
+                ? getString(R.string.click_here_to_change_passphrase)
+                : getString(R.string.prefs_masterkey_passphrase)
+        );
     }
 
     @Override
@@ -532,6 +530,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
                 }
                 break;
             case ID_DIALOG_PASSPHRASE:
+                var oldPassphrase = data != null ? (char[]) data : null;
                 new AsyncTask<Void, Void, Boolean>() {
                     @Override
                     protected void onPreExecute() {
@@ -543,10 +542,10 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
                     protected Boolean doInBackground(Void... voids) {
                         try {
                             int pl = text.length();
-                            char[] password = new char[pl];
-                            text.getChars(0, pl, password, 0);
+                            char[] passphrase = new char[pl];
+                            text.getChars(0, pl, passphrase, 0);
 
-                            ThreemaApplication.getMasterKey().setPassphrase(password);
+                            getMasterKeyManager().setPassphrase(passphrase, oldPassphrase);
                             RuntimeUtil.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
@@ -554,7 +553,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
                                 }
                             });
                         } catch (Exception e) {
-                            logger.error("Exception", e);
+                            logger.error("Failed to set passphrase", e);
                             return false;
                         }
                         return true;
@@ -567,9 +566,8 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
                         }
                         if (success) {
                             masterkeySwitchPreference.setChecked(true);
-                            if (!PassphraseService.isRunning()) {
-                                PassphraseService.start(ThreemaApplication.getAppContext());
-                            }
+                        } else {
+                            Toaster.Companion.showToast(R.string.an_error_occurred);
                         }
                     }
                 }.execute();
@@ -581,7 +579,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
     public void onNo(String tag) {
         switch (tag) {
             case ID_DIALOG_PASSPHRASE:
-                masterkeySwitchPreference.setChecked(ThreemaApplication.getMasterKey().isProtected());
+                masterkeySwitchPreference.setChecked(getMasterKeyManager().isProtectedWithPassphrase());
                 setMasterKeyPreferenceText();
                 break;
             case ID_DIALOG_PIN:
@@ -601,7 +599,7 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
                 setPin();
                 break;
             case DIALOG_TAG_PASSWORD_REMINDER_PASSPHRASE:
-                setPassphrase();
+                startChangePassphraseActivity(null);
                 break;
             default:
                 break;
@@ -626,5 +624,4 @@ public class SettingsSecurityFragment extends ThreemaPreferenceFragment implemen
     public int getPreferenceResource() {
         return R.xml.preference_security;
     }
-
 }

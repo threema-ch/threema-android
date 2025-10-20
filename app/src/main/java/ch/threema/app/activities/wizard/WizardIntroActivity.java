@@ -38,6 +38,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.activity.result.ActivityResultCallback;
@@ -48,9 +49,8 @@ import androidx.annotation.Nullable;
 
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.webviews.PrivacyPolicyActivity;
-import ch.threema.app.webviews.SimpleWebViewActivity;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.ui.InsetSides;
@@ -69,6 +69,9 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
     private static final Logger logger = LoggingUtil.getThreemaLogger("WizardIntroActivity");
 
     private static final int ACTIVITY_RESULT_PRIVACY_POLICY = 9442;
+
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private final ActivityResultLauncher<Void> backupResult = registerForActivityResult(new ActivityResultContract<>() {
         @NonNull
@@ -97,6 +100,12 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+
+        if (!dependencies.isAvailable()) {
+            finish();
+            return;
+        }
+
         setContentView(R.layout.activity_wizard_intro);
 
         // Not every layout variation file of this activity has this company_logo ImageView
@@ -140,8 +149,8 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         }
 
         TextView privacyPolicyExplainText = findViewById(R.id.wizard_privacy_policy_explain);
-        if (TestUtil.isEmptyOrNull(ThreemaApplication.getAppContext().getString(R.string.privacy_policy_url)) ||
-            (ConfigUtils.isOnPremBuild() && !ConfigUtils.isDemoOPServer(preferenceService))) {
+        if (TestUtil.isEmptyOrNull(getString(R.string.privacy_policy_url)) ||
+            (ConfigUtils.isOnPremBuild() && !ConfigUtils.isDemoOPServer(dependencies.getPreferenceService()))) {
             privacyPolicyExplainText.setVisibility(View.GONE);
         } else {
             String privacyPolicy = getString(R.string.privacy_policy);
@@ -151,8 +160,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
             builder.setSpan(new ClickableSpan() {
                 @Override
                 public void onClick(@NonNull View widget) {
-                    Intent intent = new Intent(WizardIntroActivity.this, PrivacyPolicyActivity.class);
-                    intent.putExtra(SimpleWebViewActivity.FORCE_DARK_THEME, true);
+                    Intent intent = PrivacyPolicyActivity.createIntent(WizardIntroActivity.this, true);
                     startActivityForResult(intent, ACTIVITY_RESULT_PRIVACY_POLICY);
                 }
             }, index, index + privacyPolicy.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
@@ -183,7 +191,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
             return;
         }
 
-        if (!userService.hasIdentity()) {
+        if (!dependencies.getUserService().hasIdentity()) {
             startActivity(new Intent(this, WizardFingerPrintActivity.class));
         } else {
             startActivity(new Intent(this, WizardBaseActivity.class));
@@ -197,12 +205,6 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         }
         backupResult.launch(null);
         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-    }
-
-    @Override
-    protected boolean enableOnBackPressedCallback() {
-        // Override the behavior of WizardBackgroundActivity to allow normal back navigation
-        return false;
     }
 
     /**

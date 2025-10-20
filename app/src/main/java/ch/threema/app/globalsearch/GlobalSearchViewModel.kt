@@ -27,19 +27,15 @@ import androidx.lifecycle.map
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 
-class GlobalSearchViewModel : ViewModel() {
-    val messageModels: LiveData<List<AbstractMessageModel>>
-
-    private val repository = GlobalSearchRepository()
-
-    init {
-        messageModels = repository.messageModels.map { messageModels ->
-            messageModels.filter { message ->
-                if (message is GroupMessageModel) {
-                    message.groupId > 0
-                } else {
-                    message.identity != null
-                }
+class GlobalSearchViewModel(
+    private val repository: GlobalSearchRepository,
+) : ViewModel() {
+    val messageModels: LiveData<List<AbstractMessageModel>> = repository.messageModels.map { messageModels ->
+        messageModels.filter { message ->
+            if (message is GroupMessageModel) {
+                message.groupId > 0
+            } else {
+                message.identity != null
             }
         }
     }

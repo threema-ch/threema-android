@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- When changing sth. here, also make the changes to compose equivalent in CustomColors.kt -->
+    <item android:color="?attr/colorPrimaryContainer" android:state_pressed="true" />
+    <item android:color="?attr/colorPrimaryContainer" android:state_activated="true" />
+    <item android:color="?attr/colorSurfaceContainerHigh" />
+</selector>

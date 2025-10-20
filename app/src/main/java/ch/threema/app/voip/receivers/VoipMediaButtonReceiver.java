@@ -61,8 +61,7 @@ public class VoipMediaButtonReceiver extends BroadcastReceiver {
                 return;
             }
 
-            logger.info("MediaButtonReceiver: mediaAction={}, keyCode={}",
-                intent.getAction(), mediaButtonEvent.getKeyCode());
+            logger.info("Media Button Action: keyCode={}", mediaButtonEvent.getKeyCode());
 
             // If this is a valid accept button, handle it
             if (isAcceptButton(mediaButtonEvent.getKeyCode())) {

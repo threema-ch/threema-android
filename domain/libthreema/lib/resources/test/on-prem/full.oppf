@@ -1,0 +1,91 @@
+{
+  "version": "1.0",
+  "signatureKey": "jae1lgwR3W7YyKiGQlsbdqObG13FR1EvjVci2aDNIi8=",
+  "refresh": 86400,
+  "license": {
+    "expires": "2099-12-31",
+    "count": 100,
+    "id": "DUMMY-00000001"
+  },
+  "domains": {
+    "rules": [
+      {
+        "fqdn": "onprem.example.threema.ch",
+        "matchMode": "include-subdomains",
+        "spkis": [
+          {
+            "value": "DTJU4+0HObYPrx9lF4Kz8hhjcJL3WBL4k829L++UlSk=",
+            "algorithm": "sha256"
+          },
+          {
+            "value": "C19RmQgZXzwovKRRJ2st7bsokiRchKcYjBo3m63fvn8=",
+            "algorithm": "sha256"
+          }
+        ]
+      },
+      {
+        "fqdn": "another-host.example.threema.ch",
+        "matchMode": "exact",
+        "spkis": [
+          {
+            "value": "XIglSWPJ6aJ7LeIz6KsOrr0fNgNZ0PzGgDCDEZq5/U4=",
+            "algorithm": "sha256"
+          },
+          {
+            "value": "XIglSWPJ6aJ7LeIz6KsOrr0fNgNZ0PzGgDCDEZq5/U4=",
+            "algorithm": "unknown-algorithm"
+          }
+        ]
+      },
+      {
+        "fqdn": "unknown.example.threema.ch",
+        "matchMode": "unknown-mode"
+      }
+    ]
+  },
+  "chat": {
+    "hostname": "chat.onprem.example.threema.ch",
+    "publicKey": "r9utIHN9ngo21q9OlZcotsQu1f2HwAW2Wi+u6Psp4Wc=",
+    "ports": [
+      5222,
+      443
+    ]
+  },
+  "directory": {
+    "url": "https://onprem.example.threema.ch/directory"
+  },
+  "blob": {
+    "uploadUrl": "https://blob.onprem.example.threema.ch/blob/upload",
+    "downloadUrl": "https://blob-{blobIdPrefix}.onprem.example.threema.ch/blob/{blobId}",
+    "doneUrl": "https://blob-{blobIdPrefix}.onprem.example.threema.ch/blob/{blobId}/done"
+  },
+  "work": {
+    "url": "https://work.onprem.example.threema.ch/"
+  },
+  "avatar": {
+    "url": "https://avatar.onprem.example.threema.ch/"
+  },
+  "safe": {
+    "url": "https://safe.onprem.example.threema.ch/"
+  },
+  "web": {
+    "url": "https://web.onprem.example.threema.ch/"
+  },
+  "rendezvous": {
+    "url": "wss://rendezvous.onprem.example.threema.ch/"
+  },
+  "mediator": {
+    "blob": {
+      "uploadUrl": "https://blob-mirror.onprem.example.threema.ch/blob/upload",
+      "downloadUrl": "https://blob-mirror.onprem.example.threema.ch/blob/{blobId}",
+      "doneUrl": "https://blob-mirror.onprem.example.threema.ch/blob/{blobId}/done"
+    },
+    "url": "wss://mediator.onprem.example.threema.ch/"
+  },
+  "maps": {
+    "styleUrl": "https://map.onprem.example.threema.ch/styles/threema/style.json",
+    "poiNamesUrl": "https://poi.onprem.example.threema.ch/names/{latitude}/{longitude}/{query}",
+    "poiAroundUrl": "https://poi.onprem.example.threema.ch/around/{latitude}/{longitude}/{radius}"
+  }
+}
+Un3uKLXpaQerR2DfZhZI2NRd8RbUWZmDVSBlmpeBL9dRM7+K3YYSOLibKlmXR86GXg1lB49jCIvLwCzay10RDA==

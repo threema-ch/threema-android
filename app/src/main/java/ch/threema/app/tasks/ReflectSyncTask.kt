@@ -72,9 +72,8 @@ abstract class ReflectSyncTask<TransactionResult, TaskResult>(
             keys = mdProperties.keys,
             scope = transactionScope,
             ttl = transactionTTL,
-        ) {
-            runPrecondition()
-        }.execute {
+            precondition = runPrecondition,
+        ).execute {
             runInsideTransaction(handle)
         }
 

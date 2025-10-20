@@ -24,24 +24,24 @@ package ch.threema.domain.protocol.blob
 import ch.threema.base.ProgressListener
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.Utils
-import ch.threema.base.utils.toHexString
-import ch.threema.domain.protocol.ProtocolStrings
+import ch.threema.common.Http
+import ch.threema.common.buildNew
+import ch.threema.common.buildRequest
+import ch.threema.common.execute
+import ch.threema.common.toHexString
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.data.leBytes
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.protocol.getUserAgent
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.URL
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.Volatile
+import kotlin.time.Duration.Companion.seconds
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.Response
-import okhttp3.ResponseBody
 import okio.BufferedSource
 
 private val logger = LoggingUtil.getThreemaLogger("BlobLoader")
@@ -126,57 +126,53 @@ class BlobLoader private constructor(
         val blobResult: BufferedSourceWithLength = requestBlob(scope)
 
         var read: Int = -1
-        val blobData: ByteArray
         val buffer = ByteArray(BUFFER_SIZE)
         val bos = ByteArrayOutputStream()
 
-        if (blobResult.containsContent()) {
-            logger.debug("Blob content length is {}", blobResult.length)
+        blobResult.source.use { source ->
+            if (blobResult.containsContent()) {
+                logger.debug("Blob content length is {}", blobResult.length)
 
-            var offset = 0
-            while (!isCancelled && (blobResult.source.read(buffer).also { read = it }) != -1) {
-                offset += read
+                var offset = 0
+                while (!isCancelled && (source.read(buffer).also { read = it }) != -1) {
+                    offset += read
 
-                try {
-                    bos.write(buffer, 0, read)
-                } catch (outOfMemoryError: OutOfMemoryError) {
-                    throw IOException("Out of memory on write")
+                    try {
+                        bos.write(buffer, 0, read)
+                    } catch (_: OutOfMemoryError) {
+                        throw IOException("Out of memory on write")
+                    }
+                    progressListener?.updateProgress((100f * offset / blobResult.length).toInt())
                 }
-                progressListener?.updateProgress((100f * offset / blobResult.length).toInt())
+
+                if (isCancelled) {
+                    logger.info("Blob load cancelled")
+                    progressListener?.onFinished(false)
+                    return null
+                }
+
+                if (offset.toLong() != blobResult.length) {
+                    progressListener?.onFinished(false)
+                    throw IOException("Unexpected read size. current: " + offset + ", excepted: " + blobResult.length)
+                }
+            } else {
+                logger.debug("Blob content length is unknown")
+
+                progressListener?.noProgressAvailable()
+
+                while (!isCancelled && (blobResult.source.read(buffer).also { read = it }) != -1) {
+                    bos.write(buffer, 0, read)
+                }
+
+                if (isCancelled) {
+                    logger.info("Blob load cancelled")
+                    progressListener?.onFinished(false)
+                    return null
+                }
             }
-
-            if (isCancelled) {
-                logger.info("Blob load cancelled")
-                progressListener?.onFinished(false)
-                return null
-            }
-
-            if (offset.toLong() != blobResult.length) {
-                progressListener?.onFinished(false)
-                throw IOException("Unexpected read size. current: " + offset + ", excepted: " + blobResult.length)
-            }
-
-            blobData = bos.toByteArray()
-        } else {
-            /* Content length is unknown - need to read until EOF */
-
-            logger.debug("Blob content length is unknown")
-
-            progressListener?.noProgressAvailable()
-
-            while (!isCancelled && (blobResult.source.read(buffer).also { read = it }) != -1) {
-                bos.write(buffer, 0, read)
-            }
-
-            if (isCancelled) {
-                logger.info("Blob load cancelled")
-                progressListener?.onFinished(false)
-                return null
-            }
-
-            blobData = bos.toByteArray()
         }
 
+        val blobData = bos.toByteArray()
         logger.info("Blob load complete ({} bytes received)", blobData.size)
 
         progressListener?.onFinished(true)
@@ -191,31 +187,26 @@ class BlobLoader private constructor(
     private fun requestBlob(scope: BlobScope): BufferedSourceWithLength {
         val blobUrl: URL = getBlobDownloadUrl(blobId, scope)
 
-        val okHttpClientLoad: OkHttpClient = baseOkHttpClient.newBuilder().apply {
-            connectTimeout(ProtocolDefines.BLOB_CONNECT_TIMEOUT.toLong(), TimeUnit.SECONDS)
-            readTimeout(ProtocolDefines.BLOB_LOAD_TIMEOUT.toLong(), TimeUnit.SECONDS)
-        }.build()
+        val okHttpClientLoad = baseOkHttpClient.buildNew {
+            connectTimeout(ProtocolDefines.BLOB_CONNECT_TIMEOUT.seconds)
+            readTimeout(ProtocolDefines.BLOB_LOAD_TIMEOUT.seconds)
+        }
 
-        val request: Request = Request.Builder()
-            .get()
-            .url(blobUrl)
-            .addHeader("User-Agent", "${ProtocolStrings.USER_AGENT}/${version.versionString}")
-            .build()
+        val request = buildRequest {
+            get()
+            url(blobUrl)
+            header(Http.Header.USER_AGENT, getUserAgent(version))
+        }
 
         logger.info("Loading blob from {}", blobUrl.host)
 
-        val response: Response = okHttpClientLoad.newCall(request).execute()
-
+        val response = okHttpClientLoad.execute(request)
         if (!response.isSuccessful) {
             logger.error("Blob download failed. HTTP response code not in range 200..299")
             throw IOException("download request failed with code ${response.code}")
         }
 
-        val responseBody: ResponseBody = response.body ?: run {
-            logger.error("Blob download failed. Empty successful response body")
-            throw IOException("download request failed because of missing response body")
-        }
-
+        val responseBody = response.body
         return BufferedSourceWithLength(
             responseBody.source(),
             responseBody.contentLength(),
@@ -230,16 +221,16 @@ class BlobLoader private constructor(
         try {
             val blobDoneUrl: URL = getBlobDoneUrl(blobId, scope)
 
-            val request: Request = Request.Builder()
-                .post("".toRequestBody(null))
-                .url(blobDoneUrl)
-                .addHeader("User-Agent", "${ProtocolStrings.USER_AGENT}/${version.versionString}")
-                .build()
+            val request = buildRequest {
+                post("".toRequestBody(null))
+                url(blobDoneUrl)
+                header(Http.Header.USER_AGENT, getUserAgent(version))
+            }
 
-            val response: Response = baseOkHttpClient.newCall(request).execute()
-
-            if (!response.isSuccessful) {
-                logger.warn("Marking blob as done failed. HTTP response code: {}", response.code)
+            baseOkHttpClient.execute(request).use { response ->
+                if (!response.isSuccessful) {
+                    logger.warn("Marking blob as done failed. HTTP response code: {}", response.code)
+                }
             }
         } catch (exception: IOException) {
             logger.warn("Marking blob as done failed", exception)
@@ -308,11 +299,8 @@ class BlobLoader private constructor(
         multiDevicePropertyProvider: MultiDevicePropertyProvider,
         scope: BlobScope,
     ): String {
-        val deviceIdHex: String =
-            multiDevicePropertyProvider.get().mediatorDeviceId.leBytes().toHexString()
-        val deviceGroupIdHex: String =
-            Utils.byteArrayToHexString(multiDevicePropertyProvider.get().keys.dgid)
-                ?: throw ThreemaException("Could not read device group id")
+        val deviceIdHex = multiDevicePropertyProvider.get().mediatorDeviceId.leBytes().toHexString()
+        val deviceGroupIdHex = multiDevicePropertyProvider.get().keys.dgid.toHexString()
         return "$rawUrl?deviceId=$deviceIdHex&deviceGroupId=$deviceGroupIdHex&scope=${scope.name}"
     }
 

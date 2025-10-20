@@ -26,7 +26,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.protocol.ThreemaFeature;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
 /**
  * Update all Contacts with Feature Level < current Feature Level

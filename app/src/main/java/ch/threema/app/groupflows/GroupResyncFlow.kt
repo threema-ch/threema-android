@@ -58,7 +58,7 @@ class GroupResyncFlow(
             return GroupFlowResult.Failure.Other
         }
 
-        if (groupModel.data.value?.isMember != true) {
+        if (groupModel.data?.isMember != true) {
             logger.error("Cannot resync group: the group is deleted or disbanded")
             return GroupFlowResult.Failure.Other
         }

@@ -23,8 +23,6 @@ package ch.threema.app.utils;
 
 import org.junit.Test;
 
-import java.util.Date;
-
 import androidx.annotation.Nullable;
 
 import static org.junit.Assert.assertFalse;
@@ -55,114 +53,6 @@ public class TestUtilTest {
         assertFalse(TestUtil.compare("Threema", "Threema "));
 
         assertFalse(TestUtil.compare("Threema", null));
-    }
-
-    @Test
-    public void integer() {
-        assertTrue(TestUtil.compare(100, 100));
-
-        assertFalse(TestUtil.compare(100, 101));
-
-        assertFalse(TestUtil.compare(100, null));
-    }
-
-    @Test
-    public void byteArray() {
-        assertTrue(TestUtil.compare(new byte[]{1, 2, 3, 4}, new byte[]{1, 2, 3, 4}));
-
-        //different size
-        assertFalse(TestUtil.compare(new byte[]{1, 2, 3, 4}, new byte[]{1, 2, 3}));
-        assertFalse(TestUtil.compare(new byte[]{1, 2, 3, 4}, new byte[]{1, 2, 3, 5}));
-    }
-
-    @Test
-    public void array() {
-
-        //strings
-        assertTrue(TestUtil.compare(
-            new Object[]{"string1", "string2", "string3"},
-            new Object[]{"string1", "string2", "string3"}));
-
-        assertFalse(TestUtil.compare(
-            new Object[]{"string1", "string2", "string3"},
-            new Object[]{"string1", "string2"}));
-
-        assertFalse(TestUtil.compare(
-            new Object[]{"string1", "string2", "string3"},
-            new Object[]{"string1", "string2", "string5"}));
-
-        //int
-        assertTrue(TestUtil.compare(
-            new Object[]{1, 2, 3, 4},
-            new Object[]{1, 2, 3, 4}));
-
-        assertFalse(TestUtil.compare(
-            new Object[]{1, 2, 3, 4},
-            new Object[]{1, 2, 3}));
-
-        assertFalse(TestUtil.compare(
-            new Object[]{1, 2, 3, 4},
-            new Object[]{1, 2, 3, 5}));
-
-        //mixed!!
-        assertTrue(TestUtil.compare(
-            new Object[]{"a", 1, 2.0, new byte[]{3}},
-            new Object[]{"a", 1, 2.0, new byte[]{3}}));
-
-
-        assertFalse(TestUtil.compare(
-            new Object[]{"a", 1, 2.0, new byte[]{3}},
-            new Object[]{"a", 1, 2.0, new byte[]{4}}));
-
-        assertFalse(TestUtil.compare(
-            new Object[]{"a", 1},
-            new Object[]{"a", 1, 2.0, new byte[]{3}}));
-
-    }
-
-    @Test
-    public void date() {
-        Date date1Instance1 = new Date(2000, 2, 2);
-        Date date1Instance2 = new Date(2000, 2, 2);
-        Date date2Instance1 = new Date(2000, 3, 2);
-        Date date2Instance2 = new Date(2000, 3, 2);
-
-        assertTrue(TestUtil.compare(
-            date1Instance1,
-            date1Instance2));
-
-        assertTrue(TestUtil.compare(
-            date2Instance1,
-            date2Instance2));
-
-        assertFalse(TestUtil.compare(
-            date1Instance1,
-            date2Instance1));
-
-        assertFalse(TestUtil.compare(
-            date1Instance2,
-            date2Instance2));
-
-    }
-
-    @Test
-    public void testMatchesConversationSearch() {
-        assertTrue(TestUtil.matchesConversationSearch("aaaaaaa", "aàáâãäå"));
-        assertTrue(TestUtil.matchesConversationSearch("eeeee", "eèéêë"));
-        assertTrue(TestUtil.matchesConversationSearch("iiiii", "iíìîï"));
-        assertTrue(TestUtil.matchesConversationSearch("oooooo", "oóòôöõ"));
-        assertTrue(TestUtil.matchesConversationSearch("uuuuu", "uüúùû"));
-        assertTrue(TestUtil.matchesConversationSearch("n", "ñ"));
-        assertTrue(TestUtil.matchesConversationSearch("c", "ç"));
-
-        assertTrue(TestUtil.matchesConversationSearch("A", "ä"));
-        assertTrue(TestUtil.matchesConversationSearch("a", "ä"));
-        assertTrue(TestUtil.matchesConversationSearch("a", "Ä"));
-        assertTrue(TestUtil.matchesConversationSearch("A", "Ä"));
-        assertFalse(TestUtil.matchesConversationSearch("Ä", "a"));
-
-        assertFalse(TestUtil.matchesConversationSearch(null, "a"));
-        assertFalse(TestUtil.matchesConversationSearch("a", null));
     }
 
     @Test

@@ -62,7 +62,7 @@ public class DistributionListFragment extends RecipientListFragment {
 
     @Override
     protected Intent getAddIntent() {
-        return new Intent(getActivity(), DistributionListAddActivity.class);
+        return DistributionListAddActivity.createIntent(requireContext());
     }
 
     @SuppressLint("StaticFieldLeak")

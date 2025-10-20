@@ -147,6 +147,11 @@ private fun EditHistoryItemBubble(
                 } else {
                     R.style.Threema_Bubble_Text_Body
                 },
+                messageBodyAlpha = if (isEmptyFileMessageCaption) {
+                    0.6f
+                } else {
+                    1f
+                },
             )
         }
 

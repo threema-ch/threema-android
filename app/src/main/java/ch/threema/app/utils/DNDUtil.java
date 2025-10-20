@@ -34,8 +34,8 @@ import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
-import ch.threema.app.stores.IdentityStore;
 import ch.threema.base.utils.LoggingUtil;
+import ch.threema.domain.stores.IdentityStore;
 
 public class DNDUtil {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DNDUtil");

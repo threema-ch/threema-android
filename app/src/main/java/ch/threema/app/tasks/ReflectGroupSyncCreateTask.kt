@@ -36,7 +36,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncCreate
 import ch.threema.protobuf.d2d.sync.MdD2DSync
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectGroupSyncCreate")
+private val logger = LoggingUtil.getThreemaLogger("ReflectGroupSyncCreateTask")
 
 class ReflectGroupSyncCreateTask(
     private val groupModelData: GroupModelData,

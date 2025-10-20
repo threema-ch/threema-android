@@ -54,7 +54,6 @@ import java.util.concurrent.TimeUnit;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.Person;
@@ -100,22 +99,18 @@ import ch.threema.app.utils.WidgetUtil;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.activities.GroupCallActivity;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ServerMessageModel;
-import ch.threema.storage.models.group.IncomingGroupJoinRequestModel;
-import ch.threema.storage.models.group.OutgoingGroupJoinRequestModel;
 
 import static android.provider.Settings.System.DEFAULT_NOTIFICATION_URI;
 import static android.provider.Settings.System.DEFAULT_RINGTONE_URI;
 import static androidx.core.app.NotificationCompat.MessagingStyle.MAXIMUM_RETAINED_MESSAGES;
 import static ch.threema.app.notifications.NotificationIDs.WORK_SYNC_NOTIFICATION_ID;
 import static ch.threema.app.backuprestore.csv.RestoreService.RESTORE_COMPLETION_NOTIFICATION_ID;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 import static ch.threema.app.utils.TextExtensionsKt.truncate;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
@@ -132,7 +127,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final @NonNull ConversationCategoryService conversationCategoryService;
     private final @NonNull NotificationPreferenceService notificationPreferenceService;
     private final @NonNull RingtoneService ringtoneService;
-    private @Nullable ContactService contactService = null;
+    private @Nullable ContactService _contactService = null;
     private @Nullable GroupService groupService = null;
     private static final int MAX_TICKER_TEXT_LENGTH = 256;
     public static final int APP_RESTART_NOTIFICATION_ID = 481773;
@@ -164,13 +159,7 @@ public class NotificationServiceImpl implements NotificationService {
         this.ringtoneService = ringtoneService;
         this.notificationManagerCompat = NotificationManagerCompat.from(context);
         this.fsNotificationManager = new ForwardSecurityNotificationManager(context, conversationCategoryService);
-
-        // poor design by Google, as usual...
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            this.pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT | 0x02000000; // FLAG_MUTABLE
-        } else {
-            this.pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT;
-        }
+        this.pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE;
 
         initContactService();
         initGroupService();
@@ -185,9 +174,9 @@ public class NotificationServiceImpl implements NotificationService {
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         if (serviceManager != null) {
             try {
-                this.contactService = serviceManager.getContactService();
+                this._contactService = serviceManager.getContactService();
             } catch (Exception e) {
-                logger.error("Exception", e);
+                logger.error("Could not initialize ContactService", e);
             }
         }
     }
@@ -198,17 +187,17 @@ public class NotificationServiceImpl implements NotificationService {
             try {
                 this.groupService = serviceManager.getGroupService();
             } catch (Exception e) {
-                logger.error("Exception", e);
+                logger.error("Could not initialize GroupService", e);
             }
         }
     }
 
     @Nullable
     private ContactService getContactService() {
-        if (contactService == null) {
+        if (_contactService == null) {
             initContactService();
         }
-        return contactService;
+        return _contactService;
     }
 
     @Nullable
@@ -260,7 +249,7 @@ public class NotificationServiceImpl implements NotificationService {
         );
 
         Intent notificationIntent = new Intent(context, ComposeMessageActivity.class);
-        notificationIntent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, group.getId());
+        notificationIntent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) group.getId());
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
         PendingIntent openPendingIntent = createPendingIntentWithTaskStack(notificationIntent);
 
@@ -311,7 +300,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void cancelGroupCallNotification(int groupId) {
-        PendingIntent joinIntent = getGroupCallJoinPendingIntent(groupId, PendingIntent.FLAG_NO_CREATE | PENDING_INTENT_FLAG_IMMUTABLE);
+        PendingIntent joinIntent = getGroupCallJoinPendingIntent(groupId, PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE);
         if (joinIntent != null) {
             joinIntent.cancel();
         }
@@ -323,7 +312,7 @@ public class NotificationServiceImpl implements NotificationService {
         return PendingIntent.getActivity(
             context,
             GC_PENDING_INTENT_BASE + groupId,
-            GroupCallActivity.getJoinCallIntent(context, groupId),
+            GroupCallActivity.createJoinCallIntent(context, groupId),
             flags
         );
     }
@@ -597,20 +586,23 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Nullable
     private NotificationCompat.MessagingStyle getMessagingStyle(ConversationNotificationGroup group, ArrayList<ConversationNotification> notifications) {
-        getContactService();
+        ContactService contactService = getContactService();
+
         if (contactService == null) {
             logger.warn("Contact service is null");
             return null;
         }
+
+        String myIdentity = contactService.getMe().getIdentity();
 
 
         String chatName = group.name;
         boolean isGroupChat = group.messageReceiver instanceof GroupMessageReceiver;
         Person.Builder builder = new Person.Builder()
             .setName(context.getString(R.string.me_myself_and_i))
-            .setKey(ContactUtil.getUniqueIdString(getContactService().getMe().getIdentity()));
+            .setKey(ContactUtil.getUniqueIdString(myIdentity));
 
-        Bitmap avatar = getContactService().getAvatar(getContactService().getMe(), false);
+        Bitmap avatar = contactService.getAvatar(myIdentity, false);
         if (avatar != null) {
             IconCompat iconCompat = IconCompat.createWithBitmap(avatar);
             builder.setIcon(iconCompat);
@@ -687,23 +679,21 @@ public class NotificationServiceImpl implements NotificationService {
         boolean showMarkAsReadAction = false;
 
         if (notificationPreferenceService.isShowMessagePreview() && !conversationCategoryService.isPrivateChat(uniqueId)) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                RemoteInput remoteInput = new RemoteInput.Builder(AppConstants.EXTRA_VOICE_REPLY)
-                    .setLabel(context.getString(R.string.compose_message_and_enter))
-                    .build();
+            RemoteInput remoteInput = new RemoteInput.Builder(AppConstants.EXTRA_VOICE_REPLY)
+                .setLabel(context.getString(R.string.compose_message_and_enter))
+                .build();
 
-                NotificationCompat.Action.Builder replyActionBuilder = new NotificationCompat.Action.Builder(
-                    R.drawable.ic_reply_black_18dp, context.getString(R.string.wearable_reply), replyPendingIntent)
-                    .addRemoteInput(remoteInput)
-                    .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_REPLY)
-                    .setShowsUserInterface(false);
+            NotificationCompat.Action.Builder replyActionBuilder = new NotificationCompat.Action.Builder(
+                R.drawable.ic_reply_black_18dp, context.getString(R.string.wearable_reply), replyPendingIntent)
+                .addRemoteInput(remoteInput)
+                .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_REPLY)
+                .setShowsUserInterface(false);
 
-                if (Build.VERSION.SDK_INT >= 29) {
-                    replyActionBuilder.setAllowGeneratedReplies(!notificationPreferenceService.getDisableSmartReplies());
-                }
-
-                builder.addAction(replyActionBuilder.build());
+            if (Build.VERSION.SDK_INT >= 29) {
+                replyActionBuilder.setAllowGeneratedReplies(!notificationPreferenceService.getDisableSmartReplies());
             }
+
+            builder.addAction(replyActionBuilder.build());
             if (newestGroup.messageReceiver instanceof GroupMessageReceiver) {
                 if (unreadMessagesCount == 1) {
                     builder.addAction(getThumbsUpAction(ackPendingIntent));
@@ -843,9 +833,8 @@ public class NotificationServiceImpl implements NotificationService {
             if (containedAnyNotificationToAnUnMutedReceiver) {
                 showDefaultPinLockedNewMessageNotification();
             }
-        }
-        // get and cancel active conversations notifications trough notificationManager
-        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && cancelAllMessageCategoryNotifications()) {
+        } else if (cancelAllMessageCategoryNotifications()) {
+            // get and cancel active conversations notifications trough notificationManager
             /*
              * In this case we cant really tell if all the cancelled system notifications are from blocked
              * receivers or not. That all the system notifications that were cancelled here belonging to NOW
@@ -970,7 +959,6 @@ public class NotificationServiceImpl implements NotificationService {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public boolean cancelAllMessageCategoryNotifications() {
         boolean cancelledIDs = false;
@@ -1006,7 +994,7 @@ public class NotificationServiceImpl implements NotificationService {
             context,
             NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID,
             notificationIntent,
-            PendingIntent.FLAG_NO_CREATE | PENDING_INTENT_FLAG_IMMUTABLE
+            PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE
         );
         return test != null;
     }
@@ -1096,7 +1084,7 @@ public class NotificationServiceImpl implements NotificationService {
             context,
             0,
             intent,
-            PENDING_INTENT_FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
         );
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_NOTICE)
@@ -1189,7 +1177,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void showSafeBackupFailed(int fullDaysSinceLastBackup) {
         Intent intent = new Intent(context, BackupAdminActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PENDING_INTENT_FLAG_IMMUTABLE);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
         String content = String.format(this.context.getString(R.string.safe_failed_notification), fullDaysSinceLastBackup);
 
@@ -1451,14 +1439,47 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void showGroupJoinResponseNotification(@NonNull OutgoingGroupJoinRequestModel outgoingGroupJoinRequestModel,
-                                                  @NonNull OutgoingGroupJoinRequestModel.Status status,
-                                                  @NonNull DatabaseService databaseService) {
-        /* stub */
+    public void showRemoteSecretActivatedNotification() {
+        var learnMoreUrl = Uri.parse(context.getString(R.string.remote_secret_learn_more_url));
+        var learnMoreIntent = new Intent(Intent.ACTION_VIEW, learnMoreUrl);
+        var learnMorePendingIntent = PendingIntent.getActivity(
+            context,
+            NotificationIDs.REMOTE_SECRET_ACTIVATED_OR_DEACTIVATED,
+            learnMoreIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        );
+        NotificationCompat.Action learnMoreAction = new NotificationCompat.Action(
+            0,
+            context.getString(R.string.remote_secret_activated_learn_more),
+            learnMorePendingIntent
+        );
+        NotificationCompat.Builder builder = buildRemoteSecretNotification(
+            context.getString(R.string.remote_secret_activated_notification_title),
+            context.getString(R.string.remote_secret_activated_notification_content)
+        )
+            .addAction(learnMoreAction);
+        this.notify(NotificationIDs.REMOTE_SECRET_ACTIVATED_OR_DEACTIVATED, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_ALERT);
     }
 
     @Override
-    public void showGroupJoinRequestNotification(@NonNull IncomingGroupJoinRequestModel incomingGroupJoinRequestModel, GroupModel groupModel) {
-        /* stub */
+    public void showRemoteSecretDeactivatedNotification() {
+        NotificationCompat.Builder builder = buildRemoteSecretNotification(
+            context.getString(R.string.remote_secret_deactivated_notification_title),
+            context.getString(R.string.remote_secret_deactivated_notification_content)
+        );
+        this.notify(NotificationIDs.REMOTE_SECRET_ACTIVATED_OR_DEACTIVATED, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_ALERT);
+    }
+
+    private NotificationCompat.Builder buildRemoteSecretNotification(String title, String text) {
+         return new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
+                .setSmallIcon(R.drawable.ic_notification_small)
+                .setTicker(text)
+                .setLocalOnly(true)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_STATUS)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setAutoCancel(false);
     }
 }

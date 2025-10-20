@@ -48,11 +48,7 @@ object SecureRandomUtil {
     /**
      * @return [length] random bytes.
      */
-    fun generateRandomBytes(length: Int): ByteArray {
-        val bytes = ByteArray(length)
-        secureRandom.nextBytes(bytes)
-        return bytes
-    }
+    fun generateRandomBytes(length: Int): ByteArray = secureRandom.generateRandomBytes(length)
 
     fun generateRandomU64(): ULong {
         return secureRandom.nextLong().toULong()

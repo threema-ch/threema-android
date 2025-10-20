@@ -21,26 +21,17 @@
 
 package ch.threema.storage.databaseupdate;
 
-import android.accounts.Account;
-import android.accounts.AccountManager;
-import android.content.Context;
-import android.database.Cursor;
-
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import androidx.preference.PreferenceManager;
-import ch.threema.app.R;
-import ch.threema.app.stores.PreferenceStore;
+import androidx.annotation.NonNull;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 public class DatabaseUpdateToVersion6 implements DatabaseUpdate {
-
-    private final Context context;
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion6(Context context, SQLiteDatabase sqLiteDatabase) {
-        this.context = context;
+    public DatabaseUpdateToVersion6(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 
@@ -50,46 +41,8 @@ public class DatabaseUpdateToVersion6 implements DatabaseUpdate {
             sqLiteDatabase.rawExecSQL("ALTER TABLE contacts ADD COLUMN threemaAndroidContactId VARCHAR(255) DEFAULT NULL");
         }
 
-        //get all contacts to save the threema android contact id
-
-        AccountManager accountManager = AccountManager.get(this.context);
-        final String myIdentity = PreferenceManager.getDefaultSharedPreferences(this.context).getString(PreferenceStore.PREFS_IDENTITY, null);
-
-        if (myIdentity != null) {
-            Account account = null;
-            for (Account type : accountManager.getAccountsByType(context.getString(R.string.package_name))) {
-                if (type != null && type.name.equals(myIdentity)) {
-                    account = type;
-                    break;
-                }
-            }
-
-            if (account != null) {
-                Cursor contacts = sqLiteDatabase.rawQuery("SELECT identity, androidContactId, firstName, lastName FROM contacts", null);
-                while (contacts.moveToNext()) {
-                    String identity = contacts.getString(0);
-                    String androidContactId = contacts.getString(1);
-                    String f = contacts.getString(2);
-                    String l = contacts.getString(3);
-
-                    String name = new StringBuilder()
-                        .append(f != null ? f : "")
-                        .append(f != null ? " " : "")
-                        .append(l != null ? l : "")
-                        .toString()
-                        .trim();
-
-                    if ((name.isEmpty()) || (f == null && l == null)) {
-                        name = identity;
-                    }
-
-                    if (identity == null || identity.isEmpty()) {
-                        continue;
-                    }
-                }
-                contacts.close();
-            }
-        }
+        // There used to be logic here to populate the newly added column with data, but the field will be removed in the database version 94 anyways,
+        // so we don't need to add any data into this field here anymore.
     }
 
     @Override

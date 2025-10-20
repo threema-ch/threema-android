@@ -22,11 +22,9 @@
 package ch.threema.app.notifications;
 
 import static ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_SUPPORT_IDENTITY;
-import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_IMMUTABLE;
 
 import android.annotation.SuppressLint;
 import android.app.Notification;
-import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -40,7 +38,6 @@ import androidx.core.app.NotificationManagerCompat;
 
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.receivers.SendTextToContactBroadcastReceiver;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
@@ -113,11 +110,10 @@ public class BackgroundErrorNotification {
                 appContext,
                 (int) System.nanoTime(),
                 replyIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PENDING_INTENT_FLAG_IMMUTABLE);
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             // The intent should be triggered by tapping on a notification action
             final NotificationCompat.Action action = new NotificationCompat.Action.Builder(
-                // NOTE: Do *not* use a vector drawable here, it crashes on Android 4!
                 R.drawable.ic_send_grey600_24dp,
                 appContext.getString(R.string.send_to_support),
                 pendingIntent

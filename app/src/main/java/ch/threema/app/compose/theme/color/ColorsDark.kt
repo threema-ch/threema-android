@@ -35,8 +35,8 @@ object ColorsDark : ComposeColorPaletteDark() {
     // Secondary
     override val secondary = Color(BrandColor.SHADE_400)
     override val onSecondary = Color(0xFF000000)
-    override val secondaryContainer = Color(BrandColor.SHADE_400)
-    override val onSecondaryContainer = Color(0xFF000000)
+    override val secondaryContainer = Color(BrandColor.SHADE_800)
+    override val onSecondaryContainer = Color(0xFFF3F4F6) // Brand Text
 
     // Tertiary
     override val tertiary = Color(BrandGreyColors.SHADE_800)
@@ -45,8 +45,8 @@ object ColorsDark : ComposeColorPaletteDark() {
     override val onTertiaryContainer = Color(0xFFF3F4F6) // Brand Text
 
     // Error
-    override val error = Color(0xFFFFB4AB)
-    override val onError = Color(0xFF690005)
+    override val error = Color(0xFFEDA19D)
+    override val onError = Color(0xFF000000)
     override val errorContainer = Color(0xFF93000A)
     override val onErrorContainer = Color(0xFFFFDAD6)
 

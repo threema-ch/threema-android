@@ -21,27 +21,27 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import ch.threema.storage.models.WebClientSessionModel;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import androidx.annotation.NonNull;
+
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 
 public class DatabaseUpdateToVersion40 implements DatabaseUpdate {
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion40(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion40(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 
     @Override
     public void run() throws SQLException {
-        if (!fieldExists(sqLiteDatabase, WebClientSessionModel.TABLE, WebClientSessionModel.COLUMN_PUSH_TOKEN)) {
-            sqLiteDatabase.execSQL("ALTER TABLE " + WebClientSessionModel.TABLE +
-                " ADD COLUMN " + WebClientSessionModel.COLUMN_PUSH_TOKEN + " VARCHAR(255) DEFAULT NULL");
+        if (!fieldExists(sqLiteDatabase, "wc_session", "push_token")) {
+            sqLiteDatabase.execSQL("ALTER TABLE wc_session ADD COLUMN push_token VARCHAR(255) DEFAULT NULL");
         }
     }
 

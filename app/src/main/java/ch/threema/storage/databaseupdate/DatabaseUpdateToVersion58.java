@@ -21,18 +21,21 @@
 
 package ch.threema.storage.databaseupdate;
 
+import android.database.SQLException;
+
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import android.database.SQLException;
+import androidx.annotation.NonNull;
 
 /**
  * update constraint for GroupMessagePendingMessageIdModel
  */
 public class DatabaseUpdateToVersion58 implements DatabaseUpdate {
 
+    @NonNull
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion58(SQLiteDatabase sqLiteDatabase) {
+    public DatabaseUpdateToVersion58(@NonNull SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 

@@ -34,6 +34,7 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.common.now
 import ch.threema.data.storage.DbEmojiReaction
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupMessageModel
@@ -53,7 +54,8 @@ import kotlinx.coroutines.launch
 private val logger = LoggingUtil.getThreemaLogger("ContentCreator")
 
 private const val AMOUNT_OF_NONCES = 50_000
-private const val SPAM_MESSAGES_PER_CONVERSATION = 1000
+private const val SPAM_TEXT_MESSAGES_PER_CONVERSATION = 50000
+private const val SPAM_MESSAGES_WITH_REACTIONS_PER_CONVERSATION = 1000
 
 /**
  * Chats with names that start with this prefix will be used when messages are created.
@@ -62,6 +64,29 @@ private const val SPAM_MESSAGES_PER_CONVERSATION = 1000
 private const val SPAM_CHATS_PREFIX = "\uD83D\uDC7E" // 👾
 
 object ContentCreator {
+    @JvmStatic
+    @AnyThread
+    fun createTextMessageSpam(serviceManager: ServiceManager, fragmentManager: FragmentManager) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val goOn = confirm(
+                fragmentManager,
+                "Create $SPAM_TEXT_MESSAGES_PER_CONVERSATION messages in any contact/group whose name starts with '$SPAM_CHATS_PREFIX'?",
+            )
+            if (!goOn) {
+                return@launch
+            }
+            withGenericProgress(fragmentManager, "Creating message spam...") {
+                val contacts = serviceManager.contactService.all
+                    .filter { isSpamChat(it.firstName) }
+                createContactTextSpam(contacts, serviceManager)
+
+                val groups = serviceManager.groupService.all
+                    .filter { isSpamChat(it.name) }
+                createGroupTextSpam(groups, serviceManager)
+            }
+        }
+    }
+
     @JvmStatic
     @AnyThread
     fun createReactionSpam(serviceManager: ServiceManager, fragmentManager: FragmentManager) {
@@ -102,8 +127,8 @@ object ContentCreator {
                 logger.debug("Skip group without members")
                 return@forEach
             }
-            repeat(SPAM_MESSAGES_PER_CONVERSATION) {
-                logger.debug("Group spam message #{}", it)
+            repeat(SPAM_MESSAGES_WITH_REACTIONS_PER_CONVERSATION) {
+                logger.debug("Group reaction spam message #{}", it)
                 reactions.addAll(
                     createGroupReactionSpam(groupModel, members, serviceManager),
                 )
@@ -120,7 +145,7 @@ object ContentCreator {
         members: List<String>,
         serviceManager: ServiceManager,
     ): List<DbEmojiReaction> {
-        val userIdentity = serviceManager.userService.identity
+        val userIdentity = serviceManager.userService.identity!!
         val groupMessageModelFactory = serviceManager.databaseService.groupMessageModelFactory
 
         val reactionIdentities = mutableListOf<String>()
@@ -165,6 +190,78 @@ object ContentCreator {
         return (stateTexts + reactionTexts).joinToString("\n")
     }
 
+    private fun createContactTextSpam(
+        contacts: List<ContactModel>,
+        serviceManager: ServiceManager,
+    ) {
+        contacts.forEach { contactModel ->
+            logger.info("Create spam messages for contact with identity {}", contactModel.identity)
+            repeat(SPAM_TEXT_MESSAGES_PER_CONVERSATION) {
+                logger.debug("Contact text spam message #{}", it)
+                createContactTextSpamMessage(it, contactModel, serviceManager)
+            }
+        }
+    }
+
+    private fun createContactTextSpamMessage(
+        no: Int,
+        contactModel: ContactModel,
+        serviceManager: ServiceManager,
+    ) {
+        val messageModelFactory = serviceManager.databaseService.messageModelFactory
+
+        val message = createContactMessage(
+            "Spam #$no",
+            isOutbox = Random.nextBoolean(),
+            state = null,
+            contactModel,
+        )
+        messageModelFactory.create(message)
+    }
+
+    private fun createGroupTextSpam(
+        groups: List<GroupModel>,
+        serviceManager: ServiceManager,
+    ) {
+        val groupService = serviceManager.groupService
+        groups.forEach { groupModel ->
+            logger.info(
+                "Create text messages in group with id={}",
+                groupModel.id,
+            )
+            val members = groupService.getGroupMemberIdentities(groupModel).toList()
+            if (members.isEmpty()) {
+                logger.debug("Skip empty group")
+                return@forEach
+            }
+            repeat(SPAM_TEXT_MESSAGES_PER_CONVERSATION) {
+                logger.debug("Group text spam message #{}", it)
+                createGroupTextSpamMessage(it, groupModel, members, serviceManager)
+            }
+        }
+    }
+
+    private fun createGroupTextSpamMessage(
+        no: Int,
+        groupModel: GroupModel,
+        members: List<String>,
+        serviceManager: ServiceManager,
+    ) {
+        val userIdentity = serviceManager.userService.identity!!
+        val groupMessageModelFactory = serviceManager.databaseService.groupMessageModelFactory
+
+        val senderIdentity = members.random()
+        val message = createGroupMessage(
+            "Spam message #$no",
+            senderIdentity,
+            userIdentity,
+            emptyMap(),
+            groupModel,
+        )
+
+        groupMessageModelFactory.create(message)
+    }
+
     private fun createContactReactionSpam(
         contacts: List<ContactModel>,
         serviceManager: ServiceManager,
@@ -173,7 +270,7 @@ object ContentCreator {
 
         contacts.forEach { contactModel ->
             logger.info("Create ack/dec messages for contact with identity {}", contactModel.identity)
-            repeat(SPAM_MESSAGES_PER_CONVERSATION) {
+            repeat(SPAM_MESSAGES_WITH_REACTIONS_PER_CONVERSATION) {
                 logger.debug("Contact spam message #{}", it)
                 reactions.addAll(createContactReactionSpam(contactModel, serviceManager))
             }
@@ -188,7 +285,7 @@ object ContentCreator {
         contactModel: ContactModel,
         serviceManager: ServiceManager,
     ): List<DbEmojiReaction> {
-        val userIdentity = serviceManager.userService.identity
+        val userIdentity = serviceManager.userService.identity!!
         val messageModelFactory = serviceManager.databaseService.messageModelFactory
 
         val hasUserReactions = Random.nextBoolean()
@@ -248,7 +345,7 @@ object ContentCreator {
         }
     }
 
-    private fun createReactions(identities: List<String>): List<Pair<String, Set<String>>> {
+    private fun createReactions(identities: List<Identity>): List<Pair<Identity, Set<String>>> {
         val availableReactions = getReactionSequences(identities.size * 3)
         return identities.map { identity ->
             val numberOfReactions = Random.nextInt(1..3)
@@ -270,8 +367,8 @@ object ContentCreator {
 
     private fun createGroupMessage(
         text: String,
-        senderIdentity: String,
-        userIdentity: String,
+        senderIdentity: Identity,
+        userIdentity: Identity,
         groupMessageStates: Map<String, Any>,
         groupModel: GroupModel,
     ): GroupMessageModel = GroupMessageModel().apply {
@@ -332,14 +429,15 @@ object ContentCreator {
                 return@launch
             }
             withGenericProgress(fragmentManager, "Generate random nonces") {
-                createNonces(NonceScope.CSP, serviceManager.nonceFactory, serviceManager.identityStore.identity)
-                createNonces(NonceScope.D2D, serviceManager.nonceFactory, serviceManager.identityStore.identity)
+                val myIdentity = serviceManager.identityStore.getIdentity()!!
+                createNonces(NonceScope.CSP, serviceManager.nonceFactory, myIdentity)
+                createNonces(NonceScope.D2D, serviceManager.nonceFactory, myIdentity)
             }
         }
     }
 
     @WorkerThread
-    private fun createNonces(scope: NonceScope, nonceFactory: NonceFactory, identity: String) {
+    private fun createNonces(scope: NonceScope, nonceFactory: NonceFactory, identity: Identity) {
         logger.info("Generate random nonces for scope {}", scope)
         val nonces = (0 until AMOUNT_OF_NONCES).asSequence()
             .map { nonceFactory.next(scope) }

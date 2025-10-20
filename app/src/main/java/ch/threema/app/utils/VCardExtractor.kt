@@ -24,6 +24,7 @@ package ch.threema.app.utils
 import android.content.res.Resources
 import androidx.annotation.DrawableRes
 import ch.threema.app.R
+import ch.threema.common.takeUnlessEmpty
 import ezvcard.parameter.AddressType
 import ezvcard.parameter.EmailType
 import ezvcard.parameter.RelatedType
@@ -97,28 +98,45 @@ class VCardExtractor(
     }
 
     private fun getAddress(property: Address): String =
-        StringBuilder().apply {
-            if (property.streetAddress != null) append(property.streetAddress)
-            if (property.extendedAddress != null) append(property.extendedAddress)
-            if (property.postalCode != null) append("\n${property.postalCode} ")
-            if (property.postalCode == null && property.locality != null) append("\n ")
-            if (property.locality != null) append(property.locality)
-            if (property.region != null) append("\n${property.region}")
-            if (property.country != null) append("\n${property.country}")
-        }.toString().toNonEmpty()
+        buildString {
+            if (property.streetAddress != null) {
+                append(property.streetAddress)
+            }
+            if (property.extendedAddress != null) {
+                append(property.extendedAddress)
+            }
+            if (property.postalCode != null) {
+                append("\n${property.postalCode} ")
+            }
+            if (property.postalCode == null && property.locality != null) {
+                append("\n ")
+            }
+            if (property.locality != null) {
+                append(property.locality)
+            }
+            if (property.region != null) {
+                append("\n${property.region}")
+            }
+            if (property.country != null) {
+                append("\n${property.country}")
+            }
+        }
+            .toNonEmpty()
 
-    private fun getAgent(property: Agent): String {
-        val sb = StringBuilder()
-        if (property.vCard != null) {
-            property.vCard.structuredName?.let { sb.append(getText(it, false)) }
-            sb.append(property.vCard.properties.joinToString("\n", transform = this::getText))
+    private fun getAgent(property: Agent): String =
+        buildString {
+            property.vCard?.let { vCard ->
+                vCard.structuredName?.let {
+                    append(getText(it, false))
+                }
+                append(vCard.properties.joinToString("\n", transform = ::getText))
+            }
+            property.url?.takeUnlessEmpty()?.let { url ->
+                append("\n")
+                append(url)
+            }
         }
-        if (property.url != null && property.url != "") {
-            sb.append("\n")
-            sb.append(property.url)
-        }
-        return sb.toString().toNonEmpty()
-    }
+            .toNonEmpty()
 
     private fun getBinaryProperty(property: BinaryProperty<*>): String = when (property) {
         is ImageProperty ->

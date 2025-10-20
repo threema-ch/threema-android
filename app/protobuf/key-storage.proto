@@ -1,0 +1,125 @@
+syntax = "proto3";
+
+package app;
+
+option java_package = "ch.threema.localcrypto.protobuf";
+option java_multiple_files = true;
+
+message InnerKeyStorage {
+  enum Version {
+    // Initial version
+    V1_0 = 0;
+  }
+}
+
+// Inner key storage V1, encoded in the following way:
+//
+// 1. Let `data` be the result of encoding this key storage to bytes.
+// 2. Let `version` be the selected `InnerKeyStorage.Version.V1_X` version.
+// 3. Return `u16-le(version) || data`.
+message InnerKeyStorageV1 {
+  // Master key, used for the database, files, encrypted settings, etc.
+  bytes master_key = 1;
+}
+
+message IntermediateKeyStorage {
+  enum Version {
+    // Initial version
+    V1_0 = 0;
+  }
+}
+
+// Intermediate key storage V1, encoded in the following way:
+//
+// 1. Let `data` be the result of encoding this key storage to bytes.
+// 2. Let `version` be the selected `IntermediateKeyStorage.Version.V1_X` version.
+// 3. Return `u16-le(version) || data`.
+message IntermediateKeyStorageV1 {
+  message RemoteSecretProtected {
+    // Associated remote secret authentication token
+    bytes remote_secret_authentication_token = 1;
+
+    // Associated remote secret hash
+    bytes remote_secret_hash = 2;
+
+    // Encapsulated compatible, version-prefixed inner key storage, encrypted
+    // and encoded in the following way:
+    //
+    // 1. Let `RS` be the remote secret.
+    // 2. Let `RSSK` be the result of
+    //    `BLAKE2b(key=RS, salt='rssk-a', personal='3ma-rs')`.
+    // 3. Let `inner` be the plaintext `Inner`, encoded to bytes.
+    // 4. Let `nonce` be a random nonce.
+    // 5. Let `encrypted-inner` be the result of encrypting `inner` by
+    //    `XChaCha20-Poly1305(key=RSSK, nonce)`.
+    // 6. Set this field to `nonce || encrypted-inner` (i.e. an
+    //    `extra.crypto.encrypted-data-with-nonce-ahead` struct).
+    bytes encrypted_inner = 3;
+  }
+
+  oneof inner {
+    // A compatible, version-prefixed inner key storage without any further
+    // protection
+    bytes plaintext_inner = 1;
+
+    // Inner key storage protected by the Remote Secret protocol
+    RemoteSecretProtected remote_secret_protected_inner = 2;
+  }
+}
+
+message OuterKeyStorage {
+  enum Version {
+    // Initial version
+    V1_0 = 0;
+  }
+}
+
+// Outer key storage V1, encoded in the following way:
+//
+// 1. Let `data` be the result of encoding this key storage to bytes.
+// 2. Let `version` be the selected `OuterKeyStorage.Version.V1_X` version.
+// 3. Return `u16-le(version) || data`.
+message OuterKeyStorageV1 {
+  message Argon2idProtected {
+    // Version of Argon2
+    enum Argon2Version {
+      VERSION_1_3 = 0;
+    }
+    Argon2Version version = 1;
+
+    // Random salt (16 bytes)
+    bytes salt = 2;
+
+    // Memory usage in bytes (≥ 128 MiB)
+    uint32 memory_bytes = 3;
+
+    // Number of iterations (≥ 3)
+    uint32 iterations = 4;
+
+    // Amount of parallelism (≥ 1, recommended to be 1)
+    uint32 parallelism = 5;
+
+    // Encapsulated compatible, version-prefixed intermediate key storage,
+    // encrypted and encoded in the following way:
+    //
+    // 1. Let `SK` be a 32 byte secret key derived by running Argon2id with the
+    //    given parameters and the user-provided passphrase.
+    // 2. Let `nonce` be a random nonce.
+    // 3. Let `intermediate` be a compatible, version-prefixed intermediate key
+    //    storage encoded to bytes.
+    // 4. Let `encrypted-intermediate` be the result of encrypting `intermediate`
+    //    by `XChaCha20-Poly1305(key=SK, nonce)`.
+    // 5. Set this field to `nonce || encrypted-intermediate` (i.e. an
+    //    `extra.crypto.encrypted-data-with-nonce-ahead` struct).
+    bytes encrypted_intermediate = 6;
+  }
+
+  oneof intermediate {
+    // A compatible, version-prefixed intermediate key storage without any
+    // further protection
+    bytes plaintext_intermediate = 1;
+
+    // Intermediate key storage protected by a passphrase, using Argon2id
+    Argon2idProtected argon2id_protected_intermediate = 2;
+  }
+}

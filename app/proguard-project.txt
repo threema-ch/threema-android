@@ -104,7 +104,6 @@ public static <fields>;
 -dontwarn com.google.common.collect.MinMaxPriorityQueue
 
 # threema-specific
--dontwarn org.mockito.**
 -dontwarn sun.reflect.**
 -dontwarn android.test.**
 -dontwarn class.org.junit.**
@@ -113,9 +112,6 @@ public static <fields>;
 -dontwarn android.view.**
 -dontwarn android.widget.**
 -dontwarn com.google.common.primitives.**
--dontwarn **CompatHoneycomb
--dontwarn **CompatHoneycombMR2
--dontwarn **CompatCreatorHoneycombMR2
 -dontwarn java.beans.**
 
 # WebRTC fails to build due to missing dependencies

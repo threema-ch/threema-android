@@ -21,10 +21,14 @@
 
 package ch.threema.app.utils
 
+import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.UserService
 import ch.threema.storage.models.ContactModel
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -39,6 +43,15 @@ class NameUtilTest {
             every { isMe(OTHER_IDENTITY) } returns false
             every { identity } returns ME_IDENTITY
         }
+
+        // TODO(ANDR-4219): We have to mock ServiceManager, as it is sneakily referenced somewhere deep down the stack. This needs to be cleaned up.
+        mockkObject(ThreemaApplication)
+        every { ThreemaApplication.getServiceManager() } returns null
+    }
+
+    @AfterTest
+    fun tearDown() {
+        unmockkObject(ThreemaApplication)
     }
 
     @Test

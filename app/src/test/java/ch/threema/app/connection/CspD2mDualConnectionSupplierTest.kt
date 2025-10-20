@@ -32,7 +32,7 @@ import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.d2m.D2mConnection
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
 import io.mockk.every
@@ -102,7 +102,7 @@ class CspD2mDualConnectionSupplierTest {
         val serverAddressProviderService = mockk<ServerAddressProviderService>()
         val serverAddressProvider = mockk<ServerAddressProvider>()
         every { serverAddressProviderService.serverAddressProvider } returns serverAddressProvider
-        val identityStore = mockk<IdentityStoreInterface>()
+        val identityStore = mockk<IdentityStore>()
         val version = Version()
         val isIpv6Preferred = true
         val okhttpClientSupplier = Supplier { mockk<OkHttpClient>() }

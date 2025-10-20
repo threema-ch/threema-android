@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "POI 1",
+    "place": "village",
+    "lat": 47.5,
+    "lon": 8.1,
+    "dist": 20
+  },
+  {
+    "id": 2,
+    "name": "POI 2",
+    "place": "hamlet",
+    "lat": 47.1,
+    "lon": 8.0,
+    "dist": 25
+  },
+  {
+    "id": 3,
+    "name": "POI 3",
+    "highway" : "primary",
+    "lat": 47.1,
+    "lon": 8.0,
+    "dist": 30
+  }
+]

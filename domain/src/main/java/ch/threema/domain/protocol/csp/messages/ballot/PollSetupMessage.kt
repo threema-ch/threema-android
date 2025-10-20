@@ -25,6 +25,7 @@ import ch.threema.base.utils.LoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayOutputStream
@@ -37,7 +38,7 @@ private val logger = LoggingUtil.getThreemaLogger("PollSetupMessage")
  */
 open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
     override var ballotId: BallotId? = null
-    override var ballotCreatorIdentity: String? = null
+    override var ballotCreatorIdentity: Identity? = null
     override var ballotData: BallotData? = null
 
     override fun flagSendPush(): Boolean = true
@@ -80,20 +81,20 @@ open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
     override fun getType(): Int = ProtocolDefines.MSGTYPE_BALLOT_CREATE
 
     override fun toString(): String =
-        StringBuilder().apply {
+        buildString {
             append(super.toString())
             append(": poll setup message")
-            ballotData?.let { ballotDataNotNull ->
+            ballotData?.description?.let { description ->
                 append(", description: ")
-                append(ballotDataNotNull.description)
+                append(description)
             }
-        }.toString()
+        }
 
     companion object {
         @JvmStatic
         fun fromReflected(
             message: MdD2D.IncomingMessage,
-            ballotCreatorIdentity: String,
+            ballotCreatorIdentity: Identity,
         ): PollSetupMessage = fromByteArray(
             data = message.body.toByteArray(),
             ballotCreatorIdentity = ballotCreatorIdentity,
@@ -104,7 +105,7 @@ open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
         @JvmStatic
         fun fromReflected(
             message: MdD2D.OutgoingMessage,
-            ballotCreatorIdentity: String,
+            ballotCreatorIdentity: Identity,
         ): PollSetupMessage = fromByteArray(
             data = message.body.toByteArray(),
             ballotCreatorIdentity = ballotCreatorIdentity,
@@ -114,7 +115,7 @@ open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
 
         @JvmStatic
         @Throws(BadMessageException::class)
-        fun fromByteArray(data: ByteArray, ballotCreatorIdentity: String): PollSetupMessage =
+        fun fromByteArray(data: ByteArray, ballotCreatorIdentity: Identity): PollSetupMessage =
             fromByteArray(
                 data = data,
                 offset = 0,
@@ -138,7 +139,7 @@ open class PollSetupMessage : AbstractMessage(), BallotSetupInterface {
             data: ByteArray,
             offset: Int,
             length: Int,
-            ballotCreatorIdentity: String,
+            ballotCreatorIdentity: Identity,
         ): PollSetupMessage {
             if (length < 1) {
                 throw BadMessageException("Bad length ($length) for poll setup message")

@@ -42,13 +42,29 @@
             android:paddingEnd="@dimen/group_call_participant_margin">
 
             <ImageView
+                android:id="@+id/participant_screen_share_active"
+                android:layout_width="@dimen/group_call_participant_state_icons_size"
+                android:layout_height="@dimen/group_call_participant_state_icons_size"
+                android:layout_marginEnd="@dimen/group_call_participant_margin"
+                android:contentDescription="@string/voip_gc_participant_screen_share_status_description"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@id/participant_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/participant_microphone_muted"
+                app:layout_constraintTop_toTopOf="@id/participant_name"
+                app:srcCompat="@drawable/ic_screen_share_active"
+                app:tint="@android:color/white" />
+
+            <ImageView
                 android:id="@+id/participant_microphone_muted"
-                android:layout_width="@dimen/group_call_participant_mute_icon_size"
-                android:layout_height="@dimen/group_call_participant_mute_icon_size"
+                android:layout_width="@dimen/group_call_participant_state_icons_size"
+                android:layout_height="@dimen/group_call_participant_state_icons_size"
+                android:layout_marginEnd="@dimen/group_call_participant_margin"
                 android:contentDescription="@string/voip_gc_participant_mute_status_description"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="@id/participant_name"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@id/participant_screen_share_active"
+                app:layout_constraintEnd_toStartOf="@id/participant_name"
                 app:layout_constraintTop_toTopOf="@id/participant_name"
                 app:srcCompat="@drawable/ic_mic_off_outline"
                 app:tint="@android:color/white" />
@@ -57,7 +73,6 @@
                 android:id="@+id/participant_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/group_call_participant_margin"
                 android:layout_marginBottom="@dimen/group_call_participant_margin"
                 android:ellipsize="end"
                 android:maxLines="1"

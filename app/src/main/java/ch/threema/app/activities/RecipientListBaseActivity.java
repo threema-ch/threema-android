@@ -52,6 +52,7 @@ import com.google.android.material.search.SearchBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -81,6 +82,7 @@ import androidx.viewpager.widget.ViewPager;
 import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.LocationMessageSendAction;
 import ch.threema.app.actions.SendAction;
 import ch.threema.app.actions.TextMessageSendAction;
@@ -88,6 +90,7 @@ import ch.threema.app.adapters.FilterableListAdapter;
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
 import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
 import ch.threema.app.asynctasks.ContactResult;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -102,14 +105,8 @@ import ch.threema.app.fragments.WorkUserListFragment;
 import ch.threema.app.home.HomeActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.ConversationService;
-import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.GroupService;
-import ch.threema.app.services.MessageService;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.services.UserService;
 import ch.threema.app.ui.LongToast;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SingleToast;
@@ -130,8 +127,6 @@ import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.data.repositories.ContactModelRepository;
-import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.location.Poi;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -190,15 +185,8 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     private final List<Integer> tabs = new ArrayList<>(NUM_FRAGMENTS);
     private boolean isInternallyForwardingMediaFiles = false;
 
-    private GroupService groupService;
-    private ContactService contactService;
-    private ConversationService conversationService;
-    private DistributionListService distributionListService;
-    private MessageService messageService;
-    private FileService fileService;
-    private UserService userService;
-    private APIConnector apiConnector;
-    private ContactModelRepository contactModelRepository;
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     @NonNull
     private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
@@ -215,7 +203,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
                 if (ContentResolver.SCHEME_CONTENT.equalsIgnoreCase(mediaItem.getUri().getScheme())) {
                     try {
-                        File file = fileService.createTempFile("rcpt", null);
+                        File file = dependencies.getFileService().createTempFile("rcpt", null);
                         FileUtil.copyFile(mediaItem.getUri(), file, getContentResolver());
                         mediaItem.setUri(Uri.fromFile(file));
                         mediaItem.setDeleteAfterUse(true);
@@ -283,22 +271,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
             return false;
         }
 
-        try {
-            this.contactService = serviceManager.getContactService();
-            this.conversationService = serviceManager.getConversationService();
-            this.groupService = serviceManager.getGroupService();
-            this.distributionListService = serviceManager.getDistributionListService();
-            this.messageService = serviceManager.getMessageService();
-            this.fileService = serviceManager.getFileService();
-            this.apiConnector = serviceManager.getAPIConnector();
-            this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
-            userService = serviceManager.getUserService();
-        } catch (Exception e) {
-            logger.error("Exception", e);
-            return false;
-        }
-
-        if (!userService.hasIdentity() || (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid())) {
+        if (!dependencies.getUserService().hasIdentity() || (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid())) {
             logger.debug("No identity or not licensed");
             finish();
             System.exit(0);
@@ -435,7 +408,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                 ConfigUtils.adjustSearchBarTextViewMargin(this, searchBar);
             }
 
-            if (!hideRecents && !conversationService.hasConversations()) {
+            if (!hideRecents && !dependencies.getConversationService().hasConversations()) {
                 //no conversation? show users tab as default
                 viewPager.setCurrentItem(tabs.indexOf(FRAGMENT_USERS), true);
             }
@@ -489,7 +462,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
             }
 
             String identity = IntentDataUtil.getIdentity(intent);
-            int groupId = IntentDataUtil.getGroupId(intent);
+            long groupId = IntentDataUtil.getGroupId(intent);
             long distributionListID = IntentDataUtil.getDistributionListId(intent);
 
             if (TestUtil.isEmptyOrNull(identity) && groupId == -1 && distributionListID == -1) {
@@ -501,7 +474,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                         if (bundle.containsKey(AppConstants.INTENT_DATA_CONTACT)) {
                             identity = bundle.getString(AppConstants.INTENT_DATA_CONTACT);
                         } else if (bundle.containsKey(AppConstants.INTENT_DATA_GROUP_DATABASE_ID)) {
-                            groupId = bundle.getInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID);
+                            groupId = bundle.getLong(AppConstants.INTENT_DATA_GROUP_DATABASE_ID);
                         } else if (bundle.containsKey(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
                             distributionListID = bundle.getLong(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID);
                         }
@@ -611,15 +584,15 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                     }
 
                     if (!TestUtil.isEmptyOrNull(identity)) {
-                        prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(contactService.getByIdentity(identity))));
+                        prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(dependencies.getContactService().getByIdentity(identity))));
                     } else if (groupId > 0) {
-                        prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(groupService.getById(groupId))));
+                        prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(dependencies.getGroupService().getById(groupId))));
                     } else if (distributionListID > 0) {
-                        prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(distributionListService.getById(distributionListID))));
+                        prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(dependencies.getDistributionListService().getById(distributionListID))));
                     }
                 } else if (action.equals(Intent.ACTION_SENDTO)) {
                     // called from contact app or quickcontactbadge
-                    if (lockAppService != null && lockAppService.isLocked()) {
+                    if (dependencies.getLockAppService().isLocked()) {
                         finish();
                         return;
                     }
@@ -631,7 +604,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                     if (uri != null && "smsto".equals(uri.getScheme())) {
                         mediaItems.add(new MediaItem(uri, TYPE_TEXT, MimeUtil.MIME_TYPE_TEXT, intent.getStringExtra("sms_body")));
 
-                        final ContactModel contactModel = ContactLookupUtil.phoneNumberToContact(this, contactService, uri.getSchemeSpecificPart());
+                        final ContactModel contactModel = ContactLookupUtil.phoneNumberToContact(this, dependencies.getContactService(), uri.getSchemeSpecificPart());
 
                         if (contactModel != null) {
                             prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)), false);
@@ -645,7 +618,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                     // called from action URL
                     Uri dataUri = intent.getData();
 
-                    if (TestUtil.required(dataUri)) {
+                    if (dataUri != null) {
                         String scheme = dataUri.getScheme();
                         String host = dataUri.getHost();
 
@@ -655,7 +628,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                                     ||
                                     ("https".equals(scheme) && (BuildConfig.actionUrl.equals(host) || BuildConfig.contactActionUrl.equals(host)) && "/compose".equals(dataUri.getPath()))
                             ) {
-                                if (lockAppService != null && lockAppService.isLocked()) {
+                                if (dependencies.getLockAppService().isLocked()) {
                                     finish();
                                     return;
                                 }
@@ -669,7 +642,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                                 String queryParameter = dataUri.getQueryParameter("id");
                                 if (queryParameter != null) {
                                     targetIdentity = queryParameter.toUpperCase();
-                                    ContactModel contactModel = contactService.getByIdentity(targetIdentity);
+                                    ContactModel contactModel = dependencies.getContactService().getByIdentity(targetIdentity);
 
                                     if (contactModel == null) {
                                         addNewContact(targetIdentity);
@@ -679,7 +652,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                                 }
                             } else {
                                 // redirect to chat
-                                MessageReceiver messageReceiver = IntentDataUtil.getMessageReceiverFromExtras(intent.getExtras(), contactService, groupService, distributionListService);
+                                MessageReceiver messageReceiver = IntentDataUtil.getMessageReceiverFromExtras(intent.getExtras(), dependencies.getContactService(), dependencies.getGroupService(), dependencies.getDistributionListService());
                                 if (messageReceiver != null) {
                                     Intent composeIntent = IntentDataUtil.getComposeIntentForReceivers(this, new ArrayList<>(Collections.singletonList(messageReceiver)));
                                     startComposeActivity(composeIntent);
@@ -711,11 +684,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                         }
 
                         if (!TestUtil.isEmptyOrNull(identity)) {
-                            prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(contactService.getByIdentity(identity))));
+                            prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(dependencies.getContactService().getByIdentity(identity))));
                         }
 
                         if (groupId > 0) {
-                            prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(groupService.getById(groupId))));
+                            prepareForwardingOrSharing(new ArrayList<>(Collections.singletonList(dependencies.getGroupService().getById(groupId))));
                         }
                     } else {
                         finish();
@@ -728,7 +701,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
                     if (messageIds != null && !messageIds.isEmpty()) {
                         for (int messageId : messageIds) {
-                            AbstractMessageModel model = messageService.getMessageModelFromId(messageId, originalMessageType);
+                            AbstractMessageModel model = dependencies.getMessageService().getMessageModelFromId(messageId, originalMessageType);
                             if (model != null && model.getType() != MessageType.BALLOT) {
                                 originalMessageModels.add(model);
                             }
@@ -827,7 +800,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
     @SuppressLint("StaticFieldLeak")
     private void addNewContact(final String identity) {
-        final ContactModel contactModel = contactService.getByIdentity(identity);
+        final ContactModel contactModel = dependencies.getContactService().getByIdentity(identity);
 
         if (contactModel == null) {
             GenericProgressDialog.newInstance(R.string.creating_contact, R.string.please_wait).show(getSupportFragmentManager(), "pro");
@@ -836,9 +809,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                 new BasicAddOrUpdateContactBackgroundTask(
                     identity,
                     ContactModel.AcquaintanceLevel.DIRECT,
-                    userService.getIdentity(),
-                    apiConnector,
-                    contactModelRepository,
+                    dependencies.getUserService().getIdentity(),
+                    dependencies.getApiConnector(),
+                    dependencies.getContactModelRepository(),
                     AddContactRestrictionPolicy.CHECK,
                     RecipientListBaseActivity.this,
                     null
@@ -847,7 +820,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                     public void onFinished(ContactResult result) {
                         DialogUtil.dismissDialog(getSupportFragmentManager(), "pro", true);
 
-                        ContactModel newContactModel = contactService.getByIdentity(identity);
+                        ContactModel newContactModel = dependencies.getContactService().getByIdentity(identity);
                         if (newContactModel == null) {
                             View rootView = getWindow().getDecorView().findViewById(android.R.id.content);
                             Snackbar.make(rootView, R.string.contact_not_found, Snackbar.LENGTH_LONG).show();
@@ -909,11 +882,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
         MessageReceiver messageReceiver = null;
 
         if (model instanceof ContactModel) {
-            messageReceiver = contactService.createReceiver((ContactModel) model);
+            messageReceiver = dependencies.getContactService().createReceiver((ContactModel) model);
         } else if (model instanceof GroupModel) {
-            messageReceiver = groupService.createReceiver((GroupModel) model);
+            messageReceiver = dependencies.getGroupService().createReceiver((GroupModel) model);
         } else if (model instanceof DistributionListModel) {
-            messageReceiver = distributionListService.createReceiver((DistributionListModel) model);
+            messageReceiver = dependencies.getDistributionListService().createReceiver((DistributionListModel) model);
         }
         return messageReceiver;
     }
@@ -944,7 +917,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
             intent.putExtra(AppConstants.INTENT_DATA_TEXT, mediaItems.get(0).getTrimmedCaption());
             startComposeActivity(intent);
         } else if (messageReceivers.length > 1 || !mediaItems.isEmpty()) {
-            messageService.sendMediaSingleThread(mediaItems, Arrays.asList(messageReceivers));
+            dependencies.getMessageService().sendMediaSingleThread(mediaItems, Arrays.asList(messageReceivers));
             startComposeActivity(intent);
         } else {
             startComposeActivity(intent);
@@ -953,7 +926,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
     void forwardSingleMessage(final MessageReceiver[] messageReceivers, final int i, final Intent intent, final boolean keepOriginalCaptions) {
         final AbstractMessageModel messageModel = originalMessageModels.get(i);
-        fileService.loadDecryptedMessageFile(messageModel, new FileService.OnDecryptedFileComplete() {
+        dependencies.getFileService().loadDecryptedMessageFile(messageModel, new FileService.OnDecryptedFileComplete() {
             @Override
             public void complete(File decryptedFile) {
                 RuntimeUtil.runOnUiThread(() -> DialogUtil.updateProgress(getSupportFragmentManager(), DIALOG_TAG_MULTISEND, i));
@@ -1007,6 +980,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
             @Override
             public void error(String message) {
+                logger.error("Could not load message file: {}", message);
                 RuntimeUtil.runOnUiThread(() -> {
                     SingleToast.getInstance().showLongText(getString(R.string.an_error_occurred_during_send));
                     DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_MULTISEND, true);
@@ -1116,7 +1090,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
             @Override
             protected Void doInBackground(Void... voids) {
-                fileService.loadDecryptedMessageFiles(
+                dependencies.getFileService().loadDecryptedMessageFiles(
                     originalMessageModels,
                     new FileService.OnDecryptedFilesComplete() {
                         @Override
@@ -1221,9 +1195,9 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
             if (recipientModel instanceof ContactModel) {
                 recipientNameBuilder.append(NameUtil.getDisplayNameOrNickname((ContactModel) recipientModel, true));
             } else if (recipientModel instanceof GroupModel) {
-                recipientNameBuilder.append(NameUtil.getDisplayName((GroupModel) recipientModel, this.groupService));
+                recipientNameBuilder.append(NameUtil.getDisplayName((GroupModel) recipientModel, dependencies.getGroupService()));
             } else if (recipientModel instanceof DistributionListModel) {
-                recipientNameBuilder.append(NameUtil.getDisplayName((DistributionListModel) recipientModel, this.distributionListService));
+                recipientNameBuilder.append(NameUtil.getDisplayName((DistributionListModel) recipientModel, dependencies.getDistributionListService()));
             }
         }
         return recipientNameBuilder.toString();
@@ -1574,7 +1548,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                 mediaItem.setDurationMs(durationMs);
             }
         }
-        messageService.sendMediaSingleThread(Collections.singletonList(mediaItem), Arrays.asList(messageReceivers));
+        dependencies.getMessageService().sendMediaSingleThread(Collections.singletonList(mediaItem), Arrays.asList(messageReceivers));
     }
 
     @WorkerThread

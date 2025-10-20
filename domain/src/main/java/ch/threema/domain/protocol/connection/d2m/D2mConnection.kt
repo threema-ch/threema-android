@@ -30,7 +30,7 @@ import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
 import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.multidevice.MultiDeviceProperties
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
 import okhttp3.OkHttpClient
@@ -54,7 +54,7 @@ fun interface MultiDevicePropertyProvider {
 }
 
 data class D2mConnectionConfiguration(
-    override val identityStore: IdentityStoreInterface,
+    override val identityStore: IdentityStore,
     override val serverAddressProvider: ServerAddressProvider,
     override val version: Version,
     override val assertDispatcherContext: Boolean,

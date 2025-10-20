@@ -81,11 +81,6 @@ public class RecentListFragment extends RecipientListFragment {
     protected void createListAdapter(ArrayList<Integer> checkedItemPositions) {
         ConversationService.Filter filter = new ConversationService.Filter() {
             @Override
-            public boolean onlyUnread() {
-                return false;
-            }
-
-            @Override
             public boolean noDistributionLists() {
                 return !showDistributionLists;
             }

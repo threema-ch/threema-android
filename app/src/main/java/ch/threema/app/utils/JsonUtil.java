@@ -32,17 +32,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Convert Json to X and X to Json
- */
 public class JsonUtil {
     public static List<Object> convertArray(String jsonArrayInputString) throws JSONException {
         JSONArray ja = new JSONArray(jsonArrayInputString);
-        if (ja != null) {
-            return convert(ja);
-        }
-
-        return null;
+        return convert(ja);
     }
 
     public static List<Object> convert(JSONArray jsonArray) {
@@ -61,7 +54,6 @@ public class JsonUtil {
 
     public static Map<String, Object> convertObject(String jsonObjectInputString) throws JSONException {
         JSONObject jo = new JSONObject(jsonObjectInputString);
-
         return convert(jo);
     }
 

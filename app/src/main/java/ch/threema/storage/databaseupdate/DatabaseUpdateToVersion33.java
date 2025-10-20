@@ -21,24 +21,17 @@
 
 package ch.threema.storage.databaseupdate;
 
-import net.zetetic.database.sqlcipher.SQLiteDatabase;
-
 import android.database.SQLException;
 
-import ch.threema.storage.DatabaseService;
-import ch.threema.storage.models.DistributionListMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.MessageModel;
+import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
-import static ch.threema.storage.DatabaseExtensionsKt.fieldExists;
+import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 public class DatabaseUpdateToVersion33 implements DatabaseUpdate {
 
-    private final DatabaseService databaseService;
     private final SQLiteDatabase sqLiteDatabase;
 
-    public DatabaseUpdateToVersion33(DatabaseService databaseService, SQLiteDatabase sqLiteDatabase) {
-        this.databaseService = databaseService;
+    public DatabaseUpdateToVersion33(SQLiteDatabase sqLiteDatabase) {
         this.sqLiteDatabase = sqLiteDatabase;
     }
 
@@ -54,9 +47,9 @@ public class DatabaseUpdateToVersion33 implements DatabaseUpdate {
 
         //add new isQueued field to message model fields
         for (String table : new String[]{
-            MessageModel.TABLE,
-            GroupMessageModel.TABLE,
-            DistributionListMessageModel.TABLE
+            "message",
+            "m_group_message",
+            "distribution_list_message"
         }) {
             if (!fieldExists(this.sqLiteDatabase, table, "isQueued")) {
                 sqLiteDatabase.rawExecSQL("ALTER TABLE " + table + " ADD COLUMN isQueued TINYINT NOT NULL DEFAULT 0");

@@ -55,16 +55,17 @@ import com.google.android.material.badge.BadgeDrawable;
 import com.google.android.material.badge.ExperimentalBadgeUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import org.koin.android.compat.ViewModelCompat;
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.security.MessageDigest;
-import java.util.Date;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.stream.Collectors;
@@ -82,7 +83,6 @@ import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -95,7 +95,6 @@ import ch.threema.app.activities.DistributionListAddActivity;
 import ch.threema.app.activities.DownloadApkActivity;
 import ch.threema.app.activities.EnterSerialActivity;
 import ch.threema.app.activities.GroupAddActivity;
-import ch.threema.app.activities.HomeViewModel;
 import ch.threema.app.activities.ProblemSolverActivity;
 import ch.threema.app.activities.ServerMessageActivity;
 import ch.threema.app.activities.StarredMessagesActivity;
@@ -113,17 +112,17 @@ import ch.threema.app.asynctasks.ContactCreated;
 import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.SMSVerificationDialog;
 import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.fragments.ContactsSectionFragment;
-import ch.threema.app.fragments.MessageSectionFragment;
+import ch.threema.app.fragments.ConversationsFragment;
 import ch.threema.app.fragments.MyIDFragment;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.globalsearch.GlobalSearchActivity;
-import ch.threema.app.grouplinks.OutgoingGroupRequestActivity;
 import ch.threema.app.listeners.AppIconListener;
 import ch.threema.app.listeners.ContactCountListener;
 import ch.threema.app.listeners.ConversationListener;
@@ -137,25 +136,20 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.multidevice.LinkedDevicesActivity;
 import ch.threema.app.preference.SettingsActivity;
 import ch.threema.app.push.PushService;
-import ch.threema.app.qrscanner.activity.BaseQrScannerActivity;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.routines.CheckLicenseRoutine;
 import ch.threema.app.services.ActivityService;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ContactServiceImpl;
 import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.ConversationTagService;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.PassphraseService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ThreemaPushService;
 import ch.threema.app.services.UserService;
-import ch.threema.app.services.license.LicenseService;
-import ch.threema.app.services.notification.NotificationService;
+import ch.threema.app.startup.RemoteSecretProtectionUpdateActivity;
 import ch.threema.app.tasks.ApplicationUpdateStepsTask;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.threemasafe.ThreemaSafeService;
@@ -167,37 +161,39 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConnectionIndicatorUtil;
+import ch.threema.app.utils.Destroyer;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.PowermanagerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.app.utils.Toaster;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.voip.groupcall.GroupCallDescription;
-import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.groupcall.GroupCallObserver;
 import ch.threema.app.voip.groupcall.sfu.GroupCallController;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.webclient.activities.SessionsActivity;
 import ch.threema.app.webviews.SupportActivity;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.data.repositories.ContactModelRepository;
-import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.connection.ConnectionStateListener;
 import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.localcrypto.MasterKey;
-import ch.threema.storage.DatabaseService;
+import ch.threema.localcrypto.MasterKeyManager;
+import ch.threema.localcrypto.models.RemoteSecretCheckType;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.MessageState;
+import kotlin.Lazy;
 
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
+import static org.koin.java.KoinJavaComponent.inject;
+
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class HomeActivity extends ThreemaAppCompatActivity implements
@@ -242,17 +238,12 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     private OngoingCallNoticeView ongoingCallNotice;
     private static long starredMessagesCount = 0L;
 
-    private ServiceManager serviceManager;
-    private NotificationService notificationService;
-    private UserService userService;
-    private ContactService contactService;
-    private ContactModelRepository contactModelRepository;
-    private APIConnector apiConnector;
-    private LockAppService lockAppService;
-    private PreferenceService preferenceService;
-    private NotificationPreferenceService notificationPreferenceService;
-    private ConversationService conversationService;
-    private GroupCallManager groupCallManager;
+    private final Destroyer destroyer = Destroyer.createDestroyer(this);
+
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
+    private final Lazy<MasterKeyManager> masterKeyManagerLazy = inject(MasterKeyManager.class);
 
     private @Nullable IdentityPopup identityPopup = null;
 
@@ -287,12 +278,11 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                         currentLicenseType == BuildFlavor.LicenseType.GOOGLE_WORK ||
                         currentLicenseType == BuildFlavor.LicenseType.HMS_WORK ||
                         currentLicenseType == BuildFlavor.LicenseType.ONPREM) {
-                        //show enter serial stuff
-                        startActivityForResult(new Intent(HomeActivity.this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
+                        startActivityForResult(EnterSerialActivity.createIntent(HomeActivity.this), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
                     } else {
                         showErrorTextAndExit(IntentDataUtil.getMessage(intent));
                     }
-                } else if (IntentDataUtil.ACTION_UPDATE_AVAILABLE.equals(intent.getAction()) && BuildFlavor.getCurrent().getMaySelfUpdate() && userService != null && userService.hasIdentity()) {
+                } else if (IntentDataUtil.ACTION_UPDATE_AVAILABLE.equals(intent.getAction()) && BuildFlavor.getCurrent().getMaySelfUpdate() && dependencies.getUserService().hasIdentity()) {
                     logger.info("App update available. Opening DownloadApkActivity.");
                     new Handler().postDelayed(() -> {
                         Intent dialogIntent = new Intent(intent);
@@ -316,7 +306,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         UpdateBottomNavigationBadgeTask(Activity activity) {
             activityWeakReference = new WeakReference<>(activity);
             try {
-                conversationTagService = Objects.requireNonNull(ThreemaApplication.getServiceManager()).getConversationTagService();
+                conversationTagService = ThreemaApplication.requireServiceManager().getConversationTagService();
             } catch (Exception e) {
                 logger.error("UpdateBottomNav", e);
             }
@@ -331,16 +321,11 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                 return 0;
             }
 
-            if (conversationService == null) {
-                return 0;
-            }
-
             List<ConversationModel> conversationModels = conversationService.getAll(false, new ConversationService.Filter() {
                 @Override
                 public boolean onlyUnread() {
                     return true;
                 }
-
             });
 
             int unread = 0;
@@ -456,8 +441,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             int numNewUnsent = unsentMessages.size();
 
             // Update the notification if there was a change
-            if (notificationService != null && numCurrentUnsent != numNewUnsent) {
-                notificationService.showUnsentMessageNotification(unsentMessages);
+            if (numCurrentUnsent != numNewUnsent) {
+                dependencies.getNotificationService().showUnsentMessageNotification(unsentMessages);
             }
         }
     }
@@ -483,7 +468,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     };
 
     private void updateBottomNavigation() {
-        if (preferenceService.getShowUnreadBadge()) {
+        if (dependencies.getPreferenceService().getShowUnreadBadge()) {
             RuntimeUtil.runOnUiThread(() -> {
                 try {
                     new UpdateBottomNavigationBadgeTask(this).executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -499,17 +484,17 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
     private final ConversationListener conversationListener = new ConversationListener() {
         @Override
-        public void onNew(ConversationModel conversationModel) {
+        public void onNew(@NonNull ConversationModel conversationModel) {
             updateBottomNavigation();
         }
 
         @Override
-        public void onModified(ConversationModel modifiedConversationModel, Integer oldPosition) {
+        public void onModified(@NonNull ConversationModel modifiedConversationModel, @Nullable Integer oldPosition) {
             updateBottomNavigation();
         }
 
         @Override
-        public void onRemoved(ConversationModel conversationModel) {
+        public void onRemoved(@NonNull ConversationModel conversationModel) {
             updateBottomNavigation();
         }
 
@@ -520,11 +505,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     };
 
     private final MessageListener messageListener = new MessageListener() {
-        @Override
-        public void onNew(AbstractMessageModel newMessage) {
-            //do nothing
-        }
-
         @Override
         public void onModified(@NonNull List<AbstractMessageModel> modifiedMessageModels) {
             for (AbstractMessageModel modifiedMessageModel : modifiedMessageModels) {
@@ -551,11 +531,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             for (AbstractMessageModel removedMessageModel : removedMessageModels) {
                 updateUnsentMessagesList(removedMessageModel, UnsentMessageAction.REMOVE);
             }
-        }
-
-        @Override
-        public void onProgressChanged(AbstractMessageModel messageModel, int newProgress) {
-            //do nothing
         }
 
         @Override
@@ -594,7 +569,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     private final ContactCountListener contactCountListener = new ContactCountListener() {
         @Override
         public void onNewContactsCountUpdated(int last24hoursCount) {
-            if (preferenceService != null && preferenceService.getShowUnreadBadge()) {
+            if (dependencies.getPreferenceService().getShowUnreadBadge()) {
                 RuntimeUtil.runOnUiThread(() -> {
                     if (!isFinishing() && !isDestroyed() && !isChangingConfigurations()) {
                         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
@@ -622,21 +597,22 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         final boolean isColdStart = savedInstanceState == null;
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+
         if (finishAndRestartLaterIfNotReady(this)) {
             return;
         }
 
         if (BackupService.isRunning() || RestoreService.isRunning()) {
-            startActivity(new Intent(this, BackupRestoreProgressActivity.class));
+            startActivity(BackupRestoreProgressActivity.createIntent(this));
             finish();
             return;
         }
 
         if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
             if (shouldShowWorkIntroScreen()) {
-                startActivity(new Intent(this, WorkIntroActivity.class));
+                startActivity(WorkIntroActivity.createIntent(this));
             } else {
-                startActivityForResult(new Intent(this, EnterSerialActivity.class), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
+                startActivityForResult(EnterSerialActivity.createIntent(this), ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL);
             }
             finish();
         } else {
@@ -644,75 +620,64 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
             // only execute this on first startup
             if (isColdStart) {
-                if (preferenceService != null && userService != null && userService.hasIdentity()) {
+                if (dependencies.getUserService().hasIdentity()) {
                     if (ConfigUtils.isWorkRestricted()) {
                         // update configuration
                         final ThreemaSafeMDMConfig newConfig = ThreemaSafeMDMConfig.getInstance();
-                        ThreemaSafeService threemaSafeService = getThreemaSafeService();
+                        ThreemaSafeService threemaSafeService = dependencies.getThreemaSafeService();
 
-                        if (threemaSafeService != null) {
-                            if (newConfig.hasChanged(preferenceService)) {
-                                if (newConfig.isBackupForced()) {
-                                    if (newConfig.isSkipBackupPasswordEntry()) {
-                                        // enable with given password
-                                        byte[] newMasterKey = threemaSafeService.deriveMasterKey(newConfig.getPassword(), newConfig.getIdentity());
-                                        byte[] oldMasterKey = preferenceService.getThreemaSafeMasterKey();
+                        if (newConfig.hasChanged(dependencies.getPreferenceService())) {
+                            if (newConfig.isBackupForced()) {
+                                if (newConfig.isSkipBackupPasswordEntry()) {
+                                    // enable with given password
+                                    byte[] newMasterKey = threemaSafeService.deriveMasterKey(newConfig.getPassword(), newConfig.getIdentity());
+                                    byte[] oldMasterKey = dependencies.getPreferenceService().getThreemaSafeMasterKey();
 
-                                        // show warning dialog only when password was changed
-                                        if (MessageDigest.isEqual(newMasterKey, oldMasterKey)) {
-                                            reconfigureSafe(threemaSafeService, newConfig);
-                                            enableSafe(threemaSafeService, newConfig, null);
-                                        } else {
-                                            GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.threema_safe, R.string.safe_managed_new_password_confirm, R.string.accept, R.string.real_not_now);
-                                            dialog.setData(newConfig);
-                                            dialog.show(getSupportFragmentManager(), DIALOG_TAG_PASSWORD_PRESET_CONFIRM);
-                                        }
-                                    } else if (threemaSafeService.getThreemaSafeMasterKey() != null && threemaSafeService.getThreemaSafeMasterKey().length > 0) {
-                                        // no password has been given by admin but a master key from a previous backup exists
-                                        // -> create a new backup with existing password
+                                    // show warning dialog only when password was changed
+                                    if (MessageDigest.isEqual(newMasterKey, oldMasterKey)) {
                                         reconfigureSafe(threemaSafeService, newConfig);
-                                        enableSafe(threemaSafeService, newConfig, threemaSafeService.getThreemaSafeMasterKey());
-                                    } else {
-                                        reconfigureSafe(threemaSafeService, newConfig);
-                                        threemaSafeService.launchForcedPasswordDialog(this, true);
-                                        finish();
-                                        return;
-                                    }
-                                } else {
-                                    reconfigureSafe(threemaSafeService, newConfig);
-                                }
-                            } else {
-                                if (newConfig.isBackupForced() && !preferenceService.getThreemaSafeEnabled()) {
-                                    // config has not changed but safe is still not enabled. fix it.
-                                    if (newConfig.isSkipBackupPasswordEntry()) {
-                                        // enable with given password
                                         enableSafe(threemaSafeService, newConfig, null);
                                     } else {
-                                        // ask user for a new password
-                                        threemaSafeService.launchForcedPasswordDialog(this, true);
-                                        finish();
-                                        return;
+                                        GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.threema_safe, R.string.safe_managed_new_password_confirm, R.string.accept, R.string.real_not_now);
+                                        dialog.setData(newConfig);
+                                        dialog.show(getSupportFragmentManager(), DIALOG_TAG_PASSWORD_PRESET_CONFIRM);
                                     }
+                                } else if (threemaSafeService.getThreemaSafeMasterKey() != null && threemaSafeService.getThreemaSafeMasterKey().length > 0) {
+                                    // no password has been given by admin but a master key from a previous backup exists
+                                    // -> create a new backup with existing password
+                                    reconfigureSafe(threemaSafeService, newConfig);
+                                    enableSafe(threemaSafeService, newConfig, threemaSafeService.getThreemaSafeMasterKey());
+                                } else {
+                                    reconfigureSafe(threemaSafeService, newConfig);
+                                    threemaSafeService.launchForcedPasswordDialog(this, true);
+                                    finish();
+                                    return;
+                                }
+                            } else {
+                                reconfigureSafe(threemaSafeService, newConfig);
+                            }
+                        } else {
+                            if (newConfig.isBackupForced() && !dependencies.getPreferenceService().getThreemaSafeEnabled()) {
+                                // config has not changed but safe is still not enabled. fix it.
+                                if (newConfig.isSkipBackupPasswordEntry()) {
+                                    // enable with given password
+                                    enableSafe(threemaSafeService, newConfig, null);
+                                } else {
+                                    // ask user for a new password
+                                    threemaSafeService.launchForcedPasswordDialog(this, true);
+                                    finish();
+                                    return;
                                 }
                             }
-                            // save current config as new reference
-                            newConfig.saveConfig(preferenceService);
                         }
+                        // save current config as new reference
+                        newConfig.saveConfig(dependencies.getPreferenceService());
                     }
                 }
             }
         }
 
-        viewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-    }
-
-    private boolean hasIdentity() {
-        try {
-            return ThreemaApplication.requireServiceManager().getUserService().hasIdentity();
-        } catch (NullPointerException npe) {
-            logger.error("user service not available");
-            return false;
-        }
+        viewModel = ViewModelCompat.getViewModel(this, HomeViewModel.class);
     }
 
     /**
@@ -759,18 +724,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             // ignore
         }
 
-        if (preferenceService != null) {
-            preferenceService.setThreemaSafeServerInfo(newConfig.getServerInfo());
-        }
-    }
-
-    private ThreemaSafeService getThreemaSafeService() {
-        try {
-            return serviceManager.getThreemaSafeService();
-        } catch (Exception e) {
-            //
-        }
-        return null;
+        dependencies.getPreferenceService().setThreemaSafeServerInfo(newConfig.getServerInfo());
     }
 
     @Override
@@ -778,22 +732,18 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         super.onStart();
         logger.info("HomeActivity started");
 
-        if (serviceManager != null) {
-
-            // Check if there are any server messages to display
-            DatabaseService databaseService = serviceManager.getDatabaseService();
-            try {
-                if (databaseService.getServerMessageModelFactory().count() > 0) {
-                    Intent intent = new Intent(this, ServerMessageActivity.class);
-                    startActivity(intent);
-                }
-            } catch (SQLiteException e) {
-                logger.error("Could not get server message model count", e);
+        // Check if there are any server messages to display
+        try {
+            if (dependencies.getDatabaseService().getServerMessageModelFactory().count() > 0) {
+                Intent intent = new Intent(this, ServerMessageActivity.class);
+                startActivity(intent);
             }
+        } catch (SQLiteException e) {
+            logger.error("Could not get server message model count", e);
+        }
 
-            if (viewModel != null) {
-                viewModel.checkMultiDeviceGroup(serviceManager);
-            }
+        if (viewModel != null) {
+            viewModel.checkMultiDeviceGroup();
         }
     }
 
@@ -814,48 +764,48 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     }
 
     private boolean shouldShowToolbarWarning() {
-        var appContext = ThreemaApplication.getAppContext();
+        var appContext = getApplicationContext();
+        boolean isBatteryOptimized = !PowermanagerUtil.isIgnoringBatteryOptimizations(appContext);
         return
             ConfigUtils.isBackgroundRestricted(appContext) ||
-                ConfigUtils.isBackgroundDataRestricted(appContext, false) ||
+                ConfigUtils.isBackgroundDataRestricted(appContext) ||
                 ConfigUtils.isNotificationsDisabled(appContext) ||
-                (preferenceService.isVoipEnabled() && ConfigUtils.isFullScreenNotificationsDisabled(appContext)) ||
-                ((preferenceService.useThreemaPush() || BuildFlavor.getCurrent().getForceThreemaPush()) && !PowermanagerUtil.isIgnoringBatteryOptimizations(appContext)) ||
-                (Build.VERSION.SDK_INT < Build.VERSION_CODES.N && preferenceService.shouldShowUnsupportedAndroidVersionWarning());
+                (dependencies.getPreferenceService().isVoipEnabled() && ConfigUtils.isFullScreenNotificationsDisabled(appContext)) ||
+                ((dependencies.getPreferenceService().useThreemaPush() || BuildFlavor.getCurrent().getForceThreemaPush()) && isBatteryOptimized) ||
+                (dependencies.getSessionService().hasRunningSessions() && isBatteryOptimized);
     }
 
     private void showWhatsNew() {
         final boolean skipWhatsNew = true; // set this to false if you want to show a What's New screen
 
-        if (preferenceService != null) {
-            if (!preferenceService.isLatestVersion(this)) {
-                // so the app has just been updated
-                ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher, preferenceService);
+        var preferenceService = dependencies.getPreferenceService();
+        if (!preferenceService.isLatestVersion(this)) {
+            // so the app has just been updated
+            ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher, preferenceService);
 
-                if (preferenceService.getPrivacyPolicyAccepted() == null) {
-                    preferenceService.setPrivacyPolicyAccepted(new Date(), PreferenceService.PRIVACY_POLICY_ACCEPT_UPDATE);
-                }
+            if (preferenceService.getPrivacyPolicyAccepted() == null) {
+                preferenceService.setPrivacyPolicyAccepted(Instant.now(), PreferenceService.PRIVACY_POLICY_ACCEPT_UPDATE);
+            }
 
-                if (!ConfigUtils.isWorkBuild() && !RuntimeUtil.isInTest() && !isFinishing()) {
-                    if (skipWhatsNew) {
-                        isWhatsNewShown = false; // make sure isWhatsNewShown is set to false here if whatsnew is skipped - otherwise pin unlock will not be shown once
-                    } else {
-                        int previous = preferenceService.getLatestVersion() % 10000;
+            if (!ConfigUtils.isWorkBuild() && !TestUtil.isInDeviceTest() && !isFinishing()) {
+                if (skipWhatsNew) {
+                    isWhatsNewShown = false; // make sure isWhatsNewShown is set to false here if whatsnew is skipped - otherwise pin unlock will not be shown once
+                } else {
+                    int previous = preferenceService.getLatestVersion() % 10000;
 
-                        // To not show the same dialog twice, it is only shown if the previous version
-                        // is prior to the first version that used this dialog.
-                        // Use the version code of the first version where this dialog should be shown.
-                        if (previous < 1069) {
-                            isWhatsNewShown = true;
+                    // To not show the same dialog twice, it is only shown if the previous version
+                    // is prior to the first version that used this dialog.
+                    // Use the version code of the first version where this dialog should be shown.
+                    if (previous < 1069) {
+                        isWhatsNewShown = true;
 
-                            Intent intent = new Intent(this, WhatsNewActivity.class);
-                            startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
-                            overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
-                        }
+                        Intent intent = new Intent(this, WhatsNewActivity.class);
+                        startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
+                        overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                     }
                 }
-                preferenceService.setLatestVersion(this);
             }
+            preferenceService.setLatestVersion(this);
         }
     }
 
@@ -865,7 +815,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             @Override
             protected byte[] doInBackground(Void... voids) {
                 if (masterkeyPreset == null) {
-                    return threemaSafeService.deriveMasterKey(mdmConfig.getPassword(), userService.getIdentity());
+                    return threemaSafeService.deriveMasterKey(mdmConfig.getPassword(), dependencies.getUserService().getIdentity());
                 }
                 return masterkeyPreset;
             }
@@ -874,7 +824,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             protected void onPostExecute(byte[] masterkey) {
                 if (masterkey != null) {
                     threemaSafeService.storeMasterKey(masterkey);
-                    preferenceService.setThreemaSafeServerInfo(mdmConfig.getServerInfo());
+                    dependencies.getPreferenceService().setThreemaSafeServerInfo(mdmConfig.getServerInfo());
                     threemaSafeService.setEnabled(true);
                     threemaSafeService.uploadNow(true);
                 } else {
@@ -939,46 +889,43 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             return;
         }
 
-        if (serviceManager != null) {
-            DeviceService deviceService = serviceManager.getDeviceService();
+        DeviceService deviceService = dependencies.getDeviceService();
 
-            if (deviceService.isOnline()) {
-                //start check directly
-                CheckLicenseRoutine check;
-                check = new CheckLicenseRoutine(
-                    this,
-                    serviceManager.getAPIConnector(),
-                    serviceManager.getUserService(),
-                    deviceService,
-                    serviceManager.getLicenseService(),
-                    serviceManager.getIdentityStore()
-                );
+        if (deviceService.isOnline()) {
+            //start check directly
+            CheckLicenseRoutine check;
+            check = new CheckLicenseRoutine(
+                this,
+                dependencies.getApiConnector(),
+                dependencies.getUserService(),
+                deviceService,
+                dependencies.getLicenseService(),
+                dependencies.getIdentityStore()
+            );
 
-                RuntimeUtil.runOnWorkerThread(check);
-                this.isLicenseCheckStarted = true;
+            RuntimeUtil.runOnWorkerThread(check);
+            this.isLicenseCheckStarted = true;
 
-                if (this.checkLicenseBroadcastReceiver != null) {
-                    try {
-                        this.unregisterReceiver(this.checkLicenseBroadcastReceiver);
-                    } catch (IllegalArgumentException e) {
-                        logger.error("Exception", e);
+            if (this.checkLicenseBroadcastReceiver != null) {
+                try {
+                    this.unregisterReceiver(this.checkLicenseBroadcastReceiver);
+                } catch (IllegalArgumentException e) {
+                    logger.error("Exception", e);
+                }
+            }
+        } else {
+            if (this.checkLicenseBroadcastReceiver == null) {
+                this.checkLicenseBroadcastReceiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        logger.debug("receive connectivity change in main activity to check license");
+                        checkLicense();
                     }
-                }
-            } else {
-                if (this.checkLicenseBroadcastReceiver == null) {
-                    this.checkLicenseBroadcastReceiver = new BroadcastReceiver() {
-                        @Override
-                        public void onReceive(Context context, Intent intent) {
-                            logger.debug("receive connectivity change in main activity to check license");
-                            checkLicense();
-                        }
-                    };
-                    this.registerReceiver(
-                        this.checkLicenseBroadcastReceiver,
-                        new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-                    );
-                }
-
+                };
+                this.registerReceiver(
+                    this.checkLicenseBroadcastReceiver,
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+                );
             }
         }
     }
@@ -1005,20 +952,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             //not registered... ignore exceptions
         }
 
-        // remove listeners to avoid memory leaks
-        ListenerManager.messageListeners.remove(this.messageListener);
-        ListenerManager.smsVerificationListeners.remove(this.smsVerificationListener);
-        ListenerManager.appIconListeners.remove(this.appIconListener);
-        ListenerManager.profileListeners.remove(this.profileListener);
-        ListenerManager.voipCallListeners.remove(this.voipCallListener);
-        if (groupCallManager != null) {
-            groupCallManager.removeGeneralGroupCallObserver(groupCallObserver);
-        }
-        ListenerManager.conversationListeners.remove(this.conversationListener);
-        ListenerManager.contactCountListener.remove(this.contactCountListener);
-
-        if (serviceManager != null) {
-            serviceManager.getConnection().removeConnectionStateListener(connectionStateListener);
+        if (dependencies.isAvailable()) {
+            dependencies.getServerConnection().removeConnectionStateListener(connectionStateListener);
         }
 
         super.onDestroy();
@@ -1031,7 +966,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
     private void startHomeActivity(Bundle savedInstanceState) {
         // at this point the app should be unlocked, licensed and updated
-        this.serviceManager = ThreemaApplication.requireServiceManager();
 
         if (this.isInitialized) {
             return;
@@ -1039,52 +973,37 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
         boolean isAppStart = savedInstanceState == null;
 
-        this.userService = this.serviceManager.getUserService();
-        this.preferenceService = this.serviceManager.getPreferenceService();
-        this.notificationPreferenceService = serviceManager.getNotificationPreferenceService();
-        this.notificationService = serviceManager.getNotificationService();
-        this.lockAppService = serviceManager.getLockAppService();
-        try {
-            this.conversationService = serviceManager.getConversationService();
-            this.contactService = serviceManager.getContactService();
-            this.groupCallManager = serviceManager.getGroupCallManager();
-        } catch (Exception e) {
-            //
-        }
-        this.contactModelRepository = serviceManager.getModelRepositories().getContacts();
-        this.apiConnector = serviceManager.getAPIConnector();
-
-        if (preferenceService == null || notificationService == null || userService == null) {
-            finish();
-            return;
-        }
-
         // TODO(ANDR-2816): Remove
-        preferenceService.removeLastNotificationRationaleShown();
+        dependencies.getPreferenceService().removeLastNotificationRationaleShown();
 
         // reset connectivity status
-        preferenceService.setLastOnlineStatus(serviceManager.getDeviceService().isOnline());
+        dependencies.getPreferenceService().setLastOnlineStatus(dependencies.getDeviceService().isOnline());
 
         // remove restart notification
-        notificationService.cancelRestartNotification();
+        dependencies.getNotificationService().cancelRestartNotification();
 
-        ListenerManager.smsVerificationListeners.add(this.smsVerificationListener);
-        ListenerManager.messageListeners.add(this.messageListener);
-        ListenerManager.appIconListeners.add(this.appIconListener);
-        ListenerManager.profileListeners.add(this.profileListener);
-        ListenerManager.voipCallListeners.add(this.voipCallListener);
-        if (groupCallManager != null) {
-            groupCallManager.addGeneralGroupCallObserver(groupCallObserver);
-        }
-        ListenerManager.conversationListeners.add(this.conversationListener);
-        ListenerManager.contactCountListener.add(this.contactCountListener);
+        bindListener(ListenerManager.messageListeners, messageListener);
+        bindListener(ListenerManager.smsVerificationListeners, smsVerificationListener);
+        bindListener(ListenerManager.appIconListeners, appIconListener);
+        bindListener(ListenerManager.profileListeners, profileListener);
+        bindListener(ListenerManager.voipCallListeners, voipCallListener);
+        bindListener(ListenerManager.conversationListeners, conversationListener);
+        bindListener(ListenerManager.contactCountListener, contactCountListener);
+
+        dependencies.getGroupCallManager().addGeneralGroupCallObserver(groupCallObserver);
+        destroyer.own(() -> dependencies.getGroupCallManager().removeGeneralGroupCallObserver(groupCallObserver));
 
         initHomeActivity(savedInstanceState);
         if (isAppStart) {
-            if (preferenceService.checkForAppUpdate(this)) {
-                serviceManager.getTaskManager().schedule(new ApplicationUpdateStepsTask(serviceManager));
+            if (dependencies.getPreferenceService().checkForAppUpdate(this)) {
+                dependencies.getTaskManager().schedule(new ApplicationUpdateStepsTask(dependencies.getServiceManager()));
             }
         }
+    }
+
+    private <T> void bindListener(ListenerManager.TypedListenerManager<T> listeners, T listener) {
+        listeners.add(listener);
+        destroyer.own(() -> listeners.remove(listener));
     }
 
     @UiThread
@@ -1095,10 +1014,10 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         checkApp();
 
         // start wizard if necessary
-        if (notificationPreferenceService.getWizardRunning() || !userService.hasIdentity()) {
-            logger.debug("Missing identity. Wizard running: {}", notificationPreferenceService.getWizardRunning());
+        if (dependencies.getNotificationPreferenceService().getWizardRunning() || !dependencies.getUserService().hasIdentity()) {
+            logger.debug("Missing identity. Wizard running: {}", dependencies.getNotificationPreferenceService().getWizardRunning());
 
-            if (userService.hasIdentity()) {
+            if (dependencies.getUserService().hasIdentity()) {
                 startActivity(new Intent(this, WizardBaseActivity.class));
             } else {
                 startActivity(new Intent(this, WizardStartActivity.class));
@@ -1110,15 +1029,19 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         // set up content
         setContentView(R.layout.activity_home);
 
-        // Wizard complete
-        // Write master key now if no passphrase has been set
-        if (!ThreemaApplication.getMasterKey().isProtected()) {
-            try {
-                ThreemaApplication.getMasterKey().setPassphrase(null);
-            } catch (Exception e) {
-                // better die if something went wrong as the master key may not have been saved
-                throw new RuntimeException(e);
-            }
+        // At this point, we know that the Wizard was completed, or skipped due to MDM, or a Threema Safe backup has been restored.
+        // We now need to apply the Remote Secret protection if required, or persist the master key directly as so far it might have
+        // been kept only in memory.
+        if (masterKeyManagerLazy.getValue().shouldUpdateRemoteSecretProtectionState(RemoteSecretCheckType.APP_STARTUP)) {
+            startActivity(RemoteSecretProtectionUpdateActivity.createIntent(this));
+            finish();
+            return;
+        } else {
+            MasterKeyPersisting masterKeyPersisting = KoinJavaComponent.get(MasterKeyPersisting.class);
+            masterKeyPersisting.persistMasterKeyIfNeeded(this, () -> {
+                new Toaster(this).showToast(R.string.an_error_occurred);
+                finish();
+            });
         }
 
         // Set up the action bar.
@@ -1130,15 +1053,13 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         actionBar.setDisplayShowTitleEnabled(false);
         actionBar.setDisplayUseLogoEnabled(false);
 
-        ConfigUtils.setScreenshotsAllowed(this, preferenceService, lockAppService);
+        ConfigUtils.setScreenshotsAllowed(this, dependencies.getPreferenceService(), dependencies.getLockAppService());
 
         // add connection state listener for displaying colored connection status line above toolbar
         RuntimeUtil.runOnWorkerThread(() -> {
-            if (serviceManager != null) {
-                ServerConnection connection = serviceManager.getConnection();
+                ServerConnection connection = dependencies.getServerConnection();
                 connection.addConnectionStateListener(connectionStateListener);
                 updateConnectionIndicator(connection.getConnectionState());
-            }
         });
 
         // call onPrepareOptionsMenu
@@ -1147,8 +1068,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         // Checks on app start
         if (isAppStart) {
             if (BuildFlavor.getCurrent().getForceThreemaPush()) {
-                preferenceService.setUseThreemaPush(true);
-            } else if (!preferenceService.useThreemaPush() && !PushService.servicesInstalled(this)) {
+                dependencies.getPreferenceService().setUseThreemaPush(true);
+            } else if (!dependencies.getPreferenceService().useThreemaPush() && !PushService.servicesInstalled(this)) {
                 // If a non-libre build of Threema cannot find push services, fall back to Threema Push
                 this.enableThreemaPush();
                 if (!ConfigUtils.isAmazonDevice() && !ConfigUtils.isWorkBuild()) {
@@ -1165,15 +1086,15 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         this.mainContent = findViewById(R.id.main_content);
         this.toolbarWarningButton = findViewById(R.id.toolbar_warning);
         this.toolbarWarningButton.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, ProblemSolverActivity.class);
+            Intent intent = ProblemSolverActivity.createIntent(HomeActivity.this);
             problemSolverLauncher.launch(intent);
         });
         this.noticeSMSLayout = findViewById(R.id.notice_sms_layout);
-        findViewById(R.id.notice_sms_button_enter_code).setOnClickListener(v -> SMSVerificationDialog.newInstance(userService.getLinkedMobile(true)).show(getSupportFragmentManager(), DIALOG_TAG_VERIFY_CODE));
+        findViewById(R.id.notice_sms_button_enter_code).setOnClickListener(v -> SMSVerificationDialog.newInstance(dependencies.getUserService().getLinkedMobile(true)).show(getSupportFragmentManager(), DIALOG_TAG_VERIFY_CODE));
         findViewById(R.id.notice_sms_button_cancel).setOnClickListener(v -> GenericAlertDialog.newInstance(R.string.verify_title, R.string.really_cancel_verify, R.string.yes, R.string.no)
             .show(getSupportFragmentManager(), DIALOG_TAG_CANCEL_VERIFY));
         this.noticeSMSLayout.setVisibility(
-            userService.getMobileLinkingState() == UserService.LinkingState_PENDING ?
+            dependencies.getUserService().getMobileLinkingState() == UserService.LinkingState_PENDING ?
                 View.VISIBLE : View.GONE);
 
         initOngoingCallNotice();
@@ -1219,12 +1140,12 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             }
         } else {
             // new session
-            if (conversationService == null || !conversationService.hasConversations()) {
+            if (!dependencies.getConversationService().hasConversations()) {
                 initialFragmentTag = FRAGMENT_TAG_CONTACTS;
             }
 
             contactsFragment = new ContactsSectionFragment();
-            messagesFragment = new MessageSectionFragment();
+            messagesFragment = new ConversationsFragment();
             profileFragment = new MyIDFragment();
 
             FragmentTransaction messagesTransaction = getSupportFragmentManager().beginTransaction().add(R.id.home_container, messagesFragment, FRAGMENT_TAG_MESSAGES);
@@ -1313,22 +1234,22 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         updateBottomNavigation();
 
         // restore sync adapter account if necessary
-        if (preferenceService.isSyncContacts()) {
-            if (!userService.checkAccount()) {
+        if (dependencies.getPreferenceService().isSyncContacts()) {
+            if (!dependencies.getUserService().checkAccount()) {
                 //create account
-                userService.getAccount(true);
+                dependencies.getUserService().getAccount(true);
             }
-            userService.enableAccountAutoSync(true);
+            dependencies.getUserService().enableAccountAutoSync(true);
         }
 
         isInitialized = true;
 
         showWhatsNew();
 
-        notificationService.cancelRestoreNotification();
+        dependencies.getNotificationService().cancelRestoreNotification();
 
-        if (preferenceService.getLastNotificationPermissionRequestTimestamp() == 0) {
-            ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher, preferenceService);
+        if (dependencies.getPreferenceService().getLastNotificationPermissionRequestTimestamp() == 0) {
+            ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher, dependencies.getPreferenceService());
         }
     }
 
@@ -1340,9 +1261,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     private void updateOngoingCallNotice() {
         logger.debug("Update ongoing call notice");
 
-        GroupCallController groupCallController = groupCallManager != null
-            ? groupCallManager.getCurrentGroupCallController()
-            : null;
+        GroupCallController groupCallController = dependencies.getGroupCallManager().getCurrentGroupCallController();
 
         boolean hasRunningOOCall = VoipCallService.isRunning();
         boolean hasRunningGroupCall = groupCallController != null;
@@ -1387,7 +1306,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         if (!ConfigUtils.isGroupCallsEnabled()) {
             return;
         }
-        if (ongoingCallNotice != null && groupCallManager != null && groupCallManager.isJoinedCall(call)) {
+        if (ongoingCallNotice != null && dependencies.getGroupCallManager().isJoinedCall(call)) {
             ongoingCallNotice.showGroupCall(call, OngoingCallNoticeMode.MODE_GROUP_CALL_JOINED);
         }
     }
@@ -1396,9 +1315,9 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
      * Ensure that Threema Push is enabled in the preferences.
      */
     private void enableThreemaPush() {
-        if (!preferenceService.useThreemaPush()) {
-            preferenceService.setUseThreemaPush(true);
-            ThreemaPushService.tryStart(logger, ThreemaApplication.getAppContext());
+        if (!dependencies.getPreferenceService().useThreemaPush()) {
+            dependencies.getPreferenceService().setUseThreemaPush(true);
+            ThreemaPushService.tryStart(logger, getApplicationContext());
         }
     }
 
@@ -1408,14 +1327,12 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             new AsyncTask<Void, Void, Drawable>() {
                 @Override
                 protected Drawable doInBackground(Void... params) {
-                    if (userService.getIdentity() == null) {
+                    if (!dependencies.getUserService().hasIdentity()) {
                         return null;
                     }
 
-                    // TODO(ANDR-4021): don't create a fake contact model here
-                    Bitmap bitmap = contactService.getAvatar(
-                        // Create "fake" contact model for own user
-                        ContactModel.create(userService.getIdentity(), userService.getPublicKey()),
+                    Bitmap bitmap = dependencies.getContactService().getAvatar(
+                        dependencies.getUserService().getIdentity(),
                         new AvatarOptions.Builder()
                             .setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK)
                             .toOptions()
@@ -1445,7 +1362,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             @Override
             protected Void doInBackground(Void... params) {
                 try {
-                    userService.unlinkMobileNumber(TriggerSource.LOCAL);
+                    dependencies.getUserService().unlinkMobileNumber(TriggerSource.LOCAL);
                 } catch (Exception e) {
                     logger.error("Exception", e);
                 }
@@ -1476,17 +1393,14 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             return true;
         } else if (id == R.id.menu_lock) {
             logger.info("Lock button clicked");
-            lockAppService.lock();
+            dependencies.getLockAppService().lock();
             return true;
         } else if (id == R.id.menu_new_group) {
             logger.info("New group button clicked");
             intent = new Intent(this, GroupAddActivity.class);
         } else if (id == R.id.menu_new_distribution_list) {
             logger.info("New distribution list button clicked");
-            intent = new Intent(this, DistributionListAddActivity.class);
-        } else if (id == R.id.group_requests) {
-            logger.info("Group requests button clicked");
-            intent = new Intent(this, OutgoingGroupRequestActivity.class);
+            intent = DistributionListAddActivity.createIntent(this);
         } else if (id == R.id.my_backups) {
             logger.info("Backups button clicked");
             intent = new Intent(this, BackupAdminActivity.class);
@@ -1496,9 +1410,6 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         } else if (id == R.id.multi_device) {
             logger.info("MD button clicked");
             intent = new Intent(this, LinkedDevicesActivity.class);
-        } else if (id == R.id.scanner) {
-            logger.info("QR scanner button clicked");
-            intent = new Intent(this, BaseQrScannerActivity.class);
         } else if (id == R.id.help) {
             logger.info("Help button clicked");
             intent = new Intent(this, SupportActivity.class);
@@ -1519,7 +1430,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             intent = new Intent(this, GlobalSearchActivity.class);
         } else if (id == R.id.starred_messages) {
             logger.info("Starred messages button clicked");
-            intent = new Intent(this, StarredMessagesActivity.class);
+            intent = StarredMessagesActivity.createIntent(this);
         }
 
         if (intent != null) {
@@ -1554,8 +1465,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                 if (currentFragment != null && currentFragment.isAdded() && !currentFragment.isHidden()) {
                     if (currentFragment instanceof ContactsSectionFragment) {
                         ((ContactsSectionFragment) currentFragment).onLogoClicked();
-                    } else if (currentFragment instanceof MessageSectionFragment) {
-                        ((MessageSectionFragment) currentFragment).onLogoClicked();
+                    } else if (currentFragment instanceof ConversationsFragment) {
+                        ((ConversationsFragment) currentFragment).onLogoClicked();
                     } else if (currentFragment instanceof MyIDFragment) {
                         ((MyIDFragment) currentFragment).onLogoClicked();
                     }
@@ -1570,104 +1481,84 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
 
-        if (serviceManager != null) {
-
-            MenuItem lockMenuItem = menu.findItem(R.id.menu_lock);
-            if (lockMenuItem != null) {
-                lockMenuItem.setVisible(
-                    lockAppService.isLockingEnabled()
-                );
-            }
-
-            MenuItem privateChatToggleMenuItem = menu.findItem(R.id.menu_toggle_private_chats);
-            if (privateChatToggleMenuItem != null) {
-                if (preferenceService.isPrivateChatsHidden()) {
-                    privateChatToggleMenuItem.setIcon(R.drawable.ic_outline_visibility);
-                    privateChatToggleMenuItem.setTitle(R.string.title_show_private_chats);
-                } else {
-                    privateChatToggleMenuItem.setIcon(R.drawable.ic_outline_visibility_off);
-                    privateChatToggleMenuItem.setTitle(R.string.title_hide_private_chats);
-                }
-                ConfigUtils.tintMenuIcon(this, privateChatToggleMenuItem, R.attr.colorOnSurface);
-            }
-
-            Boolean addDisabled;
-            boolean webDisabled = false;
-
-            if (ConfigUtils.isWorkRestricted()) {
-                MenuItem backupsMenuItem = menu.findItem(R.id.my_backups);
-                if (backupsMenuItem != null) {
-                    if (AppRestrictionUtil.isBackupsDisabled(this) || (AppRestrictionUtil.isDataBackupsDisabled(this) && ThreemaSafeMDMConfig.getInstance().isBackupDisabled())) {
-                        backupsMenuItem.setVisible(false);
-                    }
-                }
-
-                addDisabled = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_add_contact));
-                webDisabled = AppRestrictionUtil.isWebDisabled(this);
-            } else {
-                addDisabled = this.contactService != null &&
-                    this.contactService.getByIdentity(THREEMA_CHANNEL_IDENTITY) != null;
-            }
-
-            if (ConfigUtils.isWorkBuild()) {
-                MenuItem menuItem = menu.findItem(R.id.directory);
-                if (menuItem != null) {
-                    menuItem.setVisible(ConfigUtils.isWorkDirectoryEnabled());
-                }
-                menuItem = menu.findItem(R.id.threema_channel);
-                if (menuItem != null) {
-                    menuItem.setVisible(false);
-                }
-            } else if (addDisabled != null && addDisabled) {
-                MenuItem menuItem = menu.findItem(R.id.threema_channel);
-                if (menuItem != null) {
-                    menuItem.setVisible(false);
-                }
-            }
-
-            if (ConfigUtils.supportsGroupLinks()) {
-                MenuItem menuItem = menu.findItem(R.id.scanner);
-                if (menuItem != null) {
-                    menuItem.setVisible(true);
-                }
-
-                menuItem = menu.findItem(R.id.group_requests);
-                if (menuItem != null) {
-                    menuItem.setVisible(true);
-                    menu.setGroupVisible(menuItem.getGroupId(), true);
-                }
-            }
-
-            MenuItem webclientMenuItem = menu.findItem(R.id.webclient);
-            if (webclientMenuItem != null) {
-                webclientMenuItem.setVisible(!webDisabled);
-            }
-
-            // Id MD is currently locked, but was activated before, we still have to give access to the menu item
-            boolean mdMenuItemVisible = serviceManager.getMultiDeviceManager().isMultiDeviceActive() || ConfigUtils.isMultiDeviceEnabled(this);
-            MenuItem mdMenuItem = menu.findItem(R.id.multi_device);
-            if (mdMenuItem != null) {
-                mdMenuItem.setVisible(mdMenuItemVisible);
-            }
-
-            MenuItem starredMessagesItem = menu.findItem(R.id.starred_messages);
-            if (starredMessagesItem != null) {
-                String starredMessagesString = getString(R.string.starred_messages);
-                if (starredMessagesString != null) {
-                    if (starredMessagesCount > 0) {
-                        TextAppearanceSpan textAppearanceSpan = new TextAppearanceSpan(getApplicationContext(), R.style.Threema_TextAppearance_StarredMessages_Count);
-                        String starredMessagesCountString = starredMessagesCount > 99 ? "99+" : Long.toString(starredMessagesCount);
-                        SpannableString spannableString = new SpannableString(String.format(Locale.US, starredMessagesString + "   %s", starredMessagesCountString));
-                        spannableString.setSpan(textAppearanceSpan, spannableString.length() - starredMessagesCountString.length(), spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        starredMessagesItem.setTitle(spannableString);
-                    } else {
-                        starredMessagesItem.setTitle(starredMessagesString);
-                    }
-                }
-            }
-            return true;
+        MenuItem lockMenuItem = menu.findItem(R.id.menu_lock);
+        if (lockMenuItem != null) {
+            lockMenuItem.setVisible(
+                dependencies.getLockAppService().isLockingEnabled()
+            );
         }
-        return false;
+
+        MenuItem privateChatToggleMenuItem = menu.findItem(R.id.menu_toggle_private_chats);
+        if (privateChatToggleMenuItem != null) {
+            if (dependencies.getPreferenceService().isPrivateChatsHidden()) {
+                privateChatToggleMenuItem.setIcon(R.drawable.ic_outline_visibility);
+                privateChatToggleMenuItem.setTitle(R.string.title_show_private_chats);
+            } else {
+                privateChatToggleMenuItem.setIcon(R.drawable.ic_outline_visibility_off);
+                privateChatToggleMenuItem.setTitle(R.string.title_hide_private_chats);
+            }
+            ConfigUtils.tintMenuIcon(this, privateChatToggleMenuItem, R.attr.colorOnSurface);
+        }
+
+        Boolean addDisabled;
+        boolean webDisabled = false;
+
+        if (ConfigUtils.isWorkRestricted()) {
+            MenuItem backupsMenuItem = menu.findItem(R.id.my_backups);
+            if (backupsMenuItem != null) {
+                if (AppRestrictionUtil.isBackupsDisabled(this) || (AppRestrictionUtil.isDataBackupsDisabled(this) && ThreemaSafeMDMConfig.getInstance().isBackupDisabled())) {
+                    backupsMenuItem.setVisible(false);
+                }
+            }
+
+            addDisabled = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_add_contact));
+            webDisabled = AppRestrictionUtil.isWebDisabled(this);
+        } else {
+            addDisabled = dependencies.getContactService().getByIdentity(THREEMA_CHANNEL_IDENTITY) != null;
+        }
+
+        if (ConfigUtils.isWorkBuild()) {
+            MenuItem menuItem = menu.findItem(R.id.directory);
+            if (menuItem != null) {
+                menuItem.setVisible(ConfigUtils.isWorkDirectoryEnabled());
+            }
+            menuItem = menu.findItem(R.id.threema_channel);
+            if (menuItem != null) {
+                menuItem.setVisible(false);
+            }
+        } else if (addDisabled != null && addDisabled) {
+            MenuItem menuItem = menu.findItem(R.id.threema_channel);
+            if (menuItem != null) {
+                menuItem.setVisible(false);
+            }
+        }
+
+        MenuItem webclientMenuItem = menu.findItem(R.id.webclient);
+        if (webclientMenuItem != null) {
+            webclientMenuItem.setVisible(!webDisabled);
+        }
+
+        // Id MD is currently locked, but was activated before, we still have to give access to the menu item
+        boolean mdMenuItemVisible = dependencies.getMultiDeviceManager().isMultiDeviceActive() || ConfigUtils.isMultiDeviceEnabled(this);
+        MenuItem mdMenuItem = menu.findItem(R.id.multi_device);
+        if (mdMenuItem != null) {
+            mdMenuItem.setVisible(mdMenuItemVisible);
+        }
+
+        MenuItem starredMessagesItem = menu.findItem(R.id.starred_messages);
+        if (starredMessagesItem != null) {
+        String starredMessagesString = getString(R.string.starred_messages);
+            if (starredMessagesCount > 0) {
+                TextAppearanceSpan textAppearanceSpan = new TextAppearanceSpan(getApplicationContext(), R.style.Threema_TextAppearance_StarredMessages_Count);
+                String starredMessagesCountString = starredMessagesCount > 99 ? "99+" : Long.toString(starredMessagesCount);
+                SpannableString spannableString = new SpannableString(String.format(Locale.US, starredMessagesString + "   %s", starredMessagesCountString));
+                spannableString.setSpan(textAppearanceSpan, spannableString.length() - starredMessagesCountString.length(), spannableString.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+                starredMessagesItem.setTitle(spannableString);
+            } else {
+                starredMessagesItem.setTitle(starredMessagesString);
+            }
+        }
+        return true;
     }
 
     private void verifyPhoneCode(final String code) {
@@ -1675,7 +1566,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    userService.verifyMobileNumber(code, TriggerSource.LOCAL);
+                    dependencies.getUserService().verifyMobileNumber(code, TriggerSource.LOCAL);
                 } catch (LinkMobileNoException e) {
                     logger.error("Exception", e);
                     return getString(R.string.code_invalid);
@@ -1700,7 +1591,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
     @Override
     public void onCallRequested(String tag) {
-        if (System.currentTimeMillis() < userService.getMobileLinkingTime() + PHONE_REQUEST_DELAY) {
+        if (System.currentTimeMillis() < dependencies.getUserService().getMobileLinkingTime() + PHONE_REQUEST_DELAY) {
             SimpleStringAlertDialog.newInstance(R.string.verify_phonecall_text, getString(R.string.wait_one_minute)).show(getSupportFragmentManager(), "mi");
         } else {
             GenericAlertDialog.newInstance(R.string.verify_phonecall_text, R.string.prepare_call_message, R.string.ok, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_VERIFY_CODE_CONFIRM);
@@ -1712,7 +1603,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             @Override
             protected String doInBackground(Void... params) {
                 try {
-                    userService.makeMobileLinkCall();
+                    dependencies.getUserService().makeMobileLinkCall();
                 } catch (LinkMobileNoException e) {
                     logger.error("Exception", e);
                     return e.getMessage();
@@ -1766,7 +1657,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                 addThreemaChannel();
                 break;
             case DIALOG_TAG_PASSWORD_PRESET_CONFIRM:
-                ThreemaSafeService threemaSafeService = getThreemaSafeService();
+                ThreemaSafeService threemaSafeService = dependencies.getThreemaSafeService();
                 if (threemaSafeService != null) {
                     reconfigureSafe(threemaSafeService, (ThreemaSafeMDMConfig) data);
                     enableSafe(threemaSafeService, (ThreemaSafeMDMConfig) data, null);
@@ -1805,24 +1696,19 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             isWhatsNewShown = false;
         }
 
-        MasterKey masterKey = ThreemaApplication.getMasterKey();
-        if (masterKey.isProtected()) {
-            if (!PassphraseService.isRunning()) {
-                PassphraseService.start(this);
-            }
+        if (masterKeyManagerLazy.getValue().isProtectedWithPassphrase() && !PassphraseService.isRunning()) {
+            PassphraseService.start(this);
         }
 
-        if (serviceManager != null) {
-            RuntimeUtil.runOnWorkerThread(() -> {
-                FileService fileService = serviceManager.getFileService();
-                fileService.cleanTempDirs(2 * DateUtils.HOUR_IN_MILLIS);
-            });
+        RuntimeUtil.runOnWorkerThread(() -> {
+            FileService fileService = dependencies.getFileService();
+            fileService.cleanTempDirs(2 * DateUtils.HOUR_IN_MILLIS);
+        });
 
-            try {
-                new UpdateStarredMessagesTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
-            } catch (RejectedExecutionException e) {
-                logger.error("Could not execute update starred message task", e);
-            }
+        try {
+            new UpdateStarredMessagesTask().executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
+        } catch (RejectedExecutionException e) {
+            logger.error("Could not execute update starred message task", e);
         }
         super.onResume();
 
@@ -1855,8 +1741,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
         switch (requestCode) {
             case ThreemaActivity.ACTIVITY_ID_WIZARDFIRST:
-                UserService userService = serviceManager.getUserService();
-                if (userService.hasIdentity()) {
+                if (dependencies.getUserService().hasIdentity()) {
                     showMainContent();
                     startHomeActivity(null);
                 } else {
@@ -1865,16 +1750,13 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                 break;
 
             case ThreemaActivity.ACTIVITY_ID_ENTER_SERIAL:
-                if (serviceManager != null) {
-                    LicenseService licenseService = serviceManager.getLicenseService();
-                    if (!licenseService.isLicensed()) {
-                        GenericAlertDialog.newInstance(R.string.enter_serial_title,
-                                R.string.serial_required_want_exit,
-                                R.string.try_again, R.string.cancel)
-                            .show(getSupportFragmentManager(), DIALOG_TAG_SERIAL_LOCKED);
-                    } else {
-                        this.startHomeActivity(null);
-                    }
+                if (!dependencies.getLicenseService().isLicensed()) {
+                    GenericAlertDialog.newInstance(R.string.enter_serial_title,
+                            R.string.serial_required_want_exit,
+                            R.string.try_again, R.string.cancel)
+                        .show(getSupportFragmentManager(), DIALOG_TAG_SERIAL_LOCKED);
+                } else {
+                    this.startHomeActivity(null);
                 }
                 break;
             case ThreemaActivity.ACTIVITY_ID_SETTINGS:
@@ -1902,7 +1784,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         if (!ConfigUtils.isWorkBuild()) {
             return;
         }
-        File customAppIcon = serviceManager.getFileService().getAppLogo(
+        File customAppIcon = dependencies.getFileService().getAppLogo(
             ConfigUtils.getAppThemeSettingFromDayNightMode(ConfigUtils.getCurrentDayNightMode(this))
         );
 
@@ -1920,21 +1802,15 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
     @SuppressLint("StaticFieldLeak")
     public void addThreemaChannel() {
-        final MessageService messageService;
-
-        try {
-            messageService = serviceManager.getMessageService();
-        } catch (Exception e) {
-            return;
-        }
+        var messageService = dependencies.getMessageService();
 
         backgroundExecutor.get().execute(
             new BasicAddOrUpdateContactBackgroundTask(
                 THREEMA_CHANNEL_IDENTITY,
                 ContactModel.AcquaintanceLevel.DIRECT,
-                userService.getIdentity(),
-                apiConnector,
-                contactModelRepository,
+                dependencies.getUserService().getIdentity(),
+                dependencies.getApiConnector(),
+                dependencies.getContactModelRepository(),
                 AddContactRestrictionPolicy.IGNORE,
                 this,
                 ContactServiceImpl.THREEMA_PUBLIC_KEY
@@ -1959,13 +1835,13 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                         if (result instanceof ContactCreated) {
                             RuntimeUtil.runOnWorkerThread(() -> {
                                 try {
-                                    ContactModel threemaChannelModel = contactService.getByIdentity(THREEMA_CHANNEL_IDENTITY);
+                                    ContactModel threemaChannelModel = dependencies.getContactService().getByIdentity(THREEMA_CHANNEL_IDENTITY);
                                     if (threemaChannelModel == null) {
                                         logger.error("Threema channel model is null after adding it");
                                         return;
                                     }
 
-                                    MessageReceiver<?> receiver = contactService.createReceiver(threemaChannelModel);
+                                    MessageReceiver<?> receiver = dependencies.getContactService().createReceiver(threemaChannelModel);
                                     if (!getResources().getConfiguration().locale.getLanguage().startsWith("de") && !getResources().getConfiguration().locale.getLanguage().startsWith("gsw")) {
                                         Thread.sleep(1000);
                                         messageService.sendText("en", receiver);
@@ -2008,7 +1884,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     }
 
     private void confirmThreemaChannel() {
-        if (contactService.getByIdentity(THREEMA_CHANNEL_IDENTITY) == null) {
+        if (dependencies.getContactService().getByIdentity(THREEMA_CHANNEL_IDENTITY) == null) {
             GenericAlertDialog.newInstance(R.string.threema_channel, R.string.threema_channel_intro, R.string.ok, R.string.cancel, 0).show(getSupportFragmentManager(), DIALOG_TAG_THREEMA_CHANNEL_VERIFY);
         } else {
             launchThreemaChannelChat();

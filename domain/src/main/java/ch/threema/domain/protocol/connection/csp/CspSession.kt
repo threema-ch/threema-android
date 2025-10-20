@@ -21,11 +21,12 @@
 
 package ch.threema.domain.protocol.connection.csp
 
+import ch.threema.base.crypto.KeyPair
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.NonceCounter
-import ch.threema.base.crypto.ThreemaKDF
 import ch.threema.base.utils.SecureRandomUtil
 import ch.threema.base.utils.TimeMeasureUtil
-import ch.threema.base.utils.toHexString
+import ch.threema.common.toHexString
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.connection.BaseServerConnectionConfiguration
@@ -40,14 +41,14 @@ import ch.threema.domain.protocol.connection.data.DeviceId
 import ch.threema.domain.protocol.connection.data.leBytes
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import ch.threema.domain.stores.IdentityStoreInterface
-import com.neilalexander.jnacl.NaCl
+import ch.threema.domain.stores.IdentityStore
+import ch.threema.libthreema.CryptoException
+import ch.threema.libthreema.blake2bMac256
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import org.apache.commons.io.EndianUtils
-import ove.crypto.digest.Blake2b
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("CspSession")
 
@@ -70,7 +71,7 @@ internal class CspSession(
 
     private val version: Version
         get() = configuration.version
-    private val identityStore: IdentityStoreInterface
+    private val identityStore: IdentityStore
         get() = configuration.identityStore
     private val cspDeviceId: DeviceId?
         get() = when (configuration) {
@@ -87,8 +88,7 @@ internal class CspSession(
     private lateinit var clientCookie: ByteArray
     private lateinit var serverCookie: ByteArray
 
-    private lateinit var clientTempKeyPub: ByteArray
-    private lateinit var clientTempKeySec: ByteArray
+    private lateinit var clientTempKeypair: KeyPair
 
     private lateinit var serverPubKeyPerm: ByteArray
 
@@ -104,7 +104,11 @@ internal class CspSession(
         dispatcher.assertDispatcherContext()
         logger.debug("Start csp login")
 
-        createTemporaryKeypair()
+        clientTempKeypair = try {
+            NaCl.generateKeypair()
+        } catch (exception: Exception) {
+            throw ServerConnectionException("Failed to generate keypair", exception)
+        }
 
         sendClientHello(outbound)
         loginState = LoginState.AWAIT_HELLO
@@ -149,7 +153,12 @@ internal class CspSession(
             container.data.size,
             payload.size,
         )
-        return CspFrame(kClientTempServerTemp.encrypt(payload, clientNonce.nextNonce()))
+        return CspFrame(
+            kClientTempServerTemp.encrypt(
+                data = payload,
+                nonce = clientNonce.nextNonce(),
+            ),
+        )
     }
 
     fun decryptBox(frame: CspFrame): CspContainer {
@@ -158,19 +167,19 @@ internal class CspSession(
         if (loginState != LoginState.DONE) {
             throw ServerConnectionException("CspFrame cannot be decrypted; login not completed")
         }
-        val decrypted = kClientTempServerTemp.decrypt(frame.box, serverNonce.nextNonce())
-            ?: throw ServerConnectionException("Payload decryption failed")
+        val decrypted = try {
+            kClientTempServerTemp.decrypt(
+                data = frame.box,
+                nonce = serverNonce.nextNonce(),
+            )
+        } catch (cryptoException: CryptoException) {
+            throw ServerConnectionException("Payload decryption failed", cryptoException)
+        }
         val payloadType = decrypted[0].toUByte()
         val dataLength = decrypted.size - 4
         val data = ByteArray(dataLength)
         System.arraycopy(decrypted, 4, data, 0, dataLength)
         return CspContainer(payloadType, data)
-    }
-
-    private fun createTemporaryKeypair() {
-        clientTempKeyPub = ByteArray(NaCl.PUBLICKEYBYTES)
-        clientTempKeySec = ByteArray(NaCl.SECRETKEYBYTES)
-        NaCl.genkeypair(clientTempKeyPub, clientTempKeySec)
     }
 
     /**
@@ -203,7 +212,7 @@ internal class CspSession(
 
         serverCookie = readNBytes(input, ProtocolDefines.COOKIE_LEN)
         if (logger.isDebugEnabled) {
-            logger.debug("Server cookie = {}", NaCl.asHex(serverCookie))
+            logger.debug("Server cookie = {}", serverCookie.toHexString())
         }
         serverNonce = NonceCounter(serverCookie)
     }
@@ -214,26 +223,43 @@ internal class CspSession(
         val serverHelloBox = readNBytes(input, ProtocolDefines.SERVER_HELLO_BOXLEN)
         val nonce = serverNonce.nextNonce()
         if (logger.isDebugEnabled) {
-            logger.debug("Server nonce = {}", NaCl.asHex(nonce))
+            logger.debug("Server nonce = {}", nonce.toHexString())
         }
 
         // Note that the public key of the server is checked here in our custom chat server
         // protocol. This gives us the same security protections as certificate pinning in the tls
         // context.
         serverPubKeyPerm = serverAddressProvider.getChatServerPublicKey()
-        var kClientTempServerPerm = NaCl(clientTempKeySec, serverPubKeyPerm)
-        var serverHello = kClientTempServerPerm.decrypt(serverHelloBox, nonce)
+        var kClientTempServerPerm = NaCl(clientTempKeypair.privateKey, serverPubKeyPerm)
+        var serverHello = try {
+            kClientTempServerPerm.decrypt(
+                data = serverHelloBox,
+                nonce = nonce,
+            )
+        } catch (cryptoException: CryptoException) {
+            logger.error("Failed to decrypt server hello. Trying again with alternate key", cryptoException)
+            null
+        }
 
         if (serverHello == null) {
             /* Try again with alternate key */
             serverPubKeyPerm = serverAddressProvider.getChatServerPublicKeyAlt()
-            kClientTempServerPerm = NaCl(clientTempKeySec, serverPubKeyPerm)
-            serverHello = kClientTempServerPerm.decrypt(serverHelloBox, nonce)
-            if (serverHello == null) {
-                throw ServerConnectionException("Decryption of server hello box failed")
+            kClientTempServerPerm = NaCl(clientTempKeypair.privateKey, serverPubKeyPerm)
+            serverHello = try {
+                kClientTempServerPerm.decrypt(
+                    data = serverHelloBox,
+                    nonce = nonce,
+                )
+            } catch (cryptoException: CryptoException) {
+                throw ServerConnectionException("Decryption of server hello box failed", cryptoException)
             }
         }
-        return serverHello
+
+        if (serverHello != null) {
+            return serverHello
+        } else {
+            throw ServerConnectionException("Decryption of server hello box failed")
+        }
     }
 
     private fun assertClientCookieAndServerCookieNotEqual() {
@@ -249,7 +275,7 @@ internal class CspSession(
         val clientCookieFromServer = ByteArray(ProtocolDefines.COOKIE_LEN)
         System.arraycopy(
             serverHello,
-            NaCl.PUBLICKEYBYTES,
+            NaCl.PUBLIC_KEY_BYTES,
             clientCookieFromServer,
             0,
             ProtocolDefines.COOKIE_LEN,
@@ -268,10 +294,10 @@ internal class CspSession(
     private fun processServerHello(serverHello: ByteArray): ByteArray {
         dispatcher.assertDispatcherContext()
 
-        val serverTempKeyPub = ByteArray(NaCl.PUBLICKEYBYTES)
-        System.arraycopy(serverHello, 0, serverTempKeyPub, 0, NaCl.PUBLICKEYBYTES)
+        val serverTempKeyPub = ByteArray(NaCl.PUBLIC_KEY_BYTES)
+        System.arraycopy(serverHello, 0, serverTempKeyPub, 0, NaCl.PUBLIC_KEY_BYTES)
 
-        kClientTempServerTemp = NaCl(clientTempKeySec, serverTempKeyPub)
+        kClientTempServerTemp = NaCl(clientTempKeypair.privateKey, serverTempKeyPub)
 
         return serverTempKeyPub
     }
@@ -296,14 +322,15 @@ internal class CspSession(
 
         clientCookie = SecureRandomUtil.generateRandomBytes(ProtocolDefines.COOKIE_LEN)
         if (logger.isDebugEnabled) {
-            logger.debug("Client cookie = {}", NaCl.asHex(clientCookie))
+            logger.debug("Client cookie = {}", clientCookie.toHexString())
         }
         clientNonce = NonceCounter(clientCookie)
-        val clientHello = clientTempKeyPub + clientCookie
+        val clientHello = clientTempKeypair.publicKey + clientCookie
         timeMeasureUtil.start()
         outbound.send(CspLoginMessage(clientHello))
     }
 
+    @Throws(ServerConnectionException::class)
     private fun sendClientLogin(
         serverTempKeyPub: ByteArray,
         outbound: InputPipe<in CspLoginMessage, Unit>,
@@ -313,10 +340,13 @@ internal class CspSession(
         val loginNonce = clientNonce.nextNonce()
         val extensionsNonce = clientNonce.nextNonce()
 
-        val extensionsBox = kClientTempServerTemp.encrypt(createExtensions(), extensionsNonce)
+        val extensionsBox = kClientTempServerTemp.encrypt(
+            data = createExtensions(),
+            nonce = extensionsNonce,
+        )
         val vouch = createVouch(serverTempKeyPub)
 
-        val login = identityStore.identity.encodeToByteArray() +
+        val login = identityStore.getIdentity()!!.encodeToByteArray() +
             createExtensionIndicator(extensionsBox.size) +
             serverCookie +
             ByteArray(ProtocolDefines.RESERVED1_LEN) +
@@ -327,7 +357,10 @@ internal class CspSession(
             throw ServerConnectionException("Invalid login packet length")
         }
 
-        val loginBox = kClientTempServerTemp.encrypt(login, loginNonce)
+        val loginBox = kClientTempServerTemp.encrypt(
+            data = login,
+            nonce = loginNonce,
+        )
         timeMeasureUtil.start()
         outbound.send(CspLoginMessage(loginBox + extensionsBox))
         logger.debug("Sent login packet")
@@ -373,15 +406,27 @@ internal class CspSession(
         return bos.toByteArray()
     }
 
+    @Throws(ServerConnectionException::class)
     private fun createVouch(serverTempKeyPub: ByteArray): ByteArray {
-        val kdf = ThreemaKDF("3ma-csp")
-        val sharedSecrets =
-            identityStore.calcSharedSecret(serverPubKeyPerm) + identityStore.calcSharedSecret(
-                serverTempKeyPub,
+        val sharedSecrets = identityStore.calcSharedSecret(serverPubKeyPerm) + identityStore.calcSharedSecret(serverTempKeyPub)
+        val input = serverCookie + clientTempKeypair.publicKey
+        return try {
+            val vouchKey = blake2bMac256(
+                key = sharedSecrets,
+                personal = "3ma-csp".encodeToByteArray(),
+                salt = "v2".encodeToByteArray(),
+                data = byteArrayOf(),
             )
-        val vouchKey = kdf.deriveKey("v2", sharedSecrets)
-        val input = serverCookie + clientTempKeyPub
-        return Blake2b.Mac.newInstance(vouchKey, ProtocolDefines.VOUCH_LEN).digest(input)
+            blake2bMac256(
+                key = vouchKey,
+                personal = byteArrayOf(),
+                salt = byteArrayOf(),
+                data = input,
+            )
+        } catch (cryptoException: CryptoException.InvalidParameter) {
+            logger.error("Failed to compute blake2b hash", cryptoException)
+            throw ServerConnectionException("Failed to compute blake2b hash", cryptoException)
+        }
     }
 
     private fun processServerLoginAck(message: CspLoginMessage) {
@@ -391,8 +436,14 @@ internal class CspSession(
             throw ServerConnectionException("Login ack has invalid length")
         }
 
-        kClientTempServerTemp.decrypt(message.bytes, serverNonce.nextNonce())
-            ?: throw ServerConnectionException("Decryption of login ack box failed")
+        try {
+            kClientTempServerTemp.decrypt(
+                data = message.bytes,
+                nonce = serverNonce.nextNonce(),
+            )
+        } catch (cryptoException: CryptoException) {
+            throw ServerConnectionException("Decryption of login ack box failed", cryptoException)
+        }
         logger.info("Login ack received (rtt: {} ms)", timeMeasureUtil.elapsedTime)
     }
 }

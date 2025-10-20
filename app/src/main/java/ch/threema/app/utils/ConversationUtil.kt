@@ -22,6 +22,7 @@
 package ch.threema.app.utils
 
 import ch.threema.data.models.GroupModel
+import ch.threema.domain.types.Identity
 import ch.threema.storage.models.DistributionListModel
 
 object ConversationUtil {
@@ -31,7 +32,7 @@ object ConversationUtil {
     private const val DISTRIBUTION_LIST_UID_PREFIX = "d-"
 
     @JvmStatic
-    fun getIdentityConversationUid(identity: String): String {
+    fun getIdentityConversationUid(identity: Identity): String {
         return "$CONTACT_UID_PREFIX$identity"
     }
 

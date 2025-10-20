@@ -26,7 +26,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.media.RingtoneManager
 import android.net.Uri
-import android.os.Build
 import android.provider.Settings
 import android.text.format.DateFormat
 import androidx.annotation.RequiresApi
@@ -224,15 +223,7 @@ class SettingsNotificationsFragment : ThreemaPreferenceFragment(), RingtoneSelec
         workHoursEndTimePreference.onClick(::onWorkHoursEndTimeClicked)
     }
 
-    private fun getDateFormatSymbols() =
-        DateFormatSymbols(
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                resources.configuration.locales[0]
-            } else {
-                @Suppress("DEPRECATION")
-                resources.configuration.locale
-            },
-        )
+    private fun getDateFormatSymbols() = DateFormatSymbols(resources.configuration.locales[0])
 
     private fun buildTimePicker(initialTime: IntArray?, builder: MaterialTimePicker.Builder.() -> Unit): MaterialTimePicker =
         MaterialTimePicker.Builder()

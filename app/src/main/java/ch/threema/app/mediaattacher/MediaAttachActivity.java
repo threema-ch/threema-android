@@ -47,6 +47,7 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -71,17 +72,16 @@ import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ballot.BallotWizardActivity;
 import ch.threema.app.camera.CameraUtil;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.drafts.DraftManager;
 import ch.threema.app.fragments.ComposeMessageFragment;
-import ch.threema.app.locationpicker.LocationPickerActivity;
+import ch.threema.app.location.LocationPickerActivity;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.MessageService;
-import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SingleToast;
@@ -125,7 +125,9 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
     private HorizontalScrollView scrollView;
 
     private MessageReceiver messageReceiver;
-    private MessageService messageService;
+
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private final ActivityResultLauncher<Intent> fileSelectedResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
         result -> {
@@ -158,7 +160,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
                 MediaItem mediaItem = resultIntent.getParcelableExtra(Intent.EXTRA_STREAM);
                 @SuppressWarnings("rawtypes")
                 MessageReceiver drawingReceiver = IntentDataUtil.getMessageReceiverFromIntent(MediaAttachActivity.this, resultIntent);
-                messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(drawingReceiver));
+                dependencies.getMessageService().sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(drawingReceiver));
             }
             finish();
         });
@@ -210,16 +212,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
                 }
             }
         });
-    }
-
-    @Override
-    protected void initServices() {
-        super.initServices();
-        try {
-            this.messageService = serviceManager.getMessageService();
-        } catch (Exception e) {
-            logger.error("Exception", e);
-        }
     }
 
     public void handleIntent() {
@@ -276,7 +268,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
         });
 
         // If the media grid is shown, we don't need the gallery button
-        if (preferenceService.isShowImageAttachPreviewsEnabled() && ConfigUtils.isVideoImagePermissionGranted(this)) {
+        if (dependencies.getPreferenceService().isShowImageAttachPreviewsEnabled() && ConfigUtils.isVideoImagePermissionGranted(this)) {
             this.attachGalleryButton.setVisibility(View.GONE);
         }
 
@@ -286,7 +278,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
         }
 
         if (messageReceiver instanceof DistributionListMessageReceiver ||
-            (messageReceiver instanceof GroupMessageReceiver && groupService != null && groupService.isNotesGroup(((GroupMessageReceiver) messageReceiver).getGroup()))) {
+            (messageReceiver instanceof GroupMessageReceiver && dependencies.getGroupService().isNotesGroup(((GroupMessageReceiver) messageReceiver).getGroup()))) {
             this.attachBallotButton.setVisibility(View.GONE);
         }
 
@@ -477,7 +469,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
                     attachQR(attachQRButton);
                     break;
                 case PERMISSION_REQUEST_ATTACH_FROM_GALLERY:
-                    if (preferenceService.isShowImageAttachPreviewsEnabled()) {
+                    if (dependencies.getPreferenceService().isShowImageAttachPreviewsEnabled()) {
                         finish();
                         startActivity(getIntent());
                     } else {
@@ -573,7 +565,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
     @Override
     public void onYes(String tag, Object data) {
         if (CONFIRM_TAG_REALLY_SEND_FILE.equals(tag)) {
-            preferenceService.setFileSendInfoShown(true);
+            dependencies.getPreferenceService().setFileSendInfoShown(true);
             selectFile();
         }
     }
@@ -619,13 +611,13 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
         List<MediaItem> mediaItems = MediaItem.getFromUris(list, this, false);
         if (!mediaItems.isEmpty()) {
-            messageService.sendMediaAsync(mediaItems, Collections.singletonList(messageReceiver));
+            dependencies.getMessageService().sendMediaAsync(mediaItems, Collections.singletonList(messageReceiver));
             finish();
         }
     }
 
     private void attachFile() {
-        if (preferenceService != null && !preferenceService.getFileSendInfoShown()) {
+        if (!dependencies.getPreferenceService().getFileSendInfoShown()) {
             GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.send_as_files,
                 R.string.send_as_files_warning,
                 R.string.ok,
@@ -669,13 +661,10 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
         }
     }
 
-    private void attachQR(View v) {
-        v.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                QRScannerUtil.getInstance().initiateScan(MediaAttachActivity.this, null, QRCodeServiceImpl.QR_TYPE_ANY);
-            }
-        }, 200);
+    private void attachQR(@NonNull View v) {
+        v.postDelayed(
+            () -> QRScannerUtil.getInstance().initiateScan(MediaAttachActivity.this, null), 200
+        );
     }
 
     private void attachDrawing() {
@@ -731,8 +720,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
             Uri vcardUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_VCARD_URI, lookupKey);
 
-            Intent editContactIntent = new Intent(this, EditSendContactActivity.class);
-            editContactIntent.putExtra(EditSendContactActivity.EXTRA_CONTACT, vcardUri);
+            Intent editContactIntent = EditSendContactActivity.createIntent(this, vcardUri);
 
             editContactResultLauncher.launch(editContactIntent);
         } else {
@@ -760,7 +748,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
             mediaItem.setOriginalUri(mediaItem.getUri());
             mediaItems.add(mediaItem);
         }
-        messageService.sendMediaAsync(mediaItems, Collections.singletonList(messageReceiver));
+        dependencies.getMessageService().sendMediaAsync(mediaItems, Collections.singletonList(messageReceiver));
         finish();
     }
 

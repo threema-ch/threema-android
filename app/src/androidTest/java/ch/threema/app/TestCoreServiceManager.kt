@@ -29,8 +29,10 @@ import ch.threema.app.multidevice.PersistedMultiDeviceProperties
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
-import ch.threema.app.stores.IdentityStore
-import ch.threema.app.stores.PreferenceStoreInterface
+import ch.threema.app.stores.EncryptedPreferenceStore
+import ch.threema.app.stores.IdentityProviderImpl
+import ch.threema.app.stores.IdentityStoreImpl
+import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.base.crypto.HashedNonce
 import ch.threema.base.crypto.Nonce
@@ -50,6 +52,7 @@ import ch.threema.domain.protocol.connection.data.InboundD2mMessage.DevicesInfo
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.protocol.multidevice.MultiDeviceProperties
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.QueueSendCompleteListener
 import ch.threema.domain.taskmanager.Task
@@ -70,12 +73,17 @@ import kotlinx.coroutines.runBlocking
 class TestCoreServiceManager(
     override val version: AppVersion,
     override val databaseService: DatabaseService,
-    override val preferenceStore: PreferenceStoreInterface,
+    override val preferenceStore: PreferenceStore,
+    override val encryptedPreferenceStore: EncryptedPreferenceStore,
     override val taskArchiver: TaskArchiver = TestTaskArchiver(),
     override val deviceCookieManager: DeviceCookieManager = TestDeviceCookieManager(),
     override val taskManager: TaskManager = TestTaskManager(TransactionAckTaskCodec()),
     override val multiDeviceManager: MultiDeviceManager = TestMultiDeviceManager(),
-    override val identityStore: IdentityStore = IdentityStore(preferenceStore),
+    override val identityStore: IdentityStore = IdentityStoreImpl(
+        identityProvider = IdentityProviderImpl(preferenceStore),
+        preferenceStore = preferenceStore,
+        encryptedPreferenceStore = encryptedPreferenceStore,
+    ),
     override val nonceFactory: NonceFactory = NonceFactory(TestNonceStore()),
 ) : CoreServiceManager
 

@@ -148,7 +148,7 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
 
     private fun initThemePref() {
         val themePreference = getPref<DropDownPreference>(R.string.preferences__theme)
-        var themeIndex: Int = ConfigUtils.getAppThemePrefsSettings().toInt()
+        var themeIndex: Int = ConfigUtils.getAppThemePrefsSettings(requireContext()).toInt()
         val themeArray = resources.getStringArray(R.array.list_theme)
 
         if (themeIndex >= themeArray.size) {

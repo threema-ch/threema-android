@@ -100,6 +100,10 @@ public class AppRestrictionUtil {
         return getBoolRestriction(context, R.string.restriction__disable_share_media);
     }
 
+    public static boolean shouldEnableRemoteSecret(@NonNull Context context) {
+        return getBoolRestriction(context, R.string.restriction__enable_remote_secret);
+    }
+
     public static boolean isVideoCallsDisabled() {
         return getBoolRestriction(ThreemaApplication.getAppContext(), R.string.restriction__disable_video_calls);
     }

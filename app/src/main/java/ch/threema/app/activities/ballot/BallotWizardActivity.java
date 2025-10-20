@@ -32,6 +32,7 @@ import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.lang.ref.WeakReference;
@@ -49,15 +50,10 @@ import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 import ch.threema.app.ExecutorServices;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.ThreemaActivity;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.exceptions.NotAllowedException;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.GroupService;
-import ch.threema.app.services.MessageService;
-import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.RootViewDeferringInsetsCallback;
 import ch.threema.app.ui.StepPagerStrip;
@@ -66,10 +62,8 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.MessageId;
-import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
@@ -82,13 +76,11 @@ public class BallotWizardActivity extends ThreemaActivity {
 
     private static final int NUM_PAGES = 2;
 
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     private ViewPager pager;
     private ScreenSlidePagerAdapter pagerAdapter;
-    private BallotService ballotService;
-    private ContactService contactService;
-    private APIConnector apiConnector;
-    private GroupService groupService;
-    private String identity;
     private StepPagerStrip stepPagerStrip;
     private MaterialButton nextButton, copyButton, prevButton;
     private MessageReceiver<?> receiver;
@@ -97,8 +89,6 @@ public class BallotWizardActivity extends ThreemaActivity {
     private String ballotDescription;
     private BallotModel.Type ballotType;
     private BallotModel.Assessment ballotAssessment;
-
-    private MessageService messageService;
 
     private final List<WeakReference<BallotWizardFragment>> fragmentList = new ArrayList<>();
     private final Runnable createBallotRunnable = new Runnable() {
@@ -128,6 +118,11 @@ public class BallotWizardActivity extends ThreemaActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+
+        if (!dependencies.isAvailable()) {
+            finish();
+            return;
+        }
 
         setContentView(R.layout.activity_ballot_wizard);
 
@@ -182,8 +177,6 @@ public class BallotWizardActivity extends ThreemaActivity {
             }
         });
 
-        instantiate();
-
         setDefaults();
         handleIntent();
 
@@ -231,8 +224,6 @@ public class BallotWizardActivity extends ThreemaActivity {
 
     /**
      * save the attached fragments to update on copy command
-     *
-     * @param fragment
      */
     @Override
     public void onAttachFragment(@NonNull Fragment fragment) {
@@ -362,35 +353,6 @@ public class BallotWizardActivity extends ThreemaActivity {
         }
     }
 
-    @Override
-    protected void instantiate() {
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-
-        if (serviceManager != null) {
-            try {
-                this.messageService = serviceManager.getMessageService();
-                this.ballotService = serviceManager.getBallotService();
-                this.contactService = serviceManager.getContactService();
-                this.apiConnector = serviceManager.getAPIConnector();
-                this.groupService = serviceManager.getGroupService();
-                this.identity = serviceManager.getUserService().getIdentity();
-            } catch (ThreemaException e) {
-                logger.error("Exception", e);
-            }
-        }
-    }
-
-    @Override
-    protected boolean checkInstances() {
-        return TestUtil.required(
-            this.messageService,
-            this.ballotService,
-            this.apiConnector,
-            this.contactService,
-            this.groupService,
-            this.identity);
-    }
-
     public void startCopy() {
         Intent copyIntent = new Intent(this, BallotChooserActivity.class);
         startActivityForResult(copyIntent, ThreemaActivity.ACTIVITY_ID_COPY_BALLOT);
@@ -402,8 +364,8 @@ public class BallotWizardActivity extends ThreemaActivity {
             if (requestCode == ThreemaActivity.ACTIVITY_ID_COPY_BALLOT) {
                 //get the ballot to copy
                 int ballotToCopyId = IntentDataUtil.getBallotId(data);
-                if (ballotToCopyId > 0 && this.requiredInstances()) {
-                    BallotModel ballotModel = this.ballotService.get(ballotToCopyId);
+                if (ballotToCopyId > 0) {
+                    BallotModel ballotModel = dependencies.getBallotService().get(ballotToCopyId);
                     if (ballotModel != null) {
                         this.copyFrom(ballotModel);
                     } else {
@@ -416,7 +378,7 @@ public class BallotWizardActivity extends ThreemaActivity {
     }
 
     private void copyFrom(BallotModel ballotModel) {
-        if (ballotModel != null && this.requiredInstances()) {
+        if (ballotModel != null) {
             this.ballotDescription = ballotModel.getName();
             this.ballotType = ballotModel.getType();
             this.ballotAssessment = ballotModel.getAssessment();
@@ -424,7 +386,7 @@ public class BallotWizardActivity extends ThreemaActivity {
             this.ballotChoiceModelList.clear();
 
             try {
-                for (BallotChoiceModel ballotChoiceModel : this.ballotService.getChoices(ballotModel.getId())) {
+                for (BallotChoiceModel ballotChoiceModel : dependencies.getBallotService().getChoices(ballotModel.getId())) {
                     BallotChoiceModel choiceModel = new BallotChoiceModel();
                     choiceModel.setName(ballotChoiceModel.getName());
                     choiceModel.setType(ballotChoiceModel.getType());

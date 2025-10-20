@@ -37,6 +37,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.PointF;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.media.FaceDetector;
@@ -44,7 +45,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -64,6 +64,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
@@ -79,6 +80,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.BufferedInputStream;
@@ -93,18 +95,18 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.emojis.EmojiButton;
 import ch.threema.app.emojis.EmojiPicker;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.motionviews.FaceItem;
 import ch.threema.app.motionviews.viewmodel.Font;
@@ -122,11 +124,8 @@ import ch.threema.app.motionviews.widget.MotionView;
 import ch.threema.app.motionviews.widget.PathEntity;
 import ch.threema.app.motionviews.widget.RotationEntity;
 import ch.threema.app.motionviews.widget.TextEntity;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.services.UserService;
 import ch.threema.app.ui.ComposeEditText;
 import ch.threema.app.ui.LockableScrollView;
 import ch.threema.app.ui.MediaItem;
@@ -143,12 +142,15 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
-import ch.threema.data.repositories.GroupModelRepository;
-import ch.threema.localcrypto.MasterKeyLockedException;
 import ch.threema.data.models.GroupModel;
 
 public class ImagePaintActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("ImagePaintActivity");
+
+    {
+        // Always use night mode for this activity. Note that setting it here avoids the activity being recreated.
+        getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
+    }
 
     private enum ActivityMode {
         /**
@@ -203,6 +205,9 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
         allowedActionsEntitiesToCrop.add(FlipEntity.class);
         allowedActionsEntitiesToCrop.add(CropEntity.class);
     }
+
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     private ImageView imageView;
     private PaintView paintView;
@@ -460,6 +465,11 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
+        if (!dependencies.isAvailable()) {
+            finish();
+            return;
+        }
+
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
 
         Intent intent = getIntent();
@@ -492,7 +502,14 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
         }
 
         actionBar.setDisplayHomeAsUpEnabled(activityMode == ActivityMode.EDIT_IMAGE);
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_check);
+        if (activityMode == ActivityMode.EDIT_IMAGE) {
+            Drawable checkDrawable = AppCompatResources.getDrawable(this, R.drawable.ic_check);
+            Objects.requireNonNull(checkDrawable).setColorFilter(
+                ConfigUtils.getColorFromAttribute(this, R.attr.colorOnSurface),
+                PorterDuff.Mode.SRC_IN
+            );
+            actionBar.setHomeAsUpIndicator(checkDrawable);
+        }
         actionBar.setTitle("");
 
         this.paintView = findViewById(R.id.paint_view);
@@ -646,7 +663,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
      */
     private File createDrawingInputFile() {
         try {
-            return serviceManager.getFileService().createTempFile(".blank", ".png");
+            return dependencies.getFileService().createTempFile(".blank", ".png");
         } catch (IOException e) {
             logger.error("Error while creating temporary drawing input file");
             return null;
@@ -658,7 +675,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
      */
     private File createDrawingOutputFile() {
         try {
-            return serviceManager.getFileService().createTempFile(".drawing", ".png");
+            return dependencies.getFileService().createTempFile(".drawing", ".png");
         } catch (IOException e) {
             logger.error("Error while creating temporary drawing output file", e);
             return null;
@@ -1084,7 +1101,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
     @UiThread
     public void showTooltip() {
-        if (!preferenceService.getIsFaceBlurTooltipShown()) {
+        if (!dependencies.getPreferenceService().getIsFaceBlurTooltipShown()) {
             if (getToolbar() != null) {
                 getToolbar().postDelayed(() -> {
                     final View v = findViewById(R.id.item_face);
@@ -1108,7 +1125,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
                                 .transparentTarget(false)           // Specify whether the target is transparent (displays the content underneath)
                                 .targetRadius(50)                  // Specify the target radius (in dp)
                         );
-                        preferenceService.setFaceBlurTooltipShown(true);
+                        dependencies.getPreferenceService().setFaceBlurTooltipShown(true);
                     } catch (Exception ignore) {
                         // catch null typeface exception on CROSSCALL Action-X3
                     }
@@ -1395,35 +1412,22 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
     }
 
     private void initializeMentions() {
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager == null) {
-            logger.error("Cannot enable mention popup: serviceManager is null");
+        ch.threema.data.models.GroupModel groupModel = dependencies.getGroupModelRepository().getByLocalGroupDbId(groupId);
+
+        if (groupModel == null) {
+            logger.error("Cannot enable mention popup: no group model with id {} found", groupId);
             return;
         }
-        try {
-            GroupService groupService = serviceManager.getGroupService();
-            ContactService contactService = serviceManager.getContactService();
-            UserService userService = serviceManager.getUserService();
-            GroupModelRepository groupModelRepository = serviceManager.getModelRepositories().getGroups();
-            ch.threema.data.models.GroupModel groupModel = groupModelRepository.getByLocalGroupDbId(groupId);
 
-            if (groupModel == null) {
-                logger.error("Cannot enable mention popup: no group model with id {} found", groupId);
-                return;
-            }
-
-            captionEditText.enableMentionPopup(
-                this,
-                groupService,
-                contactService,
-                userService,
-                preferenceService,
-                groupModel,
-                null
-            );
-        } catch (MasterKeyLockedException e) {
-            logger.error("Cannot enable mention popup", e);
-        }
+        captionEditText.enableMentionPopup(
+            this,
+            dependencies.getGroupService(),
+            dependencies.getContactService(),
+            dependencies.getUserService(),
+            dependencies.getPreferenceService(),
+            groupModel,
+            null
+        );
     }
 
     @SuppressWarnings("deprecation")
@@ -1451,7 +1455,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
         emojiButton.setColorFilter(getResources().getColor(android.R.color.white));
 
         emojiPicker = (EmojiPicker) ((ViewStub) findViewById(R.id.emoji_stub)).inflate();
-        emojiPicker.init(this, ThreemaApplication.requireServiceManager().getEmojiService(), false);
+        emojiPicker.init(this, dependencies.getEmojiService(), false);
         emojiButton.attach(this.emojiPicker);
         emojiPicker.setEmojiKeyListener(emojiKeyListener);
 
@@ -1614,26 +1618,24 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
 
     private void crop() {
         try {
-            ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-            if (serviceManager == null) {
-                logger.error("Service manager is null");
-                return;
-            }
-            FileService fileService = serviceManager.getFileService();
+            FileService fileService = dependencies.getFileService();
             cropFile = fileService.createTempFile(".crop", ".png");
 
-            Intent intent = new Intent(this, CropImageActivity.class);
-            intent.setData(imageUri);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(cropFile));
-            // The rotation and flip to load the image 'correctly'
-            intent.putExtra(AppConstants.EXTRA_ORIENTATION, mediaItem.getRotation());
-            intent.putExtra(AppConstants.EXTRA_FLIP, mediaItem.getFlip());
-            // The rotation and flip that has been applied in the image paint activity
-            intent.putExtra(CropImageActivity.EXTRA_ADDITIONAL_ORIENTATION, currentOrientation.getRotation());
-            intent.putExtra(CropImageActivity.EXTRA_ADDITIONAL_FLIP, currentOrientation.getFlip());
-            intent.putExtra(CropImageActivity.FORCE_DARK_THEME, true);
+            CropImageActivity.CropImageParameters cropImageParameters =
+                new CropImageActivity.CropImageParameters(
+                    /* sourceUri = */
+                    imageUri,
+                    /* saveUri = */
+                    Uri.fromFile(cropFile)
+                );
+            // The flip and rotation to load the image 'correctly'
+            cropImageParameters.setFlip(mediaItem.getFlip());
+            cropImageParameters.setRotation(mediaItem.getRotation());
+            // The flip and rotation that has been applied in the image paint activity
+            cropImageParameters.setAdditionalFlip(currentOrientation.getFlip());
+            cropImageParameters.setAdditionalRotation(currentOrientation.getRotation());
 
-            cropResultLauncher.launch(intent);
+            cropResultLauncher.launch(CropImageActivity.createIntent(this, cropImageParameters));
         } catch (IOException e) {
             logger.debug("Unable to create temp file for crop");
         }

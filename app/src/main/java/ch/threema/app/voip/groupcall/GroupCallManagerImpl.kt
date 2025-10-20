@@ -25,7 +25,6 @@ import android.content.Context
 import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import androidx.core.content.ContextCompat
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.*
@@ -39,7 +38,7 @@ import ch.threema.app.voip.groupcall.service.GroupCallServiceConnection
 import ch.threema.app.voip.groupcall.sfu.*
 import ch.threema.base.utils.Base64
 import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.Utils
+import ch.threema.common.toHexString
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.protocol.api.SfuToken
 import ch.threema.domain.protocol.csp.ProtocolDefines
@@ -48,6 +47,7 @@ import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData.Companion.GCK_LENGTH
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
+import ch.threema.domain.types.Identity
 import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel
@@ -58,6 +58,7 @@ import java.util.*
 import kotlin.math.max
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.*
 import org.json.JSONArray
 import org.json.JSONObject
@@ -191,41 +192,48 @@ class GroupCallManagerImpl(
     }
 
     @WorkerThread
-    override suspend fun joinCall(group: GroupModel): GroupCallController? {
+    override suspend fun joinCall(localGroupId: LocalGroupId): GroupCallController? {
         GroupCallThreadUtil.assertDispatcherThread()
 
-        val groupId = group.localGroupId
+        logger.debug("Try joining call for group {}", localGroupId)
 
-        logger.debug("Try joining call for group {}", groupId)
-
-        val controller = getGroupCallControllerForJoinedCall(groupId)
+        val controller = getGroupCallControllerForJoinedCall(localGroupId)
         return if (controller != null) {
             logger.info("Call already joined")
             controller
         } else {
-            getChosenCall(groupId)?.let {
-                logger.info("Join existing call with id {}", it.callId)
-                joinAndConfirmCall(it, groupId)
+            getChosenCall(localGroupId)?.let { groupCallDescription ->
+                logger.info("Join existing call with id {}", groupCallDescription.callId)
+                joinAndConfirmCall(
+                    call = groupCallDescription,
+                    groupId = localGroupId,
+                )
             }
-        }?.also { notifyJoinedAndLeftCall(it) }
+        }?.also { groupCallController ->
+            notifyJoinedAndLeftCall(groupCallController)
+        }
     }
 
     override suspend fun createCall(group: GroupModel): GroupCallController {
         GroupCallThreadUtil.assertDispatcherThread()
 
-        return joinCall(group) ?: run {
+        return joinCall(
+            localGroupId = group.localGroupId,
+        ) ?: run {
             // there is no group call considered running for this group. Start it!
             logger.info("Create new group call")
             createNewCall(group)
-        }.also { notifyJoinedAndLeftCall(it) }
+        }.also { groupController ->
+            notifyJoinedAndLeftCall(groupController)
+        }
     }
 
-    private fun notifyJoinedAndLeftCall(call: GroupCallController) {
-        notifyCallObservers(call.description.groupId, call.description)
-        notifyGeneralCallObservers(call.description)
+    private fun notifyJoinedAndLeftCall(groupCallController: GroupCallController) {
+        notifyCallObservers(groupCallController.description.groupId, groupCallController.description)
+        notifyGeneralCallObservers(groupCallController.description)
         CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             try {
-                call.callLeftSignal.await()
+                groupCallController.callLeftSignal.await()
             } catch (e: Exception) {
                 // noop
             }
@@ -283,6 +291,11 @@ class GroupCallManagerImpl(
     }
 
     @AnyThread
+    override fun isJoinedCall(callId: CallId): Boolean {
+        return serviceConnection.getCurrentGroupCallController()?.callId == callId
+    }
+
+    @AnyThread
     override fun hasJoinedCall(groupId: LocalGroupId): Boolean {
         return serviceConnection.getCurrentGroupCallController()?.description?.groupId == groupId
     }
@@ -329,7 +342,7 @@ class GroupCallManagerImpl(
     }
 
     override fun removeGroupCallParticipants(
-        identities: Set<String>,
+        identities: Set<Identity>,
         groupModel: ch.threema.data.models.GroupModel,
     ) {
         logger.debug("Remove group call participants")
@@ -338,11 +351,35 @@ class GroupCallManagerImpl(
             getGroupCallControllerForJoinedCall(groupModel.localGroupId)?.let {
                 // Get the current members or an empty set if no group call data is available
                 // anymore.
-                val membersWithoutUser = groupModel.data.value?.otherMembers ?: emptySet()
+                val membersWithoutUser = groupModel.data?.otherMembers ?: emptySet()
                 val members = membersWithoutUser + setOf(contactService.me.identity)
                 // Remove the given identities from the members so that those will get removed.
                 it.purgeCallParticipants(members - identities)
             }
+        }
+    }
+
+    override fun watchRunningCalls(): Flow<Map<CallId, GroupCallDescription>> = callbackFlow {
+        // Tries sending an immutable copy of the current calls map
+        fun trySendCurrent() {
+            trySend(
+                element = runningCalls.toMap(),
+            )
+        }
+
+        val generalGroupCallObserver: GroupCallObserver = object : GroupCallObserver {
+            override fun onGroupCallUpdate(call: GroupCallDescription?) {
+                trySendCurrent()
+            }
+        }
+
+        // Directly publish the current map of calls
+        trySendCurrent()
+
+        addGeneralGroupCallObserver(generalGroupCallObserver)
+
+        awaitClose {
+            removeGeneralGroupCallObserver(generalGroupCallObserver)
         }
     }
 
@@ -696,14 +733,16 @@ class GroupCallManagerImpl(
 
             leaveCall(joinedCall)
 
-            groupService.getById(groupId.id)?.let {
-                joinCall(it)?.let {
-                    it.microphoneActive = microphoneActive
+            groupService.getById(groupId.id)?.let { groupModel ->
+                joinCall(
+                    localGroupId = groupModel.localGroupId,
+                )?.let { groupCallController ->
+                    groupCallController.microphoneActive = microphoneActive
                 }
             }
 
             context.startActivity(
-                GroupCallActivity.getJoinCallIntent(
+                GroupCallActivity.createJoinCallIntent(
                     context,
                     groupId.id,
                     microphoneActive,
@@ -836,14 +875,13 @@ class GroupCallManagerImpl(
             json.put("members", membersJson)
             json.put("gck", Base64.encodeBytes(callStartData.gck))
             json.put("sfuBaseUrl", callStartData.sfuBaseUrl)
-            val callIdText = Utils.byteArrayToHexString(callId.bytes)
+            val callIdText = callId.bytes.toHexString()
             val jsonText = json.toString(0)
             val callInit = Base64.encodeBytes(jsonText.encodeToByteArray())
             val message = "*CallId:*\n$callIdText\n\n*CallData:*\n$callInit"
 
             val receiver = groupService.createReceiver(group)
-            ThreemaApplication.requireServiceManager().messageService
-                .sendText(message, receiver)
+            messageService.sendText(message, receiver)
         }
     }
 

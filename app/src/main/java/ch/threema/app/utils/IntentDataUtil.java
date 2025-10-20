@@ -29,8 +29,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 
-import org.maplibre.android.geometry.LatLng;
-
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -55,6 +53,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
+import ch.threema.common.models.Coordinates;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -65,13 +64,11 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.WebClientSessionModel;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
-import ch.threema.storage.models.group.GroupInviteModel;
 
-import static android.app.PendingIntent.FLAG_IMMUTABLE;
 import static android.app.PendingIntent.FLAG_MUTABLE;
 
 public class IntentDataUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("RecipientListBaseActivity");
+    private static final Logger logger = LoggingUtil.getThreemaLogger("IntentDataUtil");
 
     public static final String ACTION_LICENSE_NOT_ALLOWED = BuildConfig.APPLICATION_ID + "license_not_allowed";
     public static final String ACTION_CONTACTS_CHANGED = BuildConfig.APPLICATION_ID + "contacts_changed";
@@ -91,9 +88,6 @@ public class IntentDataUtil {
     private static final String INTENT_DATA_MESSAGE = "message";
     private static final String INTENT_DATA_URL = "url";
     private static final String INTENT_DATA_CONTACTS = "contacts";
-    public static final String INTENT_DATA_GROUP_LINK_ID = "group_link";
-    public static final String INTENT_DATA_GROUP_LINK = "group_url";
-    public static final String INTENT_DATA_GROUP_NAME = "group_group";
     private static final String INTENT_DATA_ABSTRACT_MESSAGE_ID = "abstract_message_id";
     private static final String INTENT_DATA_ABSTRACT_MESSAGE_IDS = "abstract_message_ids";
     private static final String INTENT_DATA_ABSTRACT_MESSAGE_TYPE = "abstract_message_type";
@@ -105,7 +99,6 @@ public class IntentDataUtil {
     private static final String INTENT_DATA_BALLOT_ID = "ballot_id";
     private static final String INTENT_DATA_BALLOT_CHOICE_ID = "ballot_choide_id";
 
-    public static final int PENDING_INTENT_FLAG_IMMUTABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ? FLAG_IMMUTABLE : 0;
     public static final int PENDING_INTENT_FLAG_MUTABLE = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? FLAG_MUTABLE : 0;
 
     public static void append(byte[] payload, Intent intent) {
@@ -121,27 +114,18 @@ public class IntentDataUtil {
     }
 
     public static void append(GroupModel groupModel, Intent intent) {
-        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getId());
-    }
-
-    public static void append(GroupInviteModel groupInviteModel, Intent intent) {
-        intent.putExtra(INTENT_DATA_GROUP_LINK_ID, groupInviteModel.getId());
-    }
-
-    public static void append(Uri link, String groupName, Intent intent) {
-        intent.putExtra(INTENT_DATA_GROUP_LINK, link.toString());
-        intent.putExtra(INTENT_DATA_GROUP_NAME, groupName);
+        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) groupModel.getId());
     }
 
     public static void append(
-        @NonNull LatLng latLng,
+        @NonNull Coordinates coordinates,
         @Nullable String provider,
         @Nullable String poiName,
         @Nullable String poiAddress,
         @NonNull Intent intent
     ) {
-        intent.putExtra(INTENT_DATA_LOCATION_LAT, latLng.getLatitude());
-        intent.putExtra(INTENT_DATA_LOCATION_LNG, latLng.getLongitude());
+        intent.putExtra(INTENT_DATA_LOCATION_LAT, coordinates.getLatitude());
+        intent.putExtra(INTENT_DATA_LOCATION_LNG, coordinates.getLongitude());
         intent.putExtra(INTENT_DATA_LOCATION_PROVIDER, provider);
         if (TestUtil.isEmptyOrNull(poiName)) {
             intent.putExtra(INTENT_DATA_LOCATION_NAME, poiAddress);
@@ -241,6 +225,7 @@ public class IntentDataUtil {
         return intent.getStringExtra(INTENT_DATA_MESSAGE);
     }
 
+    /** @noinspection unused*/
     // used by threema shop builds
     public static String getUrl(Intent intent) {
         return intent.getStringExtra(INTENT_DATA_URL);
@@ -250,11 +235,11 @@ public class IntentDataUtil {
         return intent.getStringArrayExtra(INTENT_DATA_CONTACTS);
     }
 
-    public static int getGroupId(Intent intent) {
+    public static long getGroupId(Intent intent) {
         if (intent.hasExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID)) {
-            return intent.getIntExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, -1);
+            return intent.getLongExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, -1L);
         }
-        return -1;
+        return -1L;
     }
 
     public static long getDistributionListId(Intent intent) {
@@ -404,11 +389,7 @@ public class IntentDataUtil {
             String cIdentity = extras.getString(AppConstants.INTENT_DATA_CONTACT);
             return contactService.createReceiver(contactService.getByIdentity(cIdentity));
         } else if (extras.containsKey(AppConstants.INTENT_DATA_GROUP_DATABASE_ID)) {
-            // TODO(ANDR-3786) - Only read the value as type long
-            int groupId = extras.getInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
-            if (groupId == 0) {
-                groupId = (int) extras.getLong(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0L);
-            }
+            int groupId = (int) extras.getLong(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0L);
             final @Nullable GroupModel groupModel = groupService.getById(groupId);
             if (groupModel != null) {
                 return groupService.createReceiver(groupModel);
@@ -473,7 +454,7 @@ public class IntentDataUtil {
                 intent.putExtra(AppConstants.INTENT_DATA_CONTACT, ((ContactMessageReceiver) messageReceiver).getContact().getIdentity());
                 break;
             case MessageReceiver.Type_GROUP:
-                intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageReceiver) messageReceiver).getGroup().getId());
+                intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) ((GroupMessageReceiver) messageReceiver).getGroup().getId());
                 break;
             case MessageReceiver.Type_DISTRIBUTION_LIST:
                 intent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageReceiver) messageReceiver).getDistributionList().getId());
@@ -569,7 +550,7 @@ public class IntentDataUtil {
         Intent intent = new Intent(context, ComposeMessageActivity.class);
 
         if (conversationModel.isGroupConversation()) {
-            intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, conversationModel.getGroup().getId());
+            intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) conversationModel.getGroup().getId());
         } else if (conversationModel.isDistributionListConversation()) {
             intent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, conversationModel.getDistributionList().getId());
         } else {
@@ -601,7 +582,7 @@ public class IntentDataUtil {
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         if (messageModel instanceof GroupMessageModel) {
-            intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, ((GroupMessageModel) messageModel).getGroupId());
+            intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) ((GroupMessageModel) messageModel).getGroupId());
         } else if (messageModel instanceof DistributionListMessageModel) {
             intent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, ((DistributionListMessageModel) messageModel).getDistributionListId());
         } else {

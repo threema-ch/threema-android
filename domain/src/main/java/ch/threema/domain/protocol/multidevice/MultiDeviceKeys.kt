@@ -21,23 +21,28 @@
 
 package ch.threema.domain.protocol.multidevice
 
+import ch.threema.base.ThreemaException
+import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.Nonce
-import ch.threema.base.crypto.ThreemaKDF
+import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.SecureRandomUtil.generateRandomBytes
 import ch.threema.domain.protocol.connection.data.D2dMessage
 import ch.threema.domain.protocol.connection.data.D2mProtocolException
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
+import ch.threema.libthreema.CryptoException
+import ch.threema.libthreema.blake2bMac256
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.MdD2D.DeviceInfo
 import ch.threema.protobuf.d2d.MdD2D.Envelope
 import ch.threema.protobuf.d2d.MdD2D.TransactionScope
 import ch.threema.protobuf.d2d.MdD2D.TransactionScope.Scope
 import ch.threema.protobuf.d2d.transactionScope
-import com.neilalexander.jnacl.NaCl
+
+private val logger = LoggingUtil.getThreemaLogger("MultiDeviceKeys")
 
 data class MultiDeviceKeys(val dgk: ByteArray) {
     companion object {
-        private val KDF: ThreemaKDF by lazy { ThreemaKDF("3ma-mdev") }
+        private const val BLAKE_2B_PERSONAL = "3ma-mdev"
         private const val SALT_DGPK = "p"
         private const val SALT_DGRK = "r"
         private const val SALT_DGDIK = "di"
@@ -45,8 +50,25 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
         private const val SALT_DGTSK = "ts"
 
         private fun createNonce(): ByteArray {
-            return generateRandomBytes(NaCl.NONCEBYTES)
+            return generateRandomBytes(NaCl.NONCE_BYTES)
         }
+
+        @Throws(ThreemaException::class)
+        private fun blake2b256(
+            key: ByteArray,
+            salt: String,
+        ): ByteArray =
+            try {
+                blake2bMac256(
+                    key = key,
+                    personal = BLAKE_2B_PERSONAL.encodeToByteArray(),
+                    salt = salt.encodeToByteArray(),
+                    data = byteArrayOf(),
+                )
+            } catch (cryptoException: CryptoException.InvalidParameter) {
+                logger.error("Failed to compute blake2b hash", cryptoException)
+                throw Error("Failed to compute blake2b hash", cryptoException)
+            }
     }
 
     init {
@@ -56,29 +78,33 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
         }
     }
 
-    internal val dgpk: ByteArray by lazy { KDF.deriveKey(SALT_DGPK, dgk) }
+    internal val dgpk: ByteArray by lazy { blake2b256(key = dgk, salt = SALT_DGPK) }
     val dgid: ByteArray by lazy { NaCl.derivePublicKey(dgpk) }
 
-    internal val dgrk: ByteArray by lazy { KDF.deriveKey(SALT_DGRK, dgk) }
-    internal val dgdik: ByteArray by lazy { KDF.deriveKey(SALT_DGDIK, dgk) }
-    internal val dgsddk: ByteArray by lazy { KDF.deriveKey(SALT_DGSDDK, dgk) }
-    internal val dgtsk: ByteArray by lazy { KDF.deriveKey(SALT_DGTSK, dgk) }
+    internal val dgrk: ByteArray by lazy { blake2b256(key = dgk, salt = SALT_DGRK) }
+    internal val dgdik: ByteArray by lazy { blake2b256(key = dgk, salt = SALT_DGDIK) }
+    internal val dgsddk: ByteArray by lazy { blake2b256(key = dgk, salt = SALT_DGSDDK) }
+    internal val dgtsk: ByteArray by lazy { blake2b256(key = dgk, salt = SALT_DGTSK) }
 
     internal fun createServerHelloResponse(serverHello: InboundD2mMessage.ServerHello): ByteArray {
         val naCl = NaCl(dgpk, serverHello.esk)
         val nonce = createNonce()
-        return nonce + naCl.encrypt(serverHello.challenge, nonce)
+        return nonce + naCl.encrypt(data = serverHello.challenge, nonce = nonce)
     }
 
     fun encryptDeviceInfo(deviceInfo: D2dMessage.DeviceInfo): ByteArray {
         val nonce = createNonce()
-        return nonce + NaCl.symmetricEncryptData(deviceInfo.bytes, dgdik, nonce)
+        return nonce + NaCl.symmetricEncryptData(data = deviceInfo.bytes, key = dgdik, nonce = nonce)
     }
 
     fun decryptDeviceInfo(deviceInfo: ByteArray): D2dMessage.DeviceInfo {
-        val nonce = deviceInfo.copyOfRange(0, NaCl.NONCEBYTES)
+        val nonce = deviceInfo.copyOfRange(0, NaCl.NONCE_BYTES)
         val data = deviceInfo.copyOfRange(nonce.size, deviceInfo.size)
-        val decrypted = NaCl.symmetricDecryptData(data, dgdik, nonce)
+        val decrypted = NaCl.symmetricDecryptData(
+            data = data,
+            key = dgdik,
+            nonce = nonce,
+        )
         return DeviceInfo.parseFrom(decrypted).let { D2dMessage.DeviceInfo.fromProtobuf(it) }
     }
 
@@ -87,21 +113,24 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
         val bytes = transactionScope {
             this.scope = scope
         }.toByteArray()
-        val encrypted = NaCl.symmetricEncryptData(bytes, dgtsk, nonce)
+        val encrypted = NaCl.symmetricEncryptData(data = bytes, key = dgtsk, nonce = nonce)
         return nonce + encrypted
     }
 
     fun decryptTransactionScope(encryptedTransactionScope: ByteArray): Scope {
-        val nonce = encryptedTransactionScope.copyOfRange(0, NaCl.NONCEBYTES)
+        val nonce = encryptedTransactionScope.copyOfRange(0, NaCl.NONCE_BYTES)
         val data = encryptedTransactionScope.copyOfRange(nonce.size, encryptedTransactionScope.size)
-        val decrypted = NaCl.symmetricDecryptData(data, dgtsk, nonce)
+        val decrypted = NaCl.symmetricDecryptData(
+            data = data,
+            key = dgtsk,
+            nonce = nonce,
+        )
         return TransactionScope.parseFrom(decrypted).scope
     }
 
     fun encryptEnvelope(envelope: Envelope): EncryptedEnvelopeResult {
         val nonceBytes = createNonce()
-        val encryptedEnvelope =
-            nonceBytes + NaCl.symmetricEncryptData(envelope.toByteArray(), dgrk, nonceBytes)
+        val encryptedEnvelope = nonceBytes + NaCl.symmetricEncryptData(data = envelope.toByteArray(), key = dgrk, nonce = nonceBytes)
         return EncryptedEnvelopeResult(
             encryptedEnvelope = encryptedEnvelope,
             nonce = Nonce(nonceBytes),
@@ -113,9 +142,13 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
     }
 
     fun decryptEnvelope(encryptedEnvelopeBytes: ByteArray): Pair<Nonce, Envelope> {
-        val nonce = encryptedEnvelopeBytes.copyOfRange(0, NaCl.NONCEBYTES)
+        val nonce = encryptedEnvelopeBytes.copyOfRange(0, NaCl.NONCE_BYTES)
         val data = encryptedEnvelopeBytes.copyOfRange(nonce.size, encryptedEnvelopeBytes.size)
-        val decrypted = NaCl.symmetricDecryptData(data, dgrk, nonce)
+        val decrypted = NaCl.symmetricDecryptData(
+            data = data,
+            key = dgrk,
+            nonce = nonce,
+        )
         return Nonce(nonce) to Envelope.parseFrom(decrypted)
     }
 

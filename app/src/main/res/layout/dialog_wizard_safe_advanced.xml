@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="@dimen/wizard_contents_padding"
@@ -26,7 +27,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="@dimen/grid_unit_x2"
             android:gravity="center_horizontal"
             android:text="@string/flavored__safe_configure_server_explain" />
 
@@ -35,10 +36,11 @@
             style="@style/WizardSwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="@dimen/grid_unit_x3"
             android:checked="true"
             android:enabled="true"
-            android:text="@string/safe_use_default_server" />
+            android:text="@string/safe_use_default_server"
+            tools:checked="false" />
 
         <LinearLayout
             android:id="@+id/safe_server_container"
@@ -46,7 +48,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="gone"
+            tools:visibility="visible">
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/safe_server"
@@ -75,7 +78,7 @@
                 android:id="@+id/safe_credentials_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="@dimen/grid_unit_x1"
                 android:text="@string/safe_configure_server_credentials_title"
                 android:textColor="?attr/colorOnBackground"
                 android:textSize="16sp" />
@@ -84,7 +87,7 @@
                 android:id="@+id/safe_username"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="@dimen/grid_unit_x1"
                 app:hintAnimationEnabled="false"
                 app:hintEnabled="false">
 
@@ -107,7 +110,7 @@
                 android:id="@+id/safe_server_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
+                android:layout_marginTop="@dimen/grid_unit_x0_5"
                 app:hintAnimationEnabled="false"
                 app:hintEnabled="false"
                 app:passwordToggleEnabled="true">
@@ -132,14 +135,14 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="@dimen/grid_unit_x4"
             android:orientation="horizontal">
 
             <ch.threema.app.activities.wizard.components.WizardButtonXml
                 android:id="@+id/cancel_compose"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="4dp"
+                android:layout_marginEnd="@dimen/grid_unit_x0_5"
                 android:layout_weight="1"
                 app:wizardButton_style="wizardButton_inverse"
                 app:wizardButton_text="@string/cancel" />
@@ -148,7 +151,7 @@
                 android:id="@+id/ok_compose"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="4dp"
+                android:layout_marginStart="@dimen/grid_unit_x0_5"
                 android:layout_weight="1"
                 app:wizardButton_text="@string/ok" />
 

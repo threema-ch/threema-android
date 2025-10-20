@@ -108,7 +108,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
     private CharSequence datePrefix = "";
     protected String dateContentDescriptionPrefix = "";
 
-    private int groupId = 0;
+    private long groupId = 0L;
     protected Map<String, Integer> identityColors = null;
     @Nullable
     protected String filterString;
@@ -280,7 +280,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
         }
     }
 
-    public void setGroupMessage(int groupId, Map<String, Integer> identityColors) {
+    public void setGroupMessage(long groupId, Map<String, Integer> identityColors) {
         this.groupId = groupId;
         this.identityColors = identityColors;
     }
@@ -363,7 +363,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
                     ContactModel contactModel = helper.getContactService().getByIdentity(messageModel.getIdentity());
                     c = new ContactCache();
                     c.displayName = NameUtil.getDisplayNameOrNickname(contactModel, true);
-                    c.avatar = helper.getContactService().getAvatar(contactModel, false);
+                    c.avatar = helper.getContactService().getAvatar(messageModel.getIdentity(), false);
 
                     c.contactModel = contactModel;
                     helper.getContactCache().put(identity, c);
@@ -541,7 +541,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
                 }
             });
 
-//			propagate long click listener
+            // propagate long click listener
             view.setOnLongClickListener(v -> {
                 if (onLongClickElement != null) {
                     onLongClickElement.onLongClick(getMessageModel());
@@ -549,7 +549,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
                 return false;
             });
 
-//			propagate touch listener
+            // propagate touch listener
             view.setOnTouchListener(new View.OnTouchListener() {
                 @Override
                 public boolean onTouch(View arg0, MotionEvent event) {

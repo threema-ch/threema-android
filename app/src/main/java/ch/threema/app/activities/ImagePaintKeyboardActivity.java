@@ -38,6 +38,7 @@ import android.widget.TextView;
 import org.slf4j.Logger;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.appcompat.widget.AppCompatEditText;
@@ -77,7 +78,10 @@ public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
         }
 
         Drawable checkDrawable = AppCompatResources.getDrawable(this, R.drawable.ic_check);
-        Objects.requireNonNull(checkDrawable).setColorFilter(ConfigUtils.getColorFromAttribute(this, R.attr.colorOnBackground), PorterDuff.Mode.SRC_IN);
+        Objects.requireNonNull(checkDrawable).setColorFilter(
+            ConfigUtils.getColorFromAttribute(this, R.attr.colorOnSurface),
+            PorterDuff.Mode.SRC_IN
+        );
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(checkDrawable);
         actionBar.setTitle("");
@@ -124,7 +128,7 @@ public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
         });
         textEntry.addTextChangedListener(new SimpleTextWatcher() {
             @Override
-            public void afterTextChanged(Editable s) {
+            public void afterTextChanged(@NonNull Editable editable) {
                 onUserInteraction();
             }
         });

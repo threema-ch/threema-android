@@ -58,8 +58,8 @@ når den første meldingen mottas.</string>
     <string name="prefs_sum_notification_sound">Standardinnstilling</string>
     <string name="prefs_vibrate">Vibrer</string>
     <string name="prefs_sum_vibrate">Vibrer ved innkommende melding</string>
-    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
-    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 6 and 7 -->
+    <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
+    <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_light">Hvit</string>
     <string name="prefs_title_wallpaper">Velg bakgrunn</string>
     <string name="prefs_sum_wallpaper">Velg bilde for bakgrunn</string>
@@ -98,6 +98,7 @@ når den første meldingen mottas.</string>
     <string name="next">Neste</string>
     <string name="finish">Ferdig</string>
     <string name="please_wait">Vennligst vent…</string>
+    <!-- Text shown when a task which shows a loading spinner takes longer than expected (e.g. creating a group) -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="wizard_first_create_id">Opprett din ${app_name_short} ID…</string>
     <string name="wizard1_sync_contacts">Synkroniser kontakter</string>
@@ -210,7 +211,6 @@ når den første meldingen mottas.</string>
     <string name="code_invalid">Koden du skrev inn er ugyldig.</string>
     <string name="try_again">Prøv igjen</string>
     <string name="decoding_message">Dekrypterer melding</string>
-    <string name="invalid_barcode">Ugyldig type strekkode</string>
     <string name="expired_barcode">Denne koden har utløpt. Vennligst skann den igjen direkte fra den andre brukerens applikasjon.</string>
     <string name="pending">Avventer</string>
     <string name="unlinking_email">Koble fra e-post</string>
@@ -278,7 +278,8 @@ når den første meldingen mottas.</string>
     <string name="restore_data_password_msg">Skriv inn passordet du brukte til å lage denne sikkerhetskopien.</string>
     <string name="backup_data_media">Inkluder store mediafiler (video, dokumenter, originale bilder)</string>
     <string name="backup_data_new">Lag sikkerhetskopi</string>
-    <string name="pinentry_enter_pin">Skriv inn din %s PIN-kode for å fortsette</string>
+    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="pinentry_enter_pin">Skriv inn din ${app_name} PIN-kode for å fortsette</string>
     <string name="pinentry_wrong_pin">PIN-koden er feil</string>
     <string name="prefs_sum_security_pin">Sperr brukergrensesnittet</string>
     <string name="prefs_title_pin_switch">Applås</string>
@@ -692,7 +693,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="wait_one_minute">Vennligst vent minst 10 minutter for at SMS-en skal bli mottatt før du spør om en telefonsamtale.</string>
     <string name="backup_id">Eksportert ID</string>
     <string name="backup_data">Sikkerhetskopi</string>
-    <string name="really_leave_group_admin_message">Du er administrator for denne gruppen. Om du forlater den nå, vil den bli uten en leder. De andre medlemmene kan fortsatt holde samtalen gående, men det blir ikke mulig å gjøre endringer.</string>
     <string name="action_delete_group">Slett gruppe</string>
     <string name="action_leave_and_delete_group">Forlat og slett gruppe</string>
     <string name="action_dissolve_and_delete_group">Oppløs og slett gruppe</string>
@@ -773,7 +773,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="battery_optimizations_explain">Batterioptimaliseringer forhindrer %1$s fra å fungere skikkelig når telefonen går inn i hvilemodus. Vennligst deaktiver batterioptimalisering for %2$s.</string>
     <string name="battery_optimizations_disable_guide">Velg \"Alle apper\" i nedtrekksmenyen</string>
     <string name="battery_optimizations_disable_guide_ctd">Søk etter %s i listen og deaktiver optimaliseringen</string>
-    <string name="battery_optimizations_disable_confirm">Vil du virkelig beholde batterioptimalisering for %1$s? %2$s vil ikke fungere skikkelig i hvilemodus.</string>
     <string name="enter_text_hint">Skriv inn tekst</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_explain_text">Om du endrer eller mister enheten din, så kan ingen gjenopprette din ${app_name_short} ID eller samtalene dine, om det ikke er sikkerhetskopiert. Vennligst lag en sikkerhetskopi.</string>
@@ -1048,6 +1047,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="safe_configure_server_credentials_title">Autentisering (valgfritt)</string>
     <string name="username_hint">Brukernavn</string>
     <string name="server_hint">Server</string>
+    <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
     <string name="lock_option_biometric">Biometri</string>
     <string name="biometric_enter_authentication">For å låse opp, vennligst autentiser deg</string>
     <string name="biometric_authentication_failed">Autentisering feilet</string>
@@ -1107,9 +1107,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="backup_data_no_permission">Kan ikke skrive til denne plasseringen. Velg en annen plassering.</string>
     <string name="prefs_sum_show_unread_badge">Vis ulest-merker i navigasjonsfaner i bunnen</string>
     <string name="prefs_title_show_unread_badge">Merker</string>
-    <string name="pinning_not_trusted">Sertifikat \"pinning\" feil: Sjekk om \"Entrust Root Certification Authority - G2\" er installert og aktivert i legitimasjons-lagringen i enheten din.</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="pinning_failed">Sertifikat \"pinning\" feil. Mulig et Man-in-the-middle-angrep. Om du har en reklameblokkerings-app, innholdsfilter eller en brannmur-app installert (f.eks. \"AdGuard\"), deaktiver det for ${app_name}.</string>
     <string name="open_myid_popup">Åpne hurtigtilgangsvinduet</string>
     <string name="logo">Logo / Scroll til toppen</string>
     <string name="quote_subj_end">Slutt sitat</string>
@@ -1257,60 +1254,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="set_backup_path">Angi sti for sikkerhetskopi</string>
     <string name="set_backup_path_intro">På den neste skjermen, angi mappen der sikkerhetskopien skal lagres.</string>
     <string name="discard_changes_title">Forkast endringer</string>
-    <string name="group_join_request_message_info"><![CDATA[Skriv en kort melding til gruppeadministratoren <b>%1$s</b> hvorfor du ønsker å bli med <b>%2$s</b>.]]></string>
-    <string name="group_join_request">Forespørsel til gruppe</string>
-    <string name="group_join_request_for">Forespørsel for å bli med %s</string>
-    <string name="group_link_default_name">Umerket link</string>
-    <string name="group_link_share">Del gruppelink</string>
-    <string name="group_request_incoming_dialog_title">Forespørsel til %s</string>
     <string name="accept">Aksepter</string>
-    <string name="reject">Avvis</string>
-    <string name="group_request_already_sent"><![CDATA[Du har allerede aktiv forespørsel for å bli med <b>%s</b> gjennom denne linken og du venter fortsatt på svar fra administratoren. Trykk på forespørselen i listen om du vil prøve å sende på nytt.]]></string>
-    <string name="group_link_none">Det er ikke laget en link ennå</string>
-    <string name="group_request_confirm_send"><![CDATA[Du er i ferd med å sende en forespørsel for <b>%1$s</b> til administrator <b>%2$s</b>. Om denne linken ikke er ugyldig, så vil du bli lagt til gruppen når administratorens enhet mottar din forespørsel.]]></string>
-    <string name="really_delete_group_request_title_singular">Slett gruppeforespørsel</string>
-    <string name="really_delete_group_request_title_plural">Slett gruppeforespørsler</string>
-    <string name="sent_to">Sendt til: %s</string>
-    <string name="sent_on">Sent på: %s</string>
-    <string name="group_response">Svar på gruppeforespørsel</string>
-    <string name="group_response_accepted">Din forespørsel til %s ble akseptert</string>
-    <string name="group_response_full">Din forespørsel til %s ble avvist fordi gruppen er full</string>
-    <string name="group_response_rejected">Din forespørsel til %s ble avvist</string>
-    <string name="group_link_expiration_none">Ubegrenset</string>
-    <string name="group_request_hint">Hei! Det er meg…</string>
-    <string name="group_request_send_title">Send forespørsel for å bli med</string>
-    <string name="group_request_message_empty">Forespørselsmelding kan ikke være tom</string>
-    <string name="group_requests_all_title">Alle gruppeforespørsler</string>
-    <string name="group_requests_none_outgoing">Ingen forespørsel sendt. Forespørsler kan bli sendt gjennom linker som er opprettet av administratoren.</string>
-    <string name="notification_channel_group_join_response">Varsel for svar på forespørsel</string>
-    <string name="group_qr_code_title">QR-koden til gruppen</string>
-    <string name="group_link_qr_desc"><![CDATA[Del denne gruppelinken med personer du vil legge til gruppen: <b>%s</b>.]]></string>
-    <string name="new_group_link_success">Ny link opprettet</string>
-    <string name="link_administration_off_explain">Denne linken er allerede opprettet og delt. Endring av egenskapene til linken er derfor umulig. Lag en ny link med egenskapene du trenger.</string>
-    <string name="group_link_update_success">Link er oppdatert</string>
-    <string name="no_group_links">Ingen gruppelinker. For å opprette en gruppelink, klikk på knappen nederst til høyre eller aktiver standardlinken som du finner i gruppedetaljer-vinduet.</string>
-    <string name="group_links_overview_title">Gruppelinker for %s</string>
-    <string name="group_link_invalid">Ugyldig</string>
-    <string name="group_link_valid">Gyldig</string>
-    <string name="open_group_requests_chips_title">Åpne gruppeforespørsler</string>
-    <string name="all_open_group_requests">Alle gruppeforespørsler</string>
-    <string name="no_incoming_group_requests">Ingen forespørsler mottatt. Forespørslene kan bli sendt til deg gjennom gruppelinker som du kna administrere i gruppeoversikten (om du er administrator).</string>
-    <string name="received_on">Mottatt på %s</string>
-    <string name="group_request_state_full">Gruppe er full</string>
-    <string name="group_request_state_rejected">Avvist</string>
-    <string name="group_request_state_expired">Ugyldig</string>
-    <string name="group_request_state_pending">Avventer</string>
-    <string name="group_request_state_accepted">Akseptert</string>
-    <string name="open_group_requests_show">Vis forespørsler</string>
-    <string name="open_group_requests_hide">Skjul forespørsler</string>
-    <string name="group_request_link_already_deleted">Gruppelinken har blitt slettet</string>
-    <string name="incoming_group_request_no_message">Sendt via åpen link… ingen melding</string>
-    <string name="group_request_received_through">Gjennom link: %s</string>
-    <string name="reaccept">Reaksepter</string>
-    <string name="group_link_edit_expiration_date">Endre utløpsdato</string>
-    <string name="group_link_show_qr">Vis QR-kode</string>
-    <string name="group_link_rename">Endre navn</string>
-    <string name="group_link_rename_tag">Nytt navn</string>
     <string name="tap_here_for_more">Trykk her for mer informasjon</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="another_connection_instructions"><![CDATA[Serveren har oppdaget to eller flere tilkoblinger fra forskjellige enheter med samme ${app_name_short} ID.
@@ -1332,20 +1276,7 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="download_failed">Nedlasting feilet. Feilkode: %d</string>
     <string name="edit_answer">Rediger svar</string>
     <string name="share_media">Del med en annen app…</string>
-    <string name="group_link_administered">Link sendt</string>
-    <string name="group_link_open">Åpen</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="group_link_share_message">Bli med min ${app_name_short}-gruppe gjennom denne linken!: %s</string>
-    <string name="group_link_bottom_sheet_title">Gruppelink</string>
-    <string name="group_link_bottom_sheet_desc">Del denne linken med personer som du vil legge til gruppen. Se gjennom valgene nedenfor.</string>
-    <string name="group_link_bottom_sheet_link_title">Link</string>
-    <string name="group_link_properties_title">Link-egenskaper</string>
-    <string name="group_link_property_administration_title">Manuell bekreftelse</string>
-    <string name="group_link_property_administration_desc">Om den er aktiv, så vil du motta forespørsler inne i samtalen som du deretter kan akseptere eller avvise.</string>
-    <string name="group_link_property_expiration_title">Utløpsdato</string>
-    <string name="group_link_property_expiration_desc">Linken utløper etter valgt tid.</string>
     <string name="group_image">Gruppebilde</string>
-    <string name="add_group_link">Legg til medlemmer gjennom gruppelink</string>
     <string name="miui_battery_optimization">Vennligst deaktiver batterioptimalisering for %s, slik at den kan gjøre denne operasjonen. Siden Xiaomi ikke tillter apper å åpne denne innstillingen direkte, så må du gjøre det manuelt i innstillingene. Vennligst kontakt Xiaomi brukerstøtte om du trenger assistanse med å deaktivere batterioptimalisering for ${app_name_short}-appen.</string>
     <string name="forward_captions">Inkluder kommentarer</string>
     <string name="importing_files_failed">Ikke mulig å importere sikkerhetskopi. Sørg for at det er nok ledig plass på det interne minnet.</string>
@@ -1361,29 +1292,12 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="prefs_title_reset_receipts">Fjern individuelle innstillinger</string>
     <string name="prefs_sum_reset_receipts">Resett kontakt-spesifikke innstillinger for lesekvitteringer og \"Skriver…\"-indikator til standard.</string>
     <string name="reset_successful">Vellykket resett til standard</string>
-    <string name="group_link_add">Legg til gruppelink</string>
-    <string name="group_requests_show_menu_title">Vis åpne forespørsler</string>
-    <string name="group_request_show_all">Vis alle forespørsler</string>
-    <string name="group_links_manage_menu">Administrer gruppelinker</string>
-    <string name="group_request_sent_menu">Sendte gruppeforespørsler</string>
-    <string name="really_delete_group_link_title">Slett gruppelink</string>
-    <string name="really_delete_multiple_group_links_title">Slett gruppelinker</string>
-    <string name="qr_scan_result_dialog_title">QR-skann resultat</string>
-    <string name="scan_failure_dialog_title">Skann feilet</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="no_threema_qr_info">Dette er ikke en QR-kode som hører til ${app_name_short}. Det dekodede innholdet av koden er:</string>
-    <string name="default_group_link">Standard gruppelink</string>
-    <string name="default_link_name">Standard link</string>
-    <string name="reset_default_group_link">Resett standard gruppelink</string>
-    <string name="resend">Send igjen</string>
-    <string name="group_request_already_sent_title">Forespørsel allerede sendt</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Skann QR-koden til en kontakt for å verifisere identiteten. For å vise koden, spør kontakten om å trykke på profilbildet i det øvre venstre hjørnet på hovedskjermen til ${app_name_short}-appen.</string>
     <string name="enable_storage_access_for_media">Tillat tilgang til lagring for å se bilder og videoer på enheten din</string>
     <string name="take_me_there">Ta meg dit…</string>
-    <string name="notification_channel_group_join_request">Varselskanal for mottatte gruppeforespørsler</string>
-    <string name="reset_default_group_link_title">Resett standard link informasjon</string>
-    <string name="reset_default_group_link_desc">Linken som allerede er delt vil bli gjort ugyldig og forespørsler som blir sendt gjennom den gamle linken blir automatisk avvist med en utløpt-beskjed.</string>
     <string name="custom">Annen tilpasning</string>
     <string name="show_public_key">Vis offentlig nøkkel</string>
     <string name="public_key_for">Offentlig nøkkel til %s</string>
@@ -1610,7 +1524,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="action_dissolve_group">Oppløs guppe</string>
     <string name="really_dissolve_group">Om du bare oppløser en gruppe, så kan ingen sende nye meldinger til gruppen, og den kan heller ikke administreres. Den oppløste gruppen kan likevel bli klonet.</string>
     <string name="status_orphaned_group">*Gruppen mangler en administrator*\nGruppens grunnlegger har forlatt gruppen og den kan ikke lenger administreres. En av de gjenværende medlemmene kan klone gruppen (via gruppedetaljer) for å bli den nye administratoren.</string>
-    <string name="group_orphaned_notice">Gruppen mangler en administrator fordi grunnleggeren har forlatt gruppen. Vennligst klon gruppen for å bli den nye administratoren.</string>
     <string name="group_not_a_member_notice">Du er ikke lenger medlem av gruppen og kan ikke bruke den lenger.</string>
     <string name="group_dissolved_notice">Gruppen har blitt oppløst og kan ikke bli brukt lenger.</string>
     <string name="md_linked_devices">Tilkoblede enheter</string>
@@ -1641,8 +1554,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="problemsolver_title_app_battery_usgae_optimized">Batteribruk satt til \"Optimalisert\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Appen har ikke tillatelse til å opprettholde en permanent tilkobling til serverne, noe som er nødvendig for at ${app_name_short} Push skal fungere. Du vil ikke få varsel om nye meldinger så lenge appen er i bakgrunnen. For å løse dette, trykk på \"Batteribruk\" og velg \"Ubegrenset\".</string>
-    <!-- Title of warning message that informs the user that their app is no longer supported. -->
-    <!-- Details of warning message that informs the user that their app is no longer supported. -->
     <string name="problemsolver_to_settings">Til innstillinger</string>
     <string name="prefs_advanced_options">Avanserte innstillinger</string>
     <string name="push_service">Push-tjeneste</string>
@@ -1650,8 +1561,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="media_gallery_animated_webps">Animerte WebP-er</string>
     <string name="unsupported_image_type">Ustøttet bildeformat: %s</string>
     <string name="application_setup_steps_failed">Det er krav om en aktiv internettforbindelse for å sjekke tilstanden til kontaktene dine. Sørg for at du er tilkoblet internett, og prøv igjen.</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- accessibility -->
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->
@@ -1666,6 +1575,7 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <!-- Instruction text for the user directory search -->
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <!-- Message that is shown when the user wants to share an invalid file. -->
@@ -1673,6 +1583,19 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <!-- Title shown in "About" screen above item that indicates whether the DualLock (a.k.a. "Remote Secret") feature is currently activated. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="other">%d kontakter</item>
@@ -1736,28 +1659,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <plurals name="webclient_running_sessions">
         <item quantity="one">%d økt kjører</item>
         <item quantity="other">%d økter kjører</item>
-    </plurals>
-    <plurals name="really_delete_outgoing_request">
-        <item quantity="one">Vil du virkelig slette %d gruppeforespørsel?
-Merk at forespørselen ikke trekkes tilbake og du kan
-fortsatt bli akseptert eller forespurt dersom forespørselen ennå ikke er besvart.</item>
-        <item quantity="other">Er du sikker på at du vil slette %d gruppeforespørsler?
-Merk at forespørslene ikke trekkes tilbake og du kan
-heller ikke bli akseptert eller forespurt dersom forespørslene ennå ikke er besvart.</item>
-    </plurals>
-    <plurals name="really_delete_incoming_request">
-        <item quantity="one">Vil du virkelig slette %d gruppeforespørsel?
-Du kan ikke svare på forespørselen etter at den er slettet.</item>
-        <item quantity="other">Vil du virkelig slette %d gruppeforespørsler?
-Du kan ikke svare på forespørselene etter at de er slettet.</item>
-    </plurals>
-    <plurals name="really_delete_group_link">
-        <item quantity="one">Vil du virkelig slette %d gruppelink?
-Andre brukere kan ikke sende forespørsler gjennom den lenger.
-Tidligere mottatt forespørsler kan likevel fortsatt bli avvist eller godtatt.</item>
-        <item quantity="other">Vil du virkelig slette %d gruppelinker?
-Andre brukere kan ikke sende forespørsler gjennom den lenger.
-Tidligere mottatt forespørsler kan likevel fortsatt bli avvist eller godtatt.</item>
     </plurals>
     <plurals name="chat_deleted">
         <item quantity="one">%d samtale slettet.</item>

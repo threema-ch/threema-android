@@ -21,10 +21,10 @@
 
 package ch.threema.domain.protocol.csp.messages
 
+import ch.threema.base.crypto.NaCl
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
-import com.neilalexander.jnacl.NaCl
 import org.apache.commons.io.EndianUtils
 
 /**
@@ -71,7 +71,7 @@ class ImageMessage(
 
     override fun getBody(): ByteArray {
         val body =
-            ByteArray(ProtocolDefines.BLOB_ID_LEN + IMAGE_SIZE_INT_BYTE_LENGTH + NaCl.NONCEBYTES)
+            ByteArray(ProtocolDefines.BLOB_ID_LEN + IMAGE_SIZE_INT_BYTE_LENGTH + NaCl.NONCE_BYTES)
         System.arraycopy(blobId, 0, body, 0, ProtocolDefines.BLOB_ID_LEN)
         EndianUtils.writeSwappedInteger(body, ProtocolDefines.BLOB_ID_LEN, size)
         System.arraycopy(
@@ -124,7 +124,7 @@ class ImageMessage(
         @JvmStatic
         @Throws(BadMessageException::class)
         fun fromByteArray(data: ByteArray, offset: Int, length: Int): ImageMessage {
-            if (length < (ProtocolDefines.BLOB_ID_LEN + IMAGE_SIZE_INT_BYTE_LENGTH + NaCl.NONCEBYTES)) {
+            if (length < (ProtocolDefines.BLOB_ID_LEN + IMAGE_SIZE_INT_BYTE_LENGTH + NaCl.NONCE_BYTES)) {
                 throw BadMessageException("Bad length ($length) for image message")
             } else if (offset < 0) {
                 throw BadMessageException("Bad offset ($offset) for image message")
@@ -141,7 +141,7 @@ class ImageMessage(
             val imageSize: Int = EndianUtils.readSwappedInteger(data, positionIndex)
             positionIndex += IMAGE_SIZE_INT_BYTE_LENGTH
 
-            val nonce = ByteArray(NaCl.NONCEBYTES)
+            val nonce = ByteArray(NaCl.NONCE_BYTES)
             System.arraycopy(data, positionIndex, nonce, 0, nonce.size)
 
             return ImageMessage(

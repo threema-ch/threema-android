@@ -35,7 +35,7 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.stores.ContactStore;
-import ch.threema.domain.stores.IdentityStoreInterface;
+import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.testhelpers.TestHelpers;
 
 public class ProtocolTest {
@@ -79,7 +79,7 @@ public class ProtocolTest {
         b.setBallotData(data);
 
         ContactStore contactStore = TestHelpers.getNoopContactStore();
-        IdentityStoreInterface identityStore = TestHelpers.getNoopIdentityStore();
+        IdentityStore identityStore = TestHelpers.getNoopIdentityStore();
         NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();
         MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 
@@ -138,7 +138,7 @@ public class ProtocolTest {
         pollSetupMessage.setBallotData(data);
 
         ContactStore contactStore = TestHelpers.getNoopContactStore();
-        IdentityStoreInterface identityStore = TestHelpers.getNoopIdentityStore();
+        IdentityStore identityStore = TestHelpers.getNoopIdentityStore();
         MessageCoder messageCoder = new MessageCoder(contactStore, identityStore);
 
         NonceFactory nonceFactory = TestHelpers.getNoopNonceFactory();

@@ -47,7 +47,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ResettableInputStream;
 import ch.threema.base.ThreemaException;
 import ch.threema.data.models.ContactModel;
-import ch.threema.localcrypto.MasterKeyLockedException;
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.data.models.GroupModel;
 
@@ -215,18 +215,18 @@ public interface FileService {
     boolean writeConversationMedia(@NonNull AbstractMessageModel messageModel, @NonNull InputStream inputStream, boolean overwrite) throws Exception;
 
     /**
-     * Save a group avatar (resize if needed) and return true on success. Additionally, this resets
+     * Save a group avatar and return true on success. Additionally, this resets
      * the avatar cache for this group.
      */
     boolean writeGroupAvatar(GroupModel groupModel, byte[] photoData) throws IOException, MasterKeyLockedException;
 
     /**
-     * Save a group avatar (resize if needed) and return true on success. Additionally, this resets
+     * Save a group avatar and return true on success. Additionally, this resets
      * the avatar cache for this group.
      */
     boolean writeGroupAvatar(GroupModel groupModel, InputStream photoData) throws IOException, MasterKeyLockedException;
     /**
-     * Save a group avatar (resize if needed) and return true on success. Additionally, this resets
+     * Save a group avatar and return true on success. Additionally, this resets
      * the avatar cache for this group.
      */
     @Deprecated
@@ -324,7 +324,7 @@ public interface FileService {
      * Write the contact profile picture from Android's address book. Additionally, this resets the
      * avatar cache for this contact.
      */
-    boolean writeAndroidDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws Exception;
+    void writeAndroidDefinedProfilePicture(@NonNull String identity, byte[] avatarFile) throws Exception;
 
     /**
      * return the decrypted bitmap of a contact avatar

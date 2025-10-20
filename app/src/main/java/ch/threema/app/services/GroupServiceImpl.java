@@ -60,10 +60,10 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.tasks.OutgoingGroupSyncRequestTask;
-import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConversationUtil;
 import ch.threema.app.utils.GroupFeatureSupport;
 import ch.threema.app.utils.GroupUtil;
+import ch.threema.data.datatypes.IdColor;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
@@ -80,10 +80,9 @@ import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.taskmanager.TaskManager;
 import ch.threema.domain.taskmanager.TriggerSource;
+import ch.threema.storage.ChunkedSequence;
 import ch.threema.storage.DatabaseService;
-import ch.threema.storage.factories.GroupInviteModelFactory;
 import ch.threema.storage.factories.GroupMessageModelFactory;
-import ch.threema.storage.factories.IncomingGroupJoinRequestModelFactory;
 import ch.threema.storage.factories.RejectedGroupMessageFactory;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMemberModel;
@@ -92,7 +91,6 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.access.Access;
 import ch.threema.storage.models.access.GroupAccessModel;
-import ch.threema.storage.models.group.GroupInviteModel;
 
 import static ch.threema.app.utils.GroupUtil.getUniqueIdString;
 
@@ -120,7 +118,7 @@ public class GroupServiceImpl implements GroupService {
     private final GroupModelRepository groupModelRepository;
 
     // TODO(ANDR-3755): Consolidate this cache
-    private final SparseArrayCompat<Map<String, Integer>> groupMemberColorCache;
+    private final SparseArrayCompat<Map<String, IdColor>> groupMemberColorCache;
     private final SparseArrayCompat<GroupModel> groupModelCache;
     private final SparseArrayCompat<String[]> groupIdentityCache;
     private @Nullable TaskManager taskManager = null;
@@ -236,8 +234,11 @@ public class GroupServiceImpl implements GroupService {
         ballotService.remove(messageReceiver);
 
         // Remove all files that belong to messages of this group
-        for (GroupMessageModel messageModel : this.databaseService.getGroupMessageModelFactory().getByGroupIdUnsorted(groupModel.getDatabaseId())) {
-            this.fileService.removeMessageFiles(messageModel, true);
+        try (ChunkedSequence<GroupMessageModel> messageModels =
+                 databaseService.getGroupMessageModelFactory().getByGroupId(groupModel.getDatabaseId())) {
+            for (GroupMessageModel messageModel : messageModels) {
+                this.fileService.removeMessageFiles(messageModel, true);
+            }
         }
 
         // Remove avatar
@@ -292,19 +293,14 @@ public class GroupServiceImpl implements GroupService {
         // Delete polls
         ballotService.remove(createReceiver(groupModel));
 
-        // Remove all group invite links and requests
-        final GroupInviteModelFactory groupInviteModelFactory = this.databaseService.getGroupInviteModelFactory();
-        final IncomingGroupJoinRequestModelFactory incomingGroupJoinRequestModelFactory = this.databaseService.getIncomingGroupJoinRequestModelFactory();
-        for (GroupInviteModel groupInviteModel : groupInviteModelFactory.getByGroupApiId(groupModel.getApiGroupId())) {
-            incomingGroupJoinRequestModelFactory.deleteAllForGroupInvite(groupInviteModel.getId());
-            groupInviteModelFactory.delete(groupInviteModel);
-        }
-
         // Remove all messages
-        for (GroupMessageModel messageModel : this.databaseService.getGroupMessageModelFactory().getByGroupIdUnsorted(groupModel.getId())) {
-            this.fileService.removeMessageFiles(messageModel, true);
+        final GroupMessageModelFactory groupMessageModelFactory = databaseService.getGroupMessageModelFactory();
+        try (ChunkedSequence<GroupMessageModel> messageModels = groupMessageModelFactory.getByGroupId(groupModel.getId())) {
+            for (GroupMessageModel messageModel : messageModels) {
+                this.fileService.removeMessageFiles(messageModel, true);
+            }
         }
-        this.databaseService.getGroupMessageModelFactory().deleteByGroupId(groupModel.getId());
+        groupMessageModelFactory.deleteByGroupId(groupModel.getId());
 
         // Remove avatar
         this.fileService.removeGroupAvatar(groupModel);
@@ -399,7 +395,7 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public Intent getGroupDetailIntent(@NonNull GroupModel groupModel, @NonNull Activity activity) {
         Intent intent = new Intent(activity, GroupDetailActivity.class);
-        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getId());
+        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) groupModel.getId());
         return intent;
     }
 
@@ -583,11 +579,6 @@ public class GroupServiceImpl implements GroupService {
         return false;
     }
 
-    @Override
-    public boolean isOrphanedGroup(@NonNull GroupModel groupModel) {
-        return !isGroupMember(groupModel, groupModel.getCreatorIdentity()) && !isGroupCreator(groupModel);
-    }
-
     /**
      * Get the group member models of the given group. Note that the user is not part of this list.
      */
@@ -647,7 +638,7 @@ public class GroupServiceImpl implements GroupService {
             return "";
         }
 
-        GroupModelData groupModelData = groupModel.getData().getValue();
+        GroupModelData groupModelData = groupModel.getData();
         if (groupModelData == null) {
             logger.warn("Cannot get member string: Group model already deleted");
             return "";
@@ -752,10 +743,9 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public @ColorInt int getAvatarColor(@Nullable GroupModel group) {
-        if (group != null) {
-            return group.getThemedColor(context);
-        }
-        return ColorUtil.getInstance().getCurrentThemeGray(this.context);
+        return group != null
+            ? group.getIdColor().getThemedColor(context)
+            : IdColor.invalid().getThemedColor(this.context);
     }
 
     @Override
@@ -793,12 +783,11 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @NonNull
-    public Map<String, Integer> getGroupMemberIDColorIndices(@NonNull ch.threema.data.models.GroupModel model) {
+    public Map<String, IdColor> getGroupMemberIDColors(@NonNull ch.threema.data.models.GroupModel model) {
         long groupDatabaseId = model.getDatabaseId();
-        Map<String, Integer> colors = this.groupMemberColorCache.get((int) groupDatabaseId);
+        Map<String, IdColor> colors = this.groupMemberColorCache.get((int) groupDatabaseId);
         if (colors == null || colors.isEmpty()) {
-            colors = this.databaseService.getGroupMemberModelFactory().getIDColorIndices(groupDatabaseId);
-
+            colors = this.databaseService.getGroupMemberModelFactory().getIDColors(groupDatabaseId);
             this.groupMemberColorCache.put((int) groupDatabaseId, colors);
         }
 

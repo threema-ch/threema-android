@@ -23,6 +23,7 @@ package ch.threema.app.activities
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
 import android.content.res.Configuration.ORIENTATION_PORTRAIT
@@ -44,12 +45,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
-import androidx.lifecycle.ViewModelProvider
 import ch.threema.app.R
-import ch.threema.app.mediaattacher.ContactEditViewModel
+import ch.threema.app.mediaattacher.EditSendContactViewModel
 import ch.threema.app.ui.VCardPropertyView
 import ch.threema.app.ui.setMargin
 import ch.threema.app.utils.VCardExtractor
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 import com.google.android.material.appbar.AppBarLayout
@@ -59,6 +60,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCa
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import ezvcard.property.StructuredName
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private val logger = LoggingUtil.getThreemaLogger("EditSendContactActivity")
 
@@ -71,7 +73,8 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
         logScreenVisibility(logger)
     }
 
-    private lateinit var viewModel: ContactEditViewModel
+    private val viewModel: EditSendContactViewModel by viewModel()
+
     private lateinit var toolbar: MaterialToolbar
     private lateinit var appBarLayout: AppBarLayout
     private lateinit var bottomSheet: View
@@ -135,7 +138,6 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
         super.onCreate(savedInstanceState)
         toolbar = findViewById(R.id.toolbar_contact)
         appBarLayout = findViewById(R.id.appbar_layout_contact)
-        viewModel = ViewModelProvider(this)[ContactEditViewModel::class.java]
 
         // Finish activity when chat activity (in "background") is clicked
         ((findViewById<CoordinatorLayout>(R.id.edit_send_contact_coordinator).parent as ViewGroup).parent as ViewGroup).setOnClickListener {
@@ -448,8 +450,13 @@ class EditSendContactActivity : ThreemaToolbarActivity() {
     }
 
     companion object {
-        const val EXTRA_CONTACT = "EXTRA_CONTACT"
+        private const val EXTRA_CONTACT = "EXTRA_CONTACT"
         const val RESULT_CONTACT_URI = "CONTACT_URI"
         const val RESULT_CONTACT_NAME = "CONTACT_NAME"
+
+        @JvmStatic
+        fun createIntent(context: Context, vcardUri: Uri) = buildActivityIntent<EditSendContactActivity>(context) {
+            putExtra(EXTRA_CONTACT, vcardUri)
+        }
     }
 }

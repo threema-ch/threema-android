@@ -40,6 +40,7 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.utils.FileHandlingZipOutputStream;
 import ch.threema.app.utils.ListReader;
 import ch.threema.app.utils.RuntimeUtil;
+import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.data.models.GroupModel;
 import ch.threema.logging.LoggerManager;
@@ -137,6 +138,11 @@ public class LayerDependenciesTest {
             nameMatching("ch\\.threema\\.data\\.repositories\\.EmojiReactionsRepository"),
             nameMatching("ch\\.threema\\.app\\.emojis\\.EmojiUtil")
         )
+        // TODO(ANDR-3325): Remove
+        .ignoreDependency(
+            nameMatching("ch\\.threema\\.data\\.repositories\\.EmojiReactionsRepository"),
+            nameMatching("ch\\.threema\\.app\\.di\\..*")
+        )
         .ignoreDependency(DatabaseService.class, DatabaseMigrationFailedException.class)
         .ignoreDependency(DatabaseService.class, DatabaseMigrationLockedException.class)
         .ignoreDependency(DatabaseNonceStore.class, DatabaseMigrationFailedException.class)
@@ -152,6 +158,7 @@ public class LayerDependenciesTest {
         .ignoreDependency(LoggerManager.class, BuildFlavor.class)
         .ignoreDependency(LoggerManager.class, BuildFlavor.Companion.getClass())
         .ignoreDependency(LoggerManager.class, ThreemaApplication.class)
+        .ignoreDependency(LoggerManager.class, TestUtil.class)
         .ignoreDependency(DebugToasterBackend.class, RuntimeUtil.class)
         .ignoreDependency(DebugLogFileBackend.class, HandlerExecutor.class)
         .ignoreDependency(DebugLogFileBackend.class, FileHandlingZipOutputStream.class)

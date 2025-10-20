@@ -50,19 +50,6 @@
                 app:layout_constraintTop_toBottomOf="@id/ongoing_call_notice"
                 tools:visibility="visible" />
 
-            <ch.threema.app.grouplinks.OpenGroupRequestNoticeView
-                android:id="@+id/open_group_requests_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:animateLayoutChanges="true"
-                android:paddingTop="@dimen/notice_views_vertical_margin"
-                android:paddingBottom="@dimen/notice_views_vertical_margin"
-                android:visibility="gone"
-                app:layout_constraintLeft_toLeftOf="parent"
-                app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/open_ballots_layout"
-                tools:visibility="visible" />
-
             <ch.threema.app.ui.ReportSpamView
                 android:id="@+id/report_spam_layout"
                 android:layout_width="match_parent"
@@ -73,7 +60,7 @@
                 android:visibility="gone"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/open_group_requests_layout" />
+                app:layout_constraintTop_toBottomOf="@id/open_ballots_layout" />
 
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/ptr_layout"
@@ -134,10 +121,10 @@
                         android:layout_marginRight="8dp"
                         android:contentDescription="@string/scroll_to_top"
                         android:visibility="gone"
-                        app:backgroundTint="?attr/colorPrimaryContainer"
+                        app:backgroundTint="?attr/colorPrimary"
                         app:elevation="8dp"
                         app:icon="@drawable/ic_arrow_upward"
-                        app:iconTint="?attr/colorOnPrimaryContainer"
+                        app:iconTint="?attr/colorOnPrimary"
                         tools:visibility="visible" />
 
                     <FrameLayout
@@ -159,10 +146,10 @@
                             android:layout_marginRight="8dp"
                             android:layout_marginBottom="8dp"
                             android:contentDescription="@string/scroll_to_bottom"
-                            app:backgroundTint="?attr/colorPrimaryContainer"
+                            app:backgroundTint="?attr/colorPrimary"
                             app:elevation="8dp"
                             app:icon="@drawable/ic_arrow_downward"
-                            app:iconTint="?attr/colorOnPrimaryContainer" />
+                            app:iconTint="?attr/colorOnPrimary" />
 
                     </FrameLayout>
 

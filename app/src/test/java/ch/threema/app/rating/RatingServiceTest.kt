@@ -43,7 +43,7 @@ class RatingServiceTest {
                 assertEquals("POST", request.method)
                 assertEquals("https://test.threema.ch/rating/4", request.url.toString())
                 assertEquals(
-                    "ref=my-ref&feedback=Hello%20world%0A%0A---%0A1.2.3%0A",
+                    "ref=my-ref&feedback=Hello+world%0A%0A---%0A1.2.3%0A",
                     request.getBodyAsUtf8String(),
                 )
 

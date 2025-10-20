@@ -21,7 +21,6 @@
 
 package ch.threema.storage.databaseupdate
 
-import ch.threema.storage.fieldExists
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class DatabaseUpdateToVersion84(

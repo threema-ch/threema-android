@@ -27,7 +27,8 @@ import ch.threema.base.crypto.HashedNonce
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.crypto.NonceStore
-import ch.threema.domain.stores.IdentityStoreInterface
+import ch.threema.domain.stores.IdentityStore
+import ch.threema.domain.types.Identity
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import kotlin.test.AfterTest
@@ -235,8 +236,8 @@ fun hashNonce(nonce: Nonce): HashedNonce {
 
 const val USER_IDENTITY = "01234567"
 
-private class TestIdentityStore : IdentityStoreInterface {
-    override fun getIdentity(): String = USER_IDENTITY
+private class TestIdentityStore : IdentityStore {
+    override fun getIdentity(): Identity = USER_IDENTITY
 
     override fun encryptData(
         plaintext: ByteArray,
@@ -262,9 +263,16 @@ private class TestIdentityStore : IdentityStoreInterface {
     override fun getPublicNickname(): String = throw UnsupportedOperationException()
 
     override fun storeIdentity(
-        identity: String,
+        identity: Identity,
         serverGroup: String,
-        publicKey: ByteArray,
         privateKey: ByteArray,
     ) = throw UnsupportedOperationException()
+
+    override fun setPublicNickname(publicNickname: String) {
+        throw UnsupportedOperationException()
+    }
+
+    override fun clear() {
+        throw UnsupportedOperationException()
+    }
 }

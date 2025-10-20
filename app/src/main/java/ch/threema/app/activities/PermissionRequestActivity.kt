@@ -26,7 +26,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.pm.PackageManager.PERMISSION_GRANTED
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -41,6 +40,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.preference.PreferenceManager
 import ch.threema.app.BuildConfig
 import ch.threema.app.R
@@ -50,6 +50,7 @@ import ch.threema.app.ui.PermissionIconView
 import ch.threema.app.ui.PermissionIconView.PermissionIconState
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.PermissionRequest
+import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.LoggingUtil
 
@@ -66,10 +67,6 @@ private val logger = LoggingUtil.getThreemaLogger("PermissionRequestActivity")
 class PermissionRequestActivity : ThreemaActivity() {
     init {
         logScreenVisibility(logger)
-    }
-
-    companion object {
-        const val INTENT_PERMISSION_REQUESTS = "permission_requests_extra"
     }
 
     private lateinit var preferences: SharedPreferences
@@ -100,7 +97,7 @@ class PermissionRequestActivity : ThreemaActivity() {
             // steps the user needs to perform.
             if (!isGranted && getCurrentPermissionState().goToSettings) {
                 val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                intent.data = Uri.parse("package:" + BuildConfig.APPLICATION_ID)
+                intent.data = ("package:" + BuildConfig.APPLICATION_ID).toUri()
                 startActivity(intent)
             }
 
@@ -112,12 +109,6 @@ class PermissionRequestActivity : ThreemaActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            finishWithSuccess()
-            return
-        }
-
         setContentView(R.layout.activity_permission_request)
 
         preferences = PreferenceManager.getDefaultSharedPreferences(this)
@@ -474,5 +465,13 @@ class PermissionRequestActivity : ThreemaActivity() {
             permissionRequest.optional,
             permissionRequest.permissionIgnorePreference,
         )
+    }
+
+    companion object {
+        private const val INTENT_PERMISSION_REQUESTS = "permission_requests_extra"
+
+        fun createIntent(context: Context, requests: ArrayList<PermissionRequest>) = buildActivityIntent<PermissionRequestActivity>(context) {
+            putExtra(INTENT_PERMISSION_REQUESTS, requests)
+        }
     }
 }
