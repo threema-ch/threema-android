@@ -83,6 +83,7 @@
     <string name="voip_gc_waiting_for_participants">Warte uf anderi Teilnehmer</string>
     <string name="voip_gc_participant_avatar_description">Profilbild vom Teilnehmer</string>
     <string name="voip_gc_participant_mute_status_description">Stummschalt-Status vom Teilnehmer</string>
+    <string name="voip_gc_participant_screen_share_status_description">En Teilnehmer hät en Bildschirm freigeh</string>
     <string name="voip_gc_notification_new_call_public">En neue Gruppearuef isch gstarted worde</string>
     <string name="voip_gc_open_call">Ufmache</string>
     <string name="voip_gc_call_started">Gruppearuef isch gstarted worde</string>
@@ -92,6 +93,7 @@
     <string name="voip_gc_call_error">Gruppearuef isch wägeme Fehler beendet worde</string>
     <string name="voip_gc_call_start_error">Gruppearuef hät nöd chöne gstarted werde</string>
     <string name="voip_gc_call_already_ended">Gruppearuef isch scho beendet worde</string>
+    <string name="voip_gc_screen_sharing_not_supported">D’Bildschirmfreigab isch aktuell nur uf Desktop-Grät verfüegbar.</string>
     <string name="voip_gc_call_full_generic">Kei Teilnahm möglich: Die maximal Teilnehmerzahl isch erreicht.</string>
     <string name="voip_gc_call_full_n">Kei Teilnahm möglich: Di maximal Teilnehmerzahl (%1$d) isch erreicht.</string>
     <plurals name="n_participants_in_call">

@@ -559,7 +559,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="invalid_backup">无效的备份数据。无法恢复。</string>
     <string name="invalid_zip_restore_failed">恢复失败，这是无效的备份数据：%1$s</string>
     <string name="revocation_explain">您在这里输入的密码，可让您通过 https://myid.threema.ch/revoke 吊销您的ID，以防丢失或被盗</string>
-    <string name="no_unread_messages">没有未读消息或 PIN 锁已激活</string>
+    <!-- Empty state text shown on home screen widget when there are no unread messages -->
+    <string name="no_unread_messages">没有未读消息</string>
     <string name="send_media">发送媒体</string>
     <string name="rotate">旋转</string>
     <string name="remove">删除</string>
@@ -1625,7 +1626,7 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="add_shortcut_exists">此目标的快捷方式已经存在。</string>
     <string name="scan_qr_code">扫描二维码</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="scan_qr_code_explain">在您要链接的设备上扫描 %s 桌面测试版中显示的二维码。</string>
+    <string name="scan_qr_code_explain">在您要链接的设备上扫描 ${app_name_desktop} 桌面测试版中显示的二维码。</string>
     <string name="connecting">连接中…</string>
     <string name="trust_new_device">信任新设备</string>
     <string name="trust_new_device_explain">请选择与新设备上显示的相同图像，以确认您信任新设备。</string>
@@ -1789,27 +1790,27 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="work_intro_screen_onprem_download_private_button_label">立刻下载</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <string name="remote_secrets_blocked_by_admin">您的管理员已阻止访问此应用程序。\n\n请联系您的管理员以获取更多信息。</string>
-    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secrets_failed_to_fetch">无法获取 ${remote_secret} 令牌，请检查您的互联网连接并重试。</string>
-    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="fetching_remote_secret">获取 ${remote_secret} 令牌</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activated_notification_title">${remote_secret} 已启用</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
     <string name="remote_secret_activated_notification_content">此功能可在手机丢失或被盗时保障您的聊天内容安全。</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivated_notification_title">${remote_secret} 已停用</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
     <string name="remote_secret_deactivated_notification_content">如需更多信息，请联系您的管理员。</string>
     <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
     <string name="remote_secret_activated_learn_more">了解更多</string>
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating">正在启用 ${remote_secret}</string>
-    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating_failed">启用 ${remote_secret} 失败，请检查您的互联网连接并重试。</string>
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating">正在停用 ${remote_secret}</string>
-    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">停用 ${remote_secret} 失败，请检查您的互联网连接并重试。</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>

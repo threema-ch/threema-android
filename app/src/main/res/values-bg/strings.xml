@@ -545,6 +545,7 @@
     <string name="invalid_backup">Невалидно резервно копие. Възстановяването не може да се извърши.</string>
     <string name="invalid_zip_restore_failed">Възстановяването се провали. Невалидно резервно копие: %1$s</string>
     <string name="revocation_explain">Паролата, която въвеждате тук, Ви позволява да анулирате Вашия идентификатор на        https://myid.threema.ch/revoke в случай, че го изгубите или е бил откраднат</string>
+    <!-- Empty state text shown on home screen widget when there are no unread messages -->
     <string name="no_unread_messages">Няма непрочетени съобщения или има активно заключване с PIN-код</string>
     <string name="send_media">Изпратете мултимедия</string>
     <string name="rotate">Завъртете</string>
@@ -1707,7 +1708,7 @@
     <string name="emoji_reactions_popup_hint_text">Това съобщение има реакции с емотикони. Натиснете и задръжте емоджи балончетата, за да ги видите всичките.</string>
     <string name="accessibility_device_linking_pfs_warning_icon">Информация</string>
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
-    <string name="device_linking_pfs_warning_body">Когато свържете устройство, Perfect Forward Secrecy ще бъде деактивирана за всички контакти.\n\nТова е ограничение за настоящата бета версия. За да разберете по-подробно за ограниченията, консултирайте се тук {this FAQ entry}.</string>
+    <string name="device_linking_pfs_warning_body">Когато свържете устройство, Perfect Forward Secrecy ще бъде деактивирана за всички контакти.\n\nТова е ограничение за настоящата бета версия. За да разберете по-подробно за ограниченията, консултирайте се тук [this FAQ entry].</string>
     <string name="device_linking_pfs_warning_button_continue">Свържете ново устройство</string>
     <string name="device_linking_pfs_warning_button_cancel">Отменете</string>
     <!-- Title shown on a banner shown in the old Threema web sessions screen to point to the new multi device feature instead -->
@@ -1755,19 +1756,18 @@
     <string name="error_preset_onprem_url_mismatch_mdm">Предоставеният адрес на сървъра е невалиден. Моля, свържете се с Вашия администратор.</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">Предоставеният линк за активация е невалиден. Моля, свържете се с Вашия администратор.</string>
-    <!-- Title shown in "About" screen above item that indicates whether the DualLock (a.k.a. "Remote Secret") feature is currently activated. -->
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
-    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
-    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
     <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
-    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
-    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="other">%d контакти</item>

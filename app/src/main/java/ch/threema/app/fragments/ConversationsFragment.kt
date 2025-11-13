@@ -131,6 +131,7 @@ import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.LogUtil
 import ch.threema.app.utils.MimeUtil
 import ch.threema.app.utils.RuntimeUtil
+import ch.threema.app.utils.WidgetUtil
 import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.base.utils.LoggingUtil
@@ -476,6 +477,7 @@ class ConversationsFragment :
                         changedPositions = null,
                         runAfterSetData = Thread { this.firePrivateReceiverUpdate() },
                     )
+                    context?.let(WidgetUtil::updateWidgets)
                 }
                 true
             }
@@ -561,6 +563,7 @@ class ConversationsFragment :
                     changedPositions = null,
                     runAfterSetData = Thread { firePrivateReceiverUpdate() },
                 )
+                context?.let(WidgetUtil::updateWidgets)
             }
 
             ID_RETURN_FROM_SECURITY_SETTINGS -> if (ConfigUtils.hasProtection(preferenceService)) {

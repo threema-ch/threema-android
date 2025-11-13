@@ -104,7 +104,6 @@ class DependencyContainer : KoinComponent {
     val databaseService: DatabaseService by inject()
     val deviceService: DeviceService by inject()
     val dhSessionStore: DHSessionStoreInterface by inject()
-    val dhSessionStoreInterface: DHSessionStoreInterface by inject()
     val distributionListService: DistributionListService by inject()
     val emojiService: EmojiService by inject()
     val excludedSyncIdentitiesService: ExcludedSyncIdentitiesService by inject()

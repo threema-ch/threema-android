@@ -297,11 +297,13 @@ abstract class WatchConversationListItemsUseCase(
         return if (latestMessage.isOutbox) {
             ResourceIdString(R.string.me_myself_and_i)
         } else {
-            ResolvedString(
-                NameUtil.getShortName(
-                    contactService.getByIdentity(latestMessage.identity),
-                ),
-            )
+            NameUtil.getShortName(
+                contactService.getByIdentity(latestMessage.identity),
+            )?.let { shortName ->
+                ResolvedString(
+                    string = shortName,
+                )
+            }
         }
     }
 }

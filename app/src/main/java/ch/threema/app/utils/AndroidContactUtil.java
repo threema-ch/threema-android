@@ -38,7 +38,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.ContactsContract;
 import android.widget.Toast;
 
@@ -63,6 +62,7 @@ import java.util.TreeMap;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.debug.AndroidContactSyncLogger;
+import ch.threema.app.debug.LookupKeyAndContactId;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.UserService;
@@ -153,9 +153,8 @@ public class AndroidContactUtil {
      * @return a valid uri pointing to the android contact or null if permission was not granted, no android contact is linked or android contact could not be looked up
      */
     @Nullable
-    public Uri getAndroidContactUri(@NonNull ContactModel contactModel) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
-            ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+    public Uri getAndroidContactUri(@NonNull ContactModel contactModel, @NonNull Context context) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             return null;
         }
 
@@ -175,11 +174,9 @@ public class AndroidContactUtil {
      * If there's no avatar for this Android contact, any current avatar file will be deleted.
      * <p>
      * It is safe to call this method even if permission to read contacts is not given
-     *
-     * @param contactModel ContactModel
      */
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
-    public void updateAvatarByAndroidContact(@NonNull ContactModel contactModel) {
+    public void updateAvatarByAndroidContact(@NonNull ContactModel contactModel, @NonNull Context context) {
         if (fileService == null) {
             logger.info("FileService not available");
             return;
@@ -198,7 +195,7 @@ public class AndroidContactUtil {
         }
 
         // contactUri will be null if permission is not granted
-        Uri contactUri = getAndroidContactUri(contactModel);
+        Uri contactUri = getAndroidContactUri(contactModel, context);
         if (contactUri != null) {
             Bitmap bitmap = AvatarConverterUtil.convert(ThreemaApplication.getAppContext(), contactUri);
 
@@ -231,20 +228,20 @@ public class AndroidContactUtil {
     /**
      * Update the name of this contact according to the name of the Android contact
      *
-     * @param contactModel ContactModel
      * @param androidContactSyncLogger this logger can be provided to log duplicate contact names
      */
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     public void updateNameByAndroidContact(
         @NonNull ContactModel contactModel,
-        @Nullable AndroidContactSyncLogger androidContactSyncLogger
+        @Nullable AndroidContactSyncLogger androidContactSyncLogger,
+        @NonNull Context context
     ) throws ThreemaException {
         ContactModelData data = contactModel.getData();
         if (data == null) {
             logger.warn("Contact model data is null");
             return;
         }
-        Uri namedContactUri = getAndroidContactUri(contactModel);
+        Uri namedContactUri = getAndroidContactUri(contactModel, context);
         if (namedContactUri == null) {
             logger.info("Unable to get android contact uri for {} obfuscatedLookupKey = {}", contactModel.getIdentity(), getObfuscatedAndroidContactLookupKey(data));
             return;
@@ -259,8 +256,9 @@ public class AndroidContactUtil {
             throw new ThreemaException("Unable to get contact name");
         }
 
-        if (androidContactSyncLogger != null) {
-            androidContactSyncLogger.addSyncedNames(namedContactUri, contactName.firstName, contactName.lastName);
+        if (androidContactSyncLogger != null && data.androidContactLookupKey != null) {
+            LookupKeyAndContactId lookupKeyAndContactId = getLookupKeyAndContactId(data.androidContactLookupKey);
+            androidContactSyncLogger.addSyncedNames(lookupKeyAndContactId, contactName.firstName, contactName.lastName);
         }
 
         if (!data.firstName.equals(contactName.firstName) || !data.lastName.equals(contactName.lastName)) {
@@ -281,7 +279,7 @@ public class AndroidContactUtil {
      */
     @RequiresPermission(Manifest.permission.READ_CONTACTS)
     @Nullable
-    private ContactName getContactName(Uri contactUri) {
+    private ContactName getContactName(@NonNull Uri contactUri) {
         if (this.contentResolver == null) {
             logger.error("Cannot get contact name as content resolver is null");
             return null;
@@ -301,6 +299,8 @@ public class AndroidContactUtil {
                     logger.error("Cannot get contact name as contact lookup key is null");
                     return null;
                 }
+                logLookupKeyDifference(contactUri, lookupKey);
+
                 contactName = this.getContactNameFromLookupKey(lookupKey);
 
                 // fallback
@@ -748,8 +748,8 @@ public class AndroidContactUtil {
      * @param contactModel Threema contact
      * @return true if the contact is linked with a system contact (even if no app is available for an ACTION_EDIT intent in the system), false otherwise
      */
-    public boolean openContactEditor(Context context, ContactModel contactModel, int requestCode) {
-        Uri contactUri = AndroidContactUtil.getInstance().getAndroidContactUri(contactModel);
+    public boolean openContactEditor(@NonNull Context context, @NonNull ContactModel contactModel, int requestCode) {
+        Uri contactUri = AndroidContactUtil.getInstance().getAndroidContactUri(contactModel, context);
 
         if (contactUri != null) {
             Intent intent = new Intent(Intent.ACTION_EDIT);
@@ -785,16 +785,51 @@ public class AndroidContactUtil {
         if (androidContactLookupKey == null) {
             return null;
         }
+
+        LookupKeyAndContactId lookupKeyAndContactId = getLookupKeyAndContactId(androidContactLookupKey);
+        int obfuscatedLookupKey = lookupKeyAndContactId.getLookupKey().hashCode();
+        long contactId = lookupKeyAndContactId.getContactId();
+        // Concatenate the obfuscated lookup key with the raw contact id
+        return obfuscatedLookupKey + "/"  + contactId;
+    }
+
+    @NonNull
+    private static LookupKeyAndContactId getLookupKeyAndContactId(@NonNull String androidContactLookupKey) {
         // The lookup key and contact id are separated by a slash
         int splitIndex = androidContactLookupKey.lastIndexOf('/');
         if (splitIndex == -1) {
             logger.warn("Unexpected lookup key format as it does not contain '/'");
-            return "unexpected-" + androidContactLookupKey.hashCode();
+            return new LookupKeyAndContactId(androidContactLookupKey, -1L);
         }
-        // Obfuscate the lookup key as it may contain sensitive data
-        int obfuscatedLookupKey = androidContactLookupKey.substring(0, splitIndex).hashCode();
-        String contactId = androidContactLookupKey.substring(splitIndex);
-        // Concatenate the obfuscated lookup key with the raw contact id
-        return obfuscatedLookupKey + contactId;
+
+        String lookupKey = androidContactLookupKey.substring(0, splitIndex);
+        try {
+            long contactId = Long.parseLong(androidContactLookupKey.substring(splitIndex + 1));
+            return new LookupKeyAndContactId(lookupKey, contactId);
+        } catch (NumberFormatException e) {
+            logger.warn("Could not parse the contact id", e);
+            return new LookupKeyAndContactId(lookupKey, -2L);
+        }
+    }
+
+    private void logLookupKeyDifference(@NonNull Uri contactUri, @NonNull String lookupKey) {
+        String path = contactUri.getPath();
+        if (path == null) {
+            logger.warn("No path of contact uri");
+            return;
+        }
+
+        String lookupKeyAndContactIdFromUri = path.replace("/contacts/lookup/", "");
+        int lookupKeySeparationIndex = lookupKeyAndContactIdFromUri.lastIndexOf("/");
+        if (lookupKeySeparationIndex < 0) {
+            logger.warn("No / in lookup key and contact id from uri");
+            return;
+        }
+        String lookupKeyFromUri = lookupKeyAndContactIdFromUri.substring(0, lookupKeySeparationIndex);
+        if (lookupKey.equals(lookupKeyFromUri)) {
+            logger.info("Lookup key of uri matches the queried lookup key");
+        } else {
+            logger.warn("Queried lookup key is different ({} characters vs {} characters)", lookupKey.length(), lookupKeyFromUri.length());
+        }
     }
 }

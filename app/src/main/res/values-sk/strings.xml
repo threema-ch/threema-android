@@ -549,7 +549,8 @@ Naplánujte udalosti, vytvorte prieskum, alebo sa niečo spýtajte svojich priat
     <string name="invalid_zip_restore_failed">Obnovenie zlyhalo. Neplatný súbor zálohy: %1$s</string>
     <string name="revocation_explain">Heslo, ktoré tu zadáte, vám umožní odvolať vaše ID na stránke
 https://myid.threema.ch/revoke v prípade, že ho stratíte alebo vám bude odcudzené</string>
-    <string name="no_unread_messages">Žiadne neprečítané správy, alebo je aktivovaný zámok PIN</string>
+    <!-- Empty state text shown on home screen widget when there are no unread messages -->
+    <string name="no_unread_messages">Žiadne neprečítané správy</string>
     <string name="send_media">Odoslať média</string>
     <string name="rotate">Otočiť</string>
     <string name="remove">Odstrániť</string>
@@ -693,6 +694,7 @@ Už ich nebude možné obnoviť.</string>
     <string name="message_details_message_id_copied">ID správy skopírované do schránky</string>
     <string name="contact_details_id_copied">ID bolo skopírované do schránky</string>
     <string name="contact_details_nickname_copied">Prezývka bola skopírovaná do schránky</string>
+    <string name="generic_copied_to_clipboard_hint">Skopírované do schránky</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_use_id_as_nickname">Chcete použiť vaše ${app_name_short} ID ako prezývku?</string>
     <string name="new_wizard_phone_email_invalid">Telefónne číslo alebo emailová adresa, ktorú ste zadali, nie sú platné.\nOpravte to a pokračujte.</string>
@@ -1107,6 +1109,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="username_hint">Používateľské meno</string>
     <string name="server_hint">Server</string>
     <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
+    <string name="about_screen_remote_secrets_activated">Aktivované</string>
     <string name="lock_option_biometric">Biometrický</string>
     <string name="biometric_enter_authentication">Pre odomknutie vykonajte overenie</string>
     <string name="biometric_authentication_failed">Overenie zlyhalo</string>
@@ -1602,7 +1605,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="add_shortcut_exists">Odkaz pre tento cieľ už existuje.</string>
     <string name="scan_qr_code">Skenovať QR kód</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="scan_qr_code_explain">Naskenujte kód QR zobrazený v beta verzii aplikácie %s Desktop na zariadení, ktoré chcete prepojiť.</string>
+    <string name="scan_qr_code_explain">Naskenujte kód QR zobrazený v beta verzii aplikácie ${app_name_desktop} Desktop na zariadení, ktoré chcete prepojiť.</string>
     <string name="connecting">Pripája sa…</string>
     <string name="trust_new_device">Dôverovať novému zariadeniu</string>
     <string name="trust_new_device_explain">Vyberte rovnaké obrázky, aké sú zobrazené na novom zariadení, aby ste potvrdili, že mu dôverujete.</string>
@@ -1754,19 +1757,44 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="error_preset_onprem_url_mismatch_mdm">Zadaná URL adresa servera je neplatná. Obráťte sa na správcu.</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">Aktivačný odkaz je neplatný. Obráťte sa na svojho správcu.</string>
-    <!-- Title shown in "About" screen above item that indicates whether the DualLock (a.k.a. "Remote Secret") feature is currently activated. -->
+    <string name="work_intro_screen_work_title">VYSOKO BEZPEČNÁ KOMUNIKÁCIA PRE FIRMY</string>
+    <string name="work_intro_screen_work_subtitle">Threema Work je bezpečné komunikačné riešenie pre firmy – s end-to-end šifrovaním, v súlade s GDPR a vyvinuté vo Švajčiarsku.</string>
+    <string name="work_intro_screen_work_sign_in_button_label">Prihlásiť sa</string>
+    <string name="work_intro_screen_work_learn_more_hint">Ešte nepoužívate Threema Work?</string>
+    <string name="work_intro_screen_work_learn_more_button_label">Zistiť viac</string>
+    <string name="work_intro_screen_work_use_private_hint">Ak chcete používať Threemu na súkromné účely, odporúčame aplikáciu Threema Private.</string>
+    <string name="work_intro_screen_work_download_private_button_label">Stiahnuť teraz</string>
+    <string name="work_intro_screen_onprem_title">KOMUNIKÁCIA NA NAJVYŠŠEJ ÚROVNI BEZPEČNOSTI</string>
+    <string name="work_intro_screen_onprem_subtitle">Threema OnPrem je komunikačné riešenie s vlastným hosťovaním pre podniky, vládne agentúry a vojenské organizácie – pre úplnú suverenitu údajov, šifrovaný prenos údajov a vysoké požiadavky na prostredia citlivé na bezpečnosť.</string>
+    <string name="work_intro_screen_onprem_sign_in_button_label">Prihlásiť sa</string>
+    <string name="work_intro_screen_onprem_learn_more_hint">Ešte nepoužívate Threema OnPrem?</string>
+    <string name="work_intro_screen_onprem_learn_more_button_label">Zistiť viac</string>
+    <string name="work_intro_screen_onprem_use_private_hint">Ak chcete používať Threemu na súkromné účely, odporúčame aplikáciu Threema Private.</string>
+    <string name="work_intro_screen_onprem_download_private_button_label">Stiahnuť teraz</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
-    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
-    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <string name="remote_secrets_blocked_by_admin">Prístup k tejto aplikácii bol blokovaný správcom.\n\nPre viac informácií kontaktujte správcu.</string>
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secrets_failed_to_fetch">Token ${remote_secret} sa nepodarilo načítať. Skontrolujte pripojenie k internetu a skúste to znova.</string>
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="fetching_remote_secret">Načítanie tokenu ${remote_secret}</string>
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_activated_notification_title">${remote_secret} bol aktivovaný</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <string name="remote_secret_activated_notification_content">Táto funkcia chráni vaše konverzácie v prípade straty alebo krádeže telefónu.</string>
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_deactivated_notification_title">${remote_secret} bol deaktivovaný</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <string name="remote_secret_deactivated_notification_content">Ak potrebujete viac informácií, kontaktujte svojho správcu.</string>
     <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
-    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
-    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <string name="remote_secret_activated_learn_more">Zistiť viac</string>
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_activating">Aktivácia ${remote_secret}</string>
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_activating_failed">Aktivácia ${remote_secret} zlyhala. Skontrolujte pripojenie k internetu a skúste to znova.</string>
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_deactivating">Deaktivácia ${remote_secret}</string>
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_deactivating_failed">Deaktivácia ${remote_secret} zlyhala. Skontrolujte pripojenie k internetu a skúste to znova.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>

@@ -24,7 +24,6 @@ package ch.threema.app.services.license;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.domain.models.UserCredentials;
 import ch.threema.domain.protocol.api.APIConnector;
 
@@ -36,8 +35,9 @@ public class LicenseServiceUser extends LicenseServiceThreema<UserCredentials> {
 
     @Override
     public boolean hasCredentials() {
-        return !TestUtil.isEmptyOrNull(this.preferenceService.getLicenseUsername(),
-            this.preferenceService.getLicensePassword());
+        var username = preferenceService.getLicenseUsername();
+        var password = preferenceService.getLicensePassword();
+        return username != null && !username.isEmpty() && password != null && !password.isEmpty();
     }
 
     @Override
@@ -58,7 +58,7 @@ public class LicenseServiceUser extends LicenseServiceThreema<UserCredentials> {
         String username = this.preferenceService.getLicenseUsername();
         String password = this.preferenceService.getLicensePassword();
 
-        if (!TestUtil.isEmptyOrNull(username, password)) {
+        if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
             return new UserCredentials(username, password);
         }
         return null;

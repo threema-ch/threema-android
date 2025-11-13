@@ -34,7 +34,6 @@ import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -66,7 +65,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
     protected Activity activity;
     protected AlertDialog alertDialog;
     protected boolean isLinkify = false;
-    protected boolean isLengthCheck = true;
+    protected boolean requiresPasswordConfirmation = true;
     protected int minLength, maxLength;
     protected MaterialSwitch checkBox;
 
@@ -201,8 +200,14 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
         final TextInputLayout editText2Layout = dialogView.findViewById(R.id.password2layout);
         checkBox = dialogView.findViewById(R.id.check_box);
 
-        editText1.addTextChangedListener(new PasswordWatcher(editText1, editText2));
-        editText2.addTextChangedListener(new PasswordWatcher(editText1, editText2));
+        var passwordWatcher = new SimpleTextWatcher() {
+            @Override
+            public void afterTextChanged(@NonNull Editable editable) {
+                updateViews();
+            }
+        };
+        editText1.addTextChangedListener(passwordWatcher);
+        editText2.addTextChangedListener(passwordWatcher);
 
         if (maxLength > 0) {
             editText1.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
@@ -253,7 +258,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
             editText1.setInputType(inputTypePasswordHidden);
             editText2.setVisibility(View.GONE);
             editText2Layout.setVisibility(View.GONE);
-            isLengthCheck = false;
+            requiresPasswordConfirmation = false;
         } else {
             editText2Layout.setHint(getString(confirmHint));
             editText1Layout.setHelperTextEnabled(true);
@@ -312,38 +317,6 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
         callback.onNo(this.getTag());
     }
 
-    public class PasswordWatcher extends SimpleTextWatcher {
-        private final EditText password1;
-        private final EditText password2;
-
-        public PasswordWatcher(final EditText password1, final EditText password2) {
-            this.password1 = password1;
-            this.password2 = password2;
-        }
-
-        @Override
-        public void afterTextChanged(@NonNull Editable editable) {
-            String password1Text = password1.getText().toString();
-            String password2Text = password2.getText().toString();
-
-            if (isLengthCheck) {
-                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(getPasswordOK(password1Text, password2Text));
-            } else {
-                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(!password1Text.isEmpty());
-            }
-        }
-    }
-
-    private boolean getPasswordOK(String password1Text, String password2Text) {
-        boolean lengthOk = password1Text.length() >= minLength;
-        if (maxLength > 0) {
-            lengthOk = lengthOk && password1Text.length() <= maxLength;
-        }
-        boolean passwordsMatch = password1Text.equals(password2Text);
-
-        return (lengthOk && passwordsMatch);
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -356,25 +329,53 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
             }
         }
 
-        final TextInputEditText editText1 = alertDialog.findViewById(R.id.password1);
-
-        if (isLengthCheck) {
-            final TextInputEditText editText2 = alertDialog.findViewById(R.id.password2);
-
-            if (editText1 != null && editText2 != null) {
-                if (editText1.getText() != null && editText2.getText() != null) {
-                    alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(getPasswordOK(editText1.getText().toString(), editText2.getText().toString()));
-                }
-            }
-        } else {
-            if (editText1 != null && editText1.getText() != null) {
-                alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setEnabled(editText1.getText().length() > 0);
-            }
-        }
+        updateViews();
 
         ColorStateList colorStateList = DialogUtil.getButtonColorStateList(activity);
 
         alertDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(colorStateList);
         alertDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(colorStateList);
+    }
+
+    private void updateViews() {
+        var okButton = alertDialog.getButton(DialogInterface.BUTTON_POSITIVE);
+        final TextInputEditText editText1 = alertDialog.findViewById(R.id.password1);
+        final TextInputLayout editText1Layout = alertDialog.findViewById(R.id.password1layout);
+        if (editText1Layout == null || editText1 == null || editText1.getText() == null) {
+            return;
+        }
+        var password1 = editText1.getText().toString();
+
+        if (requiresPasswordConfirmation) {
+            final TextInputEditText editText2 = alertDialog.findViewById(R.id.password2);
+            final TextInputLayout editText2Layout = alertDialog.findViewById(R.id.password2layout);
+            if (editText2Layout == null || editText2 == null || editText2.getText() == null) {
+                return;
+            }
+            var password2 = editText2.getText().toString();
+
+            if (password1.length() < minLength) {
+                editText1Layout.setError(null);
+                editText2Layout.setError(null);
+                okButton.setEnabled(false);
+                return;
+            }
+            if (!password1.equals(password2)) {
+                editText1Layout.setError(null);
+                editText2Layout.setError(
+                    password2.length() >= password1.length()
+                        ? getString(R.string.passwords_dont_match)
+                        : null
+                );
+                okButton.setEnabled(false);
+                return;
+            }
+
+            editText1Layout.setError(null);
+            editText2Layout.setError(null);
+            okButton.setEnabled(true);
+        } else {
+            okButton.setEnabled(!password1.isEmpty());
+        }
     }
 }

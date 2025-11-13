@@ -131,6 +131,7 @@ public class FileServiceImpl implements FileService {
 
     private static final String DIALOG_TAG_SAVING_MEDIA = "savingToGallery";
 
+    @NonNull
     private final Context context;
     @NonNull
     private final AppDirectoryProvider appDirectoryProvider;
@@ -148,14 +149,14 @@ public class FileServiceImpl implements FileService {
     private final AvatarCacheService avatarCacheService;
 
     public FileServiceImpl(
-        @NonNull Context c,
+        @NonNull Context context,
         @NonNull AppDirectoryProvider appDirectoryProvider,
         @NonNull MasterKeyProvider masterKeyProvider,
         @NonNull PreferenceService preferenceService,
         @NonNull NotificationPreferenceService notificationPreferenceService,
         @NonNull AvatarCacheService avatarCacheService
     ) {
-        this.context = c;
+        this.context = context;
         this.appDirectoryProvider = appDirectoryProvider;
         this.preferenceService = preferenceService;
         this.masterKeyProvider = masterKeyProvider;
@@ -1085,7 +1086,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Nullable
-    public Bitmap getAndroidDefinedProfilePicture(@NonNull ContactModel contactModel) throws Exception {
+    public Bitmap getAndroidDefinedProfilePicture(@NonNull ContactModel contactModel) {
         ContactModelData contactModelData = contactModel.getData();
         if (contactModelData == null) {
             logger.error("Contact model data is null");
@@ -1098,7 +1099,7 @@ public class FileServiceImpl implements FileService {
             ServiceManager serviceManager = ThreemaApplication.getServiceManager();
             if (serviceManager != null) {
                 try {
-                    AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel);
+                    AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel, context);
                 } catch (SecurityException e) {
                     logger.error("Could not update avatar by android contact", e);
                 }

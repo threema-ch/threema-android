@@ -87,6 +87,7 @@ class MasterKeyImpl(
 
             return cipherOutputStream
         } finally {
+            // TODO(ANDR-4305): The stream should not be closed here. Check if this can be removed.
             if (cipherOutputStream == null) {
                 // close the output stream here as long as it's not attached to a CipherOutputStream
                 outputStream.close()

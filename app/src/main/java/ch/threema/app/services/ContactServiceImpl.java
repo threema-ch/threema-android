@@ -123,6 +123,7 @@ public class ContactServiceImpl implements ContactService {
 
     private static final int TYPING_RECEIVE_TIMEOUT = (int) DateUtils.SECOND_IN_MILLIS * 15;
 
+    @NonNull
     private final Context context;
     private final AvatarCacheService avatarCacheService;
     private final DatabaseContactStore contactStore;
@@ -180,7 +181,7 @@ public class ContactServiceImpl implements ContactService {
     };
 
     public ContactServiceImpl(
-        Context context,
+        @NonNull Context context,
         DatabaseContactStore contactStore,
         AvatarCacheService avatarCacheService,
         DatabaseService databaseService,
@@ -903,7 +904,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @WorkerThread
     public boolean updateAllContactNamesFromAndroidContacts() {
-        if (ContextCompat.checkSelfPermission(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
             return false;
         }
 
@@ -917,7 +918,7 @@ public class ContactServiceImpl implements ContactService {
             })
             .forEach(contactModel -> {
                 try {
-                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel, androidContactSyncLogger);
+                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel, androidContactSyncLogger, context);
                 } catch (ThreemaException e) {
                     logger.error("Unable to update contact name", e);
                 }

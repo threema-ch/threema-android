@@ -28,6 +28,9 @@ import ch.threema.data.models.GroupModel
 class SystemUpdateToVersion113(private val serviceManager: ServiceManager) : SystemUpdate {
 
     override fun run() {
+        if (!serviceManager.userService.hasIdentity()) {
+            return
+        }
         serviceManager.modelRepositories.groups.getAll()
             .filter(GroupModel::isCreator)
             .forEach(::scheduleGroupUpdate)

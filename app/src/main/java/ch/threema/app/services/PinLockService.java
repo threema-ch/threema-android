@@ -114,26 +114,26 @@ public class PinLockService implements LockAppService {
         return true;
     }
 
-    private void updateState(boolean locked) {
-        logger.info("update locked stated to: {} ", isLocked());
-        if (this.locked != locked) {
-
-            this.locked = locked;
-
-            synchronized (this.lockAppStateChangedItems) {
-                ArrayList<OnLockAppStateChanged> toRemove = new ArrayList<>();
-
-                for (OnLockAppStateChanged c : this.lockAppStateChangedItems) {
-                    if (c.changed(locked)) {
-                        toRemove.add(c);
-                    }
-                }
-                this.lockAppStateChangedItems.removeAll(toRemove);
-            }
-
-            // update widget
-            WidgetUtil.updateWidgets(context);
+    private void updateState(boolean isLocked) {
+        if (this.locked == isLocked) {
+            return;
         }
+        logger.info("updating locked stated from {} to {} ", this.locked, isLocked);
+        this.locked = isLocked;
+
+        synchronized (this.lockAppStateChangedItems) {
+            ArrayList<OnLockAppStateChanged> toRemove = new ArrayList<>();
+
+            for (OnLockAppStateChanged c : this.lockAppStateChangedItems) {
+                if (c.changed(isLocked)) {
+                    toRemove.add(c);
+                }
+            }
+            this.lockAppStateChangedItems.removeAll(toRemove);
+        }
+
+        // update widget
+        WidgetUtil.updateWidgets(context);
     }
 
     @Override

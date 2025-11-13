@@ -22,12 +22,11 @@
 package ch.threema.localcrypto
 
 import androidx.core.util.AtomicFile
+import ch.threema.base.writeAtomically
 import ch.threema.localcrypto.models.MasterKeyStorageData
 import java.io.DataInputStream
-import java.io.DataOutputStream
 import java.io.File
 import java.io.IOException
-import java.io.OutputStream
 
 /**
  * Handles reading from and writing to the version 2 master key file,
@@ -51,23 +50,8 @@ class Version2MasterKeyFileManager(
 
     @Throws(IOException::class)
     fun writeKeyFile(masterKeyStorageData: MasterKeyStorageData.Version2) {
-        writeKeyFile { outputStream ->
+        keyFile.writeAtomically { outputStream ->
             encoder.encodeMasterKeyStorageData(masterKeyStorageData).writeTo(outputStream)
         }
-    }
-
-    private fun writeKeyFile(performWrite: (OutputStream) -> Unit) {
-        val atomicKeyFile = AtomicFile(keyFile)
-        val fos = atomicKeyFile.startWrite()
-        try {
-            // Note: stream *must not* be closed explicitly (see AtomicFile documentation)
-            val dos = DataOutputStream(fos)
-            performWrite(dos)
-            dos.flush()
-        } catch (e: IOException) {
-            atomicKeyFile.failWrite(fos)
-            throw e
-        }
-        atomicKeyFile.finishWrite(fos)
     }
 }

@@ -21,13 +21,17 @@
 
 package ch.threema.localcrypto
 
+import ch.threema.localcrypto.MasterKeyTestData.MASTER_KEY
+import ch.threema.localcrypto.models.MasterKeyData
 import ch.threema.localcrypto.models.MasterKeyState
 import ch.threema.localcrypto.models.MasterKeyStorageData
+import ch.threema.localcrypto.models.Version1MasterKeyStorageData
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFails
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -67,7 +71,7 @@ class MasterKeyStorageManagerTest {
 
     @Test
     fun `reading from existing version 1 key file`() {
-        val keyStorageDataMock = mockk<MasterKeyStorageData>()
+        val keyStorageDataMock = mockk<MasterKeyStorageData.Version1>()
         val keyStateMock = mockk<MasterKeyState>()
         val keyStorageManager = MasterKeyStorageManager(
             version2KeyFileManager = mockk {
@@ -87,9 +91,11 @@ class MasterKeyStorageManagerTest {
     }
 
     @Test
-    fun `writing key`() {
+    fun `writing key when version 1 key does not exist`() {
         val version2KeyFileManagerMock = mockk<Version2MasterKeyFileManager>(relaxed = true)
-        val version1KeyFileManagerMock = mockk<Version1MasterKeyFileManager>(relaxed = true)
+        val version1KeyFileManagerMock = mockk<Version1MasterKeyFileManager>(relaxed = true) {
+            every { keyFileExists() } returns false
+        }
         val keyStateMock = mockk<MasterKeyState>()
         val storageDataMock = mockk<MasterKeyStorageData.Version2>()
         val keyStorageManager = MasterKeyStorageManager(
@@ -104,5 +110,77 @@ class MasterKeyStorageManagerTest {
 
         verify(exactly = 1) { version2KeyFileManagerMock.writeKeyFile(storageDataMock) }
         verify(exactly = 1) { version1KeyFileManagerMock.deleteFile() }
+    }
+
+    @Test
+    fun `writing key when version 1 key exists`() {
+        val version2KeyFileManagerMock = mockk<Version2MasterKeyFileManager>(relaxed = true)
+        val version1KeyFileManagerMock = mockk<Version1MasterKeyFileManager>(relaxed = true) {
+            every { keyFileExists() } returns true
+            every { readKeyFile() } returns MasterKeyStorageData.Version1(
+                data = Version1MasterKeyStorageData.Unprotected(
+                    masterKeyData = MasterKeyData(
+                        value = MASTER_KEY,
+                    ),
+                    verification = mockk(),
+                ),
+            )
+        }
+        val keyStateMock = mockk<MasterKeyState.Plain> {
+            every { masterKeyData } returns MasterKeyData(
+                value = MASTER_KEY.copyOf(),
+            )
+        }
+        val storageDataMock = mockk<MasterKeyStorageData.Version2>()
+        val keyStorageManager = MasterKeyStorageManager(
+            version2KeyFileManager = version2KeyFileManagerMock,
+            version1KeyFileManager = version1KeyFileManagerMock,
+            storageStateConverter = mockk {
+                every { toStorageData(keyStateMock as MasterKeyState) } returns storageDataMock
+            },
+        )
+
+        keyStorageManager.writeKey(keyStateMock)
+
+        verify(exactly = 1) { version2KeyFileManagerMock.writeKeyFile(storageDataMock) }
+        verify(exactly = 1) { version1KeyFileManagerMock.deleteFile() }
+    }
+
+    @Test
+    fun `writing key fails when version 1 key exists but has different value`() {
+        val version2KeyFileManagerMock = mockk<Version2MasterKeyFileManager>(relaxed = true)
+        val version1KeyFileManagerMock = mockk<Version1MasterKeyFileManager>(relaxed = true) {
+            every { keyFileExists() } returns true
+            every { readKeyFile() } returns MasterKeyStorageData.Version1(
+                data = Version1MasterKeyStorageData.Unprotected(
+                    masterKeyData = MasterKeyData(
+                        value = MASTER_KEY,
+                    ),
+                    verification = mockk(),
+                ),
+            )
+        }
+        val corruptedKey = MASTER_KEY.copyOf()
+        corruptedKey[0]++
+        val keyStateMock = mockk<MasterKeyState.Plain> {
+            every { masterKeyData } returns MasterKeyData(
+                value = corruptedKey,
+            )
+        }
+        val storageDataMock = mockk<MasterKeyStorageData.Version2>()
+        val keyStorageManager = MasterKeyStorageManager(
+            version2KeyFileManager = version2KeyFileManagerMock,
+            version1KeyFileManager = version1KeyFileManagerMock,
+            storageStateConverter = mockk {
+                every { toStorageData(keyStateMock as MasterKeyState) } returns storageDataMock
+            },
+        )
+
+        assertFails {
+            keyStorageManager.writeKey(keyStateMock)
+        }
+
+        verify(exactly = 0) { version2KeyFileManagerMock.writeKeyFile(storageDataMock) }
+        verify(exactly = 0) { version1KeyFileManagerMock.deleteFile() }
     }
 }

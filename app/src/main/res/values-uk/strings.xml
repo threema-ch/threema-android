@@ -565,6 +565,7 @@
     <string name="invalid_zip_restore_failed">Помилка відновлення. Недійсний файл резервної копії: %1$s</string>
     <string name="revocation_explain">Пароль, який ви вводите тут, дає змогу відкликати ваш ID на сторінці
 		https://myid.threema.ch/revoke у випадку його втрати або крадіжки</string>
+    <!-- Empty state text shown on home screen widget when there are no unread messages -->
     <string name="no_unread_messages">Немає непрочитаних повідомлень або активовано блокування PIN-кодом</string>
     <string name="send_media">Надіслати медіафайли</string>
     <string name="rotate">Повернути</string>
@@ -1803,27 +1804,27 @@
     <string name="work_intro_screen_onprem_download_private_button_label">Завантажити</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <string name="remote_secrets_blocked_by_admin">Доступ до цього додатка заблоковано адміністратором.\n\nЩоб дізнатися більше, зверніться до свого адміністратора.</string>
-    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secrets_failed_to_fetch">Не вдалося завантажити маркер ${remote_secret}. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
-    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="fetching_remote_secret">Завантаження маркера ${remote_secret}</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activated_notification_title">${remote_secret} активовано</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
     <string name="remote_secret_activated_notification_content">Ця функція захищає ваші чати, коли телефон загублено або вкрадено.</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivated_notification_title">${remote_secret} активовано</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
     <string name="remote_secret_deactivated_notification_content">Щоб дізнатися більше, зверніться до свого адміністратора.</string>
     <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
     <string name="remote_secret_activated_learn_more">Докладніше</string>
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating">Активація ${remote_secret}</string>
-    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating_failed">Помилка активації ${remote_secret}. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating">Деактивація ${remote_secret}</string>
-    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">Помилка деактивації ${remote_secret}. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>

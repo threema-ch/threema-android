@@ -547,7 +547,8 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="invalid_backup">Dados de backup inválidos. Não é possível restaurar.</string>
     <string name="invalid_zip_restore_failed">Falha ao restaurar. Arquivo de backup inválido: %1$s</string>
     <string name="revocation_explain">A senha que você digitar aqui permite que você revogue o seu ID em https://myid.threema.ch/revoke caso você perdê-lo ou ele for roubado</string>
-    <string name="no_unread_messages">Nenhuma mensagem não lida ou bloqueio de PIN ativado</string>
+    <!-- Empty state text shown on home screen widget when there are no unread messages -->
+    <string name="no_unread_messages">Nenhuma mensagem não lida</string>
     <string name="send_media">Enviar mídia</string>
     <string name="rotate">Girar</string>
     <string name="remove">Remover</string>
@@ -1603,7 +1604,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="add_shortcut_exists">Já existe um atalho para esta opção.</string>
     <string name="scan_qr_code">Digitalize o código QR</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="scan_qr_code_explain">Digitalize o código QR exibido na versão beta do Desktop %s no dispositivo que você deseja vincular.</string>
+    <string name="scan_qr_code_explain">Digitalize o código QR exibido na versão beta do Desktop ${app_name_desktop} no dispositivo que você deseja vincular.</string>
     <string name="connecting">Conectando…</string>
     <string name="trust_new_device">Confiar no novo dispositivo</string>
     <string name="trust_new_device_explain">Selecione as mesmas imagens mostradas no novo dispositivo para confirmar que você confia nele.</string>
@@ -1715,9 +1716,9 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <!-- Screen reader text on a cross icon button to close a hint banner -->
     <string name="accessibility_dismiss_hint">Ignorar dica</string>
     <string name="device_linking_error_generic_title">Falha no envio de dados</string>
-    <string name="device_linking_error_generic_body">Tente vincular o dispositivo novamente. Se o problema persistir, entre em contato com o suporte (“Menu principal > Ajuda”).</string>
+    <string name="device_linking_error_generic_body">Tente vincular o dispositivo novamente. Se o problema persistir, entre em contato com o suporte (“Menu principal &gt; Ajuda”).</string>
     <string name="device_linking_error_generic_network_title">Sem conexão com a Internet</string>
-    <string name="device_linking_error_generic_network_body">Tente vincular o dispositivo novamente. Se o problema persistir, entre em contato com o suporte (“Menu principal > Ajuda”).</string>
+    <string name="device_linking_error_generic_network_body">Tente vincular o dispositivo novamente. Se o problema persistir, entre em contato com o suporte (“Menu principal &gt; Ajuda”).</string>
     <string name="device_linking_error_unknown_qr_code_title">Código QR desconhecido</string>
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
@@ -1732,7 +1733,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="device_linking_error_emoji_mismatch_title">As imagens não coincidem?</string>
     <string name="device_linking_error_emoji_mismatch_body">Parece que há problemas com a conexão com o dispositivo. Reinicie o aplicativo no novo dispositivo e tente novamente.</string>
     <string name="device_linking_error_unexpected_title">Erro inesperado</string>
-    <string name="device_linking_error_unexpected_body">Tente vincular o dispositivo novamente. Se o problema persistir, entre em contato com o suporte (“Menu principal > Ajuda”).</string>
+    <string name="device_linking_error_unexpected_body">Tente vincular o dispositivo novamente. Se o problema persistir, entre em contato com o suporte (“Menu principal &gt; Ajuda”).</string>
     <string name="device_linking_error_invalid_contact_title">Contato inválido</string>
     <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <string name="device_linking_error_invalid_contact_body">O contato com a identidade %1$s está armazenado incorretamente neste dispositivo e impede a vinculação do novo dispositivo. Entre em contato com o suporte (“Menu principal &gt; Ajuda”).</string>
@@ -1768,27 +1769,27 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="work_intro_screen_onprem_download_private_button_label">Baixe agora</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <string name="remote_secrets_blocked_by_admin">O acesso a este aplicativo foi bloqueado pelo seu administrador.\n\nEntre em contato com seu administrador para obter mais informações.</string>
-    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secrets_failed_to_fetch">Não foi possível obter o token ${remote_secret}. Verifique sua conexão com a internet e tente novamente.</string>
-    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="fetching_remote_secret">Buscando token ${remote_secret}</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activated_notification_title">O ${remote_secret} foi ativado</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
     <string name="remote_secret_activated_notification_content">Este recurso mantém seus chats seguros em caso de perda ou roubo do seu telefone.</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivated_notification_title">O ${remote_secret} foi desativado</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
     <string name="remote_secret_deactivated_notification_content">Se precisar de mais informações, entre em contato com o seu administrador.</string>
     <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
     <string name="remote_secret_activated_learn_more">Saiba mais</string>
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating">Ativando o ${remote_secret}</string>
-    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating_failed">Falha ao ativar o ${remote_secret}. Verifique sua conexão com a internet e tente novamente.</string>
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating">Desativando o ${remote_secret}</string>
-    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">Falha ao desativar o ${remote_secret}. Verifique sua conexão com a internet e tente novamente.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contato</item>

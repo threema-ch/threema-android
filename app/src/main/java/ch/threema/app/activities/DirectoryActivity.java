@@ -41,6 +41,8 @@ import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.search.SearchBar;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
@@ -56,6 +58,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DefaultItemAnimator;
@@ -65,6 +68,7 @@ import ch.threema.app.adapters.DirectoryAdapter;
 import ch.threema.app.asynctasks.AddOrUpdateWorkContactBackgroundTask;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.MultiChoiceSelectorDialog;
+import ch.threema.app.ui.DirectoryDataSource;
 import ch.threema.app.ui.DirectoryDataSourceFactory;
 import ch.threema.app.ui.DirectoryHeaderItemDecoration;
 import ch.threema.app.ui.EmptyRecyclerView;
@@ -87,6 +91,9 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class DirectoryActivity extends ThreemaToolbarActivity implements ThreemaSearchView.OnQueryTextListener, MultiChoiceSelectorDialog.SelectorDialogClickListener {
     private static final Logger logger = LoggingUtil.getThreemaLogger("DirectoryActivity");
+
+    private static final String EXTRA_QUERY_TEXT = "queryText";
+    private static final String EXTRA_CHECKED_CATEGORIES = "checkedCategories";
 
     private static final int API_DIRECTORY_PAGE_SIZE = 3;
     private static final long QUERY_TIMEOUT = 1000; // ms
@@ -278,6 +285,23 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         });
 
         recyclerView.setAdapter(directoryAdapter);
+
+        if (savedInstanceState != null) {
+            queryText = savedInstanceState.getString(EXTRA_QUERY_TEXT);
+            String[] checkedCategoriesJson = savedInstanceState.getStringArray(EXTRA_CHECKED_CATEGORIES);
+            if (checkedCategoriesJson != null) {
+                checkedCategories.clear();
+                for (String checkedCategoryJson : checkedCategoriesJson) {
+                    try {
+                        checkedCategories.add(new WorkDirectoryCategory(new JSONObject(checkedCategoryJson)));
+                    } catch (JSONException e) {
+                        logger.error("Could not restore category", e);
+                    }
+                }
+                updateSelectedCategories();
+            }
+        }
+
         return true;
     }
 
@@ -341,6 +365,13 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
                             searchBar.findViewById(R.id.menu_category).getLocationInWindow(locationCategoryIcon);
                             searchBar.getTextView().getLocationInWindow(locationTextView);
                             searchView.setMaxWidth(locationCategoryIcon[0] - locationTextView[0]);
+
+                            // The query text might already be set in case the activity is recreated
+                            if (queryText != null && !queryText.isEmpty()) {
+                                searchView.setQuery(queryText, true);
+                                // This needs to be set for the text to be visible
+                                searchView.setIconified(false);
+                            }
                         } catch (Exception e) {
                             logger.debug("Unable to patch searchview");
                         }
@@ -507,8 +538,16 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
     private void updateDirectory() {
         updateEmptyViewState(EMPTY_STATE_SEARCHING);
-        directoryDataSourceFactory.postLiveData.getValue().setQueryCategories(checkedCategories);
-        directoryDataSourceFactory.postLiveData.getValue().invalidate();
+        MutableLiveData<DirectoryDataSource> postLiveData = directoryDataSourceFactory.postLiveData;
+        if (postLiveData == null) {
+            return;
+        }
+        DirectoryDataSource dataSource = postLiveData.getValue();
+        if (dataSource == null) {
+            return;
+        }
+        dataSource.setQueryCategories(checkedCategories);
+        dataSource.invalidate();
     }
 
     private void updateEmptyViewState(@EmptyState int newState) {
@@ -557,6 +596,20 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         directoryDataSourceFactory.postLiveData.getValue().setQueryText(queryText);
 
         updateSelectedCategories();
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        outState.putString(EXTRA_QUERY_TEXT, queryText);
+        String[] checkedCategoriesJsons = checkedCategories
+            .stream()
+            .map(WorkDirectoryCategory::toJSON)
+            .toArray(String[]::new);
+        if (checkedCategoriesJsons.length > 0) {
+            outState.putStringArray(EXTRA_CHECKED_CATEGORIES, checkedCategoriesJsons);
+        }
     }
 
     @Override

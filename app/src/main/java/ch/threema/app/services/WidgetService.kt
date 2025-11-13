@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2025 Threema GmbH
+ * Copyright (c) 2015-2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -19,23 +19,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.app.di.modules
+package ch.threema.app.services
 
-import androidx.preference.PreferenceManager
-import ch.threema.app.utils.AndroidContactUtil
-import ch.threema.app.utils.DispatcherProvider
-import ch.threema.app.utils.Toaster
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.module
+import android.content.Intent
+import android.widget.RemoteViewsService
+import ch.threema.app.adapters.WidgetViewsFactory
 
-/**
- * Provides access to utility classes.
- * Note that some of these may be functionally singletons, but that should be treated as an implementation detail only, i.e., they should
- * not hold global state.
- */
-val utilsModule = module {
-    factory { AndroidContactUtil.getInstance() }
-    factory { DispatcherProvider.default }
-    factoryOf(::Toaster)
-    factory { PreferenceManager.getDefaultSharedPreferences(get()) }
+class WidgetService : RemoteViewsService() {
+    override fun onGetViewFactory(intent: Intent?): RemoteViewsFactory =
+        WidgetViewsFactory(applicationContext)
 }

@@ -564,7 +564,8 @@
     <string name="invalid_zip_restore_failed">Restore failed. Invalid backup file: %1$s</string>
     <string name="revocation_explain">The password you enter here allows you to revoke your ID at
         https://myid.threema.ch/revoke in case you lose it or it gets stolen</string>
-    <string name="no_unread_messages">No unread messages or PIN lock activated</string>
+    <!-- Empty state text shown on home screen widget when there are no unread messages -->
+    <string name="no_unread_messages">No unread messages</string>
     <string name="send_media">Send media</string>
     <string name="rotate">Rotate</string>
     <string name="remove">Remove</string>

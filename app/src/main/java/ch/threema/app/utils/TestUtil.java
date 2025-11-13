@@ -59,9 +59,12 @@ public class TestUtil {
     }
 
     /**
-     * Returns true if the provided strings are null or empty. Returns false if at least one
-     * of them is not empty.
+     * Returns true if the provided strings are null or empty. Returns false if at least one of them is not empty.
+     * <p>
+     * Do not use this, as it is not intuitively clear whether it performs a logical AND or an OR on the inputs' nullability and emptiness,
+     * which can easily lead to subtle bugs.
      */
+    @Deprecated
     public static boolean isEmptyOrNull(@Nullable String... string) {
         if (string == null) {
             return true;

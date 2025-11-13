@@ -28,8 +28,10 @@ import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -37,7 +39,6 @@ import androidx.annotation.Nullable;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
@@ -48,7 +49,6 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.MessageUtil;
-import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -59,45 +59,12 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
 
     @NonNull
     private final Context context;
-    @NonNull
-    private final ConversationService conversationService;
-    @NonNull
-    private final GroupService groupService;
-    @NonNull
-    private final ContactService contactService;
-    @NonNull
-    private final DistributionListService distributionListService;
-    @NonNull
-    private final LockAppService lockAppService;
-    @NonNull
-    private final PreferenceService preferenceService;
-    @NonNull
-    private final NotificationPreferenceService notificationPreferenceService;
-    @NonNull
-    private final MessageService messageService;
-    @NonNull
-    private final ConversationCategoryService conversationCategoryService;
 
     private List<ConversationModel> conversations;
 
-    public WidgetViewsFactory(@NonNull Context context) throws ThreemaException {
+    public WidgetViewsFactory(@NonNull Context context) {
         this.context = context;
-
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager == null) {
-            throw new ThreemaException("Could not get the service manager");
-        }
-        this.conversationService = serviceManager.getConversationService();
-        this.contactService = serviceManager.getContactService();
-        this.groupService = serviceManager.getGroupService();
-        this.distributionListService = serviceManager.getDistributionListService();
-        this.messageService = serviceManager.getMessageService();
-        this.lockAppService = serviceManager.getLockAppService();
-        this.preferenceService = serviceManager.getPreferenceService();
-        this.notificationPreferenceService = serviceManager.getNotificationPreferenceService();
-        this.conversationCategoryService = serviceManager.getConversationCategoryService();
     }
-
 
     /**
      * Called when your factory is first constructed. The same factory may be shared across
@@ -121,19 +88,33 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
      */
     @Override
     public void onDataSetChanged() {
-        conversations = conversationService.getAll(false, new ConversationService.Filter() {
-            @Override
-            public boolean onlyUnread() {
-                return true;
+        logger.info("onDataSetChanged called");
+        // TODO(ANDR-4267): Improve dependency injection
+        try {
+            if (ThreemaApplication.getServiceManager() == null) {
+                logger.info("Service manager is unavailable, don't show anything");
+                conversations = Collections.emptyList();
+                return;
             }
+            ConversationService conversationService = KoinJavaComponent.get(ConversationService.class);
+            PreferenceService preferenceService = KoinJavaComponent.get(PreferenceService.class);
+            conversations = conversationService.getAll(false, new ConversationService.Filter() {
+                @Override
+                public boolean onlyUnread() {
+                    return true;
+                }
 
-            @Override
-            public boolean noHiddenChats() {
-                return preferenceService.isPrivateChatsHidden();
-            }
+                @Override
+                public boolean noHiddenChats() {
+                    return preferenceService.isPrivateChatsHidden();
+                }
 
-        });
-        logger.info("Conversations updated");
+            });
+            logger.info("Conversations updated");
+        } catch (Exception e) {
+            logger.error("Failed to get conversations for widget", e);
+            conversations = Collections.emptyList();
+        }
     }
 
     /**
@@ -150,12 +131,22 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
      */
     @Override
     public int getCount() {
-        if (!lockAppService.isLocked() &&
-            notificationPreferenceService.isShowMessagePreview() &&
-            conversations != null
-        ) {
-            return conversations.size();
-        } else {
+        // TODO(ANDR-4267): Improve dependency injection
+        try {
+            if (ThreemaApplication.getServiceManager() == null) {
+                logger.info("Service manager is unavailable, setting count to 0");
+                return 0;
+            }
+            LockAppService lockAppService = KoinJavaComponent.get(LockAppService.class);
+            NotificationPreferenceService notificationPreferenceService = KoinJavaComponent.get(NotificationPreferenceService.class);
+
+            if (!lockAppService.isLocked() && notificationPreferenceService.isShowMessagePreview() && conversations != null) {
+                return conversations.size();
+            } else {
+                return 0;
+            }
+        } catch (Exception e) {
+            logger.error("Failed to get count for widget", e);
             return 0;
         }
     }
@@ -170,6 +161,28 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
      */
     @Override
     public RemoteViews getViewAt(int position) {
+        // TODO(ANDR-4267): Improve dependency injection
+        LockAppService lockAppService;
+        NotificationPreferenceService notificationPreferenceService;
+        ContactService contactService;
+        GroupService groupService;
+        DistributionListService distributionListService;
+        ConversationCategoryService conversationCategoryService;
+        MessageService messageService;
+
+        try {
+            lockAppService = KoinJavaComponent.get(LockAppService.class);
+            notificationPreferenceService = KoinJavaComponent.get(NotificationPreferenceService.class);
+            contactService = KoinJavaComponent.get(ContactService.class);
+            groupService = KoinJavaComponent.get(GroupService.class);
+            distributionListService = KoinJavaComponent.get(DistributionListService.class);
+            conversationCategoryService = KoinJavaComponent.get(ConversationCategoryService.class);
+            messageService = KoinJavaComponent.get(MessageService.class);
+        } catch (Exception e) {
+            logger.error("Failed to get dependencies for updating view in widget", e);
+            return null;
+        }
+
         if (conversations != null && !conversations.isEmpty() && position < conversations.size()) {
             ConversationModel conversationModel = conversations.get(position);
 
@@ -180,7 +193,7 @@ public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory
                 Bundle extras = new Bundle();
                 String uniqueId = conversationModel.messageReceiver.getUniqueIdString();
 
-                if (!this.lockAppService.isLocked() && notificationPreferenceService.isShowMessagePreview()) {
+                if (!lockAppService.isLocked() && notificationPreferenceService.isShowMessagePreview()) {
                     sender = conversationModel.messageReceiver.getDisplayName();
 
                     if (conversationModel.isContactConversation()) {

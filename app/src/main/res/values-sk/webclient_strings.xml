@@ -39,5 +39,7 @@
     <string name="webclient_diagnostics_start">Spustiť</string>
     <string name="webclient_diagnostics_intro">Stisknutím tlačidla «Spustiť» zahájite test</string>
     <string name="webclient_diagnostics_done">Hotovo. Pokiaľ zaznamenáte problémy s nadviazaním spojenia na desktopovú aplikáciu alebo webového klienta, odošlite prosím tento protokol podpore Threema.</string>
+    <string name="webclient_scanned_md_linking_qr_code_title">Nesprávny QR kód</string>
     <!-- ${app_name_desktop} is a placeholder for the Desktop app's name, e.g. "Threema". ${md_link_device} is a placeholder for the name of a UI element. They must be left as they are and not translated. -->
+    <string name="webclient_scanned_md_linking_qr_code_message">QR kód, ktorý ste naskenovali, patrí k novej beta verzii aplikácie pre počítače. \n\nVráťte sa späť do „Hlavné menu &gt; ${app_name_desktop} 2.0 pre počítače (Beta)“ a vyberte „${md_link_device}“, aby ste sa pripojili k tejto aplikácii pre počítače.</string>
 </resources>

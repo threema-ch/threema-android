@@ -83,6 +83,7 @@
     <string name="voip_gc_waiting_for_participants">参加者待ち</string>
     <string name="voip_gc_participant_avatar_description">参加者のプロフィール画像</string>
     <string name="voip_gc_participant_mute_status_description">参加者のミュート状態</string>
+    <string name="voip_gc_participant_screen_share_status_description">画面を共有しています</string>
     <string name="voip_gc_notification_new_call_public">新しいグループ通話が開始されました</string>
     <string name="voip_gc_open_call">開く</string>
     <string name="voip_gc_call_started">グループ通話を開始しました</string>

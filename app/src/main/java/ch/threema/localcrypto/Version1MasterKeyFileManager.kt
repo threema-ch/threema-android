@@ -53,7 +53,7 @@ class Version1MasterKeyFileManager(
     fun keyFileExists() = keyFile.exists()
 
     @Throws(IOException::class)
-    fun readKeyFile(): MasterKeyStorageData {
+    fun readKeyFile(): MasterKeyStorageData.Version1 {
         val atomicKeyFile = AtomicFile(keyFile)
 
         DataInputStream(atomicKeyFile.openRead()).use { dis ->

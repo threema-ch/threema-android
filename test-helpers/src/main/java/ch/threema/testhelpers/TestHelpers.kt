@@ -24,6 +24,7 @@ package ch.threema.testhelpers
 import app.cash.turbine.TurbineTestContext
 import ch.threema.common.DispatcherProvider
 import ch.threema.common.models.CryptographicByteArray
+import java.io.File
 import kotlin.random.Random
 import kotlin.test.assertEquals
 import kotlinx.coroutines.CoroutineDispatcher
@@ -94,4 +95,11 @@ fun TestScope.unconfinedTestDispatcherProvider(): DispatcherProvider {
         override val io: CoroutineDispatcher
             get() = testDispatcher
     }
+}
+
+fun createTempDirectory(prefix: String = "test"): File {
+    val directory = File.createTempFile(prefix, "test")
+    directory.delete()
+    directory.mkdirs()
+    return directory
 }

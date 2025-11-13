@@ -323,29 +323,16 @@ public final class ShortcutUtil {
      * You may want to call deleteAllShareTargetShortcuts() before adding new dynamic shortcuts as they are limited
      */
     @WorkerThread
-    public static void publishRecentChatsAsShareTargets() {
-        if (ThreemaApplication.getServiceManager() == null) {
-            return;
-        }
-
-        PreferenceService preferenceService = ThreemaApplication.getServiceManager().getPreferenceService();
-        if (preferenceService == null || !preferenceService.isDirectShare()) {
+    public static void publishRecentChatsAsShareTargets(
+        @NonNull PreferenceService preferenceService,
+        @NonNull ConversationService conversationService
+    ) {
+        if (!preferenceService.isDirectShare()) {
             return;
         }
 
         if (ShortcutManagerCompat.isRateLimitingActive(getContext())) {
             logger.info("Shortcuts are currently rate limited. Exiting");
-            return;
-        }
-
-        ConversationService conversationService = null;
-        try {
-            conversationService = ThreemaApplication.getServiceManager().getConversationService();
-        } catch (ThreemaException e) {
-            return;
-        }
-
-        if (conversationService == null) {
             return;
         }
 

@@ -13,11 +13,10 @@
     <!-- The marketing name of the remote secret feature -->
     <string name="remote_secret" translatable="false">DualLock</string>
     <string name="remote_secret_learn_more_url" translatable="false">https://threema.com/faq/duallock</string>
-    <string name="threema_safe" translatable="false">Threema Safe</string>
+    <string name="threema_safe" translatable="false">${app_name_short} Safe</string>
     <string name="safe_enter_server_address_explain" translatable="false">server.example.com</string>
     <string name="lp_map_copyright" translatable="false">© Threema © MapTiler © OpenStreetMap contributors</string>
     <string name="lp_poi_copyright" translatable="false">Data © Threema © OpenStreetMap contributors</string>
-    <string name="capture_name" translatable="false">Threema QR Code Scanner</string>
     <string name="prefs_work_time_start_sum_time" translatable="false">%s</string>
     <string name="prefs_work_time_end_sum_time" translatable="false">%s</string>
     <string name="audio_focus_loss" translatable="false">Audio focus loss</string>

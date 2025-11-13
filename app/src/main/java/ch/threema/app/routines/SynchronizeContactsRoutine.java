@@ -332,8 +332,8 @@ public class SynchronizeContactsRoutine implements Runnable {
                 try {
                     boolean createNewRawContact;
 
-                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contact, androidContactSyncLogger); // throws an exception if no name can be determined
-                    AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact);
+                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contact, androidContactSyncLogger, context); // throws an exception if no name can be determined
+                    AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact, context);
 
                     contact.setAcquaintanceLevelFromLocal(AcquaintanceLevel.DIRECT);
                     if (data.verificationLevel == VerificationLevel.UNVERIFIED) {

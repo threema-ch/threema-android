@@ -25,8 +25,10 @@ import ch.threema.app.di.DependencyContainer
 import ch.threema.app.di.repository
 import ch.threema.app.di.service
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.services.ExcludedSyncIdentitiesService
 import ch.threema.app.services.ServerAddressProviderService
 import ch.threema.app.services.ServiceManagerProvider
+import ch.threema.app.services.WallpaperService
 import ch.threema.app.webclient.manager.WebClientServiceManager
 import ch.threema.localcrypto.MasterKeyManager
 import org.koin.core.module.dsl.factoryOf
@@ -58,6 +60,7 @@ val sessionScopedModule = module {
     service { distributionListService }
     service { emojiService }
     service { encryptedPreferenceStore }
+    service<ExcludedSyncIdentitiesService> { excludedSyncIdentitiesService }
     service { fileService }
     service { groupCallManager }
     service { groupCallManager }
@@ -86,6 +89,7 @@ val sessionScopedModule = module {
     service { threemaSafeService }
     service { userService }
     service { voipStateService }
+    service<WallpaperService> { wallpaperService }
     service { webClientServiceManager }
 
     repository { contacts }

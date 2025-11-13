@@ -37,12 +37,14 @@ import androidx.work.WorkerParameters
 import ch.threema.app.BuildConfig
 import ch.threema.app.backuprestore.csv.BackupService
 import ch.threema.app.di.awaitServiceManagerWithTimeout
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.services.ConversationService
 import ch.threema.app.utils.ShortcutUtil
-import ch.threema.app.utils.WorkManagerUtil
 import ch.threema.base.utils.LoggingUtil
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = LoggingUtil.getThreemaLogger("ShareTargetUpdateWorker")
 
@@ -50,6 +52,10 @@ class ShareTargetUpdateWorker(
     context: Context,
     workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams), KoinComponent {
+
+    private val preferenceService: PreferenceService by inject()
+    private val conversationService: ConversationService by inject()
+
     override suspend fun doWork(): Result {
         logger.info("Updating share target shortcuts")
 
@@ -57,7 +63,7 @@ class ShareTargetUpdateWorker(
             ?: return Result.failure()
 
         if (serviceManager.userService.hasIdentity() && !BackupService.isRunning()) {
-            ShortcutUtil.publishRecentChatsAsShareTargets()
+            ShortcutUtil.publishRecentChatsAsShareTargets(preferenceService, conversationService)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -85,24 +91,17 @@ class ShareTargetUpdateWorker(
             try {
                 val workManager = WorkManager.getInstance(context)
 
-                if (WorkManagerUtil.shouldScheduleNewWorkManagerInstance(workManager, WORKER_SHARE_TARGET_UPDATE, schedulePeriod)) {
-                    logger.debug("Create new worker")
+                // schedule the start of the service according to schedule period
+                val constraints = Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
 
-                    // schedule the start of the service according to schedule period
-                    val constraints = Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
+                val workRequest = PeriodicWorkRequest.Builder(ShareTargetUpdateWorker::class.java, schedulePeriod, TimeUnit.MILLISECONDS)
+                    .setConstraints(constraints)
+                    .setInitialDelay(20, TimeUnit.SECONDS) // give the app some time to update conversations first when the app is started
+                    .build()
 
-                    val workRequest = PeriodicWorkRequest.Builder(ShareTargetUpdateWorker::class.java, schedulePeriod, TimeUnit.MILLISECONDS)
-                        .setConstraints(constraints)
-                        .addTag(schedulePeriod.toString())
-                        .setInitialDelay(3, TimeUnit.MINUTES)
-                        .build()
-
-                    workManager.enqueueUniquePeriodicWork(WORKER_SHARE_TARGET_UPDATE, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, workRequest)
-                } else {
-                    logger.debug("Reusing existing worker")
-                }
+                workManager.enqueueUniquePeriodicWork(WORKER_SHARE_TARGET_UPDATE, ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, workRequest)
             } catch (e: IllegalStateException) {
                 logger.error("Unable to schedule share target update work", e)
                 return false

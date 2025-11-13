@@ -61,6 +61,7 @@
     <string name="prefs_vibrate">バイブレーション</string>
     <string name="prefs_sum_vibrate">メッセージを受信するとバイブレーションを鳴らします</string>
     <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
+    <string name="prefs_notification_light">通知ライト</string>
     <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_light">白</string>
     <string name="prefs_title_wallpaper">壁紙を選ぶ</string>
@@ -349,6 +350,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="creating_group">グループを作成中です</string>
     <string name="updating_group">グループを更新中です</string>
     <string name="leaving_group">グループを退会</string>
+    <string name="removing_group">グループを削除</string>
     <string name="status_create_group">グループが作成されました</string>
     <string name="status_rename_group">グループ名が «%1$s» に変更されました</string>
     <string name="status_group_new_photo">グループ画像が更新されました。</string>
@@ -500,6 +502,7 @@ http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id
     <string name="ballot_wizard0_explain">${app_name_short}で投票を行いましょう。イベントのスケジュール、アンケートの作成、友達に聞きたいことなど用途は様々です。</string>
     <string name="ballot_add_choices">回答を追加</string>
     <string name="blocked_cannot_send">連絡先にブロックされているため、メッセージを送信できません</string>
+    <string name="invalid_some_cannot_send">何名かの受信者の選択ができませんでした</string>
     <string name="really_block_contact">これからこの連絡先から送られてくるメッセージは破棄されます。続行しますか？</string>
     <string name="ballot_result_final">最終結果</string>
     <string name="invalid_cannot_send">連絡先が非アクティブのため、メッセージを送信できません</string>
@@ -540,6 +543,7 @@ http://www.7-zip.org または https://itunes.apple.com/us/app/the-unarchiver/id
     <string name="invalid_zip_restore_failed">復元は失敗しました。無効なバックアップファイル: %1$s</string>
     <string name="revocation_explain">ID を紛失したり、盗難された場合に、ここに入力したパスワードを
 https://myid.threema.ch/revoke に入力することで ID を削除することができます。</string>
+    <!-- Empty state text shown on home screen widget when there are no unread messages -->
     <string name="no_unread_messages">未読のメッセージが無いか、PINロックがかかっています</string>
     <string name="send_media">メディアを送信</string>
     <string name="rotate">回転</string>
@@ -552,6 +556,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="file_placeholder">ファイル</string>
     <string name="internal_storage">内部ストレージ</string>
     <string name="no_activity_for_mime_type">このファイルを開くためのアプリが見つかりませんでした</string>
+    <string name="no_activity_for_intent">アプリが見つかりません</string>
     <string name="open_from">で開く</string>
     <string name="file_one_contact_not_supported">%1$sファイルを受信できません</string>
     <string name="file_x_contact_not_supported">警告: %1$d 連絡先がファイルを受信できません。</string>
@@ -681,6 +686,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="message_details_message_id_copied">メッセージIDがクリップボードにコピーされました</string>
     <string name="contact_details_id_copied">IDをクリップボードにコピーしました</string>
     <string name="contact_details_nickname_copied">ユーザー名をクリップボードにコピーしました</string>
+    <string name="generic_copied_to_clipboard_hint">クリップボードにコピーしました</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_use_id_as_nickname">あなたの${app_name_short} IDをユーザー名として表示させますか？</string>
     <string name="new_wizard_phone_email_invalid">入力された電話番号またはメールアドレスのどちらかが有効ではありません。進む前に修正してください。</string>
@@ -1075,6 +1081,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="username_hint">ユーザー名</string>
     <string name="server_hint">サーバー</string>
     <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
+    <string name="about_screen_remote_secrets_activated">アーカイブ済</string>
     <string name="lock_option_biometric">生体認証</string>
     <string name="biometric_enter_authentication">ロックを解除するために認証してください</string>
     <string name="biometric_authentication_failed">認証に失敗しました</string>
@@ -1566,7 +1573,9 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="add_shortcut_exists">この対象のためのショートカットは既に存在します。</string>
     <string name="scan_qr_code">QRコードをスキャンする</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="connecting">接続中…</string>
     <string name="trust_new_device">新しい端末を信頼する</string>
+    <string name="no_match_question">マッチしませんか？</string>
     <string name="sending_data">データを送信中…</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="resend_message_dialog_title">グループメッセージを再送信しますか？</string>
@@ -1615,19 +1624,18 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
-    <!-- Title shown in "About" screen above item that indicates whether the DualLock (a.k.a. "Remote Secret") feature is currently activated. -->
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
-    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
-    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
     <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
-    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
-    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <plurals name="contacts_counter_label">
         <item quantity="other">%d 連絡先</item>
     </plurals>

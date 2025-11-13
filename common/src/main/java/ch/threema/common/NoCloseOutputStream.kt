@@ -19,23 +19,16 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.app.di.modules
+package ch.threema.common
 
-import androidx.preference.PreferenceManager
-import ch.threema.app.utils.AndroidContactUtil
-import ch.threema.app.utils.DispatcherProvider
-import ch.threema.app.utils.Toaster
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.module
+import java.io.FilterOutputStream
+import java.io.OutputStream
 
 /**
- * Provides access to utility classes.
- * Note that some of these may be functionally singletons, but that should be treated as an implementation detail only, i.e., they should
- * not hold global state.
+ * Can be used to wrap around another [outputStream] in cases where we need to prevent the stream from being closed.
  */
-val utilsModule = module {
-    factory { AndroidContactUtil.getInstance() }
-    factory { DispatcherProvider.default }
-    factoryOf(::Toaster)
-    factory { PreferenceManager.getDefaultSharedPreferences(get()) }
+class NoCloseOutputStream(outputStream: OutputStream) : FilterOutputStream(outputStream) {
+    override fun close() {
+        // do nothing here
+    }
 }

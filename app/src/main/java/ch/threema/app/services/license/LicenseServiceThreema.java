@@ -27,7 +27,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.models.LicenseCredentials;
 import ch.threema.domain.onprem.UnauthorizedFetchException;
@@ -49,13 +48,6 @@ abstract public class LicenseServiceThreema<T extends LicenseCredentials> implem
         this.preferenceService = preferenceService;
         this.deviceId = deviceId;
         this.isLicensed = preferenceService.getLicensedStatus();
-    }
-
-    @Override
-    public boolean hasCredentials() {
-        return
-            !TestUtil.isEmptyOrNull(this.preferenceService.getSerialNumber())
-                || !TestUtil.isEmptyOrNull(this.preferenceService.getLicenseUsername(), this.preferenceService.getLicensePassword());
     }
 
     @Override

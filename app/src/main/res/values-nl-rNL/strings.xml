@@ -549,7 +549,8 @@ Voer een vraag in voor uw poll.</string>
     <string name="invalid_zip_restore_failed">Herstellen is mislukt. Ongeldig back-upbestand: %1$s</string>
     <string name="revocation_explain">Met het wachtwoord dat u hier invoert, kunt u uw ID intrekken via
 		https://myid.threema.ch/revoke als u het ooit kwijtraakt of wordt gestolen</string>
-    <string name="no_unread_messages">Geen ongelezen berichten of PIN-slot geactiveerd</string>
+    <!-- Empty state text shown on home screen widget when there are no unread messages -->
+    <string name="no_unread_messages">Geen ongelezen berichten</string>
     <string name="send_media">Media versturen</string>
     <string name="rotate">Draaien</string>
     <string name="remove">Verwijderen</string>
@@ -1602,7 +1603,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="add_shortcut_exists">Er bestaat al een snelkoppeling voor dit doel.</string>
     <string name="scan_qr_code">Scan QR-code</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="scan_qr_code_explain">Scan de QR-code die wordt weergegeven in de bètaversie van %s Desktop op het apparaat dat je wilt koppelen.</string>
+    <string name="scan_qr_code_explain">Scan de QR-code die wordt weergegeven in de bètaversie van ${app_name_desktop} Desktop op het apparaat dat je wilt koppelen.</string>
     <string name="connecting">Verbinden…</string>
     <string name="trust_new_device">Nieuw apparaat vertrouwen</string>
     <string name="trust_new_device_explain">Selecteer dezelfde afbeeldingen als op het nieuwe apparaat om te bevestigen dat je het vertrouwt.</string>
@@ -1767,27 +1768,27 @@ Voer een vraag in voor uw poll.</string>
     <string name="work_intro_screen_onprem_download_private_button_label">Nu downloaden</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <string name="remote_secrets_blocked_by_admin">De toegang tot deze app is geblokkeerd door uw beheerder.\n\nNeem contact op met uw beheerder voor meer informatie.</string>
-    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secrets_failed_to_fetch">Het ${remote_secret}-token kon niet worden opgehaald. Controleer uw internetverbinding en probeer het opnieuw.</string>
-    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="fetching_remote_secret">${remote_secret}-token wordt opgehaald</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activated_notification_title">${remote_secret} is geactiveerd</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
     <string name="remote_secret_activated_notification_content">Deze functie beschermt uw chats in het geval van een gestolen of verloren telefoon.</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivated_notification_title">${remote_secret} is gedeactiveerd</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
     <string name="remote_secret_deactivated_notification_content">Neem contact op met uw beheerder als u meer informatie nodig hebt.</string>
     <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
     <string name="remote_secret_activated_learn_more">Meer informatie</string>
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating">${remote_secret} wordt geactiveerd</string>
-    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating_failed">Het activeren van ${remote_secret} is niet gelukt. Controleer uw internetverbinding en probeer het opnieuw.</string>
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating">${remote_secret} wordt gedeactiveerd</string>
-    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">Het deactiveren van ${remote_secret} is niet gelukt. Controleer uw internetverbinding en probeer het opnieuw.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contactpersoon</item>

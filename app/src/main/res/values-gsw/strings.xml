@@ -544,7 +544,8 @@
     <string name="invalid_backup">D’Backup-Date sind ungültig. Wiederherstelle nöd möglich.</string>
     <string name="invalid_zip_restore_failed">Wiederherstelle fehlgschlage. Ungültigi Backup-Datei: %1$s</string>
     <string name="revocation_explain">S’Passwort, wo Sie da iigebed, erlaubt Ihne, Ihri ID unter https://myid.threema.ch/revoke z’widerrüefe, falls Sie sie verlore händ oder sie gstohle worde isch.</string>
-    <string name="no_unread_messages">Kei ungläseni Nachrichte oder PIN-Sperri aktiv</string>
+    <!-- Empty state text shown on home screen widget when there are no unread messages -->
+    <string name="no_unread_messages">Kei ungläseni Nachrichte</string>
     <string name="send_media">Medie schicke</string>
     <string name="rotate">Drüle</string>
     <string name="remove">Entferne</string>
@@ -687,6 +688,7 @@
     <string name="message_details_message_id_copied">Nachrichte-ID id Zwüscheablag kopiert</string>
     <string name="contact_details_id_copied">ID isch id Zwüscheablag kopiert worde.</string>
     <string name="contact_details_nickname_copied">Nickname isch id Zwüscheablag kopiert worde.</string>
+    <string name="generic_copied_to_clipboard_hint">Id Zwüscheablag kopiert</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_use_id_as_nickname">Wänd Sie Ihri ${app_name_short}-ID als Nickname bruuche?</string>
     <string name="new_wizard_phone_email_invalid">D’Handynummere oder E-Mail-Adrässe, wo Sie ageh händ, isch ungültig. Bitte korrigiered oder lösched Sie die markierte Agabe, bevor Sie wiitermached.</string>
@@ -1100,6 +1102,7 @@
     <string name="username_hint">Username</string>
     <string name="server_hint">Server</string>
     <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
+    <string name="about_screen_remote_secrets_activated">Aktiviert</string>
     <string name="lock_option_biometric">Biometrisch</string>
     <string name="biometric_enter_authentication">Zum Entsperre bitte authentisiere</string>
     <string name="biometric_authentication_failed">D’Authentisierig isch fehlgschlage</string>
@@ -1743,19 +1746,44 @@
     <string name="error_preset_onprem_url_mismatch_mdm">D’Server-URL isch ungültig. Bitte kontaktiered Sie Ihre Administrator.</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">De Aktivierigslink isch ungültig. Bitte kontaktiered Sie Ihre Administrator.</string>
-    <!-- Title shown in "About" screen above item that indicates whether the DualLock (a.k.a. "Remote Secret") feature is currently activated. -->
+    <string name="work_intro_screen_work_title">HOCHSICHERI KOMMUNIKATION FÜR UNDERNEHME</string>
+    <string name="work_intro_screen_work_subtitle">Threema Work isch di sicher Kommunikationslösig für Undernehme – Ändi-zu-Ändi-verschlüsslet, DSGVO-konform und ide Schwiiz entwicklet.</string>
+    <string name="work_intro_screen_work_sign_in_button_label">Jetzt amälde</string>
+    <string name="work_intro_screen_work_learn_more_hint">Nonig bi Threema Work?</string>
+    <string name="work_intro_screen_work_learn_more_button_label">Meh erfahre</string>
+    <string name="work_intro_screen_work_use_private_hint">Wenn Sie Threema privat bruuche wennd, empfehled mir d’Threema Private-App.</string>
+    <string name="work_intro_screen_work_download_private_button_label">Jetzt abelade</string>
+    <string name="work_intro_screen_onprem_title">KOMMUNIKATION UF HÖCHSTEM SICHERHEITSNIVEAU</string>
+    <string name="work_intro_screen_onprem_subtitle">Threema OnPrem isch di sälberghostet Kommunikationslösig für Undernehme, Behörde und militärischi Irichtige – für vollständigi Datesouveränität, verschlüssleti Dateüberträgig und di höche Aaforderige vo sicherheitsrelevante Bereich.</string>
+    <string name="work_intro_screen_onprem_sign_in_button_label">Jetzt amälde</string>
+    <string name="work_intro_screen_onprem_learn_more_hint">Nonig bi Threema OnPrem?</string>
+    <string name="work_intro_screen_onprem_learn_more_button_label">Meh erfahre</string>
+    <string name="work_intro_screen_onprem_use_private_hint">Wenn Sie Threema privat bruuche wennd, empfehled mir d’Threema Private-App.</string>
+    <string name="work_intro_screen_onprem_download_private_button_label">Jetzt abelade</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
-    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. -->
-    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. -->
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated -->
+    <string name="remote_secrets_blocked_by_admin">De Zuegriff uf die App isch vo Ihrem Administrator gsperrt worde.\n\nBitte wändet Sie sich a Ihre Administrator.</string>
+    <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secrets_failed_to_fetch">S’${remote_secret}-Token hät nöd chöne abgruefe werde. Bitte prüefed Sie Ihri Internetverbindig und versueched Sie’s nomal.</string>
+    <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="fetching_remote_secret">${remote_secret}-Token wird abgruefe</string>
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_activated_notification_title">${remote_secret} isch aktiviert worde</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <string name="remote_secret_activated_notification_content">Die Funktion schützt Ihri Chats, falls Ihres Handy verlore gaht oder gstohle wird.</string>
+    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_deactivated_notification_title">${remote_secret} isch deaktiviert worde</string>
     <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
+    <string name="remote_secret_deactivated_notification_content">Für meh Infos wändet Sie sich bitte a Ihre Administrator.</string>
     <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated -->
-    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed -->
-    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated -->
-    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed -->
+    <string name="remote_secret_activated_learn_more">Meh erfahre</string>
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_activating">${remote_secret} wird aktiviert</string>
+    <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_activating_failed">${remote_secret} hät nöd chöne aktiviert werde. Bitte prüefed Sie Ihri Internetverbindig und versueched Sie’s nomal.</string>
+    <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_deactivating">${remote_secret} wird deaktiviert</string>
+    <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_deactivating_failed">${remote_secret} hät nöd chöne deaktiviert werde. Bitte prüefed Sie Ihri Internetverbindig und versueched Sie’s nomal.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontäkt</item>

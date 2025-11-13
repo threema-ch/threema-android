@@ -1171,6 +1171,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
             AbstractMessageModel nextMessage = values.get(index + 1);
             if (
                 nextMessage != null &&
+                    nextMessage.getId() != messageModel.getId() &&
                     nextMessage.isDownloadedVoiceMessage() &&
                     messageModel.isOutbox() == nextMessage.isOutbox() &&
                     messageModel.isAvailable()

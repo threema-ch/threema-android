@@ -123,6 +123,7 @@ import ch.threema.data.models.GroupIdentity;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
+import kotlin.Lazy;
 
 import static ch.threema.app.utils.QRScannerUtil.REQUEST_CODE_QR_SCANNER;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -149,6 +150,9 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
+    @NonNull
+    private final Lazy<AndroidContactUtil> androidContactUtil = KoinJavaComponent.inject(AndroidContactUtil.class);
 
     private final @NonNull LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
 
@@ -634,7 +638,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
     private void openContactEditor() {
         if (contactModel != null) {
-            if (!AndroidContactUtil.getInstance().openContactEditor(this, contactModel, REQUEST_CODE_CONTACT_EDITOR)) {
+            if (!androidContactUtil.getValue().openContactEditor(this, contactModel, REQUEST_CODE_CONTACT_EDITOR)) {
                 editName();
             }
         }
@@ -675,7 +679,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                     dependencies.getWallpaperService(),
                     dependencies.getFileService(),
                     dependencies.getExcludedSyncIdentitiesService(),
-                    dependencies.getDhSessionStoreInterface(),
+                    dependencies.getDhSessionStore(),
                     dependencies.getNotificationService(),
                     dependencies.getDatabaseService()
                 ),
@@ -919,8 +923,8 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                 break;
             case REQUEST_CODE_CONTACT_EDITOR:
                 try {
-                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel, null);
-                    AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel);
+                    androidContactUtil.getValue().updateNameByAndroidContact(contactModel, null, this);
+                    androidContactUtil.getValue().updateAvatarByAndroidContact(contactModel, this);
                     this.avatarEditView.setContactIdentity(contactModel.getIdentity());
                 } catch (ThreemaException | SecurityException e) {
                     logger.info("Unable to update contact name or avatar after returning from ContactEditor");

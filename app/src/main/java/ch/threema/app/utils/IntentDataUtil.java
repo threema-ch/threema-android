@@ -390,6 +390,11 @@ public class IntentDataUtil {
             return contactService.createReceiver(contactService.getByIdentity(cIdentity));
         } else if (extras.containsKey(AppConstants.INTENT_DATA_GROUP_DATABASE_ID)) {
             int groupId = (int) extras.getLong(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0L);
+
+            // TODO(ANDR-4303): This fallback is currently needed to handle intents coming from pinned shortcuts created before 6.2.0
+            if (groupId == 0) {
+                groupId = extras.getInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
+            }
             final @Nullable GroupModel groupModel = groupService.getById(groupId);
             if (groupModel != null) {
                 return groupService.createReceiver(groupModel);

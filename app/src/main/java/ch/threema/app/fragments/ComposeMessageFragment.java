@@ -1065,6 +1065,7 @@ public class ComposeMessageFragment extends Fragment implements
                 if (composeMessageAdapter != null) {
                     int index = composeMessageAdapter.getNextVoiceMessage(messageModel);
                     if (index != AbsListView.INVALID_POSITION) {
+                        logger.info("Playing next audio message at index {}", index);
                         View view = composeMessageAdapter.getView(index, null, null);
 
                         ComposeMessageHolder holder = (ComposeMessageHolder) view.getTag();
@@ -2495,6 +2496,11 @@ public class ComposeMessageFragment extends Fragment implements
             this.isGroupChat = true;
             if (this.groupDbId == 0) {
                 this.groupDbId = intent.getLongExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0L);
+
+                // TODO(ANDR-4303): This fallback is currently needed to handle intents coming from pinned shortcuts created before 6.2.0
+                if (groupDbId == 0L) {
+                    groupDbId = (long) intent.getIntExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
+                }
             }
             this.groupModel = groupModelRepository.getByLocalGroupDbId(this.groupDbId);
 

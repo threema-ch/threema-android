@@ -129,7 +129,7 @@ public class AudioMessagePlayer extends MessagePlayer {
 
         @Override
         public void onIsLoadingChanged(boolean isLoading) {
-            logger.info(isLoading ? "onLoading" : "onLoaded");
+            logger.info(isLoading ? "is now loading" : "is not loading");
         }
 
         @Override

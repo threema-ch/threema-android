@@ -74,7 +74,11 @@ class IncomingContactFileMessageTask(
         messageService.getContactMessageModel(
             message.messageId,
             message.fromIdentity,
-        )?.run { return ReceiveStepsResult.DISCARD }
+        )?.run {
+            // In this case the message has been processed earlier. Therefore we consider this as success. This causes the message to be reflected.
+            logger.info("Message model already exists. Aborting successfully.")
+            return ReceiveStepsResult.SUCCESS
+        }
 
         val fileData: FileData = message.fileData ?: run {
             logger.error("Discarding message ${message.messageId}: Missing file data")

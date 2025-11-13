@@ -62,6 +62,7 @@ import ch.threema.app.startup.RemoteSecretMonitorRetryController
 import ch.threema.app.startup.models.AppSystem
 import ch.threema.app.stores.EncryptedPreferenceStore
 import ch.threema.app.stores.EncryptedPreferenceStoreImpl
+import ch.threema.app.stores.IdentityProvider
 import ch.threema.app.stores.IdentityStoreImpl
 import ch.threema.app.stores.MutableIdentityProvider
 import ch.threema.app.stores.PreferenceStore
@@ -136,6 +137,7 @@ open class ThreemaApplication : Application() {
     private val masterKeyEventMonitor: MasterKeyEventMonitor by inject()
     private val appTaskExecutor: AppTaskExecutor by inject()
     private val appStartupMonitor: AppStartupMonitorImpl by inject()
+    private val identityProvider: IdentityProvider by inject()
 
     override fun onCreate() {
         if (!checkAppReplacingState(applicationContext)) {
@@ -162,9 +164,11 @@ open class ThreemaApplication : Application() {
         logger.info("*** App launched")
         logAppVersionInfo(applicationContext)
         logExitReason(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
-        logger.info("Remote secrets supported: {}", ConfigUtils.isRemoteSecretsSupported())
 
         initDependencyInjection(this)
+
+        logger.info("Has identity: {}", identityProvider.getIdentity() != null)
+        logger.info("Remote secrets supported: {}", ConfigUtils.isRemoteSecretsSupported())
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(get<AppProcessLifecycleObserver>())
 

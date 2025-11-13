@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2025 Threema GmbH
+ * Copyright (c) 2015-2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -19,23 +19,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package ch.threema.app.di.modules
+package ch.threema.app.utils
 
-import androidx.preference.PreferenceManager
-import ch.threema.app.utils.AndroidContactUtil
-import ch.threema.app.utils.DispatcherProvider
-import ch.threema.app.utils.Toaster
-import org.koin.core.module.dsl.factoryOf
-import org.koin.dsl.module
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
+import android.content.Context
+import ch.threema.app.R
+import ch.threema.app.receivers.WidgetProvider
 
-/**
- * Provides access to utility classes.
- * Note that some of these may be functionally singletons, but that should be treated as an implementation detail only, i.e., they should
- * not hold global state.
- */
-val utilsModule = module {
-    factory { AndroidContactUtil.getInstance() }
-    factory { DispatcherProvider.default }
-    factoryOf(::Toaster)
-    factory { PreferenceManager.getDefaultSharedPreferences(get()) }
+object WidgetUtil {
+    @JvmStatic
+    fun updateWidgets(context: Context) {
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        val widgetIds = appWidgetManager.getAppWidgetIds(ComponentName(context, WidgetProvider::class.java))
+        appWidgetManager.notifyAppWidgetViewDataChanged(widgetIds, R.id.widget_list)
+    }
 }

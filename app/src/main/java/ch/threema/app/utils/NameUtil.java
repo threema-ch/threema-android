@@ -179,6 +179,7 @@ public class NameUtil {
         return shortname != null ? shortname : identity;
     }
 
+    @Nullable
     public static String getShortName(ContactModel model) {
         if (model != null) {
             if (TestUtil.isEmptyOrNull(model.getFirstName())) {

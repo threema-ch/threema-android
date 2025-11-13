@@ -232,7 +232,7 @@ public class GlobalListeners {
                     }
 
                     // update widget on incoming message
-                    WidgetUtil.updateWidgets(serviceManager.getContext());
+                    WidgetUtil.updateWidgets(appContext);
                 }
             }
         } catch (ThreemaException e) {
@@ -841,13 +841,13 @@ public class GlobalListeners {
         @Override
         public void onStarted(SynchronizeContactsRoutine startedRoutine) {
             //disable contact observer
-            serviceManager.getContext().getContentResolver().unregisterContentObserver(contentObserverChangeContactNames);
+            appContext.getContentResolver().unregisterContentObserver(contentObserverChangeContactNames);
         }
 
         @Override
         public void onFinished(SynchronizeContactsRoutine finishedRoutine) {
             //enable contact observer
-            serviceManager.getContext().getContentResolver().registerContentObserver(
+            appContext.getContentResolver().registerContentObserver(
                 ContactsContract.Contacts.CONTENT_URI,
                 false,
                 contentObserverChangeContactNames);
@@ -856,7 +856,7 @@ public class GlobalListeners {
         @Override
         public void onError(SynchronizeContactsRoutine finishedRoutine) {
             //enable contact observer
-            serviceManager.getContext().getContentResolver().registerContentObserver(
+            appContext.getContentResolver().registerContentObserver(
                 ContactsContract.Contacts.CONTENT_URI,
                 false,
                 contentObserverChangeContactNames);

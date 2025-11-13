@@ -24,15 +24,15 @@ package ch.threema.app.stores
 import android.content.Context
 import ch.threema.app.listeners.PreferenceListener
 import ch.threema.app.managers.ListenerManager
-import ch.threema.app.utils.FileUtil
 import ch.threema.app.utils.StringConversionUtil
 import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.writeAtomically
 import ch.threema.common.takeUnlessEmpty
 import ch.threema.localcrypto.MasterKey
 import java.io.File
 import java.io.FileInputStream
-import java.io.FileOutputStream
 import java.io.IOException
+import kotlin.text.toByteArray
 import org.apache.commons.io.IOUtils
 import org.json.JSONArray
 import org.json.JSONObject
@@ -166,18 +166,12 @@ class EncryptedPreferenceStoreImpl(
 
     private fun saveDataToEncryptedFile(data: ByteArray, key: String) {
         val file = getEncryptedFile(key)
-        if (!file.exists()) {
-            try {
-                FileUtil.createNewFileOrLog(file, logger)
-            } catch (e: Exception) {
-                // TODO(ANDR-4060): Throw a proper exception here
-                logger.error("Failed to create encrypted file with key {}", key, e)
-            }
-        }
         try {
-            FileOutputStream(file).use { fileOutputStream ->
-                masterKey.getCipherOutputStream(fileOutputStream).use { cipherOutputStream ->
-                    cipherOutputStream.write(data)
+            synchronized(this) {
+                file.writeAtomically { fileOutputStream ->
+                    masterKey.getCipherOutputStream(fileOutputStream).use { cipherOutputStream ->
+                        cipherOutputStream.write(data)
+                    }
                 }
             }
         } catch (e: IOException) {

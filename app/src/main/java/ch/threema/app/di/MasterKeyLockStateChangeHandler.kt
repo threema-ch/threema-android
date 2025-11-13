@@ -29,6 +29,9 @@ import ch.threema.app.startup.AppStartupMonitorImpl
 import ch.threema.app.systemupdates.SystemUpdateState
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.DispatcherProvider
+import ch.threema.app.utils.ShortcutUtil
+import ch.threema.app.utils.WidgetUtil
+import ch.threema.app.workers.ShareTargetUpdateWorker
 import ch.threema.base.utils.LoggingUtil
 import ch.threema.storage.DatabaseState
 import kotlinx.coroutines.coroutineScope
@@ -59,6 +62,8 @@ class MasterKeyLockStateChangeHandler(
         globalListeners = GlobalListeners(appContext, serviceManager).apply {
             setUp()
         }
+
+        WidgetUtil.updateWidgets(appContext)
     }
 
     suspend fun onMasterKeyLocked() = coroutineScope {
@@ -78,6 +83,11 @@ class MasterKeyLockStateChangeHandler(
                 }
             }
 
+            if (serviceManager.preferenceService.isDirectShare) {
+                ShareTargetUpdateWorker.cancelScheduledShareTargetShortcutUpdate(appContext)
+                ShortcutUtil.deleteAllShareTargetShortcuts()
+            }
+
             launch(dispatcherProvider.io) {
                 serviceManager.databaseService.close()
                 serviceManager.dhSessionStore.close()
@@ -88,5 +98,7 @@ class MasterKeyLockStateChangeHandler(
         globalListeners = null
 
         ConfigUtils.scheduleAppRestart(appContext)
+
+        WidgetUtil.updateWidgets(appContext)
     }
 }

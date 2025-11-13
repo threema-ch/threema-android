@@ -242,10 +242,10 @@ class SendMediaPreviewAdapter(
                 }
 
                 override fun onResourceReady(
-                    resource: Drawable,
-                    model: Any,
+                    resource: Drawable?,
+                    model: Any?,
                     target: Target<Drawable?>?,
-                    dataSource: DataSource,
+                    dataSource: DataSource?,
                     isFirstResource: Boolean,
                 ): Boolean {
                     setQualifierView(item, holder)

@@ -42,7 +42,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/layout_top"
-            android:layout_marginTop="@dimen/grid_unit_x2"
+            android:layout_marginTop="@dimen/grid_unit_x1_5"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -64,6 +64,8 @@
                 android:layout_marginTop="5dp"
                 android:layout_weight="2"
                 android:hint="@string/masterkey_passphrase_hint"
+                android:paddingBottom="@dimen/grid_unit_x0_5"
+                android:paddingTop="@dimen/grid_unit_x0_5"
                 app:counterEnabled="false"
                 app:errorEnabled="true"
                 app:passwordToggleEnabled="true">
@@ -102,6 +104,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/unlock_layout"
+            android:layout_marginTop="@dimen/grid_unit_x1"
             android:layout_marginBottom="5dp"
             android:drawablePadding="10dp"
             android:text="@string/masterkey_lock_explain"

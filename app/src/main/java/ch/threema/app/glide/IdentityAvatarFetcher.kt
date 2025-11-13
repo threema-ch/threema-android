@@ -196,7 +196,7 @@ class IdentityAvatarFetcher(
         highRes: Boolean,
     ): Bitmap? {
         if (ContactUtil.isGatewayContact(contactModel.identity) || AndroidContactUtil.getInstance()
-                .getAndroidContactUri(contactModel) == null
+                .getAndroidContactUri(contactModel, context) == null
         ) {
             return null
         }
