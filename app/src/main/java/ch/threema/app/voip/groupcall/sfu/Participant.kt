@@ -26,7 +26,7 @@ import ch.threema.app.utils.NameUtil
 import ch.threema.app.voip.groupcall.sfu.webrtc.LocalCtx
 import ch.threema.app.voip.groupcall.sfu.webrtc.RemoteCtx
 import ch.threema.app.webrtc.Camera
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import kotlinx.coroutines.CoroutineScope
@@ -34,7 +34,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.webrtc.SurfaceViewRenderer
 
-private val logger = LoggingUtil.getThreemaLogger("Participant")
+private val logger = getThreemaLogger("Participant")
 
 @JvmInline
 value class ParticipantId(val id: UInt) {

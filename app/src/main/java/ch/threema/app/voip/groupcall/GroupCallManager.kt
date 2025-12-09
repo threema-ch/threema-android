@@ -26,6 +26,7 @@ import androidx.annotation.WorkerThread
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.groupcall.sfu.CallId
 import ch.threema.app.voip.groupcall.sfu.GroupCallController
+import ch.threema.base.SessionScoped
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
 import ch.threema.domain.types.Identity
@@ -41,6 +42,7 @@ val GroupModel.localGroupId: LocalGroupId
 val ch.threema.data.models.GroupModel.localGroupId: LocalGroupId
     get() = LocalGroupId(getDatabaseId().toInt())
 
+@SessionScoped
 interface GroupCallManager {
     /**
      * Handle a group call control message to update the known group calls. Should perform the group

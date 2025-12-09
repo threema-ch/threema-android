@@ -39,7 +39,7 @@ import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceLinkingProgressFragm
 import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceResultFragment
 import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceVerifyFragment
 import ch.threema.app.tasks.TaskCreator
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.net.UnknownHostException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -52,7 +52,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceWizardViewModel")
+private val logger = getThreemaLogger("LinkNewDeviceWizardViewModel")
 
 class LinkNewDeviceWizardViewModel(
     private val serviceManager: ServiceManager,

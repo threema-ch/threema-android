@@ -17,7 +17,7 @@ use crate::{
         digest::{FixedOutput as _, Mac as _},
         salsa20, x25519,
     },
-    utils::debug::debug_static_secret,
+    utils::debug::{Name as _, debug_static_secret},
 };
 
 /// Key for solving authentication challenges during the CSP handshake (aka _vouch key_).
@@ -256,7 +256,6 @@ impl fmt::Debug for PublicKey {
 }
 
 /// Cipher associated to the key computed as `X25519HSalsa20(DGPK.secret, ephemeral_server_key)`.
-#[expect(dead_code, reason = "Will use later")]
 pub(crate) struct DeviceGroupPathAuthenticationCipher(pub(crate) salsa20::XSalsa20Poly1305);
 
 /// The Device Group Path Key (DGPK)
@@ -272,7 +271,6 @@ impl DeviceGroupPathKey {
         PublicKey::from(&self.0)
     }
 
-    #[expect(dead_code, reason = "Will use later")]
     pub(crate) fn authentication_cipher(
         self,
         ephemeral_server_key: &PublicKey,
@@ -289,7 +287,6 @@ impl DeviceGroupPathKey {
 pub(crate) struct DeviceGroupReflectCipher(pub(crate) salsa20::XSalsa20Poly1305);
 
 /// Cipher associated to the Device Group Device Info Key (DGDIK).
-#[expect(dead_code, reason = "Will use later")]
 pub(crate) struct DeviceGroupDeviceInfoCipher(pub(crate) salsa20::XSalsa20Poly1305);
 
 /// Cipher associated to the Device Group Transaction Scope Key (DGTSK).
@@ -313,7 +310,6 @@ impl DeviceGroupKey {
 
     /// Derive the Device Group Path Key (DGPK).
     #[must_use]
-    #[expect(dead_code, reason = "Will use later")]
     pub(crate) fn path_key(&self) -> DeviceGroupPathKey {
         let path_key: [u8; DeviceGroupPathKey::LENGTH] = self.derive_key(b"p").into();
         DeviceGroupPathKey(x25519::StaticSecret::from(path_key))
@@ -327,7 +323,6 @@ impl DeviceGroupKey {
 
     /// Derive the Device Group Device Info Key (DGDIK).
     #[must_use]
-    #[expect(dead_code, reason = "Will use later")]
     pub(crate) fn device_info_key(&self) -> DeviceGroupDeviceInfoCipher {
         DeviceGroupDeviceInfoCipher(salsa20::XSalsa20Poly1305::new(&self.derive_key(b"di")))
     }

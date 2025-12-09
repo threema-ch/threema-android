@@ -45,7 +45,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
@@ -55,7 +55,7 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
  * Make sure to use a unique tag for this dialog in the show() method
  */
 public class ShowOnceDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ShowOnceDialog");
+    private static final Logger logger = getThreemaLogger("ShowOnceDialog");
 
     private Activity activity;
 

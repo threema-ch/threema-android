@@ -76,10 +76,9 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.CheckIdentityRoutine;
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.IdListService;
+import ch.threema.app.services.ProfilePictureRecipientsService;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.UserService;
 import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.ui.AvatarEditView;
@@ -95,7 +94,7 @@ import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.taskmanager.TriggerSource;
@@ -109,7 +108,7 @@ public class MyIDFragment extends MainFragment
     GenericAlertDialog.DialogClickListener,
     TextEntryDialog.TextEntryDialogClickListener,
     PasswordEntryDialog.PasswordEntryDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MyIDFragment");
+    private static final Logger logger = getThreemaLogger("MyIDFragment");
 
     private static final int MAX_REVOCATION_PASSWORD_LENGTH = 256;
     private static final int LOCK_CHECK_REVOCATION = 33;
@@ -121,7 +120,7 @@ public class MyIDFragment extends MainFragment
     private PreferenceService preferenceService;
     private LocaleService localeService;
     private FileService fileService;
-    private IdListService profilePicRecipientsService;
+    private ProfilePictureRecipientsService profilePictureRecipientsService;
     private TaskCreator taskCreator;
 
     private AvatarEditView avatarView;
@@ -349,7 +348,7 @@ public class MyIDFragment extends MainFragment
             if (serviceManager.getMultiDeviceManager().isMultiDeviceActive()) {
                 // Sync new policy setting with currently set allow list values into device group (if md is active)
                 taskCreator.scheduleReflectUserProfileShareWithAllowListSyncTask(
-                    new HashSet<>(Arrays.asList(profilePicRecipientsService.getAll()))
+                    new HashSet<>(Arrays.asList(profilePictureRecipientsService.getAll()))
                 );
             }
         } else {
@@ -857,7 +856,7 @@ public class MyIDFragment extends MainFragment
             this.preferenceService = this.serviceManager.getPreferenceService();
             this.localeService = this.serviceManager.getLocaleService();
             this.taskCreator = this.serviceManager.getTaskCreator();
-            this.profilePicRecipientsService = this.serviceManager.getProfilePicRecipientsService();
+            this.profilePictureRecipientsService = this.serviceManager.getProfilePicRecipientsService();
         }
     }
 

@@ -32,9 +32,11 @@ import ch.threema.app.webclient.exceptions.HandshakeException;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.app.webclient.state.WebClientSessionState;
+import ch.threema.base.SessionScoped;
 import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.WebClientSessionModel;
 
+@SessionScoped
 @AnyThread
 public interface SessionService {
     /**

@@ -36,10 +36,10 @@ import ch.threema.app.startup.finishAndRestartLaterIfNotReady
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ConfigUtils.isTabletLayout
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("SettingsActivity")
+private val logger = getThreemaLogger("SettingsActivity")
 
 class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
     init {

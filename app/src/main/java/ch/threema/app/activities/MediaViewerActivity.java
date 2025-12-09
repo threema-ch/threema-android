@@ -91,18 +91,19 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.GroupMessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class MediaViewerActivity extends ThreemaToolbarActivity implements ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaViewerActivity");
+    private static final Logger logger = getThreemaLogger("MediaViewerActivity");
 
     {
         // Always use night mode for this activity. Note that setting it here avoids the activity being recreated.
@@ -144,7 +145,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
         }
     }

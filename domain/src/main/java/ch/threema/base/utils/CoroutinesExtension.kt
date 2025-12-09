@@ -25,7 +25,7 @@ import androidx.annotation.AnyThread
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
-private val logger = LoggingUtil.getThreemaLogger("CoroutinesExtension")
+private val logger = getThreemaLogger("CoroutinesExtension")
 
 /**
  *  Merges all exceptions from the default completed exceptionally state and the ones that could be thrown by [Deferred.getCompleted].

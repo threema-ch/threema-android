@@ -93,13 +93,13 @@ import ch.threema.app.utils.FileHandlingZipOutputStream;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.HashedNonce;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.NonceScope;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.data.repositories.EmojiReactionsRepository;
 import ch.threema.domain.identitybackup.IdentityBackup;
@@ -124,7 +124,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
 
 public class BackupService extends Service {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BackupService");
+    private static final Logger logger = getThreemaLogger("BackupService");
 
     public static final String BACKUP_PROGRESS_INTENT = "backup_progress_intent";
     public static final String BACKUP_PROGRESS = "backup_progress";
@@ -855,16 +855,16 @@ public class BackupService extends Service {
                         .write(Tags.TAG_GROUP_USER_STATE, groupModel.getUserState() != null ? groupModel.getUserState().value : 0)
                         .write();
 
-                    //check if the group have a photo
+                    //check if the group have a profile picture
                     if (this.config.backupAvatars()) {
                         try {
                             zipOutputStream.addFileFromInputStream(
-                                this.fileService.getGroupAvatarStream(groupModel),
+                                this.fileService.getGroupProfilePictureStream(groupModel.getId()),
                                 Tags.GROUP_AVATAR_PREFIX + groupUid,
                                 false
                             );
                         } catch (Exception e) {
-                            logger.warn("Could not back up group avatar: {}", e.getMessage());
+                            logger.warn("Could not back up group profile picture: {}", e.getMessage());
                         }
                     }
 
@@ -1142,11 +1142,6 @@ public class BackupService extends Service {
                     @Override
                     public BallotModel.State[] getStates() {
                         return new BallotModel.State[]{BallotModel.State.OPEN, BallotModel.State.CLOSED};
-                    }
-
-                    @Override
-                    public boolean filter(BallotModel ballotModel) {
-                        return true;
                     }
                 });
 
@@ -1693,7 +1688,7 @@ public class BackupService extends Service {
     private String getRemainingTimeText(int currentStep, int steps) {
         final long millisPassed = System.currentTimeMillis() - startTime;
         final long millisRemaining = millisPassed * steps / currentStep - millisPassed + FILE_SETTLE_DELAY;
-        String timeRemaining = StringConversionUtil.secondsToString(millisRemaining / DateUtils.SECOND_IN_MILLIS, false);
+        String timeRemaining = ElapsedTimeFormatter.millisecondsToString(millisRemaining);
         return String.format(getString(R.string.time_remaining), timeRemaining);
     }
 

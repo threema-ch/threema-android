@@ -58,14 +58,14 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import okhttp3.OkHttpClient;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class RateDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("RateDialog");
+    private static final Logger logger = getThreemaLogger("RateDialog");
 
     private static final String BUNDLE_RATE_STAR = "rs";
     private RateDialogClickListener callback;

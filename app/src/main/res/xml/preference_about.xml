@@ -30,6 +30,16 @@
 
         <Preference android:key="@string/preferences__version" />
         <Preference android:key="@string/preferences__version_code" />
+
+        <Preference
+            android:key="@string/preferences__git_commit"
+            android:title="Git Commit"
+            app:isPreferenceVisible="false" />
+        <Preference
+            android:key="@string/preferences__git_branch"
+            android:title="Git Branch"
+            app:isPreferenceVisible="false" />
+
         <Preference android:key="@string/preferences__device_info" />
 
         <Preference

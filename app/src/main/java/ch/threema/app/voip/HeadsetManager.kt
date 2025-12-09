@@ -34,7 +34,7 @@ import android.content.pm.PackageManager
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import androidx.core.app.ActivityCompat
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
@@ -42,7 +42,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-private val logger = LoggingUtil.getThreemaLogger("HeadsetManager")
+private val logger = getThreemaLogger("HeadsetManager")
 
 /**
  * Manager for headsets. This can be used to detect whether there are wired or bluetooth headsets

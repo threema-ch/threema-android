@@ -29,4 +29,9 @@
 
     <!-- EmptyView -->
     <color name="empty_view_icon_tint">@color/brand_grey_800</color>
+
+    <!-- Fixed color from the work brand color palette. Used to display components in the work
+    color outside of work the apps (e.g.: Referral banner) -->
+    <color name="work_primary_fixed">#51CFFF</color> <!-- work-500 -->
+    <color name="work_onPrimary_fixed">#000000</color>
 </resources>

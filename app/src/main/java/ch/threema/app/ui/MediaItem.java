@@ -49,7 +49,7 @@ import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.MimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 
 /**
@@ -80,7 +80,7 @@ public class MediaItem implements Parcelable {
     private boolean isEdited;
     private boolean muted;
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaItem");
+    private static final Logger logger = getThreemaLogger("MediaItem");
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({TYPE_FILE, TYPE_IMAGE, TYPE_VIDEO, TYPE_IMAGE_CAM, TYPE_VIDEO_CAM, TYPE_VOICEMESSAGE, TYPE_TEXT, TYPE_LOCATION, TYPE_IMAGE_ANIMATED})

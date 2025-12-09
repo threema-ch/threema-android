@@ -33,14 +33,14 @@ import androidx.annotation.NonNull;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * An adapter that sends WebRTC native logs to the SLFJ logger.
  */
 public class WebRTCLogger implements Loggable {
     @SuppressLint("LoggerName")
-    private static final Logger logger = LoggingUtil.getThreemaLogger("libwebrtc");
+    private static final Logger logger = getThreemaLogger("libwebrtc");
 
     public final Logging.Severity severity;
     private final @LogLevel int minLevel;

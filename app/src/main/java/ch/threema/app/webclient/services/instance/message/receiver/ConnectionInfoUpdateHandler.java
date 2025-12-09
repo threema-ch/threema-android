@@ -32,14 +32,14 @@ import java.util.Map;
 
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Webclient sending connection info.
  */
 @WorkerThread
 public class ConnectionInfoUpdateHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ConnectionInfoUpdateHandler");
+    private static final Logger logger = getThreemaLogger("ConnectionInfoUpdateHandler");
 
     @AnyThread
     public ConnectionInfoUpdateHandler() {

@@ -25,7 +25,7 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.UserService
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -45,7 +45,7 @@ import ch.threema.storage.models.ContactModel
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectUserProfilePictureSyncTask")
+private val logger = getThreemaLogger("ReflectUserProfilePictureSyncTask")
 
 /**
  * This task just reflects the currently stored user profile picture. This is a simple mechanism

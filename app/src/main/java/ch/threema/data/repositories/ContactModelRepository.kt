@@ -26,9 +26,10 @@ import ch.threema.app.listeners.ContactListener
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.tasks.ReflectContactSyncCreateTask
+import ch.threema.base.SessionScoped
 import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.NaCl
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.ModelTypeCache
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -41,8 +42,9 @@ import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 
-private val logger = LoggingUtil.getThreemaLogger("data.ContactModelRepository")
+private val logger = getThreemaLogger("data.ContactModelRepository")
 
+@SessionScoped
 class ContactModelRepository(
     // Note: Synchronize access
     private val cache: ModelTypeCache<String, ContactModel>,

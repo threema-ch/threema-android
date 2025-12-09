@@ -100,7 +100,7 @@ import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.webclient.utils.DefaultNoopPeerConnectionObserver;
 import ch.threema.app.webclient.utils.DefaultNoopWebSocketListener;
 import ch.threema.app.webclient.webrtc.PeerConnectionWrapper;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ContactModel;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -108,7 +108,7 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 @SuppressWarnings("FieldCanBeLocal")
 @UiThread
 public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements TextEntryDialog.TextEntryDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WebDiagnosticsActivity");
+    private static final Logger logger = getThreemaLogger("WebDiagnosticsActivity");
     private static final String DIALOG_TAG_SEND_VOIP_DEBUG = "svd";
 
     // Config
@@ -441,7 +441,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
                 WebDiagnosticsActivity.this.failWs("WS test timed out");
             }
         }, WS_TEST_TIMEOUT_MS);
-        RuntimeUtil.runInAsyncTask(() -> {
+        RuntimeUtil.runOnWorkerThread(() -> {
             final boolean success = WebDiagnosticsActivity.this.testWebsocket();
             if (!success) {
                 addToLog("Initializing WebSocket test failed.");
@@ -463,7 +463,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
                 WebDiagnosticsActivity.this.onRtcComplete(this.candidateCount.get() > 0);
             }
         }, RTC_TEST_TIMEOUT_MS);
-        RuntimeUtil.runInAsyncTask(() -> {
+        RuntimeUtil.runOnWorkerThread(() -> {
             final boolean success = WebDiagnosticsActivity.this.testWebRTC();
             if (!success) {
                 addToLog("Initializing WebRTC test failed.");

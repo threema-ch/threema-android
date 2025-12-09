@@ -26,13 +26,13 @@ import android.content.RestrictionsManager
 import android.os.Bundle
 import androidx.work.WorkInfo
 import androidx.work.impl.WorkManagerImpl
+import ch.threema.android.isMainThread
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.stores.EncryptedPreferenceStore
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.RuntimeUtil
 import ch.threema.domain.models.UserCredentials
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.work.WorkData
@@ -68,7 +68,7 @@ class AppRestrictionServiceTest {
     fun tearDown() {
         unmockkObject(ThreemaApplication)
         unmockkStatic(WorkManagerImpl::class)
-        unmockkStatic(RuntimeUtil::class)
+        unmockkStatic(::isMainThread)
     }
 
     @Test
@@ -323,8 +323,8 @@ class AppRestrictionServiceTest {
             every { fetchAndStoreWorkMDMSettings(any(), any()) } answers { callOriginal() }
         }
 
-        mockkStatic(RuntimeUtil::class)
-        every { RuntimeUtil.isOnUiThread() } returns false
+        mockkStatic(::isMainThread)
+        every { isMainThread() } returns false
 
         val apiConnectorMock = mockk<APIConnector>()
         val credentials = UserCredentials("hans", "dampf")

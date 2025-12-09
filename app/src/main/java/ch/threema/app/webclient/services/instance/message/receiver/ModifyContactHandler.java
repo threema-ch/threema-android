@@ -46,7 +46,7 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.repositories.ContactModelRepository;
@@ -61,7 +61,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @WorkerThread
 public class ModifyContactHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyContactHandler");
+    private static final Logger logger = getThreemaLogger("ModifyContactHandler");
 
     private static final String FIELD_FIRST_NAME = "firstName";
     private static final String FIELD_LAST_NAME = "lastName";

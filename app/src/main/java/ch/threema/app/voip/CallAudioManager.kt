@@ -30,7 +30,7 @@ import ch.threema.app.ThreemaApplication
 import ch.threema.app.utils.AudioDevice
 import ch.threema.app.utils.getDefaultAudioDevice
 import ch.threema.app.utils.hasEarpiece
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlinx.coroutines.CoroutineScope
@@ -42,7 +42,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("CallAudioManager")
+private val logger = getThreemaLogger("CallAudioManager")
 
 class CallAudioManager(private val context: Context) {
     enum class State {

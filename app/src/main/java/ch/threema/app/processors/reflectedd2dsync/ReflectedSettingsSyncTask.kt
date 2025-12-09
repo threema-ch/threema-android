@@ -24,12 +24,12 @@ package ch.threema.app.processors.reflectedd2dsync
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ExcludedSyncIdentitiesService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.protobuf.d2d.MdD2D.SettingsSync
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedSettingsSyncTask")
+private val logger = getThreemaLogger("ReflectedSettingsSyncTask")
 
 class ReflectedSettingsSyncTask(
     private val settingsSync: SettingsSync,

@@ -32,10 +32,10 @@ import org.slf4j.Logger;
 import java.io.IOException;
 
 import ch.threema.app.utils.FileUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecorder.OnInfoListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AudioRecorder");
+    private static final Logger logger = getThreemaLogger("AudioRecorder");
 
     private final Context context;
     private OnStopListener onStopListener;
@@ -44,7 +44,7 @@ public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecord
         this.context = context;
     }
 
-    public MediaRecorder prepare(Uri uri, int maxDuration, int samplingRate) {
+    public MediaRecorder prepare(Uri uri, int samplingRate) {
         logger.info("Preparing MediaRecorder with sampling rate {}", samplingRate);
         MediaRecorder mediaRecorder = new MediaRecorder();
 

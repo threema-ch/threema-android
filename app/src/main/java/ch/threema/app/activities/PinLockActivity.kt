@@ -33,6 +33,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication.Companion.getServiceManager
@@ -42,9 +43,8 @@ import ch.threema.app.ui.InsetSides.Companion.all
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.EditTextUtil
 import ch.threema.app.utils.NavigationUtil
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.TimeProvider
 import ch.threema.common.consume
 import ch.threema.common.minus
@@ -57,7 +57,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("PinLockActivity")
+private val logger = getThreemaLogger("PinLockActivity")
 
 class PinLockActivity : ThreemaActivity() {
     init {
@@ -72,7 +72,7 @@ class PinLockActivity : ThreemaActivity() {
     private lateinit var errorTextView: TextView
 
     private val isCheckOnly by lazy(LazyThreadSafetyMode.NONE) {
-        intent.getBooleanExtra(AppConstants.INTENT_DATA_CHECK_ONLY, false)
+        intent.getBooleanExtra(INTENT_DATA_CHECK_ONLY, false)
     }
 
     private var failedAttempts: Int
@@ -232,7 +232,12 @@ class PinLockActivity : ThreemaActivity() {
         private val ERROR_MESSAGE_TIMEOUT = 3.seconds
         private val LOCKOUT_TIMEOUT = 30.seconds
 
+        private const val INTENT_DATA_CHECK_ONLY = "check"
+
         @JvmStatic
-        fun createIntent(context: Context) = buildActivityIntent<PinLockActivity>(context)
+        @JvmOverloads
+        fun createIntent(context: Context, checkOnly: Boolean = false) = buildActivityIntent<PinLockActivity>(context) {
+            putExtra(INTENT_DATA_CHECK_ONLY, checkOnly)
+        }
     }
 }

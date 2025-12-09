@@ -41,6 +41,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.components.WizardButtonXml;
+import ch.threema.app.camera.QRScannerActivity;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
@@ -51,15 +52,15 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
-import ch.threema.app.utils.QRScannerUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.FetchIdentityException;
 import ch.threema.domain.protocol.connection.ServerConnection;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardIDRestoreActivity extends WizardBackgroundActivity {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardIDRestoreActivity");
+    private static final Logger logger = getThreemaLogger("WizardIDRestoreActivity");
     private static final String DIALOG_TAG_RESTORE_PROGRESS = "rp";
     private static final int PERMISSION_REQUEST_CAMERA = 1;
 
@@ -76,6 +77,8 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
     private final int BACKUP_V1_STRING_LENGTH = 99;
     private final int BACKUP_V2_STRING_LENGTH = 129;
 
+    private static final int REQUEST_CODE_QR_SCANNER = 26657;
+
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
@@ -84,7 +87,7 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }
@@ -151,7 +154,8 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
     }
 
     public void scanQR() {
-        QRScannerUtil.getInstance().initiateScan(this, null);
+        var intent = QRScannerActivity.createIntent(this);
+        startActivityForResult(intent, REQUEST_CODE_QR_SCANNER);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -208,14 +212,16 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        String scanResult = QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent);
-        if (scanResult != null) {
-            int scanResultLength = scanResult.length();
-            if (scanResultLength == BACKUP_V1_STRING_LENGTH || scanResultLength == BACKUP_V2_STRING_LENGTH) {
-                backupIdText.setText(scanResult);
-                backupIdText.invalidate();
-            } else {
-                logger.error(getString(R.string.invalid_threema_qr_code), this);
+        if (requestCode == REQUEST_CODE_QR_SCANNER && resultCode == RESULT_OK) {
+            String scanResult = QRScannerActivity.extractResult(intent);
+            if (scanResult != null) {
+                int scanResultLength = scanResult.length();
+                if (scanResultLength == BACKUP_V1_STRING_LENGTH || scanResultLength == BACKUP_V2_STRING_LENGTH) {
+                    backupIdText.setText(scanResult);
+                    backupIdText.invalidate();
+                } else {
+                    logger.error(getString(R.string.invalid_threema_qr_code), this);
+                }
             }
         }
         super.onActivityResult(requestCode, resultCode, intent);

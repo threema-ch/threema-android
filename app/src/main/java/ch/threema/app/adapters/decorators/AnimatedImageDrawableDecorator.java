@@ -43,7 +43,7 @@ import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
@@ -53,7 +53,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
  * A decorator for animated image formats natively supported by AnimatedImageDrawable and/or by Glide
  */
 public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AnimatedImageDrawableDecorator");
+    private static final Logger logger = getThreemaLogger("AnimatedImageDrawableDecorator");
 
     private static final String LISTENER_TAG = "decorator";
     private AnimatedImageDrawableMessagePlayer animatedImageDrawableMessagePlayer;

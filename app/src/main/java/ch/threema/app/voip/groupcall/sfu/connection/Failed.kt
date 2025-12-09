@@ -24,9 +24,9 @@ package ch.threema.app.voip.groupcall.sfu.connection
 import androidx.annotation.WorkerThread
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.sfu.GroupCall
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallConnectionState.Failed")
+private val logger = getThreemaLogger("GroupCallConnectionState.Failed")
 
 class Failed internal constructor(call: GroupCall, val reason: Throwable) :
     GroupCallConnectionState(StateName.FAILED, call) {

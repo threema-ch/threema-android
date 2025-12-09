@@ -21,59 +21,26 @@
 
 package ch.threema.app.drafts
 
-import ch.threema.app.ThreemaApplication
-import ch.threema.app.preference.service.PreferenceService
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.storage.models.AbstractMessageModel
+import androidx.annotation.AnyThread
+import ch.threema.domain.models.MessageId
+import ch.threema.domain.types.ConversationUniqueId
 
-private val logger = LoggingUtil.getThreemaLogger("DraftManager")
+@AnyThread
+interface DraftManager {
+    /**
+     * Returns the draft for a conversation, or null if there is no draft.
+     * If there is a draft, its text is guaranteed to be non-blank.
+     */
+    fun get(conversationUniqueId: ConversationUniqueId): MessageDraft?
 
-object DraftManager {
-
-    private var messageDrafts = mutableMapOf<String, String>()
-    private var quoteDrafts = mutableMapOf<String, String>()
-
-    @JvmStatic
-    fun getMessageDraft(chatId: String?): String? = synchronized(this) {
-        messageDrafts[chatId]
+    fun set(conversationUniqueId: ConversationUniqueId, text: String?) {
+        set(conversationUniqueId, text, quotedMessageId = null)
     }
 
-    @JvmStatic
-    fun getQuoteDraft(chatId: String?): String? = synchronized(this) {
-        quoteDrafts[chatId]
-    }
+    /**
+     * Stores a draft for a conversation. If [text] is null or blank, the draft will be removed instead.
+     */
+    fun set(conversationUniqueId: ConversationUniqueId, text: String?, quotedMessageId: MessageId?)
 
-    @JvmStatic
-    fun putMessageDraft(chatId: String, value: CharSequence?, quotedMessageModel: AbstractMessageModel?): Unit = synchronized(this) {
-        if (value.isNullOrBlank()) {
-            messageDrafts.remove(chatId)
-            quoteDrafts.remove(chatId)
-        } else {
-            messageDrafts[chatId] = value.toString()
-            val apiMessageId = quotedMessageModel?.apiMessageId
-            if (apiMessageId != null) {
-                quoteDrafts[chatId] = apiMessageId
-            } else {
-                quoteDrafts.remove(chatId)
-            }
-        }
-
-        try {
-            val preferenceService = ThreemaApplication.requireServiceManager().preferenceService
-            preferenceService.messageDrafts = messageDrafts
-            preferenceService.quoteDrafts = quoteDrafts
-        } catch (e: Exception) {
-            logger.error("Failed to store message drafts", e)
-        }
-    }
-
-    @JvmStatic
-    fun retrieveMessageDraftsFromStorage(preferenceService: PreferenceService): Unit = synchronized(this) {
-        try {
-            messageDrafts = preferenceService.messageDrafts.toMutableMap()
-            quoteDrafts = preferenceService.quoteDrafts.toMutableMap()
-        } catch (e: Exception) {
-            logger.error("Failed to retrieve message drafts from storage", e)
-        }
-    }
+    fun remove(conversationUniqueId: ConversationUniqueId)
 }

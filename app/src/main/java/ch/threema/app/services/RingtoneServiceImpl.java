@@ -28,21 +28,23 @@ import android.net.Uri;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RingtoneUtil;
-import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class RingtoneServiceImpl implements RingtoneService {
-    private final static Logger logger = LoggingUtil.getThreemaLogger("RingtoneServiceImpl");
+    private final static Logger logger = getThreemaLogger("RingtoneServiceImpl");
     @NonNull
     private final NotificationPreferenceService notificationPreferenceService;
-    private HashMap<String, String> ringtones;
+    @NonNull
+    private Map<String, String> ringtones = new HashMap<>();
     private final boolean supportsNotificationChannels = ConfigUtils.supportsNotificationChannels();
 
     public RingtoneServiceImpl(
@@ -102,7 +104,7 @@ public class RingtoneServiceImpl implements RingtoneService {
 
     @Override
     public boolean hasCustomRingtone(String uniqueId) {
-        return ringtones != null && ringtones.containsKey(uniqueId);
+        return ringtones.containsKey(uniqueId);
     }
 
     @Override
@@ -111,7 +113,7 @@ public class RingtoneServiceImpl implements RingtoneService {
             logger.warn("No need to remove custom ringtone if notification channels are supported");
         }
 
-        if (ringtones != null && ringtones.containsKey(uniqueId)) {
+        if (ringtones.containsKey(uniqueId)) {
             ringtones.remove(uniqueId);
 
             notificationPreferenceService.setLegacyRingtones(ringtones);
@@ -120,10 +122,8 @@ public class RingtoneServiceImpl implements RingtoneService {
 
     @Override
     public void resetRingtones(Context context) {
-        if (ringtones != null) {
-            ringtones.clear();
-            notificationPreferenceService.setLegacyRingtones(ringtones);
-        }
+        ringtones.clear();
+        notificationPreferenceService.setLegacyRingtones(ringtones);
         notificationPreferenceService.setLegacyGroupNotificationSound(Uri.parse(context.getString(R.string.default_notification_sound)));
         notificationPreferenceService.setLegacyNotificationSound(Uri.parse(context.getString(R.string.default_notification_sound)));
         notificationPreferenceService.setLegacyVoipCallRingtone(RingtoneUtil.THREEMA_CALL_RINGTONE_URI);
@@ -167,14 +167,14 @@ public class RingtoneServiceImpl implements RingtoneService {
     }
 
     @Override
-    public boolean isSilent(String uniqueId, boolean isGroup) {
+    public boolean isSilent(@Nullable String uniqueId, boolean isGroup) {
         if (supportsNotificationChannels) {
             // Note that we do not manage the sound of notifications if notification channels are
             // supported. Therefore we always return false as we do not display this particularly.
             return false;
         }
 
-        if (!TestUtil.isEmptyOrNull(uniqueId)) {
+        if (uniqueId != null && !uniqueId.isEmpty()) {
             Uri defaultRingtone, selectedRingtone;
 
             if (isGroup) {

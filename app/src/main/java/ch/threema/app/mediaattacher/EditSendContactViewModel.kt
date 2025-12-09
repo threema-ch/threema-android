@@ -30,7 +30,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import ch.threema.app.utils.FileUtil
 import ch.threema.app.utils.VCardExtractor
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ezvcard.Ezvcard
 import ezvcard.VCard
 import ezvcard.property.FormattedName
@@ -43,7 +43,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("EditSendContactViewModel")
+private val logger = getThreemaLogger("EditSendContactViewModel")
 
 /**
  * Contains the data needed in the EditSendContactActivity.

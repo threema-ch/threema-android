@@ -22,7 +22,6 @@
 package ch.threema.app.utils;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -33,8 +32,9 @@ import java.util.concurrent.Executors;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import androidx.annotation.UiThread;
 import ch.threema.app.BuildConfig;
+
+import static ch.threema.android.ThreadUtilKt.isMainThread;
 
 public class RuntimeUtil {
     public static Handler handler = new Handler(Looper.getMainLooper());
@@ -42,37 +42,16 @@ public class RuntimeUtil {
     private static final ExecutorService workerExecutor = Executors.newCachedThreadPool();
 
     /**
-     * Return true if the calling thread is in the UI thread
-     */
-    public static boolean isOnUiThread() {
-        return Looper.myLooper() == Looper.getMainLooper();
-    }
-
-    /**
      * Run the specified runnable on the UI thread.
      */
     public static void runOnUiThread(final Runnable runnable) {
-        if (isOnUiThread()) {
+        if (isMainThread()) {
             if (runnable != null) {
                 runnable.run();
             }
         } else {
             handler.post(runnable);
         }
-    }
-
-    /**
-     * Run the specified runnable in an async task.
-     */
-    @UiThread
-    public static void runInAsyncTask(@NonNull final Runnable runnable) {
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                runnable.run();
-                return null;
-            }
-        }.execute();
     }
 
     /**

@@ -22,8 +22,7 @@
 package ch.threema.domain.onprem
 
 import ch.threema.base.utils.Base64
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.common.TimeProvider
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.plus
 import ch.threema.common.toIntArray
 import ch.threema.common.toJSONObjectList
@@ -42,16 +41,14 @@ import kotlin.time.Duration.Companion.seconds
 import org.json.JSONException
 import org.json.JSONObject
 
-private val logger = LoggingUtil.getThreemaLogger("OnPremConfigParser")
+private val logger = getThreemaLogger("OnPremConfigParser")
 
-class OnPremConfigParser(
-    private val timeProvider: TimeProvider = TimeProvider.default,
-) {
+class OnPremConfigParser {
     @Throws(OnPremConfigParseException::class)
-    fun parse(obj: JSONObject): OnPremConfig =
+    fun parse(obj: JSONObject, createdAt: Instant): OnPremConfig =
         try {
             OnPremConfig(
-                validUntil = timeProvider.get() + getRefreshDuration(obj),
+                validUntil = createdAt + getRefreshDuration(obj),
                 license = parseLicense(obj.getJSONObject("license")),
                 domains = parseDomains(obj.optJSONObject("domains")),
                 chat = parseChatConfig(obj.getJSONObject("chat")),

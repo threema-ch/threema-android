@@ -26,7 +26,6 @@ import androidx.annotation.NonNull;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 
-import org.apache.commons.io.EndianUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -41,7 +40,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
@@ -99,10 +98,12 @@ import ch.threema.domain.stores.IdentityStore;
 import ch.threema.protobuf.csp.e2e.MessageMetadata;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
+import static ch.threema.common.ByteArrayExtensionsKt.readLittleEndianInt;
+import static ch.threema.common.ByteArrayExtensionsKt.readLittleEndianShort;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class MessageCoder {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageCoder");
+    private static final Logger logger = getThreemaLogger("MessageCoder");
 
     private final @NonNull ContactStore contactStore;
     private final @NonNull IdentityStore identityStore;
@@ -456,7 +457,7 @@ public class MessageCoder {
                 System.arraycopy(data, i, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
                 i += ProtocolDefines.BLOB_ID_LEN;
                 groupsetphotomsg.setBlobId(blobId);
-                groupsetphotomsg.setSize(EndianUtils.readSwappedInteger(data, i));
+                groupsetphotomsg.setSize(readLittleEndianInt(data, i));
                 i += 4;
                 byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
                 System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
@@ -496,7 +497,7 @@ public class MessageCoder {
                 System.arraycopy(data, i, blobId, 0, ProtocolDefines.BLOB_ID_LEN);
                 i += ProtocolDefines.BLOB_ID_LEN;
                 groupimagemsg.setBlobId(blobId);
-                groupimagemsg.setSize(EndianUtils.readSwappedInteger(data, i));
+                groupimagemsg.setSize(readLittleEndianInt(data, i));
                 i += 4;
                 byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
                 System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
@@ -518,19 +519,19 @@ public class MessageCoder {
                 i += ProtocolDefines.IDENTITY_LEN;
                 groupvideomsg.setApiGroupId(new GroupId(data, i));
                 i += ProtocolDefines.GROUP_ID_LEN;
-                groupvideomsg.setDuration(EndianUtils.readSwappedShort(data, i));
+                groupvideomsg.setDuration(readLittleEndianShort(data, i));
                 i += 2;
                 byte[] videoBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
                 System.arraycopy(data, i, videoBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
                 i += ProtocolDefines.BLOB_ID_LEN;
                 groupvideomsg.setVideoBlobId(videoBlobId);
-                groupvideomsg.setVideoSize(EndianUtils.readSwappedInteger(data, i));
+                groupvideomsg.setVideoSize(readLittleEndianInt(data, i));
                 i += 4;
                 byte[] thumbnailBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
                 System.arraycopy(data, i, thumbnailBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
                 i += ProtocolDefines.BLOB_ID_LEN;
                 groupvideomsg.setThumbnailBlobId(thumbnailBlobId);
-                groupvideomsg.setThumbnailSize(EndianUtils.readSwappedInteger(data, i));
+                groupvideomsg.setThumbnailSize(readLittleEndianInt(data, i));
                 i += 4;
                 byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
                 System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
@@ -557,13 +558,13 @@ public class MessageCoder {
                 i += ProtocolDefines.IDENTITY_LEN;
                 groupaudiomsg.setApiGroupId(new GroupId(data, i));
                 i += ProtocolDefines.GROUP_ID_LEN;
-                groupaudiomsg.setDuration(EndianUtils.readSwappedShort(data, i));
+                groupaudiomsg.setDuration(readLittleEndianShort(data, i));
                 i += 2;
                 byte[] audioBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
                 System.arraycopy(data, i, audioBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
                 i += ProtocolDefines.BLOB_ID_LEN;
                 groupaudiomsg.setAudioBlobId(audioBlobId);
-                groupaudiomsg.setAudioSize(EndianUtils.readSwappedInteger(data, i));
+                groupaudiomsg.setAudioSize(readLittleEndianInt(data, i));
                 i += 4;
                 byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
                 System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);

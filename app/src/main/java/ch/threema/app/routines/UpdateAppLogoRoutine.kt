@@ -26,7 +26,7 @@ import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.FileService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ConfigUtils.AppThemeSetting
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.Http
 import ch.threema.common.TimeProvider
 import ch.threema.common.buildRequest
@@ -41,7 +41,7 @@ import java.time.Instant
 import kotlin.time.Duration.Companion.days
 import okhttp3.OkHttpClient
 
-private val logger = LoggingUtil.getThreemaLogger("UpdateAppLogoRoutine")
+private val logger = getThreemaLogger("UpdateAppLogoRoutine")
 
 class UpdateAppLogoRoutine(
     private val fileService: FileService,

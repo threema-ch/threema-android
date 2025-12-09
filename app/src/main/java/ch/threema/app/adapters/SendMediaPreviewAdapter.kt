@@ -267,7 +267,7 @@ class SendMediaPreviewAdapter(
             imageView.setImageResource(R.drawable.ic_videocam_black_24dp)
             val durationView = holder.qualifierView.findViewById<TextView>(R.id.video_duration_text)
             if (item.durationMs > 0) {
-                durationView.text = StringConversionUtil.getDurationString(item.durationMs)
+                durationView.text = ElapsedTimeFormatter.millisecondsToString(item.durationMs)
                 durationView.visibility = View.VISIBLE
             } else {
                 durationView.visibility = View.GONE

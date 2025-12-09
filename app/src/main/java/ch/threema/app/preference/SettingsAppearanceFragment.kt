@@ -37,12 +37,13 @@ import ch.threema.app.services.WallpaperService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil.mapLocaleToPredefinedLocales
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import java.util.Locale
+import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("SettingsAppearanceFragment")
+private val logger = getThreemaLogger("SettingsAppearanceFragment")
 
 @Suppress("unused")
 class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
@@ -52,7 +53,7 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
 
     private var oldTheme: Int = 0
 
-    private val wallpaperService: WallpaperService = requireWallpaperService()
+    private val wallpaperService: WallpaperService by inject()
 
     private var showBadge: CheckBoxPreference? = null
     private var showBadgeChecked = false

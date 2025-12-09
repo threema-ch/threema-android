@@ -21,8 +21,9 @@
 
 package ch.threema.localcrypto
 
-import ch.threema.base.utils.generateRandomBytes
+import ch.threema.common.generateRandomBytes
 import ch.threema.common.models.CryptographicByteArray
+import ch.threema.common.secureRandom
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -35,7 +36,7 @@ import javax.crypto.spec.SecretKeySpec
 
 class MasterKeyImpl(
     value: ByteArray,
-    private val random: SecureRandom = SecureRandom(),
+    private val random: SecureRandom = secureRandom(),
 ) : CryptographicByteArray(value), InvalidateableMasterKey {
     @Volatile
     private var isValid = true
@@ -48,69 +49,35 @@ class MasterKeyImpl(
     }
 
     @Throws(IOException::class)
-    override fun getCipherInputStream(inputStream: InputStream): CipherInputStream {
-        var cipherInputStream: CipherInputStream? = null
-
-        try {
-            // read IV from input stream
-            val iv = ByteArray(IV_LENGTH)
-            val readLen = inputStream.read(iv)
-            if (readLen == -1) {
-                throw IOException("Bad encrypted file (empty)")
-            } else if (readLen != IV_LENGTH) {
-                throw IOException("Bad encrypted file (invalid IV length $readLen)")
-            }
-
-            val cipher = getDecryptCipher(iv)
-            cipherInputStream = CipherInputStream(inputStream, cipher)
-
-            return cipherInputStream
-        } finally {
-            if (cipherInputStream == null) {
-                // close the input stream here as long as it's not attached to a CipherInputStream
-                inputStream.close()
-            }
+    override fun decrypt(inputStream: InputStream): InputStream {
+        val iv = ByteArray(IV_LENGTH)
+        val readLen = inputStream.read(iv)
+        if (readLen == -1) {
+            throw IOException("Bad encrypted file (empty)")
+        } else if (readLen != IV_LENGTH) {
+            throw IOException("Bad encrypted file (invalid IV length $readLen)")
         }
+        val cipher = getCipher(iv, mode = Cipher.DECRYPT_MODE)
+        return CipherInputStream(inputStream, cipher)
     }
 
     @Throws(IOException::class)
-    override fun getCipherOutputStream(outputStream: OutputStream): CipherOutputStream {
-        var cipherOutputStream: CipherOutputStream? = null
-        try {
-            // generate random IV and write to output stream
-            val iv = random.generateRandomBytes(IV_LENGTH)
-
-            outputStream.write(iv)
-
-            val cipher = getEncryptCipher(iv)
-            cipherOutputStream = CipherOutputStream(outputStream, cipher)
-
-            return cipherOutputStream
-        } finally {
-            // TODO(ANDR-4305): The stream should not be closed here. Check if this can be removed.
-            if (cipherOutputStream == null) {
-                // close the output stream here as long as it's not attached to a CipherOutputStream
-                outputStream.close()
-            }
-        }
+    override fun encrypt(outputStream: OutputStream): OutputStream {
+        val iv = random.generateRandomBytes(IV_LENGTH)
+        outputStream.write(iv)
+        val cipher = getCipher(iv, mode = Cipher.ENCRYPT_MODE)
+        return CipherOutputStream(outputStream, cipher)
     }
 
-    private fun getDecryptCipher(iv: ByteArray): Cipher {
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
+    private fun getCipher(iv: ByteArray, mode: Int): Cipher {
+        val cipher = Cipher.getInstance(CIPHER_TRANSFORMATION)
         val ivParams = IvParameterSpec(iv)
-        cipher.init(Cipher.DECRYPT_MODE, createKeySpec(), ivParams)
-        return cipher
-    }
-
-    private fun getEncryptCipher(iv: ByteArray): Cipher {
-        val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        val ivParams = IvParameterSpec(iv)
-        cipher.init(Cipher.ENCRYPT_MODE, createKeySpec(), ivParams)
+        cipher.init(mode, createKeySpec(), ivParams)
         return cipher
     }
 
     private fun createKeySpec(): SecretKeySpec {
-        val keySpec = SecretKeySpec(value, "AES")
+        val keySpec = SecretKeySpec(value, SECRET_KEY_ALGORITHM)
 
         // SecretKeySpec internally creates a copy of the key value, but it might be that the key was invalidated during this copy operation,
         // leaving the key spec in an invalid state. Therefore, we check afterwards whether the key is still valid and abort otherwise.
@@ -128,6 +95,8 @@ class MasterKeyImpl(
     override fun toString() = "[Master Key]"
 
     companion object {
+        private const val CIPHER_TRANSFORMATION = "AES/CBC/PKCS5Padding"
+        private const val SECRET_KEY_ALGORITHM = "AES"
         private const val IV_LENGTH = 16
     }
 }

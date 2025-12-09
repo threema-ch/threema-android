@@ -51,10 +51,10 @@ import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvancedDialog.WizardDialogCallback {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment1");
+    private static final Logger logger = getThreemaLogger("WizardFragment1");
     public static final int PAGE_ID = 1;
 
     private static final String DIALOG_TAG_ADVANCED = "adv";

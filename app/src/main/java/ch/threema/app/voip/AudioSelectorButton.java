@@ -43,10 +43,10 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.listeners.VoipAudioManagerListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.services.VoipCallService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class AudioSelectorButton extends AppCompatImageView implements View.OnClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AudioSelectorButton");
+    private static final Logger logger = getThreemaLogger("AudioSelectorButton");
 
     // Constants for Drawable.setAlpha()
     private static final int HIDDEN = 0;

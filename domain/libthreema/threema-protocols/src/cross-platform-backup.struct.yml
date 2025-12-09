@@ -1,0 +1,224 @@
+# Meta information
+
+meta:
+  # Document name and ID
+  id: cross-platform-backup
+  name: Cross-platform Backup
+
+  references:
+    # Serialized bytes of an offset
+    offset-bytes: &offset-bytes b10
+    layout-v1-encrypted-bytes: &layout-v1-encrypted-bytes b108
+
+# Virtual namespace, just containing the below docstring
+index: &index
+  _doc: |-
+    # Cross-Platform Backup Protocol
+
+    ## Protocol Flow
+
+    Note: This is an informational section.
+
+    ### Backup Creation
+
+    The creation of a backup may be initiated either manually by the user or as a recurring task.
+    In both cases, the application state must be set to read-only mode before starting the backup.
+
+    The backup is based on a page-oriented layout.
+    Pages are dynamically allocated during the backup process and encrypted using a page specific salt to prevent reordering.
+    Data is written in a streamable fashion to a single file either on the local file system or a remote server.
+
+    The backup starts by writing the header and allocating space for the layout.
+    Next, the backup continues with essential data followed by hashed CSP nonces, D2D nonces, blobs, and messages.
+    Finally, the resulting layout needs to be written back to the allocated space in the beginning of the backup.
+
+    Any error during the backup writing process is not recoverable and forces deletion of all previously written data.
+    Once the backup has successfully finished, the read-only mode must be left.
+
+    The application may continuously monitor new data that should be backed up.
+    Such data can be grouped and appended to the backup as delta updates and allows to incrementally extend the backup.
+
+    ### Recovery from Backup
+
+    A user may decide to restore a previous backup during the initialization of the application.
+    The user needs to provide both the backup file as well as the password.
+    An incorrect password will lead to decryption failures.
+
+    The recovery starts by reading the header and the layout.
+    Next, the data is recovered by category: essential data, hashed CSP nonces, hashed D2D nonces, blobs, past messages and potential delta updates that are applied to the existing data.
+
+    Any error during the backup recovery process is not recoverable and forces deletion of all previously restored data.
+    Once the recovery has successfully finished, the user may continue with the normal initialization.
+
+cross-platform-backup: &cross-platform-backup
+  header:
+    _doc: |-
+      The header of the backup indicating the used version.
+    fields:
+      - name: backup-version
+        _doc: |-
+          The Backup version, currently 1.
+        type: u16-le
+      - name: reserved
+        _doc: |-
+          Reserved for future usage
+        type: b14
+
+  layout-v1-encrypted:
+    _doc: |-
+      The encrypted layout of the first version of the cross-platform backup.
+
+      When creating this message:
+
+      TODO: Is this even needed?
+      1. Let `header` be the backup [header](ref:header) message.
+      1. Let `salt` be 32 randomly sampled 32 bytes.
+      1. Create the `layout-v1` message and encrypt it with BLK and an all zero-nonce, and concatenated header and salt as associated data.
+
+    fields:
+      - name: salt
+        _doc: |-
+          The randomly sampled salt used to derive the backup key.
+        type: b32
+      - name: layout-v1-box
+        _doc: |-
+          The [`layout-v1`](ref:layout-v1) encrypted with:
+            ```
+            ChaCha20-Poly1305(
+              key=BLK,
+              nonce=00..00,
+              associated-data=header || salt
+            )
+            ```
+        type: *layout-v1-encrypted-bytes
+
+  layout-v1:
+    _doc: |-
+      The layout v1.
+    fields:
+      - name: essential-data-offset
+        _doc: |-
+          [Offset](ref:offset) of the start of a sequence of `EssentialDataContainer`s.
+        type: *offset-bytes
+
+      - name: hashed-csp-nonces-offset
+        _doc: |-
+          [Offset](ref:offset) of the start of a sequence of [`hashed-nonce-container`s](ref:hashed-nonce-container) containing hashed CSP nonces.
+        type: *offset-bytes
+
+      - name: hashed-d2d-nonces-offset
+        _doc: |-
+          [Offset](ref:offset) of the start of a sequence of [`hashed-nonce-container`s](ref:hashed-nonce-container) containing hashed D2D nonces.
+        type: *offset-bytes
+
+      - name: past-messages-offset
+        _doc: |-
+          [Offset](ref:offset) of the start of a sequence of [`container`s](ref:container) containing `md-d2d-history.PastMessage`s.
+        type: *offset-bytes
+
+      - name: blobs-offset
+        _doc: |-
+          [Offset](ref:offset) of the start of a sequence of [`container`s](ref:container) containing `common.BlobData`.
+        type: *offset-bytes
+
+      - name: delta-offset
+        _doc: |-
+          [Offset](ref:offset) of the start of a sequence of `DeltaContainers`.
+        type: *offset-bytes
+
+  encrypted-page:
+    _doc: |-
+      An encrypted page containing a [`page`](ref:page).
+
+      When creating this message:
+
+      1. Let `message-type` be the type of the data.
+      1. Let `offset` be the offset where the page is written to. TODO: offset should also include page size?
+      1. Create a `page` and encrypt it with BPK.
+
+    fields:
+      - name: page-box
+        _doc: |-
+          The [`encrypted-page`](ref:encrypted-page) encrypted with:
+            ```
+            ChaCha20-Poly1305(
+            key=BPK,
+            nonce= message-type || offset
+            )
+            ```
+
+            where the message-type is a unique message type identifier of bytes length 2.
+        type: b*
+
+  page: &page
+    _doc: |-
+      An encrypted page containing a chunk of a given message type. The total length of this message is defined by the corresponding [`Offset`](ref:offset).
+
+      When creating this message:
+
+      1. Let `chunk` be a chunk of a stream of bytes that all belong to the same data type.
+      1. If `chunk` does not fit into a single page, exceptionally abort these steps.
+      1. Let `chunk-length` be the length of `chunk`.
+      1. Let `page-size` be the page size of the data's type.
+      1. Let `padding` be a zero bytes string of length s.t. this message has length `page-size`.
+
+      TODO: When reading this message:
+
+      1. Check that the padding is all-zero. Otherwise discard the message.
+      2. Discard the padding.
+
+    fields:
+      - name: chunk-length
+        _doc: |-
+          The length of the chunk.
+        type: u16-le
+      - name: next-page
+        _doc: |-
+          The offset to the page where the data continues.
+        type: *offset-bytes
+      - name: chunk
+        _doc: |-
+          The chunk containing multiple messages of the same type. The messages are not required to start/end at the page boundaries.
+        type: b{chunk-length}
+      - name: padding
+        _doc: |-
+          Zero byte padding.
+        type: b*
+
+  offset:
+    _doc: |-
+      An offset indicating the start and the size of the pages containing messages of a given message type.
+    fields:
+      - name: byte-offset
+        _doc: |-
+          The offset in bytes
+        type: u64-le
+      - name: page-size
+        _doc: |-
+          The size of the page in bytes
+        type: u16-le
+
+  container: &container
+    _doc: |-
+      Contains a backup message
+    fields:
+      - name: length
+        _doc: Length of the `data` field.
+        type: u32-le
+
+      - name: data
+        _doc: The backup message.
+        type: b{length}
+
+  hashed-nonce-container: &hashed-nonce-container
+    _doc: |-
+      Container for a hashed nonce that was used for either CSP or D2D messages.
+    fields:
+      - name: hashed-nonce
+        _doc: |-
+          Hashed nonce. Computed from the nonce with HMAC-SHA256 using the identity as _key_.
+        type: b32
+
+namespaces:
+  index: *index
+  cross-platform-backup: *cross-platform-backup

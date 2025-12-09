@@ -26,8 +26,9 @@ import ch.threema.app.emojis.EmojiUtil
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.services.MessageService
 import ch.threema.app.utils.ThrowingConsumer
+import ch.threema.base.SessionScoped
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
 import ch.threema.data.ModelTypeCache
 import ch.threema.data.models.EmojiReactionData
@@ -42,8 +43,9 @@ import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import org.koin.mp.KoinPlatform
 
-private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsRepository")
+private val logger = getThreemaLogger("EmojiReactionsRepository")
 
+@SessionScoped
 class EmojiReactionsRepository(
     private val cache: ModelTypeCache<ReactionMessageIdentifier, EmojiReactionsModel>,
     private val emojiReactionDao: EmojiReactionsDao,

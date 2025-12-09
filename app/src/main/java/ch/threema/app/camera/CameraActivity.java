@@ -41,14 +41,14 @@ import org.slf4j.Logger;
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaAppCompatActivity;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static android.view.KeyEvent.KEYCODE_VOLUME_DOWN;
 import static android.view.KeyEvent.KEYCODE_VOLUME_UP;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class CameraActivity extends ThreemaAppCompatActivity implements CameraFragment.CameraCallback, CameraFragment.CameraConfiguration {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("CameraActivity");
+    private static final Logger logger = getThreemaLogger("CameraActivity");
 
     public static final String KEY_EVENT_ACTION = "key_event_action";
     public static final String KEY_EVENT_EXTRA = "key_event_extra";

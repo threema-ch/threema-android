@@ -22,7 +22,6 @@
 package ch.threema.app.glide
 
 import android.graphics.Bitmap
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.FileService
 import ch.threema.storage.models.AbstractMessageModel
 import com.bumptech.glide.Priority
@@ -33,16 +32,14 @@ import com.bumptech.glide.load.data.DataFetcher
  * This class is used to get the thumbnails from the database or create placeholders. The results of the loaded bitmaps will be cached by glide (if possible).
  */
 class ThumbnailFetcher(
+    private val fileService: FileService,
     private val messageModel: AbstractMessageModel,
 ) : DataFetcher<Bitmap> {
-    private val fileService: FileService? by lazy { ThreemaApplication.getServiceManager()?.fileService }
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        val messageModel = messageModel
-
         val thumbnail: Bitmap? = try {
-            fileService?.getMessageThumbnailBitmap(messageModel, null)
-        } catch (e: java.lang.Exception) {
+            fileService.getMessageThumbnailBitmap(messageModel, null)
+        } catch (_: Exception) {
             null
         }
 

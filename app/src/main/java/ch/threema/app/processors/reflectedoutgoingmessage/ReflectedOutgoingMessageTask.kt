@@ -29,7 +29,7 @@ import ch.threema.app.processors.reflectedoutgoingmessage.groupcall.ReflectedOut
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.toHexString
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
@@ -42,7 +42,7 @@ import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingMessageTask")
+private val logger = getThreemaLogger("ReflectedOutgoingMessageTask")
 
 interface ReflectedOutgoingMessageTask {
     fun executeReflectedOutgoingMessageSteps()
@@ -117,7 +117,7 @@ internal sealed class ReflectedOutgoingBaseMessageTask<
             null,
         )
 
-        messageModel.apiMessageId = MessageId(outgoingMessage.messageId).toString()
+        messageModel.messageId = MessageId(outgoingMessage.messageId)
         messageModel.isSaved = true
         messageModel.isOutbox = true
         messageModel.state = MessageState.SENDING

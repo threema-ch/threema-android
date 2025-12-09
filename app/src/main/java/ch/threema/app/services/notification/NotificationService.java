@@ -37,13 +37,16 @@ import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.base.SessionScoped;
+import ch.threema.data.models.ContactModel;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ServerMessageModel;
 
+@SessionScoped
 public interface NotificationService {
 
     interface FetchCacheUri {
@@ -183,7 +186,7 @@ public interface NotificationService {
      */
     void setVisibleReceiver(MessageReceiver receiver);
 
-    void addGroupCallNotification(@NonNull GroupModel group, @NonNull ContactModel contactModel);
+    void addGroupCallNotification(@NonNull GroupModel group, @NonNull ContactModelData contactModelData);
 
     void cancelGroupCallNotification(int groupId);
 
@@ -269,15 +272,11 @@ public interface NotificationService {
 
     void cancelWorkSyncProgress();
 
-    void showNewSyncedContactsNotification(List<ch.threema.data.models.ContactModel> contactModels);
+    void showNewSyncedContactsNotification(List<ContactModel> contactModels);
 
     void showWebclientResumeFailed(String msg);
 
     void cancelRestartNotification();
 
     void cancelRestoreNotification();
-
-    void showRemoteSecretActivatedNotification();
-
-    void showRemoteSecretDeactivatedNotification();
 }

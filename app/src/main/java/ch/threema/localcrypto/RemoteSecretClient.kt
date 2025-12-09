@@ -21,7 +21,7 @@
 
 package ch.threema.localcrypto
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.libthreema.LibthreemaHttpClient
 import ch.threema.domain.libthreema.toLibthreemaClientInfo
 import ch.threema.domain.models.WorkClientInfo
@@ -56,7 +56,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.ensureActive
 
-private val logger = LoggingUtil.getThreemaLogger("RemoteSecretClient")
+private val logger = getThreemaLogger("RemoteSecretClient")
 
 class RemoteSecretClient(
     clientInfo: WorkClientInfo,

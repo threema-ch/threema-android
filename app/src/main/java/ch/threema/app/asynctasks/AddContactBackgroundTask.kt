@@ -24,14 +24,14 @@ package ch.threema.app.asynctasks
 import androidx.annotation.WorkerThread
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.app.utils.executor.BackgroundTask
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactCreateException
 import ch.threema.data.repositories.ContactModelRepository
 import kotlinx.coroutines.runBlocking
 
-private val logger = LoggingUtil.getThreemaLogger("AddContactBackgroundTask")
+private val logger = getThreemaLogger("AddContactBackgroundTask")
 
 /**
  * This task simply adds the given contact model data if the contact does not exist. If there is a

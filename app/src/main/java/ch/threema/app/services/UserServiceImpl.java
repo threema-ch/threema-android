@@ -27,24 +27,22 @@ import android.accounts.AccountManagerCallback;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.ContactsContract;
-import android.text.format.DateUtils;
 
 import ch.threema.app.profilepicture.CheckedProfilePicture;
 import ch.threema.app.profilepicture.ProfilePicture;
 import ch.threema.app.profilepicture.RawProfilePicture;
 import ch.threema.app.stores.ReadonlyInMemoryIdentityStore;
-import ch.threema.app.utils.ExifInterface;
 import ch.threema.base.crypto.NaCl;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -68,12 +66,12 @@ import ch.threema.app.tasks.ReflectUserProfileNicknameSyncTask;
 import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.app.utils.DeviceIdUtil;
+import ch.threema.app.utils.DeviceIdProvider;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.identitybackup.IdentityBackup;
 import ch.threema.domain.models.LicenseCredentials;
@@ -91,13 +89,13 @@ import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.AppConstants.PHONE_LINKED_PLACEHOLDER;
-import static ch.threema.app.utils.StreamUtilKt.toByteArray;
+import static ch.threema.common.JavaCompat.readBytes;
 
 /**
  * This service class handle all user actions (db/identity....)
  */
 public class UserServiceImpl implements UserService, CreateIdentityRequestDataInterface {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("UserServiceImpl");
+    private static final Logger logger = getThreemaLogger("UserServiceImpl");
 
     @NonNull
     private final Context context;
@@ -121,6 +119,8 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     private final TaskCreator taskCreator;
     @NonNull
     private final MultiDeviceManager multiDeviceManager;
+    @NonNull
+    private final DeviceIdProvider deviceIdProvider;
     private String policyResponseData;
     private String policySignature;
     private int policyErrorCode;
@@ -141,7 +141,8 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         @NonNull PreferenceService preferenceService,
         @NonNull TaskManager taskManager,
         @NonNull TaskCreator taskCreator,
-        @NonNull MultiDeviceManager multiDeviceManager
+        @NonNull MultiDeviceManager multiDeviceManager,
+        @NonNull DeviceIdProvider deviceIdProvider
     ) {
         this.context = context;
         this.preferenceStore = preferenceStore;
@@ -154,6 +155,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         this.taskCreator = taskCreator;
         this.taskManager = taskManager;
         this.multiDeviceManager = multiDeviceManager;
+        this.deviceIdProvider = deviceIdProvider;
     }
 
     @Override
@@ -387,7 +389,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
             throw new ThreemaException(this.context.getResources().getString(R.string.mobile_already_linked));
         }
 
-        this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE_PENDING, System.currentTimeMillis());
+        this.preferenceStore.save(PreferenceStore.PREFS_LINKED_MOBILE_PENDING, Instant.now());
         this.preferenceStore.save(PreferenceStore.PREFS_MOBILE_VERIFICATION_ID, verificationId);
 
         // If a phone number is currently successfully linked, then we trigger an update already now
@@ -488,7 +490,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
 
     @Override
     public int getMobileLinkingState() {
-        if (this.preferenceStore.getLong(PreferenceStore.PREFS_LINKED_MOBILE_PENDING) > 0) {
+        if (preferenceStore.getInstant(PreferenceStore.PREFS_LINKED_MOBILE_PENDING) != null) {
             return LinkingState_PENDING;
         } else if (this.getLinkedMobile() != null) {
             return LinkingState_LINKED;
@@ -498,8 +500,9 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
-    public long getMobileLinkingTime() {
-        return this.preferenceStore.getLong(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
+    @Nullable
+    public Instant getMobileLinkingTime() {
+        return this.preferenceStore.getInstant(PreferenceStore.PREFS_LINKED_MOBILE_PENDING);
     }
 
     @Override
@@ -583,12 +586,11 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         }
 
         try {
-            byte[] profilePictureBytes = toByteArray(fileService.getUserDefinedProfilePictureStream(getIdentity()));
-            if (profilePictureBytes != null) {
-                return new RawProfilePicture(profilePictureBytes);
-            } else {
+            var stream = fileService.getUserDefinedProfilePictureStream(getIdentity());
+            if (stream == null) {
                 return null;
             }
+            return new RawProfilePicture(readBytes(stream));
         } catch (Exception e) {
             logger.error("Could not get user profile picture", e);
             return null;
@@ -605,7 +607,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         }
 
         try {
-            fileService.writeUserDefinedProfilePicture(identity, userProfilePicture.getProfilePictureBytes());
+            fileService.writeUserDefinedProfilePicture(identity, userProfilePicture.getBytes());
             onUserProfilePictureChanged(triggerSource);
             if (multiDeviceManager.isMultiDeviceActive() && triggerSource != TriggerSource.SYNC) {
                 taskCreator.scheduleReflectUserProfilePictureTask();
@@ -637,7 +639,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         }
 
         // Persist the profile picture itself
-        fileService.writeUserDefinedProfilePicture(identity, uploadData.profilePicture.getProfilePictureBytes());
+        fileService.writeUserDefinedProfilePicture(identity, uploadData.profilePicture.getBytes());
 
         // Persist the changes regarding blob id and upload date
         this.preferenceService.setProfilePicUploadData(uploadData);
@@ -717,7 +719,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         final byte[] imageData;
         try {
             imageData = NaCl.symmetricEncryptData(
-                data.profilePicture.getProfilePictureBytes(),
+                data.profilePicture.getBytes(),
                 data.encryptionKey,
                 ProtocolDefines.CONTACT_PHOTO_NONCE
             );
@@ -736,7 +738,6 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
             logger.error("Could not upload contact photo", e);
 
             if (e instanceof FileNotFoundException && ConfigUtils.isOnPremBuild()) {
-                logger.info("Invalidating auth token");
                 apiService.invalidateAuthToken();
             }
 
@@ -826,7 +827,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
             logger.info("Sending feature mask {}", featureMask);
             this.apiConnector.setFeatureMask(featureMask, this.identityStore);
             this.preferenceService.setTransmittedFeatureMask(featureMask);
-            this.preferenceService.setLastFeatureMaskTransmission(new Date().getTime());
+            this.preferenceService.setLastFeatureMaskTransmission(Instant.now());
             logger.info("Successfully sent feature mask");
             success = true;
         } catch (Exception e) {
@@ -860,9 +861,11 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
             return true;
         }
 
-        long lastFeatureMaskTransmission = preferenceService.getLastFeatureMaskTransmission();
-        long timeThreshold = new Date().getTime() - DateUtils.DAY_IN_MILLIS;
-        return lastFeatureMaskTransmission < timeThreshold;
+        Instant lastFeatureMaskTransmission = preferenceService.getLastFeatureMaskTransmission();
+        if (lastFeatureMaskTransmission == null) {
+            return true;
+        }
+        return lastFeatureMaskTransmission.isBefore(Instant.now().minus(1, ChronoUnit.DAYS));
     }
 
     @Override
@@ -935,7 +938,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         JSONObject baseObject = new JSONObject();
 
         BuildFlavor.LicenseType licenseType = BuildFlavor.getCurrent().getLicenseType();
-        String deviceId = DeviceIdUtil.getDeviceId(this.context);
+        String deviceId = deviceIdProvider.getDeviceId();
 
         baseObject.put("deviceId", deviceId);
 

@@ -35,22 +35,23 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
-import org.msgpack.core.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.io.IOException;
 
 import ch.threema.app.R;
 import ch.threema.app.ui.MediaItem;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static android.media.MediaMetadataRetriever.OPTION_CLOSEST_SYNC;
 import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
 
 public class IconUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("IconUtil");
+    private static final Logger logger = getThreemaLogger("IconUtil");
 
     public static @DrawableRes int getMimeCategoryIcon(MimeUtil.MimeCategory category) {
         switch (category) {
@@ -199,15 +200,23 @@ public class IconUtil {
         return thumbnailBitmap;
     }
 
-    public static Bitmap getVideoThumbnailFromUri(Context context, Uri uri) {
+    @Nullable
+    public static Bitmap getVideoThumbnailFromUri(@NonNull Context context, @NonNull Uri uri) {
+        // TODO(ANDR-4279): Improve thumbnail extraction
         // do not use automatic resource management on MediaMetadataRetriever
+        // noinspection resource
         final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
             retriever.setDataSource(context, uri);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
                 return retriever.getScaledFrameAtTime(1, OPTION_CLOSEST_SYNC, THUMBNAIL_SIZE_PX, THUMBNAIL_SIZE_PX);
             } else {
-                return BitmapUtil.resizeBitmapExactlyToMaxWidth(retriever.getFrameAtTime(1), THUMBNAIL_SIZE_PX);
+                final @Nullable Bitmap firstFrame = retriever.getFrameAtTime(1);
+                if (firstFrame == null) {
+                    logger.error("Failed to get first frame for video thumbnail");
+                    return null;
+                }
+                return BitmapUtil.resizeBitmapExactlyToMaxWidth(firstFrame, THUMBNAIL_SIZE_PX);
             }
         } catch (Exception e) {
             //do not show the exception!
@@ -223,17 +232,23 @@ public class IconUtil {
     }
 
     @Nullable
-    public static Bitmap getVideoThumbnailFromUri(Context context, MediaItem mediaItem) {
-        long timeUs = mediaItem.getStartTimeMs() == 0 ? 1L : mediaItem.getStartTimeMs() * 1000;
-
+    public static Bitmap getVideoThumbnailFromUri(@NonNull Context context, @NonNull MediaItem mediaItem) {
+        // TODO(ANDR-4279): Improve thumbnail extraction
         // do not use automatic resource management on MediaMetadataRetriever
+        // noinspection resource
         final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         try {
             retriever.setDataSource(context, mediaItem.getUri());
+            final long timeUs = mediaItem.getStartTimeMs() == 0 ? 1L : mediaItem.getStartTimeMs() * 1000;
+            final @Nullable Bitmap firstFrame = retriever.getFrameAtTime(timeUs);
+            if (firstFrame == null) {
+                logger.error("Failed to get first frame for video thumbnail");
+                return null;
+            }
             // getScaledFrameAtTime() returns unfiltered bitmaps that look bad at low resolutions
-            return BitmapUtil.resizeBitmapExactlyToMaxWidth(retriever.getFrameAtTime(timeUs), THUMBNAIL_SIZE_PX);
+            return BitmapUtil.resizeBitmapExactlyToMaxWidth(firstFrame, THUMBNAIL_SIZE_PX);
         } catch (Exception e) {
-            //do not show the exception!
+            // do not show the exception!
             logger.error("Exception", e);
         } finally {
             try {

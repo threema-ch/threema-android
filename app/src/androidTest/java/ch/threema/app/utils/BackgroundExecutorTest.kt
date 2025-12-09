@@ -25,9 +25,12 @@ import android.os.Looper
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.app.utils.executor.BackgroundTask
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotEquals
+import kotlin.test.fail
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
 import org.junit.Rule
 import org.junit.rules.Timeout
 
@@ -44,17 +47,17 @@ class BackgroundExecutorTest {
 
         executor.execute(object : BackgroundTask<Unit> {
             override fun runBefore() {
-                Assert.assertEquals(initialThread.id, Thread.currentThread().id)
+                assertEquals(initialThread.id, Thread.currentThread().id)
             }
 
             override fun runInBackground() {
                 val currentThreadId = Thread.currentThread().id
-                Assert.assertNotEquals(initialThread.id, currentThreadId)
-                Assert.assertNotEquals(Looper.getMainLooper().thread.id, currentThreadId)
+                assertNotEquals(initialThread.id, currentThreadId)
+                assertNotEquals(Looper.getMainLooper().thread.id, currentThreadId)
             }
 
             override fun runAfter(result: Unit) {
-                Assert.assertEquals(Looper.getMainLooper().thread.id, Thread.currentThread().id)
+                assertEquals(Looper.getMainLooper().thread.id, Thread.currentThread().id)
             }
         })
     }
@@ -63,7 +66,7 @@ class BackgroundExecutorTest {
     fun testReturnValue() {
         executor.execute(object : BackgroundTask<Int> {
             override fun runInBackground() = 42
-            override fun runAfter(result: Int) = Assert.assertEquals(42, result)
+            override fun runAfter(result: Int) = assertEquals(42, result)
         })
     }
 
@@ -96,7 +99,7 @@ class BackgroundExecutorTest {
             }
         }).await()
 
-        Assert.assertArrayEquals(
+        assertContentEquals(
             expected,
             methodExecutionList.toTypedArray(),
         )
@@ -111,12 +114,12 @@ class BackgroundExecutorTest {
 
             override fun runInBackground() {
                 // This should never be executed as run before failed
-                Assert.fail()
+                fail()
             }
 
             override fun runAfter(result: Unit) {
                 // This should never be executed as run before failed
-                Assert.fail()
+                fail()
             }
         })
 
@@ -136,7 +139,7 @@ class BackgroundExecutorTest {
 
             override fun runAfter(result: Unit) {
                 // This should never be executed as run in background failed
-                Assert.fail()
+                fail()
             }
         })
 

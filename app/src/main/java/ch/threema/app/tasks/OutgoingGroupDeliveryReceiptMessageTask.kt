@@ -22,7 +22,7 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -32,7 +32,7 @@ import ch.threema.domain.types.Identity
 import java.util.Date
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupDeliveryReceiptMessageTask")
+private val logger = getThreemaLogger("OutgoingGroupDeliveryReceiptMessageTask")
 
 class OutgoingGroupDeliveryReceiptMessageTask(
     private val messageModelId: Int,
@@ -65,7 +65,7 @@ class OutgoingGroupDeliveryReceiptMessageTask(
             {
                 GroupDeliveryReceiptMessage().also {
                     it.receiptType = receiptType
-                    it.receiptMessageIds = arrayOf(MessageId.fromString(messageModel.apiMessageId))
+                    it.receiptMessageIds = arrayOf(messageModel.messageId)
                 }
             },
             handle,

@@ -1,0 +1,172 @@
+// # Cross-platform Backup (Supplementary)
+//
+// This is a supplementary section to the corresponding protobuf section with
+// messages that use protobuf instead of structbuf.
+
+syntax = "proto3";
+
+package cross_platform_backup;
+
+option java_package = "ch.threema.protobuf.backup";
+
+import "common.proto";
+import "md-d2d.proto";
+import "md-d2d-join.proto";
+import "md-d2d-sync.proto";
+
+message EssentialData {
+  // User's identity data
+  join.EssentialData.IdentityData identity_data = 1;
+
+  // User's profile
+  sync.UserProfile user_profile = 2;
+
+  // Shared settings
+  sync.Settings settings = 3;
+
+  // Contacts
+  repeated join.EssentialData.AugmentedContact contacts = 4;
+
+  // Groups
+  repeated join.EssentialData.AugmentedGroup groups = 5;
+
+  // Distribution lists
+  repeated join.EssentialData.AugmentedDistributionList distribution_lists = 6;
+}
+
+// Essential data container that includes either `EssentialData` or
+// `common.BlobData` corresponding to essential data blobs.
+//
+// When creating this message:
+//
+// 1. Gather all blobs referenced for the user's profile picture, contact
+// profile picture, etc. and back them up as `common.BlobData` before this
+// message.
+// 2. Send the gathered `EssentialData` where the `key` and the `nonce` in
+// `common.Blob` are omitted.
+message EssentialDataContainer {
+
+  // The container's content.
+  oneof content {
+    // A Blob that is referenced as part of `EssentialData`.
+    //
+    // When creating this message:
+    //
+    // 1. Let `id` be an arbitrary ID unique among all blobs.
+    // 1. Let `data` be the blob's data.
+    //
+    // When restoring this message:
+    //
+    // 1. Store the Blob data temporarily or permanently and store its
+    //    associated Blob ID in the device's database.
+    common.BlobData blob_data = 1;
+
+    // The `EssentialData` message.
+    //
+    // When creating this message:
+    //
+    // 1. Let `identity_data` be the user's identity data.
+    // 1. Let `user_profile` be the user's profile where an existing
+    // `profile_picture` references the ID of a blob previously stored as
+    // `common.BlobData`.
+    // 1. Let `settings` be the shared settings.
+    // 1. Let `contacts` be all contacts in the user's contact list where an
+    //    existing `contact_defined_profvile_picture_` and/or
+    //    `user_defined_profile_picture` reference IDs of blobs previously
+    //    stored as `common.BlobData`.
+    // 1. Let `groups` be all user's groups where an existing `profile_picture`
+    //    references IDs of a blob previously stored as `common.BlobData`.
+    // 1. Let `distribution` be all user's groups where an existing
+    //    `profile_picture` reference the ID of a blob previously stored as
+    //    `common.BlobData`.
+    //
+    // When restoring this message:
+    //
+    // 1. Log any Blob ID missing from the previously received
+    // `common.BlobData`.
+    // 2. Store the data in the device's database.
+    EssentialData essential_data = 2;
+  }
+}
+
+// A delta message containing an incremental backup update.
+//
+// When creating this message:
+//
+// 1. If the `message` is backed up as consequence of a received d2d message:
+//    1. Set `create_at` to the timestamp it was received from the mediator
+//    server.
+//    2. Add the corresponding d2d message.
+//    3. Return
+// 2. If the message is an `IncomingMessage` or an `IncomingMessageUpdate`, set
+// the `created_at` to the timestamp the message was received from the chat
+// server.
+// 3. If the message is an `OutgoingMessage`, set the `created_at` to the
+// timestamp the message was marked as sent.
+// 4. If the message is an `OutgoingMessageUpdate`, set the `created_at` to the
+// timestamp of the corresponding `payload.message-ack`.
+// 4. (unreachable)
+message Delta {
+  // Unix-ish timestamp in milliseconds for when the event was created.
+  uint64 created_at = 1;
+
+  // The message
+  oneof message {
+    // A user profile change
+    d2d.UserProfileSync user_profile_change = 2;
+
+    // A settings change
+    d2d.SettingsSync settings_change = 3;
+
+    // A contact change
+    d2d.ContactSync contact_change = 4;
+
+    // A group change
+    d2d.GroupSync group_change = 5;
+
+    // A distribution list change
+    d2d.DistributionListSync distribution_list_change = 6;
+
+    // A new outgoing message
+    d2d.OutgoingMessage outgoing_message = 7;
+
+    // An update for a previously backed up `d2d.OutgoingMessage`
+    d2d.OutgoingMessageUpdate outgoing_message_update = 8;
+
+    // A new incoming message
+    d2d.IncomingMessage incoming_message = 9;
+
+    // An update for a previously backed up `d2d.IncomingMessage`
+    d2d.IncomingMessageUpdate incoming_message_update = 10;
+  }
+}
+
+// Delta container that includes either a `Delta` or a `common.BlobData`
+// corresponding to delta blobs.
+//
+// When creating this message:
+//
+// 1. Gather the blob referenced for the delta and back it up as
+// `common.BlobData`
+// 2. Backup the Delta message.
+message DeltaContainer {
+  // The container's content.
+  oneof content {
+    // A Blob that is referenced as part of a `Delta`.
+    //
+    // When restoring this message:
+    //
+    // 1. Store the Blob data temporarily or permanently and store its
+    //    associated Blob ID in the device's database.
+    common.BlobData blob_data = 1;
+
+    // The `Delta` message.
+    //
+    // When restoring this message:
+    //
+    // 1. Log any Blob ID missing from the previously received
+    // `common.BlobData`.
+    // 2. Store the data in the device's database.
+    Delta delta = 2;
+  }
+}

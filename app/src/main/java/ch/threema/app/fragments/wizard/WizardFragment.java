@@ -41,10 +41,10 @@ import ch.threema.app.services.LocaleService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public abstract class WizardFragment extends Fragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment");
+    private static final Logger logger = getThreemaLogger("WizardFragment");
 
     private static final String DIALOG_TAG_ADDITIONAL_INFO = "ai";
 

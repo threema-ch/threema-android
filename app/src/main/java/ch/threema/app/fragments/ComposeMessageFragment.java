@@ -85,6 +85,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.google.common.util.concurrent.ListenableFuture;
 
 import org.jetbrains.annotations.Contract;
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -138,6 +139,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.transition.Slide;
 import androidx.transition.Transition;
 import androidx.transition.TransitionManager;
+import ch.threema.android.ActivityExtensionsKt;
 import ch.threema.app.AppConstants;
 import ch.threema.app.ExecutorServices;
 import ch.threema.app.R;
@@ -149,6 +151,8 @@ import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.activities.notificationpolicy.ContactNotificationsActivity;
 import ch.threema.app.activities.DistributionListAddActivity;
 import ch.threema.app.activities.notificationpolicy.GroupNotificationsActivity;
+import ch.threema.app.drafts.DraftUpdateTextWatcher;
+import ch.threema.app.drafts.MessageDraft;
 import ch.threema.app.home.HomeActivity;
 import ch.threema.app.activities.ImagePaintActivity;
 import ch.threema.app.mediagallery.MediaGalleryActivity;
@@ -169,7 +173,6 @@ import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.ui.TypingIndicatorTextWatcher;
-import ch.threema.app.utils.ActivityExtensionsKt;
 import ch.threema.data.datatypes.IdColor;
 import ch.threema.app.utils.GroupCallUtil;
 import ch.threema.app.webviews.WorkExplainActivity;
@@ -238,7 +241,6 @@ import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.OngoingCallNoticeMode;
 import ch.threema.app.ui.OngoingCallNoticeView;
 import ch.threema.app.ui.OpenBallotNoticeView;
-import ch.threema.app.ui.QRCodePopup;
 import ch.threema.app.ui.QuotePopup;
 import ch.threema.app.ui.ReportSpamView;
 import ch.threema.app.ui.RootViewDeferringInsetsCallback;
@@ -285,8 +287,9 @@ import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
-import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
@@ -345,7 +348,7 @@ public class ComposeMessageFragment extends Fragment implements
     ThreemaToolbarActivity.OnSoftKeyboardChangedListener,
     ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageFragment");
+    private static final Logger logger = getThreemaLogger("ComposeMessageFragment");
 
     private static final String CONFIRM_TAG_DELETE_DISTRIBUTION_LIST = "deleteDistributionList";
     public static final String DIALOG_TAG_CONFIRM_CALL = "dtcc";
@@ -422,6 +425,7 @@ public class ComposeMessageFragment extends Fragment implements
     private int longClickItem = AbsListView.INVALID_POSITION;
     private int listViewTop = 0, lastFirstVisibleItem = -1;
     private TypingIndicatorTextWatcher typingIndicatorTextWatcher;
+    private @Nullable DraftUpdateTextWatcher draftUpdateTextWatcher;
     private @NonNull Map<String, Integer> identityColors = Collections.emptyMap();
     private MediaFilterQuery lastMediaFilter;
     private RootViewDeferringInsetsCallback rootInsetsDeferringCallback = null;
@@ -444,6 +448,7 @@ public class ComposeMessageFragment extends Fragment implements
     private DownloadService downloadService;
     private LicenseService licenseService;
     private EmojiReactionsRepository emojiReactionsRepository;
+    private DraftManager draftManager;
 
     private ActivityResultLauncher<Intent> wallpaperLauncher;
     private final ActivityResultLauncher<Intent> emojiReactionsLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
@@ -1094,10 +1099,8 @@ public class ComposeMessageFragment extends Fragment implements
     private final QRCodeScanListener qrCodeScanListener = new QRCodeScanListener() {
         @Override
         public void onScanCompleted(final String scanResult) {
-            if (scanResult != null && !scanResult.isEmpty()) {
-                if (messageReceiver != null) {
-                    DraftManager.putMessageDraft(messageReceiver.getUniqueIdString(), scanResult, null);
-                }
+            if (scanResult != null && !scanResult.isEmpty() && messageReceiver != null) {
+                draftManager.set(messageReceiver.getUniqueIdString(), scanResult);
             }
         }
     };
@@ -1105,6 +1108,7 @@ public class ComposeMessageFragment extends Fragment implements
     private final BallotListener ballotListener = new BallotListener() {
         @Override
         public void onClosed(BallotModel ballotModel) {
+            openBallotNoticeView.update();
         }
 
         @Override
@@ -1114,23 +1118,27 @@ public class ComposeMessageFragment extends Fragment implements
         @Override
         public void onCreated(BallotModel ballotModel) {
             try {
-                BallotUtil.openDefaultActivity(
-                    getContext(),
-                    getFragmentManager(),
-                    ballotService.get(ballotModel.getId()),
-                    userService.getIdentity());
+                if (ballotModel != null && userService.getIdentity().equals(ballotModel.getCreatorIdentity())) {
+                    BallotUtil.openDefaultActivity(
+                        getContext(),
+                        getFragmentManager(),
+                        ballotService.get(ballotModel.getId()),
+                        messageReceiver
+                    );
+                }
             } catch (Exception e) {
-                logger.error("Exception", e);
+                logger.error("Failed to open ballot", e);
             }
         }
 
         @Override
         public void onRemoved(BallotModel ballotModel) {
+            openBallotNoticeView.update();
         }
 
         @Override
         public boolean handle(BallotModel ballotModel) {
-            return ballotModel != null && userService.getIdentity().equals(ballotModel.getCreatorIdentity());
+            return true;
         }
     };
 
@@ -1726,7 +1734,7 @@ public class ComposeMessageFragment extends Fragment implements
 
         // save unfinished text
         if (editMessageActionMode == null) {
-            saveMessageDraft();
+            updateMessageDraft();
         }
 
         if (this.typingIndicatorTextWatcher != null) {
@@ -1825,6 +1833,9 @@ public class ComposeMessageFragment extends Fragment implements
                 if (this.typingIndicatorTextWatcher != null) {
                     this.messageText.removeTextChangedListener(this.typingIndicatorTextWatcher);
                 }
+                if (draftUpdateTextWatcher != null) {
+                    messageText.removeTextChangedListener(draftUpdateTextWatcher);
+                }
                 // http://stackoverflow.com/questions/18348049/android-edittext-memory-leak
                 this.messageText.setText(null);
             }
@@ -1839,6 +1850,10 @@ public class ComposeMessageFragment extends Fragment implements
             if (this.composeMessageAdapter != null) {
                 this.composeMessageAdapter.clear();
                 this.composeMessageAdapter = null;
+            }
+
+            if (draftUpdateTextWatcher != null) {
+                draftUpdateTextWatcher.stop();
             }
 
             releaseMedia3Controller();
@@ -2486,9 +2501,12 @@ public class ComposeMessageFragment extends Fragment implements
 
         //remove old indicator every time!
         //fix ANDR-432
-        if (this.typingIndicatorTextWatcher != null) {
-            if (this.messageText != null) {
-                this.messageText.removeTextChangedListener(this.typingIndicatorTextWatcher);
+        if (messageText != null) {
+            if (typingIndicatorTextWatcher != null) {
+                messageText.removeTextChangedListener(this.typingIndicatorTextWatcher);
+            }
+            if (draftUpdateTextWatcher != null) {
+                messageText.removeTextChangedListener(draftUpdateTextWatcher);
             }
         }
 
@@ -2496,11 +2514,6 @@ public class ComposeMessageFragment extends Fragment implements
             this.isGroupChat = true;
             if (this.groupDbId == 0) {
                 this.groupDbId = intent.getLongExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0L);
-
-                // TODO(ANDR-4303): This fallback is currently needed to handle intents coming from pinned shortcuts created before 6.2.0
-                if (groupDbId == 0L) {
-                    groupDbId = (long) intent.getIntExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
-                }
             }
             this.groupModel = groupModelRepository.getByLocalGroupDbId(this.groupDbId);
 
@@ -2703,6 +2716,25 @@ public class ComposeMessageFragment extends Fragment implements
         if (!this.isGroupChat && !this.isDistributionListChat) {
             this.messageText.addTextChangedListener(this.typingIndicatorTextWatcher);
         }
+
+        draftUpdateTextWatcher = new DraftUpdateTextWatcher(
+            draftManager,
+            messageReceiver.getUniqueIdString(),
+            () -> {
+                var text = messageText.getText();
+                return text != null ? text.toString() : null;
+            },
+            () -> {
+                if (!isQuotePopupShown()) {
+                    return null;
+                }
+                var quoteMessageModel = quotePopup.getQuoteInfo().getMessageModel();
+                return quoteMessageModel != null
+                    ? quoteMessageModel.getMessageId()
+                    : null;
+            }
+        );
+        messageText.addTextChangedListener(draftUpdateTextWatcher);
 
         ListenerManager.chatListener.handle(listener -> listener.onChatOpened(conversationUid));
     }
@@ -3349,13 +3381,7 @@ public class ComposeMessageFragment extends Fragment implements
 
                             // For group messages we first show a dialog to indicate the affected
                             // recipients
-                            MessageId messageId;
-                            try {
-                                messageId = MessageId.fromString(messageModel.getApiMessageId());
-                            } catch (ThreemaException e) {
-                                logger.error("Could not get message id from message model", e);
-                                return;
-                            }
+                            MessageId messageId = messageModel.getMessageId();
 
                             RejectedGroupMessageFactory rejectedGroupMessageFactory = databaseService.getRejectedGroupMessageFactory();
                             finalRecipientIdentities.addAll(rejectedGroupMessageFactory.getMessageRejects(messageId, groupModel));
@@ -4145,9 +4171,9 @@ public class ComposeMessageFragment extends Fragment implements
                 @Override
                 public void onCompleted() {
                     RuntimeUtil.runOnUiThread(() -> {
-                        if (ConfigUtils.isTabletLayout()) {
+                        if (ConfigUtils.isTabletLayout() && messageReceiver != null) {
                             // remove draft right now to make sure conversations pane is updated
-                            DraftManager.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
+                            draftManager.remove(messageReceiver.getUniqueIdString());
                         }
                     });
                 }
@@ -4658,49 +4684,48 @@ public class ComposeMessageFragment extends Fragment implements
             this.blockMenuItem.setVisible(false);
         }
 
-        new AsyncTask<Void, Void, Long>() {
-            @Override
-            protected Long doInBackground(Void... voids) {
-                return ballotService.countBallots(new BallotService.BallotFilter() {
-                    @Override
-                    public MessageReceiver getReceiver() {
-                        return messageReceiver;
-                    }
+        if (BallotUtil.canVote(messageReceiver)) {
+            new AsyncTask<Void, Void, Long>() {
+                @Override
+                protected Long doInBackground(Void... voids) {
+                    return ballotService.countBallots(new BallotService.BallotFilter() {
+                        @Override
+                        public MessageReceiver getReceiver() {
+                            return messageReceiver;
+                        }
 
-                    @Override
-                    public BallotModel.State[] getStates() {
-                        return new BallotModel.State[]{BallotModel.State.OPEN};
-                    }
+                        @Override
+                        public BallotModel.State[] getStates() {
+                            return new BallotModel.State[]{BallotModel.State.OPEN};
+                        }
 
-                    @Override
-                    public String createdOrNotVotedByIdentity() {
-                        return userService.getIdentity();
-                    }
-
-                    @Override
-                    public boolean filter(BallotModel ballotModel) {
-                        return true;
-                    }
-                });
-            }
-
-            @Override
-            protected void onPostExecute(Long openBallots) {
-                showOpenBallotWindowMenuItem.setVisible(openBallots > 0L);
-
-                if (preferenceService.getBallotOverviewHidden()) {
-                    showOpenBallotWindowMenuItem.setIcon(R.drawable.ic_outline_visibility);
-                    showOpenBallotWindowMenuItem.setTitle(R.string.ballot_window_show);
-                } else {
-                    showOpenBallotWindowMenuItem.setIcon(R.drawable.ic_outline_visibility_off);
-                    showOpenBallotWindowMenuItem.setTitle(R.string.ballot_window_hide);
+                        @Override
+                        public String createdOrNotVotedByIdentity() {
+                            return userService.getIdentity();
+                        }
+                    });
                 }
-                Context context = getContext();
-                if (context != null) {
-                    ConfigUtils.tintMenuIcon(context, showOpenBallotWindowMenuItem, R.attr.colorOnSurface);
+
+                @Override
+                protected void onPostExecute(Long openBallots) {
+                    showOpenBallotWindowMenuItem.setVisible(openBallots > 0L);
+
+                    if (preferenceService.getBallotOverviewHidden()) {
+                        showOpenBallotWindowMenuItem.setIcon(R.drawable.ic_outline_visibility);
+                        showOpenBallotWindowMenuItem.setTitle(R.string.ballot_window_show);
+                    } else {
+                        showOpenBallotWindowMenuItem.setIcon(R.drawable.ic_outline_visibility_off);
+                        showOpenBallotWindowMenuItem.setTitle(R.string.ballot_window_hide);
+                    }
+                    Context context = getContext();
+                    if (context != null) {
+                        ConfigUtils.tintMenuIcon(context, showOpenBallotWindowMenuItem, R.attr.colorOnSurface);
+                    }
                 }
-            }
-        }.execute();
+            }.execute();
+        } else {
+            showOpenBallotWindowMenuItem.setVisible(false);
+        }
 
         new AsyncTask<Void, Void, Long>() {
             @Override
@@ -4714,11 +4739,6 @@ public class ComposeMessageFragment extends Fragment implements
                     @Override
                     public BallotModel.State[] getStates() {
                         return new BallotModel.State[]{BallotModel.State.OPEN, BallotModel.State.CLOSED};
-                    }
-
-                    @Override
-                    public boolean filter(BallotModel ballotModel) {
-                        return true;
                     }
                 });
             }
@@ -4976,14 +4996,13 @@ public class ComposeMessageFragment extends Fragment implements
             getParentFragmentManager(),
             null,
             () -> {
-                if (isAdded()) {
+                if (isAdded() && messageReceiver != null) {
                     synchronized (messageValues) {
                         messageValues.clear();
                         composeMessageAdapter.notifyDataSetChanged();
                     }
 
-                    // empty draft
-                    DraftManager.putMessageDraft(messageReceiver.getUniqueIdString(), "", null);
+                    draftManager.remove(messageReceiver.getUniqueIdString());
                     messageText.setText(null);
 
                     setCurrentPageReferenceId(null);
@@ -5067,7 +5086,7 @@ public class ComposeMessageFragment extends Fragment implements
 
     public class ComposeMessageAction implements ActionMode.Callback {
         private final int position;
-        private MenuItem quoteItem, forwardItem, saveItem, copyItem, qrItem, shareItem, infoItem, editItem, starItem, unStarItem, imageReplyItem, deleteItem;
+        private MenuItem quoteItem, forwardItem, saveItem, copyItem, shareItem, infoItem, editItem, starItem, unStarItem, imageReplyItem, deleteItem;
 
         ComposeMessageAction(int position) {
             this.position = position;
@@ -5077,7 +5096,6 @@ public class ComposeMessageFragment extends Fragment implements
         private void updateActionMenu(Menu menu) {
             boolean isSingleMessage = selectedMessages.size() == 1;
             boolean isQuotable = isSingleMessage;
-            boolean showAsQRCode = isSingleMessage;
             boolean canShowInfo = isSingleMessage;
             boolean isForwardable = selectedMessages.size() <= MAX_FORWARDABLE_ITEMS;
             boolean isSaveable = !AppRestrictionUtil.isShareMediaDisabled(getContext());
@@ -5101,7 +5119,6 @@ public class ComposeMessageFragment extends Fragment implements
             for (AbstractMessageModel message : selectedMessages) {
                 if (message == null) continue;
                 isQuotable = isQuotable && isQuotable(message);
-                showAsQRCode = showAsQRCode && canShowAsQRCode(message);
                 isForwardable = isForwardable && isForwardable(message);
                 isSaveable = isSaveable && isSaveable(message);
                 isCopyable = isCopyable && isCopyable(message);
@@ -5112,7 +5129,6 @@ public class ComposeMessageFragment extends Fragment implements
             isShareable = isShareable && (isSingleMessage || !containsTextMessage(selectedMessages));
 
             quoteItem.setVisible(isQuotable);
-            qrItem.setVisible(false /*showAsQRCode*/); // TODO(ANDR-3498): Reenable or remove completely
             infoItem.setVisible(canShowInfo);
             forwardItem.setVisible(isForwardable);
             saveItem.setVisible(isSaveable);
@@ -5121,7 +5137,8 @@ public class ComposeMessageFragment extends Fragment implements
             editItem.setVisible(isEditable);
             imageReplyItem.setVisible(canSendImageReply);
 
-            boolean isMessageCurrentlyStarred = (selectedMessages.get(0).getDisplayTags() & DisplayTag.DISPLAY_TAG_STARRED) == DisplayTag.DISPLAY_TAG_STARRED;
+            boolean isMessageCurrentlyStarred = !selectedMessages.isEmpty()
+                && (selectedMessages.get(0).getDisplayTags() & DisplayTag.DISPLAY_TAG_STARRED) == DisplayTag.DISPLAY_TAG_STARRED;
             starItem.setVisible(canStarMessage && !isMessageCurrentlyStarred);
             unStarItem.setVisible(canStarMessage && isMessageCurrentlyStarred);
 
@@ -5142,11 +5159,6 @@ public class ComposeMessageFragment extends Fragment implements
             }
             boolean isValidReceiver = messageReceiver.validateSendingPermission().isValid();
             return isValidReceiver && QuoteUtil.isQuoteable(message);
-        }
-
-        private boolean canShowAsQRCode(@NonNull AbstractMessageModel message) {
-            return message.getType() == MessageType.TEXT    // if the message is a text message
-                && !message.isStatusMessage();              // and it is not a status message
         }
 
         private boolean isForwardable(@NonNull AbstractMessageModel message) {
@@ -5244,7 +5256,6 @@ public class ComposeMessageFragment extends Fragment implements
             forwardItem = menu.findItem(R.id.menu_message_forward);
             saveItem = menu.findItem(R.id.menu_message_save);
             copyItem = menu.findItem(R.id.menu_message_copy);
-            qrItem = menu.findItem(R.id.menu_message_qrcode);
             shareItem = menu.findItem(R.id.menu_share);
             quoteItem = menu.findItem(R.id.menu_message_quote);
             infoItem = menu.findItem(R.id.menu_info);
@@ -5298,10 +5309,6 @@ public class ComposeMessageFragment extends Fragment implements
                 if (ConfigUtils.requestWriteStoragePermissions(activity, ComposeMessageFragment.this, PERMISSION_REQUEST_SAVE_MESSAGE)) {
                     fileService.saveMedia(activity, coordinatorLayout, new CopyOnWriteArrayList<>(selectedMessages), false);
                 }
-                mode.finish();
-            } else if (id == R.id.menu_message_qrcode) {
-                logger.info("Action menu: scan QR code clicked");
-                showAsQrCode(activity.getToolbar());
                 mode.finish();
             } else if (id == R.id.menu_share) {
                 logger.info("Action menu: share messages clicked");
@@ -5395,8 +5402,11 @@ public class ComposeMessageFragment extends Fragment implements
                 messageText.removeTextChangedListener(typingIndicatorTextWatcher);
                 typingIndicatorTextWatcher.stopSending();
             }
+            if (draftUpdateTextWatcher != null) {
+                messageText.removeTextChangedListener(draftUpdateTextWatcher);
+            }
 
-            saveMessageDraft();
+            updateMessageDraft();
 
             messageText.setText(getEditableText(messageModel));
 
@@ -5474,8 +5484,8 @@ public class ComposeMessageFragment extends Fragment implements
         public void onDestroyActionMode(ActionMode mode) {
             // restore message draft
             if (messageReceiver != null) {
-                String messageDraft = DraftManager.getMessageDraft(messageReceiver.getUniqueIdString());
-                messageText.setText(messageDraft);
+                MessageDraft messageDraft = draftManager.get(messageReceiver.getUniqueIdString());
+                messageText.setText(messageDraft != null ? messageDraft.getText() : null);
                 messageText.setSelection(String.valueOf(messageText.getText()).length());
             }
 
@@ -5522,6 +5532,9 @@ public class ComposeMessageFragment extends Fragment implements
             if (typingIndicatorTextWatcher != null) {
                 messageText.addTextChangedListener(typingIndicatorTextWatcher);
             }
+            if (draftUpdateTextWatcher != null) {
+                messageText.addTextChangedListener(draftUpdateTextWatcher);
+            }
 
             editMessageActionMode = null;
         }
@@ -5547,14 +5560,6 @@ public class ComposeMessageFragment extends Fragment implements
 
     private void showMessageDetailScreen(AbstractMessageModel messageModel) {
         activity.startActivity(MessageDetailsActivity.createIntent(requireContext(), messageModel));
-    }
-
-    private void showAsQrCode(View v) {
-        AbstractMessageModel messageModel = selectedMessages.get(0);
-
-        if (messageModel != null && messageModel.getType() == MessageType.TEXT) {
-            new QRCodePopup(getContext(), getActivity().getWindow().getDecorView(), getActivity()).show(v, messageModel.getBody());
-        }
     }
 
     /**
@@ -5896,6 +5901,7 @@ public class ComposeMessageFragment extends Fragment implements
                 this.downloadService = serviceManager.getDownloadService();
                 this.licenseService = serviceManager.getLicenseService();
                 this.emojiReactionsRepository = serviceManager.getModelRepositories().getEmojiReaction();
+                this.draftManager = KoinJavaComponent.get(DraftManager.class);
             } catch (Exception e) {
                 LogUtil.exception(e, activity);
             }
@@ -6040,7 +6046,7 @@ public class ComposeMessageFragment extends Fragment implements
 
         if (ConfigUtils.isTabletLayout()) {
             // make sure layout changes after rotate are reflected in thumbnail size etc.
-            saveMessageDraft();
+            updateMessageDraft();
             this.handleIntent(activity.getIntent());
         } else {
             if (isAdded()) {
@@ -6054,20 +6060,20 @@ public class ComposeMessageFragment extends Fragment implements
 
     private void restoreMessageDraft(boolean force) {
         if (this.messageReceiver != null && this.messageText != null && (force || TestUtil.isBlankOrNull(this.messageText.getText()))) {
-            String messageDraft = DraftManager.getMessageDraft(messageReceiver.getUniqueIdString());
+            MessageDraft messageDraft = draftManager.get(messageReceiver.getUniqueIdString());
 
-            if (!TextUtils.isEmpty(messageDraft)) {
+            if (messageDraft != null) {
                 this.messageText.setText("");
-                this.messageText.append(messageDraft);
-                String apiMessageId = DraftManager.getQuoteDraft(messageReceiver.getUniqueIdString());
-                if (apiMessageId != null) {
-                    AbstractMessageModel quotedMessageModel = messageService.getMessageModelByApiMessageIdAndReceiver(apiMessageId, messageReceiver);
+                this.messageText.append(messageDraft.getText());
+                var quotedApiMessageId = messageDraft.getQuotedMessageId();
+                if (quotedApiMessageId != null) {
+                    AbstractMessageModel quotedMessageModel = messageService.getMessageModelByApiMessageIdAndReceiver(quotedApiMessageId.toString(), messageReceiver);
                     if (quotedMessageModel != null && QuoteUtil.isQuoteable(quotedMessageModel)) {
                         showQuotePopup(quotedMessageModel, false);
                     }
                 }
                 // If the draft is just "@", then dismiss the mention popup when restoring the draft
-                if ("@".equals(messageDraft)) {
+                if (messageDraft.getText().equals("@")) {
                     dismissMentionPopup();
                 }
             } else {
@@ -6076,17 +6082,18 @@ public class ComposeMessageFragment extends Fragment implements
         }
     }
 
-    private void saveMessageDraft() {
-        if (this.messageReceiver != null) {
-            String draft = DraftManager.getMessageDraft(messageReceiver.getUniqueIdString());
-            if (this.messageText.getText() != null) {
-                DraftManager.putMessageDraft(messageReceiver.getUniqueIdString(),
-                    this.messageText.getText().toString(),
-                    isQuotePopupShown() ? quotePopup.getQuoteInfo().getMessageModel() : null);
-            }
-            if (!TestUtil.isBlankOrNull(this.messageText.getText()) || !TestUtil.isEmptyOrNull(draft)) {
-                ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
-            }
+    private void updateMessageDraft() {
+        if (messageReceiver != null && messageText.getText() != null) {
+            draftManager.set(
+                messageReceiver.getUniqueIdString(),
+                this.messageText.getText().toString(),
+                isQuotePopupShown() && quotePopup.getQuoteInfo().getMessageModel() != null
+                    ? quotePopup.getQuoteInfo().getMessageModel().getMessageId()
+                    : null
+            );
+
+            // At this point, we don't know whether the draft has changed, so we need to notify the listeners regardless.
+            ListenerManager.conversationListeners.handle(ConversationListener::onModifiedAll);
         }
     }
 

@@ -25,13 +25,13 @@ import android.content.Context
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.utils.WebRTCUtil
 import ch.threema.app.voip.groupcall.sfu.*
-import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils.hexStringToByteArray
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.ContactModel
 import org.webrtc.RtcCertificatePem
 
 private val FINGERPRINT_REGEX = Regex("^sha-256 (([0-9a-zA-Z]{2}:?){32})\$")
-private val logger = LoggingUtil.getThreemaLogger("GroupCallConnectionState.Joining")
+private val logger = getThreemaLogger("GroupCallConnectionState.Joining")
 
 class Joining internal constructor(
     call: GroupCall,

@@ -31,19 +31,19 @@ import androidx.annotation.UiThread
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
+import ch.threema.android.Destroyable
 import ch.threema.app.R
 import ch.threema.app.glide.AvatarOptions
 import ch.threema.app.services.ContactService
-import ch.threema.app.utils.Destroyable
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.ParticipantSurfaceViewRenderer
 import ch.threema.app.voip.groupcall.sfu.*
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.bumptech.glide.RequestManager
 import kotlinx.coroutines.*
 import org.webrtc.EglBase
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallParticipantsAdapter")
+private val logger = getThreemaLogger("GroupCallParticipantsAdapter")
 
 @UiThread
 class GroupCallParticipantsAdapter(

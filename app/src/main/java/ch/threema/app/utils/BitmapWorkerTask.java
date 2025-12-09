@@ -37,12 +37,12 @@ import java.lang.ref.WeakReference;
 import androidx.appcompat.content.res.AppCompatResources;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
 
 public class BitmapWorkerTask extends AsyncTask<BitmapWorkerTaskParams, Void, Bitmap> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BitmapWorkerTask");
+    private static final Logger logger = getThreemaLogger("BitmapWorkerTask");
 
     private final WeakReference<ImageView> imageViewReference;
 

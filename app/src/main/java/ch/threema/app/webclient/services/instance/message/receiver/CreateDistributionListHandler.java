@@ -42,12 +42,12 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.DistributionListModel;
 
 @WorkerThread
 public class CreateDistributionListHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("CreateDistributionListHandler");
+    private static final Logger logger = getThreemaLogger("CreateDistributionListHandler");
 
     private final MessageDispatcher dispatcher;
     private final DistributionListService distributionListService;

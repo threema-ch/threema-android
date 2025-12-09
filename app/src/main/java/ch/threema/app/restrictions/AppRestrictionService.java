@@ -49,10 +49,11 @@ import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.app.stores.EncryptedPreferenceStore;
 import ch.threema.domain.models.UserCredentials;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.android.ThreadUtilKt.isMainThread;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkData;
 import ch.threema.domain.protocol.api.work.WorkMDMSettings;
@@ -63,7 +64,7 @@ import java8.util.stream.StreamSupport;
  * Hold all Work App Restrictions
  */
 public class AppRestrictionService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AppRestrictionService");
+    private static final Logger logger = getThreemaLogger("AppRestrictionService");
 
     private Bundle appRestrictions;
 
@@ -214,7 +215,7 @@ public class AppRestrictionService {
             return;
         }
 
-        if (RuntimeUtil.isOnUiThread()) {
+        if (isMainThread()) {
             throw new ThreemaException("failed to fetch MDM settings in the main thread");
         }
 

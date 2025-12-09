@@ -23,9 +23,9 @@ package ch.threema.app.profilepicture
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import ch.threema.android.toJpegByteArray
 import ch.threema.app.utils.BitmapUtil
 import ch.threema.app.utils.ExifInterface
-import ch.threema.app.utils.toJpegByteArray
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import java.io.File
 import kotlinx.serialization.Serializable
@@ -35,7 +35,7 @@ import kotlinx.serialization.Serializable
  * [ProtocolDefines.PROFILE_PICTURE_HEIGHT_PX] pixels high and that it is compressed as a jpeg.
  */
 @Serializable
-class CheckedProfilePicture private constructor(override val profilePictureBytes: ByteArray) : ProfilePicture {
+class CheckedProfilePicture private constructor(override val bytes: ByteArray) : ProfilePicture {
 
     override fun isValid() = true
 
@@ -45,10 +45,10 @@ class CheckedProfilePicture private constructor(override val profilePictureBytes
 
         other as CheckedProfilePicture
 
-        return profilePictureBytes.contentEquals(other.profilePictureBytes)
+        return bytes.contentEquals(other.bytes)
     }
 
-    override fun hashCode() = profilePictureBytes.contentHashCode()
+    override fun hashCode() = bytes.contentHashCode()
 
     companion object {
         /**

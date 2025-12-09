@@ -27,7 +27,6 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
-import android.text.format.DateUtils;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresPermission;
@@ -37,6 +36,8 @@ import com.google.common.collect.ListMultimap;
 import org.slf4j.Logger;
 
 import java.math.BigInteger;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -44,6 +45,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.threema.data.datatypes.AndroidContactLookupInfo;
 import ch.threema.app.asynctasks.AddContactBackgroundTask;
 import ch.threema.app.debug.AndroidContactSyncLogger;
 import ch.threema.app.services.BlockedIdentitiesService;
@@ -59,7 +61,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.repositories.ContactModelRepository;
@@ -76,7 +78,7 @@ import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 import ch.threema.data.datatypes.IdColor;
 
 public class SynchronizeContactsRoutine implements Runnable {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsRoutine");
+    private static final Logger logger = getThreemaLogger("SynchronizeContactsRoutine");
 
     private final UserService userService;
     private final Context context;
@@ -191,9 +193,10 @@ public class SynchronizeContactsRoutine implements Runnable {
             final Map<String, ContactMatchKeyPhone> phoneNumbers = this.readPhoneNumbers();
             final int phoneNumbersHash = phoneNumbers.keySet().hashCode();
 
+            Instant timeOfLastContactSync = preferenceService.getTimeOfLastContactSync();
             if (preferenceService.getEmailSyncHashCode() == emailsHash
                 && preferenceService.getPhoneNumberSyncHashCode() == phoneNumbersHash
-                && (preferenceService.getTimeOfLastContactSync() + (DateUtils.HOUR_IN_MILLIS * 23)) > System.currentTimeMillis()) {
+                && (timeOfLastContactSync != null && timeOfLastContactSync.isAfter(Instant.now().minus(23, ChronoUnit.DAYS)))) {
                 logger.info("System contacts are unchanged or grace time not yet reached. Not syncing.");
                 success = true;
                 return;
@@ -201,7 +204,7 @@ public class SynchronizeContactsRoutine implements Runnable {
 
             preferenceService.setEmailSyncHashCode(emailsHash);
             preferenceService.setPhoneNumberSyncHashCode(phoneNumbersHash);
-            preferenceService.setTimeOfLastContactSync(System.currentTimeMillis());
+            preferenceService.setTimeOfLastContactSync(Instant.now());
 
             logger.info("Attempting to sync contacts: {} emails, {} phone numbers", emails.size(), phoneNumbers.size());
 
@@ -327,7 +330,9 @@ public class SynchronizeContactsRoutine implements Runnable {
                     isNewContact = true;
                     logger.info("Inserting new Threema contact {}", identity);
                 }
-                contact.setAndroidLookupKey(lookupKey + "/" + contactId);
+                contact.setAndroidContactLookupKey(
+                    new AndroidContactLookupInfo(lookupKey, contactId)
+                );
 
                 try {
                     boolean createNewRawContact;

@@ -491,7 +491,7 @@
     <string name="masterkey_lock_explain">${app_name} hält die Passphrase im RAM-Speicher. Wenn Sie häufig nach der Passphrase gefragt werden, kann dies an einer Task-Killer- oder Akku-Spar-App liegen, welche die Passphrase aus dem Speicher entfernt.</string>
     <string name="identity_already_exists">Diese ID ist bereits in Ihrer Kontaktliste</string>
     <string name="share_contact">Kontakt teilen</string>
-    <string name="add_shortcut">Desktop-Verkn. erstellen</string>
+    <string name="add_shortcut">Verknüpfung erstellen</string>
     <string name="group_not_found">Gruppe nicht gefunden.</string>
     <string name="contact_not_found">Kontakt nicht gefunden</string>
     <string name="contact_now_blocked">Kontakt blockiert</string>
@@ -822,7 +822,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="grace_thirty_minutes">30 Minuten</string>
     <string name="grace_never">Nie (manuell)</string>
     <string name="never">Nie</string>
-    <string name="access_protection_cannot_be_removed">Der Zugriffsschutz kann nicht entfernt werden, da noch mindestens ein privater Chat existiert.</string>
+    <string name="access_protection_private_chats_warning">Durch das Entfernen des Zugriffsschutzes werden alle privaten Chats wieder sichtbar gemacht.</string>
     <string name="verification_started">Überprüfung gestartet</string>
     <string name="cannot_open_file">Konnte Datei nicht öffnen</string>
     <string name="prefs_title_image_attach_previews">Medien-Schnellauswahl</string>
@@ -1415,7 +1415,6 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="threema_push_service_description">Dauerhafte Benachrichtigung, wenn ${app_name_short} Push aktiv ist</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push_activated">${app_name_short} Push aktiviert.</string>
-    <string name="add_shortcut_success">Verknüpfung wurde erstellt</string>
     <string name="add_shortcut_error">Fehler beim Erstellen der Desktop-Verknüpfung</string>
     <string name="web_link">Link</string>
     <string name="link_copied">%s kopiert</string>
@@ -1663,6 +1662,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Die App kann keine permanente Verbindung zu den Servern aufrechterhalten, was für die Funktion von ${app_name_short} Push jedoch erforderlich ist. Befindet sich die App im Hintergrund, werden Sie nicht über neue Nachrichten informiert. Um dies zu beheben, tippen Sie auf «Akkunutzung der App» und wählen Sie «Uneingeschränkt».</string>
     <string name="problemsolver_to_settings">Zu den Einstellungen</string>
+    <!-- Label on button to dismiss/hide a warning -->
+    <string name="problemsolver_dismiss">Ausblenden</string>
     <string name="prefs_advanced_options">Erweiterte Optionen</string>
     <string name="push_service">Push-Dienst</string>
     <string name="edit_and_send">Bearbeiten &amp; senden</string>
@@ -1802,16 +1803,14 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="remote_secrets_failed_to_fetch">Das ${remote_secret}-Token konnte nicht abgerufen werden. Bitte prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.</string>
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="fetching_remote_secret">${remote_secret}-Token wird abgerufen</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activated_notification_title">${remote_secret} wurde aktiviert</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
-    <string name="remote_secret_activated_notification_content">Diese Funktion schützt Ihre Chats, falls Ihr Mobilgerät verloren geht oder gestohlen wird.</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_activated_dialog_content">Wenn Sie Ihr Gerät verlieren, kann Ihr Administrator mit dieser Funktion die App sperren, so dass Ihre Chats auch dann verschlüsselt bleiben, wenn unbefugte Personen Ihr Gerät entsperren.\n[Mehr erfahren]</string>
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivated_notification_title">${remote_secret} wurde deaktiviert</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
-    <string name="remote_secret_deactivated_notification_content">Für weitere Informationen wenden Sie sich bitte an Ihren Administrator.</string>
-    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
-    <string name="remote_secret_activated_learn_more">Mehr erfahren</string>
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_deactivated_dialog_content">Ihr Administrator hat ${remote_secret} deaktiviert. Weitere Informationen zu ${remote_secret} finden Sie in diesem [FAQ-Eintrag].</string>
     <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating">${remote_secret} wird aktiviert</string>
     <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
@@ -1820,6 +1819,26 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="remote_secret_deactivating">${remote_secret} wird deaktiviert</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">${remote_secret} konnte nicht deaktiviert werden. Bitte prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.</string>
+
+    <string name="referral_banner_title">Empfehlen und profitieren</string>
+    <string name="referral_banner_body">Laden Sie Ihre Freunde ein, Threema Work für ihr Unternehmen zu nutzen, und sichern Sie sich einen Empfehlungsbonus!</string>
+
+    <string name="referral_screen_title">Empfehlen und profitieren</string>
+    <string name="referral_screen_subtitle">Erhalten Sie bis zu 10% vom ersten Rechnungsbetrag des angeworbenen Unternehmens.</string>
+    <string name="referral_how_it_works_title">So funktioniert’s</string>
+    <string name="referral_how_it_works_referral_title">Empfehlen</string>
+    <string name="referral_how_it_works_referral_body">Laden Sie einen Freund bzw. dessen Unternehmen zu Threema Work ein. Wichtig ist, dass Ihre Threema-ID bei der Registrierung oder beim Kauf von Lizenzen angegeben wird, damit Ihre Empfehlung berücksichtigt werden kann.</string>
+    <string name="referral_how_it_works_requirements_title">Voraussetzungen</string>
+    <string name="referral_how_it_works_requirements_body">Das angeworbene Unternehmen darf noch kein Kunde von uns sein und muss eine kostenpflichtigen Bestellung von Lizenzen tätigen.</string>
+    <string name="referral_how_it_works_confirmation_title">Bestätigen</string>
+    <string name="referral_how_it_works_confirmation_body">Damit Ihre Empfehlung korrekt zugeordnet und überprüft werden kann, nehmen wir vor der Auszahlung Kontakt mit Ihnen auf. Sobald die Prüfung abgeschlossen ist, informieren wir Sie.</string>
+    <string name="referral_your_reward_title">Ihre Belohnung</string>
+    <string name="referral_your_reward_subtitle">Erhalten Sie einen Empfehlungsbonus</string>
+    <string name="referral_your_reward_body">Für Ihre Empfehlung erhalten Sie 10% des ersten Rechnungsbetrags des angeworbenen Unternehmens (exkl. Steuern/Gebühren). Der Bonus wird 30–60 Tage nach Zahlungseingang an Sie überwiesen.</string>
+    <string name="referral_share_invitation_link">Einladungslink teilen</string>
+    <string name="referral_view_terms_and_conditions">AGB ansehen</string>
+    <string name="referral_invitation_message_content">Hey! Teste Threema Work kostenlos mit diesem Einladungslink:  %1$s</string>
+
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontakte</item>

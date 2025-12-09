@@ -56,14 +56,14 @@ import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 
 
 public class VoipUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipUtil");
+    private static final Logger logger = getThreemaLogger("VoipUtil");
 
     private static final String DIALOG_TAG_FETCHING_FEATURE_MASK = "fetchingFeatureMask";
     private static final String DIALOG_TAG_PSTN_OUTGOING = "pstn_outgoing";

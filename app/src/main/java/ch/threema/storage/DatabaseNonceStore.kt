@@ -28,7 +28,7 @@ import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.crypto.NonceStore
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.toHexString
 import ch.threema.domain.stores.IdentityStore
 import java.io.File
@@ -37,7 +37,7 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
 import net.zetetic.database.sqlcipher.SQLiteOpenHelper
 
-private val logger = LoggingUtil.getThreemaLogger("DatabaseNonceStore")
+private val logger = getThreemaLogger("DatabaseNonceStore")
 
 class DatabaseNonceStore(
     context: Context,

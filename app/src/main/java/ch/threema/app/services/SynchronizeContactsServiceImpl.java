@@ -41,20 +41,16 @@ import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
-import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
 import ch.threema.app.utils.AndroidContactUtil;
-import ch.threema.app.utils.ContactUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ModelDeletedException;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.IdentityStore;
-import ch.threema.storage.models.ContactModel;
-import okhttp3.OkHttpClient;
 
 public class SynchronizeContactsServiceImpl implements SynchronizeContactsService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsServiceImpl");
+    private static final Logger logger = getThreemaLogger("SynchronizeContactsServiceImpl");
 
     private final ContentResolver contentResolver;
     private final APIConnector apiConnector;
@@ -70,11 +66,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
     private final PreferenceService preferenceService;
     private final DeviceService deviceService;
     private final Context context;
-    private final FileService fileService;
     private final BlockedIdentitiesService blockedIdentitiesService;
-    private final ApiService apiService;
-    @NonNull
-    private final OkHttpClient okHttpClient;
 
     public SynchronizeContactsServiceImpl(
         Context context, APIConnector apiConnector,
@@ -85,17 +77,13 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
         @NonNull ExcludedSyncIdentitiesService excludedSyncIdentityListService,
         PreferenceService preferenceService,
         DeviceService deviceService,
-        FileService fileService,
         IdentityStore identityStore,
-        @NonNull BlockedIdentitiesService blockedIdentitiesService,
-        ApiService apiService,
-        @NonNull OkHttpClient okHttpClient
+        @NonNull BlockedIdentitiesService blockedIdentitiesService
     ) {
         this.excludedSyncIdentityListService = excludedSyncIdentityListService;
         this.preferenceService = preferenceService;
         this.deviceService = deviceService;
         this.context = context;
-        this.fileService = fileService;
         this.contentResolver = context.getContentResolver();
         this.apiConnector = apiConnector;
         this.contactService = contactService;
@@ -104,8 +92,6 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
         this.localeService = localeService;
         this.identityStore = identityStore;
         this.blockedIdentitiesService = blockedIdentitiesService;
-        this.apiService = apiService;
-        this.okHttpClient = okHttpClient;
     }
 
     @Override
@@ -124,44 +110,7 @@ public class SynchronizeContactsServiceImpl implements SynchronizeContactsServic
                         sync.run();
                     } catch (SecurityException exception) {
                         logger.error("Could not run contact sync", exception);
-                        return;
                     }
-
-                    //get all business accounts
-                    //disable contact changed event handler
-                    boolean enableState = ListenerManager.contactListeners.isEnabled();
-                    try {
-                        if (enableState) {
-                            ListenerManager.contactListeners.enabled(false);
-                        }
-
-                        for (ContactModel contactModel : contactService.getAll()) {
-                            if (ContactUtil.isGatewayContact(contactModel)) {
-                                ch.threema.data.models.ContactModel model = contactModelRepository.getByIdentity(contactModel.getIdentity());
-                                if (model == null) {
-                                    logger.error("Could not get contact model with identity {}", contactModel.getIdentity());
-                                    continue;
-                                }
-                                UpdateBusinessAvatarRoutine.start(
-                                    okHttpClient,
-                                    model,
-                                    fileService,
-                                    contactService,
-                                    apiService,
-                                    true
-                                );
-                            }
-                        }
-                        //fore update business account avatars
-                    } catch (Exception x) {
-                        //log exception and ignore
-                        logger.error("Ignoring exception", x);
-                    } finally {
-                        //enable contact listener again
-                        ListenerManager.contactListeners.enabled(enableState);
-                    }
-
-
                 }, "SynchronizeContactsRoutine").start();
                 return true;
             } else {

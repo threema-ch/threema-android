@@ -35,6 +35,6 @@ public class ThreemaTestRunner extends AndroidJUnitRunner {
 
     @Override
     public Application newApplication(ClassLoader cl, String className, Context context) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        return super.newApplication(cl, TestApplication.class.getName(), context);
+        return super.newApplication(cl, ThreemaApplication.class.getName(), context);
     }
 }

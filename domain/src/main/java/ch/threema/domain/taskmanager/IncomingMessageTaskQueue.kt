@@ -21,13 +21,13 @@
 
 package ch.threema.domain.taskmanager
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.InboundMessage
 import kotlinx.coroutines.channels.Channel
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingMessageTaskQueue")
+private val logger = getThreemaLogger("IncomingMessageTaskQueue")
 
 internal class IncomingMessageTaskQueue(
     private val incomingMessageProcessor: IncomingMessageProcessor,

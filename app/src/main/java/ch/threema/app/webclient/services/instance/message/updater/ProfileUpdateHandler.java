@@ -39,12 +39,12 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.converter.Profile;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.taskmanager.TriggerSource;
 
 @WorkerThread
 public class ProfileUpdateHandler extends MessageUpdater {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ProfileUpdateHandler");
+    private static final Logger logger = getThreemaLogger("ProfileUpdateHandler");
 
     // Handler
     private final @NonNull HandlerExecutor handler;

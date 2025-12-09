@@ -21,14 +21,14 @@
 
 package ch.threema.app.groupflows
 
-import ch.threema.app.services.ApiService
+import ch.threema.app.profilepicture.GroupProfilePictureUploader
 import ch.threema.app.services.FileService
 import ch.threema.app.services.UserService
 import ch.threema.app.tasks.ActiveGroupStateResyncTask
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.app.voip.groupcall.GroupCallManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.protocol.api.APIConnector
@@ -37,7 +37,7 @@ import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.DatabaseService
 import kotlinx.coroutines.runBlocking
 
-private val logger = LoggingUtil.getThreemaLogger("GroupResyncFlow")
+private val logger = getThreemaLogger("GroupResyncFlow")
 
 class GroupResyncFlow(
     private val groupModel: GroupModel,
@@ -46,7 +46,7 @@ class GroupResyncFlow(
     private val contactStore: ContactStore,
     private val apiConnector: APIConnector,
     private val userService: UserService,
-    private val apiService: ApiService,
+    private val groupProfilePictureUploader: GroupProfilePictureUploader,
     private val fileService: FileService,
     private val groupCallManager: GroupCallManager,
     private val databaseService: DatabaseService,
@@ -71,7 +71,7 @@ class GroupResyncFlow(
                     contactStore,
                     apiConnector,
                     userService,
-                    apiService,
+                    groupProfilePictureUploader,
                     fileService,
                     groupCallManager,
                     databaseService,

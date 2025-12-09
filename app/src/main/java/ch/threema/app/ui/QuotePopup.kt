@@ -46,13 +46,13 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.MessageUtil
 import ch.threema.app.utils.NameUtil
 import ch.threema.app.utils.QuoteUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.types.Identity
 import ch.threema.storage.models.AbstractMessageModel
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
 
-private val logger = LoggingUtil.getThreemaLogger("QuotePopup")
+private val logger = getThreemaLogger("QuotePopup")
 
 @SuppressLint("InflateParams")
 class QuotePopup(

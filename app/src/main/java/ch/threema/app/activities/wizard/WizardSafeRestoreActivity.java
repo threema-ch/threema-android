@@ -63,9 +63,10 @@ import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.utils.executor.BackgroundTask;
 import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.protocol.ApplicationSetupStepsKt.runApplicationSetupSteps;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
@@ -75,7 +76,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
     WizardDialog.WizardDialogCallback,
     ThreemaSafeAdvancedDialog.WizardDialogCallback {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardSafeRestoreActivity");
+    private static final Logger logger = getThreemaLogger("WizardSafeRestoreActivity");
 
     private static final String DIALOG_TAG_PASSWORD = "tpw";
     private static final String DIALOG_TAG_PROGRESS = "tpr";
@@ -99,7 +100,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }

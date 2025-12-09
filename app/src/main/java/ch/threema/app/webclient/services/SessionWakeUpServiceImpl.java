@@ -54,7 +54,7 @@ import ch.threema.app.webclient.manager.WebClientServiceManager;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
 
@@ -77,7 +77,7 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
 
     // Logger
     @NonNull
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SessionWakeUpServiceImpl");
+    private static final Logger logger = getThreemaLogger("SessionWakeUpServiceImpl");
 
     // Singleton
     @Nullable

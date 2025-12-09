@@ -98,7 +98,7 @@ impl<'writer> MakeWriter<'writer> for MakeDispatchWriter {
         Self::Writer {
             buffer: vec![],
             level: LogLevel::Debug,
-            dispatcher: self.dispatcher.clone(),
+            dispatcher: Arc::clone(&self.dispatcher),
         }
     }
 
@@ -106,7 +106,7 @@ impl<'writer> MakeWriter<'writer> for MakeDispatchWriter {
         Self::Writer {
             buffer: vec![],
             level: (*meta.level()).into(),
-            dispatcher: self.dispatcher.clone(),
+            dispatcher: Arc::clone(&self.dispatcher),
         }
     }
 }

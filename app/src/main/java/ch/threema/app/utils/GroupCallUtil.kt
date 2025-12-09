@@ -39,7 +39,7 @@ import ch.threema.app.services.GroupService
 import ch.threema.app.services.UserService
 import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.GroupCallDescription
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.storage.models.ContactModel
@@ -48,7 +48,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallUtil")
+private val logger = getThreemaLogger("GroupCallUtil")
 
 object GroupCallUtil {
 

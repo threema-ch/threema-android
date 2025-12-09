@@ -33,7 +33,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.sqlite.db.SupportSQLiteQueryBuilder;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
@@ -41,7 +41,7 @@ import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.ConversationTagModel;
 
 public class ConversationTagFactory extends ModelFactory {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationTagFactory");
+    private static final Logger logger = getThreemaLogger("ConversationTagFactory");
 
     public ConversationTagFactory(DatabaseService databaseService) {
         super(databaseService, ConversationTagModel.TABLE);

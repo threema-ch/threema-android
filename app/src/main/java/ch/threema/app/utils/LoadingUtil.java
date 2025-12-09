@@ -25,10 +25,10 @@ import org.slf4j.Logger;
 
 import androidx.fragment.app.FragmentManager;
 import ch.threema.app.dialogs.GenericProgressDialog;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class LoadingUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LoadingUtil");
+    private static final Logger logger = getThreemaLogger("LoadingUtil");
 
     private static String DIALOG_TAG_PROGRESS_LOADINGUTIL = "lou";
 

@@ -29,6 +29,7 @@ import android.widget.Toast;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.HashMap;
@@ -40,21 +41,18 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.ballot.BallotVoteListAdapter;
 import ch.threema.app.emojis.EmojiConversationTextView;
 import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.listeners.BallotVoteListener;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.ballot.BallotVoteResult;
 import ch.threema.app.ui.CheckableRelativeLayout;
-import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.LoadingUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
@@ -63,7 +61,7 @@ import ch.threema.storage.models.ballot.BallotVoteModel;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class BallotVoteDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotVoteDialog");
+    private static final Logger logger = getThreemaLogger("BallotVoteDialog");
 
     private Activity activity;
     private AlertDialog alertDialog;
@@ -71,7 +69,6 @@ public class BallotVoteDialog extends ThreemaDialogFragment {
     private BallotModel ballotModel;
 
     private BallotService ballotService;
-    private String identity;
     private int ballotId;
     private BallotVoteListAdapter listAdapter = null;
     private EmojiConversationTextView titleTextView;
@@ -168,16 +165,7 @@ public class BallotVoteDialog extends ThreemaDialogFragment {
             return alertDialog;
         }
 
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-        if (serviceManager != null) {
-            try {
-                this.ballotService = serviceManager.getBallotService();
-                this.identity = serviceManager.getUserService().getIdentity();
-            } catch (Exception e) {
-                logger.error("Exception", e);
-                return null;
-            }
-        }
+        this.ballotService = KoinJavaComponent.get(BallotService.class);
 
         ballotId = getArguments().getInt("ballotId");
         ballotModel = ballotService.get(ballotId);
@@ -192,7 +180,7 @@ public class BallotVoteDialog extends ThreemaDialogFragment {
         builder.setNegativeButton(R.string.cancel, (dialog, whichButton) -> dismiss());
 
         alertDialog = builder.create();
-        if (titleTextView != null) {
+        if (titleTextView != null && ballotModel != null) {
             titleTextView.setText(ballotModel.getName());
         }
 
@@ -275,12 +263,6 @@ public class BallotVoteDialog extends ThreemaDialogFragment {
     }
 
     private void vote() {
-        //show loading
-        if (!BallotUtil.canVote(this.ballotModel, this.identity)) {
-            return;
-        }
-
-        logger.debug("vote");
         if (this.votingThread != null && this.votingThread.isAlive()) {
             logger.debug("voting thread alive, abort");
             return;
@@ -304,9 +286,6 @@ public class BallotVoteDialog extends ThreemaDialogFragment {
     }
 
     private void voteThread() {
-        if (!BallotUtil.canVote(ballotModel, identity)) {
-            return;
-        }
         try {
             final BallotVoteResult result = this.ballotService.vote(ballotModel.getId(), this.listAdapter.getSelectedChoices(), TriggerSource.LOCAL);
             if (result != null) {

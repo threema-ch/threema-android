@@ -46,7 +46,7 @@ import java.util.concurrent.ExecutionException;
 import ch.threema.annotation.SameThread;
 import ch.threema.app.webclient.exceptions.WouldBlockException;
 import ch.threema.app.webrtc.FlowControlledDataChannel;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.logging.ThreemaLogger;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.function.Function;
@@ -63,7 +63,7 @@ import java8.util.function.Function;
 public class DataChannelContext {
     private final static long MAX_CHUNK_SIZE = 256 * 1024;
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DataChannelContext");
+    private static final Logger logger = getThreemaLogger("DataChannelContext");
 
     @NonNull
     private final DataChannel dc;

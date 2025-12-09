@@ -30,14 +30,14 @@ import ch.threema.app.voip.groupcall.sfu.*
 import ch.threema.app.voip.groupcall.sfu.messages.P2SMessage
 import ch.threema.app.voip.groupcall.sfu.messages.S2PMessage
 import ch.threema.app.webrtc.*
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.protobuf.InvalidProtocolBufferException
 import java.lang.IllegalStateException
 import java.nio.ByteBuffer
 import kotlinx.coroutines.*
 import org.webrtc.*
 
-private val logger = LoggingUtil.getThreemaLogger("ConnectionCtx")
+private val logger = getThreemaLogger("ConnectionCtx")
 
 @WorkerThread
 internal class ConnectionCtx(

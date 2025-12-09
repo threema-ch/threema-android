@@ -40,12 +40,12 @@ import androidx.fragment.app.FragmentTransaction;
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class SimpleStringAlertDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SimpleStringAlertDialog");
+    private static final Logger logger = getThreemaLogger("SimpleStringAlertDialog");
     protected Activity activity;
     @Nullable
     private Runnable onDismissRunnable;

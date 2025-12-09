@@ -36,11 +36,11 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.taskmanager.TriggerSource;
 
 public class LinkWithEmailAsyncTask extends AsyncTask<Void, Void, String> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LinkWithEmailAsyncTask");
+    private static final Logger logger = getThreemaLogger("LinkWithEmailAsyncTask");
     private static final String DIALOG_TAG_PROGRESS = "lpr";
 
     private UserService userService;

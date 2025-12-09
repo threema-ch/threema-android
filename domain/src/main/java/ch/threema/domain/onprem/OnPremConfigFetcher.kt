@@ -85,7 +85,7 @@ class OnPremConfigFetcher(
         }
 
         val oppfJsonObject = onPremConfigVerifier.verify(oppfString)
-        val onPremConfig = onPremConfigParser.parse(oppfJsonObject)
+        val onPremConfig = onPremConfigParser.parse(oppfJsonObject, createdAt = timeProvider.get())
         if (!onPremConfig.isLicenseStillValid()) {
             throw ThreemaException("OnPrem license has expired")
         }

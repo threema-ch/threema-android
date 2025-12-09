@@ -22,14 +22,14 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingContactRequestProfilePictureTask")
+private val logger = getThreemaLogger("OutgoingContactRequestProfilePictureTask")
 
 /**
  * Sends a request-profile-picture message to the given contact. Note that it is only sent, if the

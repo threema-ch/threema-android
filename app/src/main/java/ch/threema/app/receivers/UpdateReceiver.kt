@@ -26,9 +26,9 @@ import android.content.Context
 import android.content.Intent
 import ch.threema.app.utils.DownloadUtil
 import ch.threema.app.utils.PushUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("UpdateReceiver")
+private val logger = getThreemaLogger("UpdateReceiver")
 
 class UpdateReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {

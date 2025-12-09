@@ -34,7 +34,7 @@ class Version1MasterKeyCryptoTest {
     @Test
     fun `check verification, is equal`() {
         assertTrue(
-            Version1MasterKeyCrypto.checkVerification(
+            Version1MasterKeyCrypto().checkVerification(
                 masterKeyData = MasterKeyData(MASTER_KEY),
                 verification = MasterKeyTestData.Version1.VERIFICATION.toCryptographicByteArray(),
             ),
@@ -46,7 +46,7 @@ class Version1MasterKeyCryptoTest {
         val invalid = MasterKeyTestData.Version1.VERIFICATION.copyOf()
         invalid[3] = 123
         assertFalse(
-            Version1MasterKeyCrypto.checkVerification(
+            Version1MasterKeyCrypto().checkVerification(
                 masterKeyData = MasterKeyData(MASTER_KEY),
                 verification = invalid.toCryptographicByteArray(),
             ),
@@ -55,7 +55,7 @@ class Version1MasterKeyCryptoTest {
 
     @Test
     fun `decrypt passphrase`() {
-        val masterKeyData = Version1MasterKeyCrypto.decryptPassphraseProtectedMasterKey(
+        val masterKeyData = Version1MasterKeyCrypto().decryptPassphraseProtectedMasterKey(
             protection = MasterKeyState.WithPassphrase.PassphraseProtection.Version1(
                 protectedKey = MasterKeyTestData.Version1.PROTECTED_KEY.toCryptographicByteArray(),
                 salt = MasterKeyTestData.Version1.SALT.toCryptographicByteArray(),

@@ -48,7 +48,7 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ContactModel;
@@ -57,7 +57,7 @@ import ch.threema.storage.models.DistributionListModel;
 import ch.threema.data.datatypes.IdColor;
 
 public class DistributionListServiceImpl implements DistributionListService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DistributionListServiceImpl");
+    private static final Logger logger = getThreemaLogger("DistributionListServiceImpl");
     private static final String DISTRIBUTION_LIST_UID_PREFIX = "d-";
 
     private final Context context;
@@ -82,9 +82,7 @@ public class DistributionListServiceImpl implements DistributionListService {
 
     @Override
     public DistributionListModel getById(long id) {
-        return this.databaseService.getDistributionListModelFactory().getById(
-            id
-        );
+        return this.databaseService.getDistributionListModelFactory().getById(id);
     }
 
     @Override

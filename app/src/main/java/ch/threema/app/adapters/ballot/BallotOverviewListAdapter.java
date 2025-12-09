@@ -35,7 +35,9 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
+import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.AvatarListItemUtil;
@@ -46,13 +48,12 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.storage.models.ballot.BallotModel;
 
-/**
- *
- */
 public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
 
     private final Context context;
     private final List<BallotModel> values;
+    @Nullable
+    private final MessageReceiver<?> messageReceiver;
     private final BallotService ballotService;
     private final ContactService contactService;
     private final @NonNull RequestManager requestManager;
@@ -60,6 +61,7 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
     public BallotOverviewListAdapter(
         Context context,
         List<BallotModel> values,
+        @Nullable MessageReceiver<?> messageReceiver,
         BallotService ballotService,
         ContactService contactService,
         @NonNull RequestManager requestManager
@@ -68,6 +70,7 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
 
         this.context = context;
         this.values = values;
+        this.messageReceiver = messageReceiver;
         this.ballotService = ballotService;
         this.contactService = contactService;
         this.requestManager = requestManager;
@@ -120,11 +123,13 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
                 holder.state.setText(R.string.ballot_state_closed);
                 holder.state.setVisibility(View.VISIBLE);
             } else if (ballotModel.getState() == BallotModel.State.OPEN) {
-                if (BallotUtil.canClose(ballotModel, contactService.getMe().getIdentity())
-                    || BallotUtil.canViewMatrix(ballotModel, contactService.getMe().getIdentity())) {
+                var myIdentity = contactService.getMe().getIdentity();
+                if (BallotUtil.canClose(ballotModel, myIdentity, messageReceiver) || BallotUtil.canViewMatrix(ballotModel)) {
                     holder.state.setText(String.format(Locale.US, "%d / %d",
                         ballotService.getVotedParticipants(ballotModel.getId()).size(),
                         ballotService.getParticipants(ballotModel.getId()).length));
+                } else if (messageReceiver == null) {
+                    holder.state.setText("");
                 } else {
                     holder.state.setText(R.string.ballot_secret);
                 }

@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.csp.messages.file
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
@@ -31,7 +31,7 @@ import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 
-private val logger = LoggingUtil.getThreemaLogger("GroupFileMessage")
+private val logger = getThreemaLogger("GroupFileMessage")
 
 class GroupFileMessage : AbstractGroupMessage(), FileMessageInterface {
     override var fileData: FileData? = null

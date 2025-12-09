@@ -30,15 +30,15 @@ import ch.threema.app.systemupdates.SystemUpdateState
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.DispatcherProvider
 import ch.threema.app.utils.ShortcutUtil
-import ch.threema.app.utils.WidgetUtil
+import ch.threema.app.widget.WidgetUpdater
 import ch.threema.app.workers.ShareTargetUpdateWorker
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.DatabaseState
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("MasterKeyLockStateChangeHandler")
+private val logger = getThreemaLogger("MasterKeyLockStateChangeHandler")
 
 // TODO(ANDR-4187): Move this logic to a better suited place
 class MasterKeyLockStateChangeHandler(
@@ -46,6 +46,7 @@ class MasterKeyLockStateChangeHandler(
     private val dispatcherProvider: DispatcherProvider,
     private val appStartupMonitor: AppStartupMonitorImpl,
     private val serviceManagerProvider: ServiceManagerProviderImpl,
+    private val widgetUpdater: WidgetUpdater,
 ) {
 
     @Volatile
@@ -58,16 +59,16 @@ class MasterKeyLockStateChangeHandler(
     ) {
         serviceManagerProvider.setServiceManager(serviceManager)
 
-        appStartupMonitor.onServiceManagerReady(databaseState, systemUpdateState)
+        appStartupMonitor.onMasterKeyUnlocked(databaseState, systemUpdateState)
         globalListeners = GlobalListeners(appContext, serviceManager).apply {
             setUp()
         }
 
-        WidgetUtil.updateWidgets(appContext)
+        widgetUpdater.updateWidgets()
     }
 
     suspend fun onMasterKeyLocked() = coroutineScope {
-        appStartupMonitor.onServiceManagerDestroyed()
+        appStartupMonitor.onMasterKeyLocked()
 
         val serviceManager = serviceManagerProvider.getServiceManagerOrNull()
         serviceManagerProvider.setServiceManager(null)
@@ -85,7 +86,7 @@ class MasterKeyLockStateChangeHandler(
 
             if (serviceManager.preferenceService.isDirectShare) {
                 ShareTargetUpdateWorker.cancelScheduledShareTargetShortcutUpdate(appContext)
-                ShortcutUtil.deleteAllShareTargetShortcuts()
+                ShortcutUtil.deleteAllShareTargetShortcuts(serviceManager.preferenceService)
             }
 
             launch(dispatcherProvider.io) {
@@ -99,6 +100,6 @@ class MasterKeyLockStateChangeHandler(
 
         ConfigUtils.scheduleAppRestart(appContext)
 
-        WidgetUtil.updateWidgets(appContext)
+        widgetUpdater.updateWidgets()
     }
 }

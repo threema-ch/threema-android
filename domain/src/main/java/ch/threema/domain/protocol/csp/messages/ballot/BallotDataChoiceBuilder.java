@@ -22,7 +22,6 @@
 package ch.threema.domain.protocol.csp.messages.ballot;
 
 import androidx.annotation.NonNull;
-import ch.threema.base.BuilderException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,17 +75,17 @@ public class BallotDataChoiceBuilder {
     /**
      * Validate and return a {@link BallotDataChoice}.
      *
-     * @throws BuilderException if not all required fields were set.
+     * @throws IllegalArgumentException if not all required fields were set.
      */
-    public BallotDataChoice build() throws BuilderException {
+    public BallotDataChoice build() {
         if (this.id == null) {
-            throw new BuilderException("Cannot build BallotDataChoice: id is null");
+            throw new IllegalArgumentException("Cannot build BallotDataChoice: id is null");
         }
         if (this.description == null) {
-            throw new BuilderException("Cannot build BallotDataChoice: description is null");
+            throw new IllegalArgumentException("Cannot build BallotDataChoice: description is null");
         }
         if (this.sortKey == null) {
-            throw new BuilderException("Cannot build BallotDataChoice: sortKey is null");
+            throw new IllegalArgumentException("Cannot build BallotDataChoice: sortKey is null");
         }
         final BallotDataChoice choice = new BallotDataChoice(this.votes == null ? 0 : this.votes.size());
         choice.id = this.id;

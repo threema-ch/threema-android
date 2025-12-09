@@ -28,9 +28,9 @@ import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.webrtc.LocalCameraVideoContext
 import ch.threema.app.webrtc.LocalMicrophoneAudioContext
 import ch.threema.app.webrtc.VideoCaptureSettings
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("LocalCtx")
+private val logger = getThreemaLogger("LocalCtx")
 
 @WorkerThread
 class LocalCtx private constructor(

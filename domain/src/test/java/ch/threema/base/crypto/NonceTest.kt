@@ -23,7 +23,7 @@ package ch.threema.base.crypto
 
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
-import org.junit.jupiter.api.assertThrows
+import kotlin.test.assertFailsWith
 
 class NonceTest {
     @Test
@@ -34,32 +34,32 @@ class NonceTest {
 
     @Test
     fun testTooLongNonce() {
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             Nonce(generateBytes(32))
         }
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             Nonce(generateBytes(25))
         }
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             Nonce(generateBytes(48))
         }
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             Nonce(generateBytes(64))
         }
     }
 
     @Test
     fun testTooShortNonce() {
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             Nonce(generateBytes(23))
         }
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             Nonce(generateBytes(16))
         }
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             Nonce(generateBytes(12))
         }
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             Nonce(generateBytes(0))
         }
     }
@@ -72,26 +72,26 @@ class NonceTest {
 
     @Test
     fun testTooLongNonceHash() {
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             HashedNonce(generateBytes(33))
         }
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             HashedNonce(generateBytes(64))
         }
     }
 
     @Test
     fun testTooShortNonceHash() {
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             HashedNonce(generateBytes(31))
         }
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             HashedNonce(generateBytes(24))
         }
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             HashedNonce(generateBytes(16))
         }
-        assertThrows<IllegalArgumentException> {
+        assertFailsWith<IllegalArgumentException> {
             HashedNonce(generateBytes(0))
         }
     }

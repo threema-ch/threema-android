@@ -29,12 +29,12 @@ import android.telephony.PhoneStateListener
 import android.telephony.TelephonyCallback
 import android.telephony.TelephonyManager
 import androidx.core.content.ContextCompat.getSystemService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("PSTNStateListener")
+private val logger = getThreemaLogger("PSTNStateListener")
 
 class PSTNStateListener(context: Context) {
     private val telephonyManager: TelephonyManager? =

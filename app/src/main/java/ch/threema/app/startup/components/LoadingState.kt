@@ -90,7 +90,7 @@ fun LoadingState(
 private fun getMessage(pendingSystems: Set<AppSystem>): String? =
     when (pendingSystems.minOf { it }) {
         AppSystem.REMOTE_SECRET -> stringResource(R.string.fetching_remote_secret)
-        AppSystem.SERVICE_MANAGER -> null
+        AppSystem.UNLOCKED_MASTER_KEY -> null
         // We use the same message for database and system updates, as their distinction is not meaningful to the user
         AppSystem.DATABASE_UPDATES,
         AppSystem.SYSTEM_UPDATES,

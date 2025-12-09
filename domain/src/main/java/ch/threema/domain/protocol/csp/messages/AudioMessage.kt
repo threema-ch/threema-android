@@ -21,16 +21,19 @@
 
 package ch.threema.domain.protocol.csp.messages
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.readLittleEndianInt
+import ch.threema.common.readLittleEndianShort
+import ch.threema.common.writeLittleEndianInt
+import ch.threema.common.writeLittleEndianShort
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import org.apache.commons.io.EndianUtils
 
-private val logger = LoggingUtil.getThreemaLogger("AudioMessage")
+private val logger = getThreemaLogger("AudioMessage")
 
 /**
  * A message that has an audio recording (stored on the blob server) as its content.
@@ -78,9 +81,9 @@ class AudioMessage(
     override fun getBody(): ByteArray? {
         val bos = ByteArrayOutputStream()
         try {
-            EndianUtils.writeSwappedShort(bos, durationInSeconds.toShort())
+            bos.writeLittleEndianShort(durationInSeconds.toShort())
             bos.write(audioBlobId)
-            EndianUtils.writeSwappedInteger(bos, audioSizeInBytes)
+            bos.writeLittleEndianInt(audioSizeInBytes)
             bos.write(encryptionKey)
             return bos.toByteArray()
         } catch (ioException: IOException) {
@@ -144,12 +147,12 @@ class AudioMessage(
             val bis = ByteArrayInputStream(data, offset, length)
 
             try {
-                val durationInSeconds: Short = EndianUtils.readSwappedShort(bis)
+                val durationInSeconds: Short = bis.readLittleEndianShort()
 
                 val audioBlobId = ByteArray(ProtocolDefines.BLOB_ID_LEN)
                 bis.read(audioBlobId)
 
-                val audioSizeInBytes: Int = EndianUtils.readSwappedInteger(bis)
+                val audioSizeInBytes: Int = bis.readLittleEndianInt()
 
                 val encryptionKey = ByteArray(ProtocolDefines.BLOB_KEY_LEN)
                 bis.read(encryptionKey)

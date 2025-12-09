@@ -21,9 +21,12 @@
 
 package ch.threema.app.stores
 
-import ch.threema.app.ThreemaApplication
+import ch.threema.common.stateFlowOf
 import ch.threema.localcrypto.MasterKeyImpl
+import ch.threema.localcrypto.MasterKeyProvider
+import ch.threema.testhelpers.createTempDirectory
 import java.io.File
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -39,18 +42,27 @@ import org.json.JSONObject
 class EncryptedPreferenceStoreImplTest {
 
     private var onChangedCalled = false
+    private lateinit var directory: File
     private lateinit var store: EncryptedPreferenceStore
 
     @BeforeTest
     fun setUp() {
         val masterKeyData = ByteArray(32) { it.toByte() }
+        directory = createTempDirectory()
         store = EncryptedPreferenceStoreImpl(
-            context = ThreemaApplication.getAppContext(),
-            masterKey = MasterKeyImpl(masterKeyData),
+            directory = directory,
+            masterKeyProvider = MasterKeyProvider(
+                masterKeyFlow = stateFlowOf(MasterKeyImpl(masterKeyData)),
+            ),
             onChanged = { _, _ -> onChangedCalled = true },
         )
         store.clear()
         onChangedCalled = false
+    }
+
+    @AfterTest
+    fun tearDown() {
+        directory.deleteRecursively()
     }
 
     @Test
@@ -171,7 +183,7 @@ class EncryptedPreferenceStoreImplTest {
 
     @Test
     fun restoringFromPreviouslyEncryptedFile() {
-        File(ThreemaApplication.getAppContext().filesDir, ".crs-test")
+        File(directory, ".crs-test")
             .writeBytes(
                 byteArrayOf(
                     -116, 41, -38, -100, 96, 67, -28, -11, -118, -59, -33, -25,

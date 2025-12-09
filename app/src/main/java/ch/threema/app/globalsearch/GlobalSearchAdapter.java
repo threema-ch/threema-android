@@ -76,7 +76,7 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextExtensionsKt;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupMessageModel;
@@ -90,7 +90,7 @@ import ch.threema.storage.models.data.media.BallotDataModel;
 import static ch.threema.app.utils.MessageUtilKt.getUiContentColor;
 
 public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GlobalSearchAdapter");
+    private static final Logger logger = getThreemaLogger("GlobalSearchAdapter");
     private static final String FLOW_CHARACTER = "\u25BA\uFE0E"; // "►"
 
     private GroupService groupService;

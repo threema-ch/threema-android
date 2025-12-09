@@ -47,6 +47,7 @@ import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.voip.groupcall.GroupCallDescription;
 import ch.threema.base.ProgressListener;
+import ch.threema.base.SessionScoped;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
@@ -78,6 +79,7 @@ import ch.threema.storage.models.data.status.VoipStatusDataModel;
 /**
  * Handling methods for messages
  */
+@SessionScoped
 public interface MessageService {
     int FILTER_CHATS = 1;
     int FILTER_GROUPS = 1 << 1;
@@ -177,7 +179,6 @@ public interface MessageService {
 
     AbstractMessageModel createGroupCallStatus(@NonNull GroupCallStatusDataModel data,
                                                @NonNull MessageReceiver receiver,
-                                               @Nullable ContactModel contactModel,
                                                @Nullable GroupCallDescription call,
                                                boolean isOutbox,
                                                Date postedDate);
@@ -348,7 +349,7 @@ public interface MessageService {
         @NonNull Date date
     );
 
-    boolean markAsRead(AbstractMessageModel message, boolean silent) throws ThreemaException;
+    boolean markAsRead(AbstractMessageModel message, boolean silent);
 
     @WorkerThread
     boolean markAsConsumed(AbstractMessageModel message) throws ThreemaException;

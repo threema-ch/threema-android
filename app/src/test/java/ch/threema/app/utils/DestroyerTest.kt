@@ -22,7 +22,10 @@
 package ch.threema.app.utils
 
 import androidx.lifecycle.Lifecycle
-import ch.threema.app.utils.Destroyer.Companion.createDestroyer
+import ch.threema.android.Destroyable
+import ch.threema.android.Destroyer
+import ch.threema.android.Destroyer.Companion.createDestroyer
+import ch.threema.android.ownedBy
 import io.mockk.mockk
 import io.mockk.verify
 import kotlin.test.Test

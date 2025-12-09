@@ -41,12 +41,12 @@ import org.slf4j.Logger;
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class SMSVerificationDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SMSVerificationDialog");
+    private static final Logger logger = getThreemaLogger("SMSVerificationDialog");
     private static final String ARG_PHONE_NUMBER = "title";
 
     private SMSVerificationDialogCallback callback;

@@ -22,12 +22,12 @@
 package ch.threema.logging
 
 import android.annotation.SuppressLint
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.libthreema.LogDispatcher
 import ch.threema.libthreema.LogLevel
 
 @SuppressLint("LoggerName")
-private val logger = LoggingUtil.getThreemaLogger("libthreema")
+private val logger = getThreemaLogger("libthreema")
 
 class LibthreemaLogger : LogDispatcher {
     override fun log(level: LogLevel, record: String) {

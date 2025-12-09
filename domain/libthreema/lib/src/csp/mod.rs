@@ -1,78 +1,49 @@
 //! Implementation of the transport layer of the _Chat Server Protocol_.
-use core::mem;
+use core::{fmt, mem};
 
-use cipher::{LoginAckCipher, LoginBoxes, LoginCipher, decrypt_server_challenge_response};
 use const_format::formatcp;
 use data_encoding::HEXLOWER;
 use educe::Educe;
-use frame::OutgoingFrame;
-use handshake_messages::{
-    ClientHello, Login, LoginAck, LoginAckData, LoginAckDecoder, LoginData, ServerHelloDecoder,
-};
 use libthreema_macros::{ConstantTimeEq, DebugVariantNames, Name, VariantNames};
-use payload::{EncryptedOutgoingPayload, PayloadDecoder};
+use rand::Rng as _;
 use tracing::{debug, error, trace, warn};
 
-use self::{
-    cipher::PayloadCipher,
-    frame::FrameEncoder as _,
-    handshake_messages::{Extensions, ServerChallengeResponse, ServerHello},
-    payload::{IncomingPayload, OutgoingPayload},
-};
 use crate::{
     common::{
-        ClientInfo, Cookie, CspDeviceId, ThreemaId,
+        ClientInfo, CspDeviceId, DeviceCookie, ThreemaId,
         keys::{ClientKey, PublicKey},
     },
     crypto::x25519,
+    csp::{
+        cipher::{LoginAckCipher, LoginBoxes, LoginCipher, PayloadCipher, decrypt_server_challenge_response},
+        payload::{
+            EncryptedOutgoingPayload, FrameEncoder as _, IncomingPayload, OutgoingFrame, OutgoingPayload,
+            PayloadDecoder,
+            handshake::{
+                ClientHello, Extensions, Login, LoginAck, LoginAckData, LoginAckDecoder, LoginData,
+                ServerChallengeResponse, ServerHello, ServerHelloDecoder,
+            },
+        },
+    },
     utils::{
         bytes::{ByteReaderError, ByteWriterError},
-        debug::debug_static_secret,
+        debug::{Name as _, debug_static_secret},
         sequence_numbers::{SequenceNumberOverflow, SequenceNumberU64},
+        serde::string,
     },
 };
 
 mod cipher;
-pub mod frame;
-mod handshake_messages;
 pub mod payload;
 
-/// An error occurred while running the Chat Server Protocol.
-///
-/// Note: Errors can occur when using the API incorrectly or when the remote server behaves incorrectly. None
-/// of these errors are considered recoverable.
-///
-/// When encountering an error:
-///
-/// 1. Let `error` be the provided [`CspProtocolError`].
-/// 2. Abort the protocol due to `error`.
+/// Cause of an internal error.
 #[derive(Clone, Debug, thiserror::Error)]
-#[cfg_attr(feature = "uniffi", derive(uniffi::Error), uniffi(flat_error))]
-pub enum CspProtocolError {
-    /// Invalid parameter provided by foreign code.
-    #[error("Invalid parameter: {0}")]
-    InvalidParameter(&'static str),
-
-    /// Invalid state for the requested operation.
-    #[error("Invalid state: {0}")]
-    InvalidState(&'static str),
-
-    /// An internal error happened.
-    #[error("Internal error: {0}")]
-    InternalError(&'static str),
-
-    /// Exhausted the available sequence numbers to use for sending/receiving payloads.
+pub enum InternalErrorCause {
+    /// Exhausted the available sequence numbers to use for sending/receiving payloads. Should never happen.
     ///
     /// Note: Only the post-handshake state should ever be able to produce this.
     #[error("Sequence number overflow happened")]
     SequenceNumberOverflow(#[from] SequenceNumberOverflow),
-
-    /// Unable to decrypt a handshake message or a payload.
-    #[error("Decrypting '{name}' failed")]
-    DecryptionFailed {
-        /// Name of the handshake message or payload
-        name: &'static str,
-    },
 
     /// Unable to encrypt a handshake message or a payload.
     #[error("Encrypting '{name}' failed")]
@@ -90,21 +61,75 @@ pub enum CspProtocolError {
         source: ByteWriterError,
     },
 
+    /// Another kind of error occurred
+    #[error("{0}")]
+    Other(String),
+}
+impl<T: Into<String>> From<T> for InternalErrorCause {
+    fn from(message: T) -> Self {
+        Self::Other(message.into())
+    }
+}
+
+/// An error occurred while running the Chat Server Protocol.
+///
+/// Note: Errors can occur when using the API incorrectly or when the remote server behaves incorrectly. None
+/// of these errors are considered recoverable.
+///
+/// When encountering an error:
+///
+/// 1. Let `error` be the provided [`CspProtocolError`].
+/// 2. Abort the protocol due to `error`.
+#[derive(Clone, Debug, thiserror::Error)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Error), uniffi(flat_error))]
+#[cfg_attr(
+    feature = "wasm",
+    derive(tsify::Tsify, serde::Serialize),
+    serde(
+        tag = "type",
+        content = "details",
+        rename_all = "kebab-case",
+        rename_all_fields = "camelCase"
+    ),
+    tsify(into_wasm_abi)
+)]
+pub enum CspProtocolError {
+    /// Invalid parameter provided by the caller.
+    #[error("Invalid parameter: {0}")]
+    InvalidParameter(&'static str),
+
+    /// Invalid state for the requested operation.
+    #[error("Invalid state: {0}")]
+    InvalidState(&'static str),
+
+    /// An internal error happened.
+    #[cfg_attr(feature = "wasm", serde(serialize_with = "string::to_string::serialize"))]
+    #[error("Internal error: {0}")]
+    InternalError(#[from] InternalErrorCause),
+
+    /// Unable to decrypt a handshake message or a payload.
+    #[error("Decrypting '{name}' failed")]
+    DecryptionFailed {
+        /// Name of the handshake message or payload.
+        name: &'static str,
+    },
+
     /// Unable to decode a struct.
     #[error("Decoding '{name}' failed: {source}")]
     DecodingFailed {
-        /// Name of the struct
+        /// Name of the struct.
         name: &'static str,
-        /// Error source
+        /// Error source.
+        #[cfg_attr(feature = "wasm", serde(serialize_with = "string::to_string::serialize"))]
         source: ByteReaderError,
     },
 
     /// Invalid data in message or payload.
     #[error("Invalid '{name}': {cause}")]
     InvalidMessage {
-        /// Name of the handshake message or payload
+        /// Name of the handshake message or payload.
         name: &'static str,
-        /// Error cause
+        /// Error cause.
         cause: String,
     },
 
@@ -112,9 +137,70 @@ pub enum CspProtocolError {
     #[error("Server error: {0}")]
     ServerError(&'static str),
 }
+impl From<SequenceNumberOverflow> for CspProtocolError {
+    fn from(error: SequenceNumberOverflow) -> Self {
+        Self::InternalError(InternalErrorCause::from(error))
+    }
+}
+
+/// A CSP state update to indicate advancing.
+#[derive(Debug)]
+pub enum CspStateUpdate {
+    /// The client hello was sent successfully.
+    AwaitingLoginAck,
+
+    /// The handshake was successful.
+    PostHandshake(LoginAckData),
+}
+
+/// An instruction of what to do next.
+///
+/// When handling this instruction, run the following steps:
+///
+/// 1. If the current phase is the _handshake phase_:
+///    1. If `incoming_payload` is present, abort the protocol due to an error and abort these steps.
+///    2. If `outgoing_frame` is present, enqueue it to be sent to the chat server.
+/// 2. If the current phase is the _payload phase_:
+///    1. If `state_update` is present, abort the protocol due to an error and abort these steps.
+///    2. If `outgoing_frame` is present, enqueue it to be sent to the chat server.
+///    3. If `incoming_payload` is present, hand it off to the application.
+/// 3. (Unreachable)
+pub struct CspProtocolInstruction {
+    /// The state to which the CSP protocol was advanced to.
+    pub state_update: Option<CspStateUpdate>,
+
+    /// The outgoing frame that should be sent to the server.
+    pub outgoing_frame: Option<OutgoingFrame>,
+
+    /// The incoming payload that should be processed by the client.
+    pub incoming_payload: Option<IncomingPayload>,
+}
+
+/// Initializer for a [`CspProtocolContext`].
+pub struct CspProtocolContextInit {
+    /// The server's permanent public keys.
+    ///
+    /// The first element is used as the server's primary public key and the remaining keys as
+    /// fallback secondary keys. Using a secondary key will trigger a warning.
+    pub permanent_server_keys: Vec<PublicKey>,
+
+    /// The client's Threema ID.
+    pub identity: ThreemaId,
+
+    /// The client's permanent private key.
+    pub client_key: ClientKey,
+
+    /// Client info to be sent to the server during the handshake.
+    pub client_info: ClientInfo,
+
+    /// The (optional) device cookie of the client's device
+    pub device_cookie: Option<DeviceCookie>,
+
+    /// CSP device ID, randomly generated once for the associated multi-device group.
+    pub csp_device_id: Option<CspDeviceId>,
+}
 
 /// The context containing all parameters needed to initiate the protocol.
-#[derive(Debug)]
 pub struct CspProtocolContext {
     /// The server's permanent public keys.
     ///
@@ -122,84 +208,95 @@ pub struct CspProtocolContext {
     /// fallback secondary keys. Using a secondary key will trigger a warning.
     permanent_server_keys: Vec<PublicKey>,
 
-    /// The client's Threema ID
+    /// The client's Threema ID.
     identity: ThreemaId,
 
-    /// The client's permanent private key
+    /// The client's permanent private key.
     client_key: ClientKey,
 
     /// Client info to be sent to the server during the handshake.
-    ///
-    /// See the protocol specification for the exact format.
     client_info: ClientInfo,
 
-    /// The (optional) device cookie of the client's device
-    device_cookie: Option<u16>,
+    /// The (optional) device cookie of the client's device.
+    device_cookie: Option<DeviceCookie>,
 
     /// CSP device ID, randomly generated once for the associated multi-device group.
     csp_device_id: Option<CspDeviceId>,
 }
+impl TryFrom<CspProtocolContextInit> for CspProtocolContext {
+    type Error = CspProtocolError;
 
-impl CspProtocolContext {
-    /// Initialize and validate a new context.
-    ///
-    /// The first element in `permanent_server_keys` is used as the server's primary public key and
-    /// the remaining keys as fallback secondary keys.
-    ///
-    /// # Errors
-    ///
-    /// Returns an error if `permanent_server_keys` is empty.
-    pub fn new(
-        permanent_server_keys: Vec<PublicKey>,
-        identity: ThreemaId,
-        client_key: ClientKey,
-        client_info: ClientInfo,
-        device_cookie: Option<u16>,
-        csp_device_id: Option<CspDeviceId>,
-    ) -> Result<Self, CspProtocolError> {
-        if permanent_server_keys.is_empty() {
+    fn try_from(init: CspProtocolContextInit) -> Result<Self, Self::Error> {
+        if init.permanent_server_keys.is_empty() {
             return Err(CspProtocolError::InvalidParameter(
                 "permanent_server_keys must contain at least one public key.",
             ));
         }
-
         Ok(Self {
-            permanent_server_keys,
-            identity,
-            client_key,
-            client_info,
-            device_cookie,
-            csp_device_id,
+            permanent_server_keys: init.permanent_server_keys,
+            identity: init.identity,
+            client_key: init.client_key,
+            client_info: init.client_info,
+            device_cookie: init.device_cookie,
+            csp_device_id: init.csp_device_id,
         })
     }
 }
 
-/// Temporary client key (TCK)
+/// 16 byte random cookie used in combination with the sequence numbers to produce random nonces.
+#[derive(Clone, Copy, ConstantTimeEq, Name)]
+struct Cookie([u8; Self::LENGTH]);
+impl Cookie {
+    /// Byte length of a cookie.
+    const LENGTH: usize = 16;
+
+    /// Generate a random cookie.
+    #[must_use]
+    fn random() -> Self {
+        let mut cookie = Self([0_u8; Self::LENGTH]);
+        rand::thread_rng().fill(&mut cookie.0);
+        cookie
+    }
+}
+impl fmt::Display for Cookie {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(&HEXLOWER.encode(&self.0))
+    }
+}
+impl fmt::Debug for Cookie {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_tuple(Self::NAME)
+            .field(&self.to_string())
+            .finish()
+    }
+}
+
+/// Temporary client key (TCK).
 #[derive(Educe)]
 #[educe(Debug)]
 struct TemporaryClientKey(#[educe(Debug(method(debug_static_secret)))] x25519::StaticSecret);
 
-/// Temporary server key (TSK)
+/// Temporary server key (TSK).
 #[derive(Debug)]
 struct TemporaryServerKey(PublicKey);
 
-/// Client sequence number (CSN)
+/// Client sequence number (CSN).
 #[derive(Debug)]
 struct ClientSequenceNumber(SequenceNumberU64);
 
-/// Server sequence number (SSN)
+/// Server sequence number (SSN).
 #[derive(Debug)]
 struct ServerSequenceNumber(SequenceNumberU64);
 
-/// Client connection cookie (CCK)
+/// Client connection cookie (CCK).
 #[derive(Debug, Clone, Copy, ConstantTimeEq)]
 struct ClientCookie(Cookie);
 
-/// Server connection cookie (SCK)
+/// Server connection cookie (SCK).
 #[derive(Debug, Clone, Copy, ConstantTimeEq)]
 struct ServerCookie(Cookie);
 
-/// The state to await the server hello.
 struct AwaitingServerHelloState {
     temporary_client_key: TemporaryClientKey,
     client_cookie: ClientCookie,
@@ -211,7 +308,6 @@ struct AwaitingLoginAckState {
     cipher: LoginAckCipher,
 }
 
-/// The state after the handshake has completed
 struct PostHandshakeState {
     decoder: PayloadDecoder,
     cipher: PayloadCipher,
@@ -249,9 +345,9 @@ impl State {
     /// Try to advance the state out of the [`AwaitingServerHelloState`] to
     /// [`State::AwaitingLoginAck`] and return the next instruction to be executed by the client.
     ///
-    /// The server hello message should be contained in the `decoder`. Otherwise, return the
-    /// [`State::AwaitingServerHello`] again and set the [`CspProtocolInstruction`] to all `None`
-    /// values (reflecting that the caller must just wait).
+    /// The server hello message should be contained in the `decoder` of the `state`. Otherwise, return the
+    /// [`State::AwaitingServerHello`] again and set the [`CspProtocolInstruction`] to `None` (reflecting that
+    /// the caller must just wait).
     ///
     /// # Errors
     ///
@@ -350,10 +446,13 @@ impl State {
                         actual_length = login_data_box.len(),
                         "Unexpected login-data length"
                     );
-                    CspProtocolError::InternalError(formatcp!(
-                        "Encoded login-data was expected to be {} bytes",
-                        Login::LOGIN_DATA_BOX_LENGTH,
-                    ))
+                    CspProtocolError::InternalError(
+                        format!(
+                            "Encoded login-data was expected to be {} bytes",
+                            Login::LOGIN_DATA_BOX_LENGTH,
+                        )
+                        .into(),
+                    )
                 })?,
                 extensions_box,
             };
@@ -369,7 +468,7 @@ impl State {
         });
         let instruction = CspProtocolInstruction {
             state_update: Some(CspStateUpdate::AwaitingLoginAck),
-            outgoing_frame: Some(login.encode_to_frame()?),
+            outgoing_frame: Some(login.encode_frame()?),
             incoming_payload: None,
         };
         debug!(?state, "Changing state");
@@ -380,8 +479,8 @@ impl State {
     /// the next instruction to be executed by the client.
     ///
     /// The login ack message should be contained in the `decoder`. Otherwise, return the
-    /// [`State::AwaitingLoginAck`] again and set the [`CspProtocolInstruction`] to all `None` values
-    /// (reflecting that the caller must just wait).
+    /// [`State::AwaitingLoginAck`] again and set the [`CspProtocolInstruction`] to `None` (reflecting that
+    /// the caller must just wait).
     ///
     /// # Errors
     ///
@@ -408,9 +507,7 @@ impl State {
             cipher: PayloadCipher::new(state.cipher.dissolve()),
         });
         let instruction = CspProtocolInstruction {
-            state_update: Some(CspStateUpdate::PostHandshake {
-                queued_messages: login_ack_data.queued_messages as usize,
-            }),
+            state_update: Some(CspStateUpdate::PostHandshake(login_ack_data)),
             outgoing_frame: None,
             incoming_payload: None,
         };
@@ -418,12 +515,12 @@ impl State {
         Ok((state, Some(instruction)))
     }
 
-    /// Try to loop over the [`PostHandshakeState`] and return [`State::PostHandshake`] as well as
-    /// the the next instruction to be executed by the client.
+    /// Try to loop over the [`PostHandshakeState`] and return [`State::PostHandshake`] as well as the next
+    /// instruction to be executed by the client.
     ///
-    /// The `decoder` should contain the next frame.
-    /// Otherwise, return the [`State::PostHandshake`] again and set the
-    /// [`CspProtocolInstruction`] to all `None` values (reflecting that the caller must just wait).
+    /// The `decoder` of the `state` should contain the next frame. Otherwise, return the
+    /// [`State::PostHandshake`] again and set the [`CspProtocolInstruction`] to `None` (reflecting that the
+    /// caller must just wait).
     ///
     /// # Errors
     ///
@@ -439,7 +536,6 @@ impl State {
 
         // Decrypt and decode the payload according to its type
         let payload = state.cipher.decrypt_payload(payload)?;
-        trace!(payload = HEXLOWER.encode(&payload), "Raw payload");
         let payload = IncomingPayload::try_from(payload)?;
         debug!(?payload, "Received payload");
 
@@ -453,46 +549,10 @@ impl State {
     }
 }
 
-/// A CSP state update to indicate advancing
-#[derive(Debug)]
-pub enum CspStateUpdate {
-    /// The client hello was sent successfully,
-    AwaitingLoginAck,
-
-    /// The handshake was successful
-    PostHandshake {
-        /// Amount of queued messages on the server for the client.
-        queued_messages: usize,
-    },
-}
-
-/// An instruction of what to do next.
-///
-/// When handling this instruction, run the following steps:
-///
-/// 1. If the current phase is the _handshake phase_:
-///    1. If `incoming_payload` is present, abort the protocol due to an error and abort these steps.
-///    2. If `outgoing_frame` is present, enqueue it to be sent to the chat server.
-/// 2. If the current phase is the _payload phase_:
-///    1. If `state_update` is present, abort the protocol due to an error and abort these steps.
-///    2. If `outgoing_frame` is present, enqueue it to be sent to the chat server.
-///    3. If `incoming_payload` is present, hand it off to the application.
-/// 3. (Unreachable)
-pub struct CspProtocolInstruction {
-    /// The state to which the CSP protocol was advanced to
-    pub state_update: Option<CspStateUpdate>,
-
-    /// The outgoing frame that should be sent to the server
-    pub outgoing_frame: Option<OutgoingFrame>,
-
-    /// The incoming payload that should be processed by the client
-    pub incoming_payload: Option<IncomingPayload>,
-}
-
 /// The Chat Server Protocol state machine.
 ///
-/// The protocol state machine can be constructed once a connection to the chat server has been
-/// established via [`CspProtocol::new`].
+/// The protocol state machine can be constructed once a connection to the chat server has been established
+/// via [`CspProtocol::new`].
 ///
 /// Any interaction with the protocol state machine that changes the internal state will yield a
 /// [`CspProtocolInstruction`] that must be handled according to its documentation.
@@ -558,7 +618,7 @@ impl CspProtocol {
         };
         trace!(?client_hello);
         let outgoing_frame = client_hello
-            .encode_to_frame()
+            .encode_frame()
             .expect("ClientHello must be encodable");
 
         // Create initial state
@@ -573,8 +633,8 @@ impl CspProtocol {
 
     /// Poll to advance the state.
     ///
-    /// If this returns [`None`], then the state machine will not produce any more
-    /// [`CspProtocolInstruction`]s until further input is being provided.
+    /// If this returns [`None`], then the state machine will not produce any more [`CspProtocolInstruction`]s
+    /// until further input is being provided.
     ///
     /// # Errors
     ///
@@ -620,29 +680,27 @@ impl CspProtocol {
         match &mut self.state {
             State::AwaitingServerHello(state) => {
                 state.decoder.add_chunks(chunks);
-                Ok(())
             },
             State::AwaitingLoginAck(state) => {
                 state.decoder.add_chunks(chunks);
-                Ok(())
             },
             State::PostHandshake(state) => {
                 let _ = state.decoder.add_chunks(chunks);
-                Ok(())
             },
             State::Error(error) => {
                 let message = "Cannot add chunks in error state";
                 error!(?error, message);
-                Err(CspProtocolError::InvalidState(message))
+                return Err(CspProtocolError::InvalidState(message));
             },
         }
+        Ok(())
     }
 
-    /// Get the required number of bytes for the current state's decoder to advance the decoder's
-    /// internal state.
+    /// Get the required number of bytes for the current state's decoder to advance the decoder's internal
+    /// state.
     ///
-    /// Note: An efficient implementation may always provide more than the required amount of bytes,
-    /// if already available.
+    /// Note: An efficient implementation may always provide more than the required amount of bytes, if
+    /// already available.
     ///
     /// # Errors
     ///
@@ -667,25 +725,32 @@ impl CspProtocol {
     ///
     /// # Errors
     ///
-    /// Returns [`CspProtocolError::InvalidState`] if the protocol is not in the post-handshake
-    /// state.
+    /// Returns [`CspProtocolError::InvalidState`] if the protocol is not in the post-handshake state.
     #[tracing::instrument(skip_all, fields(?self))]
     pub fn create_payload(
         &mut self,
         payload: &OutgoingPayload,
     ) -> Result<CspProtocolInstruction, CspProtocolError> {
-        // Ensure we're in the post-handshake state
-        let State::PostHandshake(state) = &mut self.state else {
-            let message = "Creating an outgoing payload requires the post-handshake state";
-            error!(message);
-            return Err(CspProtocolError::InvalidState(message));
+        // Ensure we're in the post-handshake state.
+        let state = match &mut self.state {
+            State::PostHandshake(state) => state,
+            State::Error(error) => {
+                let message = "Cannot create an outgoing payload in the error state";
+                error!(?error, message);
+                return Err(CspProtocolError::InvalidState(message));
+            },
+            _ => {
+                let message = "Creating an outgoing payload requires the post-handshake state";
+                error!(message);
+                return Err(CspProtocolError::InvalidState(message));
+            },
         };
 
         // Encode and encrypt the payload into an outgoing frame
         debug!("Creating payload");
         let payload = payload.encode()?;
         let payload = state.cipher.encrypt_payload(payload)?;
-        let outgoing_frame = EncryptedOutgoingPayload(payload).encode_to_frame()?;
+        let outgoing_frame = EncryptedOutgoingPayload(payload).encode_frame()?;
 
         // Done
         Ok(CspProtocolInstruction {

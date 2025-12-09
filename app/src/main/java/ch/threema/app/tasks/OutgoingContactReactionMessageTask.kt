@@ -54,7 +54,7 @@ class OutgoingContactReactionMessageTask(
         val reactionMessageData = try {
             ReactionMessageData.forActionCase(
                 actionCase = actionCase,
-                messageId = MessageId.fromString(messageModel.apiMessageId).messageIdLong,
+                messageId = messageModel.messageId!!.messageIdLong,
                 emojiSequenceBytes = ByteString.copyFromUtf8(emojiSequence),
             )
         } catch (e: BadMessageException) {

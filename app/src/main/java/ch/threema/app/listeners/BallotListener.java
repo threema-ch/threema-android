@@ -38,10 +38,7 @@ public interface BallotListener {
     void onRemoved(final BallotModel ballotModel);
 
     /**
-     * return true, if the event have to be handled!
-     *
-     * @param ballotModel
-     * @return
+     * return true, if the event has to be handled
      */
     @AnyThread
     boolean handle(final BallotModel ballotModel);

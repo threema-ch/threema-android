@@ -556,7 +556,7 @@
     <string name="really_leave_id_export">Якщо ви цього ще не зробили, збережіть свій експортований ID у вигляді текстового рядка чи QR-коду в безпечне місце або роздрукуйте його. ID ${app_name_short} неможливо відновити без резервної копії.</string>
     <string name="revocation_key_title">Відкликати ID</string>
     <string name="revocation_key_not_set">Пароль для відкликання не встановлено</string>
-    <string name="revocation_key_set_at">Пароль установлено %1$s</string>
+    <string name="revocation_key_set_at">Пароль від %1$s</string>
     <string name="prefs_sum_remove_wallpapers">Видалити всі індивідуальні фони</string>
     <string name="prefs_title_remove_wallpapers">Видалити всі фони</string>
     <string name="really_remove_wallpapers">Справді видалити всі фони?</string>
@@ -566,13 +566,13 @@
     <string name="revocation_explain">Пароль, який ви вводите тут, дає змогу відкликати ваш ID на сторінці
 		https://myid.threema.ch/revoke у випадку його втрати або крадіжки</string>
     <!-- Empty state text shown on home screen widget when there are no unread messages -->
-    <string name="no_unread_messages">Немає непрочитаних повідомлень або активовано блокування PIN-кодом</string>
+    <string name="no_unread_messages">Немає непрочитаних повідомлень</string>
     <string name="send_media">Надіслати медіафайли</string>
     <string name="rotate">Повернути</string>
     <string name="remove">Видалити</string>
     <string name="item_already_added">Цей об\'єкт вже додано.</string>
     <string name="password_too_short" tools:ignore="PluralsCandidate">Мін. %d символів.</string>
-    <string name="mark_read">Позначити як прочитаний</string>
+    <string name="mark_read">Позначити як прочитане</string>
     <string name="attach_document">Файл</string>
     <string name="parent_directory">Перейти вище</string>
     <string name="file_placeholder">Файл</string>
@@ -804,7 +804,7 @@
     <string name="invalid_input">Недійсні дані</string>
     <string name="already_licensed">Ліцензію вже підтверджено</string>
     <string name="hide_chat">Приватні чати</string>
-    <string name="really_hide_chat_message">Позначити чат як приватний? Використовуйте меню, щоб змінити видимість приватних чатів у списку повідомлень.</string>
+    <string name="really_hide_chat_message">Увімкнути приватний чат? Приховати приватні чати зі списку можна в меню з трьома крапками.</string>
     <string name="chat_hidden">Чат позначено як приватний</string>
     <string name="title_show_private_chats">Показати приватні чати</string>
     <string name="title_hide_private_chats">Приховати приватні чати</string>
@@ -826,7 +826,7 @@
     <string name="grace_thirty_minutes">30 хвилин</string>
     <string name="grace_never">Ніколи (вручну)</string>
     <string name="never">Ніколи</string>
-    <string name="access_protection_cannot_be_removed">Неможливо вимкнути обмеження доступу, оскільки у вас є принаймні один приватний чат.</string>
+    <string name="access_protection_private_chats_warning">Якщо вилучити обмеження доступу, усі ваші приватні чати знову стануть доступними.</string>
     <string name="verification_started">Підтвердження розпочато</string>
     <string name="cannot_open_file">Не вдалося відкрити файл</string>
     <string name="prefs_title_image_attach_previews">Швидкий вибір медіафайлів</string>
@@ -1097,7 +1097,7 @@
     <string name="delete_chat_title">Видалити чат</string>
     <string name="delete_chat_confirm">Усі повідомлення в цьому чаті буде видалено, а чат – вилучено. Продовжити?</string>
     <string name="deleting_chat">Видалення чату</string>
-    <string name="set_private">Позначити як приватний чат</string>
+    <string name="set_private">Увімкнути приватний чат</string>
     <string name="unset_private">Вимкнути приватний чат</string>
     <string name="delete_group_message">Вийти з групи та повністю видалити її? Усі повідомлення буде вилучено.</string>
     <string name="delete_left_group_message">Справді видалити групу? Усі повідомлення буде вилучено.</string>
@@ -1349,8 +1349,8 @@
     <string name="status_create_notes">*Ви єдиний учасник цієї групи*\nВикористовуйте цей чат як записник, щоб безпечно зберігати текст, медіафайли та документи.</string>
     <string name="status_create_notes_off">*Ви більше не самі*\n\nПодальші повідомлення надсилатимуться всім учасникам групи.</string>
     <string name="note_group_howto">Якщо ви не додасте до групи учасників, повідомлення в ній нікому не надсилатимуться. Таку групу можна використовувати, щоб безпечно зберігати або переносити на комп\'ютер нотатки, медіафайли чи документи.</string>
-    <string name="mark_unread">Позначити як непрочитаний</string>
-    <string name="mark_read_short">Позначити як прочитаний</string>
+    <string name="mark_unread">Позначити як непрочитане</string>
+    <string name="mark_read_short">Позначити як прочитане</string>
     <string name="unread">Непрочитаний</string>
     <string name="missing_app_licence">Не вдалося підтвердити вашу покупку в магазині додатків. Якщо ви використовуєте Google Play, очистіть дані додатка Google Play Маркет і перезавантажте пристрій.</string>
     <string name="set_backup_path">Вибрати шлях до рез. копії</string>
@@ -1419,7 +1419,6 @@
     <string name="threema_push_service_description">Постійне сповіщення показується, коли ввімкнено push-сповіщення ${app_name_short}</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push_activated">Push-сповіщення ${app_name_short} ввімкнено.</string>
-    <string name="add_shortcut_success">Ярлик створено</string>
     <string name="add_shortcut_error">Не вдалося додати ярлик на головний екран пристрою</string>
     <string name="web_link">Посилання</string>
     <string name="link_copied">\"%s\" скопійовано</string>
@@ -1467,7 +1466,7 @@
     <string name="tooltip_multiple_recipients_text">Натисніть і утримуйте екран, щоб вибрати кілька отримувачів повідомлення.</string>
     <string name="synchronizing">Триває синхронізація…</string>
     <string name="forward_security">Надсилати повідомлення з Perfect Forward Secrecy</string>
-    <string name="forward_security_mode">Шифрування Perfect Forward Secrecy</string>
+    <string name="forward_security_mode">Шифрування PFS</string>
     <string name="forward_security_mode_none">Немає</string>
     <string name="clear_forward_security">Скинути Perfect Forward Secrecy для цього контакта</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1667,6 +1666,8 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Цьому додатку заборонено підтримувати постійне з\'єднання із серверами, що необхідно для роботи ${app_name_short} Push. Ви не отримуватимете сповіщення про нові повідомлення, коли додаток працює у фоновому режимі. Щоб виправити це, натисніть \"Використання акумулятора додатком\" і виберіть \"Необмежено\".</string>
     <string name="problemsolver_to_settings">Відкрити налаштування</string>
+    <!-- Label on button to dismiss/hide a warning -->
+    <string name="problemsolver_dismiss">Закрити</string>
     <string name="prefs_advanced_options">Розширені налаштування</string>
     <string name="push_service">Сервіс push-сповіщень</string>
     <string name="edit_and_send">Змінити й надіслати</string>
@@ -1808,24 +1809,22 @@
     <string name="remote_secrets_failed_to_fetch">Не вдалося завантажити маркер ${remote_secret}. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="fetching_remote_secret">Завантаження маркера ${remote_secret}</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activated_notification_title">${remote_secret} активовано</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
-    <string name="remote_secret_activated_notification_content">Ця функція захищає ваші чати, коли телефон загублено або вкрадено.</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
-    <string name="remote_secret_deactivated_notification_title">${remote_secret} активовано</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
-    <string name="remote_secret_deactivated_notification_content">Щоб дізнатися більше, зверніться до свого адміністратора.</string>
-    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
-    <string name="remote_secret_activated_learn_more">Докладніше</string>
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_activated_dialog_content">Якщо ви втратите свій пристрій, ця функція допоможе адміністратору заблокувати додаток, щоб ваші чати залишалися зашифрованими, навіть якщо сторонні особи розблокують пристрій.\n[Докладніше]</string>
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_deactivated_notification_title">${remote_secret} вимкнено</string>
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_deactivated_dialog_content">Ваш адміністратор вимкнув ${remote_secret}. Щоб дізнатися більше про ${remote_secret}, ознайомтесь із [цією статтею розділу \"Запитання й відповіді\"].</string>
     <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating">Активація ${remote_secret}</string>
     <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating_failed">Помилка активації ${remote_secret}. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
     <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
-    <string name="remote_secret_deactivating">Деактивація ${remote_secret}</string>
+    <string name="remote_secret_deactivating">Вимкнення ${remote_secret}</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
-    <string name="remote_secret_deactivating_failed">Помилка деактивації ${remote_secret}. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
+    <string name="remote_secret_deactivating_failed">Не вдалося вимкнути ${remote_secret}. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакти</item>

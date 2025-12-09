@@ -38,8 +38,12 @@
 
     <color name="text_color_openNotice">@color/text_color_open_ballots</color>
 
-    <!-- work accent color for reference -->
-    <color name="accent_work">#0096ff</color>
+    <color name="verification_work">#0096ff</color>
+
+    <!-- Fixed color from the work brand color palette. Used to display components in the work
+    color outside of work the apps (e.g.: Referral banner) -->
+    <color name="work_primary_fixed">#002E63</color> <!-- work-800 -->
+    <color name="work_onPrimary_fixed">#FFFFFF</color>
 
     <!-- emoji picker color -->
     <color name="emoji_picker_background_top">#e4e7e9</color>

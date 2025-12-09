@@ -21,9 +21,10 @@
 
 package ch.threema.app.services;
 
-import android.content.Context;
 import android.content.Intent;
 import android.widget.ImageView;
+
+import java.io.IOException;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
@@ -37,8 +38,6 @@ public interface WallpaperService {
 
     ActivityResultLauncher<Intent> getWallpaperActivityResultLauncher(@NonNull Fragment fragment, @Nullable Runnable onResultAction, @Nullable Function0<MessageReceiver> getMessageReceiver);
 
-    boolean removeWallpaper(MessageReceiver messageReceiver);
-
     void removeWallpaper(String uniqueIdString);
 
     boolean setupWallpaperBitmap(MessageReceiver messageReceiver, ImageView wallpaperView, boolean landscape, boolean isTheDarkside);
@@ -47,7 +46,7 @@ public interface WallpaperService {
 
     void selectWallpaper(@NonNull Fragment fragment, @NonNull ActivityResultLauncher<Intent> fileSelectionLauncher, @Nullable MessageReceiver messageReceiver, @Nullable Runnable onSuccess);
 
-    void removeAll(Context context, boolean silent);
+    void deleteAll() throws IOException;
 
     boolean hasGlobalGalleryWallpaper();
 

@@ -40,7 +40,7 @@ import ch.threema.app.webclient.manager.WebClientListenerManager;
 import ch.threema.app.webclient.services.ServicesContainer;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.state.WebClientSessionState;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.WebClientSessionModel;
 
@@ -57,7 +57,7 @@ public class SessionStateManager {
         void onStopped(@NonNull DisconnectContext reason);
     }
 
-    private final Logger logger = LoggingUtil.getThreemaLogger("SessionStateManager");
+    private final Logger logger = getThreemaLogger("SessionStateManager");
 
     // Stop event handler
     @NonNull

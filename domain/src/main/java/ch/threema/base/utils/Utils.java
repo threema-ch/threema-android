@@ -94,36 +94,6 @@ public class Utils {
         return byteArrayToHexString(sha256bytes);
     }
 
-    public static @NonNull byte[] longToByteArrayBigEndian(long value) {
-        return ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN).putLong(value).array();
-    }
-
-    public static long byteArrayToLongBigEndian(final @NonNull byte[] bytes) {
-        if (bytes.length != 8) {
-            throw new IllegalArgumentException("Cannot call byteArrayToLongBigEndian with " + bytes.length + "-byte array");
-        }
-        return ByteBuffer.wrap(bytes).order(ByteOrder.BIG_ENDIAN).getLong();
-    }
-
-    public static @NonNull byte[] shortToByteArrayLittleEndian(short value) {
-        return ByteBuffer.allocate(2).order(ByteOrder.LITTLE_ENDIAN).putShort(value).array();
-    }
-
-    public static @NonNull byte[] intToByteArrayLittleEndian(int value) {
-        return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array();
-    }
-
-    public static @NonNull byte[] longToByteArrayLittleEndian(long value) {
-        return ByteBuffer.allocate(8).order(ByteOrder.LITTLE_ENDIAN).putLong(value).array();
-    }
-
-    public static long byteArrayToLongLittleEndian(final @NonNull byte[] bytes) {
-        if (bytes.length != 8) {
-            throw new IllegalArgumentException("Cannot call byteArrayToLongLittleEndian with " + bytes.length + "-byte array");
-        }
-        return ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN).getLong();
-    }
-
     private static final String HEX_UPPER = "0123456789ABCDEF";
     private static final String HEX_LOWER = "0123456789abcdef";
 

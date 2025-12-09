@@ -30,6 +30,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.glide.AvatarOptions;
+import ch.threema.base.SessionScoped;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
@@ -37,6 +38,7 @@ import ch.threema.storage.models.GroupModel;
 /**
  * The methods of this interface must use a caching mechanism to speed up loading times.
  */
+@SessionScoped
 public interface AvatarCacheService {
 
     /**

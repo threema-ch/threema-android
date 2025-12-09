@@ -28,6 +28,8 @@ import android.os.Build
 import android.provider.Settings
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationManagerCompat
+import ch.threema.android.exists
+import ch.threema.android.setSound
 
 object NotificationChannels {
 

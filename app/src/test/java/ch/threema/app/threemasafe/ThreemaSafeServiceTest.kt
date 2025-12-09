@@ -54,7 +54,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
-import org.apache.commons.lang3.LocaleUtils
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -132,7 +131,7 @@ class ThreemaSafeServiceTest {
         every { threemaSafeServiceImpl.threemaSafeBackupId } answers { callOriginal() }
         every { threemaSafeServiceImpl.threemaSafeEncryptionKey } answers { callOriginal() }
 
-        val localeSwitzerland = LocaleUtils.toLocale("de_CH")
+        val localeSwitzerland = Locale("de", "CH")
         Locale.setDefault(localeSwitzerland)
         TimeZone.setDefault(TimeZone.getTimeZone("Europe/Zurich"))
 

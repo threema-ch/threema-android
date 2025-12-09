@@ -22,12 +22,12 @@
 package ch.threema.app.di
 
 import android.annotation.SuppressLint
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import org.koin.core.logger.Level
 import org.koin.core.logger.Logger as KoinLogger
 
 @SuppressLint("LoggerName")
-private val logger = LoggingUtil.getThreemaLogger("Koin")
+private val logger = getThreemaLogger("Koin")
 
 object ThreemaKoinLogger : KoinLogger() {
     override fun display(level: Level, msg: String) {

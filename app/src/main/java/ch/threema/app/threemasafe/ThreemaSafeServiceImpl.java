@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -83,7 +84,7 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.ExcludedSyncIdentitiesService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.services.IdListService;
+import ch.threema.app.services.ProfilePictureRecipientsService;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
@@ -94,14 +95,13 @@ import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.GzipOutputStream;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.StringConversionUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.WorkManagerUtil;
 import ch.threema.app.workers.ThreemaSafeUploadWorker;
 import ch.threema.app.workers.WorkerNames;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.common.Http;
 import ch.threema.data.repositories.ContactModelRepository;
@@ -135,13 +135,15 @@ import static ch.threema.app.preference.service.PreferenceService.PROFILEPIC_REL
 import static ch.threema.app.preference.service.PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST;
 import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_OPEN_HOME_ACTIVITY;
 import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_WORK_FORCE_PASSWORD;
+import static ch.threema.common.ByteArrayExtensionsKt.toLong;
+import static ch.threema.common.LongExtensionsKt.toByteArray;
 import static ch.threema.libthreema.LibthreemaKt.scrypt;
 import static ch.threema.storage.models.GroupModel.UserState.KICKED;
 import static ch.threema.storage.models.GroupModel.UserState.LEFT;
 import static ch.threema.storage.models.GroupModel.UserState.MEMBER;
 
 public class ThreemaSafeServiceImpl implements ThreemaSafeService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeServiceImpl");
+    private static final Logger logger = getThreemaLogger("ThreemaSafeServiceImpl");
 
     private static final int MASTERKEY_LENGTH = 64;
     private static final int PROFILEPIC_MAX_WIDTH = 400;
@@ -231,7 +233,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     private final BlockedIdentitiesService blockedIdentitiesService;
     @NonNull
     private final ExcludedSyncIdentitiesService excludedSyncIdentitiesService;
-    private final IdListService profilePicRecipientsService;
+    private final ProfilePictureRecipientsService profilePictureRecipientsService;
     private final DatabaseService databaseService;
     @NonNull
     private final ConversationCategoryService conversationCategoryService;
@@ -255,7 +257,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         FileService fileService,
         @NonNull BlockedIdentitiesService blockedIdentitiesService,
         @NonNull ExcludedSyncIdentitiesService excludedSyncIdentitiesService,
-        IdListService profilePicRecipientsService,
+        ProfilePictureRecipientsService profilePictureRecipientsService,
         DatabaseService databaseService,
         IdentityStore identityStore,
         @NonNull ApiService apiService,
@@ -279,7 +281,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         this.fileService = fileService;
         this.blockedIdentitiesService = blockedIdentitiesService;
         this.excludedSyncIdentitiesService = excludedSyncIdentitiesService;
-        this.profilePicRecipientsService = profilePicRecipientsService;
+        this.profilePictureRecipientsService = profilePictureRecipientsService;
         this.conversationCategoryService = conversationCategoryService;
         this.serverAddressProvider = serverAddressProvider;
         this.encryptedPreferenceStore = encryptedPreferenceStore;
@@ -297,7 +299,6 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
                 .addInterceptor(chain -> {
                     var response = chain.proceed(chain.request());
                     if (response.code() == Http.StatusCode.UNAUTHORIZED) {
-                        logger.info("Invalidating auth token");
                         apiService.invalidateAuthToken();
                     }
                     return response;
@@ -474,7 +475,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
             messageDigest.update(safeJson.getBytes(StandardCharsets.UTF_8));
-            hashString = StringConversionUtil.byteArrayToString(messageDigest.digest());
+            hashString = new String(messageDigest.digest());
         } catch (NoSuchAlgorithmException e) {
             preferenceService.setThreemaSafeErrorCode(ERROR_CODE_HASH_FAIL);
             throw new ThreemaSafeUploadException("Hash calculation failed", true);
@@ -771,7 +772,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
                         break;
                     }
                     if (identityShareWith.length() == ProtocolDefines.IDENTITY_LEN) {
-                        profilePicRecipientsService.add(identityShareWith);
+                        profilePictureRecipientsService.add(identityShareWith);
                     }
                 }
             }
@@ -1033,7 +1034,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
                 String id = distributionlist.optString(TAG_SAFE_DISTRIBUTIONLIST_ID);
                 if (id.length() == 16) {
                     final byte[] distributionListIdBytes = Utils.hexStringToByteArray(id);
-                    distributionListModel.setId(Utils.byteArrayToLongLittleEndian(distributionListIdBytes));
+                    distributionListModel.setId(toLong(distributionListIdBytes, ByteOrder.LITTLE_ENDIAN));
                 }
                 distributionListModel.setName(distributionlist.getString(TAG_SAFE_DISTRIBUTIONLIST_NAME));
                 distributionListModel.setCreatedAt(new Date(createdAt));
@@ -1371,8 +1372,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
     private JSONObject getDistributionlist(DistributionListModel distributionListModel) throws JSONException {
         JSONObject distributionlist = new JSONObject();
-
-        distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_ID, Utils.byteArrayToHexString(Utils.longToByteArrayLittleEndian(distributionListModel.getId())));
+        distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_ID, Utils.byteArrayToHexString(toByteArray(distributionListModel.getId(), ByteOrder.LITTLE_ENDIAN)));
         distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_NAME, distributionListModel.getName());
         if (distributionListModel.getCreatedAt() != null) {
             distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, Utils.getUnsignedTimestamp(distributionListModel.getCreatedAt()));
@@ -1448,7 +1448,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
                         profilePicRelease.put(PROFILE_PIC_RELEASE_ALL_PLACEHOLDER);
                         break;
                     case PROFILEPIC_RELEASE_ALLOW_LIST:
-                        for (String id : profilePicRecipientsService.getAll()) {
+                        for (String id : profilePictureRecipientsService.getAll()) {
                             profilePicRelease.put(id);
                         }
                         break;

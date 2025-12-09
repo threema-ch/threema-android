@@ -26,7 +26,7 @@ import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.runCommonGroupReceiveSteps
 import ch.threema.app.utils.MessageUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
@@ -35,7 +35,7 @@ import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageState
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingGroupDeliveryReceiptTask")
+private val logger = getThreemaLogger("IncomingGroupDeliveryReceiptTask")
 
 class IncomingGroupDeliveryReceiptTask(
     message: GroupDeliveryReceiptMessage,

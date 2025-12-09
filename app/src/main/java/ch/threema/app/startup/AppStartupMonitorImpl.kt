@@ -24,7 +24,7 @@ package ch.threema.app.startup
 import ch.threema.app.startup.models.AppSystem
 import ch.threema.app.startup.models.SystemStatus
 import ch.threema.app.systemupdates.SystemUpdateState
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.DelegateStateFlow
 import ch.threema.common.combineStates
 import ch.threema.common.mapState
@@ -37,10 +37,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 
-private val logger = LoggingUtil.getThreemaLogger("AppStartupMonitorImpl")
+private val logger = getThreemaLogger("AppStartupMonitorImpl")
 
 class AppStartupMonitorImpl : AppStartupMonitor {
-    private val serviceManagerStateFlow = MutableStateFlow(SystemStatus.PENDING)
+    private val unlockedMasterKeyStateFlow = MutableStateFlow(SystemStatus.PENDING)
     private val remoteSecretStateFlow = MutableStateFlow(SystemStatus.UNKNOWN)
     private val databaseStateFlow = DelegateStateFlow(stateFlowOf(SystemStatus.UNKNOWN))
     private val systemUpdateStateFlow = DelegateStateFlow(stateFlowOf(SystemStatus.UNKNOWN))
@@ -50,7 +50,7 @@ class AppStartupMonitorImpl : AppStartupMonitor {
         remoteSecretStateFlow.mapState { remoteSecretState ->
             mapOf(
                 AppSystem.REMOTE_SECRET to remoteSecretState,
-                AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.PENDING,
                 AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
                 AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
             )
@@ -64,11 +64,11 @@ class AppStartupMonitorImpl : AppStartupMonitor {
         remoteSecretStateFlow.value = SystemStatus.READY
     }
 
-    fun onServiceManagerReady(
+    fun onMasterKeyUnlocked(
         databaseStateFlow: StateFlow<DatabaseState>,
         systemUpdateStateFlow: StateFlow<SystemUpdateState>,
     ) {
-        this.serviceManagerStateFlow.value = SystemStatus.READY
+        this.unlockedMasterKeyStateFlow.value = SystemStatus.READY
         this.databaseStateFlow.delegate = databaseStateFlow.mapState { databaseState ->
             databaseState.toSystemStatus()
         }
@@ -81,14 +81,14 @@ class AppStartupMonitorImpl : AppStartupMonitor {
             systemUpdateStateFlow,
         ) { databaseState, systemUpdateState ->
             buildMap {
-                put(AppSystem.SERVICE_MANAGER, SystemStatus.READY)
+                put(AppSystem.UNLOCKED_MASTER_KEY, SystemStatus.READY)
                 put(AppSystem.REMOTE_SECRET, SystemStatus.READY)
                 put(AppSystem.DATABASE_UPDATES, databaseState.toSystemStatus())
                 put(AppSystem.SYSTEM_UPDATES, systemUpdateState.toSystemStatus())
             }
         }
 
-        // the ServiceManager becoming ready implies that the Remote Secret is also ready
+        // the master key becoming unlocked implies that the Remote Secret is also ready
         this.remoteSecretStateFlow.value = SystemStatus.READY
     }
 
@@ -108,18 +108,18 @@ class AppStartupMonitorImpl : AppStartupMonitor {
             SystemUpdateState.READY -> SystemStatus.READY
         }
 
-    fun onServiceManagerDestroyed() {
+    fun onMasterKeyLocked() {
         // Reset to a static state flow first so that the following updates appear atomic from the outside
         systemStatuses.delegate = stateFlowOf(
             mapOf(
-                AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.PENDING,
                 AppSystem.REMOTE_SECRET to SystemStatus.UNKNOWN,
                 AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
                 AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
             ),
         )
 
-        serviceManagerStateFlow.value = SystemStatus.PENDING
+        unlockedMasterKeyStateFlow.value = SystemStatus.PENDING
         remoteSecretStateFlow.value = SystemStatus.UNKNOWN
         databaseStateFlow.delegate = stateFlowOf(SystemStatus.UNKNOWN)
         systemUpdateStateFlow.delegate = stateFlowOf(SystemStatus.UNKNOWN)
@@ -142,10 +142,14 @@ class AppStartupMonitorImpl : AppStartupMonitor {
     override fun isReady(): Boolean =
         systemStatuses.value.all { (_, status) -> status == SystemStatus.READY } && errors.value.isEmpty()
 
+    override fun isReady(system: AppSystem): Boolean =
+        systemStatuses.value[system] == SystemStatus.READY && errors.value.isEmpty()
+
     override suspend fun awaitSystem(system: AppSystem) {
         systemStatuses.first { statuses ->
             statuses[system] == SystemStatus.READY
         }
+        errors.first { it.isEmpty() }
     }
 
     /**

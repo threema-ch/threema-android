@@ -32,12 +32,12 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
 public class SystemUpdateToVersion66 implements SystemUpdate {
     public static final int VERSION = 66;
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion66");
+    private static final Logger logger = getThreemaLogger("SystemUpdateToVersion66");
     private @NonNull final Context context;
     private @NonNull final ServiceManager serviceManager;
 

@@ -31,11 +31,11 @@ import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class TextMessageSendAction extends SendAction {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("TextMessageSendAction");
+    private static final Logger logger = getThreemaLogger("TextMessageSendAction");
 
     protected static volatile TextMessageSendAction instance;
     private static final Object instanceLock = new Object();

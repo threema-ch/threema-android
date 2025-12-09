@@ -38,14 +38,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class PublicKeyDialog extends SimpleStringAlertDialog {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("PublicKeyDialog");
+    private static final Logger logger = getThreemaLogger("PublicKeyDialog");
 
     private String publicKeyString;
     private CharSequence title;

@@ -21,32 +21,23 @@
 
 package ch.threema.app.stores
 
-import android.content.Context
-import ch.threema.app.listeners.PreferenceListener
-import ch.threema.app.managers.ListenerManager
-import ch.threema.app.utils.StringConversionUtil
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.writeAtomically
+import ch.threema.android.writeAtomically
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.emptyByteArray
 import ch.threema.common.takeUnlessEmpty
-import ch.threema.localcrypto.MasterKey
+import ch.threema.localcrypto.MasterKeyProvider
 import java.io.File
 import java.io.FileInputStream
-import java.io.IOException
 import kotlin.text.toByteArray
-import org.apache.commons.io.IOUtils
 import org.json.JSONArray
 import org.json.JSONObject
 
-private val logger = LoggingUtil.getThreemaLogger("EncryptedPreferenceStoreImpl")
+private val logger = getThreemaLogger("EncryptedPreferenceStoreImpl")
 
 class EncryptedPreferenceStoreImpl(
-    private val context: Context,
-    private val masterKey: MasterKey,
-    private val onChanged: (key: String, value: Any?) -> Unit = { key, value ->
-        ListenerManager.preferenceListeners.handle { listener: PreferenceListener ->
-            listener.onChanged(key, value)
-        }
-    },
+    private val directory: File,
+    private val masterKeyProvider: MasterKeyProvider,
+    private val onChanged: (key: String, value: Any?) -> Unit,
 ) : BasePreferenceStore(), EncryptedPreferenceStore {
     override fun remove(key: String) {
         val file = getEncryptedFile(key)
@@ -60,7 +51,7 @@ class EncryptedPreferenceStoreImpl(
     }
 
     override fun save(key: String, value: String?) {
-        saveDataToEncryptedFile(StringConversionUtil.stringToByteArray(value), key)
+        saveDataToEncryptedFile(value?.toByteArray() ?: emptyByteArray(), key)
         onChanged(key, value)
     }
 
@@ -76,7 +67,7 @@ class EncryptedPreferenceStoreImpl(
 
     override fun saveQuietly(key: String, value: Array<String>) {
         saveDataToEncryptedFile(
-            StringConversionUtil.stringToByteArray(value.encodeToString()),
+            value.encodeToString().toByteArray(),
             key,
         )
     }
@@ -96,15 +87,11 @@ class EncryptedPreferenceStoreImpl(
         onChanged(key, value)
     }
 
-    override fun getString(key: String): String {
-        val stringBytes: ByteArray = getDataFromEncryptedFile(key)
-        return StringConversionUtil.byteArrayToString(stringBytes)
-    }
+    override fun getString(key: String) = getDataFromEncryptedFile(key).decodeToString()
 
     override fun getStringArray(key: String): Array<String>? {
         val bytes: ByteArray = getDataFromEncryptedFile(key)
-        val value = StringConversionUtil.byteArrayToString(bytes)
-        return value.takeUnlessEmpty()?.decodeToStringArray()
+        return bytes.decodeToString().takeUnlessEmpty()?.decodeToStringArray()
     }
 
     @Deprecated("only used in system update, use getMap instead")
@@ -155,26 +142,42 @@ class EncryptedPreferenceStoreImpl(
         }
 
     override fun clear() {
-        clear(context)
+        try {
+            directory
+                .listFiles { _, filename: String ->
+                    filename.startsWith(ENCRYPTED_FILE_PREFIX)
+                }
+                ?.forEach { file ->
+                    if (file.delete()) {
+                        logger.info("Deleted encrypted file {}", file.name)
+                    } else {
+                        logger.error("Failed to delete encrypted file {}", file.name)
+                    }
+                }
+        } catch (e: Exception) {
+            // TODO(ANDR-4060): Throw a proper exception here
+            logger.error("Failed to clear encrypted store", e)
+        }
     }
 
     override fun containsKey(key: String): Boolean =
         getEncryptedFile(key).exists()
 
     private fun getEncryptedFile(key: String): File =
-        File(context.filesDir, ENCRYPTED_FILE_PREFIX + key)
+        File(directory, ENCRYPTED_FILE_PREFIX + key)
 
     private fun saveDataToEncryptedFile(data: ByteArray, key: String) {
         val file = getEncryptedFile(key)
         try {
             synchronized(this) {
+                val masterKey = masterKeyProvider.getMasterKey()
                 file.writeAtomically { fileOutputStream ->
-                    masterKey.getCipherOutputStream(fileOutputStream).use { cipherOutputStream ->
+                    masterKey.encrypt(fileOutputStream).use { cipherOutputStream ->
                         cipherOutputStream.write(data)
                     }
                 }
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             // TODO(ANDR-4060): Throw a proper exception here, or don't catch the exception
             logger.error("Failed to store encrypted file with key {}", key, e)
         }
@@ -184,9 +187,10 @@ class EncryptedPreferenceStoreImpl(
         val file = getEncryptedFile(key)
         if (file.exists()) {
             try {
+                val masterKey = masterKeyProvider.getMasterKey()
                 FileInputStream(file).use { fileInputStream ->
-                    masterKey.getCipherInputStream(fileInputStream).use { cipherInputStream ->
-                        return IOUtils.toByteArray(cipherInputStream)
+                    masterKey.decrypt(fileInputStream).use { cipherInputStream ->
+                        return cipherInputStream.readBytes()
                     }
                 }
             } catch (e: Exception) {
@@ -200,24 +204,5 @@ class EncryptedPreferenceStoreImpl(
 
     companion object {
         private const val ENCRYPTED_FILE_PREFIX = ".crs-"
-
-        fun clear(context: Context) {
-            try {
-                context.filesDir
-                    .listFiles { _, filename: String ->
-                        filename.startsWith(ENCRYPTED_FILE_PREFIX)
-                    }
-                    ?.forEach { file ->
-                        if (file.delete()) {
-                            logger.info("Deleted encrypted file {}", file.name)
-                        } else {
-                            logger.error("Failed to delete encrypted file {}", file.name)
-                        }
-                    }
-            } catch (e: Exception) {
-                // TODO(ANDR-4060): Throw a proper exception here
-                logger.error("Failed to clear encrypted store", e)
-            }
-        }
     }
 }

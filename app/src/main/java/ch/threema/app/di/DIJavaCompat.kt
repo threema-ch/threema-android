@@ -21,8 +21,7 @@
 
 package ch.threema.app.di
 
-import ch.threema.app.managers.ServiceManager
-import ch.threema.app.services.ServiceManagerProvider
+import android.content.Context
 import ch.threema.localcrypto.MasterKeyManager
 import org.koin.mp.KoinPlatformTools
 
@@ -31,12 +30,16 @@ import org.koin.mp.KoinPlatformTools
  */
 object DIJavaCompat {
     @JvmStatic
-    fun getServiceManagerOrNull(): ServiceManager? =
-        getKoin().get<ServiceManagerProvider>().getServiceManagerOrNull()
+    fun getAppContext(): Context =
+        getKoin().get()
 
     @JvmStatic
     fun getMasterKeyManager(): MasterKeyManager =
         getKoin().get()
+
+    @JvmStatic
+    fun isSessionScopeReady(): Boolean =
+        getKoin().isSessionScopeReady()
 
     private fun getKoin() =
         KoinPlatformTools.defaultContext().get()

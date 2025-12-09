@@ -25,7 +25,7 @@ import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import androidx.core.net.toUri
 import ch.threema.app.voip.groupcall.GroupCallDescription
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.DispatcherProvider
 import ch.threema.common.Http
 import ch.threema.common.buildNew
@@ -51,7 +51,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 
-private val logger = LoggingUtil.getThreemaLogger("SfuConnectionImpl")
+private val logger = getThreemaLogger("SfuConnectionImpl")
 
 private const val SFU_VERSION = "v1"
 private const val SFU_PEEK_PATH_SEGMENT = "peek"

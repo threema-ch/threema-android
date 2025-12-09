@@ -31,6 +31,7 @@ import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceStore
 import ch.threema.common.now
 import ch.threema.common.plus
+import ch.threema.data.datatypes.AndroidContactLookupInfo
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -165,7 +166,7 @@ class ContactModelTest {
                 readReceiptPolicy = ReadReceiptPolicy.DONT_SEND,
                 typingIndicatorPolicy = TypingIndicatorPolicy.SEND,
                 isArchived = false,
-                androidContactLookupKey = null,
+                androidContactLookupInfo = null,
                 localAvatarExpires = null,
                 isRestored = isRestored,
                 profilePictureBlobId = null,
@@ -227,7 +228,7 @@ class ContactModelTest {
                 readReceiptPolicy = ReadReceiptPolicy.SEND,
                 typingIndicatorPolicy = TypingIndicatorPolicy.DONT_SEND,
                 isArchived = false,
-                androidContactLookupKey = null,
+                androidContactLookupInfo = null,
                 localAvatarExpires = localAvatarExpires,
                 isRestored = true,
                 profilePictureBlobId = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
@@ -257,7 +258,7 @@ class ContactModelTest {
         assertEquals(7uL, value.featureMask)
         assertEquals(ReadReceiptPolicy.SEND, value.readReceiptPolicy)
         assertEquals(TypingIndicatorPolicy.DONT_SEND, value.typingIndicatorPolicy)
-        assertNull(value.androidContactLookupKey)
+        assertNull(value.androidContactLookupInfo)
         assertEquals(localAvatarExpires, value.localAvatarExpires)
         assertTrue { value.isRestored }
         assertContentEquals(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8), value.profilePictureBlobId)
@@ -530,13 +531,17 @@ class ContactModelTest {
         assertEquals(0, contactListenerTracker.onModified.size)
 
         contact.data!!.let {
-            assertNull(it.androidContactLookupKey)
+            assertNull(it.androidContactLookupInfo)
             assertFalse { it.isLinkedToAndroidContact() }
         }
 
-        contact.setAndroidLookupKey("foo/bar")
+        val androidContactLookupInfo = AndroidContactLookupInfo(
+            lookupKey = "lookMeUp",
+            contactId = 42,
+        )
+        contact.setAndroidContactLookupKey(androidContactLookupInfo)
         contact.data!!.let {
-            assertEquals("foo/bar", it.androidContactLookupKey)
+            assertEquals(androidContactLookupInfo, it.androidContactLookupInfo)
             assertTrue { it.isLinkedToAndroidContact() }
         }
         assertEquals(1, contactListenerTracker.onModified.size)
@@ -550,7 +555,7 @@ class ContactModelTest {
         val contact = createTestContact()
 
         // Initially null
-        assertNull(contact.data!!.androidContactLookupKey)
+        assertNull(contact.data!!.androidContactLookupInfo)
 
         // Set date
         val inOneDay = Instant.now() + 1.days
@@ -560,7 +565,7 @@ class ContactModelTest {
 
         // Reset to null
         contact.setLocalAvatarExpires(null)
-        assertNull(contact.data!!.androidContactLookupKey)
+        assertNull(contact.data!!.androidContactLookupInfo)
         assertTrue(contact.data?.isAvatarExpired() ?: fail("No data"))
 
         // Change listener not called

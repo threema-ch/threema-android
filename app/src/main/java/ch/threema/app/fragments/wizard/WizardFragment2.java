@@ -45,13 +45,13 @@ import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardFragment2 extends WizardFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment2");
+    private static final Logger logger = getThreemaLogger("WizardFragment2");
     private EditText nicknameText;
     public static final int PAGE_ID = 2;
 

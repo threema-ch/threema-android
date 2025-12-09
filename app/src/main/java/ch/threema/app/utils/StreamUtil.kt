@@ -25,12 +25,12 @@ import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import ch.threema.app.ThreemaApplication
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.InputStream
 
-private val logger = LoggingUtil.getThreemaLogger("StreamUtil")
+private val logger = getThreemaLogger("StreamUtil")
 
 @Throws(FileNotFoundException::class)
 fun getFromUri(context: Context, uri: Uri?): InputStream? {
@@ -43,7 +43,7 @@ fun getFromUri(context: Context, uri: Uri?): InputStream? {
     if (ContentResolver.SCHEME_CONTENT.equals(uri.scheme, ignoreCase = true)) {
         try {
             inputStream = context.contentResolver.openInputStream(uri)
-        } catch (e: FileNotFoundException) {
+        } catch (_: FileNotFoundException) {
             logger.info("Unable to get an InputStream for this file using ContentResolver: $uri")
         }
     }
@@ -60,7 +60,7 @@ fun getFromUri(context: Context, uri: Uri?): InputStream? {
             tmpPath = fileService.tempPath.absolutePath
             intTmpPath = fileService.intTmpPath.absolutePath
             appPath = context.applicationInfo.dataDir
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             return null
         }
 
@@ -77,53 +77,3 @@ fun getFromUri(context: Context, uri: Uri?): InputStream? {
     }
     return inputStream
 }
-
-/**
- * Compares the content of the input stream with the provided [byteArray]. Note that the input stream is read until the first byte that does not match
- * the byte array.
- *
- * @return true if both the input stream and the byte array are null or both contain the exact same bytes
- */
-fun InputStream?.contentEquals(byteArray: ByteArray?): Boolean {
-    if (this == null && byteArray == null) {
-        return true
-    }
-
-    if (this == null) {
-        return false
-    }
-
-    if (byteArray == null) {
-        return false
-    }
-
-    use { input ->
-        var index = 0
-        var next: Int
-        while (input.read().also { next = it } != -1) {
-            // Abort if the provided byte array is shorter than the input stream
-            if (index >= byteArray.size) {
-                return false
-            }
-            // Abort if the next byte does not match the byte array's byte at this position
-            if (next.toByte() != byteArray[index]) {
-                return false
-            }
-            index++
-        }
-        return index == byteArray.size
-    }
-}
-
-fun InputStream?.toByteArray(): ByteArray? {
-    if (this == null) {
-        return null
-    }
-
-    return buffered().use(InputStream::readBytes)
-}
-
-fun InputStream?.orEmpty(): InputStream =
-    this ?: emptyInputStream()
-
-fun emptyInputStream(): InputStream = byteArrayOf().inputStream()

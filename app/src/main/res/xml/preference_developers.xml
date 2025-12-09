@@ -11,6 +11,13 @@
             android:summary="Reset the reaction tooltip shown state." />
     </PreferenceCategory>
 
+    <PreferenceCategory android:title="Problems">
+        <Preference
+            android:key="@string/preferences__dev_reset_dismissed_problems"
+            android:title="Reset dismissed problems"
+            android:summary="Reset the problems dismissed on the Problem Solver screen" />
+    </PreferenceCategory>
+
     <PreferenceCategory
         android:key="pref_key_debug_info"
         android:title="Debug Info">

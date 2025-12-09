@@ -23,14 +23,14 @@ package ch.threema.app.tasks
 
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.MessageService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.EditMessage
 import ch.threema.domain.protocol.csp.messages.GroupEditMessage
 import ch.threema.storage.models.AbstractMessageModel
 
-private val logger = LoggingUtil.getThreemaLogger("EditMessageUtils")
+private val logger = getThreemaLogger("EditMessageUtils")
 
 fun runCommonEditMessageReceiveSteps(
     editMessage: EditMessage,

@@ -40,11 +40,11 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.webclient.exceptions.ConversionException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 @AnyThread
 public class ClientInfo extends Converter {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ClientInfo");
+    private static final Logger logger = getThreemaLogger("ClientInfo");
 
     // Top level keys
     private final static String DEVICE = "device";

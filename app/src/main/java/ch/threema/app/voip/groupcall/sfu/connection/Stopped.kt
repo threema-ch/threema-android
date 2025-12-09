@@ -24,9 +24,9 @@ package ch.threema.app.voip.groupcall.sfu.connection
 import androidx.annotation.WorkerThread
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.sfu.GroupCall
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallConnectionState.Stopped")
+private val logger = getThreemaLogger("GroupCallConnectionState.Stopped")
 
 class Stopped internal constructor(call: GroupCall) :
     GroupCallConnectionState(StateName.STOPPED, call) {

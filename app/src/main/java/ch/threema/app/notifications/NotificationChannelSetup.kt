@@ -32,6 +32,7 @@ import androidx.annotation.StringRes
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import ch.threema.android.setSound
 import ch.threema.app.R
 import ch.threema.app.notifications.NotificationChannels.NOTIFICATION_CHANNELGROUP_CHAT
 import ch.threema.app.notifications.NotificationChannels.NOTIFICATION_CHANNELGROUP_GROUP_CHAT
@@ -57,14 +58,14 @@ import ch.threema.app.notifications.migrations.Version2Migration
 import ch.threema.app.notifications.migrations.Version3Migration
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RingtoneUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.DispatcherProvider
 import java.io.File
 import java.io.FileOutputStream
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("NotificationChannelSetup")
+private val logger = getThreemaLogger("NotificationChannelSetup")
 
 class NotificationChannelSetup(
     private val appContext: Context,

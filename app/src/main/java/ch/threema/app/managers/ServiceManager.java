@@ -24,8 +24,10 @@ package ch.threema.app.managers;
 import android.content.Context;
 import android.os.PowerManager;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
+import java.security.SecureRandom;
 import java.util.Locale;
 
 import androidx.annotation.NonNull;
@@ -37,18 +39,25 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.BackupChatService;
 import ch.threema.app.backuprestore.BackupChatServiceImpl;
 import ch.threema.app.connection.CspD2mDualConnectionSupplier;
+import ch.threema.base.SessionScoped;
 import ch.threema.app.emojis.EmojiRecent;
 import ch.threema.app.emojis.EmojiService;
 import ch.threema.app.emojis.search.EmojiSearchIndex;
 import ch.threema.app.exceptions.NoIdentityException;
+import ch.threema.app.files.AppLogoFileHandleProvider;
+import ch.threema.app.files.GroupProfilePictureFileHandleProvider;
+import ch.threema.app.files.MessageFileHandleProvider;
+import ch.threema.app.files.ProfilePictureFileHandleProvider;
+import ch.threema.app.files.WallpaperFileHandleProvider;
 import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.onprem.OnPremCertPinning;
 import ch.threema.app.onprem.OnPremServerAddressProvider;
 import ch.threema.app.processors.IncomingMessageProcessorImpl;
+import ch.threema.app.profilepicture.GroupProfilePictureUploader;
 import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ApiServiceImpl;
-import ch.threema.app.services.AppDirectoryProvider;
+import ch.threema.app.files.AppDirectoryProvider;
 import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.AvatarCacheServiceImpl;
 import ch.threema.app.services.BlockedIdentitiesService;
@@ -78,8 +87,8 @@ import ch.threema.app.services.FileServiceImpl;
 import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.GroupServiceImpl;
-import ch.threema.app.services.IdListService;
-import ch.threema.app.services.IdListServiceImpl;
+import ch.threema.app.services.ProfilePictureRecipientsService;
+import ch.threema.app.services.ProfilePictureRecipientsServiceImpl;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.LifetimeServiceImpl;
 import ch.threema.app.services.LocaleService;
@@ -88,24 +97,18 @@ import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.MessageServiceImpl;
 import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.services.NotificationPreferenceServiceImpl;
 import ch.threema.app.services.OnPremConfigFetcherProvider;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.notification.NotificationServiceImpl;
 import ch.threema.app.services.PinLockService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.preference.service.PreferenceServiceImpl;
-import ch.threema.app.services.QRCodeService;
-import ch.threema.app.services.QRCodeServiceImpl;
 import ch.threema.app.services.RingtoneService;
-import ch.threema.app.services.RingtoneServiceImpl;
 import ch.threema.app.services.SensorService;
 import ch.threema.app.services.SensorServiceImpl;
 import ch.threema.app.services.ServerAddressProviderService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.services.SynchronizeContactsServiceImpl;
-import ch.threema.app.services.SystemScreenLockService;
-import ch.threema.app.services.SystemScreenLockServiceImpl;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.UserServiceImpl;
 import ch.threema.app.services.WallpaperService;
@@ -126,9 +129,8 @@ import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.threemasafe.ThreemaSafeServiceImpl;
 import ch.threema.app.utils.AppVersionProvider;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.DeviceIdUtil;
+import ch.threema.app.utils.DeviceIdProvider;
 import ch.threema.app.utils.ForwardSecurityStatusSender;
-import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.voip.groupcall.GroupCallManager;
 import ch.threema.app.voip.groupcall.GroupCallManagerImpl;
 import ch.threema.app.voip.groupcall.sfu.SfuConnection;
@@ -139,7 +141,7 @@ import ch.threema.app.webclient.services.ServicesContainer;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.SymmetricEncryptionService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.repositories.ModelRepositories;
 import ch.threema.domain.models.LicenseCredentials;
 import ch.threema.domain.models.UserCredentials;
@@ -159,15 +161,20 @@ import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.localcrypto.MasterKeyProvider;
 import ch.threema.storage.DatabaseService;
 import java8.util.function.Supplier;
+import kotlin.Lazy;
 import okhttp3.OkHttpClient;
 
+import static ch.threema.common.LazyKt.lazy;
+
+@Deprecated
+@SessionScoped
 public class ServiceManager {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ServiceManager");
+    private static final Logger logger = getThreemaLogger("ServiceManager");
 
     @NonNull
     private final CoreServiceManager coreServiceManager;
     @NonNull
-    private final Supplier<Boolean> isIpv6Preferred;
+    private final Lazy<Boolean> isIpv6Preferred;
     @NonNull
     private final MasterKeyProvider masterKeyProvider;
     @NonNull
@@ -183,13 +190,9 @@ public class ServiceManager {
     @Nullable
     private MessageService messageService;
     @Nullable
-    private QRCodeService qrCodeService;
-    @Nullable
     private FileService fileService;
     @Nullable
     private PreferenceService preferencesService;
-    @Nullable
-    private NotificationPreferenceService notificationPreferenceService;
     @Nullable
     private LocaleService localeService;
     @Nullable
@@ -203,6 +206,8 @@ public class ServiceManager {
     @Nullable
     private GroupService groupService;
     @Nullable
+    private GroupProfilePictureUploader groupProfilePictureUploader;
+    @Nullable
     private LockAppService lockAppService;
     @Nullable
     private ActivityService activityService;
@@ -214,15 +219,13 @@ public class ServiceManager {
     private NotificationService notificationService;
     @Nullable
     private SynchronizeContactsService synchronizeContactsService;
-    @Nullable
-    private SystemScreenLockService systemScreenLockService;
 
     @Nullable
     private BlockedIdentitiesService blockedIdentitiesService;
     @Nullable
     private ExcludedSyncIdentitiesService excludedSyncIdentitiesService;
     @Nullable
-    private IdListService profilePicRecipientsService;
+    private ProfilePictureRecipientsService profilePictureRecipientsService;
     @Nullable
     private ConversationCategoryService conversationCategoryService;
     @Nullable
@@ -239,8 +242,6 @@ public class ServiceManager {
     private WallpaperService wallpaperService;
     @Nullable
     private ThreemaSafeService threemaSafeService;
-    @Nullable
-    private RingtoneService ringtoneService;
     @Nullable
     private BackupChatService backupChatService;
     @NonNull
@@ -294,7 +295,7 @@ public class ServiceManager {
     private final OnPremConfigStore onPremConfigStore;
 
     @NonNull
-    private final LazyProperty<OkHttpClient> okHttpClient = new LazyProperty<>(this::createOkHttpClient);
+    private final Lazy<OkHttpClient> okHttpClient = lazy(this::createOkHttpClient);
 
     public ServiceManager(
         @NonNull ModelRepositories modelRepositories,
@@ -306,7 +307,7 @@ public class ServiceManager {
     ) throws ThreemaException {
         this.cacheService = new CacheService();
         this.coreServiceManager = coreServiceManager;
-        this.isIpv6Preferred = new LazyProperty<>(() -> getPreferenceService().isIpv6Preferred());
+        this.isIpv6Preferred = lazy(() -> getPreferenceService().isIpv6Preferred());
         this.masterKeyProvider = masterKeyProvider;
         this.databaseService = coreServiceManager.getDatabaseService();
         this.modelRepositories = modelRepositories;
@@ -352,7 +353,7 @@ public class ServiceManager {
                 }
 
                 this.apiConnector = new APIConnector(
-                    isIpv6Preferred.get(),
+                    isIpv6Preferred.getValue(),
                     this.getServerAddressProviderService().getServerAddressProvider(),
                     ConfigUtils.isWorkBuild(),
                     getOkHttpClient(),
@@ -438,7 +439,8 @@ public class ServiceManager {
                     this.getPreferenceService(),
                     this.getTaskManager(),
                     this.getTaskCreator(),
-                    this.getMultiDeviceManager()
+                    this.getMultiDeviceManager(),
+                    getDeviceIdProvider()
                 );
                 // TODO(ANDR-2519): Remove when md allows fs
                 this.userService.setForwardSecurityEnabled(getMultiDeviceManager().isMdDisabledOrSupportsFs());
@@ -524,22 +526,8 @@ public class ServiceManager {
     }
 
     @NonNull
-    public NotificationPreferenceService getNotificationPreferenceService() {
-        if (notificationPreferenceService == null) {
-            notificationPreferenceService = new NotificationPreferenceServiceImpl(
-                getContext(), getPreferenceStore()
-            );
-        }
-        return notificationPreferenceService;
-    }
-
-    @NonNull
-    public QRCodeService getQRCodeService() {
-        if (this.qrCodeService == null) {
-            this.qrCodeService = new QRCodeServiceImpl(this.getUserService());
-        }
-
-        return this.qrCodeService;
+    private NotificationPreferenceService getNotificationPreferenceService() {
+        return KoinJavaComponent.get(NotificationPreferenceService.class);
     }
 
     @NonNull
@@ -547,11 +535,14 @@ public class ServiceManager {
         if (this.fileService == null) {
             this.fileService = new FileServiceImpl(
                 this.getContext(),
-                new AppDirectoryProvider((getContext())),
-                masterKeyProvider,
+                KoinJavaComponent.get(AppDirectoryProvider.class),
                 this.getPreferenceService(),
                 this.getNotificationPreferenceService(),
-                this.getAvatarCacheService()
+                this.getAvatarCacheService(),
+                KoinJavaComponent.get(AppLogoFileHandleProvider.class),
+                KoinJavaComponent.get(MessageFileHandleProvider.class),
+                KoinJavaComponent.get(ProfilePictureFileHandleProvider.class),
+                KoinJavaComponent.get(GroupProfilePictureFileHandleProvider.class)
             );
         }
 
@@ -607,7 +598,8 @@ public class ServiceManager {
                     this.licenseService = new LicenseServiceSerial(
                         this.getAPIConnector(),
                         this.getPreferenceService(),
-                        DeviceIdUtil.getDeviceId(getContext()));
+                        getDeviceIdProvider().getDeviceId()
+                    );
                     break;
                 case GOOGLE_WORK:
                 case HMS_WORK:
@@ -615,7 +607,8 @@ public class ServiceManager {
                     this.licenseService = new LicenseServiceUser(
                         this.getAPIConnector(),
                         this.getPreferenceService(),
-                        DeviceIdUtil.getDeviceId(getContext()));
+                        getDeviceIdProvider().getDeviceId()
+                    );
                     break;
                 default:
                     this.licenseService = new LicenseService() {
@@ -645,10 +638,14 @@ public class ServiceManager {
                         }
                     };
             }
-
         }
 
         return this.licenseService;
+    }
+
+    @NonNull
+    private DeviceIdProvider getDeviceIdProvider() {
+        return KoinJavaComponent.get(DeviceIdProvider.class);
     }
 
     @NonNull
@@ -701,11 +698,22 @@ public class ServiceManager {
     }
 
     @NonNull
+    public GroupProfilePictureUploader getGroupProfilePictureUploader() {
+        if (groupProfilePictureUploader == null) {
+            groupProfilePictureUploader = new GroupProfilePictureUploader(
+                getApiService(),
+                KoinJavaComponent.get(SecureRandom.class)
+            );
+        }
+        return groupProfilePictureUploader;
+    }
+
+    @NonNull
     public ApiService getApiService() {
         if (null == this.apiService) {
             this.apiService = new ApiServiceImpl(
                 AppVersionProvider.getAppVersion(),
-                isIpv6Preferred.get(),
+                isIpv6Preferred.getValue(),
                 this.getAPIConnector(),
                 new AuthTokenStore(),
                 this.getServerAddressProviderService().getServerAddressProvider(),
@@ -823,11 +831,8 @@ public class ServiceManager {
                 this.getExcludedSyncIdentitiesService(),
                 this.getPreferenceService(),
                 this.getDeviceService(),
-                this.getFileService(),
                 this.getIdentityStore(),
-                this.getBlockedIdentitiesService(),
-                this.getApiService(),
-                this.getOkHttpClient()
+                this.getBlockedIdentitiesService()
             );
         }
 
@@ -891,7 +896,6 @@ public class ServiceManager {
         if (this.downloadService == null) {
             this.downloadService = new DownloadServiceImpl(
                 this.getContext(),
-                this.getFileService(),
                 this.getApiService()
             );
         }
@@ -918,9 +922,8 @@ public class ServiceManager {
         if (this.wallpaperService == null) {
             this.wallpaperService = new WallpaperServiceImpl(
                 getContext(),
-                getFileService(),
-                getPreferenceService(),
-                masterKeyProvider
+                KoinJavaComponent.get(WallpaperFileHandleProvider.class),
+                getPreferenceService()
             );
         }
 
@@ -955,6 +958,7 @@ public class ServiceManager {
         return this.threemaSafeService;
     }
 
+    @Deprecated()
     @NonNull
     public Context getContext() {
         return ThreemaApplication.getAppContext();
@@ -967,13 +971,7 @@ public class ServiceManager {
 
     @NonNull
     public RingtoneService getRingtoneService() {
-        if (this.ringtoneService == null) {
-            this.ringtoneService = new RingtoneServiceImpl(
-                this.getNotificationPreferenceService()
-            );
-        }
-
-        return this.ringtoneService;
+        return KoinJavaComponent.get(RingtoneService.class);
     }
 
     @NonNull
@@ -988,18 +986,6 @@ public class ServiceManager {
         }
 
         return this.backupChatService;
-    }
-
-    @NonNull
-    public SystemScreenLockService getScreenLockService() {
-        if (this.systemScreenLockService == null) {
-            this.systemScreenLockService = new SystemScreenLockServiceImpl(
-                this.getContext(),
-                this.getLockAppService(),
-                this.getPreferenceService()
-            );
-        }
-        return this.systemScreenLockService;
     }
 
     @NonNull
@@ -1049,11 +1035,11 @@ public class ServiceManager {
     }
 
     @NonNull
-    public IdListService getProfilePicRecipientsService() {
-        if (this.profilePicRecipientsService == null) {
-            this.profilePicRecipientsService = new IdListServiceImpl("identity_list_profilepics", this.getPreferenceService());
+    public ProfilePictureRecipientsService getProfilePicRecipientsService() {
+        if (this.profilePictureRecipientsService == null) {
+            this.profilePictureRecipientsService = new ProfilePictureRecipientsServiceImpl(getPreferenceService());
         }
-        return this.profilePicRecipientsService;
+        return this.profilePictureRecipientsService;
     }
 
     @NonNull
@@ -1139,6 +1125,8 @@ public class ServiceManager {
                 getDatabaseService(),
                 getGroupService(),
                 getContactService(),
+                getModelRepositories().getContacts(),
+                getUserService(),
                 getPreferenceService(),
                 getMessageService(),
                 getNotificationService(),
@@ -1205,7 +1193,7 @@ public class ServiceManager {
                 getBlockedIdentitiesService(),
                 getPreferenceService(),
                 getMultiDeviceManager(),
-                getApiService(),
+                getGroupProfilePictureUploader(),
                 getAPIConnector(),
                 getFileService(),
                 getDatabaseService(),
@@ -1218,7 +1206,7 @@ public class ServiceManager {
 
     @NonNull
     public OkHttpClient getOkHttpClient() {
-        return okHttpClient.get();
+        return okHttpClient.getValue();
     }
 
     @NonNull
@@ -1232,8 +1220,8 @@ public class ServiceManager {
             getServerAddressProviderService(),
             getIdentityStore(),
             coreServiceManager.getVersion(),
-            isIpv6Preferred.get(),
-            okHttpClient,
+            isIpv6Preferred.getValue(),
+            okHttpClient::getValue,
             ConfigUtils.isDevBuild()
         );
         return new ConvertibleServerConnection(connectionSupplier);
@@ -1257,6 +1245,6 @@ public class ServiceManager {
     }
 
     public boolean isIpv6Preferred() {
-        return isIpv6Preferred.get();
+        return isIpv6Preferred.getValue();
     }
 }

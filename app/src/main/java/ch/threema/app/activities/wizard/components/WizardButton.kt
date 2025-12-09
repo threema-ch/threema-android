@@ -58,7 +58,7 @@ import androidx.compose.ui.unit.sp
 import ch.threema.app.R
 import ch.threema.app.compose.common.ThemedText
 import ch.threema.app.compose.theme.ThreemaThemePreview
-import ch.threema.app.compose.theme.color.AlphaValuesNight
+import ch.threema.app.compose.theme.color.AlphaValues
 import ch.threema.app.compose.theme.dimens.GridUnit
 
 private const val BORDER_WIDTH = 1
@@ -151,7 +151,7 @@ fun WizardButton(
                 fontSize = 16.sp,
             ),
             color = colorResource(contentColorRes).copy(
-                alpha = if (isEnabled) 1f else AlphaValuesNight.DISABLED_ON_CONTAINER,
+                alpha = if (isEnabled) 1f else AlphaValues.DISABLED_ON_CONTAINER,
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -164,7 +164,7 @@ fun WizardButton(
                 painter = painterResource(id = trailingIconRes),
                 contentDescription = null,
                 tint = colorResource(contentColorRes).copy(
-                    alpha = if (isEnabled) 1f else AlphaValuesNight.DISABLED_ON_CONTAINER,
+                    alpha = if (isEnabled) 1f else AlphaValues.DISABLED_ON_CONTAINER,
                 ),
             )
         }
@@ -185,7 +185,7 @@ private fun buildBorderStroke(
     !isEnabled -> BorderStroke(
         width = BORDER_WIDTH.dp,
         color = colorResource(R.color.md_theme_dark_primary).copy(
-            alpha = AlphaValuesNight.DISABLED_CONTAINER,
+            alpha = AlphaValues.DISABLED_CONTAINER,
         ),
     )
 
@@ -204,10 +204,10 @@ private fun buildWizardButtonColors(
         containerColor = containerColor,
         contentColor = contentColor,
         disabledContainerColor = containerColor.copy(
-            alpha = AlphaValuesNight.DISABLED_CONTAINER,
+            alpha = AlphaValues.DISABLED_CONTAINER,
         ),
         disabledContentColor = contentColor.copy(
-            alpha = AlphaValuesNight.DISABLED_ON_CONTAINER,
+            alpha = AlphaValues.DISABLED_ON_CONTAINER,
         ),
     )
 }

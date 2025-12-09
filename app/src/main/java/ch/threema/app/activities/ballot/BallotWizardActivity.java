@@ -62,17 +62,18 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class BallotWizardActivity extends ThreemaActivity {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotWizardActivity");
+    private static final Logger logger = getThreemaLogger("BallotWizardActivity");
 
     private static final int NUM_PAGES = 2;
 
@@ -119,7 +120,7 @@ public class BallotWizardActivity extends ThreemaActivity {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }

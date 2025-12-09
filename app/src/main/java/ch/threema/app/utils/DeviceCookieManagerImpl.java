@@ -31,14 +31,14 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.stores.EncryptedPreferenceStore;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ServerMessageModel;
 
 public class DeviceCookieManagerImpl implements DeviceCookieManager {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DeviceCookieManagerImpl");
+    private static final Logger logger = getThreemaLogger("DeviceCookieManagerImpl");
 
     private static final int DEVICE_COOKIE_SIZE = 16;
 

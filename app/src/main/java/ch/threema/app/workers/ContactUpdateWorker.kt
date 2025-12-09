@@ -32,7 +32,7 @@ import androidx.work.Operation
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import ch.threema.app.di.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
@@ -40,7 +40,7 @@ import ch.threema.app.services.PollingHelper
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.WorkManagerUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ModelDeletedException
 import ch.threema.data.repositories.ContactModelRepository
@@ -50,8 +50,9 @@ import ch.threema.domain.protocol.api.APIConnector
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-private val logger = LoggingUtil.getThreemaLogger("ContactUpdateWorker")
+private val logger = getThreemaLogger("ContactUpdateWorker")
 
 /**
  * The contact update worker sends the feature mask (if necessary) and updates all contacts. This
@@ -61,16 +62,23 @@ class ContactUpdateWorker(
     private val context: Context,
     workerParameters: WorkerParameters,
 ) : CoroutineWorker(context, workerParameters), KoinComponent {
+
+    private val contactModelRepository: ContactModelRepository by inject()
+    private val contactService: ContactService by inject()
+    private val apiConnector: APIConnector by inject()
+    private val userService: UserService by inject()
+    private val preferenceService: PreferenceService by inject()
+
     override suspend fun doWork(): Result {
-        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
+        awaitAppFullyReadyWithTimeout(timeout = 20.seconds)
             ?: return Result.failure()
 
         val success = sendFeatureMaskAndUpdateContacts(
-            serviceManager.modelRepositories.contacts,
-            serviceManager.contactService,
-            serviceManager.apiConnector,
-            serviceManager.userService,
-            serviceManager.preferenceService,
+            contactModelRepository,
+            contactService,
+            apiConnector,
+            userService,
+            preferenceService,
             PollingHelper(context, "contactUpdateWorker"),
         )
 
@@ -180,15 +188,11 @@ class ContactUpdateWorker(
                 override fun states(): Array<IdentityState> =
                     arrayOf(IdentityState.ACTIVE, IdentityState.INACTIVE)
 
-                override fun requiredFeature() = null
-
                 override fun fetchMissingFeatureLevel() = null
 
                 override fun includeMyself() = true
 
                 override fun includeHidden() = true
-
-                override fun onlyWithReceiptSettings() = false
             }).mapNotNull { contactModelRepository.getByIdentity(it.identity) }
 
             val success = if (contactModels.isNotEmpty()) {

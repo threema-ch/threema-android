@@ -64,6 +64,7 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
+import ch.threema.app.camera.QRScannerActivity;
 import ch.threema.app.compose.common.interop.ComposeJavaBridge;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -85,7 +86,6 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.PowermanagerUtil;
-import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.webclient.Protocol;
@@ -101,7 +101,7 @@ import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.app.webclient.state.WebClientSessionState;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.WebClientSessionModel;
 import kotlin.Unit;
 
@@ -115,7 +115,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
     TextEntryDialog.TextEntryDialogClickListener {
 
     @NonNull
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SessionsActivity");
+    private static final Logger logger = getThreemaLogger("SessionsActivity");
     @NonNull
     private static final String DIALOG_TAG_ITEM_MENU = "itemMenu";
     @NonNull
@@ -129,6 +129,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
 
     private static final int REQUEST_ID_INTRO_WIZARD = 338;
     private static final int REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS = 339;
+    private static final int REQUEST_CODE_QR_SCANNER = 26657;
 
     private static final int MENU_POS_RENAME = 0;
     private static final int MENU_POS_START_STOP = 1;
@@ -721,7 +722,8 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
 
     private void scanQR() {
         logger.info("Initiate QR scan");
-        QRScannerUtil.getInstance().initiateScan(this, getString(R.string.webclient_qr_scan_message));
+        var intent = QRScannerActivity.createIntent(this, getString(R.string.webclient_qr_scan_message));
+        startActivityForResult(intent, REQUEST_CODE_QR_SCANNER);
     }
 
     @Override
@@ -743,12 +745,10 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
                     this.activityInitialized();
                 }
                 break;
-            default:
+            case REQUEST_CODE_QR_SCANNER:
                 if (resultCode == RESULT_OK) {
-                    // return from QR scan
-                    String payload = QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent);
-
-                    if (!TestUtil.isEmptyOrNull(payload)) {
+                    String payload = QRScannerActivity.extractResult(intent);
+                    if (payload != null && !payload.isEmpty()) {
                         final WebSessionQRCodeParser webSessionQrCodeParser = new WebSessionQRCodeParserImpl();
                         try {
                             final byte[] pl = Base64.decode(payload);

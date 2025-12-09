@@ -27,13 +27,13 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.ReflectSettingsSyncTask
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.ScreenshotPolicy
 
-private val logger = LoggingUtil.getThreemaLogger("ScreenshotPolicySetting")
+private val logger = getThreemaLogger("ScreenshotPolicySetting")
 
 /**
  * The setting whether screenshots should be denied. Stores true if they should be denied.

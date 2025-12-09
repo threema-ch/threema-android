@@ -22,7 +22,7 @@
 package ch.threema.app.voip.groupcall.sfu
 
 import ch.threema.app.voip.groupcall.GroupCallException
-import ch.threema.base.utils.SecureRandomUtil.generateRandomProtobufPadding
+import ch.threema.base.utils.generateRandomProtobufPadding
 import ch.threema.protobuf.groupcall.CallState
 
 data class GroupCallState(

@@ -43,13 +43,13 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.MimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
 
 public class MessagePlayerServiceImpl implements MessagePlayerService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessagePlayerServiceImpl");
+    private static final Logger logger = getThreemaLogger("MessagePlayerServiceImpl");
 
     private final Map<Integer, MessagePlayer> messagePlayers = new HashMap<>();
     private final Context context;

@@ -35,10 +35,10 @@ import android.os.IBinder;
 import org.slf4j.Logger;
 
 import ch.threema.app.activities.AddAccountActivity;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class AccountAuthenticatorService extends Service {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AccountAuthenticatorService");
+    private static final Logger logger = getThreemaLogger("AccountAuthenticatorService");
     public static final String TYPE = "ch.threema.app";
     private static AccountAuthenticatorImpl accountAuthenticator = null;
 

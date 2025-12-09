@@ -22,11 +22,11 @@
 package ch.threema.app.processors.reflectedoutgoingmessage
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.protobuf.d2d.MdD2D
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingPlaceholderTask")
+private val logger = getThreemaLogger("ReflectedOutgoingPlaceholderTask")
 
 /**
  * This task is used for messages that do not require any steps to be executed. We use this generic placeholder task to prevent us from having to

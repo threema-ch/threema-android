@@ -31,6 +31,7 @@ import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.utils.ConversationUtil.getDistributionListConversationUid
 import ch.threema.app.utils.ConversationUtil.getGroupConversationUid
 import ch.threema.app.utils.ConversationUtil.getIdentityConversationUid
+import ch.threema.domain.types.ConversationUID
 import java.util.Date
 
 class ConversationModel(
@@ -90,12 +91,12 @@ class ConversationModel(
     @JvmField
     var isArchived: Boolean = false
 
-    val uid: String
+    val uid: ConversationUID
         get() = when {
             isContactConversation -> getIdentityConversationUid(contact!!.identity)
             isGroupConversation -> getGroupConversationUid(group!!.id.toLong())
             isDistributionListConversation -> getDistributionListConversationUid(distributionList!!.id)
-            else -> throw IllegalStateException("Can not determine uid of conversation model for receiver od type ${messageReceiver.type}")
+            else -> error("Can not determine uid of conversation model for receiver od type ${messageReceiver.type}")
         }
 
     var position: Int = -1

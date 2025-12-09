@@ -83,6 +83,7 @@
     <string name="voip_gc_waiting_for_participants">Изчакване на участниците</string>
     <string name="voip_gc_participant_avatar_description">Профилна снимка на участника</string>
     <string name="voip_gc_participant_mute_status_description">Статус на звука на участника</string>
+    <string name="voip_gc_participant_screen_share_status_description">Участникът си споделя екрана</string>
     <string name="voip_gc_notification_new_call_public">Започна ново групово обаждане</string>
     <string name="voip_gc_open_call">Отворете</string>
     <string name="voip_gc_call_started">Груповото обаждане започна</string>
@@ -92,6 +93,7 @@
     <string name="voip_gc_call_error">Обаждането спря поради грешка</string>
     <string name="voip_gc_call_start_error">Не може да се стартира групово обаждане</string>
     <string name="voip_gc_call_already_ended">Груповото обаждане вече е приключило</string>
+    <string name="voip_gc_screen_sharing_not_supported">Споделянето на екрана е достъпно само за компютри.</string>
     <string name="voip_gc_call_full_generic">Достигнат е максималният брой участници. Не могат да се присъединят повече хора към това групово обаждане.</string>
     <string name="voip_gc_call_full_n">Достигнат е максималният брой участници - %1$d. Не можете да се присъедините в това групово обаждане.</string>
     <plurals name="n_participants_in_call">

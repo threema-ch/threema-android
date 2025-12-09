@@ -26,12 +26,14 @@ import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import ch.threema.app.R
+import ch.threema.app.ui.postDelayed
 import ch.threema.app.utils.EditTextUtil
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlin.time.Duration.Companion.milliseconds
 
-private val logger = LoggingUtil.getThreemaLogger("CallbackTextEntryDialog")
+private val logger = getThreemaLogger("CallbackTextEntryDialog")
 
 class CallbackTextEntryDialog : ThreemaDialogFragment() {
     init {
@@ -75,9 +77,9 @@ class CallbackTextEntryDialog : ThreemaDialogFragment() {
         super.onResume()
 
         // Show keyboard
-        editText?.postDelayed({
+        editText?.postDelayed(100.milliseconds) {
             EditTextUtil.showSoftKeyboard(editText)
-        }, 100)
+        }
     }
 
     companion object {

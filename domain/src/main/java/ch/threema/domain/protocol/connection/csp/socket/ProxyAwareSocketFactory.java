@@ -31,11 +31,11 @@ import java.net.URI;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.HttpProxySocket;
 
 public class ProxyAwareSocketFactory {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ProxyAwareSocketFactory");
+    private static final Logger logger = getThreemaLogger("ProxyAwareSocketFactory");
 
     public static boolean shouldUseProxy(String hostname, int port) {
         List<Proxy> proxies = ProxySelector.getDefault().select(URI.create("https://" + hostname + ":" + port + "/"));

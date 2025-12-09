@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.connection.data
 
-import ch.threema.base.utils.SecureRandomUtil.generateRandomProtobufPadding
+import ch.threema.base.utils.generateRandomProtobufPadding
 import ch.threema.protobuf.d2d.MdD2D
 
 sealed interface D2dMessage {

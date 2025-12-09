@@ -50,16 +50,17 @@ import ch.threema.app.profilepicture.CheckedProfilePicture;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.utils.CoroutinesExtensionKt;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupModel;
 import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.app.groupflows.GroupFlowResultKt.GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS;
 
 public class GroupAdd2Activity extends GroupEditActivity implements ContactEditDialog.ContactEditDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupAdd2Activity");
+    private static final Logger logger = getThreemaLogger("GroupAdd2Activity");
 
     private static final String BUNDLE_GROUP_IDENTITIES = "grId";
 
@@ -79,7 +80,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }

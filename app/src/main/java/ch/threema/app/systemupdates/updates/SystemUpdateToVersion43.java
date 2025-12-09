@@ -29,20 +29,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
-import ch.threema.app.drafts.DraftManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DeadlineListServiceImpl;
 import ch.threema.app.services.RingtoneService;
-import ch.threema.app.stores.EncryptedPreferenceStore;
 import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Base32;
 
-/**
- * add profile pic field to normal, group and distribution list message models
- */
 public class SystemUpdateToVersion43 implements SystemUpdate {
     private @NonNull final ServiceManager serviceManager;
 
@@ -64,12 +59,10 @@ public class SystemUpdateToVersion43 implements SystemUpdate {
         String messageDraftPrefs = "pref_message_drafts";
 
         PreferenceStore preferenceStore = serviceManager.getPreferenceStore();
-        EncryptedPreferenceStore encryptedPreferenceStoreInterface = serviceManager.getEncryptedPreferenceStore();
 
         Map<Integer, String> oldMutedChatsMap = preferenceStore.getIntMap(mutedChatsPrefs);
         Map<Integer, String> oldHiddenChatsMap = preferenceStore.getIntMap(hiddenChatsPrefs);
         Map<Integer, String> oldRingtoneMap = preferenceStore.getIntMap(ringtonePrefs);
-        Map<Integer, String> oldMessageDraftsMap = encryptedPreferenceStoreInterface.getIntMap(messageDraftPrefs);
         preferenceStore.remove(messageDraftPrefs);
 
         HashMap<String, String> newMutedChatsMap = new HashMap<>();
@@ -97,10 +90,6 @@ public class SystemUpdateToVersion43 implements SystemUpdate {
                     if (oldRingtoneMap.containsKey(oldUid)) {
                         newRingtoneMap.put(getNewUid(rawUid), oldRingtoneMap.get(oldUid));
                     }
-
-                    if (oldMessageDraftsMap.containsKey(oldUid)) {
-                        DraftManager.putMessageDraft(getNewUid(rawUid), oldMessageDraftsMap.get(oldUid), null);
-                    }
                 }
             }
             contacts.close();
@@ -125,10 +114,6 @@ public class SystemUpdateToVersion43 implements SystemUpdate {
 
                     if (oldRingtoneMap.containsKey(oldUid)) {
                         newRingtoneMap.put(getNewUid(rawUid), oldRingtoneMap.get(oldUid));
-                    }
-
-                    if (oldMessageDraftsMap.containsKey(oldUid)) {
-                        DraftManager.putMessageDraft(getNewUid(rawUid), oldMessageDraftsMap.get(oldUid), null);
                     }
                 }
             }

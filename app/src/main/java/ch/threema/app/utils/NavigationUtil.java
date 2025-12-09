@@ -30,10 +30,10 @@ import androidx.core.app.TaskStackBuilder;
 
 import org.slf4j.Logger;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class NavigationUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("NavigationUtil");
+    private static final Logger logger = getThreemaLogger("NavigationUtil");
 
     public static void navigateUpToHome(@NonNull Activity activity) {
         // navigate to home and get rid of the backstack (since we may have pulled the rug from under our feet)

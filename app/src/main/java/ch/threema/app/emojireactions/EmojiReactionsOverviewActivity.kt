@@ -48,7 +48,7 @@ import ch.threema.app.emojis.EmojiTextView
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.EmojiReactionData
 import ch.threema.data.repositories.EmojiReactionsRepository.ReactionMessageIdentifier
 import ch.threema.storage.models.AbstractMessageModel
@@ -63,7 +63,7 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsOverviewActivity")
+private val logger = getThreemaLogger("EmojiReactionsOverviewActivity")
 
 class EmojiReactionsOverviewActivity : ThreemaToolbarActivity() {
     init {

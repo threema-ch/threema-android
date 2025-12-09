@@ -28,7 +28,7 @@ import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.app.utils.toBasicContact
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.GroupId
@@ -41,7 +41,7 @@ import ch.threema.domain.types.Identity
 import java.util.Date
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupSyncRequestTask")
+private val logger = getThreemaLogger("OutgoingGroupSyncRequestTask")
 
 /**
  * Send a group sync request to the specified group creator. Note that maximum one sync request is

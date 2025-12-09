@@ -22,7 +22,7 @@
 package ch.threema.app.utils
 
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -37,7 +37,7 @@ import net.lingala.zip4j.model.enums.CompressionLevel
 import net.lingala.zip4j.model.enums.CompressionMethod
 import net.lingala.zip4j.model.enums.EncryptionMethod
 
-private val logger = LoggingUtil.getThreemaLogger("FileHandlingZipOutputStream")
+private val logger = getThreemaLogger("FileHandlingZipOutputStream")
 
 class FileHandlingZipOutputStream(
     outputStream: OutputStream,

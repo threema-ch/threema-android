@@ -61,13 +61,13 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MIN_PW_LENGTH;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity implements ThreemaSafeAdvancedDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeConfigureActivity");
+    private static final Logger logger = getThreemaLogger("ThreemaSafeConfigureActivity");
 
     private static final String DIALOG_TAG_PREPARING = "prep";
     private static final String DIALOG_TAG_ADVANCED = "adv";

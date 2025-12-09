@@ -36,11 +36,11 @@ import ch.threema.app.webclient.converter.Utils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 @WorkerThread
 public class AvatarRequestHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarRequestHandler");
+    private static final Logger logger = getThreemaLogger("AvatarRequestHandler");
 
     private final MessageDispatcher dispatcher;
 

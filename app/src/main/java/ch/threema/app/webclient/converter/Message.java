@@ -59,7 +59,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.utils.ThumbnailUtils;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.EmojiReactionData;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -76,7 +76,7 @@ import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 @AnyThread
 public class Message extends Converter {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("Message");
+    private static final Logger logger = getThreemaLogger("Message");
 
     public final static String ID = "id";
     public final static String TYPE = "type";

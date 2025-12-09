@@ -21,6 +21,9 @@
 
 package ch.threema.app.startup
 
+import ch.threema.app.restrictions.AppRestrictionService
+import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.RuntimeUtil
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
@@ -29,10 +32,16 @@ val startupFeatureModule = module {
     viewModelOf(::RemoteSecretProtectionUpdateViewModel)
     factoryOf(::MasterKeyEventMonitor)
 
-    factory {
+    factory<AppProcessLifecycleObserver> {
         AppProcessLifecycleObserver(
-            serviceManagerProvider = get(),
             dispatcherProvider = get(),
+            reloadAppRestrictions = {
+                if (ConfigUtils.isWorkBuild()) {
+                    RuntimeUtil.runOnWorkerThread {
+                        AppRestrictionService.getInstance().reload()
+                    }
+                }
+            },
         )
     }
 }

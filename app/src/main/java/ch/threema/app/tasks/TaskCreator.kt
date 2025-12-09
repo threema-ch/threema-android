@@ -23,7 +23,8 @@ package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.SessionScoped
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.Contact
 import ch.threema.domain.protocol.rendezvous.RendezvousConnection
 import ch.threema.domain.taskmanager.Task
@@ -34,8 +35,9 @@ import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 
-private val logger = LoggingUtil.getThreemaLogger("TaskCreator")
+private val logger = getThreemaLogger("TaskCreator")
 
+@SessionScoped
 open class TaskCreator(private val serviceManager: ServiceManager) {
     fun scheduleProfilePictureSendTaskAsync(toIdentity: Identity): Deferred<Unit> =
         scheduleTaskAsync {

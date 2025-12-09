@@ -34,10 +34,10 @@ import ch.threema.app.voip.CallStateSnapshot;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class VoipMediaButtonReceiver extends BroadcastReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipMediaButtonReceiver");
+    private static final Logger logger = getThreemaLogger("VoipMediaButtonReceiver");
 
     @Override
     public void onReceive(Context context, Intent intent) {

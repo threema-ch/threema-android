@@ -24,14 +24,14 @@ package ch.threema.app.tasks
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.MessageService
 import ch.threema.app.utils.MessageUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.DeleteMessage
 import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.storage.models.AbstractMessageModel
 
-private val logger = LoggingUtil.getThreemaLogger("DeleteMessageUtils")
+private val logger = getThreemaLogger("DeleteMessageUtils")
 
 fun runCommonDeleteMessageReceiveSteps(
     deleteMessage: DeleteMessage,

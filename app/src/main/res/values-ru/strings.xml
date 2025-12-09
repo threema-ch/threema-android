@@ -790,7 +790,7 @@
     <string name="grace_thirty_minutes">30 минут</string>
     <string name="grace_never">Никогда (вручную)</string>
     <string name="never">Никогда</string>
-    <string name="access_protection_cannot_be_removed">Защита доступа не может быть отключена, т.к. существует по крайней мере один приватный чат.</string>
+    <string name="access_protection_private_chats_warning">При отключении защиты доступа все ваши приватные чаты снова станут видимыми.</string>
     <string name="verification_started">Проверка началась</string>
     <string name="cannot_open_file">Невозможно открыть файл</string>
     <string name="prefs_title_image_attach_previews">Быстрый выбор медиа</string>
@@ -1383,7 +1383,6 @@
     <string name="threema_push_service_description">Постоянное уведомление, отображаемое, когда функция ${app_name_short} Push активна</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push_activated">Функция ${app_name_short} Safe активирована.</string>
-    <string name="add_shortcut_success">Ярлык успешно создан.</string>
     <string name="add_shortcut_error">Ошибка добавления ярлыка на экран средства запуска.</string>
     <string name="web_link">Ссылка</string>
     <string name="link_copied">%s: скопировано</string>
@@ -1631,6 +1630,8 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Приложению не разрешено поддерживать постоянное подключение к серверам, которое требуется для работы ${app_name_short} Push. Вы не будете получать уведомления о новых сообщениях, когда приложение работает в фоновом режиме. Чтобы это исправить, нажмите «Использование батареи приложением» и выберите «Неограниченно».</string>
     <string name="problemsolver_to_settings">К настройкам</string>
+    <!-- Label on button to dismiss/hide a warning -->
+    <string name="problemsolver_dismiss">Скрыть</string>
     <string name="prefs_advanced_options">Дополнительные настройки</string>
     <string name="push_service">Push-сервис</string>
     <string name="edit_and_send">Изменить и отправить</string>
@@ -1772,16 +1773,14 @@
     <string name="remote_secrets_failed_to_fetch">Невозможно получить метку ${remote_secret}. Проверьте подключение к интернету и повторите попытку.</string>
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="fetching_remote_secret">Получение метки ${remote_secret}</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activated_notification_title">${remote_secret} активирован</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
-    <string name="remote_secret_activated_notification_content">Эта функция сохранит вашу переписку в безопасности в случае утери или кражи телефона.</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_activated_dialog_content">Если вы потеряете своё устройство, эта функция позволит администратору заблокировать приложение, гарантируя, что переписка останется зашифрованной, даже если посторонним лицам удастся разблокировать устройство.\n[Узнать больше]</string>
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivated_notification_title">${remote_secret} деактивирован</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
-    <string name="remote_secret_deactivated_notification_content">Для получения дополнительной информации свяжитесь со своим администратором.</string>
-    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
-    <string name="remote_secret_activated_learn_more">Узнать больше</string>
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_deactivated_dialog_content">Ваш администратор отключил ${remote_secret}. Дополнительную информацию о ${remote_secret} можно найти в этом [разделе FAQ].</string>
     <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating">Активация ${remote_secret}</string>
     <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->

@@ -22,6 +22,7 @@
 package ch.threema.app.camera
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Size
@@ -40,7 +41,8 @@ import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import ch.threema.app.AppConstants
+import ch.threema.android.buildActivityIntent
+import ch.threema.android.buildIntent
 import ch.threema.app.R
 import ch.threema.app.activities.ThreemaActivity
 import ch.threema.app.ui.InsetSides
@@ -48,19 +50,15 @@ import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.SoundUtil
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-private val logger = LoggingUtil.getThreemaLogger("QRScannerActivity")
+private val logger = getThreemaLogger("QRScannerActivity")
 
 class QRScannerActivity : ThreemaActivity() {
     init {
         logScreenVisibility(logger)
-    }
-
-    companion object {
-        const val KEY_HINT_TEXT: String = "hint"
     }
 
     private lateinit var cameraExecutor: ExecutorService
@@ -93,11 +91,8 @@ class QRScannerActivity : ThreemaActivity() {
         }
 
         if (hint.isEmpty()) {
-            hint = if (intent.hasExtra(KEY_HINT_TEXT)) {
-                intent.getStringExtra(KEY_HINT_TEXT)!!
-            } else {
-                getString(R.string.msg_default_status)
-            }
+            hint = intent.getStringExtra(EXTRA_HINT_TEXT)
+                ?: getString(R.string.msg_default_status)
         }
 
         // set hint text
@@ -245,14 +240,35 @@ class QRScannerActivity : ThreemaActivity() {
     private fun returnData(qrCodeData: String?, success: Boolean) {
         if (success) {
             SoundUtil.play(R.raw.qrscanner_beep)
-
-            val intent = Intent()
-            intent.putExtra(AppConstants.INTENT_DATA_QRCODE, qrCodeData)
-            setResult(RESULT_OK, intent)
+            setResult(
+                RESULT_OK,
+                buildIntent {
+                    putExtra(RESULT_CONTENT, qrCodeData)
+                },
+            )
         } else {
             setResult(RESULT_CANCELED)
         }
 
         finish()
+    }
+
+    companion object {
+        @JvmStatic
+        @JvmOverloads
+        fun createIntent(context: Context, hint: String? = null) = buildActivityIntent<QRScannerActivity>(context) {
+            if (!hint.isNullOrEmpty()) {
+                putExtra(EXTRA_HINT_TEXT, hint)
+            }
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
+        }
+
+        @JvmStatic
+        fun extractResult(intent: Intent?): String? =
+            intent?.getStringExtra(RESULT_CONTENT)
+
+        private const val EXTRA_HINT_TEXT = "hint"
+        private const val RESULT_CONTENT = "content"
     }
 }

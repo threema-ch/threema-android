@@ -61,6 +61,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ch.threema.android.ActivityExtensionsKt;
 import ch.threema.app.R;
 import ch.threema.app.adapters.FilterableListAdapter;
 import ch.threema.app.fragments.MemberListFragment;
@@ -68,7 +69,6 @@ import ch.threema.app.fragments.UserMemberListFragment;
 import ch.threema.app.fragments.WorkUserMemberListFragment;
 import ch.threema.app.ui.ThreemaSearchView;
 import ch.threema.app.ui.ViewExtensionsKt;
-import ch.threema.app.utils.ActivityExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.NameUtil;

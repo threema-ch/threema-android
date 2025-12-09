@@ -3,16 +3,16 @@ use core::mem;
 
 use const_format::formatcp;
 use libthreema_macros::{DebugVariantNames, Name, VariantNames};
-use prost::{Message as _, Name as _};
+use prost::Message as _;
 use tracing::{debug, info, warn};
 
 use super::commit::{CommitTransactionResponse, CommitTransactionSubtask};
 use crate::{
     common::{D2xDeviceId, keys::DeviceGroupTransactionScopeCipher, task::TaskLoop},
     crypto::aead::AeadRandomNonceAhead as _,
-    csp_e2e::{CspE2eProtocolError, D2xContext},
+    csp_e2e::{CspE2eProtocolError, D2xContext, InternalErrorCause},
     protobuf::{self},
-    utils::time::Duration,
+    utils::{debug::Name as _, time::Duration},
 };
 
 /// Instruction for beginning a transaction. See each variant's steps.
@@ -148,7 +148,7 @@ impl State {
                 .transaction_scope_key()
                 .0
                 .encrypt_in_place_random_nonce_ahead(b"", &mut scope)
-                .map_err(|_| CspE2eProtocolError::EncryptionFailed {
+                .map_err(|_| InternalErrorCause::EncryptionFailed {
                     name: protobuf::d2d::TransactionScope::NAME,
                 })?;
             scope

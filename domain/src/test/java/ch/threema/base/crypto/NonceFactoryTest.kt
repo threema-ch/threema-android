@@ -21,10 +21,11 @@
 
 package ch.threema.base.crypto
 
-import ch.threema.base.utils.SecureRandomUtil.generateRandomBytes
+import ch.threema.common.generateRandomBytes
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import java.security.SecureRandom
 import java.util.LinkedList
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -142,6 +143,6 @@ private class TestNonceProvider : NonceFactoryNonceBytesProvider {
         if (nonce != null) {
             assertEquals(24, nonce.size.toLong())
         }
-        return nonce ?: generateRandomBytes(length)
+        return nonce ?: SecureRandom().generateRandomBytes(length)
     }
 }

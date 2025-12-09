@@ -27,11 +27,11 @@ import ch.threema.app.R
 import ch.threema.app.services.ContactService
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.types.Identity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
-private val logger = LoggingUtil.getThreemaLogger("ResendGroupMessageDialog")
+private val logger = getThreemaLogger("ResendGroupMessageDialog")
 
 class ResendGroupMessageDialog(
     private val rejectedIdentities: Set<Identity>,

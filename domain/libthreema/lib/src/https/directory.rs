@@ -173,16 +173,12 @@ impl From<IdentityType> for protobuf_contact::IdentityType {
     }
 }
 
-#[derive(Deserialize_repr)]
+#[derive(Default, Deserialize_repr)]
 #[repr(u8)]
 enum ActivityState {
+    #[default]
     Active = 0,
     Inactive = 1,
-}
-impl Default for ActivityState {
-    fn default() -> Self {
-        Self::Active
-    }
 }
 impl From<ActivityState> for protobuf_contact::ActivityState {
     fn from(state: ActivityState) -> Self {
@@ -278,12 +274,15 @@ pub(crate) fn create_identity_authentication_request(
 }
 
 #[derive(Serialize)]
-struct CreateIdentityAuthenticatedRequest {
+struct CreateIdentityAuthenticatedRequest<'creds> {
     #[serde(flatten)]
     request: CreateIdentityRequest,
 
     #[serde(flatten)]
     authentication: AuthenticationChallengeResponse,
+
+    #[serde(flatten)]
+    credentials: Option<WorkCredentials<'creds>>,
 }
 
 /// Create an identity.
@@ -294,6 +293,10 @@ pub(crate) fn create_identity_request(
     authentication: AuthenticationChallengeResponse,
     public_key: PublicKey,
 ) -> HttpsRequest {
+    let credentials = match mode {
+        Flavor::Work(work_context) => Some(WorkCredentials::from(&work_context.credentials)),
+        Flavor::Consumer => None,
+    };
     HttpsRequest {
         timeout: TIMEOUT,
         url: directory_server_url.create_identity_path(),
@@ -304,6 +307,7 @@ pub(crate) fn create_identity_request(
                 public_key: public_key.0.to_bytes(),
             },
             authentication,
+            credentials,
         })
         .expect("Failed to create directory identity creation request body"),
     }

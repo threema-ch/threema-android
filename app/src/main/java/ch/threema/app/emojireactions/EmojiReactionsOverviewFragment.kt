@@ -40,7 +40,7 @@ import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.EmojiReactionData
 import ch.threema.storage.models.AbstractMessageModel
 import kotlinx.coroutines.CoroutineScope
@@ -51,7 +51,7 @@ import org.koin.android.ext.android.inject
 
 private const val RECYCLER_VIEW_STATE = "recyclerViewState"
 
-private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsOverviewFragment")
+private val logger = getThreemaLogger("EmojiReactionsOverviewFragment")
 
 class EmojiReactionsOverviewFragment(
     val emojiSequence: String? = null,

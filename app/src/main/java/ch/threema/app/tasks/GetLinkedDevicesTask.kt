@@ -22,7 +22,7 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.data.DeviceId
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage.DevicesInfo
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
@@ -31,7 +31,7 @@ import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.MessageFilterInstruction
 
-private val logger = LoggingUtil.getThreemaLogger("GetLinkedDevicesTask")
+private val logger = getThreemaLogger("GetLinkedDevicesTask")
 
 /**
  *  Sends `GetDevicesInfo` to mediator and waits **indefinitely** for a response message of type `DevicesInfo`.

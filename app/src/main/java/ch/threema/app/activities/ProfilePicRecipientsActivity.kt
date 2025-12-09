@@ -24,27 +24,27 @@ package ch.threema.app.activities
 import android.content.Context
 import android.os.Bundle
 import androidx.annotation.StringRes
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.services.IdListService
+import ch.threema.app.services.ProfilePictureRecipientsService
 import ch.threema.app.tasks.ReflectUserProfileShareWithAllowListSyncTask
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.equalsIgnoreOrder
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("ProfilePicRecipientsActivity")
+private val logger = getThreemaLogger("ProfilePicRecipientsActivity")
 
 class ProfilePicRecipientsActivity : MemberChooseActivity() {
     init {
         logScreenVisibility(logger)
     }
 
-    private val profilePicRecipientsService: IdListService by inject()
+    private val profilePictureRecipientsService: ProfilePictureRecipientsService by inject()
     private val taskManager: TaskManager by inject()
 
     override fun initActivity(savedInstanceState: Bundle?): Boolean {
@@ -59,7 +59,7 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
 
     override fun initData(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
-            val selectedIdentities: Array<Identity>? = profilePicRecipientsService.all
+            val selectedIdentities: Array<Identity>? = profilePictureRecipientsService.all
             if (!selectedIdentities.isNullOrEmpty()) {
                 preselectedIdentities = ArrayList(listOf(*selectedIdentities))
             }
@@ -69,11 +69,11 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
     }
 
     override fun menuNext(selectedContacts: List<ContactModel?>) {
-        val oldAllowedIdentities: Array<Identity> = profilePicRecipientsService.all
+        val oldAllowedIdentities: Array<Identity> = profilePictureRecipientsService.all
         val newAllowedIdentities: Array<Identity> = selectedContacts
             .mapNotNull { contactModel -> contactModel?.identity }
             .toTypedArray<String>()
-        profilePicRecipientsService.replaceAll(newAllowedIdentities)
+        profilePictureRecipientsService.replaceAll(newAllowedIdentities)
 
         // If data changed:
         // sync new policy setting with newly set allow list values into device group (if md is active)

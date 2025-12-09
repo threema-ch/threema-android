@@ -43,33 +43,54 @@ import androidx.work.WorkerParameters
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.asynctasks.AddOrUpdateWorkContactBackgroundTask
-import ch.threema.app.di.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.notifications.NotificationIDs
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionService
 import ch.threema.app.routines.UpdateAppLogoRoutine
 import ch.threema.app.routines.UpdateWorkInfoRoutine
+import ch.threema.app.services.ContactService
+import ch.threema.app.services.FileService
+import ch.threema.app.services.UserService
+import ch.threema.app.services.license.LicenseService
+import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.utils.WorkManagerUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.Http
 import ch.threema.data.models.ContactModel
+import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.UserCredentials
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
+import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.work.WorkData
+import ch.threema.domain.stores.IdentityStore
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
+import okhttp3.OkHttpClient
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-private val logger = LoggingUtil.getThreemaLogger("WorkSyncWorker")
+private val logger = getThreemaLogger("WorkSyncWorker")
 
 class WorkSyncWorker(
     private val context: Context,
     workerParameters: WorkerParameters,
 ) : CoroutineWorker(context, workerParameters), KoinComponent {
+
+    private val contactService: ContactService by inject()
+    private val preferenceService: PreferenceService by inject()
+    private val okHttpClient: OkHttpClient by inject()
+    private val fileService: FileService by inject()
+    private val licenseService: LicenseService<*> by inject()
+    private val apiConnector: APIConnector by inject()
+    private val notificationService: NotificationService by inject()
+    private val userService: UserService by inject()
+    private val identityStore: IdentityStore by inject()
+    private val contactModelRepository: ContactModelRepository by inject()
 
     companion object {
         private const val EXTRA_FORCE_UPDATE = "FORCE_UPDATE"
@@ -218,19 +239,8 @@ class WorkSyncWorker(
 
         logger.info("Refreshing work data. Force = {}", forceUpdate)
 
-        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
+        awaitAppFullyReadyWithTimeout(timeout = 20.seconds)
             ?: return Result.failure()
-
-        val contactService = serviceManager.contactService
-        val preferenceService = serviceManager.preferenceService
-        val okHttpClient = serviceManager.okHttpClient
-        val fileService = serviceManager.fileService
-        val licenseService = serviceManager.licenseService
-        val apiConnector = serviceManager.apiConnector
-        val notificationService = serviceManager.notificationService
-        val userService = serviceManager.userService
-        val identityStore = serviceManager.identityStore
-        val contactModelRepository = serviceManager.modelRepositories.contacts
 
         if (!ConfigUtils.isWorkBuild()) {
             logger.info("Not allowed to run in a non work environment")

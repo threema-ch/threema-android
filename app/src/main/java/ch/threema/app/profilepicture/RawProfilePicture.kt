@@ -29,9 +29,9 @@ import kotlinx.serialization.Serializable
  * This class should be used whenever we can or must assume that we have a valid profile picture.
  */
 @Serializable
-data class RawProfilePicture(override val profilePictureBytes: ByteArray) : ProfilePicture {
+data class RawProfilePicture(override val bytes: ByteArray) : ProfilePicture {
     private val checkedProfilePicture: CheckedProfilePicture? by lazy {
-        CheckedProfilePicture.getOrConvertFromBytes(profilePictureBytes)
+        CheckedProfilePicture.getOrConvertFromBytes(bytes)
     }
 
     override fun isValid() = checkedProfilePicture != null
@@ -49,8 +49,8 @@ data class RawProfilePicture(override val profilePictureBytes: ByteArray) : Prof
 
         other as RawProfilePicture
 
-        return profilePictureBytes.contentEquals(other.profilePictureBytes)
+        return bytes.contentEquals(other.bytes)
     }
 
-    override fun hashCode() = profilePictureBytes.contentHashCode()
+    override fun hashCode() = bytes.contentHashCode()
 }

@@ -22,7 +22,7 @@
 package ch.threema.domain.taskmanager
 
 import ch.threema.base.crypto.Nonce
-import ch.threema.base.utils.SecureRandomUtil
+import ch.threema.base.utils.generateRandomProtobufPadding
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.connection.data.DeviceId
@@ -299,7 +299,7 @@ private fun buildEnvelopeFor(
     buildBody: MdD2D.Envelope.Builder.() -> Unit,
 ): MdD2D.Envelope =
     MdD2D.Envelope.newBuilder()
-        .setPadding(SecureRandomUtil.generateRandomProtobufPadding())
+        .setPadding(generateRandomProtobufPadding())
         .setDeviceId(mediatorDeviceId.id.toLong())
         .setProtocolVersion(ProtocolVersion.V0_3_VALUE)
         .apply { buildBody() }

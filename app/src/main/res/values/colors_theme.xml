@@ -49,8 +49,6 @@
     <!-- Other -->
     <color name="md_theme_light_outline">@color/brand_grey_700</color>
     <color name="md_theme_light_outlineVariant">@color/brand_grey_600</color>
-    <color name="md_theme_light_shadow">#000000</color>
-    <color name="md_theme_light_scrim">#000000</color>
 
     <!-- DARK -->
 
@@ -99,6 +97,4 @@
     <!-- Other -->
     <color name="md_theme_dark_outline">@color/brand_grey_100</color>
     <color name="md_theme_dark_outlineVariant">@color/brand_grey_50</color>
-    <color name="md_theme_dark_shadow">#000000</color>
-    <color name="md_theme_dark_scrim">#000000</color>
 </resources>

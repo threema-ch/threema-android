@@ -155,10 +155,10 @@ pub(crate) struct WorkContact {
     #[serde(rename = "pk", with = "base64::fixed_length")]
     pub(crate) public_key: [u8; PublicKey::LENGTH],
 
-    #[serde(rename = "first", deserialize_with = "string::empty_to_optional")]
+    #[serde(rename = "first", deserialize_with = "string::empty_to_optional::deserialize")]
     pub(crate) first_name: Option<String>,
 
-    #[serde(rename = "last", deserialize_with = "string::empty_to_optional")]
+    #[serde(rename = "last", deserialize_with = "string::empty_to_optional::deserialize")]
     pub(crate) last_name: Option<String>,
 }
 impl WorkContact {

@@ -1,5 +1,6 @@
 //! Task for creating contacts.
 use core::mem;
+use std::rc::Rc;
 
 use const_format::formatcp;
 use libthreema_macros::{DebugVariantNames, Name, VariantNames};
@@ -23,7 +24,7 @@ use crate::{
         provider::{ContactProvider, ProviderError},
     },
     protobuf,
-    utils::time::utc_now_ms,
+    utils::{debug::Name as _, time::utc_now_ms},
 };
 
 /// Instruction for creating contacts. See each variant's steps.
@@ -101,7 +102,7 @@ impl State {
         // MD: We need to create a transaction.
 
         // Precondition: At least one of the contacts has not yet been added.
-        let contact_provider = context.contacts.clone();
+        let contact_provider = Rc::clone(&context.contacts);
         let precondition = Box::new(move || {
             Ok(
                 if contact_provider.borrow().has_many(&identities)? < identities.len() {
@@ -134,7 +135,7 @@ impl State {
         let Some(d2x_context) = context.d2x.as_mut() else {
             let message = "D2X context missing";
             error!(message);
-            return Err(CspE2eProtocolError::InternalError(message.to_owned()));
+            return Err(CspE2eProtocolError::InternalError(message.into()));
         };
 
         // Poll until the transaction is in progress
@@ -217,7 +218,7 @@ impl State {
         if expected.len() != added.len() {
             let message = "One or more contact were added unexpectedly during a transaction";
             error!(?expected, ?added, message);
-            return Err(CspE2eProtocolError::DesyncError(message));
+            return Err(CspE2eProtocolError::DesyncError(message.to_owned()));
         }
 
         // Done

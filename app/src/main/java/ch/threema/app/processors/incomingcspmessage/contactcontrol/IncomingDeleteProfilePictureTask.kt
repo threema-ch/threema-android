@@ -28,12 +28,12 @@ import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.tasks.ReflectContactSyncUpdateImmediateTask.ReflectContactProfilePicture
 import ch.threema.app.utils.ShortcutUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingDeleteProfilePictureTask")
+private val logger = getThreemaLogger("IncomingDeleteProfilePictureTask")
 
 class IncomingDeleteProfilePictureTask(
     message: DeleteProfilePictureMessage,

@@ -45,6 +45,7 @@ class MasterKeyStorageManagerTest {
             version1KeyFileManager = mockk {
                 every { keyFileExists() } returns false
             },
+            storageStateConverter = mockk(),
         )
 
         assertFalse(keyStorageManager.keyExists())

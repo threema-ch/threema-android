@@ -24,12 +24,12 @@ package ch.threema.app.tasks
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.unlinking.DropDevicesIntent
 import ch.threema.app.multidevice.unlinking.runDropDevicesSteps
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("DeactivateMultiDeviceTask")
+private val logger = getThreemaLogger("DeactivateMultiDeviceTask")
 
 /**
  * This task must be run when multi device should be deactivated. It will drop all other devices, followed by this device. Afterwards, the feature

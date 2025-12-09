@@ -38,12 +38,12 @@ import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.MimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class FileViewFragment extends MediaViewFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("FileViewFragment");
+    private static final Logger logger = getThreemaLogger("FileViewFragment");
     private WeakReference<ImageView> previewViewRef;
     private WeakReference<TextView> filenameViewRef;
     private WeakReference<TextView> mimeTypeViewRef;

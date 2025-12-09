@@ -21,14 +21,14 @@
 
 package ch.threema.domain.taskmanager
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-private val logger = LoggingUtil.getThreemaLogger("LocalTaskQueue")
+private val logger = getThreemaLogger("LocalTaskQueue")
 
 internal class LocalTaskQueue(private val taskArchiver: TaskArchiver) {
     /**

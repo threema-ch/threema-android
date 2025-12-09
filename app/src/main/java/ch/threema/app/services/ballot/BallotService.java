@@ -32,6 +32,7 @@ import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.base.SessionScoped;
 import ch.threema.base.ThreemaException;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.MessageTooLongException;
@@ -48,6 +49,7 @@ import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
 import ch.threema.storage.models.ballot.LinkBallotModel;
 
+@SessionScoped
 public interface BallotService {
 
     interface BallotFilter {
@@ -58,8 +60,6 @@ public interface BallotService {
         default String createdOrNotVotedByIdentity() {
             return null;
         }
-
-        boolean filter(BallotModel ballotModel);
     }
 
     BallotModel create(
@@ -183,9 +183,6 @@ public interface BallotService {
 
     @NonNull
     String[] getParticipants(Integer ballotModelId);
-
-    @NonNull
-    String[] getParticipants(MessageReceiver<?> messageReceiver);
 
     boolean hasVoted(Integer ballotModelId, String fromIdentity);
 

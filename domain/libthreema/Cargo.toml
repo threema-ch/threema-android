@@ -64,6 +64,7 @@ as_underscore = { level = "warn", priority = 1 }
 big_endian_bytes = { level = "warn", priority = 1 }
 create_dir = { level = "warn", priority = 1 }
 cfg_not_test = { level = "warn", priority = 1 }
+clone_on_ref_ptr = { level = "warn", priority = 1 }
 dbg_macro = { level = "warn", priority = 1 }
 default_numeric_fallback = { level = "warn", priority = 1 }
 deref_by_slicing = { level = "warn", priority = 1 }

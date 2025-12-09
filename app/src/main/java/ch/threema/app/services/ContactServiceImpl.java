@@ -71,7 +71,6 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.routines.UpdateBusinessAvatarRoutine;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.stores.DatabaseContactStore;
@@ -83,7 +82,7 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.common.Http;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.ModelDeletedException;
@@ -119,7 +118,7 @@ import okhttp3.OkHttpClient;
 import static ch.threema.app.glide.AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR;
 
 public class ContactServiceImpl implements ContactService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactServiceImpl");
+    private static final Logger logger = getThreemaLogger("ContactServiceImpl");
 
     private static final int TYPING_RECEIVE_TIMEOUT = (int) DateUtils.SECOND_IN_MILLIS * 15;
 
@@ -137,7 +136,7 @@ public class ContactServiceImpl implements ContactService {
     private final Map<String, ContactModel> contactModelCache;
     @NonNull
     private final BlockedIdentitiesService blockedIdentitiesService;
-    private final IdListService profilePicRecipientsService;
+    private final ProfilePictureRecipientsService profilePictureRecipientsService;
     private final FileService fileService;
     private final ApiService apiService;
     private final LicenseService licenseService;
@@ -189,7 +188,7 @@ public class ContactServiceImpl implements ContactService {
         IdentityStore identityStore,
         @NonNull PreferenceService preferenceService,
         @NonNull BlockedIdentitiesService blockedIdentitiesService,
-        IdListService profilePicRecipientsService,
+        ProfilePictureRecipientsService profilePictureRecipientsService,
         FileService fileService,
         CacheService cacheService,
         ApiService apiService,
@@ -209,7 +208,7 @@ public class ContactServiceImpl implements ContactService {
         this.identityStore = identityStore;
         this.preferenceService = preferenceService;
         this.blockedIdentitiesService = blockedIdentitiesService;
-        this.profilePicRecipientsService = profilePicRecipientsService;
+        this.profilePictureRecipientsService = profilePictureRecipientsService;
         this.fileService = fileService;
         this.apiService = apiService;
         this.licenseService = licenseService;
@@ -264,11 +263,6 @@ public class ContactServiceImpl implements ContactService {
             }
 
             @Override
-            public Long requiredFeature() {
-                return null;
-            }
-
-            @Override
             public Boolean fetchMissingFeatureLevel() {
                 return null;
             }
@@ -280,11 +274,6 @@ public class ContactServiceImpl implements ContactService {
 
             @Override
             public Boolean includeHidden() {
-                return false;
-            }
-
-            @Override
-            public Boolean onlyWithReceiptSettings() {
                 return false;
             }
         });
@@ -499,11 +488,6 @@ public class ContactServiceImpl implements ContactService {
                 }
 
                 @Override
-                public Long requiredFeature() {
-                    return null;
-                }
-
-                @Override
                 public Boolean fetchMissingFeatureLevel() {
                     return null;
                 }
@@ -515,11 +499,6 @@ public class ContactServiceImpl implements ContactService {
 
                 @Override
                 public Boolean includeHidden() {
-                    return false;
-                }
-
-                @Override
-                public Boolean onlyWithReceiptSettings() {
                     return false;
                 }
             }),
@@ -747,15 +726,12 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    @Deprecated
-    public void save(@NonNull ContactModel contactModel) {
-        logger.info("Saving old contact model of contact {}", contactModel.getIdentity());
-
-        for (StackTraceElement stackTraceElement : Thread.currentThread().getStackTrace()) {
-            logger.info("{}", stackTraceElement);
-        }
-
-        this.contactStore.addContact(contactModel);
+    public void persistForwardSecurityState(
+        @NonNull String identity,
+        @ContactModel.ForwardSecurityState int forwardSecurityState
+    ) {
+        databaseService.getContactModelFactory().setForwardSecurityState(identity, forwardSecurityState);
+        invalidateCache(identity);
     }
 
     @NonNull
@@ -797,21 +773,6 @@ public class ContactServiceImpl implements ContactService {
             return null;
         }
 
-        // Check whether we should update the business avatar
-        ch.threema.data.models.ContactModel contactModel = contactModelRepository.getByIdentity(identity);
-        if (contactModel != null) {
-            ContactModelData data = contactModel.getData();
-            //check if a business avatar update is necessary
-            if (data != null && data.isGatewayContact() && data.isAvatarExpired()) {
-                RuntimeUtil.runOnWorkerThread(() -> UpdateBusinessAvatarRoutine.start(
-                    okHttpClient,
-                    contactModel,
-                    fileService,
-                    this,
-                    apiService
-                ));
-            }
-        }
         // Note that we should not abort if no new contact model can be found as the new model does
         // not exist for the user itself whereas the old model may refer to the user. Therefore, we
         // may still get an avatar for the provided (old) model.
@@ -984,13 +945,16 @@ public class ContactServiceImpl implements ContactService {
             return false;
         }
 
-        if (this.fileService.writeUserDefinedProfilePicture(contactModel.getIdentity(), avatar)) {
-            if (triggerSource != TriggerSource.SYNC && multiDeviceManager.isMultiDeviceActive()) {
-                taskCreator.scheduleUserDefinedProfilePictureUpdate(contactModel.getIdentity());
-            }
-            return this.onUserDefinedProfilePictureSet(contactModel);
+        try {
+            fileService.writeUserDefinedProfilePicture(contactModel.getIdentity(), avatar);
+        } catch (IOException e) {
+            logger.error("Failed to write user defined profile picture");
+            return false;
         }
-        return false;
+        if (triggerSource != TriggerSource.SYNC && multiDeviceManager.isMultiDeviceActive()) {
+            taskCreator.scheduleUserDefinedProfilePictureUpdate(contactModel.getIdentity());
+        }
+        return onUserDefinedProfilePictureSet(contactModel);
     }
 
     private boolean onUserDefinedProfilePictureSet(final ContactModel contactModel) {
@@ -1043,7 +1007,7 @@ public class ContactServiceImpl implements ContactService {
         }
 
         List<String> allowedIdentities = policy == ProfilePictureSharePolicy.Policy.ALLOW_LIST
-            ? Arrays.asList(profilePicRecipientsService.getAll())
+            ? Arrays.asList(profilePictureRecipientsService.getAll())
             : Collections.emptyList();
 
         return new ProfilePictureSharePolicy(policy, allowedIdentities);
@@ -1053,7 +1017,7 @@ public class ContactServiceImpl implements ContactService {
     public boolean isContactAllowedToReceiveProfilePicture(@NonNull String identity) {
         int profilePicRelease = preferenceService.getProfilePicRelease();
         return profilePicRelease == PreferenceService.PROFILEPIC_RELEASE_EVERYONE ||
-            (profilePicRelease == PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST && profilePicRecipientsService.has(identity));
+            (profilePicRelease == PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST && profilePictureRecipientsService.has(identity));
     }
 
     @Override
@@ -1196,11 +1160,6 @@ public class ContactServiceImpl implements ContactService {
             }
 
             @Override
-            public Long requiredFeature() {
-                return null;
-            }
-
-            @Override
             public Boolean fetchMissingFeatureLevel() {
                 return null;
             }
@@ -1216,7 +1175,7 @@ public class ContactServiceImpl implements ContactService {
             }
 
             @Override
-            public Boolean onlyWithReceiptSettings() {
+            public boolean onlyWithReceiptSettings() {
                 return true;
             }
         });

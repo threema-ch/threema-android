@@ -33,10 +33,10 @@ import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.services.MessageServiceImpl
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("SettingsMediaFragment")
+private val logger = getThreemaLogger("SettingsMediaFragment")
 
 class SettingsMediaFragment : ThreemaPreferenceFragment() {
     init {

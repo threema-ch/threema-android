@@ -46,13 +46,13 @@ import java.util.Date
 import junit.framework.TestCase
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.test.fail
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
-import org.junit.Assert.fail
 import org.junit.runner.RunWith
 
 /**
@@ -566,7 +566,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
                 groupIdentity: GroupIdentity,
                 identityNew: String?,
             ) {
-                assertTrue("Did not expect member $identityNew", newMembers.contains(identityNew))
+                assertTrue(newMembers.contains(identityNew), "Did not expect member $identityNew")
                 newMembersAdded.add(identityNew!!)
             }
 
@@ -662,7 +662,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
         isArchived = false,
-        androidContactLookupKey = null,
+        androidContactLookupInfo = null,
         localAvatarExpires = null,
         isRestored = false,
         profilePictureBlobId = null,

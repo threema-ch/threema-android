@@ -66,11 +66,10 @@ import ch.threema.app.compose.preview.PreviewThreemaAll
 import ch.threema.app.compose.theme.ThreemaTheme
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.GridUnit
-import ch.threema.app.compose.typography.SpanStyles
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("LinkNewDevicePFSInfoFragment")
+private val logger = getThreemaLogger("LinkNewDevicePFSInfoFragment")
 
 class LinkNewDevicePFSInfoFragment : LinkNewDeviceFragment() {
     init {
@@ -133,10 +132,7 @@ private fun LinkNewDevicePFSInfoContent(
 
             val warningBodyRaw = stringResource(R.string.device_linking_pfs_warning_body)
             val faqEntryUrl = stringResource(R.string.device_linking_pfs_warning_faq_link_value)
-            val warningBodyAnnotated = warningBodyRaw.rememberLinkifyWeb(
-                url = faqEntryUrl,
-                linkTextStyle = SpanStyles.linkPrimary,
-            )
+            val warningBodyAnnotated = warningBodyRaw.rememberLinkifyWeb(faqEntryUrl)
             Text(
                 textAlign = TextAlign.Center,
                 text = warningBodyAnnotated,

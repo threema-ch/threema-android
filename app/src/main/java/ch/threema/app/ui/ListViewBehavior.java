@@ -32,12 +32,12 @@ import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 public class ListViewBehavior extends CoordinatorLayout.Behavior<View> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ListViewBehavior");
+    private static final Logger logger = getThreemaLogger("ListViewBehavior");
 
     public ListViewBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);

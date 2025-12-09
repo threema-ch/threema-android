@@ -74,16 +74,15 @@ import ch.threema.app.services.ConversationService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
-import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 
 public final class ShortcutUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ShortcutUtil");
+    private static final Logger logger = getThreemaLogger("ShortcutUtil");
 
-    private static final int MAX_SHARE_TARGETS = 100; // we recommend that you publish only four distinct shortcuts to improve their visual appearance in the launcher. https://developer.android.com/guide/topics/ui/shortcuts/best-practices
+    private static final int MAX_SHARE_TARGETS = 100;
 
     public static final int TYPE_NONE = 0;
     public static final int TYPE_CHAT = 1;
@@ -94,7 +93,9 @@ public final class ShortcutUtil {
 
     private static final String DYNAMIC_SHORTCUT_SHARE_TARGET_CATEGORY = "ch.threema.app.category.DYNAMIC_SHORTCUT_SHARE_TARGET"; // do not use BuildConfig.APPLICATION_ID
     private static final String KEY_RECENT_UIDS = "recent_uids";
-    private static final int REQUEST_CODE_SHORTCUT_ADDED = 6311;
+
+    private static final float PHONE_OVERLAY_SIZE_FACTOR = 24f / 40f;
+    private static final float PHONE_OVERLAY_OFFSET_FACTOR = 1f / 40f;
 
     private static class CommonShortcutInfo {
         Intent intent;
@@ -117,12 +118,7 @@ public final class ShortcutUtil {
                     RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), R.string.add_shortcut_exists, Toast.LENGTH_LONG).show());
                     return;
                 } else {
-                    Intent pinnedShortcutCallbackIntent = new Intent(AppConstants.INTENT_ACTION_SHORTCUT_ADDED);
-                    pinnedShortcutCallbackIntent.setPackage(getContext().getPackageName());
-                    PendingIntent callback = PendingIntent.getBroadcast(getContext(), REQUEST_CODE_SHORTCUT_ADDED,
-                        pinnedShortcutCallbackIntent, IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE);
-
-                    if (ShortcutManagerCompat.requestPinShortcut(getContext(), shortcutInfoCompat, callback.getIntentSender())) {
+                    if (ShortcutManagerCompat.requestPinShortcut(getContext(), shortcutInfoCompat, null)) {
                         logger.info("Shortcut requested");
                         return;
                     }
@@ -230,7 +226,7 @@ public final class ShortcutUtil {
     private static CommonShortcutInfo getCommonShortcutInfo(@NonNull MessageReceiver<? extends AbstractMessageModel> messageReceiver, int type) {
         CommonShortcutInfo commonShortcutInfo = new CommonShortcutInfo();
 
-        Bitmap bitmap = messageReceiver.getNotificationAvatar();
+        Bitmap bitmap = messageReceiver.getHighResAvatar();
 
         if (type == TYPE_CALL) {
             commonShortcutInfo.intent = getCallShortcutIntent();
@@ -240,9 +236,14 @@ public final class ShortcutUtil {
                 commonShortcutInfo.intent.putExtra(VoipCallService.EXTRA_CONTACT_IDENTITY, ((ContactMessageReceiver) messageReceiver).getContact().getIdentity());
             }
             commonShortcutInfo.longLabel = String.format(getContext().getString(R.string.threema_call_with), messageReceiver.getDisplayName());
-            VectorDrawableCompat phoneDrawable = VectorDrawableCompat.create(getContext().getResources(), R.drawable.ic_phone_locked, getContext().getTheme());
-            Bitmap phoneBitmap = AvatarConverterUtil.getAvatarBitmap(phoneDrawable, Color.BLACK, getContext().getResources().getDimensionPixelSize(R.dimen.shortcut_overlay_size));
-            commonShortcutInfo.bitmap = bitmap != null ? BitmapUtil.addOverlay(bitmap, phoneBitmap, getContext().getResources().getDimensionPixelSize(R.dimen.call_shortcut_shadow_offset)) : null;
+
+            if (bitmap != null) {
+                int overlaySize = (int) (bitmap.getWidth() * PHONE_OVERLAY_SIZE_FACTOR);
+                int offset = (int) (bitmap.getWidth() * PHONE_OVERLAY_OFFSET_FACTOR);
+                VectorDrawableCompat phoneDrawable = VectorDrawableCompat.create(getContext().getResources(), R.drawable.ic_phone_locked, getContext().getTheme());
+                Bitmap phoneBitmap = AvatarConverterUtil.getAvatarBitmap(phoneDrawable, Color.BLACK, overlaySize);
+                commonShortcutInfo.bitmap = BitmapUtil.addOverlay(bitmap, phoneBitmap, offset);
+            }
         } else {
             commonShortcutInfo.intent = getChatShortcutIntent();
             IntentDataUtil.addMessageReceiverToIntent(commonShortcutInfo.intent, messageReceiver);
@@ -272,7 +273,8 @@ public final class ShortcutUtil {
                 .setLongLived(true);
 
             if (commonShortcutInfo.bitmap != null) {
-                shortcutInfoCompatBuilder.setIcon(IconCompat.createWithBitmap(commonShortcutInfo.bitmap));
+                var adaptiveIcon = AdaptiveIconUtil.create(getContext(), commonShortcutInfo.bitmap);
+                shortcutInfoCompatBuilder.setIcon(adaptiveIcon != null ? adaptiveIcon : IconCompat.createWithBitmap(commonShortcutInfo.bitmap));
             }
 
             if (person != null) {
@@ -363,17 +365,13 @@ public final class ShortcutUtil {
         synchronized (dynamicShortcutLock) {
             final int numPublishableConversations = Math.min(conversations.size(), Math.min(ShortcutManagerCompat.getMaxShortcutCountPerActivity(getContext()), MAX_SHARE_TARGETS));
 
-            final List<ShortcutInfoCompat> shareTargetShortcuts = new ArrayList<>();
             final List<String> publishedRecentChatsUids = new ArrayList<>();
             for (int i = 0; i < numPublishableConversations; i++) {
-                ShortcutInfoCompat shortcutInfoCompat = getShareTargetShortcutInfo(conversations.get(i), i);
-                if (shortcutInfoCompat != null) {
-                    shareTargetShortcuts.add(shortcutInfoCompat);
-                    publishedRecentChatsUids.add(shortcutInfoCompat.getId());
-                }
+                var conversation = conversations.get(i);
+                publishedRecentChatsUids.add(conversation.messageReceiver.getUniqueIdString());
             }
 
-            if (shareTargetShortcuts.isEmpty()) {
+            if (publishedRecentChatsUids.isEmpty()) {
                 logger.info("No recent chats to publish sharing targets for");
                 return;
             }
@@ -392,12 +390,21 @@ public final class ShortcutUtil {
             preferenceService.setListQuietly(KEY_RECENT_UIDS, publishedRecentChatsUids.toArray(new String[0]));
             preferenceService.setLastShortcutUpdateTimestamp(now);
 
+            final List<ShortcutInfoCompat> shareTargetShortcuts = new ArrayList<>();
+            for (int i = 0; i < numPublishableConversations; i++) {
+                var conversation = conversations.get(i);
+                ShortcutInfoCompat shortcutInfoCompat = getShareTargetShortcutInfo(conversation.messageReceiver, i);
+                if (shortcutInfoCompat != null) {
+                    shareTargetShortcuts.add(shortcutInfoCompat);
+                }
+            }
+
             try {
                 logger.info("Set {} dynamic sharing target shortcuts", numPublishableConversations);
                 ShortcutManagerCompat.setDynamicShortcuts(getContext(), shareTargetShortcuts);
                 logger.info("Published most recent {} conversations as sharing target shortcuts", numPublishableConversations);
             } catch (Exception e) {
-                logger.error("Failed setting dynamic shortcuts list ", e);
+                logger.error("Failed setting dynamic shortcuts list", e);
             }
         }
     }
@@ -406,7 +413,7 @@ public final class ShortcutUtil {
      * Delete all dynamic shortcuts associated with our app.
      */
     @WorkerThread
-    public static void deleteAllShareTargetShortcuts() {
+    public static void deleteAllShareTargetShortcuts(@NonNull PreferenceService preferenceService) {
         synchronized (dynamicShortcutLock) {
             List<ShortcutInfoCompat> shortcutInfos = ShortcutManagerCompat.getDynamicShortcuts(getContext());
 
@@ -422,6 +429,8 @@ public final class ShortcutUtil {
                     logger.error("Failed to remove shortcuts.", e);
                 }
             }
+
+            preferenceService.setLastShortcutUpdateTimestamp(null);
         }
     }
 
@@ -481,17 +490,6 @@ public final class ShortcutUtil {
 
     @Nullable
     @WorkerThread
-    private static ShortcutInfoCompat getShareTargetShortcutInfo(@NonNull ConversationModel conversationModel, int rank) {
-        MessageReceiver messageReceiver = conversationModel.messageReceiver;
-        if (messageReceiver == null) {
-            return null;
-        }
-
-        return getShareTargetShortcutInfo(messageReceiver, rank);
-    }
-
-    @Nullable
-    @WorkerThread
     private static ShortcutInfoCompat getShareTargetShortcutInfo(@NonNull MessageReceiver messageReceiver, int rank) {
         Person person = null;
         if (messageReceiver instanceof ContactMessageReceiver) {
@@ -509,13 +507,17 @@ public final class ShortcutUtil {
             }
         }
 
-        if (messageReceiver.getNotificationAvatar() != null && !TestUtil.isEmptyOrNull(messageReceiver.getDisplayName())) {
+        var avatarBitmap = messageReceiver.getHighResAvatar();
+        var displayName = messageReceiver.getDisplayName();
+        if (avatarBitmap != null && displayName != null && !displayName.isEmpty()) {
+            var adaptiveIcon = AdaptiveIconUtil.create(getContext(), avatarBitmap);
+
             try {
                 ShortcutInfoCompat.Builder shortcutInfoCompatBuilder = new ShortcutInfoCompat.Builder(getContext(), messageReceiver.getUniqueIdString())
-                    .setIcon(IconCompat.createWithBitmap(messageReceiver.getNotificationAvatar()))
+                    .setIcon(adaptiveIcon != null ? adaptiveIcon : IconCompat.createWithBitmap(avatarBitmap))
                     .setIntent(getShareTargetShortcutIntent(messageReceiver))
-                    .setShortLabel(messageReceiver.getShortName() != null ? messageReceiver.getShortName() : messageReceiver.getDisplayName())
-                    .setLongLabel(messageReceiver.getDisplayName())
+                    .setShortLabel(messageReceiver.getShortName() != null ? messageReceiver.getShortName() : displayName)
+                    .setLongLabel(displayName)
                     .setActivity(new ComponentName(getContext(), MainActivity.class))
                     .setExtras(putShareTargetExtras(messageReceiver))
                     .setLongLived(true)
@@ -534,7 +536,7 @@ public final class ShortcutUtil {
 
                 return shortcutInfoCompatBuilder.build();
             } catch (Exception e) {
-                logger.debug("Unable to build shortcut", e);
+                logger.warn("Unable to build shortcut", e);
             }
         }
         return null;

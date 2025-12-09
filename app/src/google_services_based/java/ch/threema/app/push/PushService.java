@@ -44,13 +44,13 @@ import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 import static ch.threema.common.TimeExtensionsKt.now;
 
 public class PushService extends FirebaseMessagingService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("PushService");
+    private static final Logger logger = getThreemaLogger("PushService");
 
     public static final String EXTRA_CLEAR_TOKEN = "clear";
     public static final String EXTRA_WITH_CALLBACK = "cb";

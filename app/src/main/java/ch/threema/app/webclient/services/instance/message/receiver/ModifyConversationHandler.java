@@ -40,7 +40,7 @@ import ch.threema.app.webclient.converter.Utils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTag;
@@ -50,7 +50,7 @@ import ch.threema.storage.models.ConversationTag;
  */
 @WorkerThread
 public class ModifyConversationHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyConversationHandler");
+    private static final Logger logger = getThreemaLogger("ModifyConversationHandler");
 
     private static final String FIELD_IS_PINNED = "isStarred";
 

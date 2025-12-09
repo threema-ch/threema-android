@@ -29,13 +29,13 @@ import org.slf4j.Logger;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Simple service to stop all webclient sessions - to be used from the persistent notification
  */
 public class StopSessionsAndroidService extends Service {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("StopSessionsAndroidService");
+    private static final Logger logger = getThreemaLogger("StopSessionsAndroidService");
 
     private SessionService sessionService;
 

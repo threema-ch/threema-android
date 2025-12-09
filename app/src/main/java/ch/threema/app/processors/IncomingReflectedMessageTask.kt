@@ -34,7 +34,7 @@ import ch.threema.app.tasks.ActiveComposableTask
 import ch.threema.app.utils.AppVersionProvider
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceScope
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.toHexString
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
@@ -97,7 +97,7 @@ import ch.threema.protobuf.d2d.MdD2D.OutgoingMessageUpdate
 import ch.threema.protobuf.d2d.MdD2D.SettingsSync
 import ch.threema.protobuf.d2d.MdD2D.UserProfileSync
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingReflectedMessageTask")
+private val logger = getThreemaLogger("IncomingReflectedMessageTask")
 
 class IncomingReflectedMessageTask(
     private val message: InboundD2mMessage.Reflected,
@@ -342,7 +342,7 @@ class IncomingReflectedMessageTask(
             symmetricEncryptionService = serviceManager.symmetricEncryptionService,
             appVersion = AppVersionProvider.appVersion,
             preferenceService = serviceManager.preferenceService,
-            profilePicRecipientsService = serviceManager.profilePicRecipientsService,
+            profilePictureRecipientsService = serviceManager.profilePicRecipientsService,
         ).run()
     }
 

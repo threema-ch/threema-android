@@ -27,13 +27,13 @@ import ch.threema.annotation.SameThread
 import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.app.voip.groupcall.sfu.webrtc.FactoryCtx
 import ch.threema.app.voip.util.VideoCapturerUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
 import kotlinx.coroutines.CompletableDeferred
 import org.webrtc.*
 
-private val logger = LoggingUtil.getThreemaLogger("VideoContext")
+private val logger = getThreemaLogger("VideoContext")
 
 @AnyThread
 data class VideoCaptureSettings(

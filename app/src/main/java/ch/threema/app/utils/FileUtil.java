@@ -45,7 +45,6 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -71,7 +70,7 @@ import ch.threema.app.camera.CameraActivity;
 import ch.threema.app.filepicker.FilePickerActivity;
 import ch.threema.app.services.FileService;
 import ch.threema.app.ui.MediaItem;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
@@ -80,14 +79,10 @@ import static ch.threema.app.filepicker.FilePickerActivity.INTENT_DATA_DEFAULT_P
 import static ch.threema.app.utils.StreamUtilKt.getFromUri;
 
 public class FileUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("FileUtil");
+    private static final Logger logger = getThreemaLogger("FileUtil");
 
     private FileUtil() {
 
-    }
-
-    public static boolean isFilePresent(File filename) {
-        return filename != null && filename.exists() && filename.length() > 0;
     }
 
     @Deprecated
@@ -589,18 +584,6 @@ public class FileUtil {
     }
 
     @WorkerThread
-    public static boolean copyFile(@NonNull File source, @NonNull File dest) {
-        try (InputStream inputStream = new FileInputStream(source);
-             OutputStream outputStream = new FileOutputStream(dest)) {
-            IOUtils.copy(inputStream, outputStream);
-            return true;
-        } catch (Exception e) {
-            logger.error("Exception", e);
-        }
-        return false;
-    }
-
-    @WorkerThread
     public static boolean copyFile(@NonNull Uri source, @NonNull File dest, @NonNull ContentResolver contentResolver) {
         try (InputStream inputStream = contentResolver.openInputStream(source);
              OutputStream outputStream = new FileOutputStream(dest)) {
@@ -900,44 +883,5 @@ public class FileUtil {
         }
 
         return true;
-    }
-
-    /**
-     * Logs the external storage state. In case a file is provided, the state specifically for this
-     * file is additionally logged if the provided file is on the external storage.
-     */
-    public static void logExternalStorageState(@Nullable File file) {
-        String storageState = Environment.getExternalStorageState();
-        if (isExternalStorageStateMounted(storageState)) {
-            logger.info("External storage state: {}", storageState);
-        } else {
-            logger.error("Unexpected external storage state: {}", storageState);
-        }
-
-        if (file != null && isExternalStorageFile(file)) {
-            String fileStorageState = Environment.getExternalStorageState(file);
-
-            if (isExternalStorageStateMounted(fileStorageState)) {
-                logger.info(
-                    "External storage state at '{}': {}",
-                    file.getAbsolutePath(),
-                    fileStorageState
-                );
-            } else {
-                logger.error(
-                    "Unexpected external storage state at '{}': {}",
-                    file.getAbsolutePath(),
-                    fileStorageState
-                );
-            }
-        }
-    }
-
-    private static boolean isExternalStorageStateMounted(@Nullable String storageState) {
-        return Environment.MEDIA_MOUNTED.equals(storageState);
-    }
-
-    private static boolean isExternalStorageFile(@NonNull File file) {
-        return file.getAbsolutePath().startsWith(Environment.getExternalStorageDirectory().getAbsolutePath());
     }
 }

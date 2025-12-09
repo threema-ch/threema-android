@@ -26,8 +26,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import javax.crypto.CipherInputStream
-import javax.crypto.CipherOutputStream
 
 /**
  * @param value the raw master key, used for encrypting the user's locally stored data, such as the database, files, or preferences.
@@ -38,7 +36,7 @@ interface MasterKey {
     /**
      * Checks whether this key is still valid. The key becomes invalid if it gets locked, e.g. with a passphrase, at which point the
      * underlying byte array is filled with all zeroes. Once a [MasterKey] instance is invalid, it will remain invalid, and
-     * [getCipherInputStream] and [getCipherOutputStream] will always fail when called on an invalid [MasterKey].
+     * [decrypt] and [encrypt] will always fail when called on an invalid [MasterKey].
      */
     fun isValid(): Boolean
 
@@ -51,7 +49,7 @@ interface MasterKey {
      * @throws IOException
      */
     @Throws(IOException::class)
-    fun getCipherInputStream(inputStream: InputStream): CipherInputStream
+    fun decrypt(inputStream: InputStream): InputStream
 
     /**
      * Wrap an output stream (most commonly a [FileOutputStream]) with an encryption operation
@@ -62,5 +60,5 @@ interface MasterKey {
      * @throws IOException
      */
     @Throws(IOException::class)
-    fun getCipherOutputStream(outputStream: OutputStream): CipherOutputStream
+    fun encrypt(outputStream: OutputStream): OutputStream
 }

@@ -21,12 +21,12 @@
 
 package ch.threema.domain.taskmanager
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.D2mPayloadType
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.toHex
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingD2mMessageTask")
+private val logger = getThreemaLogger("IncomingD2mMessageTask")
 
 class IncomingD2mMessageTask(
     private val message: InboundD2mMessage,

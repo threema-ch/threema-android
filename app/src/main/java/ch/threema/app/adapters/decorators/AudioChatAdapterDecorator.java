@@ -44,9 +44,9 @@ import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
@@ -57,7 +57,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 import static ch.threema.app.utils.MessageUtilKt.getUiContentColor;
 
 public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AudioChatAdapterDecorator");
+    private static final Logger logger = getThreemaLogger("AudioChatAdapterDecorator");
 
     private static final String LISTENER_TAG = "decorator";
     private MessagePlayer audioMessagePlayer;
@@ -367,9 +367,9 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
 
         //do not show duration if 0
         if (duration > 0) {
-            setDatePrefix(StringConversionUtil.secondsToString(duration, false));
+            setDatePrefix(ElapsedTimeFormatter.secondsToString(duration));
             setDuration(duration);
-            dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
+            dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + ElapsedTimeFormatter.getDurationStringHuman(getContext(), duration);
         }
 
         if (holder.contentView != null) {
@@ -384,7 +384,7 @@ public class AudioChatAdapterDecorator extends ChatAdapterDecorator {
     private void updateProgressCount(final ComposeMessageHolder holder, int value) {
         if (holder != null && holder.size != null && holder.seekBar != null) {
             holder.seekBar.setProgress(value);
-            holder.size.setText(StringConversionUtil.secondsToString((long) value / 1000, false));
+            holder.size.setText(ElapsedTimeFormatter.millisecondsToString(value));
         }
     }
 

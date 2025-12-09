@@ -43,10 +43,10 @@ import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.app.voip.groupcall.LocalGroupId
 import ch.threema.app.voip.services.VoipCallService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.button.MaterialButton
 
-private val logger = LoggingUtil.getThreemaLogger("OngoingCallNoticeView")
+private val logger = getThreemaLogger("OngoingCallNoticeView")
 
 enum class OngoingCallNoticeMode {
     MODE_VOIP,

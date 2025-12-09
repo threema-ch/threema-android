@@ -21,6 +21,7 @@
 
 package ch.threema.domain.protocol
 
+import ch.threema.base.SessionScoped
 import ch.threema.base.ThreemaException
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.urls.AppRatingUrl
@@ -29,6 +30,7 @@ import ch.threema.domain.protocol.urls.DeviceGroupUrl
 import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
 
+@SessionScoped
 interface ServerAddressProvider {
     @Throws(ThreemaException::class)
     fun getChatServerNamePrefix(ipv6: Boolean): String

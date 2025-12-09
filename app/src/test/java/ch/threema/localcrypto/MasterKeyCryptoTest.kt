@@ -52,6 +52,8 @@ class MasterKeyCryptoTest {
                     checkVerification(MasterKeyData(MASTER_KEY), verificationMock)
                 } returns true
             },
+            converter = mockk(),
+            version2Crypto = mockk(),
         )
 
         val verified = crypto.verifyPassphrase(
@@ -71,6 +73,8 @@ class MasterKeyCryptoTest {
             version2Crypto = mockk {
                 every { decryptWithPassphrase(outerDataMock, PASSPHRASE) } returns mockk()
             },
+            converter = mockk(),
+            version1Crypto = mockk(),
         )
 
         val verified = crypto.verifyPassphrase(
@@ -94,6 +98,8 @@ class MasterKeyCryptoTest {
                     decryptWithPassphrase(outerDataMock, PASSPHRASE)
                 } answers { throw CryptoException() }
             },
+            converter = mockk(),
+            version1Crypto = mockk(),
         )
 
         val verified = crypto.verifyPassphrase(
@@ -128,6 +134,8 @@ class MasterKeyCryptoTest {
         }
         val crypto = MasterKeyCrypto(
             version1Crypto = version1CryptoMock,
+            converter = mockk(),
+            version2Crypto = mockk(),
         )
 
         val withoutPassphrase = crypto.decryptWithPassphrase(
@@ -155,6 +163,7 @@ class MasterKeyCryptoTest {
             converter = mockk {
                 every { toKeyState(innerDataMock) } returns plainMock
             },
+            version1Crypto = mockk(),
         )
 
         val withoutPassphrase = crypto.decryptWithPassphrase(

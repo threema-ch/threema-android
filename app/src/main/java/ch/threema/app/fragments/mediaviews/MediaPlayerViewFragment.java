@@ -22,7 +22,7 @@
 package ch.threema.app.fragments.mediaviews;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
-import static ch.threema.app.utils.StringConversionUtil.getDurationString;
+import static ch.threema.app.utils.ElapsedTimeFormatter.millisecondsToString;
 
 import android.annotation.SuppressLint;
 import android.media.AudioManager;
@@ -54,14 +54,14 @@ import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Media Player Fragment using traditional Android MediaPlayer. Only used to play MIDI and FLAC files which are not supported by ExoPlayer
  */
 @SuppressLint("UnsafeOptInUsageError")
 public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragment implements TimeBar.OnScrubListener, MediaPlayerStateWrapper.StateListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaPlayerViewFragment");
+    private static final Logger logger = getThreemaLogger("MediaPlayerViewFragment");
 
     private WeakReference<TextView> filenameViewRef, positionRef, durationRef;
     private WeakReference<DefaultTimeBar> timeBarRef;
@@ -123,8 +123,8 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
         this.playRef.get().setVisibility(View.GONE);
         this.pauseRef.get().setVisibility(View.GONE);
 
-        this.positionRef.get().setText(getDurationString(0));
-        this.durationRef.get().setText(getDurationString(0));
+        this.positionRef.get().setText(millisecondsToString(0));
+        this.durationRef.get().setText(millisecondsToString(0));
 
         this.playRef.get().setOnClickListener(v -> resumeAudio());
 
@@ -204,7 +204,7 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
             this.mediaPlayer.setDataSource(getContext(), uri);
             try {
                 this.mediaPlayer.prepare();
-                this.durationRef.get().setText(getDurationString(this.mediaPlayer.getDuration()));
+                this.durationRef.get().setText(millisecondsToString(this.mediaPlayer.getDuration()));
                 this.timeBarRef.get().setDuration(this.mediaPlayer.getDuration());
             } catch (IOException e) {
                 logger.error("Exception", e);
@@ -285,7 +285,7 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
             public void run() {
                 if (mediaPlayer != null) {
                     timeBarRef.get().setPosition(mediaPlayer.getCurrentPosition());
-                    positionRef.get().setText(getDurationString(mediaPlayer.getCurrentPosition()));
+                    positionRef.get().setText(millisecondsToString(mediaPlayer.getCurrentPosition()));
                 }
                 progressBarHandler.postDelayed(this, 1000);
             }

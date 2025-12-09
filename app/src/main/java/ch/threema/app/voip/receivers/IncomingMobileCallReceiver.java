@@ -40,13 +40,13 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Attempt to reject regular phone call if a Threema Call is running
  */
 public class IncomingMobileCallReceiver extends BroadcastReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("IncomingMobileCallReceiver");
+    private static final Logger logger = getThreemaLogger("IncomingMobileCallReceiver");
 
     @Override
     public void onReceive(Context context, Intent intent) {

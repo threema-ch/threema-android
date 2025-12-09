@@ -32,7 +32,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * The call state is a combination of the plain state and a call ID.
@@ -45,7 +45,7 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @AnyThread
 public class CallState {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("CallState");
+    private static final Logger logger = getThreemaLogger("CallState");
 
     /**
      * No call is currently active.

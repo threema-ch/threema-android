@@ -52,14 +52,14 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.CoroutinesExtensionKt;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.GroupModel;
 import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
 @WorkerThread
 public class CreateGroupHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("CreateGroupHandler");
+    private static final Logger logger = getThreemaLogger("CreateGroupHandler");
 
     private final MessageDispatcher dispatcher;
     private final GroupFlowDispatcher groupFlowDispatcher;

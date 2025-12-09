@@ -26,13 +26,13 @@ import android.util.AttributeSet
 import androidx.preference.CheckBoxPreference
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.preference.service.SynchronizedBooleanSetting
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("SynchronizedCheckBoxPreference")
+private val logger = getThreemaLogger("SynchronizedCheckBoxPreference")
 
 class SynchronizedCheckBoxPreference : CheckBoxPreference {
     @Suppress("unused")

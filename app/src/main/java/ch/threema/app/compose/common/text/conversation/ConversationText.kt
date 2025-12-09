@@ -29,8 +29,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Face
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -54,6 +52,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalInspectionMode
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.EmojiSupportMatch
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -72,9 +71,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import ch.threema.android.ResolvableString
+import ch.threema.android.ResolvedString
 import ch.threema.app.R
-import ch.threema.app.compose.common.ResolvableString
-import ch.threema.app.compose.common.ResolvedString
 import ch.threema.app.compose.common.emoji.AsyncEmojiImage
 import ch.threema.app.compose.common.text.conversation.ConversationTextAnalyzer.Result.SearchResult
 import ch.threema.app.compose.theme.ThreemaThemePreview
@@ -296,7 +295,7 @@ private fun buildInlineContentEmojiMap(
                 // Placeholder in Previews because AsyncEmojiImage is not previewable
                 Icon(
                     modifier = Modifier.fillMaxSize(),
-                    imageVector = Icons.Rounded.Face,
+                    painter = painterResource(R.drawable.ic_tag_faces_outline),
                     contentDescription = null,
                 )
             }

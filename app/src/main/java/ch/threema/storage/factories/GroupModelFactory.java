@@ -34,7 +34,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.services.GroupService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.domain.models.GroupId;
 import ch.threema.storage.CursorHelper;
@@ -44,7 +44,7 @@ import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.GroupModel;
 
 public class GroupModelFactory extends ModelFactory {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupModelFactory");
+    private static final Logger logger = getThreemaLogger("GroupModelFactory");
 
     public GroupModelFactory(DatabaseService databaseService) {
         super(databaseService, GroupModel.TABLE);

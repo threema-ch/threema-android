@@ -36,12 +36,12 @@ import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 
 @WorkerThread
 public class AcknowledgeRequestHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AcknowledgeRequestHandler");
+    private static final Logger logger = getThreemaLogger("AcknowledgeRequestHandler");
 
     private final MessageService messageService;
     private final NotificationService notificationService;

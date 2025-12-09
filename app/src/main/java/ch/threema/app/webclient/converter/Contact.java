@@ -254,11 +254,6 @@ public class Contact extends Converter {
             }
 
             @Override
-            public Long requiredFeature() {
-                return null;
-            }
-
-            @Override
             public Boolean fetchMissingFeatureLevel() {
                 return null;
             }
@@ -271,11 +266,6 @@ public class Contact extends Converter {
             @Override
             public Boolean includeHidden() {
                 return true;
-            }
-
-            @Override
-            public Boolean onlyWithReceiptSettings() {
-                return false;
             }
         };
     }

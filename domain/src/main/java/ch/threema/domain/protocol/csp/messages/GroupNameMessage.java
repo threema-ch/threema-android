@@ -27,7 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
@@ -36,7 +36,7 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
  */
 public class GroupNameMessage extends AbstractGroupMessage {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupRenameMessage");
+    private static final Logger logger = getThreemaLogger("GroupRenameMessage");
 
     private String groupName;
 

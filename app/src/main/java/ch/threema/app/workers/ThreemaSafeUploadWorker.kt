@@ -23,26 +23,83 @@ package ch.threema.app.workers
 
 import android.content.Context
 import androidx.work.*
-import ch.threema.app.di.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.threemasafe.ThreemaSafeService
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.minus
 import java.time.Instant
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.seconds
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-private val logger = LoggingUtil.getThreemaLogger("ThreemaSafeUploadWorker")
+private val logger = getThreemaLogger("ThreemaSafeUploadWorker")
 
 class ThreemaSafeUploadWorker(
     context: Context,
     workerParameters: WorkerParameters,
 ) : CoroutineWorker(context, workerParameters), KoinComponent {
+
+    private val threemaSafeService: ThreemaSafeService by inject()
+    private val preferenceService: PreferenceService by inject()
+    private val notificationService: NotificationService by inject()
+
+    override suspend fun doWork(): Result {
+        val forceUpdate: Boolean = inputData.getBoolean(EXTRA_FORCE_UPDATE, false)
+        var success = true
+
+        logger.info("Threema Safe upload worker started, force = {}", forceUpdate)
+
+        awaitAppFullyReadyWithTimeout(timeout = 20.seconds)
+            ?: return Result.failure()
+
+        if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
+            // skip upload if license was revoked or is temporarily unavailable
+            return Result.success()
+        }
+
+        try {
+            threemaSafeService.createBackup(forceUpdate)
+            // When the backup has been successfully uploaded or does not need to be uploaded, then
+            // we ignore previous errors.
+            preferenceService.threemaSafeErrorTimestamp = null
+        } catch (e: ThreemaSafeService.ThreemaSafeUploadException) {
+            if (preferenceService.threemaSafeErrorTimestamp == null && e.isUploadNeeded) {
+                preferenceService.threemaSafeErrorTimestamp = Instant.now()
+            }
+            showWarningNotification(preferenceService, notificationService)
+            logger.error("Threema Safe upload failed", e)
+            success = false
+        }
+
+        ListenerManager.threemaSafeListeners.handle { listener -> listener.onBackupStatusChanged() }
+
+        logger.info("Threema Safe upload worker finished. Success = {}", success)
+
+        return if (success) {
+            Result.success()
+        } else {
+            Result.failure()
+        }
+    }
+
+    private fun showWarningNotification(preferenceService: PreferenceService, notificationService: NotificationService) {
+        val errorTimestamp = preferenceService.threemaSafeErrorTimestamp ?: return
+        if (errorTimestamp < Instant.now() - 7.days) {
+            val lastBackupDate = preferenceService.threemaSafeBackupTimestamp
+            val fullDaysSinceLastBackup = lastBackupDate?.let { (Instant.now() - lastBackupDate).inWholeDays.toInt() }
+            if (fullDaysSinceLastBackup != null && fullDaysSinceLastBackup > 0 && preferenceService.getThreemaSafeEnabled()) {
+                notificationService.showSafeBackupFailed(fullDaysSinceLastBackup)
+            } else {
+                notificationService.cancelSafeBackupFailed()
+            }
+        }
+    }
 
     companion object {
         private const val EXTRA_FORCE_UPDATE = "FORCE_UPDATE"
@@ -82,61 +139,6 @@ class ThreemaSafeUploadWorker(
                 .addTag(schedulePeriodMs.toString())
                 .apply { setInputData(data) }
                 .build()
-        }
-    }
-
-    override suspend fun doWork(): Result {
-        val forceUpdate: Boolean = inputData.getBoolean(EXTRA_FORCE_UPDATE, false)
-        var success = true
-
-        logger.info("Threema Safe upload worker started, force = {}", forceUpdate)
-
-        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
-            ?: return Result.failure()
-
-        val threemaSafeService = serviceManager.threemaSafeService
-        val preferenceService = serviceManager.preferenceService
-
-        if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
-            // skip upload if license was revoked or is temporarily unavailable
-            return Result.success()
-        }
-
-        try {
-            threemaSafeService.createBackup(forceUpdate)
-            // When the backup has been successfully uploaded or does not need to be uploaded, then
-            // we ignore previous errors.
-            preferenceService.threemaSafeErrorTimestamp = null
-        } catch (e: ThreemaSafeService.ThreemaSafeUploadException) {
-            if (preferenceService.threemaSafeErrorTimestamp == null && e.isUploadNeeded) {
-                preferenceService.threemaSafeErrorTimestamp = Instant.now()
-            }
-            showWarningNotification(preferenceService, serviceManager.notificationService)
-            logger.error("Threema Safe upload failed", e)
-            success = false
-        }
-
-        ListenerManager.threemaSafeListeners.handle { listener -> listener.onBackupStatusChanged() }
-
-        logger.info("Threema Safe upload worker finished. Success = {}", success)
-
-        return if (success) {
-            Result.success()
-        } else {
-            Result.failure()
-        }
-    }
-
-    private fun showWarningNotification(preferenceService: PreferenceService, notificationService: NotificationService) {
-        val errorTimestamp = preferenceService.threemaSafeErrorTimestamp ?: return
-        if (errorTimestamp < Instant.now() - 7.days) {
-            val lastBackupDate = preferenceService.threemaSafeBackupTimestamp
-            val fullDaysSinceLastBackup = lastBackupDate?.let { (Instant.now() - lastBackupDate).inWholeDays.toInt() }
-            if (fullDaysSinceLastBackup != null && fullDaysSinceLastBackup > 0 && preferenceService.getThreemaSafeEnabled()) {
-                notificationService.showSafeBackupFailed(fullDaysSinceLastBackup)
-            } else {
-                notificationService.cancelSafeBackupFailed()
-            }
         }
     }
 }

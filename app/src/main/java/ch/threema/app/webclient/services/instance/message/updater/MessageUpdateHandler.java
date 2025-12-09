@@ -55,12 +55,12 @@ import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 
 @WorkerThread
 public class MessageUpdateHandler extends MessageUpdater {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageUpdateHandler");
+    private static final Logger logger = getThreemaLogger("MessageUpdateHandler");
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({

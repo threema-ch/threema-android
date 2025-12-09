@@ -55,7 +55,7 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.MessageTooLongException;
@@ -84,7 +84,7 @@ import ch.threema.storage.models.ballot.IdentityBallotModel;
 import ch.threema.storage.models.ballot.LinkBallotModel;
 
 public class BallotServiceImpl implements BallotService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotServiceImpl");
+    private static final Logger logger = getThreemaLogger("BallotServiceImpl");
 
     private static final int REQUIRED_CHOICE_COUNT = 2;
 
@@ -275,14 +275,13 @@ public class BallotServiceImpl implements BallotService {
         //be sure to use the cached ballot model!
         final BallotModel ballotModel = this.get(ballotModelId);
 
-        //if i am not the creator
-        if (!BallotUtil.canClose(ballotModel, this.userService.getIdentity())) {
-            throw new NotAllowedException();
-        }
-
         MessageReceiver messageReceiver = this.getReceiver(ballotModel);
         if (messageReceiver == null) {
             return false;
+        }
+
+        if (!BallotUtil.canClose(ballotModel, this.userService.getIdentity(), messageReceiver)) {
+            throw new NotAllowedException();
         }
 
         //save model
@@ -560,17 +559,7 @@ public class BallotServiceImpl implements BallotService {
             filter
         );
         this.cache(ballots);
-
-        if (filter != null) {
-            return Functional.filter(ballots, new IPredicateNonNull<BallotModel>() {
-                @Override
-                public boolean apply(@NonNull BallotModel type) {
-                    return filter.filter(type);
-                }
-            });
-        } else {
-            return ballots;
-        }
+        return ballots;
     }
 
     @Override
@@ -622,11 +611,6 @@ public class BallotServiceImpl implements BallotService {
             public BallotModel.State[] getStates() {
                 return new BallotModel.State[0];
             }
-
-            @Override
-            public boolean filter(BallotModel ballotModel) {
-                return true;
-            }
         });
 
         for (final BallotModel ballotModel : ballots) {
@@ -677,27 +661,6 @@ public class BallotServiceImpl implements BallotService {
         }
 
         return pendingParticipants;
-    }
-
-
-    @Override
-    @NonNull
-    public String[] getParticipants(MessageReceiver messageReceiver) {
-        if (messageReceiver != null) {
-            switch (messageReceiver.getType()) {
-                case MessageReceiver.Type_GROUP:
-                    return this.groupService.getGroupMemberIdentities(((GroupMessageReceiver) messageReceiver).getGroup());
-
-                case MessageReceiver.Type_CONTACT:
-                    return new String[]{
-                        this.userService.getIdentity(),
-                        ((ContactMessageReceiver) messageReceiver).getContact().getIdentity()
-                    };
-                case MessageReceiver.Type_DISTRIBUTION_LIST:
-                    break;
-            }
-        }
-        return new String[0];
     }
 
     @Override
@@ -1055,11 +1018,6 @@ public class BallotServiceImpl implements BallotService {
                 @Override
                 public BallotModel.State[] getStates() {
                     return null;
-                }
-
-                @Override
-                public boolean filter(BallotModel ballotModel) {
-                    return true;
                 }
             })) {
                 if (!this.remove(ballotModel)) {

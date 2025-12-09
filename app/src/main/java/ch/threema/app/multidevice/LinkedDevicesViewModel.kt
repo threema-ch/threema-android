@@ -37,7 +37,7 @@ import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.DropDevicesStepsTask
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.combineStates
 import ch.threema.domain.protocol.connection.data.D2dMessage
 import ch.threema.domain.protocol.connection.data.DeviceId
@@ -52,7 +52,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("LinkedDevicesViewModel")
+private val logger = getThreemaLogger("LinkedDevicesViewModel")
 
 class LinkedDevicesViewModel(
     private val serviceManager: ServiceManager,

@@ -41,6 +41,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.ThreemaActivity
@@ -49,9 +50,8 @@ import ch.threema.app.multidevice.wizard.steps.LinkNewDevicePFSInfoFragment
 import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceResultFragment
 import ch.threema.app.multidevice.wizard.steps.LinkNewDeviceScanQrFragment
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetBehavior.BottomSheetCallback
 import com.google.android.material.bottomsheet.BottomSheetDragHandleView
@@ -60,7 +60,7 @@ import java.lang.ref.WeakReference
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceWizardActivity")
+private val logger = getThreemaLogger("LinkNewDeviceWizardActivity")
 
 class LinkNewDeviceWizardActivity : ThreemaActivity() {
     init {

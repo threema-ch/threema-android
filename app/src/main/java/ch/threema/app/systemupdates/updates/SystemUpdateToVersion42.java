@@ -35,15 +35,12 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Base32;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
 
-/**
- * add profile pic field to normal, group and distribution list message models
- */
 public class SystemUpdateToVersion42 implements SystemUpdate {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion42");
+    private static final Logger logger = getThreemaLogger("SystemUpdateToVersion42");
 
     private @NonNull final Context context;
     private @NonNull final ServiceManager serviceManager;

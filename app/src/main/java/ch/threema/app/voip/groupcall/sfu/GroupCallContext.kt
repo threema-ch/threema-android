@@ -31,16 +31,16 @@ import ch.threema.app.voip.groupcall.sfu.messages.P2SMessage
 import ch.threema.app.voip.groupcall.sfu.webrtc.ConnectionCtx
 import ch.threema.app.voip.groupcall.sfu.webrtc.ParticipantCallMediaKeyState
 import ch.threema.base.crypto.NaCl
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.Utils
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.toByteArray
 import ch.threema.protobuf.groupcall.CallState
 import ch.threema.protobuf.groupcall.ParticipantToParticipant
+import java.nio.ByteOrder
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.withLock
-import org.apache.commons.io.EndianUtils
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallContext")
+private val logger = getThreemaLogger("GroupCallContext")
 
 @WorkerThread
 internal class GroupCallContext(
@@ -244,11 +244,7 @@ sealed class P2PContext(val pckPublic: ByteArray, val pcck: ByteArray) {
 
         // Read and increment pcsn
         val currentPcsn = pcsnLock.withLock { pcsn++ }
-        // Multibyte data (such as long) is always stored in big-endian order on the jvm
-        // (https://docs.oracle.com/javase/specs/jvms/se8/html/jvms-4.html).
-        // Therefore we need to swap endianness as the protocol specifies a little endian sequence number
-        val swappedPcsn = EndianUtils.swapLong(currentPcsn.toLong())
-        return pcck + Utils.longToByteArrayBigEndian(swappedPcsn)
+        return pcck + currentPcsn.toLong().toByteArray(order = ByteOrder.LITTLE_ENDIAN)
     }
 }
 

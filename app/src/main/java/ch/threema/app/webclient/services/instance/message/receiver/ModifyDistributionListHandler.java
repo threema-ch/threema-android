@@ -42,14 +42,14 @@ import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.DistributionListModel;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 @WorkerThread
 public class ModifyDistributionListHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyDistributionListHandler");
+    private static final Logger logger = getThreemaLogger("ModifyDistributionListHandler");
 
     private final MessageDispatcher dispatcher;
     private final DistributionListService distributionListService;

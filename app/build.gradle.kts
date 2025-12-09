@@ -51,7 +51,7 @@ if (gradle.startParameter.taskRequests.toString().contains("Hms")) {
 /**
  * Only use the scheme "<major>.<minor>.<patch>" for the appVersion
  */
-val appVersion = "6.2.1"
+val appVersion = "6.3.0"
 
 /**
  * betaSuffix with leading dash (e.g. `-beta1`).
@@ -60,7 +60,7 @@ val appVersion = "6.2.1"
  */
 val betaSuffix = ""
 
-val defaultVersionCode = 1098
+val defaultVersionCode = 1113
 
 /**
  * Map with keystore paths (if found).
@@ -97,6 +97,7 @@ android {
         setProductNames(
             appName = "Threema",
         )
+        intBuildConfigField("DEFAULT_VERSION_CODE", defaultVersionCode)
         // package name used for sync adapter - needs to match mime types below
         stringResValue("package_name", applicationId!!)
         stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.$applicationId.profile")
@@ -115,6 +116,7 @@ android {
         byteArrayBuildConfigField("SERVER_PUBKEY", PublicKeys.prodServer)
         byteArrayBuildConfigField("SERVER_PUBKEY_ALT", PublicKeys.prodServerAlt)
         stringBuildConfigField("GIT_HASH", getGitHash())
+        stringBuildConfigField("GIT_BRANCH", getGitBranch())
         stringBuildConfigField("DIRECTORY_SERVER_URL", "https://apip.threema.ch/")
         stringBuildConfigField("DIRECTORY_SERVER_IPV6_URL", "https://ds-apip.threema.ch/")
         stringBuildConfigField("WORK_SERVER_URL", null)
@@ -147,7 +149,10 @@ android {
         stringArrayBuildConfigField("ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS", emptyArray())
         booleanBuildConfigField("MD_SYNC_DISTRIBUTION_LISTS", false)
         booleanBuildConfigField("AVAILABILITY_STATUS_ENABLED", BuildFeatureFlags["availability_status"] ?: false)
-        booleanBuildConfigField("REMOTE_SECRETS_SUPPORTED", BuildFeatureFlags["remote_secrets"] ?: false)
+        booleanBuildConfigField("CRASH_REPORTING_SUPPORTED", BuildFeatureFlags["crash_reporting"] ?: false)
+
+        // TODO(ANDR-4376): Remove this build flag
+        booleanBuildConfigField("REFERRAL_PROGRAM_AVAILABLE", BuildFeatureFlags["referral_program_available"] ?: false)
 
         // config fields for action URLs / deep links
         stringBuildConfigField("uriScheme", "threema")
@@ -285,6 +290,10 @@ android {
             stringBuildConfigField("MAP_POI_AROUND_URL", "https://poi.test.threema.ch/around/{latitude}/{longitude}/{radius}/")
             stringBuildConfigField("MAP_POI_NAMES_URL", "https://poi.test.threema.ch/names/{latitude}/{longitude}/{query}/")
             stringBuildConfigField("BLOB_MIRROR_SERVER_URL", "https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
+            booleanBuildConfigField("CRASH_REPORTING_SUPPORTED", true)
+
+            // TODO(ANDR-4376): Remove this build flag
+            booleanBuildConfigField("REFERRAL_PROGRAM_AVAILABLE", true)
         }
         create("sandbox_work") {
             versionName = "${appVersion}k$betaSuffix"
@@ -325,6 +334,8 @@ android {
             // config fields for action URLs / deep links
             stringBuildConfigField("uriScheme", "threemawork")
             stringBuildConfigField("actionUrl", "work.test.threema.ch")
+
+            booleanBuildConfigField("CRASH_REPORTING_SUPPORTED", true)
 
             stringBuildConfigField("MD_CLIENT_DOWNLOAD_URL", "https://three.ma/mdw")
 
@@ -413,6 +424,8 @@ android {
             stringBuildConfigField("MAP_POI_NAMES_URL", "https://poi.test.threema.ch/names/{latitude}/{longitude}/{query}/")
             stringBuildConfigField("LOG_TAG", "3mablue")
             stringBuildConfigField("BLOB_MIRROR_SERVER_URL", "https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
+
+            booleanBuildConfigField("CRASH_REPORTING_SUPPORTED", true)
 
             // config fields for action URLs / deep links
             stringBuildConfigField("uriScheme", "threemablue")
@@ -776,6 +789,7 @@ dependencies {
     coreLibraryDesugaring(libs.desugarJdkLibs)
 
     implementation(project(":domain"))
+    implementation(project("::commonAndroid"))
     implementation(project(":common"))
     lintChecks(project(":lint-rules"))
 
@@ -793,7 +807,6 @@ dependencies {
     implementation(libs.zip4j)
     implementation(libs.taptargetview)
     implementation(libs.commonsIo)
-    implementation(libs.commonsText)
     implementation(libs.slf4j.api)
     implementation(libs.androidImageCropper)
     implementation(libs.fastscroll)
@@ -840,7 +853,6 @@ dependencies {
     // Jetpack Compose
     implementation(platform(libs.compose.bom))
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.materialIconsExtended)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -873,8 +885,7 @@ dependencies {
 
     // Glide components
     implementation(libs.glide)
-    ksp(libs.glide.compiler)
-    annotationProcessor(libs.glide.compiler)
+    ksp(libs.glide.ksp)
 
     // Kotlin
     implementation(libs.kotlin.stdlib)
@@ -1024,10 +1035,24 @@ afterEvaluate {
 
 sonarqube {
     properties {
-        property("sonar.sources", "src/main/, ../scripts/, ../scripts-internal/")
+        property(
+            "sonar.sources",
+            listOf(
+                "src/main/",
+                "../scripts/",
+                "../scripts-internal/",
+            )
+                .joinToString(separator = ", "),
+        )
         property(
             "sonar.exclusions",
-            "src/main/java/ch/threema/localcrypto/**, src/test/java/ch/threema/localcrypto/**, src/*/res/, src/*/res-rendezvous/",
+            listOf(
+                "src/**/res/",
+                "src/**/res-rendezvous/",
+                "**/emojis/EmojiParser.kt",
+                "**/emojis/EmojiSpritemap.kt",
+            )
+                .joinToString(separator = ", "),
         )
         property("sonar.tests", "src/test/")
         property("sonar.sourceEncoding", "UTF-8")

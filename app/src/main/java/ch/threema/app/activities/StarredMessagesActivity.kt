@@ -39,6 +39,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.dialogs.SelectorDialog
@@ -61,9 +62,8 @@ import ch.threema.app.ui.ThreemaSearchView
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_NONE
 import com.bumptech.glide.Glide
@@ -75,7 +75,7 @@ import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-private val logger = LoggingUtil.getThreemaLogger("StarredMessagesActivity")
+private val logger = getThreemaLogger("StarredMessagesActivity")
 
 class StarredMessagesActivity :
     ThreemaToolbarActivity(),

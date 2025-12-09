@@ -30,12 +30,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ThreemaDialogFragment extends DialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaDialogFragment");
+    private static final Logger logger = getThreemaLogger("ThreemaDialogFragment");
 
     protected @Nullable Object object;
 

@@ -21,13 +21,13 @@
 
 package ch.threema.domain.protocol.csp.messages.protobuf
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import java.io.ByteArrayOutputStream
 import java.lang.Exception
 import java.nio.charset.StandardCharsets
 
-private val logger = LoggingUtil.getThreemaLogger("AbstractProtobufGroupMessage")
+private val logger = getThreemaLogger("AbstractProtobufGroupMessage")
 
 /**
  * @param type Protocol type of the message as defined in [ch.threema.domain.protocol.csp.ProtocolDefines]

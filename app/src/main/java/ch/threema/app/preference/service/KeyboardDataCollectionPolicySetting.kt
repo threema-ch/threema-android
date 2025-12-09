@@ -27,13 +27,13 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.ReflectSettingsSyncTask
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.KeyboardDataCollectionPolicy
 
-private val logger = LoggingUtil.getThreemaLogger("KeyboardDataCollectionPolicySetting")
+private val logger = getThreemaLogger("KeyboardDataCollectionPolicySetting")
 
 /**
  * The setting whether the keyboard should be requested to disable data collection. Stores true if the collection should be prevented.

@@ -28,6 +28,7 @@ import android.media.RingtoneManager
 import android.provider.Settings
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import ch.threema.android.setSound
 import ch.threema.app.R
 import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.notifications.NotificationChannels.NOTIFICATION_CHANNELGROUP_CHAT
@@ -55,7 +56,6 @@ import ch.threema.app.notifications.migrateChannel
 import ch.threema.app.notifications.migrateOrCreateChannel
 import ch.threema.app.notifications.safelyDeleteChannel
 import ch.threema.app.notifications.safelyDeleteChannelGroup
-import ch.threema.app.notifications.setSound
 import ch.threema.app.utils.ConfigUtils
 
 /**

@@ -24,7 +24,7 @@ package ch.threema.app.webclient.webrtc;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import org.saltyrtc.tasks.webrtc.WebRTCTask;
 import org.saltyrtc.tasks.webrtc.events.MessageHandler;
@@ -41,7 +41,7 @@ import java.util.List;
  */
 @AnyThread
 public class TemporaryTaskEventHandler implements MessageHandler {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("TemporaryTaskEventHandler");
+    private static final Logger logger = getThreemaLogger("TemporaryTaskEventHandler");
 
     @NonNull
     final private List<Object> events = new ArrayList<>();

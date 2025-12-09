@@ -24,7 +24,7 @@ package ch.threema.app.passphrase
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
-import ch.threema.app.utils.buildActivityIntent
+import ch.threema.android.buildActivityIntent
 import ch.threema.localcrypto.MasterKeyManager
 import org.koin.android.ext.android.inject
 

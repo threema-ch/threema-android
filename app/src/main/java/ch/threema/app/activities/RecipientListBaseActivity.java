@@ -82,7 +82,6 @@ import androidx.viewpager.widget.ViewPager;
 import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.actions.LocationMessageSendAction;
 import ch.threema.app.actions.SendAction;
 import ch.threema.app.actions.TextMessageSendAction;
@@ -117,7 +116,6 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
@@ -126,7 +124,7 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.location.Poi;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -137,6 +135,7 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import java8.util.concurrent.CompletableFuture;
+import kotlin.Lazy;
 
 import static ch.threema.app.activities.SendMediaActivity.MAX_EDITABLE_FILES;
 import static ch.threema.app.fragments.ComposeMessageFragment.MAX_FORWARDABLE_ITEMS;
@@ -145,6 +144,7 @@ import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
 import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+import static ch.threema.common.LazyKt.lazy;
 
 public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     CancelableHorizontalProgressDialog.ProgressDialogClickListener,
@@ -152,7 +152,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     TextWithCheckboxDialog.TextWithCheckboxDialogClickListener,
     SearchView.OnQueryTextListener {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("RecipientListBaseActivity");
+    private static final Logger logger = getThreemaLogger("RecipientListBaseActivity");
 
     private final static int FRAGMENT_RECENT = 0;
     private final static int FRAGMENT_USERS = 1;
@@ -189,7 +189,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     @NonNull
-    private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
+    private final Lazy<BackgroundExecutor> backgroundExecutor = lazy(BackgroundExecutor::new);
 
     private final Runnable copyExternalFilesRunnable = new Runnable() {
         @Override
@@ -805,7 +805,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
         if (contactModel == null) {
             GenericProgressDialog.newInstance(R.string.creating_contact, R.string.please_wait).show(getSupportFragmentManager(), "pro");
 
-            backgroundExecutor.get().execute(
+            backgroundExecutor.getValue().execute(
                 new BasicAddOrUpdateContactBackgroundTask(
                     identity,
                     ContactModel.AcquaintanceLevel.DIRECT,

@@ -23,6 +23,7 @@ package ch.threema.app.groupmanagement
 
 import ch.threema.app.DangerousTest
 import ch.threema.app.groupflows.GroupChanges
+import ch.threema.app.groupflows.GroupChanges.ProfilePictureChange.NoChange
 import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.tasks.GroupUpdateTask
 import ch.threema.app.tasks.ReflectLocalGroupUpdate
@@ -81,7 +82,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
         isArchived = false,
         profilePictureBlobId = null,
-        androidContactLookupKey = null,
+        androidContactLookupInfo = null,
         localAvatarExpires = null,
         isRestored = false,
         jobTitle = null,
@@ -111,7 +112,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
         isArchived = false,
         profilePictureBlobId = null,
-        androidContactLookupKey = null,
+        androidContactLookupInfo = null,
         localAvatarExpires = null,
         isRestored = false,
         jobTitle = null,
@@ -171,7 +172,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
-            profilePictureChange = null,
+            profilePictureChange = NoChange,
             updatedMembers = myInitialGroupModelData.otherMembers,
             groupModelData = myInitialGroupModelData,
         )
@@ -189,7 +190,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
-            profilePictureChange = null,
+            profilePictureChange = NoChange,
             updatedMembers = myInitialGroupModelData.otherMembers,
             groupModelData = myInitialGroupModelData,
         )
@@ -213,7 +214,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
 
         val groupChanges = GroupChanges(
             name = "NewGroupName",
-            profilePictureChange = null,
+            profilePictureChange = NoChange,
             updatedMembers = myInitialGroupModelData.otherMembers + initialContactData.identity,
             groupModelData = myInitialGroupModelData,
         )
@@ -235,7 +236,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
-            profilePictureChange = null,
+            profilePictureChange = NoChange,
             updatedMembers = myInitialGroupModelData.otherMembers + initialContactData.identity,
             groupModelData = myInitialGroupModelData,
         )
@@ -257,7 +258,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
-            profilePictureChange = null,
+            profilePictureChange = NoChange,
             updatedMembers = emptySet(),
             groupModelData = myInitialGroupModelData,
         )
@@ -277,7 +278,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
-            profilePictureChange = null,
+            profilePictureChange = NoChange,
             updatedMembers = emptySet(),
             groupModelData = myInitialGroupModelData,
         )
@@ -297,7 +298,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
-            profilePictureChange = null,
+            profilePictureChange = NoChange,
             updatedMembers = emptySet(),
             groupModelData = myInitialGroupModelData,
         )
@@ -321,7 +322,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
-            profilePictureChange = null,
+            profilePictureChange = NoChange,
             updatedMembers = emptySet(),
             groupModelData = myInitialGroupModelData,
         )
@@ -345,7 +346,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
-            profilePictureChange = null,
+            profilePictureChange = NoChange,
             updatedMembers = setOf(initialGroupMemberData.identity),
             groupModelData = initialGroupModelData,
         )
@@ -367,7 +368,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         assertNotNull(groupModel)
         val groupChanges = GroupChanges(
             name = "NewGroupName",
-            profilePictureChange = null,
+            profilePictureChange = NoChange,
             updatedMembers = setOf(initialGroupMemberData.identity),
             groupModelData = initialGroupModelData,
         )
@@ -395,7 +396,7 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         )
         val groupChangesNewName = GroupChanges(
             name = "NewGroupName",
-            profilePictureChange = null,
+            profilePictureChange = NoChange,
             updatedMembers = myInitialGroupModelData.otherMembers,
             groupModelData = myInitialGroupModelData,
         )

@@ -26,7 +26,7 @@ import ch.threema.app.services.license.LicenseService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.base.crypto.NaCl
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
@@ -47,7 +47,7 @@ import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import kotlinx.coroutines.runBlocking
 
-private val logger = LoggingUtil.getThreemaLogger("AddOrUpdateWorkContactBackgroundTask")
+private val logger = getThreemaLogger("AddOrUpdateWorkContactBackgroundTask")
 
 /**
  * Creates the provided contact if it does not exist. If it already exists, then it is updated in
@@ -141,7 +141,7 @@ open class AddOrUpdateWorkContactBackgroundTask(
                         readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
                         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
                         isArchived = false,
-                        androidContactLookupKey = null,
+                        androidContactLookupInfo = null,
                         localAvatarExpires = null,
                         isRestored = false,
                         profilePictureBlobId = null,
@@ -165,7 +165,7 @@ open class AddOrUpdateWorkContactBackgroundTask(
 
         // Update first and last name if the contact is not synchronized
         if (
-            currentContactModelData.androidContactLookupKey == null &&
+            currentContactModelData.androidContactLookupInfo == null &&
             (workContact.firstName != null || workContact.lastName != null)
         ) {
             contactModel.setNameFromLocal(workContact.firstName ?: "", workContact.lastName ?: "")

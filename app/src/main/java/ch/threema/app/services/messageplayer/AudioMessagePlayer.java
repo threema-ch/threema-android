@@ -57,7 +57,7 @@ import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
@@ -66,7 +66,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
 public class AudioMessagePlayer extends MessagePlayer {
-    private final Logger logger = LoggingUtil.getThreemaLogger("AudioMessagePlayer");
+    private final Logger logger = getThreemaLogger("AudioMessagePlayer");
 
     private static final int SEEKBAR_UPDATE_FREQUENCY = 50;
     private File decryptedFile = null;

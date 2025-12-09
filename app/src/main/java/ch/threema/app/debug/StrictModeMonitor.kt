@@ -26,10 +26,10 @@ import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
 import android.os.strictmode.Violation
 import ch.threema.app.BuildConfig
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.Executors
 
-private val logger = LoggingUtil.getThreemaLogger("StrictModeMonitor")
+private val logger = getThreemaLogger("StrictModeMonitor")
 
 object StrictModeMonitor {
     @JvmStatic

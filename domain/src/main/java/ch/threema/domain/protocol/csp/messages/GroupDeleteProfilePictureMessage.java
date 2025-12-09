@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import java.io.ByteArrayOutputStream;
 
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
@@ -35,7 +35,7 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
  */
 public class GroupDeleteProfilePictureMessage extends AbstractGroupMessage {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupDeletePhotoMessage");
+    private static final Logger logger = getThreemaLogger("GroupDeletePhotoMessage");
 
     public GroupDeleteProfilePictureMessage() {
         super();

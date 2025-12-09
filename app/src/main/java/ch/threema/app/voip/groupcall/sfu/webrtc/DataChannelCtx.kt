@@ -23,10 +23,10 @@ package ch.threema.app.voip.groupcall.sfu.webrtc
 
 import androidx.annotation.WorkerThread
 import ch.threema.app.webrtc.WrappedDataChannelObserver
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import org.webrtc.DataChannel
 
-private val logger = LoggingUtil.getThreemaLogger("DataChannelCtx")
+private val logger = getThreemaLogger("DataChannelCtx")
 
 internal class DataChannelCtx(
     val dc: DataChannel,

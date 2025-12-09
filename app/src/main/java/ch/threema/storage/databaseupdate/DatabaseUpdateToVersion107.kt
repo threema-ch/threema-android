@@ -27,7 +27,7 @@ import android.database.Cursor
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import ch.threema.base.utils.Base32
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.types.Identity
 import ch.threema.storage.databaseupdate.DatabaseUpdateToVersion107.Companion.DEADLINE_INDEFINITE
 import ch.threema.storage.databaseupdate.DatabaseUpdateToVersion107.Companion.DEADLINE_INDEFINITE_EXCEPT_MENTIONS
@@ -38,7 +38,7 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase
 import org.json.JSONArray
 import org.json.JSONException
 
-private val logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion107")
+private val logger = getThreemaLogger("DatabaseUpdateToVersion107")
 
 internal class DatabaseUpdateToVersion107(
     private val sqLiteDatabase: SQLiteDatabase,

@@ -135,7 +135,7 @@ import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.workers.ContactUpdateWorker;
 import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.taskmanager.TriggerSource;
@@ -155,7 +155,7 @@ public class ContactsSectionFragment
     BottomSheetAbstractDialog.BottomSheetDialogCallback,
     TextWithCheckboxDialog.TextWithCheckboxDialogClickListener,
     GenericAlertDialog.DialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSectionFragment");
+    private static final Logger logger = getThreemaLogger("ContactsSectionFragment");
 
     private static final int PERMISSION_REQUEST_REFRESH_CONTACTS = 1;
     private static final String DIALOG_TAG_SHARE_WITH = "wsw";
@@ -1091,7 +1091,7 @@ public class ContactsSectionFragment
         if (this.preferenceService.isSyncContacts() && ConfigUtils.requestContactPermissions(getActivity(), this, PERMISSION_REQUEST_REFRESH_CONTACTS)) {
             if (this.synchronizeContactsService != null) {
                 // we force a contact sync even if the grace time has not yet been reached
-                preferenceService.setTimeOfLastContactSync(0L);
+                preferenceService.setTimeOfLastContactSync(null);
                 synchronizeContactsService.instantiateSynchronizationAndRun();
             }
         }

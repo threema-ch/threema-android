@@ -46,7 +46,7 @@ class OutgoingGroupDeleteMessageTask(
         val message = getGroupMessageModel(messageModelId)
             ?: throw ThreemaException("No group message model found for messageModelId=$messageModelId")
 
-        val editedMessageIdLong = MessageId.fromString(message.apiMessageId).messageIdLong
+        val editedMessageIdLong = message.messageId!!.messageIdLong
 
         val group = groupService.getById(message.groupId)
             ?: throw ThreemaException("No group model found for groupId=${message.groupId}")

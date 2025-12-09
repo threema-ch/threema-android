@@ -22,7 +22,7 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -32,7 +32,7 @@ import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("FSRefreshStepsTask")
+private val logger = getThreemaLogger("FSRefreshStepsTask")
 
 class FSRefreshStepsTask(
     private val contacts: Set<ContactModel>,

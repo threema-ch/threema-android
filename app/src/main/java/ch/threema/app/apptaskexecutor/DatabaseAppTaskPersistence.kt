@@ -23,14 +23,14 @@ package ch.threema.app.apptaskexecutor
 
 import ch.threema.app.apptaskexecutor.tasks.AppTaskData
 import ch.threema.app.apptaskexecutor.tasks.PersistableAppTask
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.factories.AppTaskPersistenceFactory
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-private val logger = LoggingUtil.getThreemaLogger("DatabaseAppTaskPersistence")
+private val logger = getThreemaLogger("DatabaseAppTaskPersistence")
 
 class DatabaseAppTaskPersistence(private val appTaskPersistenceFactory: AppTaskPersistenceFactory) : AppTaskPersistence {
 

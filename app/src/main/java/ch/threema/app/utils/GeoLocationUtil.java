@@ -51,15 +51,15 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.location.MapActivity;
 import ch.threema.app.services.MessageService;
-import ch.threema.base.utils.LoggingUtil;
 import ch.threema.domain.protocol.csp.messages.location.Poi;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.LocationDataModel;
 
 import static ch.threema.app.location.LocationExtensionsKt.toCoordinates;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class GeoLocationUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GeoLocationUtil");
+    private static final Logger logger = getThreemaLogger("GeoLocationUtil");
 
     private static final String GEO_NUM = "-?\\d+(\\.\\d+)?";
     private static final String GEO_PARAMS = "(;[\\w\\-]+(=[\\[\\]:&+$\\w\\-.!~*'()%]+)?)*";
@@ -110,11 +110,7 @@ public class GeoLocationUtil {
                     if (addresses != null && !addresses.isEmpty()) {
                         Address address = addresses.get(0);
                         if (address != null) {
-                            addressString = StringConversionUtil.join(
-                                ", ",
-                                address.getAddressLine(0),
-                                address.getLocality()
-                            );
+                            addressString = addressToString(address);
                             addressCache.put(key, addressString);
                         }
                     }
@@ -125,6 +121,23 @@ public class GeoLocationUtil {
             addressString,
             () -> context.getString(R.string.unknown_address)
         );
+    }
+
+    private static String addressToString(@NonNull Address address) {
+        var addressLine = address.getAddressLine(0);
+        var addressLocality = address.getLocality();
+
+        var stringBuilder = new StringBuilder();
+        if (addressLine != null && !addressLine.isEmpty()) {
+            stringBuilder.append(addressLine);
+        }
+        if (addressLocality != null && !addressLocality.isEmpty()) {
+            if (stringBuilder.length() > 0) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append(addressLocality);
+        }
+        return stringBuilder.toString();
     }
 
     public void updateAddressAndModel(Context context, Location location) {

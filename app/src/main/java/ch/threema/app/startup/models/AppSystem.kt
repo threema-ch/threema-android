@@ -28,7 +28,7 @@ package ch.threema.app.startup.models
  */
 enum class AppSystem {
     REMOTE_SECRET,
-    SERVICE_MANAGER,
+    UNLOCKED_MASTER_KEY,
     DATABASE_UPDATES,
     SYSTEM_UPDATES,
 }

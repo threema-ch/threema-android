@@ -33,8 +33,14 @@ import ch.threema.app.activities.GroupAddActivity;
 import ch.threema.app.adapters.GroupListAdapter;
 import ch.threema.app.services.GroupService;
 import ch.threema.storage.models.GroupModel;
+import kotlin.Lazy;
+
+import static org.koin.java.KoinJavaComponent.inject;
 
 public class GroupListFragment extends RecipientListFragment {
+
+    private final Lazy<GroupService> groupServiceLazy = inject(GroupService.class);
+
     @Override
     protected boolean isMultiSelectAllowed() {
         return multiSelect;
@@ -71,7 +77,7 @@ public class GroupListFragment extends RecipientListFragment {
         new AsyncTask<Void, Void, List<GroupModel>>() {
             @Override
             protected List<GroupModel> doInBackground(Void... voids) {
-                return groupService.getAll(new GroupService.GroupFilter() {
+                return groupServiceLazy.getValue().getAll(new GroupService.GroupFilter() {
                     @Override
                     public boolean sortByDate() {
                         return false;
@@ -101,7 +107,7 @@ public class GroupListFragment extends RecipientListFragment {
                     activity,
                     groupModels,
                     checkedItemPositions,
-                    groupService,
+                    groupServiceLazy.getValue(),
                     GroupListFragment.this
                 );
                 setListAdapter(adapter);

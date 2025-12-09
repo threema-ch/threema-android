@@ -21,18 +21,21 @@
 
 package ch.threema.app.mediagallery
 
-import android.os.AsyncTask
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.MessageService
+import ch.threema.app.utils.DispatcherProvider
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
+import kotlinx.coroutines.withContext
 
-class MediaGalleryRepository {
+class MediaGalleryRepository(
+    private val dispatcherProvider: DispatcherProvider,
+) {
 
-    private val _messages: MutableLiveData<List<AbstractMessageModel?>?> = MutableLiveData(null)
-    val messages: LiveData<List<AbstractMessageModel?>?> = _messages
+    private val _messages: MutableLiveData<List<AbstractMessageModel>?> = MutableLiveData(null)
+    val messages: LiveData<List<AbstractMessageModel>?> = _messages
 
     /**
      *  Loads the message models from database where the content type is in [contentTypes] and publish the results
@@ -40,25 +43,19 @@ class MediaGalleryRepository {
      *
      *  @param contentTypes An empty set will always lead to zero results
      */
-    fun loadMessages(messageReceiver: MessageReceiver<*>, contentTypes: Set<Int>) {
+    suspend fun loadMessages(messageReceiver: MessageReceiver<*>, contentTypes: Set<Int>) {
         if (contentTypes.isEmpty()) {
-            _messages.value = emptyList<AbstractMessageModel>()
+            _messages.value = emptyList()
             return
         }
 
-        @Suppress("DEPRECATION", "StaticFieldLeak")
-        object : AsyncTask<String?, Void?, Void?>() {
-            override fun doInBackground(vararg params: String?): Void? {
-                _messages.postValue(
-                    messageReceiver.loadMessages(
-                        buildMessageFilter(
-                            contentTypes = contentTypes,
-                        ),
-                    ),
-                )
-                return null
-            }
-        }.execute()
+        _messages.value = withContext(dispatcherProvider.worker) {
+            messageReceiver.loadMessages(
+                buildMessageFilter(
+                    contentTypes = contentTypes,
+                ),
+            )
+        }
     }
 
     /**
@@ -75,7 +72,7 @@ class MediaGalleryRepository {
             override fun onlyUnread(): Boolean = false
             override fun onlyDownloaded(): Boolean = false
             override fun types(): Array<MessageType>? = null
-            override fun contentTypes(): IntArray? = contentTypes.toIntArray()
+            override fun contentTypes(): IntArray = contentTypes.toIntArray()
             override fun displayTags(): IntArray? = null
         }
     }

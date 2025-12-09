@@ -25,7 +25,7 @@ import androidx.annotation.CallSuper
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
@@ -34,7 +34,7 @@ import ch.threema.domain.taskmanager.getEncryptedUserProfileSyncUpdate
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.sync.MdD2DSync
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectUserProfileShareWithPolicySyncTaskBase")
+private val logger = getThreemaLogger("ReflectUserProfileShareWithPolicySyncTaskBase")
 
 abstract class ReflectUserProfileShareWithPolicySyncTaskBase(
     protected val newPolicy: ProfilePictureSharePolicy.Policy,

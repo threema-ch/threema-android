@@ -37,25 +37,20 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.services.ConversationCategoryService
-import ch.threema.app.services.SystemScreenLockService
-import ch.threema.app.services.WallpaperService
-import ch.threema.app.services.license.LicenseService
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.applyDeviceInsetsAsMargin
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ConnectionIndicatorUtil
 import ch.threema.app.utils.RuntimeUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.ConnectionState
 import ch.threema.domain.protocol.connection.ConnectionStateListener
 import ch.threema.domain.protocol.connection.ServerConnection
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 
-private val logger = LoggingUtil.getThreemaLogger("ThreemaPreferenceFragment")
+private val logger = getThreemaLogger("ThreemaPreferenceFragment")
 
 /**
  * This fragment provides some tool bar functionality and manages loading the resources.
@@ -151,47 +146,6 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
     protected fun <T : Preference> getPref(string: String): T =
         findPreference(string) ?: preferenceNotFound(string)
 
-    protected fun requirePreferenceService(): PreferenceService {
-        return checkNotNull(ThreemaApplication.getServiceManager()?.preferenceService) {
-            "Could not get preference service"
-        }
-    }
-
-    protected fun requireLicenceService(): LicenseService<*> {
-        return checkNotNull(ThreemaApplication.getServiceManager()?.licenseService) {
-            "Could not get license service"
-        }
-    }
-
-    protected fun requireWallpaperService(): WallpaperService {
-        return checkNotNull(ThreemaApplication.getServiceManager()?.wallpaperService) {
-            "Could not get wallpaper service"
-        }
-    }
-
-    protected fun requireConversationCategoryService(): ConversationCategoryService {
-        return checkNotNull(ThreemaApplication.getServiceManager()?.conversationCategoryService) {
-            "Could not get conversation category service"
-        }
-    }
-
-    protected fun requireScreenLockService(): SystemScreenLockService {
-        return checkNotNull(ThreemaApplication.getServiceManager()?.screenLockService) {
-            "Could not get screen lock service"
-        }
-    }
-
-    /**
-     * Execute the argument and return its return value and null if an exception is thrown.
-     */
-    protected fun <T> getOrNull(value: () -> T): T? {
-        return try {
-            value()
-        } catch (e: Exception) {
-            null
-        }
-    }
-
     private fun preferenceNotFound(pref: String): Nothing {
         throw IllegalArgumentException("No preference '$pref' found")
     }
@@ -201,7 +155,7 @@ abstract class ThreemaPreferenceFragment : PreferenceFragmentCompat(), Connectio
 
         try {
             serverConnection = ThreemaApplication.getServiceManager()?.connection
-        } catch (e: java.lang.Exception) {
+        } catch (_: Exception) {
             // ignore
         }
     }

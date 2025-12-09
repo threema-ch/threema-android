@@ -49,7 +49,7 @@ import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
@@ -57,7 +57,7 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.domain.models.ContactKt.CONTACT_NAME_MAX_LENGTH_BYTES;
 
 public class ContactEditDialog extends ThreemaDialogFragment implements AvatarEditView.AvatarEditListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactEditDialog");
+    private static final Logger logger = getThreemaLogger("ContactEditDialog");
 
     private static final String ARG_TITLE = "title";
     private static final String ARG_TEXT1 = "text1";

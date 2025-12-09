@@ -36,7 +36,6 @@ import kotlin.test.assertContains
 import kotlin.test.assertFailsWith
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
-import okhttp3.Call
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Response
 import okhttp3.ResponseBody
@@ -50,21 +49,21 @@ class OnPremConfigFetcherTest {
     fun `config is fetched`() {
         val timeProvider = TestTimeProvider()
         val serverConfigParameters = serverParameters
-        val oppfJsonObjectMock = mockk<JSONObject>()
+        val onPremConfigJsonObjectMock = mockk<JSONObject>()
         val responseBody = "response-body"
         val okHttpClientMock = mockOkHttpClient { request ->
             request.respondWith(responseBody)
         }
-        val onPremConfigVerifier = mockk<OnPremConfigVerifier> {
-            every { verify(responseBody) } returns oppfJsonObjectMock
+        val onPremConfigVerifierMock = mockk<OnPremConfigVerifier> {
+            every { verify(responseBody) } returns onPremConfigJsonObjectMock
         }
-        val onPremConfigParser = mockk<OnPremConfigParser> {
-            every { parse(oppfJsonObjectMock) } returns mockOnPremConfig()
+        val onPremConfigParserMock = mockk<OnPremConfigParser> {
+            every { parse(onPremConfigJsonObjectMock, createdAt = timeProvider.get()) } returns mockOnPremConfig()
         }
         val fetcher = OnPremConfigFetcher(
             okHttpClient = okHttpClientMock,
-            onPremConfigVerifier = onPremConfigVerifier,
-            onPremConfigParser = onPremConfigParser,
+            onPremConfigVerifier = onPremConfigVerifierMock,
+            onPremConfigParser = onPremConfigParserMock,
             onPremConfigStore = onPremConfigStoreMock,
             serverParameters = serverConfigParameters,
             timeProvider = timeProvider,
@@ -84,30 +83,30 @@ class OnPremConfigFetcherTest {
 
     @Test
     fun `config is stored in in-memory cache and returned from it if cache is not stale`() {
-        val testTimeProvider = TestTimeProvider()
-        val config = mockOnPremConfig(validUntil = testTimeProvider.get() + 5.minutes)
-        val oppfJsonObjectMock = mockk<JSONObject>()
+        val timeProvider = TestTimeProvider()
+        val config = mockOnPremConfig(validUntil = timeProvider.get() + 5.minutes)
+        val onPremConfigJsonObjectMock = mockk<JSONObject>()
         val responseBody = "response-body"
         val okHttpClientMock = mockOkHttpClient { request ->
             request.respondWith(responseBody)
         }
-        val onPremConfigVerifier = mockk<OnPremConfigVerifier> {
-            every { verify(responseBody) } returns oppfJsonObjectMock
+        val onPremConfigVerifierMock = mockk<OnPremConfigVerifier> {
+            every { verify(responseBody) } returns onPremConfigJsonObjectMock
         }
-        val onPremConfigParser = mockk<OnPremConfigParser> {
-            every { parse(oppfJsonObjectMock) } returns config
+        val onPremConfigParserMock = mockk<OnPremConfigParser> {
+            every { parse(onPremConfigJsonObjectMock, createdAt = any()) } returns config
         }
         val fetcher = OnPremConfigFetcher(
             okHttpClient = okHttpClientMock,
-            onPremConfigVerifier = onPremConfigVerifier,
-            onPremConfigParser = onPremConfigParser,
+            onPremConfigVerifier = onPremConfigVerifierMock,
+            onPremConfigParser = onPremConfigParserMock,
             onPremConfigStore = onPremConfigStoreMock,
             serverParameters = serverParameters,
-            timeProvider = testTimeProvider,
+            timeProvider = timeProvider,
         )
         fetcher.fetch()
 
-        testTimeProvider.advanceBy(5.minutes - 1.seconds)
+        timeProvider.advanceBy(5.minutes - 1.seconds)
 
         fetcher.fetch()
 
@@ -116,18 +115,18 @@ class OnPremConfigFetcherTest {
 
     @Test
     fun `config is fetched again if in-memory cached config is stale`() {
-        val testTimeProvider = TestTimeProvider()
-        val config = mockOnPremConfig(validUntil = testTimeProvider.get() + 5.minutes)
-        val oppfJsonObjectMock = mockk<JSONObject>()
+        val timeProvider = TestTimeProvider()
+        val config = mockOnPremConfig(validUntil = timeProvider.get() + 5.minutes)
+        val onPremConfigJsonObjectMock = mockk<JSONObject>()
         val responseBody = "response-body"
         val okHttpClientMock = mockOkHttpClient { request ->
             request.respondWith(responseBody)
         }
         val onPremConfigVerifier = mockk<OnPremConfigVerifier> {
-            every { verify(responseBody) } returns oppfJsonObjectMock
+            every { verify(responseBody) } returns onPremConfigJsonObjectMock
         }
         val onPremConfigParser = mockk<OnPremConfigParser> {
-            every { parse(oppfJsonObjectMock) } returns config
+            every { parse(onPremConfigJsonObjectMock, createdAt = any()) } returns config
         }
         val fetcher = OnPremConfigFetcher(
             okHttpClient = okHttpClientMock,
@@ -135,11 +134,11 @@ class OnPremConfigFetcherTest {
             onPremConfigParser = onPremConfigParser,
             onPremConfigStore = onPremConfigStoreMock,
             serverParameters = serverParameters,
-            timeProvider = testTimeProvider,
+            timeProvider = timeProvider,
         )
         fetcher.fetch()
 
-        testTimeProvider.advanceBy(5.minutes + 1.seconds)
+        timeProvider.advanceBy(5.minutes + 1.seconds)
 
         fetcher.fetch()
 
@@ -167,7 +166,7 @@ class OnPremConfigFetcherTest {
 
     @Test
     fun `retrying after auth error throws exception if it happens too soon`() {
-        val testTimeProvider = TestTimeProvider()
+        val timeProvider = TestTimeProvider()
         val okHttpClientMock = mockOkHttpClient { request ->
             request.respondWith(code = 401)
         }
@@ -177,15 +176,13 @@ class OnPremConfigFetcherTest {
             onPremConfigParser = mockk(),
             onPremConfigStore = onPremConfigStoreMock,
             serverParameters = serverParameters,
-            timeProvider = testTimeProvider,
+            timeProvider = timeProvider,
         )
-        try {
+        assertFailsWith<ThreemaException> {
             fetcher.fetch()
-        } catch (e: ThreemaException) {
-            // ignore exception, as it is expected
         }
 
-        testTimeProvider.advanceBy(3.minutes - 1.seconds)
+        timeProvider.advanceBy(3.minutes - 1.seconds)
 
         assertFailsWith<UnauthorizedFetchException> {
             fetcher.fetch()
@@ -194,13 +191,10 @@ class OnPremConfigFetcherTest {
 
     @Test
     fun `retrying after auth error works after a delay`() {
-        val testTimeProvider = TestTimeProvider()
+        val timeProvider = TestTimeProvider()
         val responseMock = mockk<Response>(relaxed = true) {
             every { isSuccessful } returns false
             every { code } returns 401
-        }
-        val callMock = mockk<Call> {
-            every { execute() } returns responseMock
         }
         val okHttpClientMock = mockOkHttpClient {
             responseMock
@@ -209,30 +203,28 @@ class OnPremConfigFetcherTest {
             okHttpClient = okHttpClientMock,
             onPremConfigVerifier = mockk(relaxed = true),
             onPremConfigParser = mockk {
-                every { parse(any()) } returns mockOnPremConfig()
+                every { parse(any(), createdAt = any()) } returns mockOnPremConfig()
             },
             onPremConfigStore = onPremConfigStoreMock,
             serverParameters = serverParameters,
-            timeProvider = testTimeProvider,
+            timeProvider = timeProvider,
         )
-        try {
+        assertFailsWith<ThreemaException> {
             fetcher.fetch()
-        } catch (e: ThreemaException) {
-            // ignore exception, as it is expected
         }
 
         every { responseMock.isSuccessful } returns true
         every { responseMock.body } returns mockk<ResponseBody> {
             every { string() } returns "mock-response"
         }
-        testTimeProvider.advanceBy(3.minutes + 1.seconds)
+        timeProvider.advanceBy(3.minutes + 1.seconds)
 
         fetcher.fetch()
     }
 
     @Test
     fun `retrying after a non-auth error works`() {
-        val testTimeProvider = TestTimeProvider()
+        val timeProvider = TestTimeProvider()
         val responseMock = mockk<Response>(relaxed = true) {
             every { isSuccessful } returns false
             every { code } returns 400
@@ -244,16 +236,14 @@ class OnPremConfigFetcherTest {
             okHttpClient = okHttpClientMock,
             onPremConfigVerifier = mockk(relaxed = true),
             onPremConfigParser = mockk {
-                every { parse(any()) } returns mockOnPremConfig()
+                every { parse(any(), createdAt = any()) } returns mockOnPremConfig()
             },
             onPremConfigStore = onPremConfigStoreMock,
             serverParameters = serverParameters,
-            timeProvider = testTimeProvider,
+            timeProvider = timeProvider,
         )
-        try {
+        assertFailsWith<ThreemaException> {
             fetcher.fetch()
-        } catch (_: ThreemaException) {
-            // ignore exception, as it is expected
         }
 
         every { responseMock.isSuccessful } returns true
@@ -285,7 +275,7 @@ class OnPremConfigFetcherTest {
 
     @Test
     fun `expired license raises an exception`() {
-        val testTimeProvider = TestTimeProvider()
+        val timeProvider = TestTimeProvider()
         val okHttpClientMock = mockOkHttpClient { request ->
             request.respondWith("response-body")
         }
@@ -293,11 +283,11 @@ class OnPremConfigFetcherTest {
             okHttpClient = okHttpClientMock,
             onPremConfigVerifier = mockk(relaxed = true),
             onPremConfigParser = mockk {
-                every { parse(any()) } returns mockOnPremConfig(licenseValidUntil = testTimeProvider.get() - 1.seconds)
+                every { parse(any(), createdAt = timeProvider.get()) } returns mockOnPremConfig(licenseValidUntil = timeProvider.get() - 1.seconds)
             },
             onPremConfigStore = onPremConfigStoreMock,
             serverParameters = serverParameters,
-            timeProvider = testTimeProvider,
+            timeProvider = timeProvider,
         )
 
         val exception = assertFailsWith<ThreemaException> {

@@ -34,7 +34,9 @@ import javax.crypto.spec.SecretKeySpec
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import org.junit.Assert.*
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class DatabaseNonceStoreTest {
     private lateinit var tempDbFileName: String

@@ -50,7 +50,7 @@ import ch.threema.app.R;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
@@ -58,7 +58,7 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
  * This fragment is used to show images.
  */
 public class ImageViewFragment extends MediaViewFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ImageViewFragment");
+    private static final Logger logger = getThreemaLogger("ImageViewFragment");
 
     private WeakReference<SubsamplingScaleImageView> imageViewReference;
     private WeakReference<ImageView> previewViewReference;

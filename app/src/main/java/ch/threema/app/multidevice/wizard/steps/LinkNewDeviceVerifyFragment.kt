@@ -32,10 +32,10 @@ import ch.threema.app.multidevice.wizard.LinkingResult
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.button.MaterialButton
 
-private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceVerifyFragment")
+private val logger = getThreemaLogger("LinkNewDeviceVerifyFragment")
 
 class LinkNewDeviceVerifyFragment : LinkNewDeviceFragment() {
     init {

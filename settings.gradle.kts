@@ -22,5 +22,6 @@
 include(":app")
 include(":domain")
 include(":common")
+include(":commonAndroid")
 include(":test-helpers")
 include(":lint-rules")

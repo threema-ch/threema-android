@@ -23,12 +23,12 @@ package ch.threema.app.webclient.crypto
 
 import androidx.annotation.AnyThread
 import ch.threema.base.crypto.NaCl
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import org.saltyrtc.client.crypto.CryptoException
 import org.saltyrtc.client.crypto.CryptoInstance
 import org.saltyrtc.client.crypto.CryptoProvider
 
-private val logger = LoggingUtil.getThreemaLogger("LibthreemaNaClCryptoProvider")
+private val logger = getThreemaLogger("LibthreemaNaClCryptoProvider")
 
 /**
  *  A bridge to the NaCl implementation from Libthreema.

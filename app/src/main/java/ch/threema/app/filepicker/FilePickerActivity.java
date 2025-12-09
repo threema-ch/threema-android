@@ -63,12 +63,12 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.StorageUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class FilePickerActivity extends ThreemaToolbarActivity implements ListView.OnItemClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("FilePickerActivity");
+    private static final Logger logger = getThreemaLogger("FilePickerActivity");
 
     private static final int PERMISSION_STORAGE = 1;
 

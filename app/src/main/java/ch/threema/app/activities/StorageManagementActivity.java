@@ -70,16 +70,17 @@ import ch.threema.app.utils.AutoDeleteUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.workers.AutoDeleteWorker;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.MessageType;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class StorageManagementActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, CancelableHorizontalProgressDialog.ProgressDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("StorageManagementActivity");
+    private static final Logger logger = getThreemaLogger("StorageManagementActivity");
 
     private final static String DELETE_ALL_APP_DATA_TAG = "delallappdata";
     private final static String DELETE_CONFIRM_TAG = "delconf";
@@ -307,7 +308,7 @@ public class StorageManagementActivity extends ThreemaToolbarActivity implements
 
     @Override
     public int getLayoutResource() {
-        if (!dependencies.isAvailable() || !dependencies.getUserService().hasIdentity()) {
+        if (!isSessionScopeReady() || !dependencies.getUserService().hasIdentity()) {
             return R.layout.activity_storagemanagement_empty;
         }
         return R.layout.activity_storagemanagement;

@@ -26,7 +26,7 @@ import androidx.core.util.component2
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.QuoteUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.TextMessage
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
@@ -34,7 +34,7 @@ import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.MessageContentsType
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingTextTask")
+private val logger = getThreemaLogger("ReflectedOutgoingTextTask")
 
 internal class ReflectedOutgoingTextTask(
     outgoingMessage: OutgoingMessage,

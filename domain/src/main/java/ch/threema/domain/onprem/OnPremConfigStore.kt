@@ -22,9 +22,11 @@
 package ch.threema.domain.onprem
 
 import ch.threema.common.TimeProvider
+import ch.threema.common.lastLine
 import ch.threema.common.withoutLastLine
 import java.io.File
 import java.io.IOException
+import java.time.Instant
 import org.json.JSONException
 import org.json.JSONObject
 
@@ -36,7 +38,7 @@ import org.json.JSONObject
 class OnPremConfigStore(
     baseDirectory: File,
     private val timeProvider: TimeProvider,
-    private val onPremConfigParser: OnPremConfigParser = OnPremConfigParser(),
+    private val onPremConfigParser: OnPremConfigParser,
 ) {
     private val storeFile = File(baseDirectory, STORE_FILE)
 
@@ -44,33 +46,46 @@ class OnPremConfigStore(
      * Returns the stored on prem config, if one is available.
      * Note that the config may be expired, in which case a new one should be fetched using [OnPremConfigFetcher].
      */
-    fun get(): OnPremConfig? = if (storeFile.exists()) {
-        try {
-            val data = storeFile.readText()
-
-            // The last line contains the time at which the config was stored. We need to remove it to get the config JSON.
-            val configJson = data.withoutLastLine()
-            onPremConfigParser.parse(JSONObject(configJson))
-        } catch (_: JSONException) {
-            null
-        } catch (_: IOException) {
-            null
+    fun get(): OnPremConfig? {
+        if (!storeFile.exists()) {
+            return null
         }
-    } else {
-        null
-    }
-
-    @Throws(IOException::class)
-    fun store(oppf: JSONObject) {
-        storeFile.writeText(
-            buildString {
-                append(oppf.toString())
-                append("\n")
-                // We append the time at which the file was last updated. This information is currently not used.
-                append(timeProvider.get().toEpochMilli())
-            },
+        val storedData = try {
+            storeFile.readText()
+        } catch (_: IOException) {
+            return null
+        }
+        return onPremConfigParser.parse(
+            obj = deserializeConfigJson(storedData)
+                ?: return null,
+            createdAt = deserializeCreatedAt(storedData)
+                ?: return null,
         )
     }
+
+    private fun deserializeConfigJson(data: String) =
+        try {
+            JSONObject(data.withoutLastLine())
+        } catch (_: JSONException) {
+            null
+        }
+
+    private fun deserializeCreatedAt(data: String) =
+        data.lastLine()
+            .toLongOrNull()
+            ?.let(Instant::ofEpochMilli)
+
+    @Throws(IOException::class)
+    fun store(config: JSONObject) {
+        storeFile.writeText(serialize(config, createdAt = timeProvider.get()))
+    }
+
+    private fun serialize(config: JSONObject, createdAt: Instant) =
+        buildString {
+            append(config.toString())
+            append("\n")
+            append(createdAt.toEpochMilli())
+        }
 
     /**
      * Clears the store.

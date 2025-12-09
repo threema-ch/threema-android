@@ -29,8 +29,9 @@ import ch.threema.app.services.GroupService
 import ch.threema.app.services.GroupService.GroupState
 import ch.threema.app.tasks.ReflectGroupSyncUpdateTask
 import ch.threema.app.utils.runtimeAssert
-import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.toByteArray
 import ch.threema.common.toHexString
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
@@ -47,7 +48,7 @@ import java.util.Date
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("data.GroupModel")
+private val logger = getThreemaLogger("data.GroupModel")
 
 /**
  * The group identity uniquely identifies a group. It consists of the creator identity and the group
@@ -68,7 +69,7 @@ data class GroupIdentity(
     /**
      * The group id as little endian byte array.
      */
-    val groupIdByteArray: ByteArray by lazy { Utils.longToByteArrayLittleEndian(groupId) }
+    val groupIdByteArray: ByteArray by lazy { groupId.toByteArray(order = ByteOrder.LITTLE_ENDIAN) }
 
     /**
      * The group identity as protobuf data.

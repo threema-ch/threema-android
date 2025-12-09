@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -42,7 +42,7 @@ import ch.threema.protobuf.d2d.MdD2D;
  */
 public class GroupDeliveryReceiptMessage extends AbstractGroupMessage {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupDeliveryReceiptMessage");
+    private static final Logger logger = getThreemaLogger("GroupDeliveryReceiptMessage");
 
     private int receiptType;
     private MessageId[] receiptMessageIds;

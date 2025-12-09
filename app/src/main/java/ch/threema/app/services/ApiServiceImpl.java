@@ -22,6 +22,7 @@
 package ch.threema.app.services;
 
 import org.json.JSONException;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.URL;
@@ -40,7 +41,11 @@ import ch.threema.domain.protocol.blob.BlobUploader;
 import ch.threema.domain.stores.TokenStoreInterface;
 import okhttp3.OkHttpClient;
 
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 public class ApiServiceImpl implements ApiService {
+    private static final Logger logger = getThreemaLogger("ApiServiceImpl");
+
     private final AppVersion appVersion;
     private final boolean useIpv6;
     private final APIConnector apiConnector;
@@ -143,6 +148,7 @@ public class ApiServiceImpl implements ApiService {
 
     @Override
     public void invalidateAuthToken() {
+        logger.info("Invalidating auth token");
         this.authTokenStore.storeToken(null);
     }
 

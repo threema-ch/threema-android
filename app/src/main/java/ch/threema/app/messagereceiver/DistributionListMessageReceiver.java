@@ -237,6 +237,11 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
     }
 
     @Override
+    public Bitmap getHighResAvatar() {
+        return distributionListService.getAvatar(distributionListModel, true);
+    }
+
+    @Override
     public Bitmap getAvatar() {
         return distributionListService.getAvatar(distributionListModel, true, true);
     }

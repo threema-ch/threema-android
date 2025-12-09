@@ -21,7 +21,7 @@
 
 package ch.threema.localcrypto
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.awaitNonNull
 import ch.threema.localcrypto.exceptions.CryptoException
 import ch.threema.localcrypto.exceptions.PassphraseRequiredException
@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
-private val logger = LoggingUtil.getThreemaLogger("MasterKeyStorageStateHolder")
+private val logger = getThreemaLogger("MasterKeyStorageStateHolder")
 
 /**
  * The [MasterKeyStorageStateHolder] keeps a representation of how the master key should be stored,
@@ -42,7 +42,7 @@ private val logger = LoggingUtil.getThreemaLogger("MasterKeyStorageStateHolder")
  * Note that this class does NOT persist any data.
  */
 class MasterKeyStorageStateHolder(
-    private val crypto: MasterKeyCrypto = MasterKeyCrypto(),
+    private val crypto: MasterKeyCrypto,
 ) {
     private val storageStateFlow = MutableStateFlow<MasterKeyState?>(null)
 

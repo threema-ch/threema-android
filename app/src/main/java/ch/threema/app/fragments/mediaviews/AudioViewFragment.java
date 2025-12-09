@@ -63,13 +63,13 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.VideoUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 @SuppressLint("UnsafeOptInUsageError")
 public class AudioViewFragment extends MediaViewFragment implements Player.Listener, PreviewFragmentInterface {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AudioViewFragment");
+    private static final Logger logger = getThreemaLogger("AudioViewFragment");
 
     private WeakReference<CircularProgressIndicator> progressBarRef;
     private WeakReference<PlayerView> audioView;

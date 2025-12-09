@@ -26,12 +26,12 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.tasks.FSRefreshStepsTask
 import ch.threema.app.tasks.OutgoingContactRequestProfilePictureTask
 import ch.threema.app.workers.ContactUpdateWorker
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.IdentityState
 import ch.threema.storage.models.GroupModel
 
-private val logger = LoggingUtil.getThreemaLogger("ApplicationSetupSteps")
+private val logger = getThreemaLogger("ApplicationSetupSteps")
 
 /**
  * Run the _Application Setup Steps_ as defined in the protocol.

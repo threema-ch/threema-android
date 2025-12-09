@@ -38,13 +38,13 @@ import ch.threema.app.utils.GroupCallUtil
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.groupcall.*
 import ch.threema.app.voip.groupcall.sfu.*
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.GroupModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.take
 import org.webrtc.EglBase
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallViewModel")
+private val logger = getThreemaLogger("GroupCallViewModel")
 
 @UiThread
 class GroupCallViewModel(

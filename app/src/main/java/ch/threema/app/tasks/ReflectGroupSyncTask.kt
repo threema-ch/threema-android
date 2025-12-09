@@ -22,10 +22,8 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.multidevice.MultiDeviceManager
-import ch.threema.app.protocol.ProfilePictureChange
-import ch.threema.app.protocol.RemoveProfilePicture
-import ch.threema.app.protocol.SetProfilePicture
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.app.protocol.ExpectedProfilePictureChange
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModelData
 import ch.threema.domain.protocol.csp.ProtocolDefines
@@ -51,7 +49,7 @@ import ch.threema.protobuf.unit
 import ch.threema.storage.models.GroupModel
 import com.google.protobuf.kotlin.toByteString
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectGroupSyncTask")
+private val logger = getThreemaLogger("ReflectGroupSyncTask")
 
 abstract class ReflectGroupSyncTask<TransactionResult, TaskResult>(
     multiDeviceManager: MultiDeviceManager,
@@ -116,7 +114,7 @@ fun GroupModelData.toGroupSync(
     conversationVisibility: ConversationVisibility?,
     notificationTriggerPolicyOverride: NotificationTriggerPolicyOverride? = null,
     notificationSoundPolicyOverride: NotificationSoundPolicyOverride? = null,
-    profilePictureChange: ProfilePictureChange? = null,
+    expectedProfilePictureChange: ExpectedProfilePictureChange? = null,
 ): Group = group {
     val data = this@toGroupSync
     groupIdentity = getProtoGroupIdentity()
@@ -137,9 +135,9 @@ fun GroupModelData.toGroupSync(
         this.conversationVisibility = conversationVisibility
     }
 
-    when (profilePictureChange) {
-        is SetProfilePicture -> {
-            profilePictureChange.profilePictureUploadResult?.let { uploadResult ->
+    when (expectedProfilePictureChange) {
+        is ExpectedProfilePictureChange.Set.WithUpload -> {
+            expectedProfilePictureChange.profilePictureUploadResultSuccess.let { uploadResult ->
                 profilePicture = deltaImage {
                     updated = image {
                         blob = blob {
@@ -152,7 +150,11 @@ fun GroupModelData.toGroupSync(
             }
         }
 
-        is RemoveProfilePicture -> {
+        is ExpectedProfilePictureChange.Set.WithoutUpload -> {
+            logger.error("When reflecting group profile picture, it must have been uploaded first")
+        }
+
+        is ExpectedProfilePictureChange.Remove -> {
             profilePicture = deltaImage {
                 removed = unit { }
             }

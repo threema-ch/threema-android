@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.csp.messages.file
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
@@ -30,7 +30,7 @@ import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 
-private val logger = LoggingUtil.getThreemaLogger("FileMessage")
+private val logger = getThreemaLogger("FileMessage")
 
 class FileMessage : AbstractMessage(), FileMessageInterface {
     override var fileData: FileData? = null

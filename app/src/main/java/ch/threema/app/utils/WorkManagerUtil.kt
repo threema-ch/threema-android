@@ -27,10 +27,10 @@ import androidx.work.Operation
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.await
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.ExecutionException
 
-private val logger = LoggingUtil.getThreemaLogger("WorkManagerUtil")
+private val logger = getThreemaLogger("WorkManagerUtil")
 
 object WorkManagerUtil {
     @JvmStatic

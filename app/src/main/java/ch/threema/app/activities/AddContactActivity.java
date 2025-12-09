@@ -37,7 +37,7 @@ import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -55,22 +55,22 @@ import ch.threema.app.asynctasks.ContactExists;
 import ch.threema.app.asynctasks.ContactModified;
 import ch.threema.app.asynctasks.Failed;
 import ch.threema.app.asynctasks.PolicyViolation;
+import ch.threema.app.camera.QRScannerActivity;
 import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.NewContactDialog;
-import ch.threema.app.services.QRCodeService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.QRScannerUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
+import ch.threema.app.qrcodes.ContactUrlResult;
+import ch.threema.app.qrcodes.ContactUrlUtil;
 import ch.threema.app.webclient.services.WebSessionQRCodeParser;
 import ch.threema.app.webclient.services.WebSessionQRCodeParserImpl;
 import ch.threema.base.utils.Base64;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
@@ -81,11 +81,14 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
     private static final String DIALOG_TAG_ADD_PROGRESS = "ap";
     private static final String DIALOG_TAG_ADD_ERROR = "ae";
     private static final String DIALOG_TAG_ADD_BY_ID = "abi";
+
+    private static final int REQUEST_CODE_QR_SCANNER = 26657;
+
     public static final String EXTRA_ADD_BY_ID = "add_by_id";
     public static final String EXTRA_ADD_BY_QR = "add_by_qr";
     public static final String EXTRA_QR_RESULT = "qr_result";
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AddContactActivity");
+    private static final Logger logger = getThreemaLogger("AddContactActivity");
 
     private static final int PERMISSION_REQUEST_CAMERA = 1;
 
@@ -154,7 +157,8 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 
     private void parseQrResult(String payload) {
         // first: try to parse as contact result (contact scan)
-        QRCodeService.QRCodeContentResult contactQRCode = dependencies.getQrCodeService().getResult(payload);
+        ContactUrlUtil contactUrlUtil = KoinJavaComponent.get(ContactUrlUtil.class);
+        ContactUrlResult contactQRCode = contactUrlUtil.parse(payload);
 
         if (contactQRCode != null) {
             addContactByQRResult(contactQRCode);
@@ -207,15 +211,14 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
     }
 
     @SuppressLint("StaticFieldLeak")
-    private void addContactByQRResult(@NonNull final QRCodeService.QRCodeContentResult qrResult) {
+    private void addContactByQRResult(@NonNull final ContactUrlResult contactUrlResult) {
         logger.info("Adding contact from QR code");
-        if (qrResult.getExpirationDate() != null
-            && qrResult.getExpirationDate().before(new Date())) {
+        if (contactUrlResult.isExpired(Instant.now())) {
             GenericAlertDialog.newInstance(R.string.title_adduser, getString(R.string.expired_barcode), R.string.ok, 0).show(getSupportFragmentManager(), "ex");
             return;
         }
 
-        addContactByIdentity(qrResult.getIdentity(), qrResult.getPublicKey());
+        addContactByIdentity(contactUrlResult.getIdentity(), contactUrlResult.getPublicKey());
     }
 
     private void addContactByIdentity(@NonNull String identity, @Nullable byte[] publicKey) {
@@ -291,7 +294,8 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
 
     private void scanQR() {
         if (ConfigUtils.requestCameraPermissions(this, null, PERMISSION_REQUEST_CAMERA)) {
-            QRScannerUtil.getInstance().initiateScan(this, getString(R.string.qr_scanner_id_hint));
+            var intent = QRScannerActivity.createIntent(this, getString(R.string.qr_scanner_id_hint));
+            startActivityForResult(intent, REQUEST_CODE_QR_SCANNER);
         }
     }
 
@@ -308,18 +312,17 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
 
-        if (resultCode == RESULT_OK) {
-            String payload = QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent);
+        if (requestCode == REQUEST_CODE_QR_SCANNER && resultCode == RESULT_OK) {
+            String payload = QRScannerActivity.extractResult(intent);
 
-            if (!TestUtil.isEmptyOrNull(payload)) {
-
+            if (payload != null) {
                 // first: try to parse as content result (contact scan)
-                QRCodeService.QRCodeContentResult contactQRCode = dependencies.getQrCodeService().getResult(payload);
+                ContactUrlUtil contactUrlUtil = KoinJavaComponent.get(ContactUrlUtil.class);
+                ContactUrlResult contactQRCode = contactUrlUtil.parse(payload);
 
                 if (contactQRCode != null) {
                     // ok, try to add contact
-                    if (contactQRCode.getExpirationDate() != null
-                        && contactQRCode.getExpirationDate().before(new Date())) {
+                    if (contactQRCode.isExpired(Instant.now())) {
                         GenericAlertDialog.newInstance(R.string.title_adduser, getString(R.string.expired_barcode), R.string.ok, 0).show(getSupportFragmentManager(), "ex");
                     } else {
                         addContactByQRResult(contactQRCode);

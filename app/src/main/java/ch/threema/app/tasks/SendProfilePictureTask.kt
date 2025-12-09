@@ -22,7 +22,7 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
@@ -30,7 +30,7 @@ import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("SendProfilePictureTask")
+private val logger = getThreemaLogger("SendProfilePictureTask")
 
 /**
  * This task sends out either a set-profile-picture message or a delete-profile-picture message to

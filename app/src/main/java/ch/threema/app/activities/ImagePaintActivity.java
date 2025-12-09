@@ -21,6 +21,7 @@
 
 package ch.threema.app.activities;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL;
 import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
 import static ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL;
@@ -141,11 +142,11 @@ import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupModel;
 
 public class ImagePaintActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ImagePaintActivity");
+    private static final Logger logger = getThreemaLogger("ImagePaintActivity");
 
     {
         // Always use night mode for this activity. Note that setting it here avoids the activity being recreated.
@@ -465,7 +466,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }
@@ -1239,7 +1240,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
                 // If soft keyboard is open then add its height to the image frame
                 imageFrame.setMinimumHeight(bottom - top + softKeyboardHeight);
 
-                // If the image frame is larger than it's parent (scroll view), we need to wait for another relayout.
+                // If the image frame is larger than its parent (scroll view), we need to wait for another relayout.
                 // Otherwise we can remove this listener and load the image
                 if (imageFrame.getMinimumHeight() <= scrollView.getHeight()) {
                     scrollView.removeOnLayoutChangeListener(this);

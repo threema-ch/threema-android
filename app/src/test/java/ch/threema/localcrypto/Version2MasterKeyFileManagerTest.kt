@@ -48,7 +48,11 @@ class Version2MasterKeyFileManagerTest {
     @BeforeTest
     fun setUp() {
         file = File.createTempFile("key", ".dat")
-        masterKeyFileManager = Version2MasterKeyFileManager(file)
+        masterKeyFileManager = Version2MasterKeyFileManager(
+            keyFile = file,
+            encoder = Version2MasterKeyStorageEncoder(),
+            decoder = Version2MasterKeyStorageDecoder(),
+        )
     }
 
     @AfterTest
@@ -76,7 +80,11 @@ class Version2MasterKeyFileManagerTest {
 
     @Test
     fun `write unprotected key file`() {
-        val masterKeyFileManager = Version2MasterKeyFileManager(file)
+        val masterKeyFileManager = Version2MasterKeyFileManager(
+            keyFile = file,
+            encoder = Version2MasterKeyStorageEncoder(),
+            decoder = Version2MasterKeyStorageDecoder(),
+        )
 
         masterKeyFileManager.writeKeyFile(
             MasterKeyStorageData.Version2(
@@ -103,7 +111,11 @@ class Version2MasterKeyFileManagerTest {
                 ),
             ),
         )
-        val masterKeyFileManager = Version2MasterKeyFileManager(file)
+        val masterKeyFileManager = Version2MasterKeyFileManager(
+            keyFile = file,
+            encoder = Version2MasterKeyStorageEncoder(),
+            decoder = Version2MasterKeyStorageDecoder(),
+        )
 
         masterKeyFileManager.writeKeyFile(writtenKey)
         val readKey = masterKeyFileManager.readKeyFile()
@@ -135,7 +147,11 @@ class Version2MasterKeyFileManagerTest {
 
     @Test
     fun `write passphrase protected key file`() {
-        val masterKeyFileManager = Version2MasterKeyFileManager(file)
+        val masterKeyFileManager = Version2MasterKeyFileManager(
+            keyFile = file,
+            encoder = Version2MasterKeyStorageEncoder(),
+            decoder = Version2MasterKeyStorageDecoder(),
+        )
 
         masterKeyFileManager.writeKeyFile(
             MasterKeyStorageData.Version2(
@@ -170,7 +186,11 @@ class Version2MasterKeyFileManagerTest {
                 parallelism = MasterKeyConfig.ARGON2_PARALLELIZATION,
             ),
         )
-        val masterKeyFileManager = Version2MasterKeyFileManager(file)
+        val masterKeyFileManager = Version2MasterKeyFileManager(
+            keyFile = file,
+            encoder = Version2MasterKeyStorageEncoder(),
+            decoder = Version2MasterKeyStorageDecoder(),
+        )
 
         masterKeyFileManager.writeKeyFile(writtenKey)
 
@@ -203,7 +223,11 @@ class Version2MasterKeyFileManagerTest {
 
     @Test
     fun `write remote secret protected key file`() {
-        val masterKeyFileManager = Version2MasterKeyFileManager(file)
+        val masterKeyFileManager = Version2MasterKeyFileManager(
+            keyFile = file,
+            encoder = Version2MasterKeyStorageEncoder(),
+            decoder = Version2MasterKeyStorageDecoder(),
+        )
 
         masterKeyFileManager.writeKeyFile(
             MasterKeyStorageData.Version2(
@@ -238,7 +262,11 @@ class Version2MasterKeyFileManagerTest {
                 ),
             ),
         )
-        val masterKeyFileManager = Version2MasterKeyFileManager(file)
+        val masterKeyFileManager = Version2MasterKeyFileManager(
+            keyFile = file,
+            encoder = Version2MasterKeyStorageEncoder(),
+            decoder = Version2MasterKeyStorageDecoder(),
+        )
 
         masterKeyFileManager.writeKeyFile(writtenKey)
 

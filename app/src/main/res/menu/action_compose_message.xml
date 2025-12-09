@@ -45,15 +45,6 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/menu_message_qrcode"
-        android:icon="@drawable/ic_qr_code"
-        android:orderInCategory="35"
-        android:title="@string/show_as_qrcode"
-        android:visible="false"
-        app:iconTint="?attr/colorPrimary"
-        app:showAsAction="ifRoom" />
-
-    <item
         android:id="@+id/menu_message_save"
         android:icon="@drawable/ic_save_outline"
         android:orderInCategory="40"

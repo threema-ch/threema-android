@@ -8,7 +8,7 @@ use anyhow::bail;
 use clap::Parser;
 use libthreema::{
     cli::{FullIdentityConfig, FullIdentityConfigOptions},
-    csp::{CspProtocol, CspProtocolContext, CspStateUpdate, frame::OutgoingFrame},
+    csp::{CspProtocol, CspProtocolContext, CspStateUpdate, payload::OutgoingFrame},
     https::cli::https_client_builder,
     utils::logging::init_stderr_logging,
 };
@@ -25,7 +25,6 @@ struct CspPingPongCommand {
     config: FullIdentityConfigOptions,
 }
 
-/// The Client Server Protocol connection handler
 struct CspProtocolRunner {
     /// The TCP stream
     stream: TcpStream,
@@ -100,8 +99,8 @@ impl CspProtocolRunner {
             }
 
             // Check if we've completed the handshake
-            if let Some(CspStateUpdate::PostHandshake { queued_messages }) = instruction.state_update {
-                info!(queued_messages, "Handshake complete");
+            if let Some(CspStateUpdate::PostHandshake(login_ack_data)) = instruction.state_update {
+                info!(?login_ack_data, "Handshake complete");
                 break;
             }
         }
@@ -183,7 +182,10 @@ async fn main() -> anyhow::Result<()> {
             .config
             .chat_server_address
             .addresses(config.csp_server_group),
-        config.csp_context().expect("Configuration should be valid"),
+        config
+            .csp_context_init()
+            .try_into()
+            .expect("Configuration should be valid"),
     )
     .await?;
 

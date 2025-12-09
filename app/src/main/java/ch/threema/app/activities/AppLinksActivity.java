@@ -40,23 +40,24 @@ import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.utils.HiddenChatUtil;
-import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.executor.BackgroundExecutor;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.models.ContactModel;
+import kotlin.Lazy;
 
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+import static ch.threema.common.LazyKt.lazy;
 
 public class AppLinksActivity extends ThreemaToolbarActivity {
-    private final static Logger logger = LoggingUtil.getThreemaLogger("AppLinksActivity");
+    private final static Logger logger = getThreemaLogger("AppLinksActivity");
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     @NonNull
-    private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
+    private final Lazy<BackgroundExecutor> backgroundExecutor = lazy(BackgroundExecutor::new);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -138,7 +139,7 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
     }
 
     private void addNewContactAndOpenChat(@NonNull String identity, @NonNull Uri appLinkData) {
-        backgroundExecutor.get().execute(
+        backgroundExecutor.getValue().execute(
             new BasicAddOrUpdateContactBackgroundTask(
                 identity,
                 ContactModel.AcquaintanceLevel.DIRECT,

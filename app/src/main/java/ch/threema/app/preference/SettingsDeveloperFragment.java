@@ -54,11 +54,12 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.preference.developer.ContentCreator;
 import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.problemsolving.Problem;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.api.APIConnector;
@@ -74,7 +75,7 @@ import static ch.threema.storage.models.data.status.VoipStatusDataModel.NO_CALL_
 
 @SuppressWarnings("unused")
 public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsDeveloperFragment");
+    private static final Logger logger = getThreemaLogger("SettingsDeveloperFragment");
 
     // Test identities.
     private static final String TEST_IDENTITY_1 = "ADDRTCNX";
@@ -106,6 +107,10 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
         // Reset reaction tooltip
         getPref(getResources().getString(R.string.preferences__dev_reset_reaction_tooltip_shown))
             .setOnPreferenceClickListener(this::resetReactionTooltipShown);
+
+        // Reset dismissed problems
+        getPref(getString(R.string.preferences__dev_reset_dismissed_problems))
+            .setOnPreferenceClickListener(this::resetDismissedProblems);
 
         // Generate text messages
         final Preference generateTextMessagesPreference = getPref(R.string.preferences__dev_create_text_messages);
@@ -164,6 +169,16 @@ public class SettingsDeveloperFragment extends ThreemaPreferenceFragment {
             .putInt(getString(R.string.preferences__tooltip_emoji_reactions_shown_counter), 0)
             .apply();
         showToast("Reaction tooltip reset");
+        return true;
+    }
+
+    private boolean resetDismissedProblems(Preference ignored) {
+        for (Problem problem : Problem.getEntries()) {
+            if (problem.getDismissKey() != null) {
+                preferenceService.setProblemDismissed(problem.getDismissKey(), null);
+            }
+        }
+        showToast("Problems reset");
         return true;
     }
 

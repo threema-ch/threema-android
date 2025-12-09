@@ -29,6 +29,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withLink
+import ch.threema.app.compose.typography.SpanStyles
 
 /**
  * Using this over [linkifyWeb] will ensure no unnecessary re-computation will happen during re-compositions.
@@ -36,7 +37,7 @@ import androidx.compose.ui.text.withLink
  * Changing the value of [url] and/or [linkTextStyle] will trigger a re-computation of the [AnnotatedString].
  */
 @Composable
-fun String.rememberLinkifyWeb(url: String, linkTextStyle: SpanStyle): AnnotatedString =
+fun String.rememberLinkifyWeb(url: String, linkTextStyle: SpanStyle = SpanStyles.linkPrimary): AnnotatedString =
     remember(url, linkTextStyle) {
         linkifyWeb(url, linkTextStyle)
     }
@@ -50,7 +51,7 @@ fun String.rememberLinkifyWeb(url: String, linkTextStyle: SpanStyle): AnnotatedS
  *  email addresses or other URIs will not be handled.
  *
  *  @return The annotated string containing the [url] at the specified section in the text, or just this text
- *  without a clickable section, of no `[]`-marker was found.
+ *  without a clickable section, if no `[]`-marker was found.
  */
 fun String.linkifyWeb(url: String, linkStyle: SpanStyle): AnnotatedString {
     val linkTextMatch: MatchResult = Regex("\\[([^}]*)\\]").find(this)

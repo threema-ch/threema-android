@@ -28,13 +28,13 @@ import ch.threema.app.voip.groupcall.sfu.*
 import ch.threema.app.voip.groupcall.sfu.GroupCallContext
 import ch.threema.app.voip.groupcall.sfu.webrtc.ConnectionCtx
 import ch.threema.app.webrtc.PeerConnectionObserver
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.ContactModel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.withTimeout
 import org.webrtc.RtcCertificatePem
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallConnectionState.Connecting")
+private val logger = getThreemaLogger("GroupCallConnectionState.Connecting")
 
 private const val TIMEOUT_CONNECTED_SIGNAL_MILLIS = 20000L
 

@@ -32,14 +32,14 @@ import java.util.Map;
 
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Webclient sending key persisted information
  */
 @WorkerThread
 public class KeyPersistedRequestHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("KeyPersistedRequestHandler");
+    private static final Logger logger = getThreemaLogger("KeyPersistedRequestHandler");
 
     private Listener listener;
 

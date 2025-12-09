@@ -34,7 +34,6 @@ import org.jetbrains.uast.UElement
 import org.jetbrains.uast.getContainingUClass
 import org.jetbrains.uast.getContainingUFile
 import org.jetbrains.uast.getIoFile
-import org.jetbrains.uast.tryResolveNamed
 
 object LoggerName {
     val ISSUE = Issue.create(
@@ -61,7 +60,7 @@ object LoggerName {
 
     class LoggerNameVisitor(private val context: JavaContext) : UElementHandler() {
         override fun visitCallExpression(node: UCallExpression) {
-            if (node.methodName != "getThreemaLogger" || node.receiver?.tryResolveNamed()?.name != "LoggingUtil") {
+            if (node.methodName != "getThreemaLogger") {
                 return
             }
 

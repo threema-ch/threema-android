@@ -21,7 +21,7 @@
 
 package ch.threema.app.multidevice
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.data.D2dMessage
 import ch.threema.domain.protocol.connection.data.D2dMessage.DeviceInfo.Platform
 import ch.threema.domain.protocol.connection.data.DeviceId
@@ -29,7 +29,7 @@ import ch.threema.domain.protocol.connection.data.DeviceSlotExpirationPolicy
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage.DevicesInfo
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 
-private val logger = LoggingUtil.getThreemaLogger("LinkedDevice")
+private val logger = getThreemaLogger("LinkedDevice")
 
 data class LinkedDevice(
     val deviceId: DeviceId,

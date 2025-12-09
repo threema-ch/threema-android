@@ -34,7 +34,7 @@ import androidx.annotation.NonNull;
 import org.slf4j.Logger;
 
 import ch.threema.app.ThreemaApplication;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static android.media.AudioDeviceInfo.TYPE_BLE_HEADSET;
 import static android.media.AudioDeviceInfo.TYPE_BLE_SPEAKER;
@@ -45,7 +45,7 @@ import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADPHONES;
 import static android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET;
 
 public class SoundUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SoundUtil");
+    private static final Logger logger = getThreemaLogger("SoundUtil");
 
     private SoundUtil() {
         throw new IllegalStateException("Utility class");
@@ -91,12 +91,6 @@ public class SoundUtil {
                 mediaPlayer.release();
             }
         }
-    }
-
-    public static AudioAttributes getAudioAttributesForUsage(int usage) {
-        return new AudioAttributes.Builder().setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-            .setUsage(usage)
-            .build();
     }
 
     /**

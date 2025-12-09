@@ -53,7 +53,7 @@ import ch.threema.app.video.transcoder.audio.AudioComponent;
 import ch.threema.app.video.transcoder.audio.AudioFormatTranscoder;
 import ch.threema.app.video.transcoder.audio.AudioNullTranscoder;
 import ch.threema.app.video.transcoder.audio.UnsupportedAudioFormatException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import java8.util.Optional;
 
 import static ch.threema.app.video.transcoder.VideoTranscoderUtil.getRoundedSize;
@@ -75,7 +75,7 @@ import static ch.threema.app.video.transcoder.VideoTranscoderUtil.getRoundedSize
  */
 
 public class VideoTranscoder {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoTranscoder");
+    private static final Logger logger = getThreemaLogger("VideoTranscoder");
     private @NonNull Optional<AbstractAudioTranscoder> audioTranscoder = Optional.empty();
     private @NonNull Optional<Exception> audioTranscoderError = Optional.empty();
 

@@ -36,8 +36,9 @@ import ch.threema.app.services.GroupService
 import ch.threema.common.minus
 import ch.threema.common.now
 import ch.threema.common.plus
+import ch.threema.data.datatypes.AndroidContactLookupInfo
 import ch.threema.data.datatypes.IdColor
-import ch.threema.data.models.ContactModelData.Companion.javaCreate
+import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.ContactModelRepository
@@ -73,7 +74,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkStatic
-import java.math.BigInteger
 import java.util.Date
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -983,32 +983,32 @@ class MessageUtilTest {
         every {
             contactModelRepositoryMock.getByIdentity(any())
         } returns ch.threema.data.models.ContactModel(
-            identity,
-            javaCreate(
-                identity,
-                publicKey,
-                Date(),
-                "firstname",
-                "lastname",
-                "nickname",
-                IdColor(0),
-                VerificationLevel.FULLY_VERIFIED,
-                WorkVerificationLevel.NONE,
-                IdentityType.NORMAL,
-                ContactModel.AcquaintanceLevel.DIRECT,
-                IdentityState.ACTIVE,
-                BigInteger.ONE,
-                ContactSyncState.INITIAL,
-                ReadReceiptPolicy.DEFAULT,
-                TypingIndicatorPolicy.DEFAULT,
-                false,
-                "androidContactLookupKey",
-                Date(),
-                false,
-                byteArrayOf(0),
-                null,
-                null,
-                null,
+            identity = identity,
+            data = ContactModelData(
+                identity = identity,
+                publicKey = publicKey,
+                createdAt = Date(),
+                firstName = "firstname",
+                lastName = "lastname",
+                nickname = "nickname",
+                idColor = IdColor(0),
+                verificationLevel = VerificationLevel.FULLY_VERIFIED,
+                workVerificationLevel = WorkVerificationLevel.NONE,
+                identityType = IdentityType.NORMAL,
+                acquaintanceLevel = ContactModel.AcquaintanceLevel.DIRECT,
+                activityState = IdentityState.ACTIVE,
+                featureMask = 1u,
+                syncState = ContactSyncState.INITIAL,
+                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
+                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+                isArchived = false,
+                androidContactLookupInfo = AndroidContactLookupInfo("androidcontactlookupkey", 42),
+                localAvatarExpires = Date(),
+                isRestored = false,
+                profilePictureBlobId = byteArrayOf(0),
+                jobTitle = null,
+                department = null,
+                notificationTriggerPolicyOverride = null,
             ),
             databaseBackendMock,
             contactModelRepositoryMock,
@@ -1143,32 +1143,32 @@ class MessageUtilTest {
             val identity = call.invocation.args.first() as String
 
             ch.threema.data.models.ContactModel(
-                identity,
-                javaCreate(
-                    identity,
-                    contacts.first { it.identity == identity }.publicKey,
-                    Date(),
-                    "firstname",
-                    "lastname",
-                    "nickname",
-                    IdColor(0),
-                    VerificationLevel.FULLY_VERIFIED,
-                    WorkVerificationLevel.NONE,
-                    IdentityType.NORMAL,
-                    ContactModel.AcquaintanceLevel.DIRECT,
-                    IdentityState.ACTIVE,
-                    BigInteger.ONE,
-                    ContactSyncState.INITIAL,
-                    ReadReceiptPolicy.DEFAULT,
-                    TypingIndicatorPolicy.DEFAULT,
-                    false,
-                    "androidContactLookupKey",
-                    Date(),
-                    false,
-                    byteArrayOf(0),
-                    null,
-                    null,
-                    null,
+                identity = identity,
+                data = ContactModelData(
+                    identity = identity,
+                    publicKey = contacts.first { it.identity == identity }.publicKey,
+                    createdAt = Date(),
+                    firstName = "firstname",
+                    lastName = "lastname",
+                    nickname = "nickname",
+                    idColor = IdColor(0),
+                    verificationLevel = VerificationLevel.FULLY_VERIFIED,
+                    workVerificationLevel = WorkVerificationLevel.NONE,
+                    identityType = IdentityType.NORMAL,
+                    acquaintanceLevel = ContactModel.AcquaintanceLevel.DIRECT,
+                    activityState = IdentityState.ACTIVE,
+                    featureMask = 1u,
+                    syncState = ContactSyncState.INITIAL,
+                    readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
+                    typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
+                    isArchived = false,
+                    androidContactLookupInfo = AndroidContactLookupInfo("androidcontactlookupkey", 42),
+                    localAvatarExpires = Date(),
+                    isRestored = false,
+                    profilePictureBlobId = byteArrayOf(0),
+                    department = null,
+                    jobTitle = null,
+                    notificationTriggerPolicyOverride = null,
                 ),
                 databaseBackendMock,
                 contactModelRepositoryMock,

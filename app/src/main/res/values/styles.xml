@@ -984,6 +984,7 @@
         <item name="contentPaddingLeft">12dp</item>
         <item name="contentPaddingRight">12dp</item>
         <item name="contentPaddingTop">@dimen/message_status_padding_top</item>
+        <item name="rippleColor">@color/bubble_ripple</item>
     </style>
 
     <style name="Threema.CardView.Bubble.Receive" parent="@style/Widget.Material3.CardView.Filled">
@@ -1002,6 +1003,7 @@
         <item name="contentPaddingLeft">@dimen/chat_bubble_border_padding</item>
         <item name="contentPaddingRight">@dimen/chat_bubble_border_padding</item>
         <item name="contentPaddingTop">@dimen/chat_bubble_border_padding</item>
+        <item name="rippleColor">@color/bubble_ripple</item>
     </style>
 
     <style name="Threema.CardView.Bubble.Send" parent="@style/Widget.Material3.CardView.Filled">
@@ -1020,6 +1022,7 @@
         <item name="contentPaddingLeft">@dimen/chat_bubble_border_padding</item>
         <item name="contentPaddingRight">@dimen/chat_bubble_border_padding</item>
         <item name="contentPaddingTop">@dimen/chat_bubble_border_padding</item>
+        <item name="rippleColor">@color/bubble_ripple</item>
     </style>
 
     <style name="Threema.CardView.Bubble.FirstUnread" parent="@style/Widget.Material3.CardView.Filled">

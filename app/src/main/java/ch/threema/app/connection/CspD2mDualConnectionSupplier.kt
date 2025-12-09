@@ -26,7 +26,7 @@ import ch.threema.app.BuildConfig
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.ServerAddressProviderService
 import ch.threema.base.utils.AsyncResolver
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.connection.BaseServerConnectionConfiguration
 import ch.threema.domain.protocol.connection.BaseServerConnectionProvider
@@ -51,7 +51,7 @@ class WakeLockConnectionLockProvider(private val powerManager: PowerManager) : C
 
     override fun acquire(timeoutMillis: Long, tag: ConnectionLockProvider.ConnectionLogTag): ConnectionLock {
         val lockNumber = nextLockNumber++
-        val logger = LoggingUtil.getThreemaLogger("ConnectionLock.$tag")
+        val logger = getThreemaLogger("ConnectionLock.$tag")
         val wakeLock = powerManager.newWakeLock(
             PowerManager.PARTIAL_WAKE_LOCK,
             "${BuildConfig.APPLICATION_ID}:ConnectionLock.$tag",

@@ -25,10 +25,10 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import kotlinx.coroutines.CompletableDeferred
 
-private val logger = LoggingUtil.getThreemaLogger("PermissionRegistry")
+private val logger = getThreemaLogger("PermissionRegistry")
 
 @UiThread
 class PermissionRegistry(private val activity: AppCompatActivity) {

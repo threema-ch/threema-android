@@ -36,7 +36,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import org.slf4j.Logger;
 
 import ch.threema.app.R;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
@@ -44,7 +44,7 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
  * A dialog with a title and a checkbox
  */
 public class TextWithCheckboxDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("TextWithCheckboxDialog");
+    private static final Logger logger = getThreemaLogger("TextWithCheckboxDialog");
     private TextWithCheckboxDialogClickListener callback;
     private Activity activity;
 

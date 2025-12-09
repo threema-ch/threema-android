@@ -66,12 +66,12 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class BackupDataFragment extends Fragment implements
     GenericAlertDialog.DialogClickListener,
     PasswordEntryDialog.PasswordEntryDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BackupDataFragment");
+    private static final Logger logger = getThreemaLogger("BackupDataFragment");
 
     public static final int REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS = 441;
     private static final int REQUEST_CODE_DOCUMENT_TREE = 7222;

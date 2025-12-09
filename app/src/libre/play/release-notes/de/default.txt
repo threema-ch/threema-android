@@ -1,3 +1,3 @@
-- Behebung eines Fehlers bei der Verwendung von Startbildschirm-Verknüpfungen
-- Behebung eines Fehlers, wodurch die App beim Öffnen des Archivs abstürzen konnte
-- Verschiedene UI-Verbesserungen und weitere kleine Fehlerbehebungen
+- Behebung eines Fehlers beim Zugriff auf gespeicherte Dateien
+- Nachrichtenentwürfe werden während des Tippens gespeichert
+- Verbesserungen und Behebung verschiedener Fehler

@@ -45,14 +45,14 @@ import java.util.List;
 
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.MimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Query the system media store and return images and videos found on the system.
  */
 public class MediaRepository {
     private final Context appContext;
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaRepository");
+    private static final Logger logger = getThreemaLogger("MediaRepository");
 
     public MediaRepository(Context appContext) {
         this.appContext = appContext;

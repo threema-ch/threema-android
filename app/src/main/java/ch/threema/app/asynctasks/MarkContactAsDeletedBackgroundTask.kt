@@ -38,7 +38,7 @@ import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationService
 import ch.threema.app.services.ExcludedSyncIdentitiesService
 import ch.threema.app.services.FileService
-import ch.threema.app.services.IdListService
+import ch.threema.app.services.ProfilePictureRecipientsService
 import ch.threema.app.services.RingtoneService
 import ch.threema.app.services.UserService
 import ch.threema.app.services.WallpaperService
@@ -50,7 +50,7 @@ import ch.threema.app.utils.DialogUtil
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.app.utils.executor.BackgroundTask
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.stores.DHSessionStoreException
 import ch.threema.domain.stores.DHSessionStoreInterface
@@ -62,7 +62,7 @@ import java.lang.ref.WeakReference
 
 private const val DIALOG_TAG_DELETE_CONTACT = "dc"
 
-private val logger = LoggingUtil.getThreemaLogger("MarkContactAsDeletedBackgroundTask")
+private val logger = getThreemaLogger("MarkContactAsDeletedBackgroundTask")
 
 /**
  * The collection of required services to delete a contact.
@@ -73,7 +73,7 @@ data class DeleteContactServices(
     val conversationService: ConversationService,
     val ringtoneService: RingtoneService,
     val conversationCategoryService: ConversationCategoryService,
-    val profilePicRecipientsService: IdListService,
+    val profilePictureRecipientsService: ProfilePictureRecipientsService,
     val wallpaperService: WallpaperService,
     val fileService: FileService,
     val excludedSyncIdentitiesService: ExcludedSyncIdentitiesService,
@@ -286,7 +286,7 @@ open class DeleteAllContactsBackgroundTask(
 
         deleteContactServices.ringtoneService.removeCustomRingtone(uniqueIdString)
         deleteContactServices.conversationCategoryService.persistDefaultChat(uniqueIdString)
-        deleteContactServices.profilePicRecipientsService.remove(identity)
+        deleteContactServices.profilePictureRecipientsService.remove(identity)
         deleteContactServices.wallpaperService.removeWallpaper(uniqueIdString)
         deleteContactServices.fileService.removeAndroidDefinedProfilePicture(identity)
         deleteContactServices.fileService.removeUserDefinedProfilePicture(identity)

@@ -25,6 +25,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.lang.ref.WeakReference;
@@ -34,13 +35,11 @@ import ch.threema.app.activities.PinLockActivity;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.BiometricUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.localcrypto.MasterKeyProvider;
 
-import static ch.threema.app.di.DIJavaCompat.getServiceManagerOrNull;
-
 public class ActivityService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ActivityService");
+    private static final Logger logger = getThreemaLogger("ActivityService");
 
     private final Context context;
     private final LockAppService lockAppService;
@@ -84,7 +83,7 @@ public class ActivityService {
                     if (currentActivityReference.get() != null) {
                         if (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_SYSTEM) ||
                                 preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_BIOMETRIC)) {
-                            BiometricUtil.showUnlockDialog(currentActivityReference.get(), false, 0, null);
+                            BiometricUtil.showUnlockDialog(currentActivityReference.get(), null, false, 0, null);
                         } else {
                             try {
                                 Intent intent = PinLockActivity.createIntent(context);
@@ -142,9 +141,9 @@ public class ActivityService {
 
     public static boolean activityResumed(Activity currentActivity) {
         logger.debug("*** App ActivityResumed");
-        var serviceManager = getServiceManagerOrNull();
-        if (serviceManager != null) {
-            serviceManager.getActivityService().resume(currentActivity);
+        ActivityService activityService = KoinJavaComponent.getOrNull(ActivityService.class);
+        if (activityService != null) {
+            activityService.resume(currentActivity);
             return true;
         }
         return false;
@@ -152,24 +151,24 @@ public class ActivityService {
 
     public static void activityPaused(Activity pausedActivity) {
         logger.debug("*** App ActivityPaused");
-        var serviceManager = getServiceManagerOrNull();
-        if (serviceManager != null) {
-            serviceManager.getActivityService().pause(pausedActivity);
+        ActivityService activityService = KoinJavaComponent.getOrNull(ActivityService.class);
+        if (activityService != null) {
+            activityService.pause(pausedActivity);
         }
     }
 
     public static void activityDestroyed(Activity destroyedActivity) {
         logger.debug("*** App ActivityDestroyed");
-        var serviceManager = getServiceManagerOrNull();
-        if (serviceManager != null) {
-            serviceManager.getActivityService().destroy(destroyedActivity);
+        ActivityService activityService = KoinJavaComponent.getOrNull(ActivityService.class);
+        if (activityService != null) {
+            activityService.destroy(destroyedActivity);
         }
     }
 
     public static void activityUserInteract(Activity interactedActivity) {
-        var serviceManager = getServiceManagerOrNull();
-        if (serviceManager != null) {
-            serviceManager.getActivityService().userInteract(interactedActivity);
+        ActivityService activityService = KoinJavaComponent.getOrNull(ActivityService.class);
+        if (activityService != null) {
+            activityService.userInteract(interactedActivity);
         }
     }
 }

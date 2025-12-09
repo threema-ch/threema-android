@@ -40,7 +40,7 @@ import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.receivers.FetchMessagesBroadcastReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.taskmanager.QueueSendCompleteListener;
 
@@ -52,7 +52,7 @@ import ch.threema.app.utils.IntentDataUtil;
  * has sent all new messages.
  */
 public class PollingHelper implements QueueSendCompleteListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("PollingHelper");
+    private static final Logger logger = getThreemaLogger("PollingHelper");
 
     private static final int CONNECTION_TIMEOUT = 1000 * 120;       /* maximum time to stay connected for each poll (usually the connection will be terminated earlier as the server signals the end of the queue) */
     private static final int CONNECTION_TIMEOUT_ALREADY_CONNECTED = 1000 * 60;      /* same, but timeout to use if we're already connected when polling */

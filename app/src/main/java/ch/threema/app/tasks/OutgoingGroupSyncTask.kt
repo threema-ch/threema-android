@@ -22,7 +22,7 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
@@ -30,7 +30,7 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupSyncTask")
+private val logger = getThreemaLogger("OutgoingGroupSyncTask")
 
 /**
  * Send a group sync to the given receiver identities. This includes sending a setup message, a

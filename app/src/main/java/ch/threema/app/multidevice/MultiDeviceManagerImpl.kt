@@ -37,7 +37,7 @@ import ch.threema.app.tasks.DeleteAndTerminateFSSessionsTask
 import ch.threema.app.tasks.DeviceLinkingController
 import ch.threema.app.tasks.FSRefreshStepsTask
 import ch.threema.app.tasks.TaskCreator
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.toHexString
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.protocol.D2mProtocolDefines
@@ -74,7 +74,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
-private val logger = LoggingUtil.getThreemaLogger("MultiDeviceManagerImpl")
+private val logger = getThreemaLogger("MultiDeviceManagerImpl")
 
 /**
  * ONLY SET THIS TO `false` WHEN D2D IS IMPLEMENTED AND DOES NOT SUPPORT PFS!!

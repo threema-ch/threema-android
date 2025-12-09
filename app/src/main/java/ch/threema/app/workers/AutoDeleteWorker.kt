@@ -31,7 +31,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.di.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionUtil
@@ -43,7 +43,7 @@ import ch.threema.app.services.ballot.BallotService
 import ch.threema.app.utils.AutoDeleteUtil
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.WorkManagerUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.storage.models.ConversationModel
 import ch.threema.storage.models.MessageState
@@ -59,19 +59,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-private val logger = LoggingUtil.getThreemaLogger("AutoDeleteWorker")
+private val logger = getThreemaLogger("AutoDeleteWorker")
 
 class AutoDeleteWorker(
     context: Context,
     workerParameters: WorkerParameters,
 ) : CoroutineWorker(context, workerParameters), KoinComponent {
-    private lateinit var preferenceService: PreferenceService
-    private lateinit var conversationService: ConversationService
-    private lateinit var groupService: GroupService
-    private lateinit var messageService: MessageService
-    private lateinit var fileService: FileService
-    private lateinit var ballotService: BallotService
+
+    private val preferenceService: PreferenceService by inject()
+    private val conversationService: ConversationService by inject()
+    private val groupService: GroupService by inject()
+    private val messageService: MessageService by inject()
+    private val fileService: FileService by inject()
+    private val ballotService: BallotService by inject()
 
     companion object {
         const val EXTRA_GRACE_DAYS = "grace_days"
@@ -151,15 +153,8 @@ class AutoDeleteWorker(
 
     override suspend fun doWork(): Result {
         logger.info("Start auto delete work")
-        val serviceManager = awaitServiceManagerWithTimeout(20.seconds)
+        awaitAppFullyReadyWithTimeout(20.seconds)
             ?: return Result.retry()
-
-        this.preferenceService = serviceManager.preferenceService
-        this.conversationService = serviceManager.conversationService
-        this.groupService = serviceManager.groupService
-        this.messageService = serviceManager.messageService
-        this.fileService = serviceManager.fileService
-        this.ballotService = serviceManager.ballotService
 
         val graceDays: Int = inputData.getInt(
             EXTRA_GRACE_DAYS,

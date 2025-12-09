@@ -21,15 +21,20 @@
 
 package ch.threema.app.onprem
 
-import android.content.Context
+import ch.threema.app.files.AppDirectoryProvider
+import ch.threema.domain.onprem.OnPremConfigParser
 import ch.threema.domain.onprem.OnPremConfigStore
+import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
 val onPremFeatureModule = module {
-    factory {
+    factory<OnPremConfigStore> {
         OnPremConfigStore(
-            baseDirectory = get<Context>().filesDir,
+            baseDirectory = get<AppDirectoryProvider>().appDataDirectory,
             timeProvider = get(),
+            onPremConfigParser = get(),
         )
     }
+
+    factoryOf(::OnPremConfigParser)
 }

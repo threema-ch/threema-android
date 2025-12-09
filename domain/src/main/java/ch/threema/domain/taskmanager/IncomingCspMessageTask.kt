@@ -21,13 +21,13 @@
 
 package ch.threema.domain.taskmanager
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.PayloadProcessingException
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.coders.MessageBox
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingCspMessageTask")
+private val logger = getThreemaLogger("IncomingCspMessageTask")
 
 class IncomingCspMessageTask(
     private val message: CspMessage,

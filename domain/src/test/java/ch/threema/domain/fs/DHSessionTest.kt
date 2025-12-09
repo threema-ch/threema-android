@@ -22,12 +22,12 @@
 package ch.threema.domain.fs
 
 import ch.threema.domain.helpers.DummyUsers
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import org.junit.jupiter.api.Test
 
 class DHSessionTest {
 

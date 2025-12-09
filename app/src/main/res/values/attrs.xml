@@ -112,12 +112,6 @@
         <attr name="scaleType" />
     </declare-styleable>
 
-    <!-- Zoomable TextureView -->
-    <declare-styleable name="ZoomableTextureView">
-        <attr name="minScale" format="float" />
-        <attr name="maxScale" format="float" />
-    </declare-styleable>
-
     <!-- Button for Media Attacher Control Panel -->
     <declare-styleable name="ControlPanelButton">
         <attr name="labelIcon" format="integer" />

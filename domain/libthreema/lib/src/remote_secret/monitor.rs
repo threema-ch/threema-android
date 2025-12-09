@@ -20,7 +20,10 @@ use crate::{
         endpoint::HttpsEndpointError,
         work_directory::{self, WorkFetchRemoteSecretResponse},
     },
-    utils::time::{Duration, Instant},
+    utils::{
+        debug::Name as _,
+        time::{Duration, Instant},
+    },
 };
 
 // Grace period for timeouts
@@ -37,6 +40,17 @@ const VALID_CHECK_INTERVAL_RANGE_S: RangeInclusive<u32> = 10..=86400;
 
 /// Most recent cause for a remote secret monitoring timeout.
 #[derive(Clone, Debug, thiserror::Error)]
+#[cfg_attr(
+    feature = "wasm",
+    derive(tsify::Tsify, serde::Serialize),
+    serde(
+        tag = "type",
+        content = "details",
+        rename_all = "kebab-case",
+        rename_all_fields = "camelCase"
+    ),
+    tsify(into_wasm_abi)
+)]
 #[cfg_attr(test, derive(PartialEq))]
 pub enum TimeoutCause {
     /// An unrecoverable network error occurred while communicating with a server.
@@ -80,6 +94,17 @@ impl From<HttpsEndpointError> for TimeoutCause {
 /// allowed to retry.
 #[derive(Clone, Debug, thiserror::Error)]
 #[cfg_attr(feature = "uniffi", derive(uniffi::Error), uniffi(flat_error))]
+#[cfg_attr(
+    feature = "wasm",
+    derive(tsify::Tsify, serde::Serialize),
+    serde(
+        tag = "type",
+        content = "details",
+        rename_all = "kebab-case",
+        rename_all_fields = "camelCase"
+    ),
+    tsify(into_wasm_abi)
+)]
 #[cfg_attr(test, derive(PartialEq))]
 pub enum RemoteSecretMonitorError {
     /// Invalid parameter provided by foreign code.

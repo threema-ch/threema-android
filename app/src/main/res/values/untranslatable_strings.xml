@@ -35,4 +35,5 @@
     <string name="desktop_client_download_link_threema_consumer" translatable="false">https://three.ma/md</string>
     <string name="desktop_client_download_link_threema_work" translatable="false">https://three.ma/mdw</string>
     <string name="desktop_client_download_link_threema_on_prem" translatable="false">https://three.ma/mdo</string>
+    <string name="referral_program_invitation_link" translatable="false">https://threema.com/threema-work-invitation?referral=%1$s</string>
 </resources>

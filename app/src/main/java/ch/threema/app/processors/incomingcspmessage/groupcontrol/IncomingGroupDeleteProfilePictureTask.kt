@@ -28,12 +28,12 @@ import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
 import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.utils.ShortcutUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.GroupDeleteProfilePictureMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingGroupDeleteProfilePictureTask")
+private val logger = getThreemaLogger("IncomingGroupDeleteProfilePictureTask")
 
 class IncomingGroupDeleteProfilePictureTask(
     message: GroupDeleteProfilePictureMessage,
@@ -58,7 +58,7 @@ class IncomingGroupDeleteProfilePictureTask(
         }
 
         // If the group does not have a profile picture, discard this message
-        if (!fileService.hasGroupAvatarFile(groupModel)) {
+        if (!fileService.hasGroupProfilePicture(groupModel)) {
             logger.info("Discarding this message as group has no profile picture")
             return ReceiveStepsResult.DISCARD
         }
@@ -97,7 +97,7 @@ class IncomingGroupDeleteProfilePictureTask(
             }
         }
 
-        fileService.removeGroupAvatar(groupModel)
+        fileService.removeGroupProfilePicture(groupModel)
 
         ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
 

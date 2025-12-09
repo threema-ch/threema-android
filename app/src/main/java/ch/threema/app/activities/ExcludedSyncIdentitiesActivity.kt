@@ -22,15 +22,15 @@
 package ch.threema.app.activities
 
 import android.content.Context
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.types.Identity
 
-private val logger = LoggingUtil.getThreemaLogger("ExcludedSyncIdentitiesActivity")
+private val logger = getThreemaLogger("ExcludedSyncIdentitiesActivity")
 
 class ExcludedSyncIdentitiesActivity : IdentityListActivity() {
     init {

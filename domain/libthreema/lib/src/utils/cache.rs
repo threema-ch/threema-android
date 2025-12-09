@@ -70,7 +70,7 @@ mod tests {
             [(
                 1,
                 (
-                    Instant::now().checked_sub(Duration::from_secs(60)).unwrap(),
+                    Instant::now().checked_sub(Duration::from_mins(1)).unwrap(),
                     "gone",
                 ),
             )]
@@ -103,7 +103,7 @@ mod tests {
             [(
                 1,
                 (
-                    Instant::now().checked_sub(Duration::from_secs(60)).unwrap(),
+                    Instant::now().checked_sub(Duration::from_mins(1)).unwrap(),
                     "gone",
                 ),
             )]

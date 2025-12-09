@@ -21,11 +21,11 @@
 
 package ch.threema.storage.databaseupdate
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.runDelete
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
-private val logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion111")
+private val logger = getThreemaLogger("DatabaseUpdateToVersion111")
 
 class DatabaseUpdateToVersion111(
     private val sqLiteDatabase: SQLiteDatabase,

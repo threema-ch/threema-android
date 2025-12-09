@@ -37,12 +37,12 @@ import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.home.HomeActivity;
 import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.services.WidgetService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 public class WidgetProvider extends AppWidgetProvider {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetProvider");
+    private static final Logger logger = getThreemaLogger("WidgetProvider");
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {

@@ -10,6 +10,7 @@ use crate::{
     common::{ChatServerGroup, ClientInfo, ThreemaId, config::Config, keys::ClientKey, task::TaskLoop},
     csp_e2e::{CspE2eProtocolError, Flavor},
     https::{HttpsRequest, HttpsResult, directory},
+    utils::debug::Name as _,
 };
 
 /// 1. Run the HTTPS request as defined by [`HttpsRequest`] and let `response` be the result.
@@ -212,7 +213,7 @@ impl State {
         let Flavor::Work(work_context) = &context.flavor else {
             let message = "Work context missing";
             error!(message);
-            return Err(CspE2eProtocolError::InternalError(message.to_owned()));
+            return Err(CspE2eProtocolError::InternalError(message.into()));
         };
 
         // Handle the result

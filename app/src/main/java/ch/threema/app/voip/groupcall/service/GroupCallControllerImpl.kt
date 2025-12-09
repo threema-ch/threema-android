@@ -35,7 +35,7 @@ import ch.threema.app.voip.groupcall.sfu.connection.Joining
 import ch.threema.app.voip.groupcall.sfu.messages.P2PMessageContent
 import ch.threema.app.voip.groupcall.sfu.webrtc.RemoteCtx
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.ContactModel
 import java.lang.Runnable
 import java.util.*
@@ -48,7 +48,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import org.webrtc.EglBase
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallControllerImpl")
+private val logger = getThreemaLogger("GroupCallControllerImpl")
 
 internal class GroupCallControllerImpl(
     override val callId: CallId,

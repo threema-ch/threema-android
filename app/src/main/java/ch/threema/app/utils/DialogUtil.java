@@ -35,10 +35,10 @@ import org.slf4j.Logger;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public abstract class DialogUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DialogUtil");
+    private static final Logger logger = getThreemaLogger("DialogUtil");
 
     public static void dismissDialog(@Nullable FragmentManager fragmentManager, String tag, boolean allowStateLoss) {
         logger.debug("dismissDialog: {}", tag);

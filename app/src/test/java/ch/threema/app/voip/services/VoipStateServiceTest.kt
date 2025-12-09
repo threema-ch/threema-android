@@ -29,6 +29,8 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.LifetimeService
 import ch.threema.app.services.NotificationPreferenceService
+import ch.threema.app.test.koinTestModuleRule
+import ch.threema.app.utils.DoNotDisturbUtil
 import ch.threema.app.utils.LogUtil
 import ch.threema.app.voip.listeners.VoipCallEventListener
 import ch.threema.app.voip.listeners.VoipMessageListener
@@ -66,8 +68,15 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
+import org.junit.Rule
 
 class VoipStateServiceTest {
+
+    @get:Rule
+    val koinTestRule = koinTestModuleRule {
+        factory<DoNotDisturbUtil> { mockk() }
+    }
+
     // Mocks
     private lateinit var mockContext: Context
     private lateinit var mockAudioManager: AudioManager

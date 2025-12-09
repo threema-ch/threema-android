@@ -54,10 +54,10 @@ import javax.microedition.khronos.egl.EGLContext;
 import javax.microedition.khronos.egl.EGLDisplay;
 import javax.microedition.khronos.egl.EGLSurface;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("OutputSurface");
+    private static final Logger logger = getThreemaLogger("OutputSurface");
 
     private static final int EGL_OPENGL_ES2_BIT = 4;
     private static final int EGL_CONTEXT_CLIENT_VERSION = 0x3098;

@@ -41,14 +41,14 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Webclient sending all client information.
  */
 @WorkerThread
 public class ClientInfoRequestHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ClientInfoRequestHandler");
+    private static final Logger logger = getThreemaLogger("ClientInfoRequestHandler");
 
     private final MessageDispatcher dispatcher;
     private final PreferenceService preferenceService;

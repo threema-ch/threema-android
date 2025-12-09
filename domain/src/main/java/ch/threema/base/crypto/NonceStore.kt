@@ -21,14 +21,16 @@
 
 package ch.threema.base.crypto
 
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.SecureRandomUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.generateRandomBytes
+import ch.threema.common.secureRandom
 import ch.threema.domain.types.Identity
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
+import java.security.SecureRandom
 import kotlin.Throws
 
-private val logger = LoggingUtil.getThreemaLogger("NonceStore")
+private val logger = getThreemaLogger("NonceStore")
 
 enum class NonceScope {
     CSP,
@@ -68,8 +70,8 @@ class NonceFactory(
     // Nonce Provider is injectable for testing purposes
     private val nonceProvider: NonceFactoryNonceBytesProvider,
 ) {
-    constructor(nonceStore: NonceStore) :
-        this(nonceStore, { length -> SecureRandomUtil.generateRandomBytes(length) })
+    constructor(nonceStore: NonceStore, secureRandom: SecureRandom = secureRandom()) :
+        this(nonceStore, { length -> secureRandom.generateRandomBytes(length) })
 
     @JvmName("nextNonce")
     fun next(scope: NonceScope): Nonce {

@@ -37,8 +37,8 @@ import ch.threema.storage.models.MessageType
 import java.util.UUID
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import org.junit.Assert
 
 class EditHistoryRepositoryTest {
     private lateinit var databaseService: TestDatabaseService
@@ -123,7 +123,7 @@ class EditHistoryRepositoryTest {
     private fun AbstractMessageModel.assertEditHistorySize(expectedSize: Int) {
         val actualSize = editHistoryDao.findAllByMessageUid(uid!!).size
 
-        Assert.assertEquals(expectedSize, actualSize)
+        assertEquals(expectedSize, actualSize)
     }
 
     private fun <T : AbstractMessageModel> T.enrich(text: String = "Text"): T = apply {

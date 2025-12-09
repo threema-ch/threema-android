@@ -21,15 +21,15 @@
 
 package ch.threema.app.tasks
 
+import ch.threema.app.profilepicture.GroupProfilePictureUploader
 import ch.threema.app.protocol.PreGeneratedMessageIds
 import ch.threema.app.protocol.runActiveGroupStateResyncSteps
-import ch.threema.app.services.ApiService
 import ch.threema.app.services.FileService
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.toBasicContacts
 import ch.threema.app.voip.groupcall.GroupCallManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.ContactModelRepository
@@ -43,7 +43,7 @@ import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.storage.DatabaseService
 
-private val logger = LoggingUtil.getThreemaLogger("ActiveGroupStateResyncTask")
+private val logger = getThreemaLogger("ActiveGroupStateResyncTask")
 
 class ActiveGroupStateResyncTask(
     private val groupModel: GroupModel,
@@ -51,7 +51,7 @@ class ActiveGroupStateResyncTask(
     private val contactStore: ContactStore,
     private val apiConnector: APIConnector,
     private val userService: UserService,
-    private val apiService: ApiService,
+    private val groupProfilePictureUploader: GroupProfilePictureUploader,
     private val fileService: FileService,
     private val groupCallManager: GroupCallManager,
     private val databaseService: DatabaseService,
@@ -106,7 +106,7 @@ class ActiveGroupStateResyncTask(
                 fourthMessageId = MessageId.random(),
             ),
             userService,
-            apiService,
+            groupProfilePictureUploader,
             fileService,
             groupCallManager,
             databaseService,

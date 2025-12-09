@@ -23,28 +23,44 @@ package ch.threema.app.glide
 
 import android.content.Context
 import android.graphics.Bitmap
-import ch.threema.app.ThreemaApplication
+import ch.threema.app.di.injectNonBinding
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.AvatarCacheServiceImpl
+import ch.threema.app.services.ContactService
+import ch.threema.app.services.FileService
+import ch.threema.app.services.UserService
+import ch.threema.data.repositories.ContactModelRepository
 import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.signature.ObjectKey
+import org.koin.core.component.KoinComponent
 
-class IdentityAvatarLoader(val context: Context) :
-    ModelLoader<AvatarCacheServiceImpl.IdentityAvatarConfig, Bitmap> {
-    private val userService = ThreemaApplication.getServiceManager()?.userService
-    private val contactService = ThreemaApplication.getServiceManager()?.contactService
-    private val contactModelRepository = ThreemaApplication.getServiceManager()?.modelRepositories?.contacts
-    private val preferenceService = ThreemaApplication.getServiceManager()?.preferenceService
+class IdentityAvatarLoader(
+    private val context: Context,
+) : ModelLoader<AvatarCacheServiceImpl.IdentityAvatarConfig, Bitmap>, KoinComponent {
+    private val userService: UserService? by injectNonBinding()
+    private val contactService: ContactService? by injectNonBinding()
+    private val preferenceService: PreferenceService? by injectNonBinding()
+    private val fileService: FileService? by injectNonBinding()
+    private val contactModelRepository: ContactModelRepository? by injectNonBinding()
 
     override fun buildLoadData(
         config: AvatarCacheServiceImpl.IdentityAvatarConfig,
         width: Int,
         height: Int,
         options: Options,
-    ): ModelLoader.LoadData<Bitmap> {
+    ): ModelLoader.LoadData<Bitmap>? {
         return ModelLoader.LoadData(
             ObjectKey(config),
-            IdentityAvatarFetcher(context, userService, contactService, contactModelRepository, config, preferenceService),
+            IdentityAvatarFetcher(
+                context = context,
+                userService = userService ?: return null,
+                contactService = contactService ?: return null,
+                contactModelRepository = contactModelRepository ?: return null,
+                preferenceService = preferenceService ?: return null,
+                fileService = fileService ?: return null,
+                identityAvatarConfig = config,
+            ),
         )
     }
 

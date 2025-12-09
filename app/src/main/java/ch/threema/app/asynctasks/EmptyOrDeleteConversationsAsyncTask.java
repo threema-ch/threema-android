@@ -51,7 +51,7 @@ import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.base.utils.CoroutinesExtensionKt;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.ContactModel;
@@ -76,7 +76,7 @@ import kotlinx.coroutines.Deferred;
  * - Distribution lists: Delete distribution list
  */
 public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, Void> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("EmptyOrDeleteConversationsAsyncTask");
+    private static final Logger logger = getThreemaLogger("EmptyOrDeleteConversationsAsyncTask");
 
     private static final String DIALOG_TAG_EMPTYING_OR_DELETING_CHAT = "edc";
 

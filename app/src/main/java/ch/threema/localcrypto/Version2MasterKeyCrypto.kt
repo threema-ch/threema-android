@@ -21,8 +21,8 @@
 
 package ch.threema.localcrypto
 
-import ch.threema.base.utils.generateRandomBytes
 import ch.threema.common.emptyByteArray
+import ch.threema.common.generateRandomBytes
 import ch.threema.common.toCryptographicByteArray
 import ch.threema.libthreema.Argon2idParameters
 import ch.threema.libthreema.CryptoException as LibthreemaCryptoException
@@ -42,9 +42,9 @@ import java.io.DataInputStream
 import java.security.SecureRandom
 
 class Version2MasterKeyCrypto(
-    private val encoder: Version2MasterKeyStorageEncoder = Version2MasterKeyStorageEncoder(),
-    private val decoder: Version2MasterKeyStorageDecoder = Version2MasterKeyStorageDecoder(),
-    private val random: SecureRandom = SecureRandom(),
+    private val encoder: Version2MasterKeyStorageEncoder,
+    private val decoder: Version2MasterKeyStorageDecoder,
+    private val random: SecureRandom,
 ) {
     @Throws(CryptoException::class)
     fun encryptWithPassphrase(

@@ -51,7 +51,9 @@ import ch.threema.app.R;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.android.ThreadUtilKt.isMainThread;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.domain.models.GroupId;
 import ch.threema.storage.models.DistributionListModel;
@@ -64,7 +66,7 @@ import java8.util.function.Supplier;
  */
 final public class AvatarCacheServiceImpl implements AvatarCacheService {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarCacheServiceImpl");
+    private static final Logger logger = getThreemaLogger("AvatarCacheServiceImpl");
 
     /**
      * The mapping of identities to "states". If the number is changed, the next time the avatar of this identity is accessed, it will be loaded
@@ -474,7 +476,7 @@ final public class AvatarCacheServiceImpl implements AvatarCacheService {
      */
     @AnyThread
     private static Bitmap getBitmapInWorkerThread(Supplier<Bitmap> function) {
-        if (Looper.myLooper() == Looper.getMainLooper()) {
+        if (isMainThread()) {
             BitmapLoadThread t = new BitmapLoadThread(function);
             t.start();
 

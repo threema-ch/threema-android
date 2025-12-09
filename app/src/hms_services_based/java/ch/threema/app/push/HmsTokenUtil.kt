@@ -23,10 +23,10 @@ package ch.threema.app.push
 
 import android.content.Context
 import android.content.pm.PackageManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.huawei.agconnect.AGConnectOptionsBuilder
 
-private val logger = LoggingUtil.getThreemaLogger("HmsTokenUtil")
+private val logger = getThreemaLogger("HmsTokenUtil")
 
 object HmsTokenUtil {
     const val TOKEN_SCOPE = "HCM"

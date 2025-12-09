@@ -45,7 +45,7 @@ import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UserService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.DeleteMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
@@ -65,7 +65,7 @@ import ch.threema.storage.models.data.status.GroupStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
 public class MessageUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageUtil");
+    private static final Logger logger = getThreemaLogger("MessageUtil");
 
     private final static Set<MessageType> fileMessageModelTypes = EnumSet.of(
         MessageType.IMAGE,
@@ -527,8 +527,8 @@ public class MessageUtil {
                 case VOICEMESSAGE:
                     return new MessageViewElement(R.drawable.ic_mic_filled,
                         context.getString(R.string.audio_placeholder),
-                        StringConversionUtil.secondsToString(messageModel.getAudioData().getDuration(), false),
-                        ". " + context.getString(R.string.duration) + " " + StringConversionUtil.getDurationStringHuman(context, messageModel.getAudioData().getDuration()) + ". ",
+                        ElapsedTimeFormatter.secondsToString(messageModel.getAudioData().getDuration()),
+                        ". " + context.getString(R.string.duration) + " " + ElapsedTimeFormatter.getDurationStringHuman(context, messageModel.getAudioData().getDuration()) + ". ",
                         null);
                 case FILE:
                     if (MimeUtil.isImageFile(messageModel.getFileData().getMimeType())) {
@@ -560,7 +560,7 @@ public class MessageUtil {
                             return new MessageViewElement(R.drawable.ic_mic_filled,
                                 context.getString(R.string.audio_placeholder),
                                 durationString,
-                                ". " + context.getString(R.string.duration) + " " + StringConversionUtil.getDurationStringHuman(context, messageModel.getFileData().getDurationSeconds()) + ". ",
+                                ". " + context.getString(R.string.duration) + " " + ElapsedTimeFormatter.getDurationStringHuman(context, messageModel.getFileData().getDurationSeconds()) + ". ",
                                 null);
                         } else {
                             return new MessageViewElement(R.drawable.ic_doc_audio,

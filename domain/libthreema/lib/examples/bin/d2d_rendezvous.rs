@@ -169,7 +169,7 @@ fn run_protocol(
                 assert!(result.incoming_ulp_data.is_none(), "Unexpected incoming ULP data");
 
                 // Reset timeout
-                timeout = Duration::from_millis(2000);
+                timeout = Duration::from_secs(2);
             },
 
             Err(RecvTimeoutError::Disconnected) => {

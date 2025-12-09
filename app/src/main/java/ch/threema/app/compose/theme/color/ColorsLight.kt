@@ -38,7 +38,7 @@ object ColorsLight : ComposeColorPaletteLight() {
     override val secondaryContainer = Color(BrandColor.SHADE_200)
     override val onSecondaryContainer = Color(BrandColor.SHADE_900)
 
-    // Secondary
+    // Tertiary
     override val tertiary = Color(BrandColor.SHADE_100)
     override val onTertiary = Color(0xFF1D1D1B) // Brand Text
     override val tertiaryContainer = Color(BrandColor.SHADE_100)

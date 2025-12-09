@@ -53,12 +53,12 @@ import ch.threema.app.R;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.LocaleUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class PasswordEntryDialog extends ThreemaDialogFragment implements GenericAlertDialog.DialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("PasswordEntryDialog");
+    private static final Logger logger = getThreemaLogger("PasswordEntryDialog");
     private static final String DIALOG_TAG_CONFIRM_CHECKBOX = "dtcc";
 
     protected PasswordEntryDialogClickListener callback;

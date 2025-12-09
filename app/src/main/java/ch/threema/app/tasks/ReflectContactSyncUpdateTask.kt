@@ -32,7 +32,7 @@ import ch.threema.app.utils.ConversationUtil
 import ch.threema.app.utils.runtimeAssert
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.SymmetricEncryptionService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
@@ -69,7 +69,7 @@ import ch.threema.storage.models.ConversationTag
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectContactSyncUpdateTask")
+private val logger = getThreemaLogger("ReflectContactSyncUpdateTask")
 
 abstract class ReflectContactSyncUpdateBaseTask(
     protected val contactIdentity: Identity,

@@ -27,11 +27,11 @@ import androidx.annotation.NonNull;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.SynchronizeContactsService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
 public class SystemUpdateToVersion14 implements SystemUpdate {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion14");
+    private static final Logger logger = getThreemaLogger("SystemUpdateToVersion14");
 
     private @NonNull final ServiceManager serviceManager;
 

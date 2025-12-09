@@ -26,10 +26,10 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.audio.AudioCapabilities
 import androidx.media3.exoplayer.audio.AudioSink
 import androidx.media3.exoplayer.audio.DefaultAudioSink
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.nio.ByteBuffer
 
-private val logger = LoggingUtil.getThreemaLogger("SamsungQuirkAudioSink")
+private val logger = getThreemaLogger("SamsungQuirkAudioSink")
 
 /**
  * Handle audio sink error on some Samsung devices when changing AudioAttributes by retrying

@@ -24,10 +24,10 @@ package ch.threema.app.usecases.conversations
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import ch.threema.android.ResolvableString
+import ch.threema.android.ResolvedString
+import ch.threema.android.ResourceIdString
 import ch.threema.app.R
-import ch.threema.app.compose.common.ResolvableString
-import ch.threema.app.compose.common.ResolvedString
-import ch.threema.app.compose.common.ResourceIdString
 import ch.threema.app.compose.conversation.models.ConversationNameStyle
 import ch.threema.app.compose.conversation.models.ConversationUiModel
 import ch.threema.app.compose.conversation.models.GroupCallUiModel
@@ -47,7 +47,6 @@ import ch.threema.app.utils.MessageUtil
 import ch.threema.app.utils.NameUtil
 import ch.threema.app.utils.StateBitmapUtil
 import ch.threema.app.voip.groupcall.localGroupId
-import ch.threema.common.takeUnlessBlank
 import ch.threema.domain.types.Identity
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.ContactModel
@@ -70,6 +69,7 @@ abstract class WatchConversationListItemsUseCase(
     private val groupService: GroupService,
     private val distributionListService: DistributionListService,
     private val ringtoneService: RingtoneService,
+    private val draftManager: DraftManager,
 ) {
 
     private val groupCalls: Flow<Set<GroupCallUiModel>> = watchGroupCallsUseCase.call().distinctUntilChanged()
@@ -172,11 +172,9 @@ abstract class WatchConversationListItemsUseCase(
         )
     }
 
-    private fun getDraftOrNull(conversationModel: ConversationModel): String? {
-        return DraftManager.getMessageDraft(
-            chatId = conversationModel.messageReceiver.uniqueIdString,
-        )?.takeUnlessBlank()
-    }
+    private fun getDraftOrNull(conversationModel: ConversationModel): String? =
+        draftManager.get(conversationUniqueId = conversationModel.messageReceiver.uniqueIdString)
+            ?.text
 
     private fun getLatestMessageStateIconOrNull(conversationModel: ConversationModel): IconInfo? {
         val conversationIconRes: Int? = conversationModel.getConversationIconRes()

@@ -44,6 +44,7 @@ duplicate = "2"
 ed25519-dalek = "2"
 educe = { version = "0.6", default-features = false, features = ["Debug"] }
 form_urlencoded = "1"
+generic-array = "=0.14.7"
 hmac = { version = "0.12", default-features = false }
 itertools = "0.14"
 libthreema-macros = { path = "../macros" }
@@ -74,28 +75,35 @@ x25519-dalek = { version = "2", features = [
     "zeroize",
 ] }
 zeroize = "1"
-# Bindings and CLI
+
+# Bindings (UniFFi/WASM), CLI
 tracing-subscriber = { version = "0.3", optional = true }
+
 # Bindings: UniFFI
-uniffi = { version = "0.29", optional = true }
+uniffi = { version = "0.30", optional = true }
+
 # Bindings: WASM
 getrandom = { version = "0.2", features = ["js"], optional = true }
 js-sys = { version = "0.3", optional = true }
 serde_bytes = { version = "0.11", optional = true }
 tsify = { version = "0.5", features = ["js"], optional = true }
-wasm-bindgen = { version = "0.2", optional = true }
+# When bumping the wasm-bindgen version, increase the `image` version in
+# `.devcontainer/devcontainer.json` and `.gitlab-ci.yml`
+wasm-bindgen = { version = "=0.2.105", optional = true }
 web-time = { version = "1", optional = true }
+
 # CLI
 anyhow = { version = "1", optional = true }
 clap = { version = "4", features = ["cargo", "derive"], optional = true }
-reqwest = { version = "0.12", optional = true }
-
-[dev-dependencies]
-anyhow = "1"
-assert_matches = "1.5"
-derive_builder = "0.20"
-rstest = "0.26"
-rstest_reuse = "0.7"
+futures-util = { version = "0.3", optional = true }
+reqwest = { version = "0.12", default-features = false, features = [
+    "http2",
+    "rustls-tls",
+], optional = true }
+rustls = { version = "0.23", default-features = false, features = [
+    "ring",
+    "std",
+], optional = true }
 tokio = { version = "1", default-features = false, features = [
     "io-util",
     "macros",
@@ -105,17 +113,28 @@ tokio = { version = "1", default-features = false, features = [
     "signal",
     "sync",
     "time",
-] }
+], optional = true }
+tokio-tungstenite = { version = "0.26", default-features = false, features = [
+    "connect",
+    "rustls-tls-webpki-roots",
+], optional = true }
+
+[dev-dependencies]
+anyhow = "1"
+assert_matches = "1.5"
+derive_builder = "0.20"
+rstest = "0.26"
+rstest_reuse = "0.7"
 tracing-subscriber = "0.3"
 
 [build-dependencies]
 prost-build = "0.14"
 # Bindings: UniFFI
-uniffi = { version = "0.29", features = ["build"], optional = true }
+uniffi = { version = "0.30", features = ["build"], optional = true }
 
 [features]
 slow_tests = []
-uniffi = ["dep:tracing-subscriber", "dep:uniffi"]
+uniffi = ["dep:uniffi", "dep:tracing-subscriber"]
 wasm = [
     "dep:getrandom",
     "dep:js-sys",
@@ -125,7 +144,16 @@ wasm = [
     "dep:wasm-bindgen",
     "dep:web-time",
 ]
-cli = ["dep:tracing-subscriber", "dep:anyhow", "dep:clap", "dep:reqwest"]
+cli = [
+    "dep:anyhow",
+    "dep:clap",
+    "dep:futures-util",
+    "dep:reqwest",
+    "dep:rustls",
+    "dep:tokio",
+    "dep:tokio-tungstenite",
+    "dep:tracing-subscriber",
+]
 
 [[example]]
 name = "csp-e2e-receive"
@@ -155,4 +183,9 @@ required-features = ["cli"]
 [[example]]
 name = "remote-secret"
 path = "examples/bin/remote_secret.rs"
+required-features = ["cli"]
+
+[[example]]
+name = "d2m-ping-pong"
+path = "examples/bin/d2m_ping_pong.rs"
 required-features = ["cli"]

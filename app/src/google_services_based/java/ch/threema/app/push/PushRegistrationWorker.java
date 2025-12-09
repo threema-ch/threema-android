@@ -35,11 +35,11 @@ import org.slf4j.Logger;
 
 import ch.threema.app.utils.PushUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class PushRegistrationWorker extends Worker {
-    private final Logger logger = LoggingUtil.getThreemaLogger("PushRegistrationWorker");
+    private final Logger logger = getThreemaLogger("PushRegistrationWorker");
 
     /**
      * Constructor for the PushRegistrationWorker.

@@ -23,26 +23,33 @@ package ch.threema.app.glide
 
 import android.content.Context
 import android.graphics.Bitmap
-import ch.threema.app.ThreemaApplication
+import ch.threema.app.di.injectNonBinding
 import ch.threema.app.services.AvatarCacheServiceImpl
+import ch.threema.app.services.DistributionListService
 import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.signature.ObjectKey
+import org.koin.core.component.KoinComponent
 
-class DistributionListAvatarLoader(val context: Context) :
-    ModelLoader<AvatarCacheServiceImpl.DistributionListAvatarConfig, Bitmap> {
-    private val distributionListService =
-        ThreemaApplication.getServiceManager()?.distributionListService
+class DistributionListAvatarLoader(
+    private val context: Context,
+) :
+    ModelLoader<AvatarCacheServiceImpl.DistributionListAvatarConfig, Bitmap>, KoinComponent {
+    private val distributionListService: DistributionListService? by injectNonBinding()
 
     override fun buildLoadData(
         config: AvatarCacheServiceImpl.DistributionListAvatarConfig,
         width: Int,
         height: Int,
         options: Options,
-    ): ModelLoader.LoadData<Bitmap> {
+    ): ModelLoader.LoadData<Bitmap>? {
         return ModelLoader.LoadData(
             ObjectKey(config),
-            DistributionListAvatarFetcher(context, distributionListService, config),
+            DistributionListAvatarFetcher(
+                context = context,
+                distributionListService = distributionListService ?: return null,
+                distributionListConfig = config,
+            ),
         )
     }
 

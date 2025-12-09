@@ -40,14 +40,14 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.converter.Profile;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Webclient sending the user profile.
  */
 @WorkerThread
 public class ProfileRequestHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ProfileRequestHandler");
+    private static final Logger logger = getThreemaLogger("ProfileRequestHandler");
 
     // Dispatchers
     @NonNull

@@ -26,7 +26,8 @@ import ch.threema.app.services.ServerMessageService
 import ch.threema.app.services.ServerMessageServiceImpl
 import ch.threema.app.stores.EncryptedPreferenceStore
 import ch.threema.app.stores.PreferenceStore
-import ch.threema.app.tasks.TaskArchiverImpl
+import ch.threema.app.tasks.archive.TaskArchiverImpl
+import ch.threema.app.tasks.archive.recovery.TaskRecoveryManagerImpl
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.DeviceCookieManagerImpl
 import ch.threema.base.crypto.NonceFactory
@@ -56,7 +57,10 @@ class CoreServiceManagerImpl(
      * service manager has been set.
      */
     override val taskArchiver: TaskArchiverImpl by lazy {
-        TaskArchiverImpl(databaseService.taskArchiveFactory)
+        TaskArchiverImpl(
+            taskArchiveFactory = databaseService.taskArchiveFactory,
+            taskRecoveryManager = TaskRecoveryManagerImpl(),
+        )
     }
 
     /**

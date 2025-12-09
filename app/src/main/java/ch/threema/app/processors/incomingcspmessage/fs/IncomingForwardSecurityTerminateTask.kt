@@ -21,14 +21,14 @@
 
 package ch.threema.app.processors.incomingcspmessage.fs
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.Contact
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityDecryptionResult
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataTerminate
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingForwardSecurityTerminateTask")
+private val logger = getThreemaLogger("IncomingForwardSecurityTerminateTask")
 
 class IncomingForwardSecurityTerminateTask(
     private val forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor,

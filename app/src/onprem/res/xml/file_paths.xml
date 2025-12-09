@@ -9,7 +9,4 @@
     <external-path
         name="ext_files"
         path="ThreemaOnPrem/" />
-    <external-files-path
-        name="log_files"
-        path="tmp/" />
 </paths>

@@ -50,7 +50,7 @@ class OutgoingGroupEditMessageTask(
         val group = groupService.getById(message.groupId)
             ?: throw ThreemaException("No group model found for groupId=${message.groupId}")
 
-        val editedMessageIdLong = MessageId.fromString(message.apiMessageId).messageIdLong
+        val editedMessageIdLong = message.messageId!!.messageIdLong
 
         sendGroupMessage(
             group,

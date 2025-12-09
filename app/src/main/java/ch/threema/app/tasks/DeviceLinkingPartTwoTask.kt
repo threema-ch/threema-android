@@ -34,7 +34,7 @@ import ch.threema.app.webclient.services.instance.DisconnectContext
 import ch.threema.app.workers.AutoDeleteWorker
 import ch.threema.app.workers.ContactUpdateWorker
 import ch.threema.app.workers.WorkSyncWorker
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.protocol.rendezvous.DeviceJoinMessage
 import ch.threema.domain.protocol.rendezvous.RendezvousConnection
@@ -50,7 +50,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("DeviceLinkingPartTwoTask")
+private val logger = getThreemaLogger("DeviceLinkingPartTwoTask")
 
 class DeviceLinkingPartTwoTask(
     private val rendezvousConnection: RendezvousConnection,

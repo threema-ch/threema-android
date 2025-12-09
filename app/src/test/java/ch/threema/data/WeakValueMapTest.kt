@@ -23,7 +23,10 @@ package ch.threema.data
 
 import java.util.Date
 import kotlin.test.Test
-import org.junit.Assert
+import kotlin.test.assertEquals
+import kotlin.test.assertNotSame
+import kotlin.test.assertNull
+import kotlin.test.assertSame
 
 class WeakValueMapTest {
     @Test
@@ -32,11 +35,11 @@ class WeakValueMapTest {
         val date1 = map.getOrCreate("hello") { Date() }
         val date2 = map.getOrCreate("hello") { Date() }
         val date3 = map.getOrCreate("world") { Date() }
-        Assert.assertSame(date1, date2)
-        Assert.assertNotSame(date1, date3)
-        Assert.assertSame(date1, map.get("hello"))
-        Assert.assertSame(date3, map.get("world"))
-        Assert.assertNull(map.get("something-else"))
+        assertSame(date1, date2)
+        assertNotSame(date1, date3)
+        assertSame(date1, map.get("hello"))
+        assertSame(date3, map.get("world"))
+        assertNull(map.get("something-else"))
     }
 
     @Test
@@ -44,7 +47,7 @@ class WeakValueMapTest {
         val map = WeakValueMap<String, String>()
         val string1 = map.getOrCreate("hello") { "guten tag!" }
         val string2 = map.getOrCreate("not-found") { null }
-        Assert.assertEquals("guten tag!", string1)
-        Assert.assertNull(string2)
+        assertEquals("guten tag!", string1)
+        assertNull(string2)
     }
 }

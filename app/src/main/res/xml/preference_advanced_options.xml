@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:key="pref_key_advanced_options"
     android:persistent="true"
     android:title="@string/prefs_advanced_options">
@@ -40,6 +41,20 @@
             android:key="@string/preferences__exportlog"
             android:summary="@string/prefs_exportlog_summary"
             android:title="@string/prefs_exportlog" />
+        <!-- TODO(ANDR-4339): The strings in the following preference need to be translated, and it needs to be made visible -->
+        <DropDownPreference
+            app:isPreferenceVisible="false"
+            android:defaultValue="@string/crash_reporting_value_always_ask"
+            android:entries="@array/list_crash_reporting"
+            android:entryValues="@array/list_crash_reporting_values"
+            android:key="@string/preferences__crash_reporting"
+            android:title="Automatically Report Crashes" />
+        <!-- TODO(ANDR-4339): The following preference should be removed -->
+        <Preference
+            app:isPreferenceVisible="false"
+            android:key="@string/preferences__cause_crash"
+            android:summary="Intentionally cause a crash to test crash reporting"
+            android:title="Trigger A Test Crash" />
     </PreferenceCategory>
     <PreferenceCategory
         android:key="pref_key_network"

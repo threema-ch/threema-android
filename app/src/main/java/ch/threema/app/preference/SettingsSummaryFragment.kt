@@ -21,6 +21,7 @@
 
 package ch.threema.app.preference
 
+import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -31,15 +32,21 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
+import ch.threema.app.activities.referral.ReferralActivity
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionUtil
-import ch.threema.app.utils.ConfigUtils.*
+import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.ConfigUtils.isOnPremBuild
+import ch.threema.app.utils.ConfigUtils.isTabletLayout
+import ch.threema.app.utils.ConfigUtils.isWorkBuild
+import ch.threema.app.utils.ConfigUtils.isWorkRestricted
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.app.webviews.WorkExplainActivity
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.consume
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("SettingsSummaryFragment")
+private val logger = getThreemaLogger("SettingsSummaryFragment")
 
 class SettingsSummaryFragment : ThreemaPreferenceFragment() {
     init {
@@ -97,15 +104,32 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
             requireActivity().intent.extras?.get(SettingsActivity.EXTRA_SHOW_SECURITY_FRAGMENT) == true -> "pref_key_security"
             else -> "pref_key_privacy"
         }
+
+        initializeReferralBanner()
+
         if (isTabletLayout()) {
             Handler(Looper.getMainLooper()).also {
-                it.post(object : Runnable {
-                    override fun run() {
-                        if (!onPrefClicked(prefKey)) {
-                            it.postDelayed(this, 100)
+                it.post(
+                    object : Runnable {
+                        override fun run() {
+                            if (!onPrefClicked(prefKey)) {
+                                it.postDelayed(this, 100)
+                            }
                         }
-                    }
-                })
+                    },
+                )
+            }
+        }
+    }
+
+    private fun initializeReferralBanner() {
+        val referralBannerPref = getPrefOrNull<Preference>(R.string.preferences__referral_banner) ?: return
+        if (ConfigUtils.isReferralProgramEnabled()) {
+            referralBannerPref.isVisible = true
+            referralBannerPref.setOnPreferenceClickListener {
+                consume {
+                    startActivity(Intent(requireContext(), ReferralActivity::class.java))
+                }
             }
         }
     }

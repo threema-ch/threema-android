@@ -35,10 +35,10 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class VideoTranscoderUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoTranscoderUtil");
+    private static final Logger logger = getThreemaLogger("VideoTranscoderUtil");
     private static final String KEY_ROTATION = "rotation"; // not to be confused with MediaFormat.KEY_ROTATION
 
     public static class OutputDimensions {

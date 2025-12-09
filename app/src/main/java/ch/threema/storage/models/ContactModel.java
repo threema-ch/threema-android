@@ -38,7 +38,7 @@ import ch.threema.data.datatypes.IdColor;
 import ch.threema.base.crypto.NaCl;
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.BasicContact;
 import ch.threema.domain.models.IdentityState;
@@ -50,9 +50,10 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 import static ch.threema.app.utils.TextUtil.SPACE;
 import static ch.threema.app.utils.TextUtil.TILDE;
 
+@Deprecated
 public class ContactModel extends Contact implements ReceiverModel {
 
-    private final static Logger logger = LoggingUtil.getThreemaLogger("ContactModel");
+    private final static Logger logger = getThreemaLogger("ContactModel");
 
     public static final String TABLE = "contacts";
     public static final String COLUMN_IDENTITY = "identity";

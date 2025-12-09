@@ -45,7 +45,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -53,7 +53,7 @@ import ch.threema.storage.models.ServerMessageModel;
 
 @WorkerThread
 public class TextMessageCreateHandler extends MessageCreateHandler {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("TextMessageCreateHandler");
+    private static final Logger logger = getThreemaLogger("TextMessageCreateHandler");
 
     private static final String FIELD_TEXT = "text";
     private static final String FIELD_QUOTE = "quote";

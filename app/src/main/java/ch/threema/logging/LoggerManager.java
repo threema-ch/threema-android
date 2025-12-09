@@ -44,7 +44,7 @@ import ch.threema.logging.backend.LogcatBackend;
  * <p>
  * Do not use this manager directly, instead log through SLF4J! For example:
  * <p>
- * private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaApplication");
+ * private static final Logger logger = getThreemaLogger("ThreemaApplication");
  * ...
  * logger.debug("This is a debug log");
  */

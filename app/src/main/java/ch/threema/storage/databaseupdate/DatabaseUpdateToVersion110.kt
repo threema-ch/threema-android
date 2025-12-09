@@ -23,11 +23,11 @@ package ch.threema.storage.databaseupdate
 
 import android.database.Cursor
 import ch.threema.base.crypto.NaCl
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.types.Identity
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
-private val logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion110")
+private val logger = getThreemaLogger("DatabaseUpdateToVersion110")
 
 class DatabaseUpdateToVersion110(
     private val sqLiteDatabase: SQLiteDatabase,

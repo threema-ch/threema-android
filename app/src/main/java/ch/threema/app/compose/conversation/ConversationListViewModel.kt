@@ -24,6 +24,7 @@ package ch.threema.app.compose.conversation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ch.threema.app.compose.conversation.models.ConversationListItemUiModel
+import ch.threema.app.drafts.DraftManager
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationService
@@ -51,6 +52,7 @@ class ConversationListViewModel(
     private val groupService: GroupService,
     private val distributionListService: DistributionListService,
     private val ringtoneService: RingtoneService,
+    private val draftManager: DraftManager,
 ) : ViewModel() {
     private val watchConversationListItemsUseCase = WatchUnarchivedConversationListItemsUseCase(
         watchUnarchivedConversationsUseCase = WatchUnarchivedConversationsUseCase(
@@ -68,6 +70,7 @@ class ConversationListViewModel(
         groupService = groupService,
         distributionListService = distributionListService,
         ringtoneService = ringtoneService,
+        draftManager = draftManager,
     )
 
     val conversationListItemUiModels: StateFlow<List<ConversationListItemUiModel>> =

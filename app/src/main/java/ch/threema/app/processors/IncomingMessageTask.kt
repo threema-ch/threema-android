@@ -30,8 +30,8 @@ import ch.threema.app.services.ContactServiceImpl
 import ch.threema.app.tasks.ActiveComposableTask
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceScope
-import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData
@@ -66,7 +66,7 @@ import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingMessageTask")
+private val logger = getThreemaLogger("IncomingMessageTask")
 
 class IncomingMessageTask(
     private val messageBox: MessageBox,
@@ -227,7 +227,7 @@ class IncomingMessageTask(
         updateReceivedTimestamp(message, receivedTimestamp ?: now().time.toULong())
 
         // If the message type requires automatic delivery receipts and the message does not contain
-        // the "no delivery receipt" flag, schedule the sending a delivery receipt
+        // the "no delivery receipt" flag, schedule the sending of a delivery receipt
         if (message.sendAutomaticDeliveryReceipt() &&
             !message.hasFlag(ProtocolDefines.MESSAGE_FLAG_NO_DELIVERY_RECEIPTS)
         ) {
@@ -461,7 +461,7 @@ class IncomingMessageTask(
                     readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
                     typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
                     isArchived = false,
-                    androidContactLookupKey = null,
+                    androidContactLookupInfo = null,
                     localAvatarExpires = null,
                     isRestored = false,
                     profilePictureBlobId = null,

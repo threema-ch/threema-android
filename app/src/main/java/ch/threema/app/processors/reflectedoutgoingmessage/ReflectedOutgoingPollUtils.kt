@@ -24,7 +24,7 @@ package ch.threema.app.processors.reflectedoutgoingmessage
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.ballot.BallotService
 import ch.threema.app.utils.BallotUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData
 import ch.threema.domain.protocol.csp.messages.ballot.BallotDataChoice
@@ -35,7 +35,7 @@ import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ballot.BallotChoiceModel
 import ch.threema.storage.models.ballot.BallotModel
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingPollUtils")
+private val logger = getThreemaLogger("ReflectedOutgoingPollUtils")
 
 fun handleReflectedOutgoingPoll(
     pollSetupMessage: BallotSetupInterface,

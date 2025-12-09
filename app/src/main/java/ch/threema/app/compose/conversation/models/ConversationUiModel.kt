@@ -22,7 +22,7 @@
 package ch.threema.app.compose.conversation.models
 
 import androidx.compose.runtime.Immutable
-import ch.threema.app.compose.common.ResolvableString
+import ch.threema.android.ResolvableString
 import ch.threema.app.utils.TextUtil
 import ch.threema.domain.types.ConversationUID
 import ch.threema.storage.models.AbstractMessageModel

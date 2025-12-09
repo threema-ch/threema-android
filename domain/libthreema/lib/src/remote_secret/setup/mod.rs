@@ -21,10 +21,22 @@ pub mod delete;
 /// When encountering an error:
 ///
 /// 1. Let `error` be the provided [`RemoteSecretSetupError`].
-/// 2. Run the steps defined for `error`. If none are specified, abort the protocol due to `error` and retry
-///    in 10s.
+/// 2. If `error` is [`RemoteSecretSetupError::InvalidCredentials`], notify the user that the Work credentials
+///    are invalid and request new ones before making a new attempt.
+/// 3. Notify the user according to `error` with the option to manually retry and abort the task.
 #[derive(Clone, Debug, thiserror::Error)]
 #[cfg_attr(feature = "uniffi", derive(uniffi::Error), uniffi(flat_error))]
+#[cfg_attr(
+    feature = "wasm",
+    derive(tsify::Tsify, serde::Serialize),
+    serde(
+        tag = "type",
+        content = "details",
+        rename_all = "kebab-case",
+        rename_all_fields = "camelCase"
+    ),
+    tsify(into_wasm_abi)
+)]
 pub enum RemoteSecretSetupError {
     /// Invalid parameter provided by foreign code.
     #[cfg(feature = "uniffi")]

@@ -23,6 +23,7 @@ package ch.threema.app.contactdetails;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -48,7 +49,7 @@ import org.slf4j.Logger;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -71,6 +72,7 @@ import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.GroupDetailActivity;
+import ch.threema.app.camera.QRScannerActivity;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.mediagallery.MediaGalleryActivity;
 import ch.threema.app.activities.ThreemaActivity;
@@ -96,7 +98,6 @@ import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.services.QRCodeService;
 import ch.threema.app.tasks.ForwardSecurityStateLogTask;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.ResumePauseHandler;
@@ -106,18 +107,17 @@ import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShareUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
+import ch.threema.app.qrcodes.ContactUrlUtil;
+import ch.threema.app.qrcodes.ContactUrlResult;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.webviews.WorkExplainActivity;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.domain.models.VerificationLevel;
@@ -125,7 +125,8 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 import kotlin.Lazy;
 
-import static ch.threema.app.utils.QRScannerUtil.REQUEST_CODE_QR_SCANNER;
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
+import static ch.threema.common.LazyKt.lazy;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static org.koin.core.parameter.ParametersHolderKt.parametersOf;
 
@@ -133,7 +134,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     implements LifecycleOwner,
     GenericAlertDialog.DialogClickListener,
     ContactEditDialog.ContactEditDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactDetailActivity");
+    private static final Logger logger = getThreemaLogger("ContactDetailActivity");
 
     private static final String DIALOG_TAG_EDIT = "cedit";
     private static final String DIALOG_TAG_DELETE_CONTACT = "deleteContact";
@@ -147,6 +148,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     private static final String RUN_ON_ACTIVE_RELOAD_GROUP = "reload_group";
 
     private static final int REQUEST_CODE_CONTACT_EDITOR = 39255;
+    private static final int REQUEST_CODE_QR_SCANNER = 26657;
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
@@ -154,7 +156,8 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     @NonNull
     private final Lazy<AndroidContactUtil> androidContactUtil = KoinJavaComponent.inject(AndroidContactUtil.class);
 
-    private final @NonNull LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
+    @NonNull
+    private final Lazy<BackgroundExecutor> backgroundExecutor = lazy(BackgroundExecutor::new);
 
     // Data and state holders
     private String identity;
@@ -363,7 +366,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }
@@ -663,7 +666,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     }
 
     private void removeContactConfirmed(final boolean addToExcludeList) {
-        backgroundExecutor.get().execute(
+        backgroundExecutor.getValue().execute(
             new DialogMarkContactAsDeletedBackgroundTask(
                 getSupportFragmentManager(),
                 new WeakReference<>(this),
@@ -675,7 +678,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                     dependencies.getConversationService(),
                     dependencies.getRingtoneService(),
                     dependencies.getConversationCategoryService(),
-                    dependencies.getIdListService(),
+                    dependencies.getProfilePictureRecipientsService(),
                     dependencies.getWallpaperService(),
                     dependencies.getFileService(),
                     dependencies.getExcludedSyncIdentitiesService(),
@@ -812,10 +815,10 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                 startActivity(mediaGalleryIntent);
             }
         } else if (id == R.id.action_add_profilepic_recipient) {
-            if (!dependencies.getProfilePicRecipientsService().has(this.identity)) {
-                dependencies.getProfilePicRecipientsService().add(this.identity);
+            if (!dependencies.getProfilePictureRecipientsService().has(this.identity)) {
+                dependencies.getProfilePictureRecipientsService().add(this.identity);
             } else {
-                dependencies.getProfilePicRecipientsService().remove(this.identity);
+                dependencies.getProfilePictureRecipientsService().remove(this.identity);
             }
             updateProfilepicMenu();
         } else if (id == R.id.action_send_profilepic) {
@@ -864,7 +867,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                     break;
                 case PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST:
                     if (!ContactUtil.isEchoEchoOrGatewayContact(contact)) {
-                        if (dependencies.getProfilePicRecipientsService().has(this.identity)) {
+                        if (dependencies.getProfilePictureRecipientsService().has(this.identity)) {
                             profilePicItem.setTitle(R.string.menu_send_profilpic_off);
                             profilePicItem.setIcon(R.drawable.ic_person_remove_outline);
                             profilePicSendItem.setVisible(true);
@@ -890,7 +893,8 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     }
 
     private void scanQR() {
-        QRScannerUtil.getInstance().initiateScan(this, null);
+        var intent = QRScannerActivity.createIntent(this);
+        startActivityForResult(intent, REQUEST_CODE_QR_SCANNER);
     }
 
     @Override
@@ -913,12 +917,17 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                 this.refreshAdapter();
                 break;
             case REQUEST_CODE_QR_SCANNER:
-                var qrCodeService = dependencies.getQrCodeService();
-                QRCodeService.QRCodeContentResult qrRes =
-                    QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent, qrCodeService);
-
-                if (qrRes != null) {
-                    applyQRCodeResult(qrRes);
+                if (resultCode == Activity.RESULT_OK) {
+                    var qrCodeText = QRScannerActivity.extractResult(intent);
+                    if (qrCodeText != null) {
+                        ContactUrlUtil contactUrlUtil = KoinJavaComponent.get(ContactUrlUtil.class);
+                        var result = contactUrlUtil.parse(qrCodeText);
+                        if (result != null) {
+                            applyQRCodeResult(result);
+                            break;
+                        }
+                    }
+                    SimpleStringAlertDialog.newInstance(R.string.scan_id, R.string.invalid_threema_qr_code).show(getSupportFragmentManager(), "");
                 }
                 break;
             case REQUEST_CODE_CONTACT_EDITOR:
@@ -960,13 +969,13 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         onCreateLocal();
     }
 
-    private void applyQRCodeResult(@NonNull QRCodeService.QRCodeContentResult qrRes) {
-        if (qrRes.getExpirationDate() != null && qrRes.getExpirationDate().before(new Date())) {
+    private void applyQRCodeResult(@NonNull ContactUrlResult contactUrlResult) {
+        if (contactUrlResult.isExpired(Instant.now())) {
             SimpleStringAlertDialog.newInstance(R.string.title_adduser, getString(R.string.expired_barcode)).show(getSupportFragmentManager(), "expiredId");
             return;
         }
 
-        if (!TestUtil.compare(identity, qrRes.getIdentity())) {
+        if (!contactUrlResult.getIdentity().equals(identity)) {
             SimpleStringAlertDialog.newInstance(
                 R.string.scan_id_mismatch_title,
                 getString(R.string.scan_id_mismatch_message)).show(getSupportFragmentManager(), "scanId");
@@ -981,7 +990,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             dependencies.getContactModelRepository(),
             AddContactRestrictionPolicy.CHECK,
             this,
-            qrRes.getPublicKey()
+            contactUrlResult.getPublicKey()
         ) {
             @Override
             public String onContactAdded(@NonNull ContactResult result) {
@@ -1009,7 +1018,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             }
         };
 
-        backgroundExecutor.get().execute(task);
+        backgroundExecutor.getValue().execute(task);
     }
 
     @Override

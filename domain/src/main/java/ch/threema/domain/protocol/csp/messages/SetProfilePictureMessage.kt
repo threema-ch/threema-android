@@ -21,16 +21,17 @@
 
 package ch.threema.domain.protocol.csp.messages
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.buildByteArray
+import ch.threema.common.emptyByteArray
+import ch.threema.common.writeLittleEndianInt
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
-import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
-import org.apache.commons.io.EndianUtils
 
-private val logger = LoggingUtil.getThreemaLogger("ContactSetPhotoMessage")
+private val logger = getThreemaLogger("ContactSetPhotoMessage")
 
 /**
  * A profile picture uploaded as a blob
@@ -70,18 +71,17 @@ class SetProfilePictureMessage(
 
     override fun bumpLastUpdate(): Boolean = false
 
-    override fun getBody(): ByteArray {
+    override fun getBody(): ByteArray =
         try {
-            val bos = ByteArrayOutputStream()
-            bos.write(blobId)
-            EndianUtils.writeSwappedInteger(bos, size)
-            bos.write(encryptionKey)
-            return bos.toByteArray()
+            buildByteArray {
+                write(blobId)
+                writeLittleEndianInt(size)
+                write(encryptionKey)
+            }
         } catch (e: Exception) {
             logger.error(e.message)
-            return byteArrayOf()
+            emptyByteArray()
         }
-    }
 
     companion object {
         @JvmStatic

@@ -77,11 +77,11 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.VideoUtil;
 import ch.threema.app.video.VideoTimelineThumbnailTask;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 @UnstableApi
 public class VideoEditView extends FrameLayout implements VideoTimelineThumbnailTask.VideoTimelineListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoEditView");
+    private static final Logger logger = getThreemaLogger("VideoEditView");
 
     private static final int MOVING_NONE = 0;
     private static final int MOVING_LEFT = 1;

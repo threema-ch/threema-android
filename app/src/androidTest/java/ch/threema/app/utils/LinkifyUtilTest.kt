@@ -26,7 +26,7 @@ import android.text.style.URLSpan
 import android.widget.TextView
 import androidx.test.platform.app.InstrumentationRegistry
 import kotlin.test.Test
-import org.junit.Assert.assertEquals
+import kotlin.test.assertEquals
 
 class LinkifyUtilTest {
     /**

@@ -750,8 +750,9 @@
             android:theme="@style/Theme.Threema.WithToolbar"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".activities.BiometricLockActivity"
+            android:name=".applock.AppLockActivity"
             android:autoRemoveFromRecents="true"
+            android:launchMode="singleTop"
             android:theme="@style/Theme.Threema.BiometricUnlock" />
         <activity
             android:name=".activities.AppLinksActivity"
@@ -804,6 +805,10 @@
             android:theme="@style/Theme.Threema.WithToolbar"
             android:windowSoftInputMode="adjustResize" />
         <activity
+            android:name=".activities.referral.ReferralActivity"
+            android:configChanges="touchscreen|orientation|screenLayout|screenSize|uiMode"
+            android:theme="@style/Theme.Threema.WithToolbar" />
+        <activity
             android:name=".location.MapActivity"
             android:configChanges="keyboardHidden|screenSize|screenLayout|uiMode"
             android:exported="true"
@@ -852,7 +857,7 @@
             android:launchMode="singleTask"
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
-            android:name=".activities.ProblemSolverActivity"
+            android:name=".problemsolving.ProblemSolverActivity"
             android:launchMode="singleTop"
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity

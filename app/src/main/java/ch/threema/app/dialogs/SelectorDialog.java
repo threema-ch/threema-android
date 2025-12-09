@@ -46,12 +46,12 @@ import java.util.ArrayList;
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiTextView;
 import ch.threema.app.ui.SelectorDialogItem;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class SelectorDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SelectorDialog");
+    private static final Logger logger = getThreemaLogger("SelectorDialog");
     private SelectorDialogClickListener callback;
     private SelectorDialogInlineClickListener inlineCallback;
     private Activity activity;

@@ -31,10 +31,10 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ExponentialBackOffUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class MessageSendingServiceExponentialBackOff implements MessageSendingService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageSendingServiceExponentialBackOff");
+    private static final Logger logger = getThreemaLogger("MessageSendingServiceExponentialBackOff");
 
     private final MessageSendingServiceState messageSendingServiceState;
     private final HashMap<String, Future<?>> backoffFutures = new HashMap<>();
@@ -57,7 +57,6 @@ public class MessageSendingServiceExponentialBackOff implements MessageSendingSe
                     if (x instanceof FileNotFoundException && ConfigUtils.isOnPremBuild()) {
                         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
                         if (serviceManager != null) {
-                            logger.info("Invalidating auth token");
                             serviceManager.getApiService().invalidateAuthToken();
                         }
                     }

@@ -125,7 +125,7 @@ import ch.threema.app.voip.util.VoipStats;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.voip.util.VoipVideoParams;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
@@ -145,7 +145,7 @@ import java8.util.stream.StreamSupport;
  * The service keeping track of VoIP call state and the corresponding WebRTC peer connection.
  */
 public class VoipCallService extends LifecycleService implements PeerConnectionClient.Events {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipCallService");
+    private static final Logger logger = getThreemaLogger("VoipCallService");
 
     // Intent extras
     public static final String EXTRA_CALL_ID = "CALL_ID";
@@ -380,7 +380,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
             // Determine whether a TURN relay is being used
             final boolean usesRelay = stats.usesRelay();
-            RuntimeUtil.runInAsyncTask(() -> updateNetworkRelayState(usesRelay));
+            RuntimeUtil.runOnWorkerThread(() -> updateNetworkRelayState(usesRelay));
 
             // Create debug text
             final StringBuilder builder = new StringBuilder();
@@ -439,7 +439,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
             // Determine whether a TURN relay is being used
             final boolean usesRelay = stats.usesRelay();
-            RuntimeUtil.runInAsyncTask(() -> updateNetworkRelayState(usesRelay));
+            RuntimeUtil.runOnWorkerThread(() -> updateNetworkRelayState(usesRelay));
 
             // Update state
             this.previousState = stats.getState();

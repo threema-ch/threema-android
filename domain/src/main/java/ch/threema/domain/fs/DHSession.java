@@ -32,7 +32,7 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
@@ -48,7 +48,7 @@ import ch.threema.protobuf.csp.e2e.fs.VersionRange;
  * ECDH key exchange and ratcheting session for forward security
  */
 public class DHSession {
-    private final static Logger logger = LoggingUtil.getThreemaLogger("DHSession");
+    private final static Logger logger = getThreemaLogger("DHSession");
 
     protected static final String KE_SALT_2DH_PREFIX = "ke-2dh-";
     protected static final String KE_SALT_4DH_PREFIX = "ke-4dh-";

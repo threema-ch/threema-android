@@ -96,7 +96,7 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
@@ -109,7 +109,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
     MediaGalleryAdapter.OnClickItemListener,
     GenericAlertDialog.DialogClickListener,
     ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaGalleryActivity");
+    private static final Logger logger = getThreemaLogger("MediaGalleryActivity");
 
     private static final String DIALOG_TAG_DECRYPTING_MESSAGES = "dialog_decrypting_messages";
 

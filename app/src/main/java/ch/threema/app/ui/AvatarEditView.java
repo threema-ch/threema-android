@@ -22,6 +22,7 @@
 package ch.threema.app.ui;
 
 import static android.app.Activity.RESULT_OK;
+import static ch.threema.android.BitmapExtensionsKt.calculateBrightness;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -79,14 +80,12 @@ import ch.threema.app.activities.CropImageActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.groupflows.GroupChanges;
+import ch.threema.app.groupflows.GroupChanges.ProfilePictureChange;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ProfileListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.profilepicture.CheckedProfilePicture;
-import ch.threema.app.protocol.ProfilePictureChange;
-import ch.threema.app.protocol.RemoveProfilePicture;
-import ch.threema.app.protocol.SetProfilePicture;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupFlowDispatcher;
@@ -95,14 +94,13 @@ import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.AvatarConverterUtil;
 import ch.threema.app.utils.BitmapUtil;
-import ch.threema.app.utils.ColorUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.data.repositories.GroupModelRepository;
@@ -110,7 +108,7 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
 public class AvatarEditView extends FrameLayout implements DefaultLifecycleObserver, View.OnClickListener, View.OnLongClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarEditView");
+    private static final Logger logger = getThreemaLogger("AvatarEditView");
     private static final int REQUEST_CODE_FILE_SELECTOR_ID = 43320;
     private static final int REQUEST_CODE_CAMERA_PERMISSION = 43321;
     private static final int REQUEST_CODE_CAMERA = 43322;
@@ -447,8 +445,8 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
         }
 
         ProfilePictureChange profilePictureChange = profilePicture != null
-            ? new SetProfilePicture(profilePicture, null)
-            : RemoveProfilePicture.INSTANCE;
+            ? new ProfilePictureChange.Set(profilePicture)
+            : ProfilePictureChange.Remove.INSTANCE;
 
         groupFlowDispatcher.runUpdateGroupFlow(
             new GroupChanges(
@@ -463,7 +461,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
     private void openCamera() {
         try {
-            viewModel.setCameraFile(fileService.createTempFile(".camera", ".jpg", false));
+            viewModel.setCameraFile(fileService.createTempFile(".camera", ".jpg"));
             FileUtil.getCameraFile(getActivity(), getFragment(), viewModel.getCameraFile(), REQUEST_CODE_CAMERA, fileService, true);
         } catch (Exception e) {
             logger.error("Exception", e);
@@ -518,7 +516,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
                             ContentResolver contentResolver = getContext().getContentResolver();
                             String mimeType = contentResolver.getType(intent.getData());
                             if (MimeUtil.isSupportedImageFile(mimeType)) {
-                                viewModel.setCameraFile(fileService.createTempFile(".camera", ".jpg", false));
+                                viewModel.setCameraFile(fileService.createTempFile(".camera", ".jpg"));
                                 try (InputStream is = contentResolver.openInputStream(intent.getData());
                                      FileOutputStream fos = new FileOutputStream(viewModel.getCameraFile())) {
                                     if (is != null) {
@@ -562,7 +560,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
                                         } else {
                                             contactService.setUserDefinedProfilePicture(
                                                 identity,
-                                                profilePicture.getProfilePictureBytes(),
+                                                profilePicture.getBytes(),
                                                 TriggerSource.LOCAL
                                             );
                                         }
@@ -677,7 +675,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
             } catch (RuntimeException e) {
                 logger.error("Unable to set avatar bitmap", e);
             }
-            if (ColorUtil.getInstance().calculateBrightness(bitmap, 2) > 100) {
+            if (calculateBrightness(bitmap) > 100) {
                 this.avatarImage.setColorFilter(getResources().getColor(R.color.material_grey_300), PorterDuff.Mode.DARKEN);
             } else {
                 this.avatarImage.clearColorFilter();
@@ -700,7 +698,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
             return fileService.hasUserDefinedProfilePicture(this.viewModel.getContactIdentity())
                 || fileService.hasContactDefinedProfilePicture(this.viewModel.getContactIdentity());
         } else if (this.viewModel.getGroupModel() != null) {
-            return fileService.hasGroupAvatarFile(this.viewModel.getGroupModel());
+            return fileService.hasGroupProfilePicture(this.viewModel.getGroupModel().getId());
         }
         return false;
     }
@@ -730,7 +728,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
     }
 
     private void adjustColorFilter(@Nullable Bitmap bitmap) {
-        if (bitmap != null && ColorUtil.getInstance().calculateBrightness(bitmap, 2) > 100) {
+        if (bitmap != null && calculateBrightness(bitmap) > 100) {
             AvatarEditView.this.avatarImage.setColorFilter(ContextCompat.getColor(getContext(), R.color.material_grey_300), PorterDuff.Mode.DARKEN);
         } else {
             AvatarEditView.this.avatarImage.clearColorFilter();

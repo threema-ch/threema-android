@@ -51,13 +51,13 @@ import ch.threema.app.utils.AudioDevice;
 import ch.threema.app.voip.listeners.VoipAudioManagerListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.util.AppRTCUtils;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * VoipAudioManager manages all audio related parts of the Threema VoIP calls.
  */
 public class VoipAudioManager {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipAudioManager");
+    private static final Logger logger = getThreemaLogger("VoipAudioManager");
     private static final String TAG = "VoipAudioManager";
 
     /**

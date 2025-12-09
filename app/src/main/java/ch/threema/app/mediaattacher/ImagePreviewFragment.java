@@ -41,13 +41,13 @@ import org.slf4j.Logger;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withCrossFade;
 
 public class ImagePreviewFragment extends PreviewFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ImagePreviewFragment");
+    private static final Logger logger = getThreemaLogger("ImagePreviewFragment");
 
     private SubsamplingScaleImageView scaleImageView;
     private ImageView imageView;

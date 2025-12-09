@@ -24,19 +24,20 @@ package ch.threema.app.mediagallery
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.common.toggle
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.MessageContentsType
+import kotlinx.coroutines.launch
 
 class MediaGalleryViewModel(
     private val preferenceService: PreferenceService,
+    private val mediaGalleryRepository: MediaGalleryRepository,
     private val messageReceiver: MessageReceiver<*>,
 ) : ViewModel() {
-    private val mediaGalleryRepository: MediaGalleryRepository = MediaGalleryRepository()
-
-    val messages: LiveData<List<AbstractMessageModel?>?> = mediaGalleryRepository.messages
+    val messages: LiveData<List<AbstractMessageModel>?> = mediaGalleryRepository.messages
 
     private val _selectedContentTypes: MutableLiveData<Set<Int>> = MutableLiveData()
     val selectedContentTypes: LiveData<Set<Int>> = _selectedContentTypes
@@ -79,10 +80,12 @@ class MediaGalleryViewModel(
 
     private fun loadSelectedMessages() {
         val currentlySelectedContentTypes: Set<Int> = _selectedContentTypes.value ?: return
-        mediaGalleryRepository.loadMessages(
-            messageReceiver = messageReceiver,
-            contentTypes = currentlySelectedContentTypes,
-        )
+        viewModelScope.launch {
+            mediaGalleryRepository.loadMessages(
+                messageReceiver = messageReceiver,
+                contentTypes = currentlySelectedContentTypes,
+            )
+        }
     }
 
     companion object {

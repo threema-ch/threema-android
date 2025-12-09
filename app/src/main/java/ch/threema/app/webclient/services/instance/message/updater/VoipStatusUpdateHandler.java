@@ -42,14 +42,14 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.converter.VoipStatus;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Subscribe to Voip Status listener. Send them to Threema Web as update messages.
  */
 @WorkerThread
 public class VoipStatusUpdateHandler extends MessageUpdater {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipStatusUpdateHandler");
+    private static final Logger logger = getThreemaLogger("VoipStatusUpdateHandler");
 
     @Retention(RetentionPolicy.SOURCE)
     @StringDef({

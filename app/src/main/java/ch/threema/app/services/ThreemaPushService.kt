@@ -44,10 +44,10 @@ import ch.threema.app.activities.ThreemaPushNotificationInfoActivity
 import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.webclient.services.SessionAndroidService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import org.slf4j.Logger
 
-private val logger = LoggingUtil.getThreemaLogger("ThreemaPushService")
+private val logger = getThreemaLogger("ThreemaPushService")
 
 class ThreemaPushService : Service() {
     // Threema services

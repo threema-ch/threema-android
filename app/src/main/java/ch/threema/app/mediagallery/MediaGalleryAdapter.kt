@@ -41,9 +41,9 @@ import ch.threema.app.R
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.ui.CheckableFrameLayout
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.ElapsedTimeFormatter
 import ch.threema.app.utils.IconUtil
 import ch.threema.app.utils.MimeUtil
-import ch.threema.app.utils.StringConversionUtil
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.MessageContentsType
@@ -197,8 +197,7 @@ class MediaGalleryAdapter(
                                 }
 
                                 if (duration > 0) {
-                                    holder.videoDuration?.text =
-                                        StringConversionUtil.secondsToString(duration, false)
+                                    holder.videoDuration?.text = ElapsedTimeFormatter.secondsToString(duration)
                                     holder.videoDuration?.visibility = View.VISIBLE
                                 } else {
                                     holder.videoDuration?.visibility = View.GONE
@@ -244,7 +243,7 @@ class MediaGalleryAdapter(
             } else {
                 0
             }
-            holder.vmDuration?.text = StringConversionUtil.secondsToString(duration, false)
+            holder.vmDuration?.text = ElapsedTimeFormatter.secondsToString(duration)
             holder.vmContainerView?.visibility = View.VISIBLE
             holder.textContainerView?.visibility = View.GONE
         } else if (messageModel.type == MessageType.FILE) {

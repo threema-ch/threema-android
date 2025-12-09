@@ -22,7 +22,7 @@
 package ch.threema.domain.protocol.csp.messages.voip;
 
 import androidx.annotation.NonNull;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.base.utils.JSONUtil;
 
@@ -35,7 +35,7 @@ import java.io.ByteArrayOutputStream;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class VoipCallRingingData extends VoipCallData<VoipCallRingingData> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipCallRingingData");
+    private static final Logger logger = getThreemaLogger("VoipCallRingingData");
 
     //region Serialization
 

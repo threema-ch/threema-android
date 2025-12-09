@@ -44,10 +44,10 @@ import ch.threema.app.dialogs.WizardDialog;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class WizardFragment4 extends WizardFragment implements View.OnClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment4");
+    private static final Logger logger = getThreemaLogger("WizardFragment4");
     private TextView nicknameText, phoneText, emailText, syncContactsText, phoneWarnText, emailWarnText, safeText;
     private ImageView phoneWarn, emailWarn;
     private ProgressBar phoneProgress, emailProgress, syncContactsProgress, safeProgress;

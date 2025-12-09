@@ -84,7 +84,7 @@ internal interface PipeSink<T, C> {
 }
 
 /**
- * An [InputPipe] is a [Pipe] that can be used to send messages into the [Pipe] with it's [send] method.
+ * An [InputPipe] is a [Pipe] that can be used to send messages into the [Pipe] with its [send] method.
  */
 internal open class InputPipe<T, C> : Pipe<T, C> {
     private var handler: PipeHandler<T>? = null

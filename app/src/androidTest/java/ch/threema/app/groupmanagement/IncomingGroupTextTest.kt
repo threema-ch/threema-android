@@ -26,8 +26,8 @@ import androidx.test.filters.LargeTest
 import ch.threema.app.DangerousTest
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage
 import kotlin.test.Test
+import kotlin.test.assertTrue
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert
 import org.junit.runner.RunWith
 
 /**
@@ -50,8 +50,8 @@ class IncomingGroupTextTest : GroupControlTest<GroupTextMessage>() {
         // listener. Therefore it is sufficient to test that processing a message succeeds.
         processMessage(firstMessage, contactA.identityStore)
 
-        Assert.assertTrue(sentMessagesInsideTask.isEmpty())
-        Assert.assertTrue(sentMessagesNewTask.isEmpty())
+        assertTrue(sentMessagesInsideTask.isEmpty())
+        assertTrue(sentMessagesNewTask.isEmpty())
     }
 
     override fun createMessageForGroup(): GroupTextMessage {

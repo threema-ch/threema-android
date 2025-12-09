@@ -21,21 +21,31 @@
 
 package ch.threema.app.di.modules
 
+import ch.threema.app.activities.referral.referralFeatureModule
+import ch.threema.app.applock.appLockFeatureModule
+import ch.threema.app.apptaskexecutor.appTaskExecutorFeatureModule
 import ch.threema.app.archive.archiveFeatureModule
 import ch.threema.app.camera.cameraFeatureModule
 import ch.threema.app.compose.edithistory.editHistoryFeatureModule
 import ch.threema.app.contactdetails.contactDetailsFeatureModule
+import ch.threema.app.crashreporting.crashReportingModule
 import ch.threema.app.dialogs.loadingtimeout.LoadingWithTimeoutDialogViewModel
+import ch.threema.app.drafts.draftsFeatureModule
 import ch.threema.app.emojireactions.emojiReactionsFeatureModule
+import ch.threema.app.files.filesFeatureModule
 import ch.threema.app.globalsearch.globalSearchFeatureModule
 import ch.threema.app.home.homeFeatureModule
 import ch.threema.app.location.locationFeatureModule
+import ch.threema.app.logging.loggingFeatureModule
 import ch.threema.app.mediaattacher.mediaAttacherFeatureModule
 import ch.threema.app.mediagallery.mediaGalleryFeatureModule
 import ch.threema.app.messagedetails.messageDetailsFeatureModule
 import ch.threema.app.multidevice.multiDeviceFeatureModule
 import ch.threema.app.onprem.onPremFeatureModule
 import ch.threema.app.passphrase.passphraseFeatureModule
+import ch.threema.app.preference.preferenceFeatureModule
+import ch.threema.app.problemsolving.problemSolvingFeatureModule
+import ch.threema.app.qrcodes.qrCodesFeatureModule
 import ch.threema.app.startup.startupFeatureModule
 import ch.threema.app.ui.AvatarEditViewModel
 import ch.threema.app.ui.GroupDetailViewModel
@@ -43,6 +53,8 @@ import ch.threema.app.ui.ServerMessageViewModel
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.voip.voipFeatureModule
 import ch.threema.app.webclient.webclientFeatureModule
+import ch.threema.app.widget.widgetFeatureModule
+import ch.threema.localcrypto.localCryptoFeatureModule
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -51,22 +63,34 @@ import org.koin.dsl.module
  */
 val featuresModule = module {
     includes(
+        appLockFeatureModule,
+        appTaskExecutorFeatureModule,
         archiveFeatureModule,
         cameraFeatureModule,
         contactDetailsFeatureModule,
+        crashReportingModule,
+        draftsFeatureModule,
         editHistoryFeatureModule,
         emojiReactionsFeatureModule,
+        filesFeatureModule,
         globalSearchFeatureModule,
         homeFeatureModule,
+        loggingFeatureModule,
+        localCryptoFeatureModule,
         locationFeatureModule,
         mediaAttacherFeatureModule,
         mediaGalleryFeatureModule,
         messageDetailsFeatureModule,
         multiDeviceFeatureModule,
         passphraseFeatureModule,
+        preferenceFeatureModule,
+        problemSolvingFeatureModule,
+        qrCodesFeatureModule,
         startupFeatureModule,
         voipFeatureModule,
         webclientFeatureModule,
+        widgetFeatureModule,
+        referralFeatureModule,
     )
 
     if (ConfigUtils.isOnPremBuild()) {

@@ -16,6 +16,7 @@ use crate::{
         RemoteSecretSetupContext, RemoteSecretSetupError, RemoteSecretSetupInstruction,
         RemoteSecretSetupResponse,
     },
+    utils::debug::Name as _,
 };
 
 /// 1. Update key storage according to the application data protection scheme to make use of the

@@ -44,25 +44,29 @@ import androidx.annotation.Px;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.button.MaterialButton;
 
+import org.koin.java.KoinJavaComponent;
+
 import java.lang.ref.WeakReference;
 
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.AddContactActivity;
 import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.QRCodeService;
-import ch.threema.app.services.QRCodeServiceImpl;
+import ch.threema.app.qrcodes.ContactUrlUtil;
+import ch.threema.app.qrcodes.QrCodeGenerator;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.ShareUtil;
 
 public class IdentityPopup extends DimmingPopupWindow {
 
     private WeakReference<Activity> activityRef = new WeakReference<>(null);
     private ImageView qrCodeView;
-    private QRCodeService qrCodeService;
+    private UserService userService;
+    private ContactUrlUtil contactUrlUtil;
+    private QrCodeGenerator qrCodeGenerator;
+
     private int animationCenterX, animationCenterY;
     private ProfileButtonListener profileButtonListener;
 
@@ -75,9 +79,9 @@ public class IdentityPopup extends DimmingPopupWindow {
             return;
         }
 
-        final UserService userService = serviceManager.getUserService();
-
-        qrCodeService = serviceManager.getQRCodeService();
+        userService = KoinJavaComponent.get(UserService.class);
+        contactUrlUtil = KoinJavaComponent.get(ContactUrlUtil.class);
+        qrCodeGenerator = KoinJavaComponent.get(QrCodeGenerator.class);
 
         LayoutInflater layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         FrameLayout popupLayout = (FrameLayout) layoutInflater.inflate(R.layout.popup_identity, null, false);
@@ -180,7 +184,12 @@ public class IdentityPopup extends DimmingPopupWindow {
         animationCenterX = offsetX;
         animationCenterY = 0;
 
-        Bitmap bitmap = qrCodeService.getUserQRCode();
+        var qrCodeContent = contactUrlUtil.generate(
+            userService.getIdentity(),
+            userService.getPublicKey()
+        );
+
+        Bitmap bitmap = qrCodeGenerator.generate(qrCodeContent);
         if (bitmap == null) {
             dismiss();
             return;

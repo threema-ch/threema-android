@@ -52,10 +52,10 @@ import android.widget.ListView;
 import org.slf4j.Logger;
 
 import ch.threema.app.R;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class ListViewTouchSwipeListener implements View.OnTouchListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ListViewTouchSwipeListener");
+    private static final Logger logger = getThreemaLogger("ListViewTouchSwipeListener");
 
     // Cached ViewConfiguration and system-wide constant values
     private int mSlop;

@@ -29,6 +29,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.core.app.NotificationCompat;
@@ -43,14 +44,13 @@ import ch.threema.app.passphrase.PassphraseLockActivity;
 import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.notifications.NotificationIDs;
 import ch.threema.app.services.notification.NotificationService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING;
 import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
-import static ch.threema.app.di.DIJavaCompat.getServiceManagerOrNull;
 
 public class PassphraseService extends Service {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("PassphraseService");
+    private static final Logger logger = getThreemaLogger("PassphraseService");
     private static Intent service;
     private static final int FG_SERVICE_TYPE =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
@@ -141,13 +141,11 @@ public class PassphraseService extends Service {
     private static void removePersistentNotification(Context context) {
         logger.debug("removePersistentNotification");
 
-        // ServiceManager may not yet be available at this point!
         NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
         notificationManagerCompat.cancel(NotificationIDs.PASSPHRASE_SERVICE_NOTIFICATION_ID);
 
-        var serviceManager = getServiceManagerOrNull();
-        if (serviceManager != null) {
-            NotificationService notificationService = serviceManager.getNotificationService();
+        NotificationService notificationService = KoinJavaComponent.getOrNull(NotificationService.class);
+        if (notificationService != null) {
             notificationService.cancelConversationNotificationsOnLockApp();
         }
     }

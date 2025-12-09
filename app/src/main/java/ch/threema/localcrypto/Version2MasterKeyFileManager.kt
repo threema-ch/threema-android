@@ -22,7 +22,7 @@
 package ch.threema.localcrypto
 
 import androidx.core.util.AtomicFile
-import ch.threema.base.writeAtomically
+import ch.threema.android.writeAtomically
 import ch.threema.localcrypto.models.MasterKeyStorageData
 import java.io.DataInputStream
 import java.io.File
@@ -35,8 +35,8 @@ import java.io.IOException
  */
 class Version2MasterKeyFileManager(
     private val keyFile: File,
-    private val encoder: Version2MasterKeyStorageEncoder = Version2MasterKeyStorageEncoder(),
-    private val decoder: Version2MasterKeyStorageDecoder = Version2MasterKeyStorageDecoder(),
+    private val encoder: Version2MasterKeyStorageEncoder,
+    private val decoder: Version2MasterKeyStorageDecoder,
 ) {
     fun keyFileExists() = keyFile.exists()
 

@@ -23,7 +23,7 @@ package ch.threema.app.processors.reflectedoutgoingmessage
 
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
@@ -33,7 +33,7 @@ import ch.threema.storage.models.data.LocationDataModel
 import ch.threema.storage.models.data.MessageContentsType
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingGroupLocationTask")
+private val logger = getThreemaLogger("ReflectedOutgoingGroupLocationTask")
 
 internal class ReflectedOutgoingGroupLocationTask(
     outgoingMessage: OutgoingMessage,

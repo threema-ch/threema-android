@@ -11,18 +11,25 @@ use crate::{
     csp_e2e::{CspE2eProtocolContext, CspE2eProtocolError, Flavor},
     https::{HttpsRequest, HttpsResult, directory, work_directory},
     model::contact::{Contact, ContactInit, ContactUpdateError},
-    utils::cache::TimedCache,
+    protobuf::d2d_sync::contact as protobuf_contact,
+    utils::{cache::TimedCache, debug::Name as _},
 };
 
 /// Contact that was looked up.
+///
+/// IMPORTANT: Existing contacts which have been revoked will be presented as [`ContactResult::Invalid`]
+/// (unlike [`ContactProvider::get`] which will yield an existing contact as-is)!
 #[derive(Clone)]
 pub(crate) enum ContactResult {
     /// The contact is the user itself.
     User,
-    /// The contact already exists.
+
+    /// The contact already exists and is valid (not revoked).
     ExistingContact(Contact),
-    /// The contact does not yet exist.
+
+    /// The contact does not yet exist and is not valid (not revoked).
     NewContact(ContactInit),
+
     /// The contact is invalid (has been revoked or never existed).
     Invalid(ThreemaId),
 }
@@ -82,6 +89,7 @@ pub(crate) enum CacheLookupPolicy {
 pub(crate) enum CachedContactResult {
     /// The contact does not yet exist.
     NewContact(ContactInit),
+
     /// The contact is invalid (has been revoked or never existed).
     Invalid(ThreemaId),
 }
@@ -163,11 +171,17 @@ impl State {
                 continue;
             }
 
-            // Lookup existing contact
+            // Lookup existing contact (and map correctly if revoked)
             if let Some(existing_contact) = context.contacts.borrow().get(identity)? {
-                let _ = contacts
-                    .known
-                    .insert(identity, ContactResult::ExistingContact(existing_contact));
+                if existing_contact.activity_state == protobuf_contact::ActivityState::Invalid {
+                    let _ = contacts
+                        .known
+                        .insert(identity, ContactResult::Invalid(existing_contact.identity));
+                } else {
+                    let _ = contacts
+                        .known
+                        .insert(identity, ContactResult::ExistingContact(existing_contact));
+                }
                 continue;
             }
 
@@ -249,9 +263,9 @@ impl State {
                 {
                     error!(identity = ?contact.identity, ?error,
                             "Unable to update contact from predefined contact");
-                    return Err(CspE2eProtocolError::InternalError(format!(
-                        "Unable to update contact from predefined contact: {error}"
-                    )));
+                    return Err(CspE2eProtocolError::InternalError(
+                        format!("Unable to update contact from predefined contact: {error}").into(),
+                    ));
                 }
 
                 // Add the contact
@@ -308,7 +322,7 @@ impl State {
             (Flavor::Work(_), None) => {
                 let message = "Missing work directory result for work flavor";
                 error!(message);
-                return Err(CspE2eProtocolError::InternalError(message.to_owned()));
+                return Err(CspE2eProtocolError::InternalError(message.into()));
             },
         }
 

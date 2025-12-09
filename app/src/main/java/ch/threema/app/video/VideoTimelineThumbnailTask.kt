@@ -32,11 +32,11 @@ import ch.threema.app.video.transcoder.OutputSurface
 import ch.threema.app.video.transcoder.VideoTranscoder
 import ch.threema.app.video.transcoder.VideoTranscoderUtil
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-private val logger = LoggingUtil.getThreemaLogger("VideoTimelineThumbnailTask")
+private val logger = getThreemaLogger("VideoTimelineThumbnailTask")
 
 class VideoTimelineThumbnailTask(
     private val context: Context,

@@ -45,7 +45,7 @@ import ch.threema.app.backuprestore.csv.RestoreService;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.taskmanager.TaskManager;
 import java8.util.stream.StreamSupport;
 
@@ -54,7 +54,7 @@ import java8.util.stream.StreamSupport;
  */
 @AnyThread
 public class LifetimeServiceImpl implements LifetimeService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LifetimeServiceImpl");
+    private static final Logger logger = getThreemaLogger("LifetimeServiceImpl");
 
     public static final String REQUEST_CODE_KEY = "requestCode";
     public static final int REQUEST_CODE_RELEASE = 1;

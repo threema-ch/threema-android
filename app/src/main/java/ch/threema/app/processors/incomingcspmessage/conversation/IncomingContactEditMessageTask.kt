@@ -26,13 +26,13 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.tasks.runCommonEditMessageReceiveSteps
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.EditMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.storage.models.AbstractMessageModel
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingContactEditMessageTask")
+private val logger = getThreemaLogger("IncomingContactEditMessageTask")
 
 class IncomingContactEditMessageTask(
     editMessage: EditMessage,

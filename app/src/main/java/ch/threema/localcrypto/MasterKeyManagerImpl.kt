@@ -23,7 +23,7 @@ package ch.threema.localcrypto
 
 import androidx.annotation.WorkerThread
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.combineStates
 import ch.threema.localcrypto.exceptions.BlockedByAdminException
 import ch.threema.localcrypto.exceptions.CryptoException
@@ -33,6 +33,7 @@ import ch.threema.localcrypto.exceptions.PassphraseRequiredException
 import ch.threema.localcrypto.exceptions.RemoteSecretMonitorException
 import ch.threema.localcrypto.models.MasterKeyData
 import ch.threema.localcrypto.models.MasterKeyEvent
+import ch.threema.localcrypto.models.MasterKeyReadResult
 import ch.threema.localcrypto.models.MasterKeyState
 import ch.threema.localcrypto.models.PassphraseLockState
 import ch.threema.localcrypto.models.RemoteSecretAuthenticationToken
@@ -51,16 +52,16 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-private val logger = LoggingUtil.getThreemaLogger("MasterKeyManagerImpl")
+private val logger = getThreemaLogger("MasterKeyManagerImpl")
 
 class MasterKeyManagerImpl(
     private val keyStorageManager: MasterKeyStorageManager,
-    private val random: SecureRandom = SecureRandom(),
-    private val keyGenerator: MasterKeyGenerator = MasterKeyGenerator(random),
-    private val lockStateHolder: MasterKeyLockStateHolder = MasterKeyLockStateHolder(),
-    private val crypto: MasterKeyCrypto = MasterKeyCrypto(),
-    private val storageStateHolder: MasterKeyStorageStateHolder = MasterKeyStorageStateHolder(crypto),
-    private val passphraseStore: PassphraseStore = PassphraseStore(),
+    private val random: SecureRandom,
+    private val keyGenerator: MasterKeyGenerator,
+    private val lockStateHolder: MasterKeyLockStateHolder,
+    private val crypto: MasterKeyCrypto,
+    private val storageStateHolder: MasterKeyStorageStateHolder,
+    private val passphraseStore: PassphraseStore,
     private val remoteSecretManager: RemoteSecretManager,
 ) : MasterKeyManager {
 
@@ -109,13 +110,15 @@ class MasterKeyManagerImpl(
      */
     @Throws(IOException::class)
     @WorkerThread
-    fun readOrGenerateKey() {
+    fun readOrGenerateKey(): MasterKeyReadResult {
         if (keyStorageManager.keyExists()) {
             logger.info("Master key exists")
             readKey()
+            return MasterKeyReadResult.READ_FROM_STORAGE
         } else {
             logger.info("Master key does not exist, generating new one")
             generateKey()
+            return MasterKeyReadResult.NEWLY_GENERATED
         }
     }
 
@@ -393,7 +396,6 @@ class MasterKeyManagerImpl(
                         parameters = result.parameters,
                     ),
                 )
-                _events.send(MasterKeyEvent.RemoteSecretActivated)
             }
 
             RemoteSecretProtectionCheckResult.SHOULD_DEACTIVATE -> {

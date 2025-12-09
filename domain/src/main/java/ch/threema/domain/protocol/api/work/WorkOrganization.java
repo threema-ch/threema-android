@@ -25,9 +25,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class WorkOrganization {
-    public String name;
+    private String name;
 
     public WorkOrganization() {
     }
@@ -36,18 +37,28 @@ public class WorkOrganization {
         this.name = jsonObject.optString("name");
     }
 
+    @Nullable
     public String getName() {
-        return this.name;
+        if (name != null && name.isEmpty()) {
+            return null;
+        }
+        return name;
+    }
+
+    public void setName(@Nullable String name) {
+        this.name = name;
     }
 
     public String toJSON() {
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("name", getName());
-
+            var name = getName();
+            if (name != null) {
+                jsonObject.put("name", name);
+            }
             return jsonObject.toString();
         } catch (JSONException e) {
-            return "";
+            throw new RuntimeException(e);
         }
     }
 }

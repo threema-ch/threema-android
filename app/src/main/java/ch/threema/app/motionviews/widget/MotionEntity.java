@@ -49,8 +49,8 @@ public abstract class MotionEntity implements ActionEntity {
      */
     protected final Matrix matrix = new Matrix();
     /**
-     * true - entity is selected and need to draw it's border false - not selected, no need to draw
-     * it's border
+     * true - entity is selected and need to draw its border false - not selected, no need to draw
+     * its border
      */
     private boolean isSelected;
 

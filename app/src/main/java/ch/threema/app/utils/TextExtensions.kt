@@ -37,14 +37,6 @@ import androidx.core.text.toSpanned
 import ch.threema.app.R
 import java.util.Locale
 
-fun String.capitalize(): String =
-    replaceFirstChar { it.titlecase(Locale.getDefault()) }
-
-fun CharSequence.truncate(maxLength: Int): CharSequence {
-    require(maxLength >= 0)
-    return if (length > maxLength) substring(0, maxLength) + "…" else this
-}
-
 /**
  *  This will highlight **all** occurrences of [filterText] in this char-sequence.
  *

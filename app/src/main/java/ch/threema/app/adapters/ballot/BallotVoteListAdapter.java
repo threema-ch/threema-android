@@ -43,9 +43,6 @@ import ch.threema.app.ui.CheckableRelativeLayout;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 
-/**
- *
- */
 public class BallotVoteListAdapter extends ArrayAdapter<BallotChoiceModel> {
 
     private final Context context;

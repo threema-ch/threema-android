@@ -47,13 +47,13 @@ import ch.threema.app.utils.RingtoneUtil
 import ch.threema.app.utils.contracts.PickRingtoneContract
 import ch.threema.app.utils.contracts.launch
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.text.DateFormatSymbols
 import java.util.Locale
 
-private val logger = LoggingUtil.getThreemaLogger("SettingsNotificationsFragment")
+private val logger = getThreemaLogger("SettingsNotificationsFragment")
 
 class SettingsNotificationsFragment : ThreemaPreferenceFragment(), RingtoneSelectorDialogClickListener {
     init {

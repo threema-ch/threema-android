@@ -36,6 +36,7 @@ public class ArchitectureDefinitions {
 
     // Layer names
     public static final String
+        ANDROID = "android",
         ANNOTATION = "annotation",
         APP = "app",
         BASE = "base",
@@ -48,6 +49,7 @@ public class ArchitectureDefinitions {
 
     // Layer packages
     public static final String
+        PACKAGE_ANDROID = THREEMA_ROOT_PACKAGE_DOT + ANDROID,
         PACKAGE_ANNOTATION = THREEMA_ROOT_PACKAGE_DOT + ANNOTATION,
         PACKAGE_APP = THREEMA_ROOT_PACKAGE_DOT + APP,
         PACKAGE_BASE = THREEMA_ROOT_PACKAGE_DOT + BASE,
@@ -66,6 +68,7 @@ public class ArchitectureDefinitions {
             .layer(LOCALCRYPTO).definedBy(PACKAGE_LOCALCRYPTO + "..")
             .layer(DATA).definedBy(PACKAGE_DATA + "..")
             .layer(DOMAIN).definedBy(PACKAGE_DOMAIN + "..")
+            .layer(ANDROID).definedBy(PACKAGE_ANDROID + "..")
             .layer(COMMON).definedBy(PACKAGE_COMMON + "..")
             .layer(BASE).definedBy(PACKAGE_BASE + "..")
             .layer(LOGGING).definedBy(PACKAGE_LOGGING + "..")

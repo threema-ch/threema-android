@@ -44,13 +44,13 @@ import ch.threema.app.webclient.converter.Utils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 
 @WorkerThread
 abstract public class MessageCreateHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageCreateHandler");
+    private static final Logger logger = getThreemaLogger("MessageCreateHandler");
 
     private static final String LIFETIME_SERVICE_TAG = "wcMessageCreateHandler";
 

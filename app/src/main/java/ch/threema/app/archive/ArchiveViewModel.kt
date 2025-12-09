@@ -26,13 +26,14 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import ch.threema.android.ResolvableString
+import ch.threema.android.ResolvedString
+import ch.threema.android.ResourceIdString
 import ch.threema.app.R
 import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask
-import ch.threema.app.compose.common.ResolvableString
-import ch.threema.app.compose.common.ResolvedString
-import ch.threema.app.compose.common.ResourceIdString
 import ch.threema.app.compose.conversation.models.ConversationListItemUiModel
 import ch.threema.app.compose.conversation.models.ConversationUiModel
+import ch.threema.app.drafts.DraftManager
 import ch.threema.app.listeners.ConversationListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.messagereceiver.MessageReceiver
@@ -83,6 +84,7 @@ class ArchiveViewModel(
     private val distributionListService: DistributionListService,
     private val ringtoneService: RingtoneService,
     private val groupModelRepository: GroupModelRepository,
+    private val draftManager: DraftManager,
     private val watchArchivedConversationsUseCase: WatchArchivedConversationsUseCase,
     private val watchGroupCallsUseCase: WatchGroupCallsUseCase,
     private val watchTypingIdentitiesUseCase: WatchTypingIdentitiesUseCase,
@@ -98,6 +100,7 @@ class ArchiveViewModel(
         groupService = groupService,
         distributionListService = distributionListService,
         ringtoneService = ringtoneService,
+        draftManager = draftManager,
     )
 
     private val conversationUiModels: Flow<List<ConversationUiModel>> = watchArchivedConversationListItemsUseCase.call()

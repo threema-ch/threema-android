@@ -64,11 +64,11 @@ import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.SoundUtil
 import ch.threema.app.voicemessage.SamsungQuirkAudioSink
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
 
-private val logger = LoggingUtil.getThreemaLogger("VoiceMessagePlayerService")
+private val logger = getThreemaLogger("VoiceMessagePlayerService")
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class VoiceMessagePlayerService :

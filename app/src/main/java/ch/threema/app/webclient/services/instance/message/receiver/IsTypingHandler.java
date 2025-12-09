@@ -34,11 +34,11 @@ import java.util.Map;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 @WorkerThread
 public class IsTypingHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("IsTypingHandler");
+    private static final Logger logger = getThreemaLogger("IsTypingHandler");
 
     @NonNull
     private final ContactService contactService;

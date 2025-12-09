@@ -50,7 +50,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
@@ -60,7 +60,7 @@ import ch.threema.storage.models.data.media.MediaMessageDataInterface;
  * Currently, this is limited to WebP
  */
 public class AnimatedImageDrawableMessagePlayer extends MessagePlayer {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AnimatedImageDrawableMessagePlayer");
+    private static final Logger logger = getThreemaLogger("AnimatedImageDrawableMessagePlayer");
 
     private final PreferenceService preferenceService;
     private Drawable imageDrawable;

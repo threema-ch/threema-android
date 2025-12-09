@@ -27,7 +27,7 @@ import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.runCommonGroupReceiveSteps
 import ch.threema.app.tasks.runCommonReactionMessageReceiveEmojiSequenceConversion
 import ch.threema.app.tasks.runCommonReactionMessageReceiveSteps
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.protocol.csp.messages.GroupReactionMessage
@@ -35,7 +35,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.storage.models.AbstractMessageModel
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingGroupReactionMessageTask")
+private val logger = getThreemaLogger("IncomingGroupReactionMessageTask")
 
 class IncomingGroupReactionMessageTask(
     message: GroupReactionMessage,

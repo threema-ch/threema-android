@@ -23,8 +23,10 @@ package ch.threema.app.services.license;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
+import ch.threema.base.SessionScoped;
 import ch.threema.domain.models.LicenseCredentials;
 
+@SessionScoped
 public interface LicenseService<T extends LicenseCredentials> {
 
     /**

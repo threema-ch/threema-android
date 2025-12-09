@@ -22,6 +22,8 @@
 package ch.threema.app.utils
 
 import ch.threema.data.models.GroupModel
+import ch.threema.domain.types.ConversationUID
+import ch.threema.domain.types.GroupDatabaseId
 import ch.threema.domain.types.Identity
 import ch.threema.storage.models.DistributionListModel
 
@@ -32,17 +34,17 @@ object ConversationUtil {
     private const val DISTRIBUTION_LIST_UID_PREFIX = "d-"
 
     @JvmStatic
-    fun getIdentityConversationUid(identity: Identity): String {
+    fun getIdentityConversationUid(identity: Identity): ConversationUID {
         return "$CONTACT_UID_PREFIX$identity"
     }
 
     @JvmStatic
-    fun getGroupConversationUid(groupId: Long): String {
+    fun getGroupConversationUid(groupId: Long): ConversationUID {
         return "$GROUP_UID_PREFIX$groupId"
     }
 
     @JvmStatic
-    fun getDistributionListConversationUid(distributionListId: Long): String {
+    fun getDistributionListConversationUid(distributionListId: Long): ConversationUID {
         return "$DISTRIBUTION_LIST_UID_PREFIX$distributionListId"
     }
 
@@ -50,7 +52,7 @@ object ConversationUtil {
      * Get the contact's identity from the conversation uid. If the conversation uid does not belong to a contact, then this method returns null.
      */
     @JvmStatic
-    fun getContactIdentityFromUid(conversationUid: String): String? {
+    fun getContactIdentityFromUid(conversationUid: ConversationUID): Identity? {
         val identity = conversationUid.removePrefix(CONTACT_UID_PREFIX)
         if (identity == conversationUid) {
             // In this case the conversation uid does not belong to a contact
@@ -64,7 +66,7 @@ object ConversationUtil {
      * null.
      */
     @JvmStatic
-    fun getGroupDatabaseIdFromUid(conversationUid: String): Long? {
+    fun getGroupDatabaseIdFromUid(conversationUid: ConversationUID): GroupDatabaseId? {
         val groupId = conversationUid.removePrefix(GROUP_UID_PREFIX)
         if (groupId == conversationUid) {
             // In this case the conversation uid does not belong to a group
@@ -73,11 +75,11 @@ object ConversationUtil {
         return groupId.toLongOrNull()
     }
 
-    fun GroupModel.getConversationUid(): String {
+    fun GroupModel.getConversationUid(): ConversationUID {
         return getGroupConversationUid(getDatabaseId())
     }
 
-    fun DistributionListModel.getConversationUid(): String {
+    fun DistributionListModel.getConversationUid(): ConversationUID {
         return getDistributionListConversationUid(id)
     }
 }

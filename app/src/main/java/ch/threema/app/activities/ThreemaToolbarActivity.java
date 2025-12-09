@@ -56,19 +56,20 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConnectionIndicatorUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.connection.ConnectionStateListener;
 import kotlin.Unit;
 
 import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 
 /**
  * Helper class for activities that use the new toolbar
  */
 public abstract class ThreemaToolbarActivity extends ThreemaActivity implements ConnectionStateListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaToolbarActivity");
+    private static final Logger logger = getThreemaLogger("ThreemaToolbarActivity");
 
     private AppBarLayout appBarLayout;
     private Toolbar toolbar;
@@ -100,7 +101,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
     @Override
     protected void onResume() {
-        if (dependencies.isAvailable()) {
+        if (isSessionScopeReady()) {
             dependencies.getServerConnection().addConnectionStateListener(this);
             ConnectionState connectionState = dependencies.getServerConnection().getConnectionState();
             ConnectionIndicatorUtil.getInstance().updateConnectionIndicator(connectionIndicator, connectionState);
@@ -110,7 +111,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
     @Override
     protected void onPause() {
-        if (dependencies.isAvailable()) {
+        if (isSessionScopeReady()) {
             dependencies.getServerConnection().removeConnectionStateListener(this);
         }
         super.onPause();
@@ -164,7 +165,7 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
     protected boolean initActivity(@Nullable Bundle savedInstanceState) {
         logger.debug("initActivity");
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             return false;
         }
 

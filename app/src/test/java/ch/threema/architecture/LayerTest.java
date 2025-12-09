@@ -28,6 +28,7 @@ import com.tngtech.archunit.lang.ArchRule;
 
 import org.junit.runner.RunWith;
 
+import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_ANDROID;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_ANNOTATION;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_APP;
 import static ch.threema.architecture.ArchitectureDefinitions.PACKAGE_BASE;
@@ -53,6 +54,7 @@ public class LayerTest {
         PACKAGE_BASE + "..",
         PACKAGE_DATA + "..",
         PACKAGE_DOMAIN + "..",
+        PACKAGE_ANDROID + "..",
         PACKAGE_COMMON + "..",
         PACKAGE_LOCALCRYPTO + "..",
         PACKAGE_LOGGING + "..",

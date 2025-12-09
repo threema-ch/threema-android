@@ -44,12 +44,12 @@ import ch.threema.app.adapters.StickerSelectorAdapter;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class StickerSelectorActivity extends ThreemaToolbarActivity implements LoaderManager.LoaderCallbacks<String[]> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("StickerSelectorActivity");
+    private static final Logger logger = getThreemaLogger("StickerSelectorActivity");
 
     private static final String STICKER_DIRECTORY = "emojione";
     private static final String STICKER_INDEX = STICKER_DIRECTORY + "/contents.txt";

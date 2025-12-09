@@ -37,14 +37,14 @@ import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.rating.RateDialog;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.ThreemaApplication.getAppContext;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class SettingsRateFragment extends ThreemaPreferenceFragment implements RateDialog.RateDialogClickListener, GenericAlertDialog.DialogClickListener {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsRateFragment");
+    private static final Logger logger = getThreemaLogger("SettingsRateFragment");
 
     private static final String DIALOG_TAG_RATE = "rate";
     private static final String DIALOG_TAG_RATE_ON_GOOGLE_PLAY = "ratep";

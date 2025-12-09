@@ -43,21 +43,23 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.base.ProgressListener;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
+import ch.threema.common.ByteArrayExtensionsKt;
 import ch.threema.domain.protocol.blob.BlobLoader;
 import ch.threema.domain.protocol.blob.BlobScope;
 
 public class DownloadServiceImpl implements DownloadService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DownloadServiceImpl");
+    private static final Logger logger = getThreemaLogger("DownloadServiceImpl");
 
     private static final String TAG = "DownloadService";
     private static final String WAKELOCK_TAG = BuildConfig.APPLICATION_ID + ":" + TAG;
     private static final int DOWNLOAD_WAKELOCK_TIMEOUT = 10 * 1000;
     private final ArrayList<Download> downloads = new ArrayList<>();
-    private final FileService fileService;
     private final ApiService apiService;
     private final PowerManager powerManager;
+    @NonNull
+    private final Context appContext;
 
     private final static class Download {
         int messageModelId;
@@ -120,10 +122,10 @@ public class DownloadServiceImpl implements DownloadService {
         }
     }
 
-    public DownloadServiceImpl(Context context, FileService fileService, ApiService apiService) {
-        this.fileService = fileService;
+    public DownloadServiceImpl(@NonNull Context appContext, @NonNull ApiService apiService) {
+        this.appContext = appContext;
         this.apiService = apiService;
-        this.powerManager = (PowerManager) context.getApplicationContext().getSystemService(Context.POWER_SERVICE);
+        this.powerManager = (PowerManager) appContext.getSystemService(Context.POWER_SERVICE);
     }
 
     @Override
@@ -304,7 +306,7 @@ public class DownloadServiceImpl implements DownloadService {
     }
 
     private File getTemporaryDownloadFile(byte[] blobId) {
-        File path = this.fileService.getBlobDownloadPath();
-        return new File(path.getPath() + "/" + Utils.byteArrayToHexString(blobId));
+        final String fileName = ByteArrayExtensionsKt.toHexString(blobId, 0);
+        return new File(appContext.getCacheDir(), fileName);
     }
 }

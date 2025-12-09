@@ -47,12 +47,12 @@ import ch.threema.app.ui.ComposeEditText;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ExpandableTextEntryDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ExpandableTextEntryDialog");
+    private static final Logger logger = getThreemaLogger("ExpandableTextEntryDialog");
     private ExpandableTextEntryDialogClickListener callback;
     private Activity activity;
     private ComposeEditText captionEditText;

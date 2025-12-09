@@ -24,12 +24,12 @@ package ch.threema.app.camera
 import android.graphics.ImageFormat
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import java.nio.ByteBuffer
 
-private val logger = LoggingUtil.getThreemaLogger("QRCodeAnalyzer")
+private val logger = getThreemaLogger("QRCodeAnalyzer")
 
 class QRCodeAnalyzer(private val onDecodeQRCode: (decodeQRCodeState: DecodeQRCodeState) -> Unit) :
     ImageAnalysis.Analyzer {

@@ -1,14 +1,10 @@
 //! High-level crypto bindings.
-use std::sync::{Arc, Mutex};
+use std::sync::Mutex;
 
 use duplicate::duplicate_item;
-use rand::Rng as _;
 
 use crate::{
-    common::{
-        Nonce,
-        keys::{RemoteSecret, WonkyFieldCipherKey},
-    },
+    common::Nonce,
     crypto::{
         argon2, blake2b, chacha20,
         chunked::{self, InvalidTag},
@@ -520,99 +516,5 @@ impl cipher_name {
             .take()
             .ok_or(CryptoError::CipherFailed)?
             .finalize_verify(expected_tag)?)
-    }
-}
-
-/// A wonky field encryptor context created by [`WonkyFieldCipher::encryptor`].
-#[derive(uniffi::Record)]
-pub struct WonkyFieldEncryptorContext {
-    /// The nonce that must be prepended to the ciphertext.
-    pub nonce: Vec<u8>,
-
-    /// The chunked encryptor to encrypt the field.
-    pub encryptor: Arc<ChunkedXChaCha20Poly1305Encryptor>,
-}
-
-/// Wonky field cipher for the wonky database field encryption.
-///
-/// A word of warning: This should generally be avoided. We only need it since the Threema iOS app would
-/// require a large refactoring prior to being able to leverage an encrypted database (`SQLCipher`) like all
-/// other Threema apps. Ultimately, that is still our goal but until that is reached, we need this wonky field
-/// encryption implementation footgun thingy.
-///
-/// See [`Self::encryptor()`] and [`Self::decryptor()`] for the encryption resp. decryption flows.
-#[derive(uniffi::Object)]
-pub struct WonkyFieldCipher {
-    key: WonkyFieldCipherKey,
-}
-
-#[uniffi::export]
-impl WonkyFieldCipher {
-    /// Create a new wonky field cipher.
-    ///
-    /// # Errors
-    ///
-    /// Returns [`CryptoError::InvalidParameter`] if `remote_secret` is not exactly 32 bytes.
-    #[uniffi::constructor]
-    pub fn new(remote_secret: Vec<u8>) -> Result<Self, CryptoError> {
-        let remote_secret = RemoteSecret(
-            remote_secret
-                .try_into()
-                .map_err(|_| CryptoError::InvalidParameter("'remote_secret' must be 32 bytes".to_owned()))?,
-        );
-        Ok(Self {
-            key: remote_secret.wonky_field_cipher_key(),
-        })
-    }
-
-    /// Generate a new random nonce and instantiate a new [`ChunkedXChaCha20Poly1305Encryptor`].
-    ///
-    /// The flow to encrypt a database field is as follows:
-    ///
-    /// 1. Call this function and let `nonce` and `encryptor` as defined in the resulting
-    ///    [`WonkyFieldEncryptorContext`].
-    /// 2. Let `data` be the database field serialized to bytes.
-    /// 3. Let `encrypted_data` be the chunkwise encryption of `data` using the `encryptor`'s
-    ///    [`ChunkedXChaCha20Poly1305Encryptor::encrypt()`] method.
-    /// 4. Let `tag` be the result of calling the `encryptor`'s
-    ///    [`ChunkedXChaCha20Poly1305Encryptor::finalize()`] method.
-    /// 5. Compose the encrypted database field by concatenating `nonce`, `encrypted_data`, and `tag`, i.e.,
-    ///    `encrypted_database_field = nonce || encrypted_data || tag`.
-    #[must_use]
-    #[expect(clippy::missing_panics_doc, reason = "Panic will never happen")]
-    pub fn encryptor(&self) -> WonkyFieldEncryptorContext {
-        let nonce = {
-            let mut nonce = [0; chacha20::NONCE_LENGTH];
-            rand::thread_rng().fill(&mut nonce);
-            nonce
-        };
-
-        WonkyFieldEncryptorContext {
-            nonce: nonce.to_vec(),
-            encryptor: Arc::new(
-                ChunkedXChaCha20Poly1305Encryptor::new(&self.key.0, &nonce, &[])
-                    .expect("'key' and 'nonce' should have correct size."),
-            ),
-        }
-    }
-
-    /// Instantiate a new [`ChunkedXChaCha20Poly1305Decryptor`] from the given `nonce`.
-    ///
-    /// The flow to decrypt an encrypted database field is as follows:
-    ///
-    /// 1. Parse the encrypted database field (stored as bytes) into `nonce || encrypted_data || tag` where
-    ///    `nonce` is 24 bytes long, and `tag` is 16 bytes long.
-    /// 2. Let `decryptor` be the result of calling this function with `nonce` as argument.
-    /// 3. Let `data` be the chunkwise decryption of `encrypted_data` using the `decryptor`'s
-    ///    [`ChunkedXChaCha20Poly1305Decryptor::decrypt()`] method.
-    /// 4. Verify the `tag` by calling the `decryptor`'s
-    ///    [`ChunkedXChaCha20Poly1305Decryptor::finalize_verify()`] method. Abort if this fails.
-    /// 5. Deserialize `data` into the data type of the corresponding database field.
-    ///
-    /// # Errors
-    ///
-    /// Returns [`CryptoError::InvalidParameter`] if `nonce` is not exactly 24 bytes.
-    pub fn decryptor(&self, nonce: &[u8]) -> Result<ChunkedXChaCha20Poly1305Decryptor, CryptoError> {
-        ChunkedXChaCha20Poly1305Decryptor::new(&self.key.0, nonce, &[])
     }
 }

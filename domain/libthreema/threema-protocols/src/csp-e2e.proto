@@ -63,6 +63,7 @@ message MessageMetadata {
 // - Reactions: No
 // - Edit applies to: N/A (obviously)
 // - Deletable by: N/A
+// - Include in history: Yes
 // - When rejected: N/A (ignored)
 // - Send to Threema Gateway ID group creator: N/A
 //
@@ -84,6 +85,7 @@ message MessageMetadata {
 // - Reactions: No
 // - Edit applies to: N/A (obviously)
 // - Deletable by: N/A
+// - Include in history: Yes
 // - When rejected: N/A (ignored)
 // - Send to Threema Gateway ID group creator: If capture is enabled
 //
@@ -92,8 +94,12 @@ message MessageMetadata {
 //
 // 1. If the sender or the receiver do not have `EDIT_MESSAGE_SUPPORT`, disallow
 //    editing and abort these steps.
-// 2. Run the _Common Edit Message Enter Steps_.
-// 3. Allow the user to edit the referred message.
+// 2. Let `message` be the referred message.
+// 3. If the user is not the original sender of `message`, disallow editing and
+//    abort these steps.
+// 4. If `message` has been sent (`sent-at`) more than 6 hours ago, disallow
+//    editing and abort these steps.¹
+// 5. Allow the user to edit the referred message.
 //
 // The following steps must be invoked when the user wants to edit a group
 // message:
@@ -101,18 +107,15 @@ message MessageMetadata {
 // 1. If the group is marked as _left_, disallow editing and abort these steps.
 // 2. If the sender or all of the group members do not have
 //    `EDIT_MESSAGE_SUPPORT`, disallow editing and abort these steps.
-// 3. Run the _Common Edit Message Enter Steps_.
-// 4. If any of the group members do not have `EDIT_MESSAGE_SUPPORT`, notify the
-//    user that the affected contacts will not receive the edited content.
-// 5. Allow the user to edit the referred message.
-//
-// The following steps are defined as the _Common Edit Message Enter Steps_:
-//
-// 1. Let `message` be the referred message.
-// 2. If the user is not the original sender of `message`, disallow editing and
+// 3. Let `message` be the referred message.
+// 4. If the user is not the original sender of `message`, disallow editing and
 //    abort these steps.
-// 3. If `message` has been sent (`sent-at`) more than 6 hours ago, disallow
-//    editing and abort these steps.¹
+// 5. If the group is not a _notes_ group:
+//    1. If `message` has been sent (`sent-at`) more than 6 hours ago, disallow
+//       editing and abort these steps.¹
+// 6. If any of the group members do not have `EDIT_MESSAGE_SUPPORT`, notify the
+//    user that the affected contacts will not receive the edited content.
+// 7. Allow the user to edit the referred message.
 //
 // The following steps must be invoked when the user wants to submit an edited
 // 1:1 message.
@@ -234,6 +237,7 @@ message EditMessage {
 // - Reactions: No
 // - Edit applies to: N/A
 // - Deletable by: N/A (obviously)
+// - Include in history: Yes
 // - When rejected: N/A (ignored)
 // - Send to Threema Gateway ID group creator: N/A
 //
@@ -255,6 +259,7 @@ message EditMessage {
 // - Reactions: No
 // - Edit applies to: N/A
 // - Deletable by: N/A (obviously)
+// - Include in history: Yes
 // - When rejected: N/A (ignored)
 // - Send to Threema Gateway ID group creator: If capture is enabled
 //
@@ -263,13 +268,17 @@ message EditMessage {
 //
 // 1. If the sender or the receiver do not have `DELETE_MESSAGE_SUPPORT`,
 //    disallow removal and abort these steps.
-// 2. Run the _Common Delete Message Preflight Steps_.
-// 3. Let `deleted-at` be the current timestamp.
-// 4. Run the _1:1 Messages Submit Steps_ with `messages` set from the following
+// 2. Let `message` be the referred message.
+// 3. If the user is not the original sender of `message`, disallow removal and
+//    abort these steps.
+// 4. If `message` has been sent (`sent-at`) more than 6 hours ago, disallow
+//    removal and abort these steps.¹
+// 5. Let `deleted-at` be the current timestamp.
+// 6. Run the _1:1 Messages Submit Steps_ with `messages` set from the following
 //    properties:
 //    - `created-at` set to `deleted-at`,
 //    - to construct a `DeleteMessage` message.
-// 5. Replace the referred message with a message informing the user that the
+// 7. Replace the referred message with a message informing the user that the
 //    referred message of the user has been removed at `deleted-at`.²
 //
 // The following steps must be invoked when the user wants to delete a group
@@ -278,26 +287,22 @@ message EditMessage {
 // 1. If the group is marked as _left_, disallow removal and abort these steps.
 // 2. If the sender or all of the group members do not have
 //    `DELETE_MESSAGE_SUPPORT`, disallow removal and abort these steps.
-// 3. Run the _Common Delete Message Preflight Steps_.
-// 4. If any of the group members do not have `DELETE_MESSAGE_SUPPORT`, notify
+// 3. Let `message` be the referred message.
+// 4. If the user is not the original sender of `message`, disallow removal and
+//    abort these steps.
+// 5. If the group is not a _notes_ group:
+//    1. If `message` has been sent (`sent-at`) more than 6 hours ago, disallow
+//       removal and abort these steps.¹
+// 6. Let `deleted-at` be the current timestamp.
+// 7. If any of the group members do not have `DELETE_MESSAGE_SUPPORT`, notify
 //    the user that the affected contacts will continue to see the message.
-// 5. Let `deleted-at` be the current timestamp.
-// 6. Run the _Group Messages Submit Steps_ with `messages` set from the
+// 8. Run the _Group Messages Submit Steps_ with `messages` set from the
 //    following properties:
 //    - `created-at` set to `deleted-at`,
 //    - to construct a `DeleteMessage` message (wrapped by
 //      [`group-member-container`](ref:e2e.group-member-container)).
-// 7. Replace the referred message with a message informing the user that the
+// 9. Replace the referred message with a message informing the user that the
 //    referred message of the user has been removed at `deleted-at`.²
-//
-// The following steps are defined as the _Common Delete Message Preflight
-// Steps_:
-//
-// 1. Let `message` be the referred message.
-// 2. If the user is not the original sender of `message`, disallow removal and
-//    abort these steps.
-// 3. If `message` has been sent (`sent-at`) more than 6 hours ago, disallow
-//    removal and abort these steps.¹
 //
 // When reflected from another device as an incoming or outgoing 1:1 message:
 //
@@ -321,9 +326,9 @@ message EditMessage {
 // The following steps are defined as the _Common Delete Message Receive Steps_:
 //
 // 1. Lookup the message with `message_id` originally sent by the sender within
-//    the associated conversation and let `message` be the result.
+//    the associated conversation and let `referred-message` be the result.
 // 2. If `referred-message` is not defined or the sender is not the original
-//    sender of `message`, discard the message and abort these steps.
+//    sender of `referred-message`, discard the message and abort these steps.
 // 3. If `referred-message` is not deletable (see the associated _Deletable by_
 //    property), discard the message and abort these steps.
 // 4. Replace `referred-message` with a message informing the user that the
@@ -364,6 +369,7 @@ message DeleteMessage {
 // - When rejected: N/A¹
 // - Edit applies to: N/A
 // - Deletable by: N/A
+// - Include in history: Yes
 // - Send to Threema Gateway ID group creator: If capture is enabled
 //
 // ¹: For the group creator it will be handled as if `group-sync-request` was
@@ -441,6 +447,7 @@ message GroupCallStart {
 // - When rejected: N/A (ignored)
 // - Edit applies to: N/A (can withdraw and apply with another `Reaction`)
 // - Deletable by: N/A (can withdraw with another `Reaction`)
+// - Include in history: Yes
 // - Send to Threema Gateway ID group creator: N/A
 //
 // **Properties (Group)**:
@@ -460,6 +467,7 @@ message GroupCallStart {
 // - When rejected: N/A (ignored)
 // - Edit applies to: N/A (can withdraw and apply with another `Reaction`)
 // - Deletable by: N/A (can withdraw with another `Reaction`)
+// - Include in history: Yes
 // - Send to Threema Gateway ID group creator: If capture is enabled
 //
 // When the user submits a reaction in a 1:1 conversation:
@@ -635,6 +643,7 @@ message Reaction {
 // - When rejected: N/A (ignored)
 // - Edit applies to: N/A
 // - Deletable by: User only
+// - Include in history: No
 // - Send to Threema Gateway ID group creator: N/A
 //
 // When receiving this message:
@@ -698,6 +707,7 @@ message GroupJoinRequest {
 // - When rejected: N/A (ignored)
 // - Edit applies to: N/A
 // - Deletable by: N/A
+// - Include in history: Yes
 // - Send to Threema Gateway ID group creator: N/A
 //
 // When receiving this message:

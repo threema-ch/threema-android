@@ -27,13 +27,13 @@ import org.slf4j.Logger;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class DownloadApkActivity extends AppCompatActivity {
     public static final String EXTRA_FORCE_UPDATE_DIALOG = "";
     // stub
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DownloadApkActivity");
+    private static final Logger logger = getThreemaLogger("DownloadApkActivity");
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

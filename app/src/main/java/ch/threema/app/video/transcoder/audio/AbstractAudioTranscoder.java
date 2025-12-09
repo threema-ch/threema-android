@@ -31,11 +31,11 @@ import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.video.transcoder.VideoTranscoder;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import java8.util.Optional;
 
 public abstract class AbstractAudioTranscoder {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AbstractAudioTranscoder");
+    private static final Logger logger = getThreemaLogger("AbstractAudioTranscoder");
 
     //region Member Variables
     protected final AudioComponent component;

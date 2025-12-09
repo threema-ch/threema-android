@@ -53,12 +53,12 @@ import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements View.OnClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeAdvancedDialog");
+    private static final Logger logger = getThreemaLogger("ThreemaSafeAdvancedDialog");
 
     private static final String ARG_SERVER_URL = "sU";
     private static final String ARG_PLAIN_STYLE = "pS";

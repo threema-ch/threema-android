@@ -38,7 +38,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
@@ -55,7 +55,7 @@ import ch.threema.storage.databaseupdate.FSDatabaseUpgradeToVersion4;
 import static ch.threema.storage.databaseupdate.DatabaseUpdateKt.getFullDescription;
 
 public class SQLDHSessionStore extends PermanentlyCloseableSQLiteOpenHelper implements DHSessionStoreInterface {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SQLDHSessionStore");
+    private static final Logger logger = getThreemaLogger("SQLDHSessionStore");
 
     public static final String DATABASE_NAME = "threema-fs.db";
     private static final int DATABASE_VERSION = FSDatabaseUpgradeToVersion4.VERSION;

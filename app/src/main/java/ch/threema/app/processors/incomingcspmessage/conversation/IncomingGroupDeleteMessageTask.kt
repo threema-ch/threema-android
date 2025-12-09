@@ -26,12 +26,12 @@ import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.runCommonGroupReceiveSteps
 import ch.threema.app.tasks.runCommonDeleteMessageReceiveSteps
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingGroupDeleteMessageTask")
+private val logger = getThreemaLogger("IncomingGroupDeleteMessageTask")
 
 class IncomingGroupDeleteMessageTask(
     message: GroupDeleteMessage,

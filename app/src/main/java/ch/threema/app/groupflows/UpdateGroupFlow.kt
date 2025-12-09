@@ -22,23 +22,21 @@
 package ch.threema.app.groupflows
 
 import ch.threema.app.managers.ListenerManager
+import ch.threema.app.profilepicture.CheckedProfilePicture
+import ch.threema.app.profilepicture.GroupProfilePictureUploader
+import ch.threema.app.profilepicture.GroupProfilePictureUploader.GroupProfilePictureUploadResult
+import ch.threema.app.protocol.ExpectedProfilePictureChange
 import ch.threema.app.protocol.PredefinedMessageIds
-import ch.threema.app.protocol.ProfilePictureChange
-import ch.threema.app.protocol.RemoveProfilePicture
-import ch.threema.app.protocol.SetProfilePicture
-import ch.threema.app.services.ApiService
 import ch.threema.app.services.FileService
 import ch.threema.app.services.GroupFlowDispatcher
-import ch.threema.app.tasks.GroupPhotoUploadResult
 import ch.threema.app.tasks.GroupUpdateTask
 import ch.threema.app.tasks.ReflectLocalGroupUpdate
 import ch.threema.app.tasks.ReflectionResult
-import ch.threema.app.tasks.tryUploadingGroupPhoto
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.app.voip.groupcall.GroupCallManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.GroupModelRepository
@@ -47,7 +45,7 @@ import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.taskmanager.TaskManager
 import kotlinx.coroutines.runBlocking
 
-private val logger = LoggingUtil.getThreemaLogger("UpdateGroupFlow")
+private val logger = getThreemaLogger("UpdateGroupFlow")
 
 class GroupChanges(
     /**
@@ -57,7 +55,7 @@ class GroupChanges(
     /**
      * The profile picture change.
      */
-    val profilePictureChange: ProfilePictureChange?,
+    val profilePictureChange: ProfilePictureChange,
     /**
      * The members that should be added to the group.
      */
@@ -77,7 +75,7 @@ class GroupChanges(
      */
     constructor(
         name: String?,
-        profilePictureChange: ProfilePictureChange?,
+        profilePictureChange: ProfilePictureChange,
         updatedMembers: Set<String>,
         groupModelData: GroupModelData,
     ) : this(
@@ -86,6 +84,12 @@ class GroupChanges(
         addMembers = updatedMembers - groupModelData.otherMembers,
         removeMembers = groupModelData.otherMembers - updatedMembers,
     )
+
+    sealed interface ProfilePictureChange {
+        data class Set(val profilePicture: CheckedProfilePicture) : ProfilePictureChange
+        object Remove : ProfilePictureChange
+        object NoChange : ProfilePictureChange
+    }
 }
 
 /**
@@ -99,7 +103,7 @@ class UpdateGroupFlow(
     private val groupModelRepository: GroupModelRepository,
     private val groupCallManager: GroupCallManager,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
-    private val apiService: ApiService,
+    private val groupProfilePictureUploader: GroupProfilePictureUploader,
     private val fileService: FileService,
     private val taskManager: TaskManager,
     private val connection: ServerConnection,
@@ -125,14 +129,13 @@ class UpdateGroupFlow(
                 return GroupFlowResult.Failure.Network
             }
             runBlocking {
-                val reflectionResult: ReflectionResult<Unit> = taskManager.schedule(
+                val reflectionResult: ReflectionResult<GroupProfilePictureUploadResult?> = taskManager.schedule(
                     ReflectLocalGroupUpdate(
                         updatedName = groupChanges.name,
                         addMembers = groupChanges.addMembers,
                         removeMembers = groupChanges.removeMembers,
                         profilePictureChange = groupChanges.profilePictureChange,
-                        uploadGroupPhoto = ::uploadGroupPicture,
-                        finishGroupUpdate = ::finishGroupUpdate,
+                        uploadGroupProfilePicture = ::uploadGroupProfilePicture,
                         groupModel = groupModel,
                         nonceFactory = outgoingCspMessageServices.nonceFactory,
                         contactModelRepository = outgoingCspMessageServices.contactModelRepository,
@@ -142,8 +145,25 @@ class UpdateGroupFlow(
 
                 when (reflectionResult) {
                     is ReflectionResult.Success -> {
-                        logger.info("Group update successful")
-                        GroupFlowResult.Success(groupModel)
+                        when (val uploadResult = reflectionResult.result) {
+                            is GroupProfilePictureUploadResult.Success -> {
+                                finishGroupUpdate(ExpectedProfilePictureChange.Set.WithUpload(uploadResult))
+                            }
+
+                            null -> {
+                                finishGroupUpdate(null)
+                            }
+
+                            is GroupProfilePictureUploadResult.Failure.UploadFailed -> {
+                                logger.warn("Could not update group because blob server is not reachable")
+                                GroupFlowResult.Failure.Network
+                            }
+
+                            is GroupProfilePictureUploadResult.Failure.OnPremAuthTokenInvalid -> {
+                                logger.warn("Could not update group because onprem auth token is invalid")
+                                GroupFlowResult.Failure.Other
+                            }
+                        }
                     }
 
                     is ReflectionResult.PreconditionFailed -> {
@@ -165,39 +185,53 @@ class UpdateGroupFlow(
                 }
             }
         } else {
-            val groupPhotoUploadResult =
-                runCatching {
-                    uploadGroupPicture(groupChanges.profilePictureChange)
-                }.getOrElse { exception ->
-                    logger.error("Failed to upload the group photo", exception)
-                    // While this could also have internal reasons, a network failure is more likely
-                    // TODO(ANDR-3823): Distinguish between different failures from uploading process
-                    return GroupFlowResult.Failure.Network
+            if (groupModelData.otherMembers.isEmpty() && groupChanges.addMembers.isEmpty()) {
+                // Do not upload profile picture in notes groups
+                val expectedProfilePictureChange = when (groupChanges.profilePictureChange) {
+                    is GroupChanges.ProfilePictureChange.Set ->
+                        ExpectedProfilePictureChange.Set.WithoutUpload(groupChanges.profilePictureChange.profilePicture)
+
+                    is GroupChanges.ProfilePictureChange.Remove -> ExpectedProfilePictureChange.Remove
+                    is GroupChanges.ProfilePictureChange.NoChange -> null
                 }
-            finishGroupUpdate(groupPhotoUploadResult)
+
+                return finishGroupUpdate(expectedProfilePictureChange)
+            }
+
+            val expectedProfilePictureChange =
+                when (val groupProfilePictureUploadResult = uploadGroupProfilePicture(groupChanges.profilePictureChange)) {
+                    is GroupProfilePictureUploadResult.Success -> ExpectedProfilePictureChange.Set.WithUpload(groupProfilePictureUploadResult)
+                    null -> {
+                        when (groupChanges.profilePictureChange) {
+                            is GroupChanges.ProfilePictureChange.Set -> {
+                                logger.error("Group profile picture hasn't been uploaded but should have been uploaded")
+                                // We can continue anyways, as the active group update steps will upload it in this case
+                                ExpectedProfilePictureChange.Set.WithoutUpload(groupChanges.profilePictureChange.profilePicture)
+                            }
+
+                            is GroupChanges.ProfilePictureChange.Remove -> ExpectedProfilePictureChange.Remove
+                            is GroupChanges.ProfilePictureChange.NoChange -> null
+                        }
+                    }
+
+                    GroupProfilePictureUploadResult.Failure.UploadFailed -> return GroupFlowResult.Failure.Network
+                    GroupProfilePictureUploadResult.Failure.OnPremAuthTokenInvalid -> return GroupFlowResult.Failure.Other
+                }
+
+            finishGroupUpdate(expectedProfilePictureChange)
         }
 
         return groupFlowResult
     }
 
-    private fun uploadGroupPicture(profilePictureChange: ProfilePictureChange?): GroupPhotoUploadResult? =
-        if (profilePictureChange is SetProfilePicture) {
-            tryUploadingGroupPhoto(profilePictureChange.profilePicture.profilePictureBytes, apiService)
+    private fun uploadGroupProfilePicture(profilePictureChange: GroupChanges.ProfilePictureChange): GroupProfilePictureUploadResult? =
+        if (profilePictureChange is GroupChanges.ProfilePictureChange.Set) {
+            groupProfilePictureUploader.tryUploadingGroupProfilePicture(profilePictureChange.profilePicture)
         } else {
             null
         }
 
-    /**
-     *  TODO(ANDR-3823): Remove this warning once corrected
-     *
-     *  Warning: At this point, before `ANDR-3823` is implemented, *any* specific type of [GroupFlowResult.Failure]
-     *  returned from this method will effectively result in a [GroupFlowResult.Failure.Other] *if MD is active*.
-     */
-    private fun finishGroupUpdate(groupPhotoUploadResult: GroupPhotoUploadResult?): GroupFlowResult {
-        if (groupChanges.profilePictureChange is SetProfilePicture && groupPhotoUploadResult == null) {
-            logger.error("Group photo upload result must not be null. Continuing anyway.")
-        }
-
+    private fun finishGroupUpdate(expectedProfilePictureChange: ExpectedProfilePictureChange?): GroupFlowResult {
         groupCallManager.removeGroupCallParticipants(groupChanges.removeMembers, groupModel)
 
         persistChanges()
@@ -206,12 +240,6 @@ class UpdateGroupFlow(
             outgoingCspMessageServices.groupService.runRejectedMessagesRefreshSteps(groupModel)
         }
 
-        val profilePictureChange =
-            when (groupChanges.profilePictureChange) {
-                is SetProfilePicture -> SetProfilePicture(groupChanges.profilePictureChange.profilePicture, groupPhotoUploadResult)
-                else -> RemoveProfilePicture
-            }
-
         val members = groupModel.data?.otherMembers ?: run {
             logger.error("Group model data expected to exist")
             return GroupFlowResult.Failure.Other
@@ -219,18 +247,18 @@ class UpdateGroupFlow(
 
         taskManager.schedule(
             GroupUpdateTask(
-                groupChanges.name,
-                profilePictureChange,
-                members,
-                groupChanges.addMembers,
-                groupChanges.removeMembers,
-                groupModel.groupIdentity,
-                PredefinedMessageIds(),
-                outgoingCspMessageServices,
-                groupCallManager,
-                fileService,
-                apiService,
-                groupModelRepository,
+                name = groupChanges.name,
+                expectedProfilePictureChange = expectedProfilePictureChange,
+                updatedMembers = members,
+                addedMembers = groupChanges.addMembers,
+                removedMembers = groupChanges.removeMembers,
+                groupIdentity = groupModel.groupIdentity,
+                predefinedMessageIds = PredefinedMessageIds.random(),
+                outgoingCspMessageServices = outgoingCspMessageServices,
+                groupCallManager = groupCallManager,
+                fileService = fileService,
+                groupProfilePictureUploader = groupProfilePictureUploader,
+                groupModelRepository = groupModelRepository,
             ),
         )
 
@@ -240,28 +268,28 @@ class UpdateGroupFlow(
     private fun persistChanges() {
         groupModel.persistMemberChanges(groupChanges.addMembers, groupChanges.removeMembers)
 
-        val avatarHasChanged = when (groupChanges.profilePictureChange) {
-            is SetProfilePicture -> {
+        val groupProfilePictureHasChanged = when (groupChanges.profilePictureChange) {
+            is GroupChanges.ProfilePictureChange.Set -> {
                 logger.info("Set profile picture")
-                val oldGroupAvatar = fileService.getGroupAvatarBytes(groupModel)
-                fileService.writeGroupAvatar(
+                val oldGroupProfilePicture = fileService.getGroupProfilePictureBytes(groupModel)
+                fileService.writeGroupProfilePicture(
                     groupModel,
-                    groupChanges.profilePictureChange.profilePicture.profilePictureBytes,
+                    groupChanges.profilePictureChange.profilePicture.bytes,
                 )
-                !groupChanges.profilePictureChange.profilePicture.profilePictureBytes.contentEquals(oldGroupAvatar)
+                !groupChanges.profilePictureChange.profilePicture.bytes.contentEquals(oldGroupProfilePicture)
             }
 
-            is RemoveProfilePicture -> {
+            is GroupChanges.ProfilePictureChange.Remove -> {
                 logger.info("Remove profile picture")
-                val hadAvatar = fileService.hasGroupAvatarFile(groupModel)
-                fileService.removeGroupAvatar(groupModel)
-                hadAvatar
+                val hadGroupProfilePicture = fileService.hasGroupProfilePicture(groupModel)
+                fileService.removeGroupProfilePicture(groupModel)
+                hadGroupProfilePicture
             }
 
-            null -> false
+            is GroupChanges.ProfilePictureChange.NoChange -> false
         }
-        if (avatarHasChanged) {
-            logger.info("Avatar has changed")
+        if (groupProfilePictureHasChanged) {
+            logger.info("Group profile picture has changed")
             ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
             ShortcutUtil.updateShareTargetShortcut(
                 outgoingCspMessageServices.groupService.createReceiver(groupModel),

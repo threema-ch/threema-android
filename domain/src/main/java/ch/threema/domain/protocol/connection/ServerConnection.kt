@@ -22,6 +22,7 @@
 package ch.threema.domain.protocol.connection
 
 import androidx.annotation.WorkerThread
+import ch.threema.base.SessionScoped
 
 /**
  * The [ServerConnection] connects to the server used for the exchange of messages. Different types
@@ -31,6 +32,7 @@ import androidx.annotation.WorkerThread
  * define how actual messages are exchanged with the server. This can be handled differently depending
  * on the implementation.
  */
+@SessionScoped
 interface ServerConnection {
     val isRunning: Boolean
 

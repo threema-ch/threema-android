@@ -21,10 +21,13 @@
 
 package ch.threema.app.di
 
+import ch.threema.app.crashreporting.CrashReportingHelper
+import ch.threema.app.drafts.DraftManager
 import ch.threema.app.emojis.EmojiService
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.qrcodes.QrCodeGenerator
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.ConversationCategoryService
@@ -35,19 +38,16 @@ import ch.threema.app.services.ExcludedSyncIdentitiesService
 import ch.threema.app.services.FileService
 import ch.threema.app.services.GroupFlowDispatcher
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.IdListService
 import ch.threema.app.services.LifetimeService
 import ch.threema.app.services.LocaleService
 import ch.threema.app.services.LockAppService
 import ch.threema.app.services.MessageService
 import ch.threema.app.services.NotificationPreferenceService
-import ch.threema.app.services.QRCodeService
+import ch.threema.app.services.ProfilePictureRecipientsService
 import ch.threema.app.services.RingtoneService
 import ch.threema.app.services.SensorService
 import ch.threema.app.services.ServerAddressProviderService
-import ch.threema.app.services.ServiceManagerProvider
 import ch.threema.app.services.SynchronizeContactsService
-import ch.threema.app.services.SystemScreenLockService
 import ch.threema.app.services.UserService
 import ch.threema.app.services.WallpaperService
 import ch.threema.app.services.ballot.BallotService
@@ -78,21 +78,18 @@ import org.koin.core.component.inject
  * it might happen that services are leaked.
  */
 class DependencyContainer : KoinComponent {
-    val serviceManagerProvider: ServiceManagerProvider by inject()
-
     private var serviceManagerInstance: ServiceManager? = null
 
+    @Deprecated("Avoid accessing the service manager directly, use Koin instead")
     val serviceManager: ServiceManager?
         get() {
             val instance = serviceManagerInstance
             if (instance != null) {
                 return instance
             }
-            serviceManagerInstance = serviceManagerProvider.getServiceManagerOrNull()
+            serviceManagerInstance = getOrNull()
             return serviceManagerInstance
         }
-
-    fun isAvailable() = serviceManager != null
 
     val apiConnector: APIConnector by inject()
     val ballotService: BallotService by inject()
@@ -101,10 +98,12 @@ class DependencyContainer : KoinComponent {
     val contactService: ContactService by inject()
     val conversationCategoryService: ConversationCategoryService by inject()
     val conversationService: ConversationService by inject()
+    val crashReportingHelper: CrashReportingHelper by inject()
     val databaseService: DatabaseService by inject()
     val deviceService: DeviceService by inject()
     val dhSessionStore: DHSessionStoreInterface by inject()
     val distributionListService: DistributionListService by inject()
+    val draftManager: DraftManager by inject()
     val emojiService: EmojiService by inject()
     val excludedSyncIdentitiesService: ExcludedSyncIdentitiesService by inject()
     val fileService: FileService by inject()
@@ -112,7 +111,6 @@ class DependencyContainer : KoinComponent {
     val groupFlowDispatcher: GroupFlowDispatcher by inject()
     val groupModelRepository: GroupModelRepository by inject()
     val groupService: GroupService by inject()
-    val idListService: IdListService by inject()
     val identityStore: IdentityStore by inject()
     val licenseService: LicenseService<*> by inject()
     val lifetimeService: LifetimeService by inject()
@@ -123,15 +121,14 @@ class DependencyContainer : KoinComponent {
     val notificationPreferenceService: NotificationPreferenceService by inject()
     val notificationService: NotificationService by inject()
     val preferenceService: PreferenceService by inject()
-    val profilePicRecipientsService: IdListService by inject()
-    val qrCodeService: QRCodeService by inject()
+    val profilePictureRecipientsService: ProfilePictureRecipientsService by inject()
+    val qrCodeGenerator: QrCodeGenerator by inject()
     val ringtoneService: RingtoneService by inject()
     val sensorService: SensorService by inject()
     val serverAddressProviderService: ServerAddressProviderService by inject()
     val serverConnection: ServerConnection by inject()
     val sessionService: SessionService by inject()
     val synchronizeContactsService: SynchronizeContactsService by inject()
-    val systemScreenLockService: SystemScreenLockService by inject()
     val taskCreator: TaskCreator by inject()
     val taskManager: TaskManager by inject()
     val threemaSafeMDMConfig: ThreemaSafeMDMConfig by inject()

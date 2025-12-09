@@ -28,10 +28,10 @@ import ch.threema.app.services.UserService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("SupportActivity")
+private val logger = getThreemaLogger("SupportActivity")
 
 class SupportActivity : SimpleWebViewActivity() {
     init {

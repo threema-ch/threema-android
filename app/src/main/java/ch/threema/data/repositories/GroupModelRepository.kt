@@ -25,6 +25,7 @@ import android.database.sqlite.SQLiteException
 import ch.threema.app.listeners.GroupListener
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ListenerManager
+import ch.threema.base.SessionScoped
 import ch.threema.base.ThreemaException
 import ch.threema.data.ModelTypeCache
 import ch.threema.data.models.GroupIdentity
@@ -35,6 +36,7 @@ import ch.threema.data.storage.DatabaseBackend
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.types.Identity
 
+@SessionScoped
 class GroupModelRepository(
     // Note: Synchronize access
     private val cache: ModelTypeCache<GroupIdentity, GroupModel>,

@@ -78,9 +78,9 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import ch.threema.android.ResolvableString
+import ch.threema.android.ResolvedString
 import ch.threema.app.R
-import ch.threema.app.compose.common.ResolvableString
-import ch.threema.app.compose.common.ResolvedString
 import ch.threema.app.compose.common.SpacerHorizontal
 import ch.threema.app.compose.common.ThemedText
 import ch.threema.app.compose.common.buttons.ButtonPrimaryDense

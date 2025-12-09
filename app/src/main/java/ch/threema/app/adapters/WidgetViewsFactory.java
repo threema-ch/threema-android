@@ -49,13 +49,13 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.MessageUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 
 public class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WidgetViewsFactory");
+    private static final Logger logger = getThreemaLogger("WidgetViewsFactory");
 
     @NonNull
     private final Context context;

@@ -27,13 +27,13 @@ import ch.threema.app.AppConstants
 import ch.threema.app.services.RingtoneService
 import ch.threema.app.utils.GroupUtil
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.GroupModelRepository
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("GroupNotificationsActivity")
+private val logger = getThreemaLogger("GroupNotificationsActivity")
 
 class GroupNotificationsActivity : NotificationsActivity() {
     init {

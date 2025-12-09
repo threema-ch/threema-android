@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.rendezvous
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.io.IOException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
@@ -36,7 +36,7 @@ import okhttp3.WebSocketListener
 import okio.ByteString
 import okio.ByteString.Companion.toByteString
 
-private val logger = LoggingUtil.getThreemaLogger("WebSocketRendezvousPath")
+private val logger = getThreemaLogger("WebSocketRendezvousPath")
 
 internal class WebSocketRendezvousPath(
     override val pid: UInt,

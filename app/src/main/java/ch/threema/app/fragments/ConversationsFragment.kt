@@ -79,6 +79,7 @@ import ch.threema.app.dialogs.PasswordEntryDialog.PasswordEntryDialogClickListen
 import ch.threema.app.dialogs.SelectorDialog
 import ch.threema.app.dialogs.SimpleStringAlertDialog
 import ch.threema.app.dialogs.loadingtimeout.LoadingWithTimeoutDialogXml
+import ch.threema.app.drafts.DraftManager
 import ch.threema.app.groupflows.GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS
 import ch.threema.app.groupflows.GroupDisbandIntent
 import ch.threema.app.groupflows.GroupFlowResult
@@ -110,7 +111,6 @@ import ch.threema.app.services.GroupService
 import ch.threema.app.services.LockAppService
 import ch.threema.app.services.MessageService
 import ch.threema.app.services.RingtoneService
-import ch.threema.app.services.SystemScreenLockService
 import ch.threema.app.services.UserService
 import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.ui.EmptyRecyclerView
@@ -131,10 +131,10 @@ import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.LogUtil
 import ch.threema.app.utils.MimeUtil
 import ch.threema.app.utils.RuntimeUtil
-import ch.threema.app.utils.WidgetUtil
 import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.GroupCallManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.app.widget.WidgetUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.base.utils.onCompleted
 import ch.threema.common.consume
 import ch.threema.data.models.GroupIdentity
@@ -156,7 +156,7 @@ import kotlinx.coroutines.Deferred
 import org.koin.android.ext.android.inject
 import org.slf4j.Logger
 
-private val logger: Logger = LoggingUtil.getThreemaLogger("ConversationsFragment")
+private val logger: Logger = getThreemaLogger("ConversationsFragment")
 
 /**
  * This is one of the tabs in the home screen. It shows the current conversations.
@@ -185,8 +185,8 @@ class ConversationsFragment :
     private val fileService: FileService by inject()
     private val preferenceService: PreferenceService by inject()
     private val lockAppService: LockAppService by inject()
-    private val screenLockService: SystemScreenLockService by inject()
     private val notificationService: NotificationService by inject()
+    private val draftManager: DraftManager by inject()
 
     private var activity: Activity? = null
     private var tempMessagesFile: File? = null
@@ -556,7 +556,6 @@ class ConversationsFragment :
             }
 
             ThreemaActivity.ACTIVITY_ID_CHECK_LOCK -> if (resultCode == Activity.RESULT_OK) {
-                screenLockService.setAuthenticated(true)
                 preferenceService.setPrivateChatsHidden(false)
                 updateList(
                     scrollToPosition = 0,
@@ -572,7 +571,6 @@ class ConversationsFragment :
 
             ID_PRIVATE_TO_PUBLIC -> {
                 if (resultCode == Activity.RESULT_OK) {
-                    screenLockService.setAuthenticated(true)
                     if (selectedConversation != null) {
                         removePrivateMark(selectedConversation!!)
                     }
@@ -1793,6 +1791,7 @@ class ConversationsFragment :
                             conversationCategoryService,
                             preferenceService,
                             groupCallManager,
+                            draftManager,
                             highlightUid,
                             this@ConversationsFragment,
                             messageListAdapterItemCache,
@@ -1833,6 +1832,7 @@ class ConversationsFragment :
                                 contactService,
                                 ringtoneService,
                                 conversationCategoryService,
+                                draftManager,
                             ),
                         )
                     }

@@ -49,9 +49,11 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.FileHandlingZipOutputStream;
 import ch.threema.app.utils.executor.HandlerExecutor;
-import ch.threema.base.utils.LoggingUtil;
 import ch.threema.logging.LogLevel;
 import java8.util.concurrent.CompletableFuture;
+
+import static ch.threema.common.JavaCompat.getStackTraceString;
+import static ch.threema.logging.backend.LogBackendUtilsKt.cleanTag;
 
 /**
  * A logging backend that logs to the debug log file.
@@ -258,16 +260,16 @@ public class DebugLogFileBackend implements LogBackend {
             final Date now = new Date();
             String logLine = now.toString()
                 + '\t' + levelString
-                + " " + LoggingUtil.cleanTag(tag, STRIP_PREFIXES) + ": ";
+                + " " + cleanTag(tag, STRIP_PREFIXES) + ": ";
             if (message == null) {
                 if (throwable != null) {
-                    logLine += Log.getStackTraceString(throwable);
+                    logLine += getStackTraceString(throwable);
                 }
             } else {
                 if (throwable == null) {
                     logLine += message;
                 } else {
-                    logLine += message + '\n' + Log.getStackTraceString(throwable);
+                    logLine += message + '\n' + getStackTraceString(throwable);
                 }
             }
 

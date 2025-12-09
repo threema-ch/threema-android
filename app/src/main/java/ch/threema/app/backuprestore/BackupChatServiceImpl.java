@@ -41,10 +41,10 @@ import ch.threema.app.utils.FileHandlingZipOutputStream;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.MessageType;
@@ -53,7 +53,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
 
 public class BackupChatServiceImpl implements BackupChatService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BackupChatServiceImpl");
+    private static final Logger logger = getThreemaLogger("BackupChatServiceImpl");
 
     private final Context context;
     private final FileService fileService;
@@ -139,9 +139,7 @@ public class BackupChatServiceImpl implements BackupChatService {
                         break;
                     case VOIP_STATUS:
                         if (m.getVoipStatusData() != null && m.getVoipStatusData().getDuration() != null) {
-                            messageLine += " <" + StringConversionUtil.secondsToString(
-                                m.getVoipStatusData().getDuration(),
-                                false) + ">";
+                            messageLine += " <" + ElapsedTimeFormatter.secondsToString(m.getVoipStatusData().getDuration()) + ">";
                         }
                         break;
                     default:

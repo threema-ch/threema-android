@@ -26,6 +26,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.dialogs.TextEntryDialog
@@ -34,15 +35,14 @@ import ch.threema.app.services.DistributionListService
 import ch.threema.app.ui.SingleToast
 import ch.threema.app.utils.LogUtil
 import ch.threema.app.utils.RuntimeUtil
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("DistributionListAddActivity")
+private val logger = getThreemaLogger("DistributionListAddActivity")
 
 class DistributionListAddActivity : MemberChooseActivity(), TextEntryDialogClickListener {
     init {

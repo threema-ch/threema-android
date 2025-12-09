@@ -24,7 +24,7 @@ package ch.threema.app.processors.reflectedoutgoingmessage
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.MimeUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
 import ch.threema.protobuf.Common
@@ -34,7 +34,7 @@ import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingGroupFileTask")
+private val logger = getThreemaLogger("ReflectedOutgoingGroupFileTask")
 
 internal class ReflectedOutgoingGroupFileTask(
     outgoingMessage: MdD2D.OutgoingMessage,

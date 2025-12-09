@@ -75,7 +75,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.GroupDetailAdapter;
 import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.di.DependencyContainer;
@@ -86,6 +85,7 @@ import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.dialogs.TextEntryDialog;
 import ch.threema.app.dialogs.loadingtimeout.LoadingWithTimeoutDialogXml;
 import ch.threema.app.emojis.EmojiEditText;
+import ch.threema.app.groupflows.GroupChanges.ProfilePictureChange;
 import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.groupflows.GroupChanges;
 import ch.threema.app.groupflows.GroupCreateProperties;
@@ -98,9 +98,6 @@ import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.mediagallery.MediaGalleryActivity;
 import ch.threema.app.profilepicture.CheckedProfilePicture;
-import ch.threema.app.protocol.ProfilePictureChange;
-import ch.threema.app.protocol.RemoveProfilePicture;
-import ch.threema.app.protocol.SetProfilePicture;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.GroupDetailViewModel;
 import ch.threema.app.ui.ResumePauseHandler;
@@ -119,7 +116,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.groupcall.GroupCallDescription;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.CoroutinesExtensionKt;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
@@ -130,6 +127,7 @@ import kotlinx.coroutines.Deferred;
 
 import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.COLLAPSED;
 import static ch.threema.app.adapters.GroupDetailAdapter.GroupDescState.NONE;
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.app.groupflows.GroupFlowResultKt.GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS;
 
@@ -137,7 +135,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     GenericAlertDialog.DialogClickListener,
     TextEntryDialog.TextEntryDialogClickListener,
     GroupDetailAdapter.OnGroupDetailsClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupDetailActivity");
+    private static final Logger logger = getThreemaLogger("GroupDetailActivity");
     // static values
     private final int MODE_EDIT = 1;
     private final int MODE_READONLY = 2;
@@ -283,7 +281,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }
@@ -1211,29 +1209,29 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         }
     }
 
-    @Nullable
+    @NonNull
     private ProfilePictureChange getProfilePictureChange(ch.threema.data.models.GroupModel groupModel) {
         if (!groupDetailViewModel.hasAvatarChanges()) {
-            return null;
+            return ProfilePictureChange.NoChange.INSTANCE;
         }
 
         CheckedProfilePicture profilePicture = CheckedProfilePicture.getOrConvertFromFile(groupDetailViewModel.getAvatarFile());
-        byte[] newAvatarBytes = profilePicture != null ? profilePicture.getProfilePictureBytes() : null;
+        byte[] newAvatarBytes = profilePicture != null ? profilePicture.getBytes() : null;
 
         byte[] oldAvatarBytes;
         try {
-            oldAvatarBytes = dependencies.getFileService().getGroupAvatarBytes(groupModel);
+            oldAvatarBytes = dependencies.getFileService().getGroupProfilePictureBytes(groupModel);
         } catch (Exception e) {
             logger.error("Could not get group avatar", e);
             oldAvatarBytes = null;
         }
 
         if (Arrays.equals(newAvatarBytes, oldAvatarBytes)) {
-            return null;
+            return ProfilePictureChange.NoChange.INSTANCE;
         } else if (newAvatarBytes != null) {
-            return new SetProfilePicture(profilePicture, null);
+            return new ProfilePictureChange.Set(profilePicture);
         } else {
-            return RemoveProfilePicture.INSTANCE;
+            return ProfilePictureChange.Remove.INSTANCE;
         }
     }
 

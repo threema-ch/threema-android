@@ -23,11 +23,11 @@ package ch.threema.app.ui
 
 import android.app.Application
 import androidx.preference.PreferenceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 
-private val logger = LoggingUtil.getThreemaLogger("DynamicColorsHelper")
+private val logger = getThreemaLogger("DynamicColorsHelper")
 
 object DynamicColorsHelper {
     private const val PREF_KEY_DYNAMIC_COLOR = "pref_dynamic_color"

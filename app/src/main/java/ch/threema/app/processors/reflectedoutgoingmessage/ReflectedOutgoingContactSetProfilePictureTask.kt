@@ -22,12 +22,12 @@
 package ch.threema.app.processors.reflectedoutgoingmessage
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingContactSetProfilePictureTask")
+private val logger = getThreemaLogger("ReflectedOutgoingContactSetProfilePictureTask")
 
 internal class ReflectedOutgoingContactSetProfilePictureTask(
     message: OutgoingMessage,

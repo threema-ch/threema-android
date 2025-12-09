@@ -25,7 +25,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.webrtc.DataChannelObserver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import org.slf4j.Logger;
 import org.webrtc.DataChannel;
@@ -39,7 +39,7 @@ import java.util.List;
  */
 @AnyThread
 public class TemporaryDataChannelObserver extends DataChannelObserver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("TemporaryDataChannelObserver");
+    private static final Logger logger = getThreemaLogger("TemporaryDataChannelObserver");
 
     @NonNull
     final private List<Object> events = new ArrayList<>();

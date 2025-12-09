@@ -29,10 +29,10 @@ import androidx.annotation.WorkerThread
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.groupcall.sfu.GroupCallController
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import kotlinx.coroutines.*
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallServiceConnection")
+private val logger = getThreemaLogger("GroupCallServiceConnection")
 
 class GroupCallServiceConnection : ServiceConnection {
     private var groupCallController: GroupCallController? = null

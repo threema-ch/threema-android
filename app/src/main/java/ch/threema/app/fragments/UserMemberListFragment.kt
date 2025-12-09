@@ -22,22 +22,34 @@
 package ch.threema.app.fragments
 
 import android.annotation.SuppressLint
-import android.os.AsyncTask
+import androidx.lifecycle.lifecycleScope
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.adapters.UserListAdapter
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ContactService
+import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.app.utils.DispatcherProvider
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import com.bumptech.glide.Glide
-
-private val logger = LoggingUtil.getThreemaLogger("UserMemberListFragment")
+import kotlin.getValue
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 
 class UserMemberListFragment : MemberListFragment() {
+
+    private val contactService: ContactService by inject()
+    private val conversationCategoryService: ConversationCategoryService by inject()
+    private val blockedIdentitiesService: BlockedIdentitiesService by inject()
+    private val preferenceService: PreferenceService by inject()
+    private val dispatcherProvider: DispatcherProvider by inject()
+
     override fun getBundleName(): String = "UserMemberListState"
 
     override fun getEmptyText(): Int = R.string.no_matching_contacts
@@ -50,30 +62,25 @@ class UserMemberListFragment : MemberListFragment() {
         groups: Boolean,
         profilePics: Boolean,
     ) {
-        @Suppress("DEPRECATION")
-        object : AsyncTask<Void?, Void?, List<ContactModel>>() {
-            @Deprecated("Deprecated in Java")
-            override fun doInBackground(vararg params: Void?): List<ContactModel> {
+        lifecycleScope.launch {
+            val contactModels = withContext(dispatcherProvider.worker) {
                 var contactModels: List<ContactModel> = if (groups) {
                     contactService.find(
                         object : ContactService.Filter {
-                            override fun states(): Array<IdentityState> =
+                            override fun states() =
                                 if (preferenceService.showInactiveContacts()) {
                                     arrayOf(IdentityState.ACTIVE, IdentityState.INACTIVE)
                                 } else {
                                     arrayOf(IdentityState.ACTIVE)
                                 }
 
-                            // required!
-                            override fun requiredFeature(): Long = ThreemaFeature.GROUP_CHAT
+                            override fun requiredFeature() = ThreemaFeature.GROUP_CHAT
 
-                            override fun fetchMissingFeatureLevel(): Boolean = true
+                            override fun fetchMissingFeatureLevel() = true
 
-                            override fun includeMyself(): Boolean = false
+                            override fun includeMyself() = false
 
-                            override fun includeHidden(): Boolean = false
-
-                            override fun onlyWithReceiptSettings(): Boolean = false
+                            override fun includeHidden() = false
                         },
                     )
                 } else if (profilePics) {
@@ -94,37 +101,30 @@ class UserMemberListFragment : MemberListFragment() {
                         excludedIdentities.contains(contactModel.identity)
                     }
                 }
-                return contactModels
+                contactModels
             }
 
-            @Deprecated("Deprecated in Java")
-            override fun onPostExecute(contactModels: List<ContactModel>) {
-                if (conversationCategoryService == null) {
-                    logger.error("Conversation category service is null")
-                    return
+            adapter = UserListAdapter(
+                activity,
+                contactModels,
+                preselectedIdentities,
+                checkedItemPositions,
+                contactService,
+                blockedIdentitiesService,
+                conversationCategoryService,
+                preferenceService,
+                this@UserMemberListFragment,
+                Glide.with(ThreemaApplication.getAppContext()),
+                false,
+            )
+            setListAdapter(adapter)
+            if (listInstanceState != null) {
+                if (isAdded && view != null && getActivity() != null) {
+                    listView.onRestoreInstanceState(listInstanceState)
                 }
-                adapter = UserListAdapter(
-                    activity,
-                    contactModels,
-                    preselectedIdentities,
-                    checkedItemPositions,
-                    contactService,
-                    blockedIdentitiesService,
-                    conversationCategoryService,
-                    preferenceService,
-                    this@UserMemberListFragment,
-                    Glide.with(ThreemaApplication.getAppContext()),
-                    false,
-                )
-                setListAdapter(adapter)
-                if (listInstanceState != null) {
-                    if (isAdded && view != null && getActivity() != null) {
-                        listView.onRestoreInstanceState(listInstanceState)
-                    }
-                    listInstanceState = null
-                }
-                onAdapterCreated()
+                listInstanceState = null
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+            onAdapterCreated()
+        }
     }
 }

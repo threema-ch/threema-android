@@ -62,12 +62,12 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_CHANGE_PASSWORD;
 
 public class BackupThreemaSafeFragment extends Fragment implements GenericAlertDialog.DialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BackupThreemaSafeFragment");
+    private static final Logger logger = getThreemaLogger("BackupThreemaSafeFragment");
 
     private static final int REQUEST_CODE_SAFE_CONFIGURE = 22;
     private static final int REQUEST_CODE_SAFE_CHANGE_PASSWORD = 23;

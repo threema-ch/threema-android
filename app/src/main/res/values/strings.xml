@@ -824,7 +824,7 @@
     <string name="grace_thirty_minutes">30 minutes</string>
     <string name="grace_never">Never (manual)</string>
     <string name="never">Never</string>
-    <string name="access_protection_cannot_be_removed">Access protection cannot be removed as there is at least one private chat.</string>
+    <string name="access_protection_private_chats_warning">By removing the access protection all your private chats will become visible again.</string>
     <string name="verification_started">Verification started</string>
     <string name="cannot_open_file">Could not open file</string>
     <string name="prefs_title_image_attach_previews">Media quick select</string>
@@ -1419,7 +1419,6 @@
     <string name="threema_push_service_description">Persistent notification shown when ${app_name_short} Push is active</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push_activated">${app_name_short} Push activated.</string>
-    <string name="add_shortcut_success">Shortcut successfully created</string>
     <string name="add_shortcut_error">Error adding shortcut to launcher screen</string>
     <string name="web_link">Link</string>
     <string name="link_copied">%s copied</string>
@@ -1667,6 +1666,8 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">The app is not allowed to maintain a permanent connection to the servers which is required for ${app_name_short} Push to work. You will not be informed of new messages when the app is in the background. To fix this, tap on “App battery usage” and select “Unrestricted.”</string>
     <string name="problemsolver_to_settings">To settings</string>
+    <!-- Label on button to dismiss/hide a warning -->
+    <string name="problemsolver_dismiss">Dismiss</string>
     <string name="prefs_advanced_options">Advanced options</string>
     <string name="push_service">Push service</string>
     <string name="edit_and_send">Edit and send</string>
@@ -1822,16 +1823,14 @@
     <string name="remote_secrets_failed_to_fetch">The ${remote_secret} token could not be fetched. Please check your Internet connection and try again.</string>
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="fetching_remote_secret">Fetching ${remote_secret} token</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activated_notification_title">${remote_secret} has been activated</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
-    <string name="remote_secret_activated_notification_content">This feature keeps your chats safe if your phone is lost or stolen.</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_activated_dialog_content">If you lose your device, this feature allows your administrator to lock the app, ensuring that your chats remain encrypted even if unauthorized people manage to unlock your device.\n[Learn more]</string>
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivated_notification_title">${remote_secret} has been deactivated</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
-    <string name="remote_secret_deactivated_notification_content">If you need more information, please contact your administrator.</string>
-    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
-    <string name="remote_secret_activated_learn_more">Learn more</string>
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_deactivated_dialog_content">Your administrator has deactivated ${remote_secret}. More information about ${remote_secret} can be found in this [FAQ entry].</string>
     <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating">Activating ${remote_secret}</string>
     <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
@@ -1840,6 +1839,24 @@
     <string name="remote_secret_deactivating">Deactivating ${remote_secret}</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">Deactivating ${remote_secret} failed. Please check your Internet connection and try again.</string>
+
+    <string name="referral_banner_title">Recommend and Benefit</string>
+    <string name="referral_banner_body">Invite your friends to use Threema Work in their company and earn a referral bonus!</string>
+    <string name="referral_screen_title">Recommend and Benefit</string>
+    <string name="referral_screen_subtitle">Receive up to 10% of the first invoice amount of the recruited company.</string>
+    <string name="referral_how_it_works_title">How It Works</string>
+    <string name="referral_how_it_works_referral_title">Referral</string>
+    <string name="referral_how_it_works_referral_body">Invite a friend or their company to join Threema Work. It is important that your Threema ID is provided during registration or when purchasing licenses so that your referral can be taken into account.</string>
+    <string name="referral_how_it_works_requirements_title">Requirements</string>
+    <string name="referral_how_it_works_requirements_body">The referred company must not already be a customer of ours and must order licenses</string>
+    <string name="referral_how_it_works_confirmation_title">Confirmation</string>
+    <string name="referral_how_it_works_confirmation_body">To ensure that your referral can be correctly assigned and verified, we will contact you before making the payment. We will inform you as soon as the verification process is complete.</string>
+    <string name="referral_your_reward_title">Your Reward</string>
+    <string name="referral_your_reward_subtitle">Earn a Referral Bonus</string>
+    <string name="referral_your_reward_body">For your referral, you will receive 10% of the first invoice amount of the recruited company (excluding taxes/fees). The bonus will be transferred to you 30–60 days after receipt of payment.</string>
+    <string name="referral_share_invitation_link">Share Invitation Link</string>
+    <string name="referral_view_terms_and_conditions">View Terms &amp; Conditions</string>
+    <string name="referral_invitation_message_content">Hey! Try Threema Work for free with this invitation link: %1$s</string>
 
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>

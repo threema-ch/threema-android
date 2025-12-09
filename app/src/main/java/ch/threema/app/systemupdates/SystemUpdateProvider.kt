@@ -76,7 +76,7 @@ class SystemUpdateProvider(
             add(SystemUpdateToVersion66(context, serviceManager))
         }
         if (oldVersion < SystemUpdateToVersion72.VERSION) {
-            add(SystemUpdateToVersion72(serviceManager))
+            add(SystemUpdateToVersion72())
         }
         if (oldVersion < SystemUpdateToVersion91.VERSION) {
             add(SystemUpdateToVersion91(context))
@@ -93,11 +93,26 @@ class SystemUpdateProvider(
         if (oldVersion < SystemUpdateToVersion113.VERSION) {
             add(SystemUpdateToVersion113(serviceManager))
         }
+        if (oldVersion < SystemUpdateToVersion114.VERSION) {
+            add(SystemUpdateToVersion114())
+        }
+        if (oldVersion < SystemUpdateToVersion115.VERSION) {
+            add(SystemUpdateToVersion115(context))
+        }
+        if (oldVersion < SystemUpdateToVersion116.VERSION) {
+            add(SystemUpdateToVersion116())
+        }
+        if (oldVersion < SystemUpdateToVersion117.VERSION) {
+            add(SystemUpdateToVersion117())
+        }
+        if (oldVersion < SystemUpdateToVersion118.VERSION) {
+            add(SystemUpdateToVersion118())
+        }
     }
 
     fun getVersion() = VERSION
 
     companion object {
-        const val VERSION = SystemUpdateToVersion113.VERSION
+        const val VERSION = SystemUpdateToVersion118.VERSION
     }
 }

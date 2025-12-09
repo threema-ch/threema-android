@@ -40,6 +40,9 @@ dependencies {
     api(libs.okhttp3.coroutines)
     api(libs.okhttp3.loggingInterceptor)
 
+    // JSON
+    implementation(libs.kotlinx.serialization.json)
+
     // Testing
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

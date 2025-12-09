@@ -23,12 +23,13 @@ package ch.threema.domain.protocol.blob
 
 import ch.threema.base.ProgressListener
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.Http
 import ch.threema.common.buildNew
 import ch.threema.common.buildRequest
 import ch.threema.common.execute
+import ch.threema.common.getSuccessBodyOrThrow
 import ch.threema.common.toHexString
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.Version
@@ -40,7 +41,6 @@ import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL
-import java.nio.charset.StandardCharsets
 import kotlin.concurrent.Volatile
 import kotlin.time.Duration.Companion.seconds
 import okhttp3.MediaType
@@ -50,9 +50,8 @@ import okhttp3.RequestBody
 import okhttp3.internal.closeQuietly
 import okio.BufferedSink
 import okio.source
-import org.apache.commons.io.IOUtils
 
-private val logger = LoggingUtil.getThreemaLogger("BlobUploader")
+private val logger = getThreemaLogger("BlobUploader")
 
 private const val PROGRESS_UPDATE_STEP_SIZE = 10
 
@@ -180,29 +179,18 @@ class BlobUploader private constructor(
                     progressListener?.onFinished(false)
                     return null
                 }
-                if (!response.isSuccessful) {
-                    logger.error("Blob upload failed. HTTP response code not in range 200..299")
-                    throw IOException("upload request failed with code ${response.code}")
-                }
 
-                val responseBodyStream: InputStream = response.body.byteStream()
-                val blobIdHex = IOUtils.toString(responseBodyStream, StandardCharsets.UTF_8)
+                val blobIdHex = response.getSuccessBodyOrThrow().string()
+                progressListener?.onFinished(true)
 
-                progressListener?.onFinished(blobIdHex != null)
-
-                if (blobIdHex != null) {
-                    logger.info("Blob upload completed. ID = $blobIdHex")
-                    return Utils.hexStringToByteArray(blobIdHex)
-                } else {
-                    logger.error("Blob upload failed. Could not read ID from successful response")
-                    throw ThreemaException("TB001") // Invalid blob ID received from server
-                }
+                logger.info("Blob upload completed. ID = $blobIdHex")
+                return Utils.hexStringToByteArray(blobIdHex)
             }
         } catch (ioException: IOException) {
             // Mutable field `isCancelled` will be mutated by calls to progressListener.onFinished
             val isCancelledAtTimeOfException = isCancelled
             progressListener?.onFinished(false)
-            // If the "UploadBlobRequestBody" stops writing bytes due to cancellation, it result
+            // If the "UploadBlobRequestBody" stops writing bytes due to cancellation, it results
             // in an IOException. But only catch it, if we cancelled this uploader on our own
             if (isCancelledAtTimeOfException) {
                 logger.info("Blob upload cancelled manually")

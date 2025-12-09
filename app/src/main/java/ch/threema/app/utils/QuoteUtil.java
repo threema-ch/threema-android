@@ -41,7 +41,7 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -54,7 +54,7 @@ import static ch.threema.app.messagereceiver.MessageReceiver.Type_DISTRIBUTION_L
 import static ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP;
 
 public class QuoteUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("QuoteUtil");
+    private static final Logger logger = getThreemaLogger("QuoteUtil");
 
     private static final Pattern bodyMatchPattern = Pattern.compile("(?sm)(\\A> .*?)^(?!> ).+");
     private static final Pattern quoteV1MatchPattern = Pattern.compile("(?sm)\\A> ([A-Z0-9*]{8}): (.*?)^(?!> ).+");

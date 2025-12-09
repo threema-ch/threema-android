@@ -26,12 +26,12 @@ import org.slf4j.Logger;
 import java.security.SecureRandom;
 
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.libthreema.CryptoException;
 
 public class SymmetricEncryptionService {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SymmetricEncryptionService");
+    private static final Logger logger = getThreemaLogger("SymmetricEncryptionService");
 
     public byte[] generateSymmetricKey() {
         final byte[] encryptionKey = new byte[NaCl.SYMM_KEY_BYTES];

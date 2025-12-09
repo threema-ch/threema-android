@@ -25,7 +25,7 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.UserService
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
@@ -41,7 +41,7 @@ import ch.threema.protobuf.d2d.sync.UserProfileKt.identityLinks
 import ch.threema.protobuf.d2d.sync.userProfile
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectUserProfileIdentityLinksTask")
+private val logger = getThreemaLogger("ReflectUserProfileIdentityLinksTask")
 
 /**
  * Note that this task always reflects the current state when it is running. Therefore, this task should be scheduled whenever the identity links

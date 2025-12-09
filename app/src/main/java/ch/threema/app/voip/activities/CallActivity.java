@@ -22,6 +22,7 @@
 package ch.threema.app.voip.activities;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 import static ch.threema.app.utils.ShortcutUtil.EXTRA_CALLED_FROM_SHORTCUT;
@@ -146,7 +147,7 @@ import ch.threema.app.voip.services.CallRejectService;
 import ch.threema.app.voip.services.VideoContext;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.util.VoipUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
@@ -164,7 +165,7 @@ public class CallActivity extends ThreemaActivity implements
     GenericAlertDialog.DialogClickListener,
     SensorListener,
     LifecycleOwner {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("CallActivity");
+    private static final Logger logger = getThreemaLogger("CallActivity");
     private static final String LIFETIME_SERVICE_TAG = "CallActivity";
     private static final String SENSOR_TAG_CALL = "voipcall";
     public static final String EXTRA_ACCEPT_INCOMING_CALL = "ACCEPT_INCOMING_CALL";
@@ -913,7 +914,9 @@ public class CallActivity extends ThreemaActivity implements
             }
         }
 
-        if (dependencies.isAvailable()) {
+        var isSessionScopeReady = isSessionScopeReady();
+
+        if (isSessionScopeReady) {
             var voipStateService = dependencies.getVoipStateService();
             // stop capturing
             if ((voipStateService.getVideoRenderMode() & VIDEO_RENDER_FLAG_OUTGOING) == VIDEO_RENDER_FLAG_OUTGOING) {
@@ -932,7 +935,7 @@ public class CallActivity extends ThreemaActivity implements
         }
 
         // Release connection
-        if (dependencies.isAvailable()) {
+        if (isSessionScopeReady) {
             dependencies.getLifetimeService().releaseConnection(LIFETIME_SERVICE_TAG);
         }
 
@@ -940,7 +943,7 @@ public class CallActivity extends ThreemaActivity implements
         LocalBroadcastManager.getInstance(this).unregisterReceiver(this.localBroadcastReceiver);
 
         // Unregister sensor listeners
-        if (dependencies.isAvailable()) {
+        if (isSessionScopeReady) {
             dependencies.getSensorService().unregisterSensors(SENSOR_TAG_CALL);
             sensorEnabled = false;
         }
@@ -956,7 +959,7 @@ public class CallActivity extends ThreemaActivity implements
             this.videoViews = null;
         }
 
-        if (dependencies.isAvailable()) {
+        if (isSessionScopeReady) {
             dependencies.getPreferenceService().setPipPosition(pipPosition);
         }
 

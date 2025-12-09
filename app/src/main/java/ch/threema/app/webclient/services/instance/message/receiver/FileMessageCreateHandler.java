@@ -51,7 +51,7 @@ import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 
@@ -63,7 +63,7 @@ import static ch.threema.app.utils.MimeUtil.MIME_TYPE_IMAGE_PNG;
 
 @WorkerThread
 public class FileMessageCreateHandler extends MessageCreateHandler {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("FileMessageCreateHandler");
+    private static final Logger logger = getThreemaLogger("FileMessageCreateHandler");
 
     private static final String FIELD_NAME = "name";
     private static final String FIELD_FILE_TYPE = "fileType";
@@ -186,7 +186,7 @@ public class FileMessageCreateHandler extends MessageCreateHandler {
     }
 
     private File save(final byte[] bytes) throws IOException {
-        final File file = fileService.createTempFile("wcm", "", false);
+        final File file = fileService.createTempFile("wcm", "");
         try (
             final FileOutputStream fileOutputStream = new FileOutputStream(file);
             final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream)

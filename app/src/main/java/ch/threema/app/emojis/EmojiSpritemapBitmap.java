@@ -35,10 +35,10 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class EmojiSpritemapBitmap {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiSpritemapBitmap");
+    private static final Logger logger = getThreemaLogger("EmojiSpritemapBitmap");
 
     private final Context context;
     private final EmojiGroup emojiGroup;

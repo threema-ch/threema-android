@@ -38,7 +38,7 @@ import ch.threema.app.utils.ConversationUtil.getConversationUid
 import ch.threema.app.utils.GroupUtil
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.NonceScope
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride.*
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -101,7 +101,7 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.kotlin.toByteString
 import java.nio.ByteBuffer
 
-private val logger = LoggingUtil.getThreemaLogger("DeviceLinkingDataCollector")
+private val logger = getThreemaLogger("DeviceLinkingDataCollector")
 
 data class DeviceLinkingData(val blobs: Sequence<BlobData>, val essentialDataProvider: EssentialDataProvider)
 
@@ -383,7 +383,7 @@ class DeviceLinkingDataCollector(
             }
 
             val blobDataProvider = BlobDataProvider(profilePictureData.blobId) {
-                profilePictureData.profilePicture.profilePictureBytes
+                profilePictureData.profilePicture.bytes
             }
 
             blobDataProvider to profilePicture
@@ -789,8 +789,8 @@ class DeviceLinkingDataCollector(
     }
 
     private fun collectGroupAvatar(groupModel: GroupModel): Pair<BlobDataProvider, DeltaImage>? {
-        return if (fileService.hasGroupAvatarFile(groupModel)) {
-            createJpegBlobAssets { fileService.getGroupAvatar(groupModel) }
+        return if (fileService.hasGroupProfilePicture(groupModel)) {
+            createJpegBlobAssets { fileService.getGroupProfilePictureBitmap(groupModel) }
         } else {
             null
         }

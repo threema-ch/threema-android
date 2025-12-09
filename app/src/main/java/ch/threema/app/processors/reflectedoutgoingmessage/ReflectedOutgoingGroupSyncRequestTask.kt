@@ -22,12 +22,12 @@
 package ch.threema.app.processors.reflectedoutgoingmessage
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingGroupSyncRequestTask")
+private val logger = getThreemaLogger("ReflectedOutgoingGroupSyncRequestTask")
 
 internal class ReflectedOutgoingGroupSyncRequestTask(
     outgoingMessage: MdD2D.OutgoingMessage,

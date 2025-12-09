@@ -35,12 +35,12 @@ import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ServerMessageModel;
 
 @WorkerThread
 public class AlertHandler extends MessageUpdater {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AlertHandler");
+    private static final Logger logger = getThreemaLogger("AlertHandler");
 
     public static final String SOURCE_SERVER = "server";
     public static final String SOURCE_DEVICE = "device";

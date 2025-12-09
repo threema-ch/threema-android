@@ -3,9 +3,6 @@
     <files-path
         name="tmp_files"
         path="tmp/" />
-    <external-files-path
-        name="ext_tmp_files"
-        path="tmp/" />
     <cache-path
         name="cache_files"
         path="/" />

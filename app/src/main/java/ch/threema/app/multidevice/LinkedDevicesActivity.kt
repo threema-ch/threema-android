@@ -59,7 +59,7 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.HiddenChatUtil
 import ch.threema.app.utils.linkifyWeb
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
@@ -67,7 +67,7 @@ import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-private val logger = LoggingUtil.getThreemaLogger("LinkedDevicesActivity")
+private val logger = getThreemaLogger("LinkedDevicesActivity")
 
 class LinkedDevicesActivity : ThreemaToolbarActivity() {
     init {

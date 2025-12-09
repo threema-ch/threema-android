@@ -41,7 +41,7 @@ import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Listen for changes that require the entire list of contacts to be refreshed in Threema Web.
@@ -50,7 +50,7 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @WorkerThread
 public class ReceiversUpdateHandler extends MessageUpdater {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ReceiversUpdateHandler");
+    private static final Logger logger = getThreemaLogger("ReceiversUpdateHandler");
 
     // Handler
     private final @NonNull HandlerExecutor handler;

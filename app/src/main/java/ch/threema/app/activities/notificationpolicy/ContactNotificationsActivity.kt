@@ -27,13 +27,13 @@ import ch.threema.app.AppConstants
 import ch.threema.app.services.RingtoneService
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.types.Identity
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("ContactNotificationsActivity")
+private val logger = getThreemaLogger("ContactNotificationsActivity")
 
 class ContactNotificationsActivity : NotificationsActivity() {
     init {

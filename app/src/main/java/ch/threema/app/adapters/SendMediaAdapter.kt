@@ -32,9 +32,9 @@ import androidx.viewpager2.widget.ViewPager2
 import ch.threema.app.fragments.BigMediaFragment
 import ch.threema.app.utils.MediaAdapter
 import ch.threema.app.utils.MediaAdapterManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("SendMediaAdapter")
+private val logger = getThreemaLogger("SendMediaAdapter")
 
 class SendMediaAdapter(
     fm: FragmentManager,

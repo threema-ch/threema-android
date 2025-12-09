@@ -32,7 +32,7 @@ import ch.threema.app.voip.groupcall.sfu.messages.S2PMessage
 import ch.threema.app.voip.groupcall.sfu.webrtc.ConnectionCtx
 import ch.threema.app.webrtc.PeerConnectionObserver
 import ch.threema.app.webrtc.SaneDataChannelObserver
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import com.google.protobuf.InvalidProtocolBufferException
 import java8.util.function.Function
@@ -42,7 +42,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.webrtc.DataChannel
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallConnectionState.Connected")
+private val logger = getThreemaLogger("GroupCallConnectionState.Connected")
 
 class Connected internal constructor(
     call: GroupCall,

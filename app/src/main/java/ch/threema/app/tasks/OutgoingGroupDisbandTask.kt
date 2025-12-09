@@ -29,7 +29,7 @@ import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.app.utils.toBasicContacts
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.MessageId
@@ -47,7 +47,7 @@ import ch.threema.storage.models.GroupModel
 import java.util.Date
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupDisbandTask")
+private val logger = getThreemaLogger("OutgoingGroupDisbandTask")
 
 /**
  * This task is used to send out an empty [GroupSetupMessage] to each member of the given group.

@@ -22,6 +22,8 @@
 package ch.threema.app.voip.groupcall.sfu.webrtc
 
 import ch.threema.app.voip.groupcall.CryptoCallUtils
+import ch.threema.common.generateRandomBytes
+import ch.threema.common.secureRandom
 import ch.threema.domain.protocol.csp.ProtocolDefines.GC_PCMK_LENGTH
 
 /**
@@ -77,7 +79,7 @@ class LocalParticipantCallMediaKey {
     private var _current: ParticipantCallMediaKeyState = ParticipantCallMediaKeyState(
         epoch = 0u,
         ratchetCounter = 0u,
-        pcmk = CryptoCallUtils.getSecureRandomBytes(GC_PCMK_LENGTH),
+        pcmk = secureRandom().generateRandomBytes(GC_PCMK_LENGTH),
     )
     private var _pending: PendingParticipantCallMediaKeyState? = null
 
@@ -102,7 +104,7 @@ class LocalParticipantCallMediaKey {
             val state = ParticipantCallMediaKeyState(
                 epoch = if (currentKeyState.epoch == 255u) 0u else currentKeyState.epoch + 1u,
                 ratchetCounter = 0u,
-                pcmk = CryptoCallUtils.getSecureRandomBytes(GC_PCMK_LENGTH),
+                pcmk = secureRandom().generateRandomBytes(GC_PCMK_LENGTH),
             )
             PendingParticipantCallMediaKeyState(
                 state = state,

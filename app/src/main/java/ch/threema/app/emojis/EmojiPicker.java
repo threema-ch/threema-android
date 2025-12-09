@@ -53,11 +53,11 @@ import ch.threema.app.emojireactions.EmojiReactionsGridAdapter;
 import ch.threema.app.ui.LockableViewPager;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.EditTextUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.EmojiReactionData;
 
 public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.EmojiSearchListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiPicker");
+    private static final Logger logger = getThreemaLogger("EmojiPicker");
 
     private Activity activity;
     private final ArrayList<EmojiPickerListener> emojiPickerListeners = new ArrayList<>();

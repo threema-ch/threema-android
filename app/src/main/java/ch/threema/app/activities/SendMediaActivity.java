@@ -22,6 +22,7 @@
 package ch.threema.app.activities;
 
 import static ch.threema.app.adapters.SendMediaPreviewAdapter.VIEW_TYPE_NORMAL;
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.preference.service.PreferenceService.ImageScale_SEND_AS_FILE;
 import static ch.threema.app.preference.service.PreferenceService.VideoSize_DEFAULT;
 import static ch.threema.app.preference.service.PreferenceService.VideoSize_MEDIUM;
@@ -88,7 +89,6 @@ import androidx.viewpager2.widget.ViewPager2;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
-import org.apache.commons.text.similarity.JaroWinklerSimilarity;
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
@@ -98,6 +98,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import ch.threema.android.ActivityExtensionsKt;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -108,7 +109,7 @@ import ch.threema.app.camera.CameraUtil;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.CallbackTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
-import ch.threema.app.drafts.DraftManager;
+import ch.threema.app.drafts.DraftUpdateTextWatcher;
 import ch.threema.app.emojis.EmojiButton;
 import ch.threema.app.emojis.EmojiPicker;
 import ch.threema.app.mediaattacher.MediaFilterQuery;
@@ -127,7 +128,6 @@ import ch.threema.app.ui.SendButton;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.ui.TranslateDeferringInsetsAnimationCallback;
 import ch.threema.app.ui.ViewExtensionsKt;
-import ch.threema.app.utils.ActivityExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
@@ -138,7 +138,7 @@ import ch.threema.app.utils.MediaAdapterManager;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.video.VideoTimelineCache;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
 import ch.threema.data.models.GroupModel;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
@@ -147,7 +147,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
     GenericAlertDialog.DialogClickListener,
     ThreemaToolbarActivity.OnSoftKeyboardChangedListener,
     MediaAdapterListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SendMediaActivity");
+    private static final Logger logger = getThreemaLogger("SendMediaActivity");
 
     {
         // Always use night mode for this activity. Note that setting it here avoids the activity being recreated.
@@ -178,6 +178,8 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
     private RecyclerView recyclerView;
     private ViewPager2 viewPager;
     private ArrayList<MessageReceiver> messageReceivers;
+    @Nullable
+    private DraftUpdateTextWatcher draftUpdateTextWatcher;
     private File tempFile = null;
     private ComposeEditText captionEditText;
     private LinearLayout activityParentLayout;
@@ -227,7 +229,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
         }
     }
@@ -440,6 +442,19 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             recipientText.setText(getString(R.string.send_to, recipients));
         } else {
             findViewById(R.id.recipient_container).setVisibility(View.GONE);
+        }
+
+        if (messageReceivers.size() == 1) {
+            var conversationUid = messageReceivers.get(0).getUniqueIdString();
+            draftUpdateTextWatcher = new DraftUpdateTextWatcher(
+                dependencies.getDraftManager(),
+                conversationUid,
+                () -> {
+                    var mediaItems = mediaAdapterManager.getItems();
+                    return !mediaItems.isEmpty() ? mediaItems.get(0).getCaption() : null;
+                }
+            );
+            captionEditText.addTextChangedListener(draftUpdateTextWatcher);
         }
 
         SendButton sendButton = findViewById(R.id.send_button);
@@ -709,10 +724,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         File cameraFile = null;
         File videoFile;
         try {
-            cameraFile = dependencies.getFileService().createTempFile(".camera", ".jpg", false);
+            cameraFile = dependencies.getFileService().createTempFile(".camera", ".jpg");
             this.cameraFilePath = cameraFile.getCanonicalPath();
 
-            videoFile = dependencies.getFileService().createTempFile(".video", ".mp4", false);
+            videoFile = dependencies.getFileService().createTempFile(".video", ".mp4");
             this.videoFilePath = videoFile.getCanonicalPath();
         } catch (IOException e) {
             logger.error("Exception", e);
@@ -1025,20 +1040,11 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         dependencies.getMessageService().sendMediaAsync(mediaAdapterManager.getItems(), messageReceivers, null);
 
         if (messageReceivers.size() == 1) {
-            String messageDraft = DraftManager.getMessageDraft(messageReceivers.get(0).getUniqueIdString());
-            if (!TestUtil.isEmptyOrNull(messageDraft)) {
-                for (MediaItem mediaItem : mediaAdapterManager.getItems()) {
-                    try {
-                        double similarity = new JaroWinklerSimilarity().apply(mediaItem.getCaption(), messageDraft);
-                        if (similarity > 0.8D) {
-                            DraftManager.putMessageDraft(messageReceivers.get(0).getUniqueIdString(), null, null);
-                            break;
-                        }
-                    } catch (IllegalArgumentException ignore) {
-                        // one argument is probably null
-                    }
-                }
+            if (draftUpdateTextWatcher != null) {
+                captionEditText.removeTextChangedListener(draftUpdateTextWatcher);
+                draftUpdateTextWatcher.stop();
             }
+            dependencies.getDraftManager().remove(messageReceivers.get(0).getUniqueIdString());
         }
 
         // return last media filter to chat via intermediate hop through MediaAttachActivity
@@ -1270,6 +1276,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         }
         this.sendMediaPreviewAdapter = null;
 
+        if (draftUpdateTextWatcher != null) {
+            draftUpdateTextWatcher.stop();
+        }
+
         super.onDestroy();
     }
 
@@ -1345,22 +1355,6 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             default:
                 logger.error("No menu item for video size {}", videoSize);
                 throw new IllegalArgumentException(String.format("No menu item for video size %d", videoSize));
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        // Normally, the activity's state is stored and recreated when the activity is recreated.
-        // However, in the event of a crash, we might lose this state and with that we lose user data.
-        // To mitigate this, we store the caption of the first media item as a draft, so that we can at least restore that.
-        // We only do this if we can uniquely identify the chat that the draft should be stored in.
-        if (!isFinishing()) {
-            var mediaItems = mediaAdapterManager.getItems();
-            if (messageReceivers.size() == 1 && !mediaItems.isEmpty()) {
-                DraftManager.putMessageDraft(messageReceivers.get(0).getUniqueIdString(), mediaItems.get(0).getCaption(), null);
-            }
         }
     }
 }

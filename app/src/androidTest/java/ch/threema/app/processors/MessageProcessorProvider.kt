@@ -32,7 +32,8 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManagerImpl
 import ch.threema.app.services.FileService
 import ch.threema.app.services.LifetimeService
-import ch.threema.app.tasks.TaskArchiverImpl
+import ch.threema.app.tasks.archive.TaskArchiverImpl
+import ch.threema.app.tasks.archive.recovery.TaskRecoveryManagerImpl
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
@@ -77,6 +78,7 @@ import ch.threema.domain.taskmanager.toCspMessage
 import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.GroupMemberModel
+import java.io.ByteArrayInputStream
 import java.util.Queue
 import java.util.concurrent.ConcurrentLinkedQueue
 import junit.framework.TestCase.assertEquals
@@ -420,7 +422,7 @@ open class MessageProcessorProvider {
             serviceManager.databaseService,
             serviceManager.preferenceStore,
             serviceManager.encryptedPreferenceStore,
-            TaskArchiverImpl(serviceManager.databaseService.taskArchiveFactory),
+            TaskArchiverImpl(serviceManager.databaseService.taskArchiveFactory, TaskRecoveryManagerImpl()),
             serviceManager.deviceCookieManager,
             taskManager,
             serviceManager.multiDeviceManager as MultiDeviceManagerImpl,
@@ -507,7 +509,11 @@ open class MessageProcessorProvider {
             databaseService.groupMemberModelFactory.createOrUpdate(memberModel)
         }
         if (testGroup.profilePicture != null) {
-            fileService.writeGroupAvatar(groupModel, testGroup.profilePicture)
+            fileService.writeGroupProfilePicture(
+                groupModel.groupIdentity,
+                groupModel.id.toLong(),
+                ByteArrayInputStream(testGroup.profilePicture),
+            )
         }
 
         // We trigger the listeners to invalidate the cache of the new group model.

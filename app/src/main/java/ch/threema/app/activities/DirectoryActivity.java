@@ -77,20 +77,22 @@ import ch.threema.app.ui.ThreemaSearchView;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ContactModel;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
+import kotlin.Lazy;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.ui.DirectoryDataSource.MIN_SEARCH_STRING_LENGTH;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+import static ch.threema.common.LazyKt.lazy;
 
 public class DirectoryActivity extends ThreemaToolbarActivity implements ThreemaSearchView.OnQueryTextListener, MultiChoiceSelectorDialog.SelectorDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DirectoryActivity");
+    private static final Logger logger = getThreemaLogger("DirectoryActivity");
 
     private static final String EXTRA_QUERY_TEXT = "queryText";
     private static final String EXTRA_CHECKED_CATEGORIES = "checkedCategories";
@@ -113,7 +115,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     @NonNull
-    private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
+    private final Lazy<BackgroundExecutor> backgroundExecutor = lazy(BackgroundExecutor::new);
 
     private boolean sortByFirstName;
 
@@ -152,7 +154,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
         }
     }
@@ -229,7 +231,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         }
 
         WorkOrganization workOrganization = dependencies.getPreferenceService().getWorkOrganization();
-        if (workOrganization != null && !TestUtil.isEmptyOrNull(workOrganization.getName())) {
+        if (workOrganization != null && workOrganization.getName() != null) {
             logger.info("Organization: {}", workOrganization.getName());
             updateToolbarTitle(workOrganization.getName());
         }
@@ -427,7 +429,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
     private void addContact(final WorkDirectoryContact workDirectoryContact, Runnable runAfter) {
         logger.info("Add new work contact");
-        backgroundExecutor.get().execute(
+        backgroundExecutor.getValue().execute(
             new AddOrUpdateWorkContactBackgroundTask(
                 workDirectoryContact,
                 dependencies.getUserService().getIdentity(),

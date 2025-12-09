@@ -43,7 +43,7 @@ import ch.threema.app.R
 import ch.threema.app.compose.theme.color.CustomColors
 import ch.threema.app.messagedetails.MessageTimestampsUiModel
 import ch.threema.app.utils.LocaleUtil
-import ch.threema.app.utils.capitalize
+import ch.threema.common.capitalize
 import ch.threema.common.now
 import ch.threema.common.plus
 import java.util.Date

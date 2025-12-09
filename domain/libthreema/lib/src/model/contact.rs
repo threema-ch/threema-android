@@ -7,7 +7,10 @@ use super::provider::{ContactProvider, ProviderError, SettingsProvider};
 use crate::{
     common::{Delta, FeatureMask, ThreemaId, config::Config, keys::PublicKey},
     protobuf::{self, d2d_sync::contact as protobuf_contact},
-    utils::time::utc_now_ms,
+    utils::{
+        apply::{Apply as _, TryApply},
+        time::utc_now_ms,
+    },
 };
 
 /// A contact could not be updated.
@@ -24,8 +27,18 @@ pub(crate) enum ContactUpdateError {
 
 #[derive(Debug)]
 pub(crate) enum CommunicationPermission {
+    /// Communication with this contact is allowed.
     Allow,
+
+    /// Communication with this contact is disallowed due to it being explicitly blocked.
     BlockExplicit,
+
+    /// Communication with this contact is disallowed due to it being implicitly blocked by the _block
+    /// unknown_ setting.
+    ///
+    /// Note: This is purely informational, i.e. when encountering this, the behaviour must be the same as for
+    /// [`CommunicationPermission::BlockExplicit`]. Communication would be allowed after the contact has been
+    /// explicitly added or both the user and the contact are in a group not marked as _left_.
     BlockUnknown,
 }
 
@@ -36,7 +49,7 @@ pub(crate) enum CommunicationPermission {
 //-
 // IMPORTANT: When touching these, always make sure to update [`ContactUpdate`] and
 // `ContactUpdate::apply_to` accordingly.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Contact {
     /// Threema ID of the contact.
     pub identity: ThreemaId,
@@ -98,14 +111,34 @@ pub struct Contact {
     /// Conversation visibility of the contact.
     pub conversation_visibility: protobuf::d2d_sync::ConversationVisibility,
 }
-impl Contact {
+
+/// All protocol relevant data associated to create a contact with the following exclusions:
+///
+/// - _contact-defined_ profile picture
+/// - _user-defined_ profile picture
+pub type ContactInit = Contact;
+
+#[derive(Debug)]
+pub(crate) enum ContactOrInit {
+    ExistingContact(Contact),
+    NewContact(ContactInit),
+}
+impl ContactOrInit {
+    #[inline]
+    pub(crate) const fn inner(&self) -> &Contact {
+        match self {
+            ContactOrInit::NewContact(contact) | ContactOrInit::ExistingContact(contact) => contact,
+        }
+    }
+
     pub(crate) fn communication_permission(
         &self,
         config: &Config,
         settings_provider: &dyn SettingsProvider,
         contact_provider: &dyn ContactProvider,
     ) -> Result<CommunicationPermission, ProviderError> {
-        let predefined_contact = config.predefined_contacts.get(&self.identity);
+        let inner = self.inner();
+        let predefined_contact = config.predefined_contacts.get(&inner.identity);
 
         // Special contacts cannot be blocked
         if predefined_contact.is_some_and(|contact| contact.special) {
@@ -113,7 +146,7 @@ impl Contact {
         }
 
         // Check if the user explicitly blocked the contact
-        if contact_provider.is_explicitly_blocked(self.identity)? {
+        if contact_provider.is_explicitly_blocked(inner.identity)? {
             return Ok(CommunicationPermission::BlockExplicit);
         }
 
@@ -127,36 +160,26 @@ impl Contact {
             return Ok(CommunicationPermission::Allow);
         }
 
-        // A contact is not _unknown_ if the user and the identity are in at least one common active
-        // group.
-        Ok(
-            if self.acquaintance_level == protobuf_contact::AcquaintanceLevel::Direct
-                || contact_provider.is_member_of_active_group(self.identity)?
-            {
-                CommunicationPermission::Allow
-            } else {
+        Ok(match &self {
+            ContactOrInit::NewContact(_) => {
+                // The contact does not exist and block unknown is active
                 CommunicationPermission::BlockUnknown
             },
-        )
-    }
-}
 
-/// All protocol relevant data associated to create a contact with the following exclusions:
-///
-/// - _contact-defined_ profile picture
-/// - _user-defined_ profile picture
-pub type ContactInit = Contact;
+            ContactOrInit::ExistingContact(inner) => {
+                // Check if the contact has acquaintance level _direct_
+                if inner.acquaintance_level == protobuf_contact::AcquaintanceLevel::Direct {
+                    return Ok(CommunicationPermission::Allow);
+                }
 
-pub(crate) enum ContactOrInit {
-    ExistingContact(Contact),
-    NewContact(ContactInit),
-}
-impl ContactOrInit {
-    #[inline]
-    pub(crate) fn inner(&self) -> &Contact {
-        match self {
-            ContactOrInit::NewContact(contact) | ContactOrInit::ExistingContact(contact) => contact,
-        }
+                // Check if the user and the contact are part of an active group
+                if contact_provider.is_member_of_active_group(inner.identity)? {
+                    CommunicationPermission::Allow
+                } else {
+                    CommunicationPermission::BlockUnknown
+                }
+            },
+        })
     }
 }
 
@@ -231,7 +254,7 @@ impl From<&ContactInit> for protobuf::d2d_sync::Contact {
 /// - _user-defined_ profile picture
 ///
 /// Note: This may only include changes to a contact.
-#[derive(Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct ContactUpdate {
     /// Threema ID of the contact.
     pub identity: ThreemaId,
@@ -312,11 +335,20 @@ impl ContactUpdate {
     }
 
     pub(crate) fn has_changes(&self) -> bool {
-        self == &Self::default(self.identity)
+        self != &Self::default(self.identity)
     }
+}
+impl TryApply<ContactUpdate> for Contact {
+    type Error = ContactUpdateError;
 
-    pub(crate) fn apply_to(self, contact: &mut Contact) -> Result<(), ContactUpdateError> {
-        let Self {
+    /// Try applying the contact update to the contact.
+    ///
+    /// # Errors
+    ///
+    /// Returns [`ContactUpdateError`] if the identity mismatches.
+    fn try_apply(&mut self, value: ContactUpdate) -> Result<(), Self::Error> {
+        // Unpacking here, so we can't miss updating this function when a new field is being added
+        let ContactUpdate {
             identity,
             first_name,
             last_name,
@@ -334,33 +366,37 @@ impl ContactUpdate {
             notification_sound_policy_override,
             conversation_category,
             conversation_visibility,
-        } = self;
+        } = value;
 
         // Ensure the identity equals before updating
-        if identity != contact.identity {
+        if identity != self.identity {
             return Err(ContactUpdateError::IdentityMismatch {
-                expected: contact.identity,
+                expected: self.identity,
                 actual: identity,
             });
         }
 
         // Update all properties
-        first_name.apply_to(&mut contact.first_name);
-        last_name.apply_to(&mut contact.last_name);
-        nickname.apply_to(&mut contact.nickname);
-        contact.verification_level = verification_level.unwrap_or(contact.verification_level);
-        contact.work_verification_level = work_verification_level.unwrap_or(contact.work_verification_level);
-        contact.identity_type = identity_type.unwrap_or(contact.identity_type);
-        contact.acquaintance_level = acquaintance_level.unwrap_or(contact.acquaintance_level);
-        contact.activity_state = activity_state.unwrap_or(contact.activity_state);
-        contact.feature_mask = feature_mask.unwrap_or(contact.feature_mask);
-        contact.sync_state = sync_state.unwrap_or(contact.sync_state);
-        read_receipt_policy_override.apply_to(&mut contact.read_receipt_policy_override);
-        typing_indicator_policy_override.apply_to(&mut contact.typing_indicator_policy_override);
-        notification_trigger_policy_override.apply_to(&mut contact.notification_trigger_policy_override);
-        notification_sound_policy_override.apply_to(&mut contact.notification_sound_policy_override);
-        contact.conversation_category = conversation_category.unwrap_or(contact.conversation_category);
-        contact.conversation_visibility = conversation_visibility.unwrap_or(contact.conversation_visibility);
+        self.first_name.apply(first_name);
+        self.last_name.apply(last_name);
+        self.nickname.apply(nickname);
+        self.verification_level = verification_level.unwrap_or(self.verification_level);
+        self.work_verification_level = work_verification_level.unwrap_or(self.work_verification_level);
+        self.identity_type = identity_type.unwrap_or(self.identity_type);
+        self.acquaintance_level = acquaintance_level.unwrap_or(self.acquaintance_level);
+        self.activity_state = activity_state.unwrap_or(self.activity_state);
+        self.feature_mask = feature_mask.unwrap_or(self.feature_mask);
+        self.sync_state = sync_state.unwrap_or(self.sync_state);
+        self.read_receipt_policy_override
+            .apply(read_receipt_policy_override);
+        self.typing_indicator_policy_override
+            .apply(typing_indicator_policy_override);
+        self.notification_trigger_policy_override
+            .apply(notification_trigger_policy_override);
+        self.notification_sound_policy_override
+            .apply(notification_sound_policy_override);
+        self.conversation_category = conversation_category.unwrap_or(self.conversation_category);
+        self.conversation_visibility = conversation_visibility.unwrap_or(self.conversation_visibility);
 
         // Done
         Ok(())
@@ -438,7 +474,7 @@ impl From<&ContactUpdate> for protobuf::d2d_sync::Contact {
 /// A predefined contact that does not need to be fetched from the directory.
 ///
 /// It is automatically elevated to the highest verification level.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct PredefinedContact {
     /// Threema ID of the predefined contact.
     pub identity: ThreemaId,
@@ -453,12 +489,12 @@ pub struct PredefinedContact {
     pub nickname: String,
 }
 impl PredefinedContact {
-    pub(crate) const _3MAPUSH: ThreemaId = ThreemaId::predefined(*b"*3MAPUSH");
+    pub(crate) const _3MAPUSH_IDENTITY: ThreemaId = ThreemaId::predefined(*b"*3MAPUSH");
 
     pub(crate) fn production() -> HashMap<ThreemaId, Self> {
         [
             Self {
-                identity: Self::_3MAPUSH,
+                identity: Self::_3MAPUSH_IDENTITY,
                 special: true,
                 #[rustfmt::skip]
                 public_key: PublicKey::from([
@@ -550,7 +586,7 @@ impl PredefinedContact {
     pub(crate) fn sandbox() -> HashMap<ThreemaId, Self> {
         [
             Self {
-                identity: Self::_3MAPUSH,
+                identity: Self::_3MAPUSH_IDENTITY,
                 special: true,
                 #[rustfmt::skip]
                 public_key: PublicKey::from([

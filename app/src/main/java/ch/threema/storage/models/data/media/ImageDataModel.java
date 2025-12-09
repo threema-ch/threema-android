@@ -31,12 +31,12 @@ import java.io.StringWriter;
 
 import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 
 @Deprecated
 public class ImageDataModel implements MediaMessageDataInterface {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ImageDataModel");
+    private static final Logger logger = getThreemaLogger("ImageDataModel");
 
     private byte[] imageBlobId;
     private byte[] encryptionKey;

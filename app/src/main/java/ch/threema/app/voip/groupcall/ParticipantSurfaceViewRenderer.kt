@@ -26,14 +26,14 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import kotlinx.coroutines.*
 import org.webrtc.EglBase
 import org.webrtc.RendererCommon
 import org.webrtc.SurfaceViewRenderer
 import org.webrtc.VideoFrame
 
-private val logger = LoggingUtil.getThreemaLogger("ParticipantSurfaceViewRenderer")
+private val logger = getThreemaLogger("ParticipantSurfaceViewRenderer")
 
 /**
  * A SurfaceViewRenderer that keeps track of the number of frames displayed.

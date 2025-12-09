@@ -22,7 +22,7 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -32,7 +32,7 @@ import ch.threema.domain.taskmanager.getEncryptedIncomingGroupMessageUpdateReadE
 import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutboundIncomingGroupMessageUpdateReadTask")
+private val logger = getThreemaLogger("OutboundIncomingGroupMessageUpdateReadTask")
 
 class OutboundIncomingGroupMessageUpdateReadTask(
     private val messageIds: Set<MessageId>,

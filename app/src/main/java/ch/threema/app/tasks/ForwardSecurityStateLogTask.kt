@@ -22,12 +22,12 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.services.ContactService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.storage.models.ContactModel
 
-private val logger = LoggingUtil.getThreemaLogger("ForwardSecurityStateLogTask")
+private val logger = getThreemaLogger("ForwardSecurityStateLogTask")
 
 /**
  * This task just logs the forward security state. This needs to be a task, because accessing the

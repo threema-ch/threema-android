@@ -39,7 +39,9 @@ import ch.threema.app.voip.groupcall.sfu.messages.P2POuterEnvelope
 import ch.threema.app.voip.groupcall.sfu.messages.P2SMessage
 import ch.threema.app.voip.groupcall.sfu.webrtc.ConnectionCtx
 import ch.threema.base.crypto.NaCl
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.generateRandomBytes
+import ch.threema.common.secureRandom
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
@@ -48,10 +50,10 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import org.webrtc.SurfaceViewRenderer
 
-private val logger = LoggingUtil.getThreemaLogger("P2PHandshake")
+private val logger = getThreemaLogger("P2PHandshake")
 
 @SuppressLint("LoggerName")
-private val participantLogger = LoggingUtil.getThreemaLogger("NormalRemoteParticipant")
+private val participantLogger = getThreemaLogger("NormalRemoteParticipant")
 
 @WorkerThread
 class P2PHandshake private constructor(
@@ -67,8 +69,8 @@ class P2PHandshake private constructor(
         }
 
     private val senderP2PContext: LocalP2PContext by lazy {
-        val pckPrivate = CryptoCallUtils.getSecureRandomBytes(NaCl.SECRET_KEY_BYTES)
-        val pcck = CryptoCallUtils.getSecureRandomBytes(ProtocolDefines.COOKIE_LEN)
+        val pckPrivate = secureRandom().generateRandomBytes(NaCl.SECRET_KEY_BYTES)
+        val pcck = secureRandom().generateRandomBytes(ProtocolDefines.COOKIE_LEN)
         LocalP2PContext(sender, pckPrivate, pcck)
     }
 
@@ -199,7 +201,7 @@ class P2PHandshake private constructor(
         GroupCallThreadUtil.assertDispatcherThread()
 
         logger.info("Create Auth from {} to {}", sender.id, receiverId)
-        val innerNonce = CryptoCallUtils.getSecureRandomBytes(NaCl.NONCE_BYTES)
+        val innerNonce = secureRandom().generateRandomBytes(NaCl.NONCE_BYTES)
         val auth = Handshake.Auth(
             receiverP2PContext.pckPublic,
             receiverP2PContext.pcck,

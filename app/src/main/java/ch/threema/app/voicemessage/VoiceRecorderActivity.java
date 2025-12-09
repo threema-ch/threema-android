@@ -22,6 +22,7 @@
 package ch.threema.app.voicemessage;
 
 import static android.Manifest.permission.BLUETOOTH_CONNECT;
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 import android.animation.LayoutTransition;
@@ -41,6 +42,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.format.DateUtils;
+import android.view.Choreographer;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
@@ -64,7 +66,6 @@ import org.slf4j.Logger;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
-import java.util.Locale;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaAppCompatActivity;
@@ -74,18 +75,17 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ActivityService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.MimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements DefaultLifecycleObserver, View.OnClickListener, AudioRecorder.OnStopListener, AudioManager.OnAudioFocusChangeListener, GenericAlertDialog.DialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VoiceRecorderActivity");
+    private static final Logger logger = getThreemaLogger("VoiceRecorderActivity");
 
     private static final String DIALOG_TAG_CANCEL_CONFIRM = "cc";
     private static final String DIALOG_TAG_EXPIRED_CONFIRM = "ec";
-    public static final int MAX_VOICE_MESSAGE_LENGTH_MILLIS = (int) DateUtils.HOUR_IN_MILLIS;
-    public static final int BLUETOOTH_SAMPLING_RATE_HZ = 8000;
     public static final String VOICEMESSAGE_FILE_EXTENSION = ".aac";
     private static final int DISCARD_CONFIRMATION_THRESHOLD_SECONDS = 10;
     private static final int PERMISSION_REQUEST_BLUETOOTH_CONNECT = 45454;
@@ -106,13 +106,13 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
     private ImageView playButton;
     private ImageView pauseButton;
     private ImageView recordImage;
-    private ImageView bluetoothToogle;
+    private ImageView bluetoothToggle;
     private SeekBar seekBar;
     private Uri uri;
     private int recordingDuration;
     private long startTimestamp, pauseTimestamp, pauseDuration;
-    private Handler timeDisplayHandler, blinkingHandler, seekBarHandler;
-    private Runnable timeDisplayRunnable, blinkingRunnable, updateSeekBarRunnable;
+    private Handler timeDisplayHandler, blinkingHandler;
+    private Runnable timeDisplayRunnable, blinkingRunnable;
     private boolean hasAudioFocus = false;
     private AudioManager audioManager;
     private BroadcastReceiver audioStateChangedReceiver;
@@ -132,13 +132,21 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
         }
     };
 
+    private final Choreographer.FrameCallback updateSeekbarCallback = new Choreographer.FrameCallback() {
+        @Override
+        public void doFrame(long frameTimeNanos) {
+            updateSeekbar();
+            Choreographer.getInstance().postFrameCallback(this);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         getLifecycle().addObserver(this);
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }
@@ -226,7 +234,6 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
 
             timeDisplayHandler = new Handler();
             blinkingHandler = new Handler();
-            seekBarHandler = new Handler();
 
             if (!startRecording()) {
                 Toast.makeText(this, R.string.recording_canceled, Toast.LENGTH_LONG).show();
@@ -239,12 +246,12 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
 
         muteAllStreams();
 
-        bluetoothToogle = findViewById(R.id.bluetooth_toggle);
+        bluetoothToggle = findViewById(R.id.bluetooth_toggle);
 
         if (isBluetoothEnabled()) {
-            if (bluetoothToogle != null) {
-                bluetoothToogle.setVisibility(View.VISIBLE);
-                bluetoothToogle.setOnClickListener(this);
+            if (bluetoothToggle != null) {
+                bluetoothToggle.setVisibility(View.VISIBLE);
+                bluetoothToggle.setOnClickListener(this);
             }
 
             audioStateChangedReceiver = new BroadcastReceiver() {
@@ -283,9 +290,9 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
                 }
             }
         } else {
-            if (bluetoothToogle != null) {
-                bluetoothToogle.setVisibility(View.INVISIBLE);
-                bluetoothToogle.setOnClickListener(null);
+            if (bluetoothToggle != null) {
+                bluetoothToggle.setVisibility(View.INVISIBLE);
+                bluetoothToggle.setOnClickListener(null);
             }
         }
     }
@@ -347,17 +354,13 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
     }
 
     private void updateTimeDisplay() {
-        int duration, minutes = 0, seconds = 0;
+        long duration = 0L;
         if (status == MediaState.STATE_RECORDING) {
             duration = getRecordingDuration();
-            minutes = (duration % 3600) / 60;
-            seconds = duration % 60;
         } else if ((status == MediaState.STATE_PLAYING || status == MediaState.STATE_PLAYING_PAUSED) && mediaPlayer != null) {
-            duration = mediaPlayer.getCurrentPosition();
-            minutes = duration / 60000;
-            seconds = (duration % 60000) / 1000;
+            duration = mediaPlayer.getCurrentPosition() / 1000;
         }
-        timerTextView.setText(String.format(Locale.US, "%02d:%02d", minutes, seconds));
+        timerTextView.setText(ElapsedTimeFormatter.secondsToString(duration));
     }
 
     private void updateSeekbar() {
@@ -371,7 +374,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
     }
 
     private void updateBluetoothButton() {
-        if (bluetoothToogle != null) {
+        if (bluetoothToggle != null) {
             @DrawableRes int stateRes;
 
             switch (scoAudioState) {
@@ -389,39 +392,26 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
                     stateRes = R.drawable.ic_bluetooth_searching_outline;
                     break;
             }
-            bluetoothToogle.setImageResource(stateRes);
+            bluetoothToggle.setImageResource(stateRes);
         }
     }
 
     public void startSeekbar() {
-        updateSeekBarRunnable = new Runnable() {
-            @Override
-            public void run() {
-                updateSeekbar();
-                seekBarHandler.postDelayed(updateSeekBarRunnable, 1);
-            }
-        };
-        seekBarHandler.post(updateSeekBarRunnable);
+        Choreographer.getInstance().postFrameCallback(updateSeekbarCallback);
     }
 
     private void startTimer() {
-        timeDisplayRunnable = new Runnable() {
-            @Override
-            public void run() {
-                updateTimeDisplay();
-                timeDisplayHandler.postDelayed(timeDisplayRunnable, 1000);
-            }
+        timeDisplayRunnable = () -> {
+            updateTimeDisplay();
+            timeDisplayHandler.postDelayed(timeDisplayRunnable, 1000);
         };
         timeDisplayHandler.post(timeDisplayRunnable);
     }
 
     private void startBlinking() {
-        blinkingRunnable = new Runnable() {
-            @Override
-            public void run() {
-                updateBlinkingDisplay();
-                blinkingHandler.postDelayed(blinkingRunnable, 600);
-            }
+        blinkingRunnable = () -> {
+            updateBlinkingDisplay();
+            blinkingHandler.postDelayed(blinkingRunnable, 600);
         };
         blinkingHandler.post(blinkingRunnable);
     }
@@ -435,11 +425,11 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
     }
 
     private void stopUpdateSeekbar() {
-        seekBarHandler.removeCallbacks(updateSeekBarRunnable);
+        Choreographer.getInstance().removeFrameCallback(updateSeekbarCallback);
     }
 
     private void resetTimerDisplay() {
-        timerTextView.setText(String.format(Locale.US, "%02d:%02d", 0, 0));
+        timerTextView.setText(ElapsedTimeFormatter.secondsToString(0));
     }
 
     private boolean startRecording() {
@@ -452,10 +442,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
         audioRecorder.setOnStopListener(this);
         try {
             logger.info("Now recording to {}", uri);
-            mediaRecorder = audioRecorder.prepare(uri, MAX_VOICE_MESSAGE_LENGTH_MILLIS,
-                scoAudioState == AudioManager.SCO_AUDIO_STATE_CONNECTED ?
-                    BLUETOOTH_SAMPLING_RATE_HZ :
-                    getDefaultSamplingRate());
+            mediaRecorder = audioRecorder.prepare(uri, getDefaultSamplingRate());
             logger.info("Started recording with {}", this.mediaRecorder);
             if (mediaRecorder != null) {
                 startTimestamp = System.nanoTime();
@@ -741,21 +728,15 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
             try {
                 mediaPlayer.setDataSource(this, uri);
                 mediaPlayer.prepare();
-                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        seekBar.setMax(mp.getDuration());
-                        resetTimerDisplay();
-                        mediaPlayer.start();
-                        updateMediaState(MediaState.STATE_PLAYING);
-                    }
+                mediaPlayer.setOnPreparedListener(mp -> {
+                    seekBar.setMax(mp.getDuration());
+                    resetTimerDisplay();
+                    mediaPlayer.start();
+                    updateMediaState(MediaState.STATE_PLAYING);
                 });
-                mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        updateMediaState(MediaState.STATE_PLAYING_PAUSED);
-                        seekBar.setProgress(seekBar.getMax());
-                    }
+                mediaPlayer.setOnCompletionListener(mp -> {
+                    updateMediaState(MediaState.STATE_PLAYING_PAUSED);
+                    seekBar.setProgress(seekBar.getMax());
                 });
             } catch (Exception e) {
                 logger.debug("unable to play recording.");
@@ -913,9 +894,7 @@ public class VoiceRecorderActivity extends ThreemaAppCompatActivity implements D
         if (blinkingHandler != null) {
             blinkingHandler.removeCallbacksAndMessages(null);
         }
-        if (seekBarHandler != null) {
-            seekBarHandler.removeCallbacksAndMessages(null);
-        }
+        Choreographer.getInstance().removeFrameCallback(updateSeekbarCallback);
 
         if (isBluetoothEnabled()) {
             logger.debug("stopBluetoothSco");

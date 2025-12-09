@@ -23,7 +23,7 @@ package ch.threema.app.voip.groupcall.service
 
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.sfu.Participant
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
@@ -32,7 +32,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallLeaveTimer")
+private val logger = getThreemaLogger("GroupCallLeaveTimer")
 
 /**
  * This timer ends the call after being alone in a call for [GroupCallLeaveTimer.timeUntilLeaveMs] milliseconds.

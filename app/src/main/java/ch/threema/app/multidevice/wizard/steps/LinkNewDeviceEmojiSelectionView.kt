@@ -27,10 +27,10 @@ import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.widget.ImageView
 import ch.threema.app.R
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.card.MaterialCardView
 
-private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceEmojiSelectionView")
+private val logger = getThreemaLogger("LinkNewDeviceEmojiSelectionView")
 
 /**
  * A button-like view that displays a sequence of three rendezvous emojis

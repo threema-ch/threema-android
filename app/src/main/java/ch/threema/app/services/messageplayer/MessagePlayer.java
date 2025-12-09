@@ -51,12 +51,12 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ProgressListener;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.data.media.MediaMessageDataInterface;
 
 public abstract class MessagePlayer {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessagePlayer");
+    private static final Logger logger = getThreemaLogger("MessagePlayer");
 
     public static final int SOURCE_UNDEFINED = 0;
     public static final int SOURCE_UI_TOGGLE = 1;

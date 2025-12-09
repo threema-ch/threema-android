@@ -61,6 +61,9 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import ch.threema.android.Destroyer.Companion.createDestroyer
+import ch.threema.android.buildActivityIntent
+import ch.threema.android.ownedBy
 import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.activities.ComposeMessageActivity
@@ -84,13 +87,10 @@ import ch.threema.app.ui.BottomSheetItem
 import ch.threema.app.ui.TooltipPopup
 import ch.threema.app.utils.AudioDevice
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.Destroyer.Companion.createDestroyer
 import ch.threema.app.utils.PermissionRegistry
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.getIconResource
 import ch.threema.app.utils.getStringResource
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.app.utils.ownedBy
 import ch.threema.app.utils.requestGroupCallPermissions
 import ch.threema.app.voip.CallAudioSelectorButton
 import ch.threema.app.voip.groupcall.GroupCallDescription
@@ -98,7 +98,7 @@ import ch.threema.app.voip.groupcall.GroupCallIntention
 import ch.threema.app.voip.groupcall.LocalGroupId
 import ch.threema.app.voip.util.VoipUtil
 import ch.threema.app.voip.viewmodel.GroupCallViewModel
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.GroupModel
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.CancellationException
@@ -109,7 +109,7 @@ import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallActivity")!!
+private val logger = getThreemaLogger("GroupCallActivity")!!
 
 @UiThread
 class GroupCallActivity :

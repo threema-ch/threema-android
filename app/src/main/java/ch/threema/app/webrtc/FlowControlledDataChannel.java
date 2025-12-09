@@ -27,7 +27,7 @@ import org.webrtc.DataChannel;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.logging.ThreemaLogger;
 import java8.util.concurrent.CompletableFuture;
 
@@ -41,7 +41,7 @@ import java8.util.concurrent.CompletableFuture;
 @AnyThread
 public class FlowControlledDataChannel {
     @NonNull
-    final private Logger logger = LoggingUtil.getThreemaLogger("FlowControlledDataChannel");
+    final private Logger logger = getThreemaLogger("FlowControlledDataChannel");
     @NonNull
     public final DataChannel dc;
     private final long lowWaterMark;

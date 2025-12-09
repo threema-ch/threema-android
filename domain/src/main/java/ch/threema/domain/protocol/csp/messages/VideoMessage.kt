@@ -21,16 +21,19 @@
 
 package ch.threema.domain.protocol.csp.messages
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.readLittleEndianInt
+import ch.threema.common.readLittleEndianShort
+import ch.threema.common.writeLittleEndianInt
+import ch.threema.common.writeLittleEndianShort
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
-import org.apache.commons.io.EndianUtils
 
-private val logger = LoggingUtil.getThreemaLogger("VideoMessage")
+private val logger = getThreemaLogger("VideoMessage")
 
 /**
  * A message that has a video including thumbnail (stored on the blob server) as its content.
@@ -87,11 +90,11 @@ class VideoMessage(
     override fun getBody(): ByteArray? {
         val bos = ByteArrayOutputStream()
         try {
-            EndianUtils.writeSwappedShort(bos, durationInSeconds.toShort())
+            bos.writeLittleEndianShort(durationInSeconds.toShort())
             bos.write(videoBlobId)
-            EndianUtils.writeSwappedInteger(bos, videoSizeInBytes)
+            bos.writeLittleEndianInt(videoSizeInBytes)
             bos.write(thumbnailBlobId)
-            EndianUtils.writeSwappedInteger(bos, thumbnailSizeInBytes)
+            bos.writeLittleEndianInt(thumbnailSizeInBytes)
             bos.write(encryptionKey)
             return bos.toByteArray()
         } catch (ioException: IOException) {
@@ -160,17 +163,17 @@ class VideoMessage(
             val bis = ByteArrayInputStream(data, offset, length)
 
             try {
-                val durationInSeconds: Short = EndianUtils.readSwappedShort(bis)
+                val durationInSeconds: Short = bis.readLittleEndianShort()
 
                 val videoBlobId = ByteArray(ProtocolDefines.BLOB_ID_LEN)
                 bis.read(videoBlobId)
 
-                val videoSizeInBytes: Int = EndianUtils.readSwappedInteger(bis)
+                val videoSizeInBytes: Int = bis.readLittleEndianInt()
 
                 val thumbnailBlobId = ByteArray(ProtocolDefines.BLOB_ID_LEN)
                 bis.read(thumbnailBlobId)
 
-                val thumbnailSizeInBytes: Int = EndianUtils.readSwappedInteger(bis)
+                val thumbnailSizeInBytes: Int = bis.readLittleEndianInt()
 
                 val encryptionKey = ByteArray(ProtocolDefines.BLOB_KEY_LEN)
                 bis.read(encryptionKey)

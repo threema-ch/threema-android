@@ -38,10 +38,10 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.emojis.EmojiParser;
 import ch.threema.app.restrictions.AppRestrictionUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class TextUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("TextUtil");
+    private static final Logger logger = getThreemaLogger("TextUtil");
 
     public static final String TILDE = "~";
     public static final String SPACE = " ";

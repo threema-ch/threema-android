@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.rendezvous
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.chunked
 import ch.threema.libthreema.PathProcessResult
 import ch.threema.libthreema.PathStateUpdate
@@ -31,7 +31,7 @@ import ch.threema.protobuf.d2d.rendezvous.MdD2DRendezvous.RendezvousInit
 import kotlinx.coroutines.Deferred
 import okhttp3.OkHttpClient
 
-private val logger = LoggingUtil.getThreemaLogger("DeviceJoin.RendezvousConnection")
+private val logger = getThreemaLogger("DeviceJoin.RendezvousConnection")
 
 class RendezvousConnection private constructor(
     val rph: ByteArray,

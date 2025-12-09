@@ -40,11 +40,11 @@ import ch.threema.app.asynctasks.Failed;
 import ch.threema.app.asynctasks.PolicyViolation;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.BackgroundErrorNotification;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 
 public class SendTextToContactBroadcastReceiver extends ActionBroadcastReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SendTextToContactBroadcastReceiver");
+    private static final Logger logger = getThreemaLogger("SendTextToContactBroadcastReceiver");
 
     @Override
     @SuppressLint("StaticFieldLeak")

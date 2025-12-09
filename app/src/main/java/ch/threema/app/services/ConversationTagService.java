@@ -26,11 +26,13 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 
+import ch.threema.base.SessionScoped;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTagModel;
 import ch.threema.storage.models.ConversationTag;
 
+@SessionScoped
 public interface ConversationTagService {
     /**
      * Tag the {@link ConversationModel} with the given {@link ConversationTag}

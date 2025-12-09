@@ -74,13 +74,13 @@ import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.BottomSheetItem;
 import ch.threema.app.ui.MentionClickableSpan;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 
 public class LinkifyUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LinkifyUtil");
+    private static final Logger logger = getThreemaLogger("LinkifyUtil");
     public static final String DIALOG_TAG_CONFIRM_LINK = "cnfl";
     private final Pattern compose, add, license, geo;
     private final GestureDetectorCompat gestureDetector;

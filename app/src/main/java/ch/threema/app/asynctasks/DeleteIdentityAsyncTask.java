@@ -46,14 +46,14 @@ import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.onprem.OnPremConfigStore;
 import ch.threema.localcrypto.MasterKeyFileProvider;
 import ch.threema.storage.DatabaseNonceStore;
 import ch.threema.storage.DatabaseService;
 
 public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DeleteIdentityAsyncTask");
+    private static final Logger logger = getThreemaLogger("DeleteIdentityAsyncTask");
 
     private static final String DIALOG_TAG_DELETING_ID = "di";
 
@@ -98,8 +98,12 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
             serviceManager.getBallotService().removeAll();
             serviceManager.getPreferenceService().clear();
             serviceManager.getFileService().removeAllAvatars();
-            serviceManager.getWallpaperService().removeAll(context, true);
-            ShortcutUtil.deleteAllShareTargetShortcuts();
+            try {
+                serviceManager.getWallpaperService().deleteAll();
+            } catch (IOException e) {
+                logger.error("Failed to deleted wallpapers", e);
+            }
+            ShortcutUtil.deleteAllShareTargetShortcuts(serviceManager.getPreferenceService());
             ShortcutUtil.deleteAllPinnedShortcuts();
 
             boolean interrupted = false;
@@ -117,7 +121,8 @@ public class DeleteIdentityAsyncTask extends AsyncTask<Void, Void, Exception> {
                 DisconnectContext.byUs(DisconnectContext.REASON_SESSION_DELETED));
             SessionWakeUpServiceImpl.clear();
 
-            File masterKeyFile = MasterKeyFileProvider.getVersion2MasterKeyFile(context);
+            MasterKeyFileProvider masterKeyFileProvider = KoinJavaComponent.get(MasterKeyFileProvider.class);
+            File masterKeyFile = masterKeyFileProvider.getVersion2MasterKeyFile();
             File databaseFile = DatabaseService.getDatabaseFile(context);
             File nonceDatabaseFile = DatabaseNonceStore.getDatabaseFile(context);
             File backupFile = DatabaseService.getDatabaseBackupFile(context);

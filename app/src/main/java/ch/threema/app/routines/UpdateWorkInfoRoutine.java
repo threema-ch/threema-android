@@ -37,7 +37,7 @@ import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.domain.models.UserCredentials;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.IdentityStore;
 
@@ -45,7 +45,7 @@ import ch.threema.domain.stores.IdentityStore;
  * Send (only in work build) the infos to the work info resource
  */
 public class UpdateWorkInfoRoutine implements Runnable {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateWorkInfoRoutine");
+    private static final Logger logger = getThreemaLogger("UpdateWorkInfoRoutine");
 
     @NonNull
     private final APIConnector apiConnector;

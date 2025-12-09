@@ -35,13 +35,13 @@ import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 
 public class GroupDescEditDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupDescEditDialog");
+    private static final Logger logger = getThreemaLogger("GroupDescEditDialog");
 
 
     private static final String ARG_TITLE = "title";

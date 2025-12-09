@@ -23,8 +23,9 @@ package ch.threema.data.repositories
 
 import android.database.sqlite.SQLiteException
 import ch.threema.app.managers.CoreServiceManager
+import ch.threema.base.SessionScoped
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.ModelTypeCache
 import ch.threema.data.models.EditHistoryListModel
 import ch.threema.data.models.toDataType
@@ -34,8 +35,9 @@ import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("EditHistoryRepository")
+private val logger = getThreemaLogger("EditHistoryRepository")
 
+@SessionScoped
 class EditHistoryRepository(
     private val cache: ModelTypeCache<String, EditHistoryListModel>,
     private val editHistoryDao: EditHistoryDao,

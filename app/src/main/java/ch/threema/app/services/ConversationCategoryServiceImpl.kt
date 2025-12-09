@@ -30,13 +30,15 @@ import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.GroupUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
+import ch.threema.domain.types.ConversationUID
+import ch.threema.domain.types.GroupDatabaseId
 import ch.threema.domain.types.Identity
 import ch.threema.protobuf.d2d.sync.MdD2DSync
 import java.lang.ref.WeakReference
 
-private val logger = LoggingUtil.getThreemaLogger("ConversationCategoryServiceImpl")
+private val logger = getThreemaLogger("ConversationCategoryServiceImpl")
 
 class ConversationCategoryServiceImpl(
     preferenceService: PreferenceService,
@@ -92,7 +94,7 @@ class ConversationCategoryServiceImpl(
     /* Group related methods */
 
     @Synchronized
-    override fun markGroupChatAsPrivate(groupDatabaseId: Long) {
+    override fun markGroupChatAsPrivate(groupDatabaseId: GroupDatabaseId) {
         val uniqueIdentifier = UniqueIdentifier.fromGroupDatabaseId(groupDatabaseId)
         if (privateChatsCache.isPrivateChat(uniqueIdentifier)) {
             logger.warn("Group chat with db id {} is already marked as private", groupDatabaseId)
@@ -107,7 +109,7 @@ class ConversationCategoryServiceImpl(
     }
 
     @Synchronized
-    override fun removePrivateMarkFromGroupChat(groupDatabaseId: Long) {
+    override fun removePrivateMarkFromGroupChat(groupDatabaseId: GroupDatabaseId) {
         val uniqueIdentifier = UniqueIdentifier.fromGroupDatabaseId(groupDatabaseId)
         if (!privateChatsCache.isPrivateChat(uniqueIdentifier)) {
             logger.warn("Group chat with db id {} hasn't been marked as private", groupDatabaseId)
@@ -122,19 +124,19 @@ class ConversationCategoryServiceImpl(
     }
 
     @Synchronized
-    override fun isPrivateGroupChat(groupDatabaseId: Long): Boolean {
+    override fun isPrivateGroupChat(groupDatabaseId: GroupDatabaseId): Boolean {
         return privateChatsCache.isPrivateChat(UniqueIdentifier.fromGroupDatabaseId(groupDatabaseId))
     }
 
     /* General methods */
 
     @Synchronized
-    override fun isPrivateChat(uniqueIdString: String): Boolean {
+    override fun isPrivateChat(uniqueIdString: ConversationUID): Boolean {
         return privateChatsCache.isPrivateChat(UniqueIdentifier(uniqueIdString))
     }
 
     @Synchronized
-    override fun getConversationCategory(uniqueIdString: String): MdD2DSync.ConversationCategory {
+    override fun getConversationCategory(uniqueIdString: ConversationUID): MdD2DSync.ConversationCategory {
         return if (privateChatsCache.isPrivateChat(UniqueIdentifier(uniqueIdString))) {
             MdD2DSync.ConversationCategory.PROTECTED
         } else {
@@ -191,7 +193,7 @@ class ConversationCategoryServiceImpl(
     }
 
     @Synchronized
-    override fun persistPrivateChat(uniqueIdString: String) {
+    override fun persistPrivateChat(uniqueIdString: ConversationUID) {
         val uniqueIdentifier = UniqueIdentifier(uniqueIdString)
         if (!privateChatsCache.isPrivateChat(uniqueIdentifier)) {
             privateChatsCache.addPrivateChat(uniqueIdentifier)
@@ -199,7 +201,7 @@ class ConversationCategoryServiceImpl(
     }
 
     @Synchronized
-    override fun persistDefaultChat(uniqueIdString: String) {
+    override fun persistDefaultChat(uniqueIdString: ConversationUID) {
         val uniqueIdentifier = UniqueIdentifier(uniqueIdString)
         if (privateChatsCache.isPrivateChat(uniqueIdentifier)) {
             privateChatsCache.removePrivateChat(uniqueIdentifier)
@@ -234,7 +236,7 @@ class ConversationCategoryServiceImpl(
         private val preferenceService: PreferenceService,
         private val preferenceStore: PreferenceStore,
     ) {
-        private var privateChatsCache: WeakReference<MutableSet<String>> = WeakReference(null)
+        private var privateChatsCache: WeakReference<MutableSet<ConversationUID>> = WeakReference(null)
 
         @Synchronized
         fun isPrivateChat(uniqueIdentifier: UniqueIdentifier): Boolean {
@@ -267,7 +269,7 @@ class ConversationCategoryServiceImpl(
             privateChatsCache = WeakReference(null)
         }
 
-        private fun getPrivateChatUniqueIds(): MutableSet<String> {
+        private fun getPrivateChatUniqueIds(): MutableSet<ConversationUID> {
             return privateChatsCache.get() ?: run {
                 val privateChatsUniqueIds = getFromPreferences()
                 privateChatsCache = WeakReference(privateChatsUniqueIds)
@@ -293,13 +295,13 @@ class ConversationCategoryServiceImpl(
     }
 
     @JvmInline
-    private value class UniqueIdentifier(val uniqueId: String) {
+    private value class UniqueIdentifier(val uniqueId: ConversationUID) {
         companion object {
             fun fromContactIdentity(identity: Identity): UniqueIdentifier {
                 return UniqueIdentifier(ContactUtil.getUniqueIdString(identity))
             }
 
-            fun fromGroupDatabaseId(groupDatabaseId: Long): UniqueIdentifier {
+            fun fromGroupDatabaseId(groupDatabaseId: GroupDatabaseId): UniqueIdentifier {
                 return UniqueIdentifier(GroupUtil.getUniqueIdString(groupDatabaseId))
             }
         }
@@ -307,7 +309,7 @@ class ConversationCategoryServiceImpl(
 
     companion object {
         // Do not change this list name as it is stored in preferences like this.
-        private const val LEGACY_PREF_LIST_NAME: String = "list_hidden_chats"
-        private const val PREF_LIST_NAME: String = "list_private_chats_unique_ids"
+        private const val LEGACY_PREF_LIST_NAME = "list_hidden_chats"
+        private const val PREF_LIST_NAME = "list_private_chats_unique_ids"
     }
 }

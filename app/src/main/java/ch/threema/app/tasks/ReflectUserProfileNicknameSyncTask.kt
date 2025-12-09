@@ -22,7 +22,7 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -35,7 +35,7 @@ import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.sync.userProfile
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectUserProfileNicknameSyncTask")
+private val logger = getThreemaLogger("ReflectUserProfileNicknameSyncTask")
 
 class ReflectUserProfileNicknameSyncTask(
     private val newNickname: String,

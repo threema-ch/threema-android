@@ -94,7 +94,7 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.EmojiReactionData;
 import ch.threema.data.repositories.EmojiReactionsRepository;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
@@ -106,7 +106,7 @@ import ch.threema.storage.models.MessageType;
 
 public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> implements EmojiReactionGroup.OnEmojiReactionGroupClickListener {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageAdapter");
+    private static final Logger logger = getThreemaLogger("ComposeMessageAdapter");
     public static final int MIN_CONSTRAINT_LENGTH = 2;
 
     private final List<AbstractMessageModel> values;

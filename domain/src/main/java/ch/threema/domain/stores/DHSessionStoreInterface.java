@@ -25,10 +25,12 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.base.SessionScoped;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
 
+@SessionScoped
 public interface DHSessionStoreInterface {
     interface DHSessionStoreErrorHandler {
         void onInvalidDHSessionState(@NonNull String peerIdentity, @NonNull DHSessionId sessionId, @NonNull ActiveTaskCodec handle);

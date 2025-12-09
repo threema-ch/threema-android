@@ -27,13 +27,13 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.ReflectSettingsSyncTask
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.ContactSyncPolicy
 
-private val logger = LoggingUtil.getThreemaLogger("ContactSyncPolicySetting")
+private val logger = getThreemaLogger("ContactSyncPolicySetting")
 
 /**
  * The setting whether address book synchronization should be enabled. Stores true if it should be enabled.

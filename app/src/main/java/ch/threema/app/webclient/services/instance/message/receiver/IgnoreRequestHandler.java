@@ -32,14 +32,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * A handler that logs and ignores incoming messages for the specified subtype.
  */
 @WorkerThread
 public class IgnoreRequestHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("IgnoreRequestHandler");
+    private static final Logger logger = getThreemaLogger("IgnoreRequestHandler");
 
     private final @NonNull String type;
 

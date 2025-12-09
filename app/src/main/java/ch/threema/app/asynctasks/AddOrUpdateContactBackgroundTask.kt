@@ -28,7 +28,7 @@ import ch.threema.app.R
 import ch.threema.app.restrictions.AppRestrictionUtil
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.Http
 import ch.threema.common.now
 import ch.threema.data.datatypes.IdColor
@@ -51,7 +51,7 @@ import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import kotlinx.coroutines.runBlocking
 
-private val logger = LoggingUtil.getThreemaLogger("AddOrUpdateContactBackgroundTask")
+private val logger = getThreemaLogger("AddOrUpdateContactBackgroundTask")
 
 /**
  * This background task should be used if a new identity should be added to the contacts. The task
@@ -221,7 +221,7 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
                         readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
                         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
                         isArchived = false,
-                        androidContactLookupKey = null,
+                        androidContactLookupInfo = null,
                         localAvatarExpires = null,
                         isRestored = false,
                         profilePictureBlobId = null,

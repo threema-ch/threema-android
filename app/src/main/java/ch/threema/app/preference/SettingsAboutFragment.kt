@@ -24,11 +24,12 @@ package ch.threema.app.preference
 import android.annotation.SuppressLint
 import android.content.ActivityNotFoundException
 import android.content.Intent
-import android.os.AsyncTask
 import android.os.Build
 import androidx.core.net.toUri
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
+import ch.threema.android.showToast
 import ch.threema.app.BuildConfig
 import ch.threema.app.BuildFlavor
 import ch.threema.app.R
@@ -41,18 +42,21 @@ import ch.threema.app.services.license.LicenseService
 import ch.threema.app.services.license.LicenseServiceSerial
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.DialogUtil
+import ch.threema.app.utils.DispatcherProvider
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.app.utils.showToast
 import ch.threema.app.webviews.EulaActivity
 import ch.threema.app.webviews.LicenseActivity
 import ch.threema.app.webviews.PrivacyPolicyActivity
 import ch.threema.app.webviews.TermsOfServiceActivity
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.takeUnlessEmpty
 import ch.threema.localcrypto.MasterKeyManager
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("SettingsAboutFragment")
+private val logger = getThreemaLogger("SettingsAboutFragment")
 
 @Suppress("unused")
 class SettingsAboutFragment : ThreemaPreferenceFragment() {
@@ -65,6 +69,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     private val preferenceService: PreferenceService by inject()
     private val licenseService: LicenseService<*> by inject()
     private val masterKeyManager: MasterKeyManager by inject()
+    private val dispatcherProvider: DispatcherProvider by inject()
 
     override fun initializePreferences() {
         initLicensePref()
@@ -124,6 +129,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         initVersionPref()
         initVersionCodePref()
         initDeviceInfoPref()
+        initDebugInfoPrefs()
     }
 
     private fun initVersionPref() {
@@ -150,11 +156,9 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     }
 
     private fun initVersionCodePref() {
-        val versionCodePreference = getPref<Preference>(R.string.preferences__version_code)
-        versionCodePreference.title = buildString {
-            append(getString(R.string.threema_version_code))
-            append(" ")
-            append(BuildConfig.VERSION_CODE)
+        getPref<Preference>(R.string.preferences__version_code).apply {
+            title = getString(R.string.threema_version_code)
+            summary = BuildConfig.DEFAULT_VERSION_CODE.toString()
         }
     }
 
@@ -164,6 +168,24 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
                 title = Build.MANUFACTURER + " " + Build.MODEL
             }
             summary = Build.FINGERPRINT
+        }
+    }
+
+    private fun initDebugInfoPrefs() {
+        if (!BuildConfig.DEBUG) {
+            return
+        }
+        BuildConfig.GIT_HASH.takeUnlessEmpty().let { hash ->
+            getPref<Preference>(R.string.preferences__git_commit).apply {
+                isVisible = true
+                summary = hash
+            }
+        }
+        BuildConfig.GIT_BRANCH.takeUnlessEmpty().let { branch ->
+            getPref<Preference>(R.string.preferences__git_branch).apply {
+                isVisible = true
+                summary = branch
+            }
         }
     }
 
@@ -233,7 +255,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             ?: "?"
     }
 
-    private fun getVersionNameWithBuildNumber(): String = buildString {
+    private fun getVersionNameWithBuildNumber() = buildString {
         appendVersionName()
         appendBuildNumber()
         appendBuildFlavor()
@@ -253,10 +275,6 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     private fun StringBuilder.appendBuildFlavor() {
         append(" ")
         append(BuildFlavor.current.fullDisplayName)
-        if (BuildConfig.DEBUG) {
-            append(" Commit ")
-            append(BuildConfig.GIT_HASH)
-        }
     }
 
     private fun onRemoteSecretClicked() {
@@ -275,42 +293,48 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             logger.warn("Called checkForUpdate in a build variant without self-updating")
             return
         }
-        object : AsyncTask<Void?, Void?, String?>() {
-            private var updateUrl: String? = null
 
-            @Deprecated("Deprecated in Java")
-            override fun onPreExecute() {
+        lifecycleScope.launch {
+            activity?.let { activity ->
                 GenericProgressDialog.newInstance(R.string.check_updates, R.string.please_wait)
-                    .show(activity!!.supportFragmentManager, DIALOG_TAG_CHECK_UPDATE)
+                    .show(activity.supportFragmentManager, DIALOG_TAG_CHECK_UPDATE)
             }
-
-            @Deprecated("Deprecated in Java")
-            override fun doInBackground(vararg voids: Void?): String? {
-                return try {
+            val result = withContext(dispatcherProvider.worker) {
+                try {
                     licenseServiceSerial.validate(false)
-                    updateUrl = licenseServiceSerial.updateUrl
-                    if (updateUrl.isNullOrEmpty()) getString(R.string.no_update_available) else null
+                    val updateUrl = licenseServiceSerial.updateUrl
+                    if (!updateUrl.isNullOrEmpty()) {
+                        Result.UpdateUrl(updateUrl)
+                    } else {
+                        Result.Error(getString(R.string.no_update_available))
+                    }
                 } catch (e: Exception) {
-                    getString(R.string.an_error_occurred_more, e.localizedMessage)
+                    logger.error("Failed to get update url")
+                    Result.Error(getString(R.string.an_error_occurred_more, e.localizedMessage))
                 }
             }
 
-            @Deprecated("Deprecated in Java")
-            override fun onPostExecute(error: String?) {
-                DialogUtil.dismissDialog(parentFragmentManager, DIALOG_TAG_CHECK_UPDATE, true)
-                if (error != null) {
-                    SimpleStringAlertDialog.newInstance(R.string.check_updates, error)
-                        .show(parentFragmentManager, "nu")
-                } else {
+            DialogUtil.dismissDialog(parentFragmentManager, DIALOG_TAG_CHECK_UPDATE, true)
+            when (result) {
+                is Result.UpdateUrl -> {
                     val updateMessage = getString(R.string.update_available_message)
                     val dialogIntent =
-                        IntentDataUtil.createActionIntentUpdateAvailable(updateMessage, updateUrl)
+                        IntentDataUtil.createActionIntentUpdateAvailable(updateMessage, result.url)
                             .putExtra(DownloadApkActivity.EXTRA_FORCE_UPDATE_DIALOG, true)
                             .setClass(requireContext(), DownloadApkActivity::class.java)
                     startActivity(dialogIntent)
                 }
+                is Result.Error -> {
+                    SimpleStringAlertDialog.newInstance(R.string.check_updates, result.error)
+                        .show(parentFragmentManager, "nu")
+                }
             }
-        }.execute()
+        }
+    }
+
+    private sealed class Result {
+        data class UpdateUrl(val url: String) : Result()
+        data class Error(val error: String) : Result()
     }
 
     companion object {

@@ -27,6 +27,7 @@ import java.util.List;
 
 import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.base.SessionScoped;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -35,6 +36,7 @@ import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.ReceiverModel;
 
+@SessionScoped
 public interface ConversationService {
 
     interface Filter {
@@ -64,7 +66,7 @@ public interface ConversationService {
     }
 
     /**
-     * Return all conversation models.
+     * Return all (non-archived) conversation models.
      *
      * @param forceReloadFromDatabase force a reload from database
      */
@@ -72,7 +74,7 @@ public interface ConversationService {
     List<ConversationModel> getAll(boolean forceReloadFromDatabase);
 
     /**
-     * Return a filtered list of all conversation models.
+     * Return a filtered list of all (non-archived) conversation models.
      *
      * @param forceReloadFromDatabase force a reload from database
      * @param filter                  an optional conversation filter
@@ -113,9 +115,9 @@ public interface ConversationService {
     /**
      * update the conversation cache entry for the given contact model
      *
-     * @param contactModel the contact model that is loaded again from the database
+     * @param identity the identity of the contact model that is loaded again from the database
      */
-    void updateContactConversation(@NonNull ContactModel contactModel);
+    void updateContactConversation(@NonNull String identity);
 
     /**
      * refresh a conversation model with a modified message model

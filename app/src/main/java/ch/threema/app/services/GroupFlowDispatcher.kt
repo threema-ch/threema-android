@@ -35,9 +35,11 @@ import ch.threema.app.groupflows.RemoveGroupFlow
 import ch.threema.app.groupflows.UpdateGroupFlow
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.profilepicture.GroupProfilePictureUploader
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.app.voip.groupcall.GroupCallManager
+import ch.threema.base.SessionScoped
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.ContactModelRepository
@@ -58,6 +60,7 @@ import kotlinx.coroutines.Deferred
  * these actions require reflection and sending csp messages, the flows are executed on a background
  * thread and a deferred is returned.
  */
+@SessionScoped
 class GroupFlowDispatcher(
     private val contactModelRepository: ContactModelRepository,
     private val groupModelRepository: GroupModelRepository,
@@ -72,7 +75,7 @@ class GroupFlowDispatcher(
     private val blockedIdentitiesService: BlockedIdentitiesService,
     private val preferenceService: PreferenceService,
     private val multiDeviceManager: MultiDeviceManager,
-    private val apiService: ApiService,
+    private val groupProfilePictureUploader: GroupProfilePictureUploader,
     private val apiConnector: APIConnector,
     private val fileService: FileService,
     private val databaseService: DatabaseService,
@@ -113,7 +116,7 @@ class GroupFlowDispatcher(
             groupModelRepository,
             outgoingCspMessageServices,
             groupCallManager,
-            apiService,
+            groupProfilePictureUploader,
             fileService,
             taskManager,
             connection,
@@ -133,7 +136,7 @@ class GroupFlowDispatcher(
             groupModelRepository,
             groupCallManager,
             outgoingCspMessageServices,
-            apiService,
+            groupProfilePictureUploader,
             fileService,
             taskManager,
             connection,
@@ -209,7 +212,7 @@ class GroupFlowDispatcher(
             contactStore,
             apiConnector,
             userService,
-            apiService,
+            groupProfilePictureUploader,
             fileService,
             groupCallManager,
             databaseService,

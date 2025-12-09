@@ -39,7 +39,7 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.taskmanager.TriggerSource;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -49,7 +49,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 @WorkerThread
 public class ModifyProfileHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyProfileHandler");
+    private static final Logger logger = getThreemaLogger("ModifyProfileHandler");
 
     private static final String FIELD_NICKNAME = "publicNickname";
     private static final String FIELD_AVATAR = "avatar";

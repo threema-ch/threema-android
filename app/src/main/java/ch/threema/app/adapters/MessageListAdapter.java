@@ -45,6 +45,7 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.drafts.DraftManager;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationCategoryService;
@@ -57,13 +58,13 @@ import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.voip.groupcall.GroupCallManager;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.GroupModel;
 
 public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationModel, RecyclerView.ViewHolder> {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageListAdapter");
+    private static final Logger logger = getThreemaLogger("MessageListAdapter");
 
     private static final int MAX_SELECTED_ITEMS = 0;
 
@@ -82,6 +83,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
     private final @NonNull ContactService contactService;
     private final @NonNull RingtoneService ringtoneService;
     private final @NonNull ConversationCategoryService conversationCategoryService;
+    private final @NonNull DraftManager draftManager;
     private final @NonNull MessageListViewHolder.MessageListItemParams messageListItemParams;
     private final @NonNull MessageListViewHolder.MessageListItemStrings messageListItemStrings;
     private final @NonNull LayoutInflater inflater;
@@ -145,6 +147,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
         @NonNull ConversationCategoryService conversationCategoryService,
         @NonNull PreferenceService preferenceService,
         @NonNull GroupCallManager groupCallManager,
+        @NonNull DraftManager draftManager,
         @Nullable String highlightUid,
         @NonNull ItemClickListener clickListener,
         @NonNull Map<ConversationModel, MessageListAdapterItem> messageListAdapterItemCache,
@@ -156,6 +159,7 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
         this.contactService = contactService;
         this.ringtoneService = ringtoneService;
         this.conversationCategoryService = conversationCategoryService;
+        this.draftManager = draftManager;
         this.clickListener = clickListener;
         EmojiMarkupUtil emojiMarkupUtil = EmojiMarkupUtil.getInstance();
         StateBitmapUtil stateBitmapUtil = StateBitmapUtil.getInstance();
@@ -270,7 +274,8 @@ public class MessageListAdapter extends AbstractRecyclerAdapter<ConversationMode
                     conversationModel,
                     contactService,
                     ringtoneService,
-                    conversationCategoryService
+                    conversationCategoryService,
+                    draftManager
                 );
                 synchronized (messageListAdapterItemsCache) {
                     messageListAdapterItemsCache.put(conversationModel, item);

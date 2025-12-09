@@ -28,7 +28,7 @@ import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
@@ -41,7 +41,7 @@ import ch.threema.protobuf.d2d.MdD2D;
  */
 public class DeliveryReceiptMessage extends AbstractMessage {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DeliveryReceiptMessage");
+    private static final Logger logger = getThreemaLogger("DeliveryReceiptMessage");
 
     private int receiptType;
     private MessageId[] receiptMessageIds;

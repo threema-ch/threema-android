@@ -71,9 +71,9 @@ import ch.threema.app.compose.theme.dimens.GridUnit
 import ch.threema.app.multidevice.wizard.LinkingResult
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceResultFragment")
+private val logger = getThreemaLogger("LinkNewDeviceResultFragment")
 
 class LinkNewDeviceResultFragment : LinkNewDeviceFragment() {
     init {

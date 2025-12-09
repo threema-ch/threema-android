@@ -39,6 +39,7 @@ import android.service.notification.StatusBarNotification;
 import android.text.format.DateUtils;
 
 import org.jetbrains.annotations.Contract;
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -73,6 +74,7 @@ import ch.threema.app.activities.ServerMessageActivity;
 import ch.threema.app.collections.Functional;
 import ch.threema.app.notifications.NotificationIDs;
 import ch.threema.app.services.ConversationCategoryService;
+import ch.threema.app.utils.DoNotDisturbUtil;
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
@@ -90,17 +92,19 @@ import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.app.utils.DNDUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.utils.WidgetUtil;
+import ch.threema.app.widget.WidgetUtil;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.activities.GroupCallActivity;
-import ch.threema.base.utils.LoggingUtil;
+
+import static ch.threema.android.ThreadUtilKt.isMainThread;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.models.ContactModel;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageType;
@@ -111,14 +115,14 @@ import static android.provider.Settings.System.DEFAULT_RINGTONE_URI;
 import static androidx.core.app.NotificationCompat.MessagingStyle.MAXIMUM_RETAINED_MESSAGES;
 import static ch.threema.app.notifications.NotificationIDs.WORK_SYNC_NOTIFICATION_ID;
 import static ch.threema.app.backuprestore.csv.RestoreService.RESTORE_COMPLETION_NOTIFICATION_ID;
-import static ch.threema.app.utils.TextExtensionsKt.truncate;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_ACTIVITY_MODE;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
+import static ch.threema.common.CharSequenceExtensionsKt.truncate;
 
 public class NotificationServiceImpl implements NotificationService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("NotificationServiceImpl");
+    private static final Logger logger = getThreemaLogger("NotificationServiceImpl");
     private static final long NOTIFY_AGAIN_TIMEOUT = 30 * DateUtils.SECOND_IN_MILLIS;
     private static final String NAME_PREPEND_SEPARATOR = ": ";
 
@@ -129,6 +133,10 @@ public class NotificationServiceImpl implements NotificationService {
     private final @NonNull RingtoneService ringtoneService;
     private @Nullable ContactService _contactService = null;
     private @Nullable GroupService groupService = null;
+
+    @NonNull
+    private final DoNotDisturbUtil doNotDisturbUtil = KoinJavaComponent.get(DoNotDisturbUtil.class);
+
     private static final int MAX_TICKER_TEXT_LENGTH = 256;
     public static final int APP_RESTART_NOTIFICATION_ID = 481773;
     private static final int GC_PENDING_INTENT_BASE = 30000;
@@ -226,7 +234,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @SuppressLint("MissingPermission")
     @Override
-    public void addGroupCallNotification(@NonNull GroupModel group, @NonNull ContactModel contactModel) {
+    public void addGroupCallNotification(@NonNull GroupModel group, @NonNull ContactModelData contactModelData) {
         if (getGroupService() == null) {
             logger.error("Group service is null; cannot show notification");
             return;
@@ -238,7 +246,7 @@ public class NotificationServiceImpl implements NotificationService {
         final boolean shouldBlockGroupCallNotification = !(notificationTriggerPolicyOverride instanceof NotificationTriggerPolicyOverride.MutedIndefiniteExceptMentions)
             && notificationTriggerPolicyOverride.getMuteAppliesRightNow();
 
-        if (shouldBlockGroupCallNotification || DNDUtil.getInstance().isMutedWork()) {
+        if (shouldBlockGroupCallNotification || doNotDisturbUtil.isDoNotDisturbActive()) {
             return;
         }
 
@@ -253,7 +261,7 @@ public class NotificationServiceImpl implements NotificationService {
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
         PendingIntent openPendingIntent = createPendingIntentWithTaskStack(notificationIntent);
 
-        String contentText = context.getString(R.string.voip_gc_notification_call_started, NameUtil.getShortName(contactModel), group.getName());
+        String contentText = context.getString(R.string.voip_gc_notification_call_started, contactModelData.getShortName(), group.getName());
 
         // public version of the notification
         NotificationCompat.Builder publicBuilder = new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_GROUP_CALLS)
@@ -262,6 +270,7 @@ public class NotificationServiceImpl implements NotificationService {
             .setSmallIcon(R.drawable.ic_phone_locked_outline)
             .setGroup(NotificationGroups.CALLS)
             .setGroupSummary(false)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
             .setChannelId(NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_GROUP_CALLS);
 
         // private version of the notification
@@ -275,7 +284,7 @@ public class NotificationServiceImpl implements NotificationService {
             .setLocalOnly(true)
             .setGroup(NotificationGroups.CALLS)
             .setGroupSummary(false)
-            .setCategory(NotificationCompat.CATEGORY_SOCIAL)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
             .setPublicVersion(publicBuilder.build())
@@ -349,7 +358,7 @@ public class NotificationServiceImpl implements NotificationService {
             );
             if (!notificationAlreadyExistsInCache) {
                 uniqueMessageReceiverId = conversationNotification.getGroup().messageReceiver.getUniqueIdString();
-                if (!DNDUtil.getInstance().isMessageMuted(conversationNotification.getGroup().messageReceiver.getNotificationTriggerPolicyOverrideOrNull(), conversationNotification.getRawMessage())) {
+                if (!doNotDisturbUtil.isMessageMuted(conversationNotification.getGroup().messageReceiver.getNotificationTriggerPolicyOverrideOrNull(), conversationNotification.getRawMessage())) {
                     this.conversationNotificationsCache.addFirst(conversationNotification);
                 }
             } else if (updateExisting) {
@@ -820,7 +829,7 @@ public class NotificationServiceImpl implements NotificationService {
                 .stream()
                 .anyMatch(
                     conversationNotification ->
-                        !DNDUtil.getInstance().isMessageMuted(
+                        !doNotDisturbUtil.isMessageMuted(
                             conversationNotification.getGroup().messageReceiver.getNotificationTriggerPolicyOverrideOrNull(),
                             conversationNotification.getRawMessage()
                         )
@@ -913,7 +922,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Nullable
     private NotificationSchema createNotificationSchema(@NonNull ConversationNotificationGroup notificationGroup, @Nullable CharSequence rawMessage) {
         final @NonNull MessageReceiver messageReceiver = notificationGroup.messageReceiver;
-        if (DNDUtil.getInstance().isMessageMuted(messageReceiver.getNotificationTriggerPolicyOverrideOrNull(), rawMessage)) {
+        if (doNotDisturbUtil.isMessageMuted(messageReceiver.getNotificationTriggerPolicyOverrideOrNull(), rawMessage)) {
             return null;
         }
         if (messageReceiver instanceof GroupMessageReceiver) {
@@ -1079,6 +1088,10 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void showServerMessage(ServerMessageModel m) {
+        if (doNotDisturbUtil.isDoNotDisturbActive()) {
+            return;
+        }
+
         Intent intent = new Intent(context, ServerMessageActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
             context,
@@ -1206,14 +1219,14 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void showNewSyncedContactsNotification(@Nullable List<ch.threema.data.models.ContactModel> contactModels) {
+    public void showNewSyncedContactsNotification(@Nullable List<ContactModel> contactModels) {
         if (contactModels != null && !contactModels.isEmpty()) {
             String message;
             Intent notificationIntent;
 
             if (contactModels.size() > 1) {
                 StringBuilder contactListBuilder = new StringBuilder();
-                for (ch.threema.data.models.ContactModel contactModel : contactModels) {
+                for (ContactModel contactModel : contactModels) {
                     if (contactListBuilder.length() > 0) {
                         contactListBuilder.append(", ");
                     }
@@ -1376,7 +1389,7 @@ public class NotificationServiceImpl implements NotificationService {
                     contentValues.put("package_name", BuildConfig.APPLICATION_ID);
                     contentValues.put("activity_name", launcherClassName);
 
-                    if (RuntimeUtil.isOnUiThread()) {
+                    if (isMainThread()) {
                         if (queryHandler == null) {
                             queryHandler = new AsyncQueryHandler(
                                 context.getApplicationContext().getContentResolver()) {
@@ -1436,50 +1449,5 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void cancelRestoreNotification() {
         cancel(RESTORE_COMPLETION_NOTIFICATION_ID);
-    }
-
-    @Override
-    public void showRemoteSecretActivatedNotification() {
-        var learnMoreUrl = Uri.parse(context.getString(R.string.remote_secret_learn_more_url));
-        var learnMoreIntent = new Intent(Intent.ACTION_VIEW, learnMoreUrl);
-        var learnMorePendingIntent = PendingIntent.getActivity(
-            context,
-            NotificationIDs.REMOTE_SECRET_ACTIVATED_OR_DEACTIVATED,
-            learnMoreIntent,
-            PendingIntent.FLAG_IMMUTABLE
-        );
-        NotificationCompat.Action learnMoreAction = new NotificationCompat.Action(
-            0,
-            context.getString(R.string.remote_secret_activated_learn_more),
-            learnMorePendingIntent
-        );
-        NotificationCompat.Builder builder = buildRemoteSecretNotification(
-            context.getString(R.string.remote_secret_activated_notification_title),
-            context.getString(R.string.remote_secret_activated_notification_content)
-        )
-            .addAction(learnMoreAction);
-        this.notify(NotificationIDs.REMOTE_SECRET_ACTIVATED_OR_DEACTIVATED, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_ALERT);
-    }
-
-    @Override
-    public void showRemoteSecretDeactivatedNotification() {
-        NotificationCompat.Builder builder = buildRemoteSecretNotification(
-            context.getString(R.string.remote_secret_deactivated_notification_title),
-            context.getString(R.string.remote_secret_deactivated_notification_content)
-        );
-        this.notify(NotificationIDs.REMOTE_SECRET_ACTIVATED_OR_DEACTIVATED, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_ALERT);
-    }
-
-    private NotificationCompat.Builder buildRemoteSecretNotification(String title, String text) {
-         return new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
-                .setSmallIcon(R.drawable.ic_notification_small)
-                .setTicker(text)
-                .setLocalOnly(true)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_STATUS)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
-                .setAutoCancel(false);
     }
 }

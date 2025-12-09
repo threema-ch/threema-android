@@ -43,11 +43,11 @@ import ch.threema.app.utils.PushUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class PushService extends HmsMessageService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("PushService");
+    private static final Logger logger = getThreemaLogger("PushService");
 
     public static void deleteToken(Context context) {
         logger.info("Delete HMS push token");

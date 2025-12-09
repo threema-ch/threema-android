@@ -28,9 +28,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Block
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.AbstractComposeView
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -84,9 +82,9 @@ private fun ContactAvailability(status: AvailabilityStatus) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
-            imageVector = when (status) {
-                AvailabilityStatus.AVAILABLE -> Icons.Outlined.CheckCircle
-                AvailabilityStatus.UNAVAILABLE -> Icons.Outlined.Block
+            painter = when (status) {
+                AvailabilityStatus.AVAILABLE -> painterResource(R.drawable.ic_check)
+                AvailabilityStatus.UNAVAILABLE -> painterResource(R.drawable.ic_block)
             },
             tint = when (status) {
                 AvailabilityStatus.AVAILABLE -> colorResource(R.color.availability_status_available)

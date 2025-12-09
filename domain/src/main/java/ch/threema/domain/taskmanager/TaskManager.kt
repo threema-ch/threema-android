@@ -21,7 +21,8 @@
 
 package ch.threema.domain.taskmanager
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.SessionScoped
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.ConnectionLock
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.data.CspMessage
@@ -36,11 +37,12 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("TaskManager")
+private val logger = getThreemaLogger("TaskManager")
 
 /**
  * This is the public task manager interface. It can be used by the client to schedule new tasks.
  */
+@SessionScoped
 interface TaskManager {
     /**
      * Schedule a new task asynchronously. The task is executed when all prior tasks have finished

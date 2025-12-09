@@ -24,9 +24,11 @@ package ch.threema.domain.protocol.connection.csp
 import ch.threema.base.crypto.KeyPair
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.NonceCounter
-import ch.threema.base.utils.SecureRandomUtil
 import ch.threema.base.utils.TimeMeasureUtil
+import ch.threema.common.generateRandomBytes
+import ch.threema.common.secureRandom
 import ch.threema.common.toHexString
+import ch.threema.common.writeLittleEndianShort
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.connection.BaseServerConnectionConfiguration
@@ -48,7 +50,7 @@ import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
-import org.apache.commons.io.EndianUtils
+import java.security.SecureRandom
 
 private val logger = ConnectionLoggingUtil.getConnectionLogger("CspSession")
 
@@ -59,6 +61,7 @@ interface CspSessionState {
 internal class CspSession(
     private val configuration: BaseServerConnectionConfiguration,
     private val dispatcher: ServerConnectionDispatcher,
+    private val secureRandom: SecureRandom = secureRandom(),
 ) : CspSessionState {
     private enum class LoginState {
         IDLE,
@@ -320,7 +323,7 @@ internal class CspSession(
     private fun sendClientHello(outbound: InputPipe<in CspLoginMessage, Unit>) {
         dispatcher.assertDispatcherContext()
 
-        clientCookie = SecureRandomUtil.generateRandomBytes(ProtocolDefines.COOKIE_LEN)
+        clientCookie = secureRandom.generateRandomBytes(ProtocolDefines.COOKIE_LEN)
         if (logger.isDebugEnabled) {
             logger.debug("Client cookie = {}", clientCookie.toHexString())
         }
@@ -402,7 +405,7 @@ internal class CspSession(
         }
         val bos = ByteArrayOutputStream(ProtocolDefines.EXTENSION_INDICATOR_LEN)
         bos.write(ProtocolExtension.VERSION_MAGIC_STRING.encodeToByteArray())
-        EndianUtils.writeSwappedShort(bos, extensionsBoxLength.toShort())
+        bos.writeLittleEndianShort(extensionsBoxLength.toShort())
         return bos.toByteArray()
     }
 

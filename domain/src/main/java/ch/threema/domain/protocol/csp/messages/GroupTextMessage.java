@@ -28,7 +28,7 @@ import java.nio.charset.StandardCharsets;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
@@ -41,7 +41,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class GroupTextMessage extends AbstractGroupMessage {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupTextMessage");
+    private static final Logger logger = getThreemaLogger("GroupTextMessage");
 
     private String text;
 

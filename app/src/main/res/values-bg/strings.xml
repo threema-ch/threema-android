@@ -546,7 +546,7 @@
     <string name="invalid_zip_restore_failed">Възстановяването се провали. Невалидно резервно копие: %1$s</string>
     <string name="revocation_explain">Паролата, която въвеждате тук, Ви позволява да анулирате Вашия идентификатор на        https://myid.threema.ch/revoke в случай, че го изгубите или е бил откраднат</string>
     <!-- Empty state text shown on home screen widget when there are no unread messages -->
-    <string name="no_unread_messages">Няма непрочетени съобщения или има активно заключване с PIN-код</string>
+    <string name="no_unread_messages">Няма непрочетени съобщения</string>
     <string name="send_media">Изпратете мултимедия</string>
     <string name="rotate">Завъртете</string>
     <string name="remove">Премахнете</string>
@@ -689,6 +689,7 @@
     <string name="message_details_message_id_copied">Идентификаторът на съобщението е копиран в буферната памет</string>
     <string name="contact_details_id_copied">Идентификаторът е копиран в буферната памет</string>
     <string name="contact_details_nickname_copied">Псевдонимът е копиран в буферната памет</string>
+    <string name="generic_copied_to_clipboard_hint">Копирано в буферната памет</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_use_id_as_nickname">Искате ли да използвате Вашия ${app_name_short} идентификатор като псевдоним?</string>
     <string name="new_wizard_phone_email_invalid">Телефонният номер или имейлът са невалидни.\nМоля, коригирайте ги преди да продължите.</string>
@@ -797,7 +798,7 @@
     <string name="grace_thirty_minutes">30 минути</string>
     <string name="grace_never">Никога (ръчно)</string>
     <string name="never">Никога</string>
-    <string name="access_protection_cannot_be_removed">Защитеният достъп не може да бъде премахнат, защото има поне един поверителен чат.</string>
+    <string name="access_protection_private_chats_warning">Ако премахнете защитата на достъпа сега, Вашите поверителни чатове ще станат видими отново.</string>
     <string name="verification_started">Проверката започна</string>
     <string name="cannot_open_file">Не може да се отвори файлът</string>
     <string name="prefs_title_image_attach_previews">Бърз избор на мултимедия</string>
@@ -1112,6 +1113,7 @@
     <string name="username_hint">Потребителско име</string>
     <string name="server_hint">Сървър</string>
     <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
+    <string name="about_screen_remote_secrets_activated">Активирано</string>
     <string name="lock_option_biometric">Биометрия</string>
     <string name="biometric_enter_authentication">Необходимо е удостоверяване, за да се отключи</string>
     <string name="biometric_authentication_failed">Удостоверяването е неуспешно</string>
@@ -1389,7 +1391,6 @@
     <string name="threema_push_service_description">Постоянното известие се показва, когато ${app_name_short} Push е активен</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push_activated">${app_name_short} Push е активиран.</string>
-    <string name="add_shortcut_success">Прекият път е успешно създаден</string>
     <string name="add_shortcut_error">Грешка при добавянето на пряк път на екрана на устройството</string>
     <string name="web_link">Линк</string>
     <string name="link_copied">%s копирано</string>
@@ -1637,6 +1638,8 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">На приложението не му е разрешено да поддържа постоянна връзка със сървърите, а това е необходимо на ${app_name_short} Push, за да работи. Вие няма да бъдете информирани за нови съобщения, когато приложението е във фонов режим. За да го поправите, натиснете на „Използване на батерията“ и изберете „Неограничено“.</string>
     <string name="problemsolver_to_settings">Към настройките</string>
+    <!-- Label on button to dismiss/hide a warning -->
+    <string name="problemsolver_dismiss">Премахни</string>
     <string name="prefs_advanced_options">Разширени опции</string>
     <string name="push_service">Push услуга</string>
     <string name="edit_and_send">Редактирайте и изпратете</string>
@@ -1756,18 +1759,42 @@
     <string name="error_preset_onprem_url_mismatch_mdm">Предоставеният адрес на сървъра е невалиден. Моля, свържете се с Вашия администратор.</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">Предоставеният линк за активация е невалиден. Моля, свържете се с Вашия администратор.</string>
+    <string name="work_intro_screen_work_title">ИЗКЛЮЧИТЕЛНО СИГУРНА КОМУНИКАЦИЯ ЗА ФИРМИТЕ</string>
+    <string name="work_intro_screen_work_subtitle">Threema Work е приложение за сигурна комуникация между фирми и компании, което е криптирано от край до край, съобразено с GDPR и е разработено в Швейцария.</string>
+    <string name="work_intro_screen_work_sign_in_button_label">Впишете се сега</string>
+    <string name="work_intro_screen_work_learn_more_hint">Все още ли не използвате Threema Work?</string>
+    <string name="work_intro_screen_work_learn_more_button_label">Научете повече</string>
+    <string name="work_intro_screen_work_use_private_hint">Ако искате да използвате Threema за лични нужди, то ние Ви препоръчваме да използвате частното Threema приложение.</string>
+    <string name="work_intro_screen_work_download_private_button_label">Изтеглете сега</string>
+    <string name="work_intro_screen_onprem_title">КОМУНИКАЦИЯ С НАЙ-ВИСОКО НИВО НА СИГУРНОСТ</string>
+    <string name="work_intro_screen_onprem_subtitle">Threema OnPrem е самостоятелно приложение за комуникация, което е предназначено за фирми, държавни институции и военни организации. Предназначено е за пълна автономност на данните, криптирано изпращане на данни и да покрива изискванията за сигурност при боравене с чувствителни данни.</string>
+    <string name="work_intro_screen_onprem_sign_in_button_label">Впишете се сега</string>
+    <string name="work_intro_screen_onprem_learn_more_hint">Все още ли не използвате Threema OnPrem?</string>
+    <string name="work_intro_screen_onprem_learn_more_button_label">Научете повече</string>
+    <string name="work_intro_screen_onprem_use_private_hint">Ако искате да използвате Threema за лични нужди, то ние Ви препоръчваме да използвате частното Threema приложение.</string>
+    <string name="work_intro_screen_onprem_download_private_button_label">Изтеглете сега</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
+    <string name="remote_secrets_blocked_by_admin">Достъпът Ви до това приложение е блокиран от Вашия администратор.\n\nМоля, свържете се с администратора за повече информация.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secrets_failed_to_fetch">${remote_secret} токенът не може да бъде извлечен. Моля, проверете интернет връзката Ви и опитайте отново.</string>
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
-    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
+    <string name="fetching_remote_secret">Извличане на ${remote_secret} токен</string>
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_activated_notification_title">${remote_secret} е активиран</string>
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_activated_dialog_content">Ако загубите Вашето устройство, тази функция ще позволи на администратора да заключи приложението, за да запази чатовете Ви криптирани дори и ако хора без достъп са успели да Ви отключат устройството.\n[Научете повече]</string>
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_deactivated_notification_title">${remote_secret} беше деактивиран</string>
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_deactivated_dialog_content">Вашият администратор деактивира ${remote_secret}. Повече информация за ${remote_secret} може да намерите в [ЧЗВ].</string>
     <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_activating">Активиране ${remote_secret}</string>
     <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_activating_failed">Активацията на ${remote_secret} е неуспешна. Моля, проверете интернет връзката Ви и опитайте отново.</string>
     <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_deactivating">Деактивиране ${remote_secret}</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_deactivating_failed">Деактивацията на ${remote_secret} е неуспешна. Моля, проверете интернет връзката Ви и опитайте отново.</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="other">%d контакти</item>

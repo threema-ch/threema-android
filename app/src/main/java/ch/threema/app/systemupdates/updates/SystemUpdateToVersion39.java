@@ -74,11 +74,6 @@ public class SystemUpdateToVersion39 implements SystemUpdate {
             public Boolean includeHidden() {
                 return true;
             }
-
-            @Override
-            public Boolean onlyWithReceiptSettings() {
-                return false;
-            }
         });
     }
 

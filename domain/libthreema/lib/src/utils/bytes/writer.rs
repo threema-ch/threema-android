@@ -41,17 +41,8 @@ pub(crate) trait ByteWriter {
     /// Writer type used for [`ByteWriter::run_at`].
     type RunAtWriter<'run_at>: ByteWriter;
 
-    /// Skip over a specific amount of bytes.
-    ///
-    /// If the underlying buffer is not large enough and extendable to facilitate the resulting
-    /// offset, newly allocated space will be zerofilled.
-    ///
-    /// # Error
-    ///
-    /// Returns [`ByteWriterError::InsufficientSpace`] if the writer offset would move outside of
-    /// the underlying buffer boundary.
-    #[expect(dead_code, reason = "Will use later")]
-    fn skip(&mut self, length: usize) -> Result<(), ByteWriterError>;
+    /// Return the current offset of the writer.
+    fn offset(&self) -> usize;
 
     /// Run an arbitrary operation on the writer.
     ///
@@ -77,7 +68,6 @@ pub(crate) trait ByteWriter {
     /// underlying buffer boundary.
     ///
     /// Returns any [`ByteWriterError`] returned by the operation.
-    #[expect(dead_code, reason = "Will use later")]
     fn run_at<T, F: FnOnce(Self::RunAtWriter<'_>) -> Result<T, ByteWriterError>>(
         &mut self,
         relative_offset: isize,
@@ -91,6 +81,14 @@ pub(crate) trait ByteWriter {
     /// Returns [`ByteWriterError::InsufficientSpace`] if the writer offset would move outside
     /// of the underlying buffer boundary.
     fn write(&mut self, bytes: &[u8]) -> Result<(), ByteWriterError>;
+
+    /// Borrow a mutable slice for direct in-place writing.
+    ///
+    /// # Error
+    ///
+    /// Returns [`ByteWriterError::InsufficientSpace`] if the `offset` would move outside of the underlying
+    /// buffer boundary.
+    fn write_in_place(&mut self, length: usize) -> Result<&mut [u8], ByteWriterError>;
 
     /// Write a u8.
     ///
@@ -121,7 +119,6 @@ pub(crate) trait ByteWriter {
     /// Returns [`ByteWriterError::InsufficientSpace`] if the writer offset would move outside
     /// of the underlying buffer boundary.
     #[inline]
-    #[expect(dead_code, reason = "Will use later")]
     fn write_u32_le(&mut self, value: u32) -> Result<(), ByteWriterError> {
         self.write(&value.to_le_bytes())
     }
@@ -200,20 +197,8 @@ impl ByteWriter for ByteWriterContainer<buffer_type> {
     type RunWriter<'run> = ByteWriterContainer<run_writer_type>;
 
     #[inline]
-    fn skip(&mut self, length: usize) -> Result<(), ByteWriterError> {
-        let insufficient_space = || self.insufficient_space(length);
-
-        // Calculate new offset
-        let updated_offset = self.offset.checked_add(length).ok_or_else(insufficient_space)?;
-
-        // Check if there's sufficient space
-        if updated_offset > self.buffer.len() {
-            return Err(insufficient_space());
-        }
-
-        // Update offset
-        self.offset = updated_offset;
-        Ok(())
+    fn offset(&self) -> usize {
+        self.offset
     }
 
     #[inline]
@@ -256,18 +241,15 @@ impl ByteWriter for ByteWriterContainer<buffer_type> {
     #[inline]
     fn write(&mut self, bytes: &[u8]) -> Result<(), ByteWriterError> {
         let length = bytes.len();
-
-        // Check if there's sufficient space
-        let space = self.space();
-        if length > space {
-            return Err(self.insufficient_space(length));
-        }
+        let insufficient_space = || self.insufficient_space(length);
 
         // Calculate new offset
-        let updated_offset = self
-            .offset
-            .checked_add(length)
-            .expect("updated_offset must not overflow after space check");
+        let updated_offset = self.offset.checked_add(length).ok_or_else(insufficient_space)?;
+
+        // Check if there's sufficient space
+        if updated_offset > self.buffer.len() {
+            return Err(insufficient_space());
+        }
 
         // Write bytes
         self.buffer
@@ -276,6 +258,27 @@ impl ByteWriter for ByteWriterContainer<buffer_type> {
             .copy_from_slice(bytes);
         self.offset = updated_offset;
         Ok(())
+    }
+
+    #[inline]
+    fn write_in_place(&mut self, length: usize) -> Result<&mut [u8], ByteWriterError> {
+        let insufficient_space = || self.insufficient_space(length);
+
+        // Calculate new offset
+        let updated_offset = self.offset.checked_add(length).ok_or_else(insufficient_space)?;
+
+        // Check if there's sufficient space
+        if updated_offset > self.buffer.len() {
+            return Err(insufficient_space());
+        }
+
+        // Update offset and return borrowed mutable buffer
+        let buffer = self
+            .buffer
+            .get_mut(self.offset..updated_offset)
+            .expect("[offset..updated_offset] must be valid after space check");
+        self.offset = updated_offset;
+        Ok(buffer)
     }
 }
 
@@ -329,20 +332,8 @@ impl ByteWriter for ByteWriterContainer<buffer_type> {
     type RunWriter<'run> = ByteWriterContainer<run_writer_type>;
 
     #[inline]
-    fn skip(&mut self, length: usize) -> Result<(), ByteWriterError> {
-        let insufficient_space = || self.insufficient_space(length);
-
-        // Calculate new offset
-        let updated_offset = self.offset.checked_add(length).ok_or_else(insufficient_space)?;
-
-        // Extend (zerofill) if we need to (but don't truncate).
-        if updated_offset > self.buffer.len() {
-            self.buffer.resize(updated_offset, 0x00);
-        }
-
-        // Update offset
-        self.offset = updated_offset;
-        Ok(())
+    fn offset(&self) -> usize {
+        self.offset
     }
 
     #[inline]
@@ -417,6 +408,28 @@ impl ByteWriter for ByteWriterContainer<buffer_type> {
         self.offset = updated_offset;
         Ok(())
     }
+
+    #[inline]
+    fn write_in_place(&mut self, length: usize) -> Result<&mut [u8], ByteWriterError> {
+        // Calculate new offset
+        let updated_offset = self
+            .offset
+            .checked_add(length)
+            .ok_or_else(|| self.insufficient_space(length))?;
+
+        // Extend (zerofill) first if we need to (but don't truncate).
+        if updated_offset > self.buffer.len() {
+            self.buffer.resize(updated_offset, 0x00);
+        }
+
+        // Update offset and return borrowed mutable buffer
+        let buffer = self
+            .buffer
+            .get_mut(self.offset..updated_offset)
+            .expect("[offset..updated_offset] must be valid after space check");
+        self.offset = updated_offset;
+        Ok(buffer)
+    }
 }
 
 /// Wraps a [`&mut [u8]`] and allows to apply write operations safely within the constrained space.
@@ -455,12 +468,12 @@ impl InsertSlice for Vec<u8> {
         // Make room for the additional bytes
         self.reserve(additional_length);
 
-        // # Safety: The underlying vector MUST contain bytes.
         #[expect(
             clippy::arithmetic_side_effects,
             clippy::multiple_unsafe_ops_per_block,
             reason = "TODO(LIB-16)"
         )]
+        // # Safety: The underlying vector MUST contain bytes.
         unsafe {
             // Move the existing bytes at the specific offset by the amount of bytes to add
             ptr::copy(
@@ -474,5 +487,92 @@ impl InsertSlice for Vec<u8> {
 
             self.set_len(current_length + additional_length);
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// Test byte writing for an implementation of [`ByteWriter`].
+    ///
+    /// `extendable` indicates whether the inner buffer of `writer` can extend itself by allocating more
+    /// space.
+    ///
+    /// The tests fail if the passed writer is not zero-filled initially.
+    fn test_byte_writer<TWriter: ByteWriter, TUnwrapFn: Fn(&TWriter) -> &[u8]>(
+        mut writer: TWriter,
+        extendable: bool,
+        inner: TUnwrapFn,
+    ) {
+        {
+            // Sanity check: The passed writer is zero-filled
+            let buffer = inner(&writer);
+            assert!(buffer.iter().all(|byte| *byte == 0));
+        }
+
+        // Write multiple groups of bytes (the written bytes are in increasing order to facilitate testing)
+        writer.write_u8(1).unwrap();
+        writer.write_u16_le(u16::from_le_bytes([2, 3])).unwrap();
+        writer.write_u32_le(u32::from_le_bytes([4, 5, 6, 7])).unwrap();
+        writer
+            .write_u64_le(u64::from_le_bytes([8, 9, 10, 11, 12, 13, 14, 15]))
+            .unwrap();
+        writer.write(&[16, 17, 18]).unwrap();
+        {
+            let buffer = writer.write_in_place(3).unwrap();
+            assert_eq!(buffer.len(), 3);
+
+            buffer.copy_from_slice(&[19, 20, 21]);
+        }
+        assert_eq!(inner(&writer)[..21], (1..=21).collect::<Vec<_>>());
+
+        // Catch out of bounds writing
+        assert_eq!(writer.offset(), 21);
+        assert!(writer.run_at(-22, |mut writer| writer.write(&[0, 0])).is_err());
+
+        if extendable {
+            let offset = writer.offset();
+            assert_eq!(offset, 21);
+
+            // Extendable: We should be able to add more bytes
+            writer.write_u8(22).unwrap();
+            writer.write(&[23]).unwrap();
+
+            let buffer = inner(&writer);
+            assert_eq!(buffer[offset..], [22, 23]);
+        } else {
+            // Not extendable: Moving beyond the offset should fail
+            assert!(writer.write_u8(1).is_err());
+            assert!(writer.write(&[0]).is_err());
+        }
+    }
+
+    #[test]
+    fn slice_byte_writer() {
+        let mut buffer: [u8; 21] = [0; 21];
+        let writer = SliceByteWriter::new(&mut buffer);
+
+        test_byte_writer(writer, false, |writer| writer.buffer);
+    }
+
+    #[test]
+    fn owned_vec_byte_writer() {
+        let writer = OwnedVecByteWriter::new_with_capacity(21);
+        test_byte_writer(writer, true, |writer| &writer.buffer);
+
+        let writer = OwnedVecByteWriter::new_empty();
+        test_byte_writer(writer, true, |writer| &writer.buffer);
+    }
+
+    #[test]
+    fn borrowed_vec_byte_writer() {
+        let mut buffer: Vec<u8> = vec![];
+        let writer = BorrowedVecByteWriter::new(&mut buffer);
+        test_byte_writer(writer, true, |writer| writer.buffer);
+
+        let mut buffer: Vec<u8> = Vec::with_capacity(21);
+        let writer = BorrowedVecByteWriter::new(&mut buffer);
+        test_byte_writer(writer, true, |writer| writer.buffer);
     }
 }

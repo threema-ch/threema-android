@@ -62,7 +62,7 @@ import ch.threema.app.voip.groupcall.sfu.SfuConnection
 import ch.threema.app.voip.services.VoipStateService
 import ch.threema.app.voip.util.VoipUtil
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.takeUnlessEmpty
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.protocol.api.APIConnector
@@ -73,7 +73,7 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallService")
+private val logger = getThreemaLogger("GroupCallService")
 
 /**
  * A foreground service which handles group calls. It is responsible for establishing a connection

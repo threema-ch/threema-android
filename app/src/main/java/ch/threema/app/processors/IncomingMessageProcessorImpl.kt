@@ -22,7 +22,7 @@
 package ch.threema.app.processors
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.csp.coders.MessageBox
@@ -30,7 +30,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.storage.models.ServerMessageModel
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingMessageProcessorImpl")
+private val logger = getThreemaLogger("IncomingMessageProcessorImpl")
 
 class IncomingMessageProcessorImpl(private val serviceManager: ServiceManager) :
     IncomingMessageProcessor {

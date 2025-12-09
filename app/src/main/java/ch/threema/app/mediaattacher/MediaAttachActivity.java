@@ -72,9 +72,9 @@ import ch.threema.app.activities.SendMediaActivity;
 import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.activities.ballot.BallotWizardActivity;
 import ch.threema.app.camera.CameraUtil;
+import ch.threema.app.camera.QRScannerActivity;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
-import ch.threema.app.drafts.DraftManager;
 import ch.threema.app.fragments.ComposeMessageFragment;
 import ch.threema.app.location.LocationPickerActivity;
 import ch.threema.app.managers.ListenerManager;
@@ -92,9 +92,8 @@ import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
-import ch.threema.app.utils.QRScannerUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
 
 import static ch.threema.app.AppConstants.MAX_BLOB_SIZE;
@@ -106,7 +105,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
     MediaAttachAdapter.ItemClickListener,
     GenericAlertDialog.DialogClickListener {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaAttachActivity");
+    private static final Logger logger = getThreemaLogger("MediaAttachActivity");
 
     private static final int CONTACT_PICKER_INTENT = 33002;
     private static final int LOCATION_PICKER_INTENT = 33003;
@@ -114,6 +113,8 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
     private static final int PERMISSION_REQUEST_ATTACH_CONTACT = 2;
     private static final int PERMISSION_REQUEST_QR_READER = 3;
     private static final int PERMISSION_REQUEST_ATTACH_FROM_EXTERNAL_CAMERA = 6;
+
+    private static final int REQUEST_CODE_QR_SCANNER = 26657;
 
     public static final String CONFIRM_TAG_REALLY_SEND_FILE = "reallySendFile";
 
@@ -528,13 +529,14 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
     public void onActivityResult(int requestCode, int resultCode, final Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
         if (resultCode == Activity.RESULT_OK) {
-            final String scanResult = QRScannerUtil.getInstance().parseActivityResult(this, requestCode, resultCode, intent);
-            if (scanResult != null && !scanResult.isEmpty()) {
-                ListenerManager.qrCodeScanListener.handle(listener -> listener.onScanCompleted(scanResult));
-                finish();
-            }
-
             switch (requestCode) {
+                case REQUEST_CODE_QR_SCANNER:
+                    final @Nullable String scanResult = QRScannerActivity.extractResult(intent);
+                    if (scanResult != null) {
+                        ListenerManager.qrCodeScanListener.handle(listener -> listener.onScanCompleted(scanResult));
+                        finish();
+                    }
+                    break;
                 case LOCATION_PICKER_INTENT:
                     Location location = IntentDataUtil.getLocation(intent);
                     String poiName = intent.getStringExtra(INTENT_DATA_LOCATION_NAME);
@@ -583,9 +585,9 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
     public void onEdit(final List<Uri> uriList, boolean asFiles) {
         ArrayList<MediaItem> mediaItems = MediaItem.getFromUris(uriList, this, asFiles);
         if (!mediaItems.isEmpty()) {
-            var draft = DraftManager.getMessageDraft(messageReceiver.getUniqueIdString());
+            var draft = dependencies.getDraftManager().get(messageReceiver.getUniqueIdString());
             if (draft != null) {
-                mediaItems.get(0).setCaption(draft);
+                mediaItems.get(0).setCaption(draft.getText());
             }
 
             Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
@@ -661,9 +663,11 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
         }
     }
 
-    private void attachQR(@NonNull View v) {
-        v.postDelayed(
-            () -> QRScannerUtil.getInstance().initiateScan(MediaAttachActivity.this, null), 200
+    private void attachQR(@NonNull View view) {
+        var intent = QRScannerActivity.createIntent(this);
+        view.postDelayed(
+            () -> startActivityForResult(intent, REQUEST_CODE_QR_SCANNER),
+            200
         );
     }
 

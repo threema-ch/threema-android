@@ -22,7 +22,7 @@ use crate::{
     model::contact::PredefinedContact,
     utils::{
         debug::debug_str_redacted,
-        serde::{base64, from_str},
+        serde::{base64, string},
         time::Duration,
     },
 };
@@ -621,7 +621,6 @@ impl RendezvousServerBaseUrl {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MediatorServerBaseUrl(WssBaseUrl);
 impl MediatorServerBaseUrl {
-    #[expect(dead_code, reason = "Will use later")]
     pub(crate) fn path(&self, device_group_path_key: &DeviceGroupPathKey, path: fmt::Arguments) -> String {
         device_group_id_template_url::path(&self.0.0.0, device_group_path_key, Some(path))
     }
@@ -710,7 +709,7 @@ impl url_type {
 
 #[duplicate_item(
     url_type                        inner_url_type;
-    [ OnPremConfigUrl ]      [ HttpsUrl ];
+    [ OnPremConfigUrl ]             [ HttpsUrl ];
     [ DirectoryServerBaseUrl ]      [ HttpsBaseUrl ];
     [ BlobServerUploadUrl ]         [ HttpsUrl ];
     [ BlobServerDownloadUrl ]       [ HttpsUrl ];
@@ -809,7 +808,7 @@ struct RawOnPremMediatorAndBlobMirrorServerConfig {
 
 #[derive(Deserialize)]
 struct RawOnPremConfig {
-    #[serde(rename = "version", deserialize_with = "from_str::deserialize")]
+    #[serde(rename = "version", deserialize_with = "string::from_str::deserialize")]
     version: OnPremConfigVersion,
 
     #[serde(rename = "signatureKey", with = "base64::fixed_length")]
@@ -1627,7 +1626,7 @@ mod tests {
                 config,
                 OnPremConfig {
                     version: OnPremConfigVersion::V1_0,
-                    refresh_interval: Duration::from_secs(86400),
+                    refresh_interval: Duration::from_hours(24),
                     chat_server_address: ChatServerAddress {
                         hostname: "chat.onprem.example.threema.ch".to_owned(),
                         ports: vec![5222, 443]
@@ -1675,7 +1674,7 @@ mod tests {
                 config,
                 OnPremConfig {
                     version: OnPremConfigVersion::V1_0,
-                    refresh_interval: Duration::from_secs(86400),
+                    refresh_interval: Duration::from_hours(24),
                     chat_server_address: ChatServerAddress {
                         hostname: "chat.onprem.example.threema.ch".to_owned(),
                         ports: vec![5222, 443]

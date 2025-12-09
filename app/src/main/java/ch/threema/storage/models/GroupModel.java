@@ -98,7 +98,6 @@ public class GroupModel implements ReceiverModel {
 
     }
 
-    // dummy class
     @Nullable
     public String getName() {
         return this.name;
@@ -259,4 +258,3 @@ public class GroupModel implements ReceiverModel {
         return Objects.hash(id);
     }
 }
-

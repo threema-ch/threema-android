@@ -23,11 +23,13 @@ package ch.threema.app.services
 
 import android.content.Context
 import ch.threema.app.tasks.ReflectSettingsSyncTask
+import ch.threema.base.SessionScoped
 import ch.threema.domain.types.Identity
 
 /**
  * Manage blocked identities.
  */
+@SessionScoped
 interface BlockedIdentitiesService {
     /**
      * Block an identity. The identity will be persisted regardless whether a contact with this

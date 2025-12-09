@@ -23,8 +23,8 @@ package ch.threema.base.crypto
 
 import ch.threema.base.utils.Utils
 import ch.threema.libthreema.blake2bMac256
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
-import org.junit.jupiter.api.Test
 
 class ThreemaKDFTest {
     @Test

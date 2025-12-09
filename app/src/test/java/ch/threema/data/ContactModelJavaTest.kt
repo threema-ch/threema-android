@@ -24,6 +24,7 @@ package ch.threema.data
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.common.now
+import ch.threema.data.datatypes.AndroidContactLookupInfo
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData.Companion.javaCreate
 import ch.threema.data.repositories.ContactModelRepository
@@ -94,7 +95,7 @@ class ContactModelJavaTest {
                 readReceiptPolicy = ReadReceiptPolicy.DONT_SEND,
                 typingIndicatorPolicy = TypingIndicatorPolicy.SEND,
                 isArchived = false,
-                androidContactLookupKey = "asdf",
+                androidContactLookupInfo = AndroidContactLookupInfo(lookupKey = "asdf", contactId = null),
                 localAvatarExpires = null,
                 isRestored = false,
                 profilePictureBlobId = byteArrayOf(1, 2, 3),
@@ -127,7 +128,7 @@ class ContactModelJavaTest {
         assertEquals(ContactSyncState.CUSTOM, data.syncState)
         assertEquals(ReadReceiptPolicy.DONT_SEND, data.readReceiptPolicy)
         assertEquals(TypingIndicatorPolicy.SEND, data.typingIndicatorPolicy)
-        assertEquals("asdf", data.androidContactLookupKey)
+        assertEquals(AndroidContactLookupInfo(lookupKey = "asdf", contactId = null), data.androidContactLookupInfo)
         assertNull(data.localAvatarExpires)
         assertFalse(data.isRestored)
         assertContentEquals(byteArrayOf(1, 2, 3), data.profilePictureBlobId)

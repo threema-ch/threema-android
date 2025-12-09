@@ -66,7 +66,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
@@ -80,7 +80,7 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
  */
 
 public class WizardFragment3 extends WizardFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFragment3");
+    private static final Logger logger = getThreemaLogger("WizardFragment3");
 
     private EditText prefixText, emailEditText, phoneText;
     private CountryListAdapter countryListAdapter;

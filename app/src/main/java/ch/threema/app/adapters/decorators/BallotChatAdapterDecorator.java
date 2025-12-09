@@ -30,24 +30,20 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.SelectorDialog;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.data.media.BallotDataModel;
 
 public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotChatAdapterDecorator");
+    private static final Logger logger = getThreemaLogger("BallotChatAdapterDecorator");
 
     private final static int ACTION_VOTE = 0, ACTION_RESULTS = 1, ACTION_CLOSE = 2;
 
@@ -66,13 +62,12 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
             final BallotModel ballotModel = this.helper.getBallotService().get(ballotData.getBallotId());
 
             if (ballotModel == null) {
-                explain = "";
                 holder.bodyTextView.setText("");
             } else {
                 switch (ballotData.getType()) {
                     case BALLOT_CREATED:
                     case BALLOT_MODIFIED:
-                        if (ballotModel.getState() != BallotModel.State.CLOSED) {
+                        if (BallotUtil.canVote(ballotModel, helper.getMessageReceiver())) {
                             explain = getContext().getString(R.string.ballot_tap_to_vote);
                         }
                         break;
@@ -94,7 +89,7 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
                 @Override
                 public void onDebouncedClick(View v) {
                     if (messageModel.getState() != MessageState.FS_KEY_MISMATCH && messageModel.getState() != MessageState.SENDFAILED) {
-                        BallotChatAdapterDecorator.this.onActionButtonClick(ballotModel);
+                        showChooser(ballotModel);
                     }
                 }
             }, holder.messageBlockView);
@@ -109,41 +104,18 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
         }
     }
 
-    private void onActionButtonClick(final BallotModel ballotModel) {
-        if (getMessageModel() instanceof GroupMessageModel) {
-            try {
-                GroupService groupService = ThreemaApplication.getServiceManager().getGroupService();
-                GroupMessageModel groupMessageModel = (GroupMessageModel) getMessageModel();
-
-                if (groupService != null) {
-                    GroupModel groupModel = groupService.getById(groupMessageModel.getGroupId());
-
-                    if (groupModel != null) {
-                        if (groupService.isGroupMember(groupModel)) {
-                            showChooser(ballotModel);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                logger.error("Exception", e);
-            }
-        } else {
-            showChooser(ballotModel);
-        }
-    }
-
     private void showChooser(final BallotModel ballotModel) {
-
         ArrayList<SelectorDialogItem> items = new ArrayList<>();
         final ArrayList<Integer> action = new ArrayList<>();
         String title = null;
 
-        if (BallotUtil.canVote(ballotModel, helper.getMyIdentity())) {
+        if (BallotUtil.canVote(ballotModel, helper.getMessageReceiver())) {
             items.add(new SelectorDialogItem(getContext().getString(R.string.ballot_vote), R.drawable.ic_vote_outline));
             action.add(ACTION_VOTE);
         }
 
-        if (BallotUtil.canViewMatrix(ballotModel, helper.getMyIdentity())) {
+        var canView = BallotUtil.canViewMatrix(ballotModel);
+        if (canView) {
             if (ballotModel.getState() == BallotModel.State.CLOSED) {
                 items.add(new SelectorDialogItem(getContext().getString(R.string.ballot_result_final), R.drawable.ic_ballot_outline));
             } else {
@@ -152,13 +124,13 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
             action.add(ACTION_RESULTS);
         }
 
-        if (BallotUtil.canClose(ballotModel, helper.getMyIdentity())) {
+        var canClose = BallotUtil.canClose(ballotModel, helper.getMyIdentity(), helper.getMessageReceiver());
+        if (canClose) {
             items.add(new SelectorDialogItem(getContext().getString(R.string.ballot_close), R.drawable.ic_check));
             action.add(ACTION_CLOSE);
         }
 
-        if (BallotUtil.canClose(ballotModel, helper.getMyIdentity())
-            || BallotUtil.canViewMatrix(ballotModel, helper.getMyIdentity())) {
+        if (canClose || canView) {
             title = String.format(getContext().getString(R.string.ballot_received_votes),
                 helper.getBallotService().getVotedParticipants(ballotModel.getId()).size(),
                 helper.getBallotService().getParticipants(ballotModel.getId()).length);
@@ -170,13 +142,13 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
                 public void onClick(String tag, int which, Object data) {
                     switch (action.get(which)) {
                         case ACTION_VOTE:
-                            BallotUtil.openVoteDialog(helper.getFragment().getFragmentManager(), ballotModel, helper.getMyIdentity());
+                            BallotUtil.openVoteDialog(helper.getFragment().getFragmentManager(), ballotModel);
                             break;
                         case ACTION_RESULTS:
-                            BallotUtil.openMatrixActivity(getContext(), ballotModel, helper.getMyIdentity());
+                            BallotUtil.openMatrixActivity(getContext(), ballotModel);
                             break;
                         case ACTION_CLOSE:
-                            BallotUtil.requestCloseBallot(ballotModel, helper.getMyIdentity(), helper.getFragment(), null);
+                            BallotUtil.requestCloseBallot(ballotModel, helper.getFragment(), null);
                             break;
                         default:
                             break;
@@ -193,8 +165,12 @@ public class BallotChatAdapterDecorator extends ChatAdapterDecorator {
                 }
             });
             selectorDialog.show(helper.getFragment().getFragmentManager(), "chooseAction");
-        } else {
-            BallotUtil.openDefaultActivity(getContext(), helper.getFragment().getFragmentManager(), ballotModel, helper.getMyIdentity());
+        } else if (!items.isEmpty()) {
+            BallotUtil.openDefaultActivity(getContext(),
+                helper.getFragment().getFragmentManager(),
+                ballotModel,
+                helper.getMessageReceiver()
+            );
         }
     }
 }

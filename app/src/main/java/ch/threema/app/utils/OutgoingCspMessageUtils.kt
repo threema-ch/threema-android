@@ -33,8 +33,9 @@ import ch.threema.app.services.UserService
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
-import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.lazy
 import ch.threema.common.now
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.repositories.ContactModelRepository
@@ -66,7 +67,7 @@ import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingCspMessageUtils")
+private val logger = getThreemaLogger("OutgoingCspMessageUtils")
 
 /**
  * Map each identity to a cached contact. If the contact is known, it is converted to a cached
@@ -495,6 +496,10 @@ private class OutgoingCspMessageSender(
             forwardSecurityResults.add(fsEncryptionResult)
 
             for ((message, nonce) in fsEncryptionResult.outgoingMessages) {
+                check(message.toIdentity == receiverIdentity) {
+                    "Expected the message's to-identity to match the intended receiver identity."
+                }
+
                 // If a server ack is required, store the message id to await it later on
                 if (!message.hasFlag(ProtocolDefines.MESSAGE_FLAG_NO_SERVER_ACK)) {
                     pendingCspMessageAcks.add(receiverIdentity to message.messageId)

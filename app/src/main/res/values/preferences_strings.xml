@@ -54,6 +54,8 @@
     <string name="preferences__fontstyle" translatable="false">pref_key_font_style</string>
     <string name="preferences__sendlog" translatable="false">pref_key_sendlog</string>
     <string name="preferences__exportlog" translatable="false">pref_key_exportlog</string>
+    <string name="preferences__crash_reporting" translatable="false">pref_key_crash_reporting</string>
+    <string name="preferences__cause_crash" translatable="false">pref_key_cause_crash</string>
     <string name="preferences__lockout_deadline" translatable="false">pref_key_lock_deadline</string>
     <string name="preferences__lockout_attempts" translatable="false">pref_key_lock_attempts</string>
     <string name="preferences__wizard_running" translatable="false">pref_wizard_running</string>
@@ -83,6 +85,8 @@
     <string name="preferences__web_client_enabled" translatable="false">pref_web_client_enabled</string>
     <string name="preferences__version" translatable="false">pref_version</string>
     <string name="preferences__version_code" translatable="false">pref_version_code</string>
+    <string name="preferences__git_branch" translatable="false">pref_git_branch</string>
+    <string name="preferences__git_commit" translatable="false">pref_git_commit</string>
     <string name="preferences__server_config" translatable="false">pref_server_config</string>
     <string name="preferences__work_license_name" translatable="false">pref_work_license_name</string>
     <string name="preferences__licenses" translatable="false">pref_licenses</string>
@@ -234,6 +238,7 @@
     <string name="preferences__notification_channels_version" translatable="false">pref_notification_channels_version</string>
     <string name="preferences__last_shortcut_update_date" translatable="false">pref_last_shortcut_update_date</string>
     <string name="preferences__last_notification_request_timestamp" translatable="false">pref_last_notification_request_timestamp</string>
+    <string name="preferences__dev_reset_dismissed_problems" translatable="false">pref_dev_reset_dismissed_problems</string>
     <string name="preferences__dev_reset_reaction_tooltip_shown" translatable="false">pref_dev_reset_reaction_tooltip_shown</string>
     <string name="preferences__dev_create_messages_with_reactions" translatable="false">pref_dev_create_create_messages_with_reactions</string>
     <string name="preferences__dev_create_text_messages" translatable="false">pref_dev_create_create_text_messages</string>
@@ -241,4 +246,6 @@
     <string name="preferences__last_multi_device_group_check_timestamp" translatable="false">pref_last_multi_device_group_check_timestamp</string>
     <string name="preferences__hidden_info_section" translatable="false">pref_hidden_info</string>
     <string name="preferences__installer_package" translatable="false">pref_key_installer_package</string>
+    <string name="preferences__problem_dismissed_prefix" translatable="false">pref_problem_dismissed_</string>
+    <string name="preferences__referral_banner" translatable="false">pref_key_referral_banner</string>
 </resources>

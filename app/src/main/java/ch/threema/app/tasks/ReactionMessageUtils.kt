@@ -24,7 +24,7 @@ package ch.threema.app.tasks
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.MessageService
 import ch.threema.app.utils.MessageUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupReactionMessage
 import ch.threema.domain.protocol.csp.messages.ReactionMessage
@@ -32,7 +32,7 @@ import ch.threema.storage.models.AbstractMessageModel
 import com.google.protobuf.ByteString
 import kotlin.text.isNotEmpty
 
-private val logger = LoggingUtil.getThreemaLogger("ReactionMessageUtils")
+private val logger = getThreemaLogger("ReactionMessageUtils")
 
 private const val MAX_EMOJI_SEQUENCE_BYTE_SIZE = 64
 

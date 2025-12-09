@@ -41,7 +41,9 @@ import kotlin.test.assertFailsWith
 class MasterKeyStorageStateConverterTest {
     @Test
     fun `unprotected version 1 to key state`() {
-        val converter = MasterKeyStorageStateConverter()
+        val converter = MasterKeyStorageStateConverter(
+            version1KeyVerifier = Version1MasterKeyCrypto(),
+        )
 
         val keyState = converter.toKeyState(
             MasterKeyStorageData.Version1(
@@ -62,7 +64,9 @@ class MasterKeyStorageStateConverterTest {
 
     @Test
     fun `unprotected version 2 to key state`() {
-        val converter = MasterKeyStorageStateConverter()
+        val converter = MasterKeyStorageStateConverter(
+            version1KeyVerifier = mockk(),
+        )
 
         val keyState = converter.toKeyState(
             MasterKeyStorageData.Version2(
@@ -84,7 +88,9 @@ class MasterKeyStorageStateConverterTest {
 
     @Test
     fun `passphrase version 1 protected to key state`() {
-        val converter = MasterKeyStorageStateConverter()
+        val converter = MasterKeyStorageStateConverter(
+            version1KeyVerifier = mockk(),
+        )
         val protectedKeyMock = mockk<CryptographicByteArray>()
         val saltMock = mockk<CryptographicByteArray>()
         val verificationMock = mockk<CryptographicByteArray>()
@@ -113,7 +119,9 @@ class MasterKeyStorageStateConverterTest {
 
     @Test
     fun `passphrase version 2 protected to key state`() {
-        val converter = MasterKeyStorageStateConverter()
+        val converter = MasterKeyStorageStateConverter(
+            version1KeyVerifier = mockk(),
+        )
         val encryptedDataMock = mockk<CryptographicByteArray>()
         val nonceMock = mockk<CryptographicByteArray>()
         val saltMock = mockk<CryptographicByteArray>()
@@ -150,7 +158,9 @@ class MasterKeyStorageStateConverterTest {
 
     @Test
     fun `remote secret protected to key state`() {
-        val converter = MasterKeyStorageStateConverter()
+        val converter = MasterKeyStorageStateConverter(
+            version1KeyVerifier = mockk(),
+        )
         val parametersMock = mockk<RemoteSecretParameters>()
         val encryptedDataMock = mockk<CryptographicByteArray>()
 
@@ -176,7 +186,9 @@ class MasterKeyStorageStateConverterTest {
 
     @Test
     fun `unprotected version 2 to storage data`() {
-        val converter = MasterKeyStorageStateConverter()
+        val converter = MasterKeyStorageStateConverter(
+            version1KeyVerifier = mockk(),
+        )
 
         val storageData = converter.toStorageData(
             MasterKeyState.Plain(
@@ -198,7 +210,9 @@ class MasterKeyStorageStateConverterTest {
 
     @Test
     fun `passphrase version 1 protected to storage data`() {
-        val converter = MasterKeyStorageStateConverter()
+        val converter = MasterKeyStorageStateConverter(
+            version1KeyVerifier = mockk(),
+        )
         val protectedKeyMock = mockk<CryptographicByteArray>()
         val saltMock = mockk<CryptographicByteArray>()
         val verificationMock = mockk<CryptographicByteArray>()
@@ -218,7 +232,9 @@ class MasterKeyStorageStateConverterTest {
 
     @Test
     fun `passphrase version 2 protected to storage data`() {
-        val converter = MasterKeyStorageStateConverter()
+        val converter = MasterKeyStorageStateConverter(
+            version1KeyVerifier = mockk(),
+        )
         val encryptedDataMock = mockk<CryptographicByteArray>()
         val nonceMock = mockk<CryptographicByteArray>()
         val saltMock = mockk<CryptographicByteArray>()
@@ -255,7 +271,9 @@ class MasterKeyStorageStateConverterTest {
 
     @Test
     fun `remote secret protected to storage data`() {
-        val converter = MasterKeyStorageStateConverter()
+        val converter = MasterKeyStorageStateConverter(
+            version1KeyVerifier = mockk(),
+        )
         val parametersMock = mockk<RemoteSecretParameters>()
         val encryptedDataMock = mockk<CryptographicByteArray>()
 

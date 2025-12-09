@@ -39,14 +39,14 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.PollingHelper;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.domain.protocol.connection.ConnectionState;
 
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 public class AlarmManagerBroadcastReceiver extends BroadcastReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AlarmManagerBroadcastReceiver");
+    private static final Logger logger = getThreemaLogger("AlarmManagerBroadcastReceiver");
 
     private static PendingIntent requireLoggedInConnectionIntent = null;
 

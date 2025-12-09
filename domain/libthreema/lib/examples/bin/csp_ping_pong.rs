@@ -15,8 +15,7 @@ use libthreema::{
     cli::{FullIdentityConfig, FullIdentityConfigOptions},
     csp::{
         CspProtocol, CspProtocolContext, CspStateUpdate,
-        frame::OutgoingFrame,
-        payload::{EchoPayload, IncomingPayload, OutgoingPayload},
+        payload::{EchoPayload, IncomingPayload, OutgoingFrame, OutgoingPayload},
     },
     https::cli::https_client_builder,
     utils::logging::init_stderr_logging,
@@ -49,7 +48,6 @@ struct PayloadQueuesForCsp {
     outgoing: mpsc::Receiver<OutgoingPayload>,
 }
 
-/// The Client Server Protocol connection handler
 struct CspProtocolRunner {
     /// The TCP stream
     stream: TcpStream,
@@ -124,8 +122,8 @@ impl CspProtocolRunner {
             }
 
             // Check if we've completed the handshake
-            if let Some(CspStateUpdate::PostHandshake { queued_messages }) = instruction.state_update {
-                info!(queued_messages, "Handshake complete");
+            if let Some(CspStateUpdate::PostHandshake(login_ack_data)) = instruction.state_update {
+                info!(?login_ack_data, "Handshake complete");
                 break;
             }
         }
@@ -155,7 +153,7 @@ impl CspProtocolRunner {
                             .add_chunks(&[read_buffer.get(..length)
                             .expect("Amount of read bytes should be available")])?;
                         None
-                    }
+                    },
 
                     // Forward any outgoing payloads
                     Some(outgoing_payload) = queues.outgoing.recv() => {
@@ -278,7 +276,7 @@ async fn run_ping_pong_flow(mut queues: PayloadQueuesForCspPingPong) -> anyhow::
         Duration::from_secs(10),
     );
 
-    // Enter application loop
+    // Enter ping-pong flow loop
     loop {
         tokio::select! {
             // Send echo-request when the timer fires
@@ -287,9 +285,9 @@ async fn run_ping_pong_flow(mut queues: PayloadQueuesForCspPingPong) -> anyhow::
                     EchoPayload("ping".as_bytes().to_owned()));
                 info!(?echo_request, "Sending echo request");
                 queues.outgoing.send(echo_request).await?;
-            }
+            },
 
-            // Process incoming payload (or stop signal)
+            // Process incoming payload
             incoming_payload = queues.incoming.recv() => {
                 if let Some(incoming_payload) = incoming_payload {
                     info!(?incoming_payload, "Received payload");
@@ -339,7 +337,10 @@ async fn main() -> anyhow::Result<()> {
             .config
             .chat_server_address
             .addresses(config.csp_server_group),
-        config.csp_context().expect("Configuration should be valid"),
+        config
+            .csp_context_init()
+            .try_into()
+            .expect("Configuration should be valid"),
     )
     .await?;
 

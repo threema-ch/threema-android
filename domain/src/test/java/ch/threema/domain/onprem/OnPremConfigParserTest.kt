@@ -40,31 +40,32 @@ import org.json.JSONObject
 
 class OnPremConfigParserTest {
 
-    private val testTimeProvider = TestTimeProvider()
+    private val timeProvider = TestTimeProvider(initialTimestamp = 123_456_789_000L)
     private lateinit var config: OnPremConfig
 
     @BeforeTest
     fun setUp() {
-        config = createParser().parse(JSONObject(OnPremConfigTestData.goodOppf.withoutLastLine()))
-    }
-
-    private fun createParser(): OnPremConfigParser =
-        OnPremConfigParser(
-            timeProvider = testTimeProvider,
+        config = OnPremConfigParser().parse(
+            obj = JSONObject(OnPremConfigTestData.goodOppf.withoutLastLine()),
+            createdAt = timeProvider.get(),
         )
+    }
 
     @Test
     fun testInvalidConfig() {
-        val parser = createParser()
+        val parser = OnPremConfigParser()
 
         assertFailsWith<OnPremConfigParseException> {
-            parser.parse(JSONObject("{}"))
+            parser.parse(
+                obj = JSONObject("{}"),
+                createdAt = timeProvider.get(),
+            )
         }
     }
 
     @Test
     fun testRefresh() {
-        assertEquals(testTimeProvider.get() + 24.hours, config.validUntil)
+        assertEquals(timeProvider.get() + 24.hours, config.validUntil)
     }
 
     @Test
@@ -171,9 +172,12 @@ class OnPremConfigParserTest {
 
     @Test
     fun `test minimal oppf`() {
-        val config = createParser().parse(JSONObject(OnPremConfigTestData.minimalOppf.withoutLastLine()))
+        val config = OnPremConfigParser().parse(
+            obj = JSONObject(OnPremConfigTestData.minimalOppf.withoutLastLine()),
+            createdAt = timeProvider.get(),
+        )
 
-        assertEquals(testTimeProvider.get() + 24.hours, config.validUntil)
+        assertEquals(timeProvider.get() + 24.hours, config.validUntil)
         assertNull(config.maps)
         assertNull(config.mediator)
         assertNull(config.domains)

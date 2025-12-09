@@ -30,13 +30,13 @@ import org.slf4j.Logger;
 import java.nio.ByteBuffer;
 
 import ch.threema.app.video.transcoder.VideoTranscoder;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Keep audio input track and return it unchanged to the muxer
  */
 public class AudioNullTranscoder extends AbstractAudioTranscoder {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AudioNullTranscoder");
+    private static final Logger logger = getThreemaLogger("AudioNullTranscoder");
 
     /**
      * Time of the previously muxed sample.

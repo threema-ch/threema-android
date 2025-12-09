@@ -28,8 +28,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import androidx.annotation.Nullable;
+import ch.threema.base.SessionScoped;
 import ch.threema.base.ThreemaException;
 
+@SessionScoped
 public interface ThreemaSafeService {
 
     int ERROR_CODE_OK = 0;

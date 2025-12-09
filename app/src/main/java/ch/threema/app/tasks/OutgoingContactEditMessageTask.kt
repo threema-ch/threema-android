@@ -49,7 +49,7 @@ class OutgoingContactEditMessageTask(
 
         val editMessage = EditMessage(
             EditMessageData(
-                messageId = MessageId.fromString(messageModel.apiMessageId).messageIdLong,
+                messageId = messageModel.messageId!!.messageIdLong,
                 text = editedText,
             ),
         )

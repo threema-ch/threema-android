@@ -27,6 +27,7 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.listeners.AppIconListener;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.listeners.BallotVoteListener;
@@ -51,13 +52,13 @@ import ch.threema.app.listeners.ServerMessageListener;
 import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.listeners.ThreemaSafeListener;
 import ch.threema.app.listeners.VoipCallListener;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class ListenerManager {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ListenerManager");
+    private static final Logger logger = getThreemaLogger("ListenerManager");
 
     public interface HandleListener<T> {
-        void handle(T listener);
+        void handle(@NonNull T listener);
     }
 
     public static class TypedListenerManager<T> {
@@ -150,24 +151,24 @@ public class ListenerManager {
         }
     }
 
-    public static final TypedListenerManager<ConversationListener> conversationListeners = new TypedListenerManager<ConversationListener>();
-    public static final TypedListenerManager<ContactListener> contactListeners = new TypedListenerManager<ContactListener>();
-    public static final TypedListenerManager<ContactTypingListener> contactTypingListeners = new TypedListenerManager<ContactTypingListener>();
-    public static final TypedListenerManager<DistributionListListener> distributionListListeners = new TypedListenerManager<DistributionListListener>();
-    public static final TypedListenerManager<GroupListener> groupListeners = new TypedListenerManager<GroupListener>();
-    public static final TypedListenerManager<MessageListener> messageListeners = new TypedListenerManager<MessageListener>();
+    public static final TypedListenerManager<ConversationListener> conversationListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<ContactListener> contactListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<ContactTypingListener> contactTypingListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<DistributionListListener> distributionListListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<GroupListener> groupListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<MessageListener> messageListeners = new TypedListenerManager<>();
     public static final TypedListenerManager<MessageDeletedForAllListener> messageDeletedForAllListener = new TypedListenerManager<>();
-    public static final TypedListenerManager<PreferenceListener> preferenceListeners = new TypedListenerManager<PreferenceListener>();
-    public static final TypedListenerManager<ServerMessageListener> serverMessageListeners = new TypedListenerManager<ServerMessageListener>();
-    public static final TypedListenerManager<SynchronizeContactsListener> synchronizeContactsListeners = new TypedListenerManager<SynchronizeContactsListener>();
-    public static final TypedListenerManager<ContactSettingsListener> contactSettingsListeners = new TypedListenerManager<ContactSettingsListener>();
-    public static final TypedListenerManager<BallotListener> ballotListeners = new TypedListenerManager<BallotListener>();
-    public static final TypedListenerManager<BallotVoteListener> ballotVoteListeners = new TypedListenerManager<BallotVoteListener>();
-    public static final TypedListenerManager<SMSVerificationListener> smsVerificationListeners = new TypedListenerManager<SMSVerificationListener>();
-    public static final TypedListenerManager<AppIconListener> appIconListeners = new TypedListenerManager<AppIconListener>();
-    public static final TypedListenerManager<ProfileListener> profileListeners = new TypedListenerManager<ProfileListener>();
-    public static final TypedListenerManager<VoipCallListener> voipCallListeners = new TypedListenerManager<VoipCallListener>();
-    public static final TypedListenerManager<ThreemaSafeListener> threemaSafeListeners = new TypedListenerManager<ThreemaSafeListener>();
+    public static final TypedListenerManager<PreferenceListener> preferenceListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<ServerMessageListener> serverMessageListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<SynchronizeContactsListener> synchronizeContactsListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<ContactSettingsListener> contactSettingsListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<BallotListener> ballotListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<BallotVoteListener> ballotVoteListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<SMSVerificationListener> smsVerificationListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<AppIconListener> appIconListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<ProfileListener> profileListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<VoipCallListener> voipCallListeners = new TypedListenerManager<>();
+    public static final TypedListenerManager<ThreemaSafeListener> threemaSafeListeners = new TypedListenerManager<>();
     public static final TypedListenerManager<ChatListener> chatListener = new TypedListenerManager<>();
     public static final TypedListenerManager<MessagePlayerListener> messagePlayerListener = new TypedListenerManager<>();
     public static final TypedListenerManager<NewSyncedContactsListener> newSyncedContactListener = new TypedListenerManager<>();

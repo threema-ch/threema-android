@@ -42,6 +42,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.activities.RecipientListBaseActivity
@@ -65,9 +66,8 @@ import ch.threema.app.ui.CustomTextSelectionCallback
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.LinkifyUtil
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
 import com.google.android.material.appbar.MaterialToolbar
@@ -77,7 +77,7 @@ import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
 
-private val logger = LoggingUtil.getThreemaLogger("MessageDetailsActivity")
+private val logger = getThreemaLogger("MessageDetailsActivity")
 
 class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
     init {

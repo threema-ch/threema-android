@@ -79,12 +79,12 @@ import ch.threema.app.ui.VerticalTextView;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.Destroyer;
+import ch.threema.android.Destroyer;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.LocationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.storage.models.data.LocationDataModel;
 
@@ -97,7 +97,7 @@ import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_PROVIDER;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class MapActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MapActivity");
+    private static final Logger logger = getThreemaLogger("MapActivity");
 
     private static final String DIALOG_TAG_ENABLE_LOCATION_SERVICES = "lss";
 

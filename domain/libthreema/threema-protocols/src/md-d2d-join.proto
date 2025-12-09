@@ -266,6 +266,10 @@ message EssentialData {
   sync.Settings settings = 5;
 
   // MDM parameters
+  //
+  // Optional for a Threema Work app. Must not be present in a Threema consumer app.
+  //
+  // [//]: # "TODO(SE-307): Make this required for Threema Work!"
   sync.MdmParameters mdm_parameters = 6;
 
   // Contacts

@@ -35,7 +35,7 @@ import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.BasicContact;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.VerificationLevel;
@@ -51,7 +51,7 @@ import ch.threema.storage.models.ContactModel;
  * which stores the contacts in the Android SQLite database.
  */
 public class DatabaseContactStore implements ContactStore {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseContactStore");
+    private static final Logger logger = getThreemaLogger("DatabaseContactStore");
 
     private final @NonNull DatabaseService databaseService;
 
@@ -72,6 +72,10 @@ public class DatabaseContactStore implements ContactStore {
     ) {
         this.databaseService = databaseService;
 
+        if (ConfigUtils.isOnPremBuild()) {
+            // TODO(ONPREM-164): OnPrem currently doesn't support the concept of special contacts
+            return;
+        }
         try {
             // Add special contact '*3MAPUSH'
             final byte[] publicKey = serverAddressProvider.getThreemaPushPublicKey();

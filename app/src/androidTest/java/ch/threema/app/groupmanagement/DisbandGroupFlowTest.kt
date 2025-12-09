@@ -78,7 +78,7 @@ class DisbandGroupFlowTest : GroupFlowTest() {
         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
         isArchived = false,
         profilePictureBlobId = null,
-        androidContactLookupKey = null,
+        androidContactLookupInfo = null,
         localAvatarExpires = null,
         isRestored = false,
         jobTitle = null,

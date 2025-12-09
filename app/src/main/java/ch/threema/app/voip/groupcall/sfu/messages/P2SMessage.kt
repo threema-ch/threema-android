@@ -22,7 +22,7 @@
 package ch.threema.app.voip.groupcall.sfu.messages
 
 import ch.threema.app.voip.groupcall.sfu.ParticipantId
-import ch.threema.base.utils.SecureRandomUtil.generateRandomProtobufPadding
+import ch.threema.base.utils.generateRandomProtobufPadding
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.groupcall.ParticipantToSfu
 import com.google.protobuf.ByteString

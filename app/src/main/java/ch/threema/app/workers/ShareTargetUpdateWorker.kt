@@ -36,33 +36,35 @@ import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import ch.threema.app.BuildConfig
 import ch.threema.app.backuprestore.csv.BackupService
-import ch.threema.app.di.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ConversationService
+import ch.threema.app.services.UserService
 import ch.threema.app.utils.ShortcutUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-private val logger = LoggingUtil.getThreemaLogger("ShareTargetUpdateWorker")
+private val logger = getThreemaLogger("ShareTargetUpdateWorker")
 
 class ShareTargetUpdateWorker(
     context: Context,
     workerParams: WorkerParameters,
 ) : CoroutineWorker(context, workerParams), KoinComponent {
 
+    private val userService: UserService by inject()
     private val preferenceService: PreferenceService by inject()
     private val conversationService: ConversationService by inject()
 
     override suspend fun doWork(): Result {
         logger.info("Updating share target shortcuts")
 
-        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
+        awaitAppFullyReadyWithTimeout(timeout = 20.seconds)
             ?: return Result.failure()
 
-        if (serviceManager.userService.hasIdentity() && !BackupService.isRunning()) {
+        if (userService.hasIdentity() && !BackupService.isRunning()) {
             ShortcutUtil.publishRecentChatsAsShareTargets(preferenceService, conversationService)
         }
 

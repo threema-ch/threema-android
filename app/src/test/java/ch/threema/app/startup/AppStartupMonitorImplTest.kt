@@ -41,13 +41,13 @@ import kotlinx.coroutines.test.runTest
 
 class AppStartupMonitorImplTest {
     @Test
-    fun `not ready before onServiceManagerReady is called`() = runTest {
+    fun `not ready before onMasterKeyUnlocked is called`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
 
         assertEquals(
             mapOf(
                 AppSystem.REMOTE_SECRET to SystemStatus.UNKNOWN,
-                AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.PENDING,
                 AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
                 AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
             ),
@@ -55,17 +55,21 @@ class AppStartupMonitorImplTest {
         )
         assertEquals(
             setOf(
-                AppSystem.SERVICE_MANAGER,
+                AppSystem.UNLOCKED_MASTER_KEY,
             ),
             appStartupMonitor.observePendingSystems().first(),
         )
         assertFalse(appStartupMonitor.isReady())
+        assertFalse(appStartupMonitor.isReady(AppSystem.REMOTE_SECRET))
+        assertFalse(appStartupMonitor.isReady(AppSystem.UNLOCKED_MASTER_KEY))
+        assertFalse(appStartupMonitor.isReady(AppSystem.SYSTEM_UPDATES))
+        assertFalse(appStartupMonitor.isReady(AppSystem.DATABASE_UPDATES))
     }
 
     @Test
-    fun `service manager ready after onServiceManagerReady is called, database and system updates not ready`() = runTest {
+    fun `master key ready after onMasterKeyUnlocked is called, database and system updates not ready`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.onServiceManagerReady(
+        appStartupMonitor.onMasterKeyUnlocked(
             databaseStateFlow = stateFlowOf(DatabaseState.INIT),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.INIT),
         )
@@ -73,7 +77,7 @@ class AppStartupMonitorImplTest {
         assertEquals(
             mapOf(
                 AppSystem.REMOTE_SECRET to SystemStatus.READY,
-                AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.READY,
                 AppSystem.SYSTEM_UPDATES to SystemStatus.PENDING,
                 AppSystem.DATABASE_UPDATES to SystemStatus.PENDING,
             ),
@@ -87,12 +91,16 @@ class AppStartupMonitorImplTest {
             appStartupMonitor.observePendingSystems().first(),
         )
         assertFalse(appStartupMonitor.isReady())
+        assertTrue(appStartupMonitor.isReady(AppSystem.REMOTE_SECRET))
+        assertTrue(appStartupMonitor.isReady(AppSystem.UNLOCKED_MASTER_KEY))
+        assertFalse(appStartupMonitor.isReady(AppSystem.SYSTEM_UPDATES))
+        assertFalse(appStartupMonitor.isReady(AppSystem.DATABASE_UPDATES))
     }
 
     @Test
-    fun `database and service manager ready but system updates not done`() = runTest {
+    fun `database and master key ready but system updates not done`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.onServiceManagerReady(
+        appStartupMonitor.onMasterKeyUnlocked(
             databaseStateFlow = stateFlowOf(DatabaseState.READY),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.INIT),
         )
@@ -100,7 +108,7 @@ class AppStartupMonitorImplTest {
         assertEquals(
             mapOf(
                 AppSystem.REMOTE_SECRET to SystemStatus.READY,
-                AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.READY,
                 AppSystem.SYSTEM_UPDATES to SystemStatus.PENDING,
                 AppSystem.DATABASE_UPDATES to SystemStatus.READY,
             ),
@@ -113,12 +121,16 @@ class AppStartupMonitorImplTest {
             appStartupMonitor.observePendingSystems().first(),
         )
         assertFalse(appStartupMonitor.isReady())
+        assertTrue(appStartupMonitor.isReady(AppSystem.REMOTE_SECRET))
+        assertTrue(appStartupMonitor.isReady(AppSystem.UNLOCKED_MASTER_KEY))
+        assertFalse(appStartupMonitor.isReady(AppSystem.SYSTEM_UPDATES))
+        assertTrue(appStartupMonitor.isReady(AppSystem.DATABASE_UPDATES))
     }
 
     @Test
     fun `database not ready but system updates done`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.onServiceManagerReady(
+        appStartupMonitor.onMasterKeyUnlocked(
             databaseStateFlow = stateFlowOf(DatabaseState.PREPARING),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.READY),
         )
@@ -126,7 +138,7 @@ class AppStartupMonitorImplTest {
         assertEquals(
             mapOf(
                 AppSystem.REMOTE_SECRET to SystemStatus.READY,
-                AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.READY,
                 AppSystem.SYSTEM_UPDATES to SystemStatus.READY,
                 AppSystem.DATABASE_UPDATES to SystemStatus.PENDING,
             ),
@@ -139,12 +151,16 @@ class AppStartupMonitorImplTest {
             appStartupMonitor.observePendingSystems().first(),
         )
         assertFalse(appStartupMonitor.isReady())
+        assertTrue(appStartupMonitor.isReady(AppSystem.REMOTE_SECRET))
+        assertTrue(appStartupMonitor.isReady(AppSystem.UNLOCKED_MASTER_KEY))
+        assertTrue(appStartupMonitor.isReady(AppSystem.SYSTEM_UPDATES))
+        assertFalse(appStartupMonitor.isReady(AppSystem.DATABASE_UPDATES))
     }
 
     @Test
     fun `everything is ready`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.onServiceManagerReady(
+        appStartupMonitor.onMasterKeyUnlocked(
             databaseStateFlow = stateFlowOf(DatabaseState.READY),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.READY),
         )
@@ -152,7 +168,7 @@ class AppStartupMonitorImplTest {
         assertEquals(
             mapOf(
                 AppSystem.REMOTE_SECRET to SystemStatus.READY,
-                AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.READY,
                 AppSystem.SYSTEM_UPDATES to SystemStatus.READY,
                 AppSystem.DATABASE_UPDATES to SystemStatus.READY,
             ),
@@ -163,21 +179,25 @@ class AppStartupMonitorImplTest {
             appStartupMonitor.observePendingSystems().first(),
         )
         assertTrue(appStartupMonitor.isReady())
+        assertTrue(appStartupMonitor.isReady(AppSystem.REMOTE_SECRET))
+        assertTrue(appStartupMonitor.isReady(AppSystem.UNLOCKED_MASTER_KEY))
+        assertTrue(appStartupMonitor.isReady(AppSystem.SYSTEM_UPDATES))
+        assertTrue(appStartupMonitor.isReady(AppSystem.DATABASE_UPDATES))
     }
 
     @Test
-    fun `not ready after onServiceManagerDestroyed is called`() = runTest {
+    fun `not ready after onMasterKeyLocked is called`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.onServiceManagerReady(
+        appStartupMonitor.onMasterKeyUnlocked(
             databaseStateFlow = stateFlowOf(DatabaseState.READY),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.READY),
         )
-        appStartupMonitor.onServiceManagerDestroyed()
+        appStartupMonitor.onMasterKeyLocked()
 
         assertEquals(
             mapOf(
                 AppSystem.REMOTE_SECRET to SystemStatus.UNKNOWN,
-                AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.PENDING,
                 AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
                 AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
             ),
@@ -185,11 +205,15 @@ class AppStartupMonitorImplTest {
         )
         assertEquals(
             setOf(
-                AppSystem.SERVICE_MANAGER,
+                AppSystem.UNLOCKED_MASTER_KEY,
             ),
             appStartupMonitor.observePendingSystems().first(),
         )
         assertFalse(appStartupMonitor.isReady())
+        assertFalse(appStartupMonitor.isReady(AppSystem.REMOTE_SECRET))
+        assertFalse(appStartupMonitor.isReady(AppSystem.UNLOCKED_MASTER_KEY))
+        assertFalse(appStartupMonitor.isReady(AppSystem.SYSTEM_UPDATES))
+        assertFalse(appStartupMonitor.isReady(AppSystem.DATABASE_UPDATES))
     }
 
     @Test
@@ -202,7 +226,7 @@ class AppStartupMonitorImplTest {
             expectItem(
                 mapOf(
                     AppSystem.REMOTE_SECRET to SystemStatus.UNKNOWN,
-                    AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                    AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.PENDING,
                     AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
                     AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
                 ),
@@ -216,7 +240,7 @@ class AppStartupMonitorImplTest {
             expectItem(
                 mapOf(
                     AppSystem.REMOTE_SECRET to SystemStatus.PENDING,
-                    AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                    AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.PENDING,
                     AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
                     AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
                 ),
@@ -224,20 +248,20 @@ class AppStartupMonitorImplTest {
             expectItem(
                 mapOf(
                     AppSystem.REMOTE_SECRET to SystemStatus.READY,
-                    AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                    AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.PENDING,
                     AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
                     AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
                 ),
             )
 
-            appStartupMonitor.onServiceManagerReady(
+            appStartupMonitor.onMasterKeyUnlocked(
                 databaseStateFlow = databaseStateFlow,
                 systemUpdateStateFlow = systemUpdateState,
             )
             expectItem(
                 mapOf(
                     AppSystem.REMOTE_SECRET to SystemStatus.READY,
-                    AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                    AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.READY,
                     AppSystem.SYSTEM_UPDATES to SystemStatus.PENDING,
                     AppSystem.DATABASE_UPDATES to SystemStatus.PENDING,
                 ),
@@ -247,7 +271,7 @@ class AppStartupMonitorImplTest {
             expectItem(
                 mapOf(
                     AppSystem.REMOTE_SECRET to SystemStatus.READY,
-                    AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                    AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.READY,
                     AppSystem.SYSTEM_UPDATES to SystemStatus.PENDING,
                     AppSystem.DATABASE_UPDATES to SystemStatus.READY,
                 ),
@@ -257,17 +281,17 @@ class AppStartupMonitorImplTest {
             expectItem(
                 mapOf(
                     AppSystem.REMOTE_SECRET to SystemStatus.READY,
-                    AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                    AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.READY,
                     AppSystem.SYSTEM_UPDATES to SystemStatus.READY,
                     AppSystem.DATABASE_UPDATES to SystemStatus.READY,
                 ),
             )
 
-            appStartupMonitor.onServiceManagerDestroyed()
+            appStartupMonitor.onMasterKeyLocked()
             expectItem(
                 mapOf(
                     AppSystem.REMOTE_SECRET to SystemStatus.UNKNOWN,
-                    AppSystem.SERVICE_MANAGER to SystemStatus.PENDING,
+                    AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.PENDING,
                     AppSystem.SYSTEM_UPDATES to SystemStatus.UNKNOWN,
                     AppSystem.DATABASE_UPDATES to SystemStatus.UNKNOWN,
                 ),
@@ -275,14 +299,14 @@ class AppStartupMonitorImplTest {
 
             val databaseStateFlow2 = MutableStateFlow(DatabaseState.PREPARING)
             val systemUpdateState2 = MutableStateFlow(SystemUpdateState.READY)
-            appStartupMonitor.onServiceManagerReady(
+            appStartupMonitor.onMasterKeyUnlocked(
                 databaseStateFlow = databaseStateFlow2,
                 systemUpdateStateFlow = systemUpdateState2,
             )
             expectItem(
                 mapOf(
                     AppSystem.REMOTE_SECRET to SystemStatus.READY,
-                    AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                    AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.READY,
                     AppSystem.SYSTEM_UPDATES to SystemStatus.READY,
                     AppSystem.DATABASE_UPDATES to SystemStatus.PENDING,
                 ),
@@ -292,7 +316,7 @@ class AppStartupMonitorImplTest {
             expectItem(
                 mapOf(
                     AppSystem.REMOTE_SECRET to SystemStatus.READY,
-                    AppSystem.SERVICE_MANAGER to SystemStatus.READY,
+                    AppSystem.UNLOCKED_MASTER_KEY to SystemStatus.READY,
                     AppSystem.SYSTEM_UPDATES to SystemStatus.READY,
                     AppSystem.DATABASE_UPDATES to SystemStatus.READY,
                 ),
@@ -309,7 +333,7 @@ class AppStartupMonitorImplTest {
         appStartupMonitor.observePendingSystems().test {
             expectItem(
                 setOf(
-                    AppSystem.SERVICE_MANAGER,
+                    AppSystem.UNLOCKED_MASTER_KEY,
                 ),
             )
 
@@ -321,16 +345,16 @@ class AppStartupMonitorImplTest {
             expectItem(
                 setOf(
                     AppSystem.REMOTE_SECRET,
-                    AppSystem.SERVICE_MANAGER,
+                    AppSystem.UNLOCKED_MASTER_KEY,
                 ),
             )
             expectItem(
                 setOf(
-                    AppSystem.SERVICE_MANAGER,
+                    AppSystem.UNLOCKED_MASTER_KEY,
                 ),
             )
 
-            appStartupMonitor.onServiceManagerReady(
+            appStartupMonitor.onMasterKeyUnlocked(
                 databaseStateFlow = databaseStateFlow,
                 systemUpdateStateFlow = systemUpdateState,
             )
@@ -353,16 +377,16 @@ class AppStartupMonitorImplTest {
                 emptySet(),
             )
 
-            appStartupMonitor.onServiceManagerDestroyed()
+            appStartupMonitor.onMasterKeyLocked()
             expectItem(
                 setOf(
-                    AppSystem.SERVICE_MANAGER,
+                    AppSystem.UNLOCKED_MASTER_KEY,
                 ),
             )
 
             val databaseStateFlow2 = MutableStateFlow(DatabaseState.PREPARING)
             val systemUpdateState2 = MutableStateFlow(SystemUpdateState.READY)
-            appStartupMonitor.onServiceManagerReady(
+            appStartupMonitor.onMasterKeyUnlocked(
                 databaseStateFlow = databaseStateFlow2,
                 systemUpdateStateFlow = systemUpdateState2,
             )
@@ -382,7 +406,7 @@ class AppStartupMonitorImplTest {
     @Test
     fun `error reporting`() = runTest {
         val appStartupMonitor = AppStartupMonitorImpl()
-        appStartupMonitor.onServiceManagerReady(
+        appStartupMonitor.onMasterKeyUnlocked(
             databaseStateFlow = stateFlowOf(DatabaseState.READY),
             systemUpdateStateFlow = stateFlowOf(SystemUpdateState.READY),
         )
@@ -402,6 +426,10 @@ class AppStartupMonitorImplTest {
             appStartupMonitor.observeErrors().first(),
         )
         assertFalse(appStartupMonitor.isReady())
+        assertFalse(appStartupMonitor.isReady(AppSystem.REMOTE_SECRET))
+        assertFalse(appStartupMonitor.isReady(AppSystem.UNLOCKED_MASTER_KEY))
+        assertFalse(appStartupMonitor.isReady(AppSystem.SYSTEM_UPDATES))
+        assertFalse(appStartupMonitor.isReady(AppSystem.DATABASE_UPDATES))
 
         appStartupMonitor.clearTemporaryStartupErrors()
         assertEquals(

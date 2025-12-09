@@ -68,7 +68,7 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.models.ModelDeletedException;
@@ -95,7 +95,7 @@ import ch.threema.storage.models.access.GroupAccessModel;
 import static ch.threema.app.utils.GroupUtil.getUniqueIdString;
 
 public class GroupServiceImpl implements GroupService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupServiceImpl");
+    private static final Logger logger = getThreemaLogger("GroupServiceImpl");
 
     private final Context context;
 
@@ -242,7 +242,7 @@ public class GroupServiceImpl implements GroupService {
         }
 
         // Remove avatar
-        this.fileService.removeGroupAvatar(groupModel);
+        this.fileService.removeGroupProfilePicture(groupModel);
 
         // Remove chat settings (e.g. wallpaper or custom ringtones)
         String uniqueIdString = getUniqueIdString(groupModel);
@@ -303,8 +303,7 @@ public class GroupServiceImpl implements GroupService {
         groupMessageModelFactory.deleteByGroupId(groupModel.getId());
 
         // Remove avatar
-        this.fileService.removeGroupAvatar(groupModel);
-        this.avatarCacheService.reset(groupModel);
+        fileService.removeGroupProfilePicture(groupModel.getGroupIdentity(), groupModel.getId());
 
         // Remove chat settings (e.g. wallpaper or custom ringtones)
         String uniqueIdString = getUniqueIdString(groupModel);
@@ -441,11 +440,9 @@ public class GroupServiceImpl implements GroupService {
             List<GroupMessageModel> allRejectedMessages = groupMessageModelFactory.getAllRejectedMessagesInGroup(groupModel);
             for (GroupMessageModel rejectedMessage : allRejectedMessages) {
                 // Try to get the message id of the group message
-                MessageId rejectedMessageId;
-                try {
-                    rejectedMessageId = MessageId.fromString(rejectedMessage.getApiMessageId());
-                } catch (ThreemaException e) {
-                    logger.error("Could not get message id from rejected message");
+                MessageId rejectedMessageId = rejectedMessage.getMessageId();
+                if (rejectedMessageId == null) {
+                    logger.error("message id from rejected message was unexpectedly null");
                     continue;
                 }
 
@@ -694,7 +691,7 @@ public class GroupServiceImpl implements GroupService {
         // this group, we can return null directly. Important: This is necessary to prevent glide
         // from logging an unnecessary error stack trace.
         if (options.defaultAvatarPolicy == AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR
-            && !fileService.hasGroupAvatarFile(groupModel)) {
+            && !fileService.hasGroupProfilePicture(groupModel.getId())) {
             return null;
         }
 

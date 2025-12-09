@@ -67,19 +67,20 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
-import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.utils.executor.BackgroundTask;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.LicenseCredentials;
+import kotlin.Lazy;
 
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
+import static ch.threema.common.LazyKt.lazy;
 
 // this should NOT extend ThreemaToolbarActivity
 public class EnterSerialActivity extends ThreemaActivity {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("EnterSerialActivity");
+    private static final Logger logger = getThreemaLogger("EnterSerialActivity");
 
     private static final String BUNDLE_PASSWORD = "bupw";
     private static final String BUNDLE_LICENSE_KEY = "bulk";
@@ -93,7 +94,7 @@ public class EnterSerialActivity extends ThreemaActivity {
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
-    private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
+    private final Lazy<BackgroundExecutor> backgroundExecutor = lazy(BackgroundExecutor::new);
 
     // We need to use getResources().getIdentifier(...) because of flavor specific layout files for this fragment
     @SuppressLint("DiscouragedApi")
@@ -153,7 +154,7 @@ public class EnterSerialActivity extends ThreemaActivity {
         // In case there are credentials, we can validate them and skip this activity so that the
         // user does not have to enter them again.
         if (dependencies.getLicenseService().hasCredentials()) {
-            backgroundExecutor.get().execute(new BackgroundTask<Boolean>() {
+            backgroundExecutor.getValue().execute(new BackgroundTask<Boolean>() {
                 @Override
                 public void runBefore() {
                     // Nothing to do

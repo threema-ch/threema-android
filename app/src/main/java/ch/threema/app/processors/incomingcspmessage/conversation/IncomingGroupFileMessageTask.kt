@@ -27,7 +27,7 @@ import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.runCommonGroupReceiveSteps
 import ch.threema.app.utils.MimeUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.protocol.csp.messages.file.FileData
@@ -39,7 +39,7 @@ import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
 import java.util.UUID
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingGroupFileMessageTask")
+private val logger = getThreemaLogger("IncomingGroupFileMessageTask")
 
 class IncomingGroupFileMessageTask(
     groupFileMessage: GroupFileMessage,

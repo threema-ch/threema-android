@@ -42,12 +42,12 @@ import ch.threema.app.emojis.EmojiEditText;
 import ch.threema.app.services.ActivityService;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.DialogUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class FormatTextEntryDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("FormatTextEntryDialog");
+    private static final Logger logger = getThreemaLogger("FormatTextEntryDialog");
 
     public static final String ARG_TITLE = "title";
     public static final String ARG_MESSAGE = "message";

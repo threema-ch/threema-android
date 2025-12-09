@@ -30,7 +30,7 @@ import ch.threema.app.dialogs.GenericProgressDialog
 import ch.threema.app.managers.ServiceManager
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
 import ch.threema.data.storage.DbEmojiReaction
 import ch.threema.domain.models.MessageId
@@ -51,7 +51,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("ContentCreator")
+private val logger = getThreemaLogger("ContentCreator")
 
 private const val AMOUNT_OF_NONCES = 50_000
 private const val SPAM_TEXT_MESSAGES_PER_CONVERSATION = 50000

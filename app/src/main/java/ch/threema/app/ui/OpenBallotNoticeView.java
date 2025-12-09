@@ -82,7 +82,7 @@ import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ballot.BallotModel;
@@ -91,7 +91,7 @@ import ch.threema.storage.models.ballot.BallotModel;
  * A view that shows all open ballots (polls) for a chat in a ChipGroup and allows users to vote or close the ballot
  */
 public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLifecycleObserver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("OpenBallotNoticeView");
+    private static final Logger logger = getThreemaLogger("OpenBallotNoticeView");
     private static final int MAX_BALLOTS_SHOWN = 20;
     private static final int MAX_BALLOT_TITLE_LENGTH = 20;
     private ChipGroup chipGroup;
@@ -254,7 +254,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
     @UiThread
     @SuppressLint("StaticFieldLeak")
     private void updateBallotDisplay() {
-        if (messageReceiver == null) {
+        if (!BallotUtil.canVote(messageReceiver)) {
             return;
         }
 
@@ -276,11 +276,6 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
                         @Override
                         public String createdOrNotVotedByIdentity() {
                             return identity;
-                        }
-
-                        @Override
-                        public boolean filter(BallotModel ballotModel) {
-                            return true;
                         }
                     });
                 } catch (NotAllowedException | IllegalStateException e) {
@@ -377,7 +372,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
                 ConfigUtils.tintMenuIcon(getContext(), menuItem, R.attr.colorOnSurface);
             }
 
-            if (BallotUtil.canViewMatrix(ballotModel, identity)) {
+            if (BallotUtil.canViewMatrix(ballotModel)) {
                 menuBuilder.findItem(R.id.menu_ballot_results).setTitle(ballotModel.getState() == BallotModel.State.CLOSED ? R.string.ballot_result_final : R.string.ballot_result_intermediate);
             }
 
@@ -404,7 +399,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
                     if (id == R.id.menu_ballot_vote) {
                         vote(ballotModel);
                     } else if (id == R.id.menu_ballot_results) {
-                        BallotUtil.openMatrixActivity(getContext(), ballotModel, identity);
+                        BallotUtil.openMatrixActivity(getContext(), ballotModel);
                     } else if (id == R.id.menu_ballot_close) {
                         close(ballotModel);
                     } else if (id == R.id.menu_ballot_delete) {
@@ -419,11 +414,15 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
                 }
             });
 
-            if (!BallotUtil.canViewMatrix(ballotModel, identity)) {
+            if (!BallotUtil.canVote(ballotModel, messageReceiver)) {
+                menuBuilder.removeItem(R.id.menu_ballot_vote);
+            }
+
+            if (!BallotUtil.canViewMatrix(ballotModel)) {
                 menuBuilder.removeItem(R.id.menu_ballot_results);
             }
 
-            if (!BallotUtil.canClose(ballotModel, identity)) {
+            if (!BallotUtil.canClose(ballotModel, identity, messageReceiver)) {
                 menuBuilder.removeItem(R.id.menu_ballot_close);
             }
 
@@ -436,13 +435,13 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
     private void vote(BallotModel model) {
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
-        if (BallotUtil.canVote(model, identity)) {
-            BallotUtil.openVoteDialog(fragmentManager, model, identity);
+        if (BallotUtil.canVote(model, messageReceiver)) {
+            BallotUtil.openVoteDialog(fragmentManager, model);
         }
     }
 
     private void close(BallotModel model) {
-        if (BallotUtil.canClose(model, identity)) {
+        if (BallotUtil.canClose(model, identity, messageReceiver)) {
             MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext())
                 .setTitle(R.string.ballot_close)
                 .setMessage(R.string.ballot_really_close)
@@ -462,14 +461,12 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
             .setTitle(R.string.single_ballot_really_delete)
             .setMessage(getContext().getString(R.string.single_ballot_really_delete_text))
             .setNegativeButton(R.string.no, null)
-            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    try {
-                        ballotService.remove(model);
-                    } catch (NotAllowedException e) {
-                        logger.error("Exception", e);
-                    }
+            .setPositiveButton(R.string.yes, (dialog, which) -> {
+                try {
+                    ballotService.remove(model);
+                    update();
+                } catch (NotAllowedException e) {
+                    logger.error("Failed to delete ballot", e);
                 }
             });
         builder.create().show();
@@ -520,7 +517,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
                 show();
             } else {
                 updateName();
-                setColor(BallotUtil.isMine(ballot, userService), displayedVotes, displayedParticipants);
+                setColor(BallotUtil.isMine(ballot, userService.getIdentity()), displayedVotes, displayedParticipants);
             }
         }
 
@@ -557,7 +554,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
 
             chip.setOnClickListener((View v) -> OpenBallotNoticeView.this.onChipClick(v, ballot, votes == participants));
 
-            boolean isMine = BallotUtil.isMine(ballot, userService);
+            boolean isMine = BallotUtil.isMine(ballot, userService.getIdentity());
 
             chip.setText(getText(isMine, votes, participants));
 
@@ -569,7 +566,7 @@ public class OpenBallotNoticeView extends ConstraintLayout implements DefaultLif
         private void updateName() {
             int votes = ballotService.getVotedParticipants(ballot.getId()).size();
             int participants = ballotService.getParticipants(ballot.getId()).length;
-            chip.setText(getText(BallotUtil.isMine(ballot, userService), votes, participants));
+            chip.setText(getText(BallotUtil.isMine(ballot, userService.getIdentity()), votes, participants));
             if (votes > displayedVotes && participants == displayedParticipants) {
                 // Animate view when the number of votes increased
                 chip.setAnimation(animation);

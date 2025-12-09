@@ -33,13 +33,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import ch.threema.app.webrtc.Camera;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Enumerate and initialize device cameras.
  */
 public class VideoCapturerUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoCapturerUtil");
+    private static final Logger logger = getThreemaLogger("VideoCapturerUtil");
 
     /**
      * Return a flag indicating whether the Camera2 API should be used or not.

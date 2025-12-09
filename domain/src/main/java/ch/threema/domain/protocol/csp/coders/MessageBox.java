@@ -23,14 +23,18 @@ package ch.threema.domain.protocol.csp.coders;
 
 import ch.threema.base.crypto.NaCl;
 
-import org.apache.commons.io.EndianUtils;
 import org.slf4j.Logger;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static ch.threema.common.InputStreamExtensionsKt.readLittleEndianInt;
+import static ch.threema.common.InputStreamExtensionsKt.readLittleEndianShort;
+import static ch.threema.common.OutputStreamExtensionsKt.writeLittleEndianInt;
+import static ch.threema.common.OutputStreamExtensionsKt.writeLittleEndianShort;
+
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.connection.data.CspMessage;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -41,7 +45,7 @@ import ch.threema.domain.models.MessageId;
  */
 public class MessageBox implements Serializable {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageBox");
+    private static final Logger logger = getThreemaLogger("MessageBox");
 
     private String fromIdentity;
     private String toIdentity;
@@ -65,7 +69,7 @@ public class MessageBox implements Serializable {
             bos.write(fromIdentity.getBytes());
             bos.write(toIdentity.getBytes());
             bos.write(messageId.getMessageId());
-            EndianUtils.writeSwappedInteger(bos, (int) (date.getTime() / 1000));
+            writeLittleEndianInt(bos, (int) (date.getTime() / 1000));
             bos.write(flags);
             bos.write(0);    /* reserved */
 
@@ -73,7 +77,7 @@ public class MessageBox implements Serializable {
             if (metadataBox != null) {
                 metadataLen = (short) metadataBox.getBox().length;
             }
-            EndianUtils.writeSwappedShort(bos, metadataLen);
+            writeLittleEndianShort(bos, metadataLen);
 
             byte[] pushFromNameBytesT = new byte[ProtocolDefines.PUSH_FROM_LEN];
             byte[] pushFromNameBytes = Utils.truncateUTF8StringToByteArray(pushFromName, ProtocolDefines.PUSH_FROM_LEN);
@@ -125,7 +129,7 @@ public class MessageBox implements Serializable {
         bis.read(messageId);
         message.setMessageId(new MessageId(messageId));
 
-        int dateTs = EndianUtils.readSwappedInteger(bis);
+        int dateTs = readLittleEndianInt(bis);
         message.setDate(new Date((long) dateTs * 1000));
 
         message.setFlags(bis.read());
@@ -133,7 +137,7 @@ public class MessageBox implements Serializable {
         /* reserved */
         bis.read();
 
-        short metadataLen = EndianUtils.readSwappedShort(bis);
+        short metadataLen = readLittleEndianShort(bis);
 
         byte[] pushFromNameB = new byte[ProtocolDefines.PUSH_FROM_LEN];
         bis.read(pushFromNameB);

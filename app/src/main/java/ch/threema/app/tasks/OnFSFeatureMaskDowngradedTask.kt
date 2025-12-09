@@ -24,7 +24,7 @@ package ch.threema.app.tasks
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.MessageService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
 import ch.threema.domain.fs.DHSession
 import ch.threema.domain.models.Contact
@@ -42,7 +42,7 @@ import ch.threema.protobuf.csp.e2e.fs.Terminate
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OnFSFeatureMaskDowngradedTask")
+private val logger = getThreemaLogger("OnFSFeatureMaskDowngradedTask")
 
 /**
  * Performs the required steps if a contact does not support forward security anymore due to a

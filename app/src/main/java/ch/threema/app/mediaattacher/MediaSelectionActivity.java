@@ -61,10 +61,10 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocaleUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class MediaSelectionActivity extends MediaSelectionBaseActivity {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaSelectionActivity");
+    private static final Logger logger = getThreemaLogger("MediaSelectionActivity");
 
     private ControlPanelButton selectButton, cancelButton;
     private Button selectCounterButton;

@@ -24,12 +24,11 @@ package ch.threema.app.processors.incomingcspmessage.fs
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.handleIncomingGroupSyncRequest
 import ch.threema.app.processors.incomingcspmessage.groupcontrol.runCommonGroupReceiveSteps
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.models.BasicContact
 import ch.threema.domain.models.Contact
-import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityDecryptionResult
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataReject
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -42,7 +41,7 @@ import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingForwardSecurityRejectTask")
+private val logger = getThreemaLogger("IncomingForwardSecurityRejectTask")
 
 class IncomingForwardSecurityRejectTask(
     private val sender: Contact,
@@ -242,7 +241,7 @@ class IncomingForwardSecurityRejectTask(
 
                 // Add the sender to the list of recipients requesting a re-send
                 databaseService.rejectedGroupMessageFactory.insertMessageReject(
-                    MessageId.fromString(messageModel.apiMessageId),
+                    messageModel.messageId!!,
                     sender.identity,
                     group.getDatabaseId(),
                 )

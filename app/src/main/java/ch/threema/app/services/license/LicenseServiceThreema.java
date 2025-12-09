@@ -27,13 +27,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.LicenseCredentials;
 import ch.threema.domain.onprem.UnauthorizedFetchException;
 import ch.threema.domain.protocol.api.APIConnector;
 
 abstract public class LicenseServiceThreema<T extends LicenseCredentials> implements LicenseService<T> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LicenseServiceThreema");
+    private static final Logger logger = getThreemaLogger("LicenseServiceThreema");
 
     protected final APIConnector apiConnector;
     protected final PreferenceService preferenceService;

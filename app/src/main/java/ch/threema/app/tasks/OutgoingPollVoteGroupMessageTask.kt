@@ -22,7 +22,7 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId
@@ -36,7 +36,7 @@ import ch.threema.storage.models.ballot.BallotModel
 import java.util.Date
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingPollVoteGroupMessageTask")
+private val logger = getThreemaLogger("OutgoingPollVoteGroupMessageTask")
 
 class OutgoingPollVoteGroupMessageTask(
     private val messageId: MessageId,

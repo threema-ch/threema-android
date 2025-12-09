@@ -94,7 +94,7 @@ import ch.threema.app.webclient.services.instance.message.updater.TypingUpdateHa
 import ch.threema.app.webclient.services.instance.message.updater.VoipStatusUpdateHandler;
 import ch.threema.app.webclient.services.instance.state.SessionStateManager;
 import ch.threema.app.webclient.state.WebClientSessionState;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.logging.ThreemaLogger;
 import ch.threema.storage.models.WebClientSessionModel;
 
@@ -104,7 +104,7 @@ import ch.threema.storage.models.WebClientSessionModel;
 @WorkerThread
 public class SessionInstanceServiceImpl implements SessionInstanceService {
     @NonNull
-    final Logger logger = LoggingUtil.getThreemaLogger("SessionInstanceServiceImpl");
+    final Logger logger = getThreemaLogger("SessionInstanceServiceImpl");
 
     // Session id registry
     @NonNull

@@ -222,7 +222,6 @@
     <dimen name="incoming_call_widget_circle_size">64dp</dimen>
     <dimen name="incoming_call_slider_height">74dp</dimen>
     <dimen name="incoming_call_slider_margin_bottom">64dp</dimen>
-    <dimen name="call_shortcut_shadow_offset">1dp</dimen>
 
     <!-- mediaviewer dimensions -->
     <dimen name="mediaviewer_caption_border_bottom">72dp</dimen>
@@ -264,7 +263,6 @@
 
     <!-- edittext bubble used in compose and others -->
     <dimen name="edittext_bubble_border_radius">24dp</dimen>
-    <dimen name="shortcut_overlay_size">24dp</dimen>
     <dimen name="emoji_and_photo_button_width">80dp</dimen>
 
     <!-- navigation icon in toolbar on top of home screen -->

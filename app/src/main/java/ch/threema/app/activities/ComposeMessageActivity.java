@@ -45,13 +45,13 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ComposeMessageActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeMessageActivity");
+    private static final Logger logger = getThreemaLogger("ComposeMessageActivity");
 
     private static final int ID_HIDDEN_CHECK_ON_NEW_INTENT = 9291;
     private static final int ID_HIDDEN_CHECK_ON_CREATE = 9292;
@@ -219,7 +219,6 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
                 super.onActivityResult(requestCode, resultCode, intent);
 
                 if (resultCode == RESULT_OK) {
-                    dependencies.getSystemScreenLockService().setAuthenticated(true);
                     if (composeMessageFragment != null) {
                         getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
                         // mark conversation as read as soon as it's unhidden
@@ -233,7 +232,6 @@ public class ComposeMessageActivity extends ThreemaToolbarActivity implements Ge
                 super.onActivityResult(requestCode, resultCode, intent);
 
                 if (resultCode == RESULT_OK) {
-                    dependencies.getSystemScreenLockService().setAuthenticated(true);
                     if (composeMessageFragment != null) {
                         getSupportFragmentManager().beginTransaction().show(composeMessageFragment).commit();
                         composeMessageFragment.onNewIntent(this.currentIntent);

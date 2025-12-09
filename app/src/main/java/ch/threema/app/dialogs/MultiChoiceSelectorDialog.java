@@ -33,12 +33,12 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class MultiChoiceSelectorDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MultiChoiceSelectorDialog");
+    private static final Logger logger = getThreemaLogger("MultiChoiceSelectorDialog");
 
     private SelectorDialogClickListener callback;
     private Activity activity;

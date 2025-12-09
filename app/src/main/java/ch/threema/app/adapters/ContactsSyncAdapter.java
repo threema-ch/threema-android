@@ -37,11 +37,11 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
 public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactsSyncAdapter");
+    private static final Logger logger = getThreemaLogger("ContactsSyncAdapter");
 
     private boolean isSyncEnabled = true;
 

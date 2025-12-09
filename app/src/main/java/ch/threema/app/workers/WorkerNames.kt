@@ -30,4 +30,5 @@ object WorkerNames {
     const val WORKER_CONNECTIVITY_CHANGE = "ConnectivityChange"
     const val WORKER_AUTO_DELETE = "AutoDelete"
     const val WORKER_AUTOSTART = "Autostart"
+    const val WORKER_GATEWAY_PROFILE_PICTURES = "GatewayProfilePictures"
 }

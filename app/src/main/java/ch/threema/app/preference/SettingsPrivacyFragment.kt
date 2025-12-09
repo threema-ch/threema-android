@@ -46,12 +46,13 @@ import ch.threema.app.routines.SynchronizeContactsRoutine
 import ch.threema.app.services.SynchronizeContactsService
 import ch.threema.app.utils.*
 import ch.threema.app.workers.ShareTargetUpdateWorker
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.lazy
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException
 import com.google.android.material.snackbar.BaseTransientBottomBar.BaseCallback
 import com.google.android.material.snackbar.Snackbar
 
-private val logger = LoggingUtil.getThreemaLogger("SettingsPrivacyFragment")
+private val logger = getThreemaLogger("SettingsPrivacyFragment")
 
 class SettingsPrivacyFragment :
     ThreemaPreferenceFragment(),
@@ -199,7 +200,7 @@ class SettingsPrivacyFragment :
             contactSyncPreference.onChange<Boolean> { enabled ->
                 preferenceService.emailSyncHashCode = 0
                 preferenceService.phoneNumberSyncHashCode = 0
-                preferenceService.timeOfLastContactSync = 0L
+                preferenceService.timeOfLastContactSync = null
 
                 // Note that the change here can be triggered from sync. However, as this only happens while the preferences are shown, this is
                 // considered acceptable.
@@ -269,7 +270,7 @@ class SettingsPrivacyFragment :
                 ShareTargetUpdateWorker.scheduleShareTargetShortcutUpdate(requireContext())
             } else {
                 ShareTargetUpdateWorker.cancelScheduledShareTargetShortcutUpdate(requireContext())
-                ShortcutUtil.deleteAllShareTargetShortcuts()
+                ShortcutUtil.deleteAllShareTargetShortcuts(preferenceService)
             }
         }
 

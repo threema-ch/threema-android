@@ -26,14 +26,14 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.KeyPair
 import ch.threema.base.crypto.NaCl
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.types.Identity
 import ch.threema.libthreema.CryptoException
 import java.util.Collections
 
-private val logger = LoggingUtil.getThreemaLogger("IdentityStoreImpl")
+private val logger = getThreemaLogger("IdentityStoreImpl")
 
 class IdentityStoreImpl
 @JvmOverloads

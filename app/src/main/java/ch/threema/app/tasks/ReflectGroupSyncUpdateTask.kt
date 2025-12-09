@@ -21,20 +21,17 @@
 
 package ch.threema.app.tasks
 
-import ch.threema.app.groupflows.GroupFlowResult
+import ch.threema.app.groupflows.GroupChanges
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
-import ch.threema.app.protocol.ProfilePictureChange
-import ch.threema.app.protocol.RemoveProfilePicture
-import ch.threema.app.protocol.SetProfilePicture
+import ch.threema.app.profilepicture.GroupProfilePictureUploader.GroupProfilePictureUploadResult
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationTagService
 import ch.threema.app.services.FileService
 import ch.threema.app.utils.ConversationUtil
-import ch.threema.app.utils.contentEquals
-import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.contentEquals
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
@@ -64,7 +61,7 @@ import ch.threema.storage.models.ConversationTag
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectGroupSyncUpdateTask")
+private val logger = getThreemaLogger("ReflectGroupSyncUpdateTask")
 
 abstract class ReflectGroupSyncUpdateBaseTask<TransactionResult, TaskResult>(
     protected val groupModel: GroupModel,
@@ -273,7 +270,7 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
         override val type = "ReflectGroupDeleteProfilePicture"
 
         override fun checkForDataRaces(currentData: GroupModelData) {
-            if (fileService.getGroupAvatarStream(groupModel).contentEquals(profilePictureBlob)) {
+            if (fileService.getGroupProfilePictureStream(groupModel).contentEquals(profilePictureBlob)) {
                 logger.warn("Group race occurred: The profile picture did not change")
             }
         }
@@ -306,7 +303,7 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
         override val type = "ReflectGroupDeleteProfilePicture"
 
         override fun checkForDataRaces(currentData: GroupModelData) {
-            if (!fileService.hasGroupAvatarFile(groupModel)) {
+            if (!fileService.hasGroupProfilePicture(groupModel)) {
                 logger.warn("Group race occurred: There is no group profile picture for this group")
             }
         }
@@ -611,17 +608,17 @@ abstract class ReflectGroupSyncUpdateTask(
     }
 }
 
-abstract class ReflectGroupSyncUpdateFromLocal<T>(
+abstract class ReflectGroupSyncUpdateFromLocal<T, U>(
     groupModel: GroupModel,
     nonceFactory: NonceFactory,
     multiDeviceManager: MultiDeviceManager,
-) : ReflectGroupSyncUpdateBaseTask<T, ReflectionResult<Unit>>(
+) : ReflectGroupSyncUpdateBaseTask<T, ReflectionResult<U>>(
     groupModel,
     nonceFactory,
     multiDeviceManager,
 ),
-    ActiveTask<ReflectionResult<Unit>> {
-    override suspend fun invoke(handle: ActiveTaskCodec): ReflectionResult<Unit> {
+    ActiveTask<ReflectionResult<U>> {
+    override suspend fun invoke(handle: ActiveTaskCodec): ReflectionResult<U> {
         if (!multiDeviceManager.isMultiDeviceActive) {
             logger.warn("Cannot reflect group sync update from local of type {} when md is not active", type)
             return ReflectionResult.MultiDeviceNotActive()
@@ -640,21 +637,20 @@ class ReflectLocalGroupUpdate(
     private val updatedName: String?,
     private val addMembers: Set<String>,
     private val removeMembers: Set<String>,
-    private val profilePictureChange: ProfilePictureChange?,
-    private val uploadGroupPhoto: (ProfilePictureChange?) -> GroupPhotoUploadResult?,
-    private val finishGroupUpdate: (GroupPhotoUploadResult?) -> GroupFlowResult,
+    private val profilePictureChange: GroupChanges.ProfilePictureChange,
+    private val uploadGroupProfilePicture: (GroupChanges.ProfilePictureChange) -> GroupProfilePictureUploadResult?,
     groupModel: GroupModel,
     nonceFactory: NonceFactory,
     private val contactModelRepository: ContactModelRepository,
     multiDeviceManager: MultiDeviceManager,
-) : ReflectGroupSyncUpdateFromLocal<Unit>(
+) : ReflectGroupSyncUpdateFromLocal<GroupProfilePictureUploadResult?, GroupProfilePictureUploadResult?>(
     groupModel,
     nonceFactory,
     multiDeviceManager,
 ) {
     override val type = "ReflectGroupLocalUpdate"
 
-    private var groupPhotoUploadResult: GroupPhotoUploadResult? = null
+    private var groupProfilePictureUploadResultSuccess: GroupProfilePictureUploadResult.Success? = null
 
     override fun checkInPrecondition(currentData: GroupModelData): Boolean {
         return addMembers.all { contactModelRepository.getByIdentity(it) != null } &&
@@ -678,8 +674,8 @@ class ReflectLocalGroupUpdate(
                 identities.addAll(updatedMembers)
             }
             when (profilePictureChange) {
-                is SetProfilePicture -> {
-                    groupPhotoUploadResult?.let {
+                is GroupChanges.ProfilePictureChange.Set -> {
+                    groupProfilePictureUploadResultSuccess?.let {
                         profilePicture = deltaImage {
                             updated = image {
                                 type = Common.Image.Type.JPEG
@@ -691,39 +687,35 @@ class ReflectLocalGroupUpdate(
                             }
                         }
                     } ?: {
-                        logger.error("Not reflecting group picture as upload failed")
+                        // Note: This should never happen as the reflection is only performed when the upload was successful
+                        error("Not reflecting group picture as upload failed")
                     }
                 }
 
-                is RemoveProfilePicture -> {
+                GroupChanges.ProfilePictureChange.Remove -> {
                     profilePicture = deltaImage {
                         removed = unit { }
                     }
                 }
 
-                null -> Unit
+                GroupChanges.ProfilePictureChange.NoChange -> Unit
             }
         }
     }
 
-    override val runInsideTransaction: suspend (handle: ActiveTaskCodec) -> Unit = { handle ->
-        groupPhotoUploadResult = uploadGroupPhoto(profilePictureChange)
-        reflectGroupSync(handle)
+    override val runInsideTransaction: suspend (handle: ActiveTaskCodec) -> GroupProfilePictureUploadResult? = { handle ->
+        val uploadResult = uploadGroupProfilePicture(profilePictureChange)
+
+        if (uploadResult is GroupProfilePictureUploadResult.Success || uploadResult == null) {
+            groupProfilePictureUploadResultSuccess = uploadResult
+            reflectGroupSync(handle)
+        }
+
+        uploadResult
     }
 
-    /**
-     *  TODO(ANDR-3823): Rework the result type of this task
-     *
-     *  @throws ThreemaException if the [finishGroupUpdate] block does not return [GroupFlowResult.Success].
-     */
-    override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> ReflectionResult<Unit> = {
-        val groupFlowResult = finishGroupUpdate(groupPhotoUploadResult)
-        when (groupFlowResult) {
-            is GroupFlowResult.Success -> ReflectionResult.Success(Unit)
-            is GroupFlowResult.Failure -> throw ThreemaException(
-                "Group update was successfully reflected but we failed to to finish updating the group locally",
-            )
-        }
+    override val runAfterSuccessfulTransaction: (GroupProfilePictureUploadResult?) -> ReflectionResult<GroupProfilePictureUploadResult?> = {
+        ReflectionResult.Success(it)
     }
 
     override fun getMemberStateChanges(): Map<String, MemberStateChange> {
@@ -740,7 +732,7 @@ class ReflectLocalGroupLeaveOrDisband(
     groupModel: GroupModel,
     nonceFactory: NonceFactory,
     multiDeviceManager: MultiDeviceManager,
-) : ReflectGroupSyncUpdateFromLocal<Unit>(
+) : ReflectGroupSyncUpdateFromLocal<Unit, Unit>(
     groupModel,
     nonceFactory,
     multiDeviceManager,

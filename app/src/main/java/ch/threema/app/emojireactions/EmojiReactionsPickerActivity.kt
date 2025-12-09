@@ -33,6 +33,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import ch.threema.android.getCurrentInsets
 import ch.threema.app.R
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.emojis.EmojiPicker
@@ -44,9 +45,8 @@ import ch.threema.app.ui.RootViewDeferringInsetsCallback
 import ch.threema.app.ui.SingleToast
 import ch.threema.app.ui.TranslateDeferringInsetsAnimationCallback
 import ch.threema.app.utils.IntentDataUtil
-import ch.threema.app.utils.getCurrentInsets
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.EmojiReactionData
 import ch.threema.data.models.EmojiReactionsModel
 import ch.threema.data.repositories.EmojiReactionsRepository
@@ -58,7 +58,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsPickerActivity")
+private val logger = getThreemaLogger("EmojiReactionsPickerActivity")
 
 class EmojiReactionsPickerActivity : ThreemaToolbarActivity(), EmojiPicker.EmojiKeyListener {
     init {

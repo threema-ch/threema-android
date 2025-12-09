@@ -28,13 +28,13 @@ import org.slf4j.Logger;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import ch.threema.app.BuildConfig;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * remove old pre-API26 notification channels
  */
 public class SystemUpdateToVersion53 implements SystemUpdate {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion53");
+    private static final Logger logger = getThreemaLogger("SystemUpdateToVersion53");
 
     @NonNull
     private final Context context;

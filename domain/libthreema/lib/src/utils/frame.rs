@@ -4,7 +4,9 @@ use core::{fmt, marker::PhantomData};
 use duplicate::duplicate_item;
 use libthreema_macros::Name;
 
-/// Contains a stream of data and hands out individual fixed length frames one by one.
+use crate::utils::debug::Name as _;
+
+/// Contains a stream of data and hands out individual fixed length frames, one by one.
 #[derive(Name)]
 pub(crate) struct FixedLengthFrameDecoder<const LENGTH: usize> {
     data: Vec<u8>,
@@ -100,7 +102,7 @@ enum VariableLengthFrameDecoderState {
     PartialFrame { length: usize },
 }
 
-/// Contains a stream of data and hands out individual variable length frames one by one.
+/// Contains a stream of data and hands out individual variable length frames, one by one.
 #[derive(Name)]
 pub(crate) struct VariableLengthFrameDecoder<
     const DELIMETER_LENGTH: usize,

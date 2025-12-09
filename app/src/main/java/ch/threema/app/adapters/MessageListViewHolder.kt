@@ -57,13 +57,13 @@ import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.app.voip.groupcall.GroupCallObserver
 import ch.threema.app.voip.groupcall.localGroupId
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.bumptech.glide.RequestManager
 import com.google.android.material.button.MaterialButton
 import java.text.SimpleDateFormat
 import java.util.Objects
 
-private val logger = LoggingUtil.getThreemaLogger("MessageListViewHolder")
+private val logger = getThreemaLogger("MessageListViewHolder")
 
 class MessageListViewHolder(
     itemView: View,

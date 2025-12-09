@@ -23,7 +23,7 @@ package ch.threema.app.processors.reflectedoutgoingmessage
 
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.MessageUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
 import ch.threema.protobuf.Common
@@ -32,7 +32,7 @@ import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageState
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedOutgoingGroupDeliveryReceiptTask")
+private val logger = getThreemaLogger("ReflectedOutgoingGroupDeliveryReceiptTask")
 
 internal class ReflectedOutgoingGroupDeliveryReceiptTask(
     outgoingMessage: MdD2D.OutgoingMessage,

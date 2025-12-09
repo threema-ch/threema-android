@@ -24,6 +24,7 @@ package ch.threema.app.services;
 import android.content.Intent;
 
 import androidx.annotation.NonNull;
+import ch.threema.base.SessionScoped;
 
 /**
  * The Lifetime Service is responsible for opening and closing a connection to the Threema
@@ -38,6 +39,7 @@ import androidx.annotation.NonNull;
  * service), then set the `unpauseable` flag (or use {@link #acquireUnpauseableConnection(String)})
  * when acquiring the connection.
  */
+@SessionScoped
 public interface LifetimeService {
     interface LifetimeServiceListener {
         /**

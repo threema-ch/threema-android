@@ -41,12 +41,12 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ConversationModel;
 
 @WorkerThread
 public class CleanReceiverConversationRequestHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("CleanReceiverConversationRequestHandler");
+    private static final Logger logger = getThreemaLogger("CleanReceiverConversationRequestHandler");
 
     private final MessageDispatcher responseDispatcher;
     private final ConversationService conversationService;

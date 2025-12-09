@@ -31,7 +31,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Capture the disconnect context:
@@ -41,7 +41,7 @@ import ch.threema.base.utils.LoggingUtil;
  */
 @AnyThread
 public abstract class DisconnectContext {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DisconnectContext");
+    private static final Logger logger = getThreemaLogger("DisconnectContext");
 
     // The session SHALL be stopped by the receiving peer.
     public final static int REASON_SESSION_STOPPED = 1;

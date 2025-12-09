@@ -25,8 +25,8 @@ import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.app.voip.groupcall.sfu.ParticipantId
 import ch.threema.app.voip.groupcall.sfu.SfuException
 import ch.threema.app.voip.groupcall.sfu.webrtc.ParticipantCallMediaKeyState
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.SecureRandomUtil.generateRandomProtobufPadding
+import ch.threema.base.utils.generateRandomProtobufPadding
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.types.Identity
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.groupcall.ParticipantToParticipant
@@ -35,7 +35,7 @@ import com.google.protobuf.ByteString
 import com.google.protobuf.InvalidProtocolBufferException
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("P2PMessages")
+private val logger = getThreemaLogger("P2PMessages")
 
 sealed interface Handshake {
     fun getEnvelopeBytes(): ByteArray

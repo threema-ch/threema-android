@@ -34,15 +34,16 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.lifecycleScope
+import ch.threema.android.bindExtra
+import ch.threema.android.buildActivityIntent
+import ch.threema.android.buildIntent
 import ch.threema.app.AppConstants
 import ch.threema.app.GlobalAppState
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.ThreemaActivity
+import ch.threema.app.di.awaitAppFullyReady
 import ch.threema.app.dialogs.GenericProgressDialog
-import ch.threema.app.managers.ServiceManager
-import ch.threema.app.startup.AppStartupMonitor
-import ch.threema.app.startup.models.AppSystem
+import ch.threema.app.services.LifetimeService
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SimpleTextWatcher
 import ch.threema.app.ui.SpacingValues
@@ -50,11 +51,8 @@ import ch.threema.app.ui.ThreemaTextInputEditText
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.DialogUtil
 import ch.threema.app.utils.EditTextUtil
-import ch.threema.app.utils.bindExtra
-import ch.threema.app.utils.buildActivityIntent
-import ch.threema.app.utils.buildIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.DispatcherProvider
 import ch.threema.common.consume
 import ch.threema.localcrypto.MasterKeyManager
@@ -64,7 +62,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("PassphraseUnlockActivity")
+private val logger = getThreemaLogger("PassphraseUnlockActivity")
 
 // Note: This should NOT extend ThreemaToolbarActivity
 class PassphraseUnlockActivity : ThreemaActivity() {
@@ -73,8 +71,8 @@ class PassphraseUnlockActivity : ThreemaActivity() {
     }
 
     private val masterKeyManager: MasterKeyManager by inject()
-    private val startupMonitor: AppStartupMonitor by inject()
     private val dispatcherProvider: DispatcherProvider by inject()
+    private val lifetimeService: LifetimeService by inject()
 
     private lateinit var passphraseText: ThreemaTextInputEditText
     private lateinit var passphraseLayout: TextInputLayout
@@ -215,18 +213,13 @@ class PassphraseUnlockActivity : ThreemaActivity() {
 
     private fun triggerConnection() {
         lifecycleScope.launch(dispatcherProvider.worker) {
-            val lifetimeService = awaitServiceManager().lifetimeService
+            awaitAppFullyReady()
             if (GlobalAppState.isAppResumed) {
                 lifetimeService.acquireConnection(AppConstants.ACTIVITY_CONNECTION_TAG)
             } else {
                 lifetimeService.ensureConnection()
             }
         }
-    }
-
-    private suspend fun awaitServiceManager(): ServiceManager {
-        startupMonitor.awaitSystem(AppSystem.SERVICE_MANAGER)
-        return ThreemaApplication.requireServiceManager()
     }
 
     companion object {

@@ -27,9 +27,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type.displayCutout
 import androidx.core.view.WindowInsetsCompat.Type.systemBars
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import kotlin.time.Duration
 
-private val logger = LoggingUtil.getThreemaLogger("ViewExtensions")
+private val logger = getThreemaLogger("ViewExtensions")
 
 /**
  * Gets the coordinates of this view in the coordinate space of the window that contains the view.
@@ -184,4 +185,8 @@ fun View?.setMargin(left: Int, top: Int, right: Int, bottom: Int) {
     } catch (castException: ClassCastException) {
         logger.error("Could not set margins", castException)
     }
+}
+
+fun View.postDelayed(delay: Duration, action: () -> Unit) {
+    postDelayed(action, delay.inWholeMilliseconds)
 }

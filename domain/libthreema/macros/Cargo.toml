@@ -12,7 +12,7 @@ proc-macro = true
 workspace = true
 
 [dependencies]
-convert_case = "0.8"
+convert_case = "0.9"
 quote = "1"
 subtle = { version = "2", features = ["const-generics"] }
 syn = { version = "2", features = ["full"] }

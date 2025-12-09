@@ -23,11 +23,14 @@ package ch.threema.storage.models
 
 import ch.threema.app.utils.MimeUtil
 import ch.threema.app.utils.QuoteUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
 import ch.threema.domain.types.Identity
+import ch.threema.domain.types.MessageIdString
+import ch.threema.domain.types.MessageUid
 import ch.threema.storage.models.data.DisplayTag
 import ch.threema.storage.models.data.LocationDataModel
 import ch.threema.storage.models.data.MessageContentsType
@@ -44,7 +47,7 @@ import ch.threema.storage.models.data.status.StatusDataModel
 import ch.threema.storage.models.data.status.VoipStatusDataModel
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("AbstractMessageModel")
+private val logger = getThreemaLogger("AbstractMessageModel")
 
 abstract class AbstractMessageModel
 @JvmOverloads
@@ -59,12 +62,22 @@ internal constructor(
     /**
      * The message's uid, globally unique.
      */
-    open var uid: String? = null
+    open var uid: MessageUid? = null
+
+    /**
+     * The chat protocol message id assigned by the sender, represented as a string.
+     * Use [messageId] instead if possible.
+     */
+    open var apiMessageId: MessageIdString? = null
 
     /**
      * The chat protocol message id assigned by the sender.
      */
-    open var apiMessageId: String? = null
+    var messageId: MessageId?
+        get() = apiMessageId?.let(MessageId::fromString)
+        set(value) {
+            apiMessageId = value?.toString()
+        }
 
     /**
      * The associated identity: Either the recipient

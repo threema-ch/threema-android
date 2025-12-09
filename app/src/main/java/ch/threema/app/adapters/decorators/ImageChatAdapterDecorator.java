@@ -44,14 +44,14 @@ import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.data.media.ImageDataModel;
 
 public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ImageChatAdapterDecorator");
+    private static final Logger logger = getThreemaLogger("ImageChatAdapterDecorator");
 
     private static final String LISTENER_TAG = "ImageDecorator";
 

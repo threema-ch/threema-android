@@ -40,8 +40,6 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.groupflows.GroupChanges;
 import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.profilepicture.CheckedProfilePicture;
-import ch.threema.app.protocol.ProfilePictureChange;
-import ch.threema.app.protocol.SetProfilePicture;
 import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.UserService;
@@ -54,7 +52,7 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.CoroutinesExtensionKt;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.GroupModelRepository;
@@ -63,7 +61,7 @@ import kotlinx.coroutines.Deferred;
 
 @WorkerThread
 public class ModifyGroupHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ModifyGroupHandler");
+    private static final Logger logger = getThreemaLogger("ModifyGroupHandler");
 
     private final @NonNull MessageDispatcher dispatcher;
     private final @NonNull UserService userService;
@@ -158,7 +156,7 @@ public class ModifyGroupHandler extends MessageReceiver {
         }
 
         // Update avatar (note that it is not possible to remove the avatar via webclient)
-        ProfilePictureChange profilePictureChange = null;
+        GroupChanges.ProfilePictureChange profilePictureChange;
         if (data.containsKey(Protocol.ARGUMENT_AVATAR)) {
             try {
                 final Value avatarValue = data.get(Protocol.ARGUMENT_AVATAR);
@@ -167,16 +165,22 @@ public class ModifyGroupHandler extends MessageReceiver {
                     byte[] rawProfilePictureBytes = avatarValue.asBinaryValue().asByteArray();
                     CheckedProfilePicture profilePicture = CheckedProfilePicture.getOrConvertFromBytes(rawProfilePictureBytes);
                     if (profilePicture != null) {
-                        profilePictureChange = new SetProfilePicture(profilePicture, null);
+                        profilePictureChange = new GroupChanges.ProfilePictureChange.Set(profilePicture);
                     } else {
                         logger.warn("The provided byte array cannot be converted to a valid profile picture");
+                        this.failed(temporaryId, Protocol.ERROR_INVALID_GROUP);
+                        return;
                     }
+                } else {
+                    profilePictureChange = GroupChanges.ProfilePictureChange.NoChange.INSTANCE;
                 }
             } catch (Exception e) {
                 logger.error("Failed to save avatar", e);
                 this.failed(temporaryId, Protocol.ERROR_INTERNAL);
                 return;
             }
+        } else {
+            profilePictureChange = GroupChanges.ProfilePictureChange.NoChange.INSTANCE;
         }
 
         // Save changes

@@ -30,13 +30,13 @@ import java.util.Map;
 
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
 
 public class BallotMatrixServiceImpl implements BallotMatrixService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotMatrixServiceImpl");
+    private static final Logger logger = getThreemaLogger("BallotMatrixServiceImpl");
 
     private abstract class AxisElement {
         private final int pos;

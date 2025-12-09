@@ -29,10 +29,10 @@ import org.slf4j.Logger;
 import java.io.File;
 
 import androidx.annotation.NonNull;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class SystemUpdateToVersion63 implements SystemUpdate {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion63");
+    private static final Logger logger = getThreemaLogger("SystemUpdateToVersion63");
     private @NonNull final Context context;
 
     public SystemUpdateToVersion63(@NonNull Context context) {

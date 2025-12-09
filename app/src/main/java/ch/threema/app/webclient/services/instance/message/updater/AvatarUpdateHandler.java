@@ -37,7 +37,7 @@ import ch.threema.app.webclient.converter.Utils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -47,7 +47,7 @@ import ch.threema.storage.models.GroupModel;
  */
 @WorkerThread
 public class AvatarUpdateHandler extends MessageUpdater {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarUpdateHandler");
+    private static final Logger logger = getThreemaLogger("AvatarUpdateHandler");
 
     // Handler
     private final @NonNull HandlerExecutor handler;

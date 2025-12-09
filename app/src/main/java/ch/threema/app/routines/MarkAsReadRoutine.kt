@@ -30,10 +30,10 @@ import ch.threema.app.services.MessageService
 import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.utils.MessageUtil
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.AbstractMessageModel
 
-private val logger = LoggingUtil.getThreemaLogger("MarkAsReadRoutine")
+private val logger = getThreemaLogger("MarkAsReadRoutine")
 
 class MarkAsReadRoutine @JvmOverloads constructor(
     private val conversationService: ConversationService? = ThreemaApplication.getServiceManager()?.getConversationService(),

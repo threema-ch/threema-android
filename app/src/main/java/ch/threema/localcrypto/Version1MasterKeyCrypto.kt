@@ -30,7 +30,7 @@ import ch.threema.localcrypto.models.MasterKeyData
 import ch.threema.localcrypto.models.MasterKeyState
 import java.security.MessageDigest
 
-object Version1MasterKeyCrypto {
+class Version1MasterKeyCrypto {
     fun checkVerification(masterKeyData: MasterKeyData, verification: CryptographicByteArray): Boolean =
         calculateVerification(masterKeyData).secureContentEquals(verification.value)
 

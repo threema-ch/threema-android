@@ -3,6 +3,7 @@ use core::{
     array::TryFromSliceError,
     fmt,
     num::ParseIntError,
+    ops::Deref,
     str::{self, FromStr},
 };
 use std::env;
@@ -10,7 +11,7 @@ use std::env;
 #[cfg(test)]
 use anyhow;
 use data_encoding::HEXLOWER;
-use libthreema_macros::{ConstantTimeEq, Name, concat_fixed_bytes};
+use libthreema_macros::Name;
 use rand::{self, Rng as _};
 use serde::{Deserialize, Serialize};
 use tracing::warn;
@@ -18,7 +19,7 @@ use tracing::warn;
 use crate::{
     crypto::{consts::U24, generic_array::GenericArray},
     protobuf,
-    utils::{bytes::ProtobufPaddedMessage as _, sequence_numbers::SequenceNumberValue, time::utc_now_ms},
+    utils::{apply::Apply, debug::Name as _, protobuf::PaddedMessage as _, time::utc_now_ms},
 };
 
 pub mod config;
@@ -173,6 +174,59 @@ impl ClientInfo {
             },
         }
     }
+
+    /// Construct a [`protobuf::d2d::DeviceInfo`] from a device label and the [`ClientInfo`].
+    ///
+    /// The device label (e.g. "PC at Work") is recommended to not exceed 64 grapheme clusters.
+    pub(crate) fn to_device_info(&self, label: Option<String>) -> protobuf::d2d::DeviceInfo {
+        let (platform, platform_details, app_version) = match self {
+            ClientInfo::Android {
+                version,
+                device_model,
+                ..
+            } => (
+                protobuf::d2d::device_info::Platform::Android,
+                device_model.clone(),
+                version.clone(),
+            ),
+
+            ClientInfo::Ios {
+                version,
+                device_model,
+                ..
+            } => (
+                protobuf::d2d::device_info::Platform::Ios,
+                device_model.clone(),
+                version.clone(),
+            ),
+
+            ClientInfo::Desktop {
+                version,
+                renderer_name,
+                renderer_version,
+                os_name,
+                ..
+            } => (
+                protobuf::d2d::device_info::Platform::Desktop,
+                format!("{renderer_name} {renderer_version} ({os_name})"),
+                version.clone(),
+            ),
+
+            ClientInfo::Libthreema => (
+                protobuf::d2d::device_info::Platform::Unspecified,
+                format!("libthreema ({os_name})", os_name = env::consts::OS),
+                env!("CARGO_PKG_VERSION").to_owned(),
+            ),
+        };
+        protobuf::d2d::DeviceInfo {
+            #[expect(deprecated, reason = "Will be filled by encode_to_vec_padded")]
+            padding: vec![],
+            platform: platform as i32,
+            platform_details,
+            app_version,
+            label: label.unwrap_or_default(),
+        }
+    }
 }
 
 /// Invalid [`ThreemaId`].
@@ -222,6 +276,13 @@ impl ThreemaId {
         // SAFETY: This is safe because the creation of a `ThreemaId` requires that it is a valid
         // UTF-8 sequence.
         unsafe { str::from_utf8_unchecked(&self.0) }
+    }
+
+    /// Return whether this is a Gateway ID
+    #[inline]
+    #[must_use]
+    pub fn is_gateway_id(self) -> bool {
+        self.0[0] == b'*'
     }
 }
 impl fmt::Display for ThreemaId {
@@ -355,6 +416,42 @@ impl fmt::Debug for ChatServerGroup {
     }
 }
 
+/// A CSP device cookie.
+#[derive(Clone, Copy, Eq, Hash, PartialEq, Name)]
+pub struct DeviceCookie(pub [u8; Self::LENGTH]);
+impl DeviceCookie {
+    /// Byte length of a CSP device cookie.
+    pub(crate) const LENGTH: usize = 16;
+
+    #[cfg(any(test, feature = "cli"))]
+    pub(crate) fn from_hex(string: &str) -> anyhow::Result<Self> {
+        let bytes = HEXLOWER.decode(string.as_bytes())?;
+        let bytes: [u8; Self::LENGTH] = bytes.as_slice().try_into()?;
+        Ok(Self(bytes))
+    }
+}
+#[cfg(any(test, feature = "cli"))]
+impl FromStr for DeviceCookie {
+    type Err = anyhow::Error;
+
+    fn from_str(device_cookie: &str) -> Result<Self, Self::Err> {
+        Self::from_hex(device_cookie)
+    }
+}
+impl fmt::Display for DeviceCookie {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(&HEXLOWER.encode(&self.0))
+    }
+}
+impl fmt::Debug for DeviceCookie {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_tuple(Self::NAME)
+            .field(&self.to_string())
+            .finish()
+    }
+}
+
 /// A D2X device ID.
 #[derive(Clone, Copy, Eq, Hash, PartialEq, Name)]
 pub struct D2xDeviceId(pub u64);
@@ -372,6 +469,11 @@ impl FromStr for D2xDeviceId {
 
     fn from_str(id: &str) -> Result<Self, Self::Err> {
         Self::try_from(id)
+    }
+}
+impl fmt::Display for D2xDeviceId {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{:02x}", self.0)
     }
 }
 impl fmt::Debug for D2xDeviceId {
@@ -403,6 +505,11 @@ impl FromStr for CspDeviceId {
 
     fn from_str(id: &str) -> Result<Self, Self::Err> {
         Self::try_from(id)
+    }
+}
+impl fmt::Display for CspDeviceId {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{:02x}", self.0)
     }
 }
 impl fmt::Debug for CspDeviceId {
@@ -515,35 +622,6 @@ impl FeatureMask {
     pub const DELETE_MESSAGE_SUPPORT: u64 =   0b_0000_0010_0000_0000;
 }
 
-/// 16 byte random cookie
-#[derive(Clone, Copy, ConstantTimeEq, Name)]
-pub struct Cookie(pub [u8; Self::LENGTH]);
-impl Cookie {
-    /// Byte length of a cookie
-    pub const LENGTH: usize = 16;
-
-    /// Generate a random cookie
-    #[must_use]
-    pub fn random() -> Self {
-        let mut cookie = Self([0_u8; Self::LENGTH]);
-        rand::thread_rng().fill(&mut cookie.0);
-        cookie
-    }
-}
-impl fmt::Display for Cookie {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter.write_str(&HEXLOWER.encode(&self.0))
-    }
-}
-impl fmt::Debug for Cookie {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        formatter
-            .debug_tuple(Self::NAME)
-            .field(&self.to_string())
-            .finish()
-    }
-}
-
 /// A 24-byte nonce for use with XSalsa20Poly1305 or XChaCha20Poly1305.
 #[derive(Clone, Eq, PartialEq, Hash, Name)]
 pub struct Nonce(pub [u8; Self::LENGTH]);
@@ -551,16 +629,12 @@ impl Nonce {
     /// Byte length of a nonce.
     pub const LENGTH: usize = 24;
 
-    /// Concatenate a cookie and a u64-le sequence number
-    ///
-    /// Note that the sequence number is not incremented within this function!
+    /// Generate a random nonce
     #[must_use]
-    #[expect(clippy::needless_pass_by_value, reason = "Prevent sequence number re-use")]
-    pub(crate) fn from_cookie_and_sequence_number(
-        cookie: Cookie,
-        sequence_number: SequenceNumberValue<u64>,
-    ) -> Self {
-        Self(concat_fixed_bytes!(cookie.0, sequence_number.0.to_le_bytes()))
+    pub fn random() -> Self {
+        let mut nonce = Self([0_u8; Self::LENGTH]);
+        rand::thread_rng().fill(&mut nonce.0);
+        nonce
     }
 
     #[cfg(test)]
@@ -625,6 +699,13 @@ impl MessageId {
     pub(crate) fn from_hex(string: &str) -> Result<Self, ParseIntError> {
         Ok(Self(u64::from_str_radix(string, 16)?.to_be()))
     }
+
+    /// Byte representation of the Message ID.
+    #[inline]
+    #[must_use]
+    pub fn to_bytes(self) -> [u8; Self::LENGTH] {
+        u64::to_le_bytes(self.0)
+    }
 }
 impl fmt::Display for MessageId {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -646,10 +727,12 @@ impl From<[u8; Self::LENGTH]> for MessageId {
 }
 
 /// Message flags which were/are transmitted to the server.
-#[derive(Clone, Copy, Name, PartialEq, Eq)]
+#[derive(Clone, Copy, Default, Name, PartialEq, Eq)]
 pub struct MessageFlags(pub u8);
 #[rustfmt::skip]
 impl MessageFlags {
+    pub(crate) const LENGTH: usize = 1;
+
     /// Whether a push should be sent by the chat server. Only meaningful for an outgoing message.
     pub const SEND_PUSH_NOTIFICATION:u8 =          0b_0000_0001;
 
@@ -680,6 +763,7 @@ impl fmt::Debug for MessageFlags {
             if self.0 & flag != 0 { Some(name) } else { None }
         };
 
+        // Keep this format in sync with [`MessageOverrides`]!
         write!(
             formatter,
             "{}({})",
@@ -701,7 +785,7 @@ impl fmt::Debug for MessageFlags {
 }
 
 /// Metadata associated to a message.
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct MessageMetadata {
     /// Unique message ID. Must match the message ID of the outer struct.
     pub message_id: MessageId,
@@ -762,8 +846,17 @@ pub enum Delta<T> {
     Remove,
 }
 impl<T> Delta<T> {
+    /// Maps a `Delta<T>` to `Delta<U>` by applying a function to a contained value (if `Update`) or returns
+    /// `Unchanged` or `Remove` respectively.
+    pub(crate) fn map<U, F: FnOnce(T) -> U>(self, transform_fn: F) -> Delta<U> {
+        match self {
+            Delta::Unchanged => Delta::Unchanged,
+            Delta::Update(value) => Delta::Update(transform_fn(value)),
+            Delta::Remove => Delta::Remove,
+        }
+    }
+
     /// Converts from [`&Delta<T>`](`Delta<T>`) to [`Delta<&T>`].
-    #[expect(dead_code, reason = "May use later")]
     #[inline]
     pub(crate) const fn as_ref(&self) -> Delta<&T> {
         match &self {
@@ -773,16 +866,31 @@ impl<T> Delta<T> {
         }
     }
 
-    /// Apply the delta update to the `current` value.
+    /// Converts from [`Delta<T>`] (or [`&Delta<T>`](`Delta<T>`)) to `Delta<&T::Target>`.
+    #[expect(dead_code, reason = "May use later")]
     #[inline]
-    pub(crate) fn apply_to(self, current: &mut Option<T>) {
-        match self {
-            Self::Unchanged => {},
-            Self::Update(value) => {
-                let _ = current.insert(value);
+    pub(crate) fn as_deref(&self) -> Delta<&T::Target>
+    where
+        T: Deref,
+    {
+        self.as_ref().map(Deref::deref)
+    }
+}
+impl<T> Apply<Delta<T>> for Option<T> {
+    /// Apply the delta update to self.
+    ///
+    /// - [`Delta::Unchanged`] does nothing,
+    /// - [`Delta::Update`] replaces any value in self with `Some(T)`,
+    /// - [`Delta::Remove`] replaces any value in self with `None`.
+    #[inline]
+    fn apply(&mut self, value: Delta<T>) {
+        match value {
+            Delta::Unchanged => {},
+            Delta::Update(value) => {
+                let _ = self.insert(value);
             },
-            Self::Remove => {
-                let _ = current.take();
+            Delta::Remove => {
+                let _ = self.take();
             },
         }
     }
@@ -805,13 +913,13 @@ impl<T: Eq> Delta<T> {
         }
     }
 }
-impl Delta<String> {
-    /// Creates a [`Delta<String>`] from a source where an empty string is semantically
-    /// equivalent to [`Delta::Remove`].
-    pub(crate) fn from_non_empty(update: Option<String>) -> Self {
+impl<T: Default + Eq> Delta<T> {
+    /// Creates a [`Delta<T>`] from a source where the `T::Default` is semantically equivalent to
+    /// [`Delta::Remove`].
+    pub(crate) fn from_non_empty(update: Option<T>) -> Self {
         match update {
             Some(update) => {
-                if update.is_empty() {
+                if update == T::default() {
                     Self::Remove
                 } else {
                     Self::Update(update)
@@ -821,23 +929,20 @@ impl Delta<String> {
         }
     }
 
-    /// Creates a [`Option<String>`] from the delta update where [`Delta::Remove`] is converted into
-    /// an empty string.
+    /// Creates a [`Option<T>`] from the delta update where [`Delta::Remove`] is converted into `T::Default`.
     ///
-    /// WARNING: A delta update should not contain an empty string, since the resulting
-    /// [`Option<String>`] is recognized as a [`Delta::Remove`] when converted back via
-    /// [`Delta<String>::from_non_empty`].
-    #[tracing::instrument(skip_all, fields(?self))]
-    pub(crate) fn into_non_empty(self) -> Option<String> {
+    /// WARNING: A [`Delta::Update`] should never contain a `T::Default`, since the resulting [`Option<T>`] is
+    /// recognized as a [`Delta::Remove`] when converted back via [`Delta<T>::from_non_empty`].
+    pub(crate) fn into_non_empty(self) -> Option<T> {
         match self {
             Self::Unchanged => None,
             Self::Update(value) => {
-                if value.is_empty() {
-                    warn!("Delta::Update contained an empty string");
+                if value == T::default() {
+                    warn!("Delta::Update contained T::Default");
                 }
                 Some(value)
             },
-            Self::Remove => Some(String::new()),
+            Self::Remove => Some(T::default()),
         }
     }
 }

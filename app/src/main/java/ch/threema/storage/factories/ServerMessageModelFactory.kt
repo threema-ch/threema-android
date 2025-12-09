@@ -22,7 +22,7 @@
 package ch.threema.storage.factories
 
 import android.database.sqlite.SQLiteException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.CursorHelper
 import ch.threema.storage.DatabaseService
 import ch.threema.storage.buildContentValues
@@ -31,7 +31,7 @@ import ch.threema.storage.runDelete
 import ch.threema.storage.runQuery
 import java.sql.SQLException
 
-private val logger = LoggingUtil.getThreemaLogger("ServerMessageModelFactory")
+private val logger = getThreemaLogger("ServerMessageModelFactory")
 
 class ServerMessageModelFactory(databaseService: DatabaseService) :
     ModelFactory(databaseService, ServerMessageModel.TABLE) {

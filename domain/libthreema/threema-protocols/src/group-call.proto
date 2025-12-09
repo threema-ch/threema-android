@@ -363,12 +363,13 @@
 //       previous PCMK.
 // 5. Send `pending-pcmk` to all authenticated participants via a _rekey_
 //    message.
-// 6. Schedule a task to run the following steps after 2s:
-//   1. Apply `pending-pcmk` for media encryption. This means that
-//      `pending-pcmk` now replaces the _applied_ PCMK and is no longer
-//      _pending_.
-//   2. If `pending-pcmk` is marked as _stale_, run the parent steps from the
-//      beginning.
+// 6. Schedule a volatile task bound to the call to run the following steps
+//    after 2s:
+//    1. Apply `pending-pcmk` for media encryption. This means that
+//       `pending-pcmk` now replaces the _applied_ PCMK and is no longer
+//       _pending_.
+//    2. If `pending-pcmk` is marked as _stale_, run the parent steps from the
+//       beginning.
 //
 // When a participant receives a _rekey_ message from another participant.
 //
@@ -459,6 +460,14 @@ message CallState {
 
   // Information for each participant of the group call.
   map<uint32, Participant> participants = 4;
+}
+
+// Supported feature (to be used as a bitmask).
+enum SupportedFeature {
+  // Base feature support (always present).
+  BASE = 0x0000;
+  // Support for screen sharing.
+  SCREEN_SHARE = 0x0001;
 }
 
 // Request payloads sent to the SFU as part of an HTTP request.
@@ -623,6 +632,9 @@ message SfuHttpResponse {
     // Note: This is the authentication anchor for the WebRTC connection towards
     //       the SFU.
     bytes dtls_fingerprint = 7;
+
+    // Supported features bitmask (see `SupportedFeature`).
+    uint64 supported_features = 8;
   }
 }
 
@@ -649,6 +661,7 @@ message SfuToParticipant {
     oneof content {
       ParticipantToParticipant.OuterEnvelope relay = 2;
       Hello hello = 3;
+      Timestamp timestamp_response = 6;
       ParticipantJoined participant_joined = 4;
       ParticipantLeft participant_left = 5;
     }
@@ -686,6 +699,13 @@ message SfuToParticipant {
   //    steps.
   // 2. Run the corresponding steps described by the _Join/Leave_ section.
   message ParticipantLeft { uint32 participant_id = 1; }
+
+  // Current UNIX-ish timestamp in milliseconds of the SFU.
+  //
+  // When receiving this message:
+  //
+  // 1. Resolve the first pending timestamp request with the response.
+  message Timestamp { uint64 ms = 1; }
 }
 
 // Messages sent from a participant to the SFU via a data channel.
@@ -711,11 +731,19 @@ message ParticipantToSfu {
     oneof content {
       ParticipantToParticipant.OuterEnvelope relay = 2;
       UpdateCallState update_call_state = 3;
+      RequestTimestamp request_timestamp = 7;
       ParticipantMicrophone request_participant_microphone = 6;
       ParticipantCamera request_participant_camera = 4;
-      ParticipantScreen request_participant_screen_share = 5;
+      ParticipantScreen request_participant_screen = 5;
     }
   }
+
+  // Request the current timestamp of the SFU.
+  //
+  // When receiving this message:
+  //
+  // 1. Respond with a `TimestampResponse` message.
+  message RequestTimestamp {}
 
   // Update the call state that can be retrieved via a _peek_.
   //
@@ -798,13 +826,34 @@ message ParticipantToSfu {
   }
 
   // Subscribe or unsubscribe to a participant's screen feed.
+  //
+  // Availability: If the SFU announced support for
+  // `SupportedFeature.SCREEN_SHARE`.
+  //
+  // When receiving this message:
+  //
+  // 1. If the `participant_id` refers to the sender's participant ID or an
+  //    unknown participant ID, discard the message and abort these steps.
+  // 2. If `subscribe` is set, forward the screen feed to the client that fits
+  //    best to the provided parameters.
+  // 3. If `unsubscribe` is set, stop forwarding screen feed of this participant
+  //    to the client.
   message ParticipantScreen {
     // Participant ID whose screen feed should be subscribed or unsubscribed
     // from.
     uint32 participant_id = 1;
 
     // Subscribe to a participant's screen feed.
-    message Subscribe {}
+    message Subscribe {
+      // Desired resolution. The client should use the canvas' resolution the
+      // screen feed be displayed in. The SFU will select the spatial layer that
+      // fits best.
+      common.Resolution desired_resolution = 1;
+
+      // Desired frame rate. The SFU will select the temporal layer that fits
+      // best.
+      uint32 desired_fps = 2;
+    }
 
     // Unsubscribe a participant's screen feed.
     message Unsubscribe {}
@@ -1257,7 +1306,11 @@ message ParticipantToParticipant {
   // 3. If `device` is to be turned _on_:
   //    1. Start capturing from the device.
   //    2. Resume the corresponding media track.
-  // 4. Send the `CaptureState` message for the `device`.
+  // 4. If `device` is of type _screen_:
+  //    1. Send a `RequestTimestamp` to the SFU.
+  //    2. Let `context` be the corresponding `Timestamp` response.
+  // 5. Send the `CaptureState` message for the `device` with the provided
+  //    `context`.
   //
   // When receiving this message:
   //
@@ -1278,8 +1331,11 @@ message ParticipantToParticipant {
   //    3. If `device` is `Microphone`, no further action is necessary.
   //    4. If `device` is `Camera`, send a `ParticipantCamera.Subscribe` message
   //       to the SFU.
-  //    5. If `device` is `Screen`, send a `ParticipantScreen.Subscribe` message
-  //       to the SFU.
+  //    5. If `device` is `Screen`:
+  //       1. Send a `ParticipantScreen.Subscribe` message to the SFU.
+  //       2. If `device`'s `started_at` timestamp is the most recent timestamp
+  //          from all currently active screen shares of all participants, set
+  //          the focus to this participant's screen.
   message CaptureState {
     // Capture state of the microphone.
     message Microphone {
@@ -1299,8 +1355,14 @@ message ParticipantToParticipant {
 
     // Capture state of the screen.
     message Screen {
+      message On {
+        // UNIX-ish timestamp in milliseconds retrieved from the SFU for when
+        // the screen share was initiated.
+        uint64 started_at = 1;
+      }
+
       oneof state {
-        common.Unit on = 1;
+        On on = 1;
         common.Unit off = 2;
       }
     }
@@ -1308,6 +1370,7 @@ message ParticipantToParticipant {
     oneof state {
       Microphone microphone = 1;
       Camera camera = 2;
+      Screen screen = 3;
     }
   }
 

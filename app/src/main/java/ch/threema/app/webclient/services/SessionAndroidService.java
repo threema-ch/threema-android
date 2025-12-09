@@ -42,13 +42,13 @@ import ch.threema.app.notifications.NotificationChannels;
 import ch.threema.app.notifications.NotificationGroups;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.webclient.activities.SessionsActivity;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING;
 
 @MainThread
 public class SessionAndroidService extends Service {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SessionAndroidService");
+    private static final Logger logger = getThreemaLogger("SessionAndroidService");
     private static final int WEBCLIENT_ACTIVE_NOTIFICATION_ID = 23329;
 
     public static final String ACTION_START = "start";

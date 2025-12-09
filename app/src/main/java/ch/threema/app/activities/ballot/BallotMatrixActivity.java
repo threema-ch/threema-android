@@ -61,15 +61,16 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class BallotMatrixActivity extends BallotDetailActivity {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotMatrixActivity");
+    private static final Logger logger = getThreemaLogger("BallotMatrixActivity");
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
@@ -136,7 +137,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
         }
     }

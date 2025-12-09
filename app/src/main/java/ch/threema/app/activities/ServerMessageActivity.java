@@ -41,13 +41,13 @@ import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ServerMessageViewModel;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ServerMessageActivity extends ThreemaActivity {
-    private final static Logger logger = LoggingUtil.getThreemaLogger("ServerMessageActivity");
+    private final static Logger logger = getThreemaLogger("ServerMessageActivity");
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);

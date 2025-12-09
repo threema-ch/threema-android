@@ -35,7 +35,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.crypto.NaCl;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
@@ -47,7 +47,7 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 
 public class ContactModelFactory extends ModelFactory {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactModelFactory");
+    private static final Logger logger = getThreemaLogger("ContactModelFactory");
 
     public ContactModelFactory(DatabaseService databaseService) {
         super(databaseService, ContactModel.TABLE);
@@ -278,6 +278,24 @@ public class ContactModelFactory extends ModelFactory {
         Long lastUpdateTime = lastUpdate != null ? lastUpdate.getTime() : null;
         ContentValues contentValues = new ContentValues();
         contentValues.put(ContactModel.COLUMN_LAST_UPDATE, lastUpdateTime);
+
+        getWritableDatabase().update(
+            ContactModel.TABLE,
+            contentValues,
+            ContactModel.COLUMN_IDENTITY + " = ?",
+            new String[]{identity}
+        );
+    }
+
+    /**
+     * Updates the forward security state of the given identity.
+     */
+    public void setForwardSecurityState(
+        @NonNull String identity,
+        @ContactModel.ForwardSecurityState int forwardSecurityState
+    ) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(ContactModel.COLUMN_FORWARD_SECURITY_STATE, forwardSecurityState);
 
         getWritableDatabase().update(
             ContactModel.TABLE,

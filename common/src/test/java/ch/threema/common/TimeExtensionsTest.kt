@@ -91,8 +91,8 @@ class TimeExtensionsTest {
             1.minutes,
             1.hours,
             200.hours,
-            3.hours.plus(10.minutes).plus(3.seconds),
-            3.hours.plus(2.minutes).plus(30.seconds),
+            3.hours + 10.minutes + 3.seconds,
+            3.hours + 2.minutes + 30.seconds,
         )
 
         // act

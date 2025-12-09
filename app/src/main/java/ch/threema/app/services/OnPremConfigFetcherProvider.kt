@@ -22,6 +22,7 @@
 package ch.threema.app.services
 
 import ch.threema.app.preference.service.PreferenceService
+import ch.threema.base.SessionScoped
 import ch.threema.base.ThreemaException
 import ch.threema.domain.onprem.OnPremConfigFetcher
 import ch.threema.domain.onprem.OnPremConfigParser
@@ -30,6 +31,7 @@ import ch.threema.domain.onprem.OnPremConfigVerifier
 import ch.threema.domain.onprem.OnPremServerConfigParameters
 import okhttp3.OkHttpClient
 
+@SessionScoped
 class OnPremConfigFetcherProvider(
     private val preferenceService: PreferenceService,
     private val onPremConfigParser: OnPremConfigParser = OnPremConfigParser(),

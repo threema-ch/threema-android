@@ -22,12 +22,12 @@
 package ch.threema.app.voip.groupcall
 
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.emptyByteArray
 import ch.threema.libthreema.CryptoException
 import ch.threema.libthreema.blake2bMac256
-import java.security.SecureRandom
 
-private val logger = LoggingUtil.getThreemaLogger("CryptoCallUtils")
+private val logger = getThreemaLogger("CryptoCallUtils")
 
 object CryptoCallUtils {
 
@@ -42,7 +42,7 @@ object CryptoCallUtils {
     fun gcBlake2b256(
         key: ByteArray? = null,
         salt: String,
-        data: ByteArray = byteArrayOf(),
+        data: ByteArray = emptyByteArray(),
     ): ByteArray = try {
         blake2bMac256(
             key = key,
@@ -53,11 +53,5 @@ object CryptoCallUtils {
     } catch (cryptoException: CryptoException.InvalidParameter) {
         logger.error("Failed to compute blake2b hash", cryptoException)
         throw ThreemaException("Failed to compute blake2b hash", cryptoException)
-    }
-
-    fun getSecureRandomBytes(length: Int): ByteArray {
-        val bytes = ByteArray(length)
-        SecureRandom().nextBytes(bytes)
-        return bytes
     }
 }

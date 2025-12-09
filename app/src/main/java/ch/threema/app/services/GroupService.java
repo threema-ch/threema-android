@@ -42,6 +42,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.utils.GroupFeatureSupport;
+import ch.threema.base.SessionScoped;
 import ch.threema.data.datatypes.IdColor;
 import ch.threema.base.ThreemaException;
 import ch.threema.data.models.GroupIdentity;
@@ -65,6 +66,7 @@ import ch.threema.storage.models.access.GroupAccessModel;
  * and {@code fromSync}. {@code fromLocal} methods usually also send the corresponding group control
  * messages and fire the group listeners.
  */
+@SessionScoped
 public interface GroupService extends AvatarService<GroupModel> {
 
     /**

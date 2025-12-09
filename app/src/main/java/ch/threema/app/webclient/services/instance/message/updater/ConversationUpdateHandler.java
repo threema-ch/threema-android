@@ -46,7 +46,7 @@ import ch.threema.app.webclient.converter.MsgpackObjectBuilder;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ConversationModel;
 
 import static ch.threema.app.webclient.Protocol.ARGUMENT_MODE;
@@ -56,7 +56,7 @@ import static ch.threema.app.webclient.Protocol.ARGUMENT_MODE_REMOVED;
 
 @WorkerThread
 public class ConversationUpdateHandler extends MessageUpdater {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationUpdateHandler");
+    private static final Logger logger = getThreemaLogger("ConversationUpdateHandler");
 
     // Handler
     private final @NonNull HandlerExecutor handler;

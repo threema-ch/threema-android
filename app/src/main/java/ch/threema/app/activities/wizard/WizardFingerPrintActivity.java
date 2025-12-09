@@ -48,14 +48,15 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardFingerPrintActivity extends WizardBackgroundActivity
     implements WizardDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardFingerPrintActivity");
+    private static final Logger logger = getThreemaLogger("WizardFingerPrintActivity");
 
     public static final int PROGRESS_MAX = 100;
     private static final String DIALOG_TAG_CREATE_ID = "ci";
@@ -72,7 +73,7 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }

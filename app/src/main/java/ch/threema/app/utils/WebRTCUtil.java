@@ -31,7 +31,7 @@ import org.webrtc.PeerConnectionFactory;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.logging.WebRTCLogger;
 
 /**
@@ -50,7 +50,7 @@ public class WebRTCUtil {
         CALL_OR_GROUP_CALL_OR_WEB_CLIENT,
     }
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WebRTCUtil");
+    private static final Logger logger = getThreemaLogger("WebRTCUtil");
 
     private static @Nullable Scope initialized = null;
 

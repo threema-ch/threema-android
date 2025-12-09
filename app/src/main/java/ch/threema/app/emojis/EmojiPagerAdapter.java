@@ -37,9 +37,9 @@ import androidx.annotation.Nullable;
 import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.viewpager.widget.PagerAdapter;
+import ch.threema.android.ActivityExtensionsKt;
 import ch.threema.app.R;
 import ch.threema.app.emojireactions.EmojiReactionsGridAdapter;
-import ch.threema.app.utils.ActivityExtensionsKt;
 import ch.threema.data.models.EmojiReactionData;
 
 public class EmojiPagerAdapter extends PagerAdapter {

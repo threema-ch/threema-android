@@ -194,6 +194,11 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
      */
     Bitmap getNotificationAvatar();
 
+    /**
+     * @return the bitmap of the avatar in maximally available resolution and without being cropped to a circle
+     */
+    Bitmap getHighResAvatar();
+
     @Nullable
     Bitmap getAvatar();
 

@@ -37,7 +37,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.video.transcoder.MediaComponent;
 import ch.threema.app.video.transcoder.VideoTranscoder;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import java8.util.Optional;
 
 
@@ -60,7 +60,7 @@ import java8.util.Optional;
  */
 @SuppressWarnings("deprecation") // we use various deprecated methods to support older versions.
 public class AudioFormatTranscoder extends AbstractAudioTranscoder {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AudioFormatTranscoder");
+    private static final Logger logger = getThreemaLogger("AudioFormatTranscoder");
 
     private static final int TIMEOUT_USEC = VideoTranscoder.TIMEOUT_USEC;
 

@@ -42,7 +42,7 @@ import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.CoroutinesExtensionKt;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.GroupModel;
 import kotlin.Unit;
@@ -50,7 +50,7 @@ import kotlinx.coroutines.Deferred;
 
 @WorkerThread
 public class SyncGroupHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SyncGroupHandler");
+    private static final Logger logger = getThreemaLogger("SyncGroupHandler");
 
     private final MessageDispatcher responseDispatcher;
     private final GroupService groupService;

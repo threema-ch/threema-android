@@ -22,14 +22,14 @@
 package ch.threema.app.activities
 
 import android.content.Context
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.types.Identity
 
-private val logger = LoggingUtil.getThreemaLogger("BlockedIdentitiesActivity")
+private val logger = getThreemaLogger("BlockedIdentitiesActivity")
 
 class BlockedIdentitiesActivity : IdentityListActivity() {
     init {

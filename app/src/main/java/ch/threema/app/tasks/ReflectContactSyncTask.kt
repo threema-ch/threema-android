@@ -131,7 +131,7 @@ private fun ContactModelData.getSyncActivityState(): MdD2DSync.Contact.ActivityS
 
 private fun ContactModelData.getSyncSyncState(): MdD2DSync.Contact.SyncState =
     // TODO(ANDR-2327): Consolidate this mechanism
-    if (androidContactLookupKey != null) {
+    if (androidContactLookupInfo != null) {
         MdD2DSync.Contact.SyncState.IMPORTED
     } else if (lastName.isBlank() && firstName.isBlank()) {
         MdD2DSync.Contact.SyncState.INITIAL

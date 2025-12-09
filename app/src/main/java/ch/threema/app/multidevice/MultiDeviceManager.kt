@@ -28,6 +28,7 @@ import ch.threema.app.multidevice.linking.DeviceLinkingStatus
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
 import ch.threema.app.tasks.TaskCreator
+import ch.threema.base.SessionScoped
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
 import ch.threema.domain.protocol.connection.data.DeviceId
@@ -37,6 +38,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.protobuf.d2d.MdD2D
 import kotlinx.coroutines.flow.Flow
 
+@SessionScoped
 interface MultiDeviceManager {
     // TODO(ANDR-2519): Remove when md allows fs
     val isMdDisabledOrSupportsFs: Boolean

@@ -21,6 +21,7 @@
 
 package ch.threema.app.usecases.conversations
 
+import ch.threema.app.drafts.DraftManager
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.DistributionListService
@@ -38,6 +39,7 @@ class WatchUnarchivedConversationListItemsUseCase(
     groupService: GroupService,
     distributionListService: DistributionListService,
     ringtoneService: RingtoneService,
+    draftManager: DraftManager,
 ) : WatchConversationListItemsUseCase(
     conversationCategoryService = conversationCategoryService,
     contactService = contactService,
@@ -47,4 +49,5 @@ class WatchUnarchivedConversationListItemsUseCase(
     conversationModels = watchUnarchivedConversationsUseCase.call(),
     watchGroupCallsUseCase = watchGroupCallsUseCase,
     watchTypingIdentitiesUseCase = watchTypingIdentitiesUseCase,
+    draftManager = draftManager,
 )

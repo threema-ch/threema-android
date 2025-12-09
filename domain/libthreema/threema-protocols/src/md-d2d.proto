@@ -112,6 +112,7 @@ message TransactionScope {
     SETTINGS_SYNC = 4;
     MDM_PARAMETER_SYNC = 5;
     NEW_DEVICE_SYNC = 6;
+    DROP_DEVICE = 7;
   }
   Scope scope = 1;
 }

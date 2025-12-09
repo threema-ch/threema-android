@@ -37,8 +37,12 @@ import ch.threema.app.voip.groupcall.service.GroupCallService
 import ch.threema.app.voip.groupcall.service.GroupCallServiceConnection
 import ch.threema.app.voip.groupcall.sfu.*
 import ch.threema.base.utils.Base64
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.generateRandomBytes
+import ch.threema.common.secureRandom
 import ch.threema.common.toHexString
+import ch.threema.data.models.ContactModelData
+import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.protocol.api.SfuToken
 import ch.threema.domain.protocol.csp.ProtocolDefines
@@ -49,11 +53,9 @@ import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData.Comp
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
 import ch.threema.domain.types.Identity
 import ch.threema.storage.DatabaseService
-import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.data.status.GroupCallStatusDataModel
 import java.lang.ref.WeakReference
-import java.security.SecureRandom
 import java.util.*
 import kotlin.math.max
 import kotlinx.coroutines.*
@@ -63,7 +65,7 @@ import kotlinx.coroutines.flow.*
 import org.json.JSONArray
 import org.json.JSONObject
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallManagerImpl")
+private val logger = getThreemaLogger("GroupCallManagerImpl")
 
 @WorkerThread
 class GroupCallManagerImpl(
@@ -72,6 +74,8 @@ class GroupCallManagerImpl(
     private val databaseService: DatabaseService,
     private val groupService: GroupService,
     private val contactService: ContactService,
+    private val contactModelRepository: ContactModelRepository,
+    private val userService: UserService,
     private val preferenceService: PreferenceService,
     private val messageService: MessageService,
     private val notificationService: NotificationService,
@@ -80,6 +84,8 @@ class GroupCallManagerImpl(
     private companion object {
         private const val ARTIFICIAL_GC_CREATE_WAIT_PERIOD_MILLIS: Long = 2000L
     }
+
+    private val myIdentity by lazy { userService.identity }
 
     private val groupCallStartQueue: MutableSharedFlow<GroupCallStartMessage> =
         MutableSharedFlow<GroupCallStartMessage>(
@@ -500,7 +506,7 @@ class GroupCallManagerImpl(
         createStartedStatusMessage(
             callDescription,
             group,
-            contactService.me,
+            myIdentity!!,
             true,
             callDescription.getStartedAtDate(),
         )
@@ -621,13 +627,13 @@ class GroupCallManagerImpl(
 
         addRunningCall(call)
 
-        val callerContactModel = contactService.getByIdentity(message.fromIdentity)
-        if (callerContactModel != null) {
-            val isOutbox = message.fromIdentity.equals(contactService.me.identity)
+        val callerContactModelData = contactModelRepository.getByIdentity(message.fromIdentity)?.data
+        if (callerContactModelData != null) {
+            val isOutbox = message.fromIdentity == myIdentity
             createStartedStatusMessage(
                 call,
                 group,
-                callerContactModel,
+                message.fromIdentity,
                 isOutbox,
                 message.date,
             )
@@ -635,10 +641,10 @@ class GroupCallManagerImpl(
 
         groupService.bumpLastUpdate(group)
 
-        notifyGroupCallStart(group, callerContactModel)
+        notifyGroupCallStart(group, callerContactModelData)
     }
 
-    private suspend fun notifyGroupCallStart(group: GroupModel, callerContactModel: ContactModel?) {
+    private suspend fun notifyGroupCallStart(group: GroupModel, callerContactModelData: ContactModelData?) {
         val groupId = group.localGroupId
 
         val chosenCall = runGroupCallRefreshSteps(groupId)
@@ -656,7 +662,7 @@ class GroupCallManagerImpl(
             return
         }
 
-        if (callerContactModel == null) {
+        if (callerContactModelData == null) {
             logger.warn("Caller could not be determined. Not showing notifications.")
             return
         }
@@ -666,9 +672,9 @@ class GroupCallManagerImpl(
             return
         }
 
-        if (callerContactModel.identity != contactService.me.identity) {
+        if (callerContactModelData.identity != contactService.me.identity) {
             logger.debug("Show group call notification")
-            notificationService.addGroupCallNotification(group, callerContactModel)
+            notificationService.addGroupCallNotification(group, callerContactModelData)
         }
     }
 
@@ -678,7 +684,7 @@ class GroupCallManagerImpl(
     private fun createStartedStatusMessage(
         callDescription: GroupCallDescription,
         group: GroupModel,
-        caller: ContactModel,
+        callerIdentity: Identity,
         isOutbox: Boolean,
         startedAt: Date,
     ) {
@@ -686,10 +692,9 @@ class GroupCallManagerImpl(
             GroupCallStatusDataModel.createStarted(
                 callDescription.callId.toString(),
                 callDescription.groupId.id,
-                caller.identity,
+                callerIdentity,
             ),
             groupService.createReceiver(group),
-            caller,
             callDescription,
             isOutbox,
             startedAt,
@@ -800,12 +805,8 @@ class GroupCallManagerImpl(
     }
 
     @WorkerThread
-    private fun createGck(): ByteArray {
-        val random = SecureRandom()
-        val gck = ByteArray(GCK_LENGTH)
-        random.nextBytes(gck)
-        return gck
-    }
+    private fun createGck(): ByteArray =
+        secureRandom().generateRandomBytes(GCK_LENGTH)
 
     /**
      * Schedule a task that creates a GroupCallStartMessage and sends it to the given group members.
@@ -1010,7 +1011,6 @@ class GroupCallManagerImpl(
             messageService.createGroupCallStatus(
                 GroupCallStatusDataModel.createEnded(callId.toString()),
                 groupService.createReceiver(groupModel),
-                null,
                 call,
                 false,
                 Date(),

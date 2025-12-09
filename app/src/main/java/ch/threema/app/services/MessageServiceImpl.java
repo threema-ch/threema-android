@@ -112,7 +112,7 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ThumbnailUtil;
 import ch.threema.app.utils.VideoUtil;
@@ -123,7 +123,7 @@ import ch.threema.base.ProgressListener;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
 import ch.threema.base.crypto.SymmetricEncryptionService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.data.models.EmojiReactionData;
 import ch.threema.data.repositories.EditHistoryRepository;
@@ -206,7 +206,7 @@ import static ch.threema.app.utils.StreamUtilKt.getFromUri;
 import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_STICKER;
 
 public class MessageServiceImpl implements MessageService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageServiceImpl");
+    private static final Logger logger = getThreemaLogger("MessageServiceImpl");
 
     public static final long FILE_AUTO_DOWNLOAD_MAX_SIZE_M = 5; // MB
     public static final long FILE_AUTO_DOWNLOAD_MAX_SIZE_ISO = FILE_AUTO_DOWNLOAD_MAX_SIZE_M * 1024 * 1024; // used for calculations
@@ -356,7 +356,6 @@ public class MessageServiceImpl implements MessageService {
     public AbstractMessageModel createGroupCallStatus(
         @NonNull GroupCallStatusDataModel data,
         @NonNull MessageReceiver receiver,
-        @Nullable ContactModel callerContactModel,
         @Nullable GroupCallDescription call,
         boolean isOutbox,
         Date postedDate) {
@@ -444,7 +443,7 @@ public class MessageServiceImpl implements MessageService {
             model.setSaved(true);
             model.setBallotData(new BallotDataModel(type, ballotModel.getId()));
             model.setOutbox(ballotModel.getCreatorIdentity().equals(identityStore.getIdentity()));
-            model.setApiMessageId(messageId.toString());
+            model.setMessageId(messageId);
             model.setMessageFlags(messageFlags);
             model.setForwardSecurityMode(forwardSecurityMode);
             receiver.saveLocalModel(model);
@@ -978,8 +977,8 @@ public class MessageServiceImpl implements MessageService {
     ) throws Exception {
 
         // check if a message file exists that could be resent or abort immediately
-        File file = fileService.getMessageFile(messageModel);
-        if (file == null || !file.exists()) {
+        var messageUid = messageModel.getUid();
+        if (messageUid == null || !fileService.hasMessageFile(messageUid)) {
             throw new ThreemaException("Message file not present");
         }
 
@@ -1389,7 +1388,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public boolean markAsRead(AbstractMessageModel message, boolean silent) throws ThreemaException {
+    public boolean markAsRead(AbstractMessageModel message, boolean silent) {
         logger.debug("markAsRead message = {} silent = {}", message.getApiMessageId(), silent);
         boolean saved = false;
 
@@ -1441,7 +1440,7 @@ public class MessageServiceImpl implements MessageService {
             if (messageAllowsDeliveryReceipt && receiverAllowsDeliveryReceipt) {
                 contactService.createReceiver(contactModel).sendDeliveryReceipt(
                     ProtocolDefines.DELIVERYRECEIPT_MSGREAD,
-                    new MessageId[]{MessageId.fromString(message.getApiMessageId())},
+                    new MessageId[]{message.getMessageId()},
                     readAt.getTime()
                 );
                 logger.info("Enqueued delivery receipt (read) message for message ID {} from {}",
@@ -1449,14 +1448,14 @@ public class MessageServiceImpl implements MessageService {
             } else {
                 if (message instanceof MessageModel) {
                     contactService.createReceiver(contactModel).sendIncomingMessageUpdateRead(
-                        Set.of(MessageId.fromString(message.getApiMessageId())), readAt.getTime()
+                        Set.of(message.getMessageId()), readAt.getTime()
                     );
                 } else if (message instanceof GroupMessageModel) {
                     int localGroupId = ((GroupMessageModel) message).getGroupId();
                     GroupModel groupModel = groupService.getById(localGroupId);
                     if (groupModel != null) {
                         groupService.createReceiver(groupModel).sendIncomingMessageUpdateRead(
-                            Set.of(MessageId.fromString(message.getApiMessageId())),
+                            Set.of(message.getMessageId()),
                             readAt.getTime()
                         );
                     } else {
@@ -1769,7 +1768,7 @@ public class MessageServiceImpl implements MessageService {
             messageModel = r.createLocalModel(MessageType.TEXT, MessageContentsType.TEXT, message.getDate());
             cache(messageModel);
 
-            messageModel.setApiMessageId(message.getMessageId().toString());
+            messageModel.setMessageId(message.getMessageId());
             messageModel.setMessageFlags(message.getMessageFlags());
             messageModel.setOutbox(false);
             // replace CR by LF for Window$ Phone compatibility - me be removed soon.
@@ -1890,7 +1889,7 @@ public class MessageServiceImpl implements MessageService {
             messageModel = receiver.createLocalModel(MessageType.VOICEMESSAGE, MessageContentsType.VOICE_MESSAGE, message.getDate());
             cache(messageModel);
 
-            messageModel.setApiMessageId(message.getMessageId().toString());
+            messageModel.setMessageId(message.getMessageId());
             messageModel.setMessageFlags(message.getMessageFlags());
             messageModel.setOutbox(false);
             messageModel.setIdentity(message.getFromIdentity());
@@ -1952,7 +1951,7 @@ public class MessageServiceImpl implements MessageService {
             messageModel = receiver.createLocalModel(MessageType.VIDEO, MessageContentsType.VIDEO, message.getDate());
             cache(messageModel);
 
-            messageModel.setApiMessageId(message.getMessageId().toString());
+            messageModel.setMessageId(message.getMessageId());
             messageModel.setMessageFlags(message.getMessageFlags());
             messageModel.setOutbox(false);
             messageModel.setIdentity(message.getFromIdentity());
@@ -2106,7 +2105,7 @@ public class MessageServiceImpl implements MessageService {
             messageModel = r.createLocalModel(MessageType.TEXT, MessageContentsType.TEXT, message.getDate());
             cache(messageModel);
 
-            messageModel.setApiMessageId(message.getMessageId().toString());
+            messageModel.setMessageId(message.getMessageId());
             messageModel.setMessageFlags(message.getMessageFlags());
             messageModel.setOutbox(false);
             // replace CR by LF for Window$ Phone compatibility - me be removed soon.
@@ -2215,7 +2214,7 @@ public class MessageServiceImpl implements MessageService {
             messageModel = (GroupMessageModel) r.createLocalModel(MessageType.IMAGE, MessageContentsType.IMAGE, message.getDate());
             cache(messageModel);
 
-            messageModel.setApiMessageId(message.getMessageId().toString());
+            messageModel.setMessageId(message.getMessageId());
             messageModel.setMessageFlags(message.getMessageFlags());
             messageModel.setOutbox(false);
             messageModel.setIdentity(message.getFromIdentity());
@@ -2359,7 +2358,7 @@ public class MessageServiceImpl implements MessageService {
             messageModel = (GroupMessageModel) r.createLocalModel(MessageType.LOCATION, MessageContentsType.LOCATION, message.getDate());
             cache(messageModel);
 
-            messageModel.setApiMessageId(message.getMessageId().toString());
+            messageModel.setMessageId(message.getMessageId());
             messageModel.setMessageFlags(message.getMessageFlags());
             messageModel.setOutbox(false);
             messageModel.setIdentity(message.getFromIdentity());
@@ -2429,7 +2428,7 @@ public class MessageServiceImpl implements MessageService {
 
             logger.info("saveBoxMessage: {} - D", message.getMessageId());
 
-            messageModel.setApiMessageId(message.getMessageId().toString());
+            messageModel.setMessageId(message.getMessageId());
             messageModel.setMessageFlags(message.getMessageFlags());
             messageModel.setOutbox(false);
             messageModel.setIdentity(contactModel.getIdentity());
@@ -2600,7 +2599,7 @@ public class MessageServiceImpl implements MessageService {
         if (messageModel == null) {
             messageModel = r.createLocalModel(MessageType.LOCATION, MessageContentsType.LOCATION, message.getDate());
             cache(messageModel);
-            messageModel.setApiMessageId(message.getMessageId().toString());
+            messageModel.setMessageId(message.getMessageId());
             messageModel.setMessageFlags(message.getMessageFlags());
             messageModel.setOutbox(false);
         }
@@ -2866,7 +2865,7 @@ public class MessageServiceImpl implements MessageService {
                         contactMessageCache.add(model);
                     }
                 }
-            } catch (MessageId.BadMessageIdException ignore) {
+            } catch (IllegalArgumentException ignore) {
                 logger.warn("Encountered invalid message ID in contact message");
             }
         }
@@ -2919,7 +2918,7 @@ public class MessageServiceImpl implements MessageService {
                     if (model != null) {
                         groupMessageCache.add(model);
                     }
-                } catch (MessageId.BadMessageIdException ignore) {
+                } catch (IllegalArgumentException ignore) {
                     logger.warn("Encountered invalid message ID in group message");
                 }
             }
@@ -2999,7 +2998,7 @@ public class MessageServiceImpl implements MessageService {
                 return new MessageString(locationString);
             case VOICEMESSAGE:
                 String messageString = prefix + context.getString(R.string.audio_placeholder);
-                messageString += " (" + StringConversionUtil.secondsToString(messageModel.getAudioData().getDuration(), false) + ")";
+                messageString += " (" + ElapsedTimeFormatter.secondsToString(messageModel.getAudioData().getDuration()) + ")";
                 return new MessageString(messageString);
             case FILE:
                 if (MimeUtil.isImageFile(messageModel.getFileData().getMimeType())) {
@@ -3126,9 +3125,8 @@ public class MessageServiceImpl implements MessageService {
         @Nullable ProgressListener progressListener
     ) throws ThreemaException {
         if (mediaMessageModel.getType() != MessageType.IMAGE) {
-            File messageFile = fileService.getMessageFile(mediaMessageModel);
-            if (messageFile != null && messageFile.exists() && messageFile.length() > NaCl.BOX_OVERHEAD_BYTES) {
-                // hack: do not re-download a blob that's already present on the file system
+            var messageUid = mediaMessageModel.getUid();
+            if (messageUid != null && fileService.hasMessageFile(messageUid)) {
                 return true;
             }
         }
@@ -3344,8 +3342,8 @@ public class MessageServiceImpl implements MessageService {
             distributionListMessageCache.clear();
         }
 
-        //clear all files in app Path
-        fileService.clearDirectory(fileService.getAppDataPath(), false);
+        //clear all media files
+        fileService.deleteMediaFiles();
     }
 
     @Override
@@ -4740,7 +4738,7 @@ public class MessageServiceImpl implements MessageService {
 
             File outputFile;
             try {
-                outputFile = fileService.createTempFile(".trans", ".mp4", false);
+                outputFile = fileService.createTempFile(".trans", ".mp4");
             } catch (IOException e) {
                 logger.error("Unable to open temp file");
                 // skip this MediaItem

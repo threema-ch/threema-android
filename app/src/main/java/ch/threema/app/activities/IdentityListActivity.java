@@ -57,6 +57,8 @@ import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
+
 abstract public class IdentityListActivity extends ThreemaToolbarActivity implements TextEntryDialog.TextEntryDialogClickListener {
     private static final String BUNDLE_RECYCLER_LAYOUT = "recycler";
     private static final String BUNDLE_SELECTED_ITEM = "item";
@@ -92,7 +94,7 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }
@@ -322,7 +324,7 @@ abstract public class IdentityListActivity extends ThreemaToolbarActivity implem
     }
 
     private void fireOnModifiedContact(final String identity) {
-        if (dependencies.isAvailable()) {
+        if (isSessionScopeReady()) {
             ListenerManager.contactListeners.handle(listener -> listener.onModified(identity));
         }
     }

@@ -26,6 +26,7 @@ import android.graphics.Bitmap
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import ch.threema.app.R
 import ch.threema.app.services.AvatarCacheServiceImpl
+import ch.threema.app.services.FileService
 import ch.threema.app.utils.AvatarConverterUtil
 import ch.threema.app.utils.BitmapUtil
 import ch.threema.data.datatypes.IdColor
@@ -38,8 +39,9 @@ import com.bumptech.glide.load.data.DataFetcher
  * This class is used to get the avatars from the database or create the default avatars. The results of the loaded bitmaps will be cached by glide (if possible).
  */
 class GroupAvatarFetcher(
-    context: Context,
-    private val groupModelRepository: GroupModelRepository?,
+    private val context: Context,
+    private val groupModelRepository: GroupModelRepository,
+    private val fileService: FileService,
     private val config: AvatarCacheServiceImpl.GroupAvatarConfig,
 ) : AvatarFetcher(context) {
     private val groupDefaultAvatar: VectorDrawableCompat? by lazy {
@@ -52,7 +54,7 @@ class GroupAvatarFetcher(
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
         val groupModel = config.subject?.let {
-            groupModelRepository?.getByCreatorIdentityAndId(it.creatorIdentity, it.apiGroupId)
+            groupModelRepository.getByCreatorIdentityAndId(it.creatorIdentity, it.apiGroupId)
         }
         val defaultAvatar: Boolean
         val defaultAvatarIfNone: Boolean
@@ -100,7 +102,7 @@ class GroupAvatarFetcher(
         returnDefaultAvatarIfNone: Boolean,
         backgroundColor: Int,
     ): Bitmap? {
-        var groupImage: Bitmap? = fileService?.getGroupAvatar(groupModel)
+        var groupImage: Bitmap? = fileService.getGroupProfilePictureBitmap(groupModel)
         if (groupImage != null && !highRes) {
             // resize image!
             val converted = AvatarConverterUtil.convert(context.resources, groupImage)

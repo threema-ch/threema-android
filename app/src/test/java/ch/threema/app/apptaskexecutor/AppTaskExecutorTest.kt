@@ -23,15 +23,12 @@ package ch.threema.app.apptaskexecutor
 
 import ch.threema.app.apptaskexecutor.tasks.AppTask
 import ch.threema.app.apptaskexecutor.tasks.PersistableAppTask
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.test.testDispatcherProvider
-import ch.threema.common.stateFlowOf
 import ch.threema.testhelpers.assertSuspendsForever
 import ch.threema.testhelpers.willThrow
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
-import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import kotlin.test.Test
@@ -40,8 +37,8 @@ import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -54,12 +51,10 @@ class AppTaskExecutorTest {
         val (appTask, deferred) = getAwaitableAppTask()
 
         val appTaskExecutor = AppTaskExecutor(
-            appStartupMonitor = mockk(),
             dispatcherProvider = testDispatcherProvider(),
-            serviceManagerProvider = mockk {
-                every { serviceManagerFlow } returns stateFlowOf(null)
+            appTaskPersistenceProvider = mockk {
+                coEvery { getAppTaskPersistence() } coAnswers { awaitCancellation() }
             },
-            appTaskPersistenceProvider = mockk(),
         )
 
         appTaskExecutor.scheduleTask(appTask)
@@ -77,12 +72,10 @@ class AppTaskExecutorTest {
         val (appTask, deferred) = getAwaitableAppTask()
 
         val appTaskExecutor = AppTaskExecutor(
-            appStartupMonitor = mockk(),
             dispatcherProvider = testDispatcherProvider(),
-            serviceManagerProvider = mockk {
-                every { serviceManagerFlow } returns stateFlowOf(null)
+            appTaskPersistenceProvider = mockk {
+                coEvery { getAppTaskPersistence() } coAnswers { awaitCancellation() }
             },
-            appTaskPersistenceProvider = mockk(),
         )
 
         backgroundScope.launch {
@@ -100,12 +93,10 @@ class AppTaskExecutorTest {
         val (appTasks, deferreds) = List(1000) { getAwaitableAppTask { delay(1000.milliseconds) } }.unzip()
 
         val appTaskExecutor = AppTaskExecutor(
-            appStartupMonitor = mockk(),
             dispatcherProvider = testDispatcherProvider(),
-            serviceManagerProvider = mockk {
-                every { serviceManagerFlow } returns stateFlowOf(null)
+            appTaskPersistenceProvider = mockk {
+                coEvery { getAppTaskPersistence() } coAnswers { awaitCancellation() }
             },
-            appTaskPersistenceProvider = mockk(),
         )
 
         backgroundScope.launch {
@@ -129,12 +120,10 @@ class AppTaskExecutorTest {
         }
 
         val appTaskExecutor = AppTaskExecutor(
-            appStartupMonitor = mockk(),
             dispatcherProvider = testDispatcherProvider(),
-            serviceManagerProvider = mockk {
-                every { serviceManagerFlow } returns stateFlowOf(null)
+            appTaskPersistenceProvider = mockk {
+                coEvery { getAppTaskPersistence() } coAnswers { awaitCancellation() }
             },
-            appTaskPersistenceProvider = mockk(),
         )
 
         backgroundScope.launch {
@@ -150,24 +139,25 @@ class AppTaskExecutorTest {
     }
 
     @Test
-    fun `persisted tasks are run when service manager becomes available`() = runTest {
+    fun `persisted tasks are run when app task persistence is ready`() = runTest {
         val persistedTask = mockk<PersistableAppTask>()
         val persistedTaskCompleted = CompletableDeferred<Unit>()
         coEvery { persistedTask.run() } answers {
             persistedTaskCompleted.complete(Unit)
         }
-        val serviceManagerFlow = MutableStateFlow<ServiceManager?>(null)
+        val deferred = CompletableDeferred<Unit>()
         val mockedPersistence = mockk<AppTaskPersistence>()
         coEvery { mockedPersistence.loadAllPersistedTasks() } returns setOf(persistedTask)
         coEvery { mockedPersistence.removePersistedTask(persistedTask) } just Runs
 
         val appTaskExecutor = AppTaskExecutor(
-            appStartupMonitor = mockk(),
             dispatcherProvider = testDispatcherProvider(),
-            serviceManagerProvider = mockk {
-                every { this@mockk.serviceManagerFlow } returns serviceManagerFlow
+            appTaskPersistenceProvider = mockk {
+                coEvery { getAppTaskPersistence() } coAnswers {
+                    deferred.await()
+                    mockedPersistence
+                }
             },
-            appTaskPersistenceProvider = { mockedPersistence },
         )
 
         backgroundScope.launch {
@@ -176,29 +166,22 @@ class AppTaskExecutorTest {
 
         advanceUntilIdle()
 
-        // Assert that persisted task has not yet been executed (as service manager isn't available yet)
+        // Assert that persisted task has not yet been executed (as AppTaskPersistence isn't available yet)
         coVerify(exactly = 0) { mockedPersistence.loadAllPersistedTasks() }
 
-        // Provide service manager and assert that task have been loaded and run
-        serviceManagerFlow.emit(mockk<ServiceManager>())
+        // Provide AppTaskPersistence and assert that task have been loaded and run
+        deferred.complete(Unit)
         persistedTaskCompleted.await()
-        coVerify(exactly = 1) { mockedPersistence.loadAllPersistedTasks() }
-
-        // Emit another service manager and ensure that tasks are not loaded again
-        serviceManagerFlow.emit(null)
-        serviceManagerFlow.emit(mockk<ServiceManager>())
         coVerify(exactly = 1) { mockedPersistence.loadAllPersistedTasks() }
     }
 
     @Test
-    fun `persistable tasks are not scheduled when no service manager is available`() = runTest {
+    fun `persistable tasks are not scheduled when no AppTaskPersistence is available`() = runTest {
         val appTaskExecutor = AppTaskExecutor(
-            appStartupMonitor = mockk(),
             dispatcherProvider = testDispatcherProvider(),
-            serviceManagerProvider = mockk {
-                every { serviceManagerFlow } returns stateFlowOf(null)
+            appTaskPersistenceProvider = mockk {
+                coEvery { getAppTaskPersistence() } coAnswers { awaitCancellation() }
             },
-            appTaskPersistenceProvider = mockk(),
         )
 
         backgroundScope.launch {
@@ -213,12 +196,10 @@ class AppTaskExecutorTest {
     @Test
     fun `failing task should not stop task executor`() = runTest {
         val appTaskExecutor = AppTaskExecutor(
-            appStartupMonitor = mockk(),
             dispatcherProvider = testDispatcherProvider(),
-            serviceManagerProvider = mockk {
-                every { serviceManagerFlow } returns stateFlowOf(null)
+            appTaskPersistenceProvider = mockk {
+                coEvery { getAppTaskPersistence() } coAnswers { awaitCancellation() }
             },
-            appTaskPersistenceProvider = mockk(),
         )
 
         backgroundScope.launch {

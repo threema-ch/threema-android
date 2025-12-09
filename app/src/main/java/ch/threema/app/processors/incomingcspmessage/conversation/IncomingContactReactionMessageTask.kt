@@ -26,12 +26,12 @@ import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.tasks.runCommonReactionMessageReceiveEmojiSequenceConversion
 import ch.threema.app.tasks.runCommonReactionMessageReceiveSteps
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.ReactionMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingContactReactionMessageTask")
+private val logger = getThreemaLogger("IncomingContactReactionMessageTask")
 
 class IncomingContactReactionMessageTask(
     message: ReactionMessage,

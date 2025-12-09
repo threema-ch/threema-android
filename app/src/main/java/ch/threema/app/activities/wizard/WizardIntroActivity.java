@@ -61,12 +61,13 @@ import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardIntroActivity extends WizardBackgroundActivity {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardIntroActivity");
+    private static final Logger logger = getThreemaLogger("WizardIntroActivity");
 
     private static final int ACTIVITY_RESULT_PRIVACY_POLICY = 9442;
 
@@ -101,7 +102,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }

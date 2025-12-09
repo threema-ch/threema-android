@@ -30,7 +30,7 @@ import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.libthreema.CryptoException;
 import ch.threema.libthreema.LibthreemaKt;
 
@@ -39,7 +39,7 @@ import ch.threema.libthreema.LibthreemaKt;
  */
 public class KDFRatchet {
 
-    private final static Logger logger = LoggingUtil.getThreemaLogger("KDFRatchet");
+    private final static Logger logger = getThreemaLogger("KDFRatchet");
 
     /**
      * Upper limit on how many times we are willing to turn the ratchet to catch up with a peer.

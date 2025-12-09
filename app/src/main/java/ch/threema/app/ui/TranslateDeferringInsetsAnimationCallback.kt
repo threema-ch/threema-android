@@ -43,9 +43,9 @@ import androidx.core.graphics.Insets
 import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 import ch.threema.app.emojis.EmojiPicker
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("TranslateDeferringInsetsAnimationCallback")
+private val logger = getThreemaLogger("TranslateDeferringInsetsAnimationCallback")
 
 /**
  * A [WindowInsetsAnimationCompat.Callback] which will translate/move the given view during any
@@ -56,7 +56,7 @@ private val logger = LoggingUtil.getThreemaLogger("TranslateDeferringInsetsAnima
  * [deferredInsetTypes]. The values passed into this constructor should match those which
  * the [RootViewDeferringInsetsCallback] is created with.
  *
- * @param view the view to translate from it's start to end state
+ * @param view the view to translate from its start to end state
  * @param emojiPicker used to check for the special case of an opened emoji picker
  * @param persistentInsetTypes the bitmask of any inset types which were handled as part of the
  * layout

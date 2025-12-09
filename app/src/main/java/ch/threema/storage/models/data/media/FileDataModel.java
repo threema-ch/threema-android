@@ -37,14 +37,14 @@ import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.JsonUtil;
 import ch.threema.app.utils.ListReader;
 import ch.threema.app.utils.MimeUtil;
-import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 
 public class FileDataModel implements MediaMessageDataInterface {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("FileDataModel");
+    private static final Logger logger = getThreemaLogger("FileDataModel");
 
     public static final String METADATA_KEY_DURATION = "d";
     public static final String METADATA_KEY_WIDTH = "w";
@@ -277,7 +277,7 @@ public class FileDataModel implements MediaMessageDataInterface {
      * @return Formatted duration string or 00:00 in case of error
      */
     public @NonNull String getDurationString() {
-        return StringConversionUtil.secondsToString(getDurationSeconds(), false);
+        return ElapsedTimeFormatter.secondsToString(getDurationSeconds());
     }
 
     /**

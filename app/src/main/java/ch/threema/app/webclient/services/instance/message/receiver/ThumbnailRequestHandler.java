@@ -41,12 +41,12 @@ import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.app.webclient.utils.ThumbnailUtils;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 
 @WorkerThread
 public class ThumbnailRequestHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ThumbnailRequestHandler");
+    private static final Logger logger = getThreemaLogger("ThumbnailRequestHandler");
 
     private final MessageDispatcher dispatcher;
     private final MessageService messageService;

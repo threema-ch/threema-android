@@ -31,14 +31,27 @@ if [[ -z ${_no_container+x} ]] ; then
     source ./.devcontainer/env.sh
 fi
 
+# Ensure consistent target dir, even if `build.target-dir` config option is set for Cargo
+export CARGO_TARGET_DIR=target
+
 # Build library
-cargo build -F uniffi -p libthreema --release
+cargo build --locked -F uniffi -p libthreema --release
 
 # Generate Kotlin bindings
-cargo run -p uniffi-bindgen generate --library ./target/release/liblibthreema.so --language kotlin --out-dir ./build/uniffi/kotlin
+cargo run \
+    --locked \
+    -p uniffi-bindgen generate \
+    --library ./target/release/liblibthreema.so \
+    --language kotlin \
+    --out-dir ./build/uniffi/kotlin
 
 # Generate Swift bindings
-cargo run -p uniffi-bindgen generate --library ./target/release/liblibthreema.so --language swift --out-dir ./build/uniffi/swift
+cargo run \
+    --locked \
+    -p uniffi-bindgen generate \
+    --library ./target/release/liblibthreema.so \
+    --language swift \
+    --out-dir ./build/uniffi/swift
 
 # Unload dev container if it was started
 if [[ -z ${_no_container+x} ]] ; then

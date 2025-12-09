@@ -22,7 +22,10 @@
 package ch.threema.app.services
 
 import ch.threema.app.messagereceiver.MessageReceiver
+import ch.threema.base.SessionScoped
 import ch.threema.data.models.ContactModel
+import ch.threema.domain.types.ConversationUID
+import ch.threema.domain.types.GroupDatabaseId
 import ch.threema.protobuf.d2d.sync.MdD2DSync.ConversationCategory
 
 /**
@@ -30,6 +33,7 @@ import ch.threema.protobuf.d2d.sync.MdD2DSync.ConversationCategory
  *
  * TODO(ANDR-3010): Move the conversation category into the database.
  */
+@SessionScoped
 interface ConversationCategoryService {
     /* Contact related methods */
 
@@ -41,17 +45,17 @@ interface ConversationCategoryService {
 
     /* Group related methods */
 
-    fun markGroupChatAsPrivate(groupDatabaseId: Long)
+    fun markGroupChatAsPrivate(groupDatabaseId: GroupDatabaseId)
 
-    fun removePrivateMarkFromGroupChat(groupDatabaseId: Long)
+    fun removePrivateMarkFromGroupChat(groupDatabaseId: GroupDatabaseId)
 
-    fun isPrivateGroupChat(groupDatabaseId: Long): Boolean
+    fun isPrivateGroupChat(groupDatabaseId: GroupDatabaseId): Boolean
 
     /* General methods */
 
-    fun isPrivateChat(uniqueIdString: String): Boolean
+    fun isPrivateChat(uniqueIdString: ConversationUID): Boolean
 
-    fun getConversationCategory(uniqueIdString: String): ConversationCategory
+    fun getConversationCategory(uniqueIdString: ConversationUID): ConversationCategory
 
     /**
      * Returns true if the chat has been marked as private. If the chat is already private, then false is returned.
@@ -63,9 +67,9 @@ interface ConversationCategoryService {
      */
     fun removePrivateMark(messageReceiver: MessageReceiver<*>): Boolean
 
-    fun persistPrivateChat(uniqueIdString: String)
+    fun persistPrivateChat(uniqueIdString: ConversationUID)
 
-    fun persistDefaultChat(uniqueIdString: String)
+    fun persistDefaultChat(uniqueIdString: ConversationUID)
 
     fun hasPrivateChats(): Boolean
 

@@ -50,11 +50,11 @@ import androidx.annotation.RequiresPermission;
 import androidx.core.graphics.drawable.RoundedBitmapDrawable;
 import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 import ch.threema.app.R;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class AvatarConverterUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AvatarConverterUtil");
+    private static final Logger logger = getThreemaLogger("AvatarConverterUtil");
 
     private static int avatarSize = -1, iconSize = -1, iconOffset = -1;
 

@@ -22,11 +22,11 @@
 package ch.threema.storage
 
 import android.util.Log
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import net.zetetic.database.LogTarget
 import net.zetetic.database.Logger
 
-private val logger = LoggingUtil.getThreemaLogger("DatabaseLogging")
+private val logger = getThreemaLogger("DatabaseLogging")
 
 fun setupDatabaseLogging() {
     Logger.setTarget(object : LogTarget {

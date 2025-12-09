@@ -33,11 +33,11 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class LocationMessageSendAction extends SendAction {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LocationMessageSendAction");
+    private static final Logger logger = getThreemaLogger("LocationMessageSendAction");
 
     protected static volatile LocationMessageSendAction instance;
     private static final Object instanceLock = new Object();

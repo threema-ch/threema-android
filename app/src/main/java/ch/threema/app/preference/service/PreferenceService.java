@@ -39,9 +39,11 @@ import ch.threema.app.home.HomeActivity;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.base.SessionScoped;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
 
+@SessionScoped
 public interface PreferenceService {
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({ImageScale_DEFAULT, ImageScale_SMALL, ImageScale_MEDIUM, ImageScale_LARGE, ImageScale_XLARGE, ImageScale_ORIGINAL, ImageScale_SEND_AS_FILE})
@@ -97,6 +99,12 @@ public interface PreferenceService {
     String VIDEO_CODEC_NO_VP8 = "no-vp8";
     String VIDEO_CODEC_NO_H264HIP = "no-h264hip";
     String VIDEO_CODEC_SW = "sw";
+
+    enum CrashReportingState {
+        ALWAYS_ASK,
+        ALWAYS_SEND,
+        NEVER_SEND,
+    }
 
     boolean isSyncContacts();
 
@@ -215,9 +223,10 @@ public interface PreferenceService {
 
     void setTransmittedFeatureMask(long featureMask);
 
-    long getLastFeatureMaskTransmission();
+    @Nullable
+    Instant getLastFeatureMaskTransmission();
 
-    void setLastFeatureMaskTransmission(long timestamp);
+    void setLastFeatureMaskTransmission(@Nullable Instant timestamp);
 
     @NonNull
     String[] getList(String listName);
@@ -537,8 +546,9 @@ public interface PreferenceService {
 
     List<WorkDirectoryCategory> getWorkDirectoryCategories();
 
-    void setWorkOrganization(WorkOrganization organization);
+    void setWorkOrganization(@Nullable WorkOrganization organization);
 
+    @Nullable
     WorkOrganization getWorkOrganization();
 
     void setLicensedStatus(boolean licensed);
@@ -605,9 +615,10 @@ public interface PreferenceService {
 
     boolean skipGroupCallCreateDelay();
 
-    long getBackupWarningDismissedTime();
+    @Nullable
+    Instant getBackupWarningDismissedTime();
 
-    void setBackupWarningDismissedTime(long time);
+    void setBackupWarningDismissedTime(@Nullable Instant timestamp);
 
     @StarredMessagesSortOrder
     int getStarredMessagesSortOrder();
@@ -633,9 +644,10 @@ public interface PreferenceService {
 
     void setPhoneNumberSyncHashCode(int phoneNumbersHash);
 
-    void setTimeOfLastContactSync(long timeMs);
+    void setTimeOfLastContactSync(@Nullable Instant timestamp);
 
-    long getTimeOfLastContactSync();
+    @Nullable
+    Instant getTimeOfLastContactSync();
 
     boolean showMessageDebugInfo();
 
@@ -649,13 +661,14 @@ public interface PreferenceService {
     /**
      * Set the last timestamp when the notification permission has been requested.
      */
-    void setLastNotificationPermissionRequestTimestamp(long timestamp);
+    void setLastNotificationPermissionRequestTimestamp(@Nullable Instant timestamp);
 
     /**
      * Get the last timestamp when the notification permission has been requested. If the
-     * notification permission has not yet been requested, 0 is returned.
+     * notification permission has not yet been requested, null is returned.
      */
-    long getLastNotificationPermissionRequestTimestamp();
+    @Nullable
+    Instant getLastNotificationPermissionRequestTimestamp();
 
     /**
      * @return The saved {@code Instant} or {@code null} if not present.
@@ -678,4 +691,12 @@ public interface PreferenceService {
      *  refactored.
      */
     void reloadSynchronizedBooleanSettings();
+
+    @NonNull
+    CrashReportingState getCrashReportingState();
+
+    @Nullable
+    Instant getProblemDismissed(@NonNull String problemKey);
+
+    void setProblemDismissed(@NonNull String problemKey, @Nullable Instant timestamp);
 }

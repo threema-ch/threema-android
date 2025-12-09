@@ -176,7 +176,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
         readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
         isArchived = false,
-        androidContactLookupKey = null,
+        androidContactLookupInfo = null,
         localAvatarExpires = null,
         isRestored = false,
         profilePictureBlobId = null,

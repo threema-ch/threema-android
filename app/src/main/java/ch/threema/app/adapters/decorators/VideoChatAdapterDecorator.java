@@ -42,9 +42,9 @@ import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ImageViewUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -52,7 +52,7 @@ import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
 public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoChatAdapterDecorator");
+    private static final Logger logger = getThreemaLogger("VideoChatAdapterDecorator");
 
     private static final String LISTENER_TAG = "decorator";
 
@@ -108,8 +108,8 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
 
         //do not show duration if 0
         if (duration > 0) {
-            datePrefixString = StringConversionUtil.secondsToString(duration, false);
-            dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
+            datePrefixString = ElapsedTimeFormatter.secondsToString(duration);
+            dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + ElapsedTimeFormatter.getDurationStringHuman(getContext(), duration);
             setDuration(duration);
         }
 
@@ -143,7 +143,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
         } else {
             if (duration > 0) {
                 datePrefixString = datePrefixString + getMessageModel().getFileData().getDurationString();
-                dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + StringConversionUtil.getDurationStringHuman(getContext(), duration);
+                dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + ElapsedTimeFormatter.getDurationStringHuman(getContext(), duration);
             }
         }
 

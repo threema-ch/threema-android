@@ -28,9 +28,9 @@ import androidx.core.view.WindowInsetsAnimationCompat
 import androidx.core.view.WindowInsetsCompat
 import ch.threema.app.activities.ThreemaToolbarActivity
 import ch.threema.app.emojis.EmojiPicker
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("RootViewDeferringInsetsCallback")
+private val logger = getThreemaLogger("RootViewDeferringInsetsCallback")
 
 class RootViewDeferringInsetsCallback(
     private val tag: String,

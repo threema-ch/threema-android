@@ -30,9 +30,14 @@ import kotlinx.coroutines.flow.StateFlow
  */
 interface AppStartupMonitor {
     /**
-     * Check whether the app is considered ready, i.e., all systems are considered ready (as opposed to unknown or pending) and there are no errors.
+     * Check whether the app is considered ready, i.e., all systems are considered ready (as opposed to unknown or pending) AND there are no errors.
      */
     fun isReady(): Boolean
+
+    /**
+     * Check whether a specific system is currently considered ready AND there are no errors.
+     */
+    fun isReady(system: AppSystem): Boolean
 
     /**
      * Returns a flow that indicates all the systems and what status they are currently in.

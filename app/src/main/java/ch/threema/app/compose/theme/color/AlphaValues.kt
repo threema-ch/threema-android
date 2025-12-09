@@ -22,11 +22,7 @@
 package ch.threema.app.compose.theme.color
 
 object AlphaValues {
-    const val DISABLED_CONTAINER = 0.5f
-    const val DISABLED_ON_CONTAINER = 0.5f
-}
-
-object AlphaValuesNight {
-    const val DISABLED_CONTAINER = 0.20f
-    const val DISABLED_ON_CONTAINER = 0.55f
+    const val FULLY_OPAQUE: Float = 1f
+    const val DISABLED_CONTAINER: Float = 0.5f
+    const val DISABLED_ON_CONTAINER: Float = 0.5f
 }

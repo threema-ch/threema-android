@@ -104,12 +104,12 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LocationUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class LocationPickerActivity extends ThreemaActivity implements
     LocationPickerAdapter.OnClickItemListener {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LocationPickerActivity");
+    private static final Logger logger = getThreemaLogger("LocationPickerActivity");
 
     private static final String DIALOG_TAG_ENABLE_LOCATION_SERVICES = "lss";
     private static final String DIALOG_TAG_CONFIRM_PLACE = "conf";

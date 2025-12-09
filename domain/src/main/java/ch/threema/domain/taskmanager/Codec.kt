@@ -23,7 +23,7 @@ package ch.threema.domain.taskmanager
 
 import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.D2mPayloadType
 import ch.threema.domain.protocol.connection.data.CspMessage
@@ -82,7 +82,7 @@ sealed interface ActiveTaskCodec : PassiveTaskCodec {
 
 interface TaskCodec : ActiveTaskCodec
 
-private val logger = LoggingUtil.getThreemaLogger("TaskCodec")
+private val logger = getThreemaLogger("TaskCodec")
 
 suspend fun PassiveTaskCodec.awaitOutgoingMessageAck(messageId: MessageId, identity: Identity) {
     read { inboundMessage ->
@@ -134,7 +134,7 @@ suspend fun PassiveTaskCodec.awaitReflectAck(reflectId: UInt): ULong {
     return (acceptedMessage as InboundD2mMessage.ReflectAck).timestamp
 }
 
-private val transactionLogger = LoggingUtil.getThreemaLogger("ActiveTaskCodec")
+private val transactionLogger = getThreemaLogger("ActiveTaskCodec")
 
 /**
  * Use the maximum time to live for this transaction. The maximum time is used, when the value 0 is

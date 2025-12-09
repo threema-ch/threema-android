@@ -39,7 +39,7 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import ch.threema.app.R
-import ch.threema.app.di.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.GroupCallPolicySetting
 import ch.threema.app.preference.service.O2oCallPolicySetting
@@ -55,7 +55,7 @@ import ch.threema.app.services.UserService
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.workers.AutoDeleteWorker.Companion.scheduleAutoDelete
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.minus
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.TriggerSource
@@ -71,7 +71,7 @@ import kotlin.time.Duration.Companion.seconds
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-private val logger = LoggingUtil.getThreemaLogger("ApplyAppRestrictionsWorker")
+private val logger = getThreemaLogger("ApplyAppRestrictionsWorker")
 
 /**
  * This worker applies the app restrictions. Applying the app restrictions includes the following actions:
@@ -88,9 +88,14 @@ class ApplyAppRestrictionsWorker(
 ) : CoroutineWorker(context, workerParameters), KoinComponent {
 
     private val masterKeyManager: MasterKeyManager by inject()
+    private val userService: UserService by inject()
+    private val multiDeviceManager: MultiDeviceManager by inject()
+    private val taskCreator: TaskCreator by inject()
+    private val lifetimeService: LifetimeService by inject()
+    private val preferenceService: PreferenceService by inject()
 
     override suspend fun doWork(): Result {
-        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
+        awaitAppFullyReadyWithTimeout(timeout = 20.seconds)
             ?: run {
                 logger.error("Could not apply app restrictions because the service manager is not available")
                 return Result.retry()
@@ -106,11 +111,11 @@ class ApplyAppRestrictionsWorker(
             mapRestrictionsToPreferences(
                 sharedPreferences = sharedPreferences,
                 context = context,
-                userService = serviceManager.userService,
-                multiDeviceManager = serviceManager.multiDeviceManager,
-                taskCreator = serviceManager.taskCreator,
-                lifetimeService = serviceManager.lifetimeService,
-                preferenceService = serviceManager.preferenceService,
+                userService = userService,
+                multiDeviceManager = multiDeviceManager,
+                taskCreator = taskCreator,
+                lifetimeService = lifetimeService,
+                preferenceService = preferenceService,
                 triggerSource = TriggerSource.LOCAL,
             )
         } catch (e: TransactionScope.TransactionException) {
@@ -123,8 +128,8 @@ class ApplyAppRestrictionsWorker(
         }
 
         disableMultiDeviceIfRestricted(
-            multiDeviceManager = serviceManager.multiDeviceManager,
-            taskCreator = serviceManager.taskCreator,
+            multiDeviceManager = multiDeviceManager,
+            taskCreator = taskCreator,
         )
 
         if (masterKeyManager.shouldUpdateRemoteSecretProtectionState(RemoteSecretCheckType.APP_RUNTIME)) {

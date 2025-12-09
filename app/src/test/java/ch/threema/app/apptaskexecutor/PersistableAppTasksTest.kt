@@ -23,27 +23,14 @@ package ch.threema.app.apptaskexecutor
 
 import ch.threema.app.apptaskexecutor.tasks.AppTaskData
 import ch.threema.app.apptaskexecutor.tasks.RemoteSecretDeleteStepsTask
-import ch.threema.app.services.ServiceManagerProvider
-import ch.threema.app.startup.AppStartupMonitor
-import ch.threema.app.test.koinTestModuleRule
-import ch.threema.localcrypto.MasterKeyManager
-import io.mockk.mockk
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlinx.serialization.json.Json
-import org.junit.Rule
 import org.koin.test.KoinTest
 
 class PersistableAppTasksTest : KoinTest {
-
-    @get:Rule
-    val koinTestRule = koinTestModuleRule {
-        factory { mockk<ServiceManagerProvider>() }
-        factory { mockk<AppStartupMonitor>() }
-        factory { mockk<MasterKeyManager>() }
-    }
 
     @Test
     fun testRemoteSecretDeleteStepsTask() {

@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.taskmanager
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.layer.Layer5Codec
 import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
@@ -52,7 +52,7 @@ import kotlinx.coroutines.withTimeout
 import org.junit.Rule
 import org.junit.rules.Timeout
 
-private val logger = LoggingUtil.getThreemaLogger("TaskExecutionTest")
+private val logger = getThreemaLogger("TaskExecutionTest")
 
 class TaskExecutionTest {
     @Rule

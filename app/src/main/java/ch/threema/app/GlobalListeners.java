@@ -71,8 +71,8 @@ import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.utils.Toaster;
-import ch.threema.app.utils.WidgetUtil;
+import ch.threema.android.Toaster;
+import ch.threema.app.widget.WidgetUtil;
 import ch.threema.app.voip.listeners.VoipCallEventListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.webclient.listeners.WebClientServiceListener;
@@ -83,13 +83,15 @@ import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.state.WebClientSessionState;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.GroupIdentity;
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
@@ -103,10 +105,12 @@ import ch.threema.storage.models.ballot.LinkBallotModel;
 import ch.threema.storage.models.data.status.GroupStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
 
+import static ch.threema.android.ToasterKt.showToast;
+
 // TODO(ANDR-3400) This code was moved out from ThreemaApplication and needs some heavy refactoring
 public class GlobalListeners {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GlobalListeners");
+    private static final Logger logger = getThreemaLogger("GlobalListeners");
 
     public static final Lock onAndroidContactChangeLock = new ReentrantLock();
 
@@ -116,6 +120,8 @@ public class GlobalListeners {
     ) {
         this.appContext = appContext;
         this.serviceManager = serviceManager;
+
+        webClientWakeUpListener = () -> showToast(appContext, R.string.webclient_protocol_version_to_old, Toaster.Duration.LONG);
     }
 
     @NonNull
@@ -581,11 +587,7 @@ public class GlobalListeners {
     private final ContactListener contactListener = new ContactListener() {
         @Override
         public void onModified(final @NonNull String identity) {
-            final ContactModel modifiedContact = serviceManager.getDatabaseService().getContactModelFactory().getByIdentity(identity);
-            if (modifiedContact == null) {
-                return;
-            }
-            final ch.threema.data.models.ContactModel modifiedContactModel = serviceManager.getModelRepositories().getContacts().getByIdentity(identity);
+            final ContactModel modifiedContactModel = serviceManager.getModelRepositories().getContacts().getByIdentity(identity);
             if (modifiedContactModel == null) {
                 return;
             }
@@ -596,7 +598,7 @@ public class GlobalListeners {
                     final ContactService contactService = serviceManager.getContactService();
 
                     // Refresh conversation cache
-                    conversationService.updateContactConversation(modifiedContact);
+                    conversationService.updateContactConversation(identity);
                     conversationService.refresh(modifiedContactModel);
 
                     ContactMessageReceiver messageReceiver = contactService.createReceiver(modifiedContactModel);
@@ -692,6 +694,7 @@ public class GlobalListeners {
                 try {
                     BallotService ballotService = s.getBallotService();
                     ContactService contactService = s.getContactService();
+                    ContactModelRepository contactModelRepository = s.getModelRepositories().getContacts();
                     GroupService groupService = s.getGroupService();
                     MessageService messageService = s.getMessageService();
                     UserService userService = s.getUserService();
@@ -717,10 +720,12 @@ public class GlobalListeners {
                             } else if (linkBallotModel instanceof IdentityBallotModel) {
                                 String identity = ((IdentityBallotModel) linkBallotModel).getIdentity();
 
-                                // not implemented
-                                receiver = contactService.createReceiver(contactService.getByIdentity(identity));
-                                // reset archived status
-                                contactService.setIsArchived(identity, false, TriggerSource.LOCAL);
+                                ContactModel contactModel = contactModelRepository.getByIdentity(identity);
+                                if (contactModel != null) {
+                                    receiver = contactService.createReceiver(contactModel);
+                                    // reset archived status
+                                    contactService.setIsArchived(identity, false, TriggerSource.LOCAL);
+                                }
                             }
 
                             if (ballotModel.getType() == BallotModel.Type.RESULT_ON_CLOSE) {
@@ -741,7 +746,7 @@ public class GlobalListeners {
                                 linkBallotModel instanceof GroupBallotModel
                                     && (type == GroupStatusDataModel.GroupStatusType.FIRST_VOTE
                                     || type == GroupStatusDataModel.GroupStatusType.MODIFIED_VOTE)
-                                    && !BallotUtil.isMine(ballotModel, userService)
+                                    && !BallotUtil.isMine(ballotModel, userService.getIdentity())
                             ) {
                                 // Only show votes (and vote changes) to the creator of the ballot in a group
                                 return;
@@ -917,7 +922,7 @@ public class GlobalListeners {
                 if (model.getLabel() != null) {
                     toastText += " (" + model.getLabel() + ")";
                 }
-                Toaster.Companion.showToast(toastText, Toaster.Duration.LONG);
+                showToast(appContext, toastText, Toaster.Duration.LONG);
 
                 final Intent intent = new Intent(appContext, SessionAndroidService.class);
 
@@ -986,13 +991,11 @@ public class GlobalListeners {
     };
 
     @NonNull
-    private final WebClientWakeUpListener webClientWakeUpListener =
-        () -> Toaster.Companion.showToast(R.string.webclient_protocol_version_to_old,
-            Toaster.Duration.LONG);
+    private final WebClientWakeUpListener webClientWakeUpListener;
 
     @NonNull
     private final VoipCallEventListener voipCallEventListener = new VoipCallEventListener() {
-        private final Logger logger = LoggingUtil.getThreemaLogger("VoipCallEventListener");
+        private final Logger logger = getThreemaLogger("VoipCallEventListener");
 
         @Override
         public void onRinging(String peerIdentity) {
@@ -1054,6 +1057,7 @@ public class GlobalListeners {
                 // Services
                 final IdentityStore identityStore = serviceManager.getIdentityStore();
                 final ContactService contactService = serviceManager.getContactService();
+                final ContactModelRepository contactModelRepository = serviceManager.getModelRepositories().getContacts();
                 final MessageService messageService = serviceManager.getMessageService();
 
                 // If an incoming status message is not targeted at our own identity, something's wrong
@@ -1064,9 +1068,11 @@ public class GlobalListeners {
                 }
 
                 // Create status message
-                final ContactModel contactModel = contactService.getByIdentity(identity);
+                final ContactModel contactModel = contactModelRepository.getByIdentity(identity);
+                if (contactModel != null) {
                 final ContactMessageReceiver receiver = contactService.createReceiver(contactModel);
                 messageService.createVoipStatus(status, receiver, isOutbox, isRead);
+                }
             } catch (ThreemaException e) {
                 logger.error("Exception", e);
             }

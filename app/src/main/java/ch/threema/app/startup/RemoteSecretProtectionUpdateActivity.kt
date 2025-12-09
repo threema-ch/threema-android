@@ -27,12 +27,21 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.window.DialogProperties
+import ch.threema.android.buildActivityIntent
+import ch.threema.android.context
+import ch.threema.android.disableEnterTransition
 import ch.threema.app.R
 import ch.threema.app.activities.EnterSerialActivity
 import ch.threema.app.compose.common.buttons.ButtonPrimary
+import ch.threema.app.compose.common.rememberLinkifyWeb
 import ch.threema.app.compose.preview.PreviewThreemaAll
 import ch.threema.app.compose.theme.ThreemaTheme
 import ch.threema.app.compose.theme.ThreemaThemePreview
@@ -41,16 +50,14 @@ import ch.threema.app.framework.WithViewState
 import ch.threema.app.startup.components.AppStartupScreen
 import ch.threema.app.startup.components.ErrorState
 import ch.threema.app.startup.components.LoadingState
+import ch.threema.app.startup.models.RemoteSecretUpdateStatus
 import ch.threema.app.startup.models.RemoteSecretUpdateType
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.buildActivityIntent
-import ch.threema.app.utils.context
-import ch.threema.app.utils.disableEnterTransition
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import org.koin.androidx.compose.koinViewModel
 
-private val logger = LoggingUtil.getThreemaLogger("RemoteSecretProtectionUpdateActivity")
+private val logger = getThreemaLogger("RemoteSecretProtectionUpdateActivity")
 
 /**
  * This activity is started when the Remote Secret feature needs to be activated or deactivated.
@@ -72,7 +79,7 @@ class RemoteSecretProtectionUpdateActivity : AppCompatActivity() {
             EventHandler(viewModel) { event ->
                 when (event) {
                     RemoteSecretProtectionUpdateViewModelEvent.Done -> {
-                        ConfigUtils.scheduleAppRestart(context, 1000)
+                        ConfigUtils.scheduleAppRestart(context)
                     }
                     RemoteSecretProtectionUpdateViewModelEvent.PromptForCredentials -> {
                         startActivity(EnterSerialActivity.createIntent(context))
@@ -101,10 +108,14 @@ private fun RemoteSecretActivationScreen(
         if (state != null) {
             RemoteSecretActivationScreen(
                 updateType = state.updateType,
-                hasFailed = state.hasFailed,
+                status = state.status,
                 onClickedRetry = {
                     logger.info("Retry button clicked")
                     viewModel.onClickedRetry()
+                },
+                onDismissedDialog = {
+                    logger.info("Info dialog dismissed")
+                    viewModel.onDismissedDialog()
                 },
             )
         }
@@ -114,12 +125,13 @@ private fun RemoteSecretActivationScreen(
 @Composable
 private fun RemoteSecretActivationScreen(
     updateType: RemoteSecretUpdateType,
-    hasFailed: Boolean,
+    status: RemoteSecretUpdateStatus,
     onClickedRetry: () -> Unit,
+    onDismissedDialog: () -> Unit,
 ) {
     AppStartupScreen {
-        when {
-            hasFailed -> ErrorState(
+        when (status) {
+            RemoteSecretUpdateStatus.FAILED -> ErrorState(
                 message = when (updateType) {
                     RemoteSecretUpdateType.ACTIVATING -> stringResource(R.string.remote_secret_activating_failed)
                     RemoteSecretUpdateType.DEACTIVATING -> stringResource(R.string.remote_secret_deactivating_failed)
@@ -132,14 +144,60 @@ private fun RemoteSecretActivationScreen(
                     maxLines = 2,
                 )
             }
-            else -> LoadingState(
+            RemoteSecretUpdateStatus.SUCCEEDED -> {
+                val faqEntryUrl = stringResource(R.string.remote_secret_learn_more_url)
+
+                when (updateType) {
+                    RemoteSecretUpdateType.ACTIVATING -> InfoDialog(
+                        title = stringResource(R.string.remote_secret_activated_notification_title),
+                        text = stringResource(R.string.remote_secret_activated_dialog_content)
+                            .rememberLinkifyWeb(faqEntryUrl),
+                        onDismissRequest = onDismissedDialog,
+                    )
+                    RemoteSecretUpdateType.DEACTIVATING -> InfoDialog(
+                        title = stringResource(R.string.remote_secret_deactivated_notification_title),
+                        text = stringResource(R.string.remote_secret_deactivated_dialog_content)
+                            .rememberLinkifyWeb(faqEntryUrl),
+                        onDismissRequest = onDismissedDialog,
+                    )
+                }
+            }
+            RemoteSecretUpdateStatus.IN_PROGRESS -> LoadingState(
                 message = when (updateType) {
                     RemoteSecretUpdateType.ACTIVATING -> stringResource(R.string.remote_secret_activating)
                     RemoteSecretUpdateType.DEACTIVATING -> stringResource(R.string.remote_secret_deactivating)
                 },
             )
+            RemoteSecretUpdateStatus.IDLE -> Unit
         }
     }
+}
+
+@Composable
+private fun InfoDialog(
+    title: String,
+    text: AnnotatedString,
+    onDismissRequest: () -> Unit,
+) {
+    AlertDialog(
+        properties = DialogProperties(
+            dismissOnClickOutside = false,
+        ),
+        onDismissRequest = onDismissRequest,
+        confirmButton = {
+            TextButton(
+                onClick = onDismissRequest,
+            ) {
+                Text(text = stringResource(R.string.ok))
+            }
+        },
+        title = {
+            Text(title)
+        },
+        text = {
+            Text(text)
+        },
+    )
 }
 
 @PreviewThreemaAll
@@ -147,8 +205,20 @@ private fun RemoteSecretActivationScreen(
 private fun RemoteSecretActivationScreen_Preview_Activating() = ThreemaThemePreview {
     RemoteSecretActivationScreen(
         updateType = RemoteSecretUpdateType.ACTIVATING,
-        hasFailed = false,
+        status = RemoteSecretUpdateStatus.IN_PROGRESS,
         onClickedRetry = {},
+        onDismissedDialog = {},
+    )
+}
+
+@PreviewThreemaAll
+@Composable
+private fun RemoteSecretActivationScreen_Preview_Activated() = ThreemaThemePreview {
+    RemoteSecretActivationScreen(
+        updateType = RemoteSecretUpdateType.ACTIVATING,
+        status = RemoteSecretUpdateStatus.SUCCEEDED,
+        onClickedRetry = {},
+        onDismissedDialog = {},
     )
 }
 
@@ -157,7 +227,8 @@ private fun RemoteSecretActivationScreen_Preview_Activating() = ThreemaThemePrev
 private fun RemoteSecretActivationScreen_Preview_Error() = ThreemaThemePreview {
     RemoteSecretActivationScreen(
         updateType = RemoteSecretUpdateType.ACTIVATING,
-        hasFailed = true,
+        status = RemoteSecretUpdateStatus.FAILED,
         onClickedRetry = {},
+        onDismissedDialog = {},
     )
 }

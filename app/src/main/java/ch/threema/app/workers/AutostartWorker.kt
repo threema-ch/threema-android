@@ -30,18 +30,20 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import ch.threema.app.R
-import ch.threema.app.di.awaitServiceManagerWithTimeout
+import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.home.HomeActivity
 import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.notifications.NotificationIDs
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.services.UserService
 import ch.threema.app.utils.IntentDataUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.localcrypto.MasterKeyManager
 import kotlin.time.Duration.Companion.seconds
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-private val logger = LoggingUtil.getThreemaLogger("AutostartWorker")
+private val logger = getThreemaLogger("AutostartWorker")
 
 class AutostartWorker(
     val context: Context,
@@ -50,6 +52,8 @@ class AutostartWorker(
     CoroutineWorker(context, workerParameters), KoinComponent {
 
     private val masterKeyManager: MasterKeyManager by inject()
+    private val preferenceService: PreferenceService by inject()
+    private val userService: UserService by inject()
 
     @SuppressLint("MissingPermission")
     override suspend fun doWork(): Result {
@@ -86,17 +90,14 @@ class AutostartWorker(
             )
         }
 
-        val serviceManager = awaitServiceManagerWithTimeout(timeout = 20.seconds)
+        awaitAppFullyReadyWithTimeout(timeout = 20.seconds)
             ?: return Result.retry()
 
-        // fixes https://issuetracker.google.com/issues/36951052
-        val preferenceService = serviceManager.preferenceService
         // reset feature level
         preferenceService.transmittedFeatureMask = 0
 
         // auto fix failed sync account
         if (preferenceService.isSyncContacts) {
-            val userService = serviceManager.userService
             if (!userService.checkAccount()) {
                 // create account
                 userService.getAccount(true)

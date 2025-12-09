@@ -43,11 +43,11 @@ import java.util.UUID
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.fail
-import org.junit.Assert
 
 class EmojiReactionsRepositoryTest {
     private lateinit var testCoreServiceManager: TestCoreServiceManager
@@ -139,10 +139,10 @@ class EmojiReactionsRepositoryTest {
         message.assertEmojiReactionSize(1)
 
         val reactions = emojiReactionsRepository.getReactionsByMessage(message)
-        Assert.assertNotNull(reactions)
+        assertNotNull(reactions)
 
-        val reaction = reactions!!.data!![0]
-        Assert.assertEquals("⚽", reaction.emojiSequence)
+        val reaction = reactions.data!![0]
+        assertEquals("⚽", reaction.emojiSequence)
 
         databaseService.messageModelFactory.delete(message)
     }
@@ -155,8 +155,8 @@ class EmojiReactionsRepositoryTest {
         databaseService.messageModelFactory.create(contactMessage)
         databaseService.groupMessageModelFactory.create(groupMessage)
 
-        Assert.assertEquals(1, contactMessage.id)
-        Assert.assertEquals(1, groupMessage.id)
+        assertEquals(1, contactMessage.id)
+        assertEquals(1, groupMessage.id)
 
         contactMessage.assertEmojiReactionSize(0)
         groupMessage.assertEmojiReactionSize(0)
@@ -176,8 +176,8 @@ class EmojiReactionsRepositoryTest {
         val groupReaction =
             emojiReactionsRepository.getReactionsByMessage(groupMessage)!!.data!![0]
 
-        Assert.assertEquals("⚾", contactReaction.emojiSequence)
-        Assert.assertEquals("⛵", groupReaction.emojiSequence)
+        assertEquals("⚾", contactReaction.emojiSequence)
+        assertEquals("⛵", groupReaction.emojiSequence)
     }
 
     @Test
@@ -190,8 +190,8 @@ class EmojiReactionsRepositoryTest {
         databaseService.messageModelFactory.create(contactMessage)
         databaseService.groupMessageModelFactory.create(groupMessage)
 
-        Assert.assertEquals(1, contactMessage.id)
-        Assert.assertEquals(1, groupMessage.id)
+        assertEquals(1, contactMessage.id)
+        assertEquals(1, groupMessage.id)
 
         contactMessage.assertEmojiReactionSize(0)
         groupMessage.assertEmojiReactionSize(0)
@@ -306,7 +306,7 @@ class EmojiReactionsRepositoryTest {
     private fun AbstractMessageModel.assertEmojiReactionSize(expectedSize: Int) {
         val actualSize = emojiReactionDao.findAllByMessage(this).size
 
-        Assert.assertEquals(expectedSize, actualSize)
+        assertEquals(expectedSize, actualSize)
     }
 
     private fun <T : AbstractMessageModel> T.enrich(text: String = "Text"): T {

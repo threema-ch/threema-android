@@ -29,12 +29,12 @@ import java.util.ArrayList;
 
 import androidx.annotation.StringRes;
 import ch.threema.app.ui.BottomSheetItem;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class BottomSheetGridDialog extends BottomSheetAbstractDialog {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BottomSheetGridDialog");
+    private static final Logger logger = getThreemaLogger("BottomSheetGridDialog");
 
     public static BottomSheetGridDialog newInstance(@StringRes int title, ArrayList<BottomSheetItem> items) {
         BottomSheetGridDialog dialog = new BottomSheetGridDialog();

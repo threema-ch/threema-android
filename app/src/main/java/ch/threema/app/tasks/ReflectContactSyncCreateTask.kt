@@ -23,7 +23,7 @@ package ch.threema.app.tasks
 
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
@@ -31,7 +31,7 @@ import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.getEncryptedContactSyncCreate
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectContactSyncCreateTask")
+private val logger = getThreemaLogger("ReflectContactSyncCreateTask")
 
 class ReflectContactSyncCreateTask(
     private val contactModelData: ContactModelData,

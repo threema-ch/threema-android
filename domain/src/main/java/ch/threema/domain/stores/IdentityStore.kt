@@ -21,9 +21,11 @@
 
 package ch.threema.domain.stores
 
+import ch.threema.base.SessionScoped
 import ch.threema.base.ThreemaException
 import ch.threema.domain.types.Identity
 
+@SessionScoped
 interface IdentityStore {
     /**
      * Encrypt the given plaintext with the private key stored in this identity store.

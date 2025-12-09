@@ -21,10 +21,10 @@
 
 package ch.threema.domain.protocol.connection.csp;
 
-import org.apache.commons.io.EndianUtils;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
+import static ch.threema.common.OutputStreamExtensionsKt.writeLittleEndianShort;
 
 public class ProtocolExtension {
     public static final int CLIENT_INFO_TYPE = 0x00;
@@ -57,7 +57,7 @@ public class ProtocolExtension {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
         bos.write(type);
-        EndianUtils.writeSwappedShort(bos, (short) data.length);
+        writeLittleEndianShort(bos, (short) data.length);
         bos.write(data);
         return bos.toByteArray();
     }

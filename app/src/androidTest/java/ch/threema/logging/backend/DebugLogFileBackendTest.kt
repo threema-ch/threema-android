@@ -26,6 +26,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import ch.threema.app.BuildConfig
 import ch.threema.app.DangerousTest
+import ch.threema.app.ThreemaApplication
 import ch.threema.app.getReadWriteExternalStoragePermissionRule
 import ch.threema.logging.LogLevel
 import java.util.concurrent.TimeUnit
@@ -33,6 +34,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import org.junit.Assume
+import org.junit.BeforeClass
 import org.junit.Rule
 import org.junit.runner.RunWith
 
@@ -124,5 +127,25 @@ class DebugLogFileBackendTest {
 
     private fun DebugLogFileBackend.printSomething(@LogLevel level: Int) {
         printAsync(level, BuildConfig.LOG_TAG, null, "hi").get(500, TimeUnit.MILLISECONDS)
+    }
+
+    companion object {
+        /**
+         * On one of our CI devices, the access to the external storage directory is inexplicably broken, which leads these tests to fail.
+         * Since the external storage is only used for the debug log file, and a fallback is already in place to write the debug log into
+         * a different location if writing to the external storage fails, it is acceptable for the time being to simply skip these tests
+         * based on the precondition that the external storage directory exists.
+         */
+        @BeforeClass
+        @JvmStatic
+        fun assumeDeviceHasAccessToExternalStorage() {
+            Assume.assumeTrue(
+                try {
+                    ThreemaApplication.getAppContext().getExternalFilesDir(null)?.exists() == true
+                } catch (_: Exception) {
+                    false
+                },
+            )
+        }
     }
 }

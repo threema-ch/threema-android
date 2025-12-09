@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.csp.messages
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.types.Identity
@@ -31,7 +31,7 @@ import ch.threema.protobuf.d2d.conversationOrNull
 import ch.threema.protobuf.d2d.groupOrNull
 import java.io.ByteArrayOutputStream
 
-private val logger = LoggingUtil.getThreemaLogger("GroupSyncRequestMessage")
+private val logger = getThreemaLogger("GroupSyncRequestMessage")
 
 /**
  * Request current group information to be sent back.

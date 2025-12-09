@@ -59,15 +59,9 @@ import java.util.HashSet;
 import java.util.List;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.adapters.FilterResultsListener;
 import ch.threema.app.adapters.FilterableListAdapter;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.BlockedIdentitiesService;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.ConversationCategoryService;
-import ch.threema.app.services.ConversationService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.preference.service.PreferenceService;
@@ -78,29 +72,27 @@ import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.SnackbarUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static org.koin.java.KoinJavaComponent.inject;
+
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
 import ch.threema.storage.models.GroupModel;
+import kotlin.Lazy;
 
 public abstract class RecipientListFragment extends ListFragment implements ListView.OnItemLongClickListener, FilterResultsListener {
     public static final String ARGUMENT_MULTI_SELECT = "ms";
     public static final String ARGUMENT_MULTI_SELECT_FOR_COMPOSE = "msi";
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("RecipientListFragment");
+    private static final Logger logger = getThreemaLogger("RecipientListFragment");
 
-    protected ContactService contactService;
-    protected GroupService groupService;
-    protected DistributionListService distributionListService;
-    protected ConversationService conversationService;
-    protected PreferenceService preferenceService;
-    protected BlockedIdentitiesService blockedIdentitiesService;
-    @Nullable
-    protected ConversationCategoryService conversationCategoryService;
+    private final Lazy<PreferenceService> preferenceServiceLazy = inject(PreferenceService.class);
+    private final Lazy<DistributionListService> distributionListServiceLazy = inject(DistributionListService.class);
+    private final Lazy<GroupService> groupServiceLazy = inject(GroupService.class);
+
     protected FragmentActivity activity;
     protected Parcelable listInstanceState;
     protected ExtendedFloatingActionButton floatingActionButton;
@@ -116,21 +108,6 @@ public abstract class RecipientListFragment extends ListFragment implements List
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         activity = getActivity();
-
-        final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-
-        try {
-            contactService = serviceManager.getContactService();
-            groupService = serviceManager.getGroupService();
-            distributionListService = serviceManager.getDistributionListService();
-            blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
-            conversationService = serviceManager.getConversationService();
-            preferenceService = serviceManager.getPreferenceService();
-            conversationCategoryService = serviceManager.getConversationCategoryService();
-        } catch (ThreemaException e) {
-            LogUtil.exception(e, activity);
-            return null;
-        }
 
         Bundle bundle = getArguments();
         if (bundle != null) {
@@ -302,7 +279,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
 
                 if (identities.size() > 1) {
                     try {
-                        DistributionListModel distributionListModel = distributionListService.createDistributionList(
+                        DistributionListModel distributionListModel = distributionListServiceLazy.getValue().createDistributionList(
                             null,
                             identities.toArray(new String[0]),
                             true);
@@ -359,9 +336,9 @@ public abstract class RecipientListFragment extends ListFragment implements List
             if (model instanceof ContactModel) {
                 name = NameUtil.getDisplayNameOrNickname((ContactModel) model, true);
             } else if (model instanceof GroupModel) {
-                name = NameUtil.getDisplayName((GroupModel) model, this.groupService);
+                name = NameUtil.getDisplayName((GroupModel) model, groupServiceLazy.getValue());
             } else if (model instanceof DistributionListModel) {
-                name = NameUtil.getDisplayName((DistributionListModel) model, this.distributionListService);
+                name = NameUtil.getDisplayName((DistributionListModel) model, distributionListServiceLazy.getValue());
             }
             if (name != null) {
                 if (builder.length() > 0) {
@@ -419,7 +396,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
             !isMultiSelectAllowed() ||
                 !multiSelectIdentity ||
                 floatingActionButton == null ||
-                preferenceService.getMultipleRecipientsTooltipCount() >= 1
+                preferenceServiceLazy.getValue().getMultipleRecipientsTooltipCount() >= 1
         ) {
             return;
         }
@@ -434,7 +411,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
                     return;
                 }
 
-                preferenceService.incrementMultipleRecipientsTooltipCount();
+                preferenceServiceLazy.getValue().incrementMultipleRecipientsTooltipCount();
 
                 int[] location = new int[2];
                 listView.getLocationOnScreen(location);

@@ -40,13 +40,13 @@ import ch.threema.app.R;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ViewExtensionsKt;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 @UiThread
 public class SessionsIntroActivity extends ThreemaToolbarActivity {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SessionsIntroActivity");
+    private static final Logger logger = getThreemaLogger("SessionsIntroActivity");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

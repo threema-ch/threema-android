@@ -25,7 +25,7 @@ import androidx.annotation.WorkerThread
 import ch.threema.app.services.license.LicenseService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -47,7 +47,7 @@ import ch.threema.domain.taskmanager.NetworkException
 import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.types.Identity
 
-private val logger = LoggingUtil.getThreemaLogger("ValidContactsLookupSteps")
+private val logger = getThreemaLogger("ValidContactsLookupSteps")
 
 sealed class ContactOrInit(val identity: Identity)
 
@@ -238,7 +238,7 @@ private fun BasicContact.toContactModelData() = ContactModelData(
     acquaintanceLevel = ch.threema.storage.models.ContactModel.AcquaintanceLevel.DIRECT,
     isArchived = false,
     localAvatarExpires = null,
-    androidContactLookupKey = null,
+    androidContactLookupInfo = null,
     profilePictureBlobId = null,
     isRestored = false,
     jobTitle = null,
@@ -268,7 +268,7 @@ private fun FetchIdentityResult.toContactModelData(workContact: WorkContact?) = 
     acquaintanceLevel = ch.threema.storage.models.ContactModel.AcquaintanceLevel.DIRECT,
     isArchived = false,
     localAvatarExpires = null,
-    androidContactLookupKey = null,
+    androidContactLookupInfo = null,
     profilePictureBlobId = null,
     isRestored = false,
     jobTitle = workContact?.jobTitle,

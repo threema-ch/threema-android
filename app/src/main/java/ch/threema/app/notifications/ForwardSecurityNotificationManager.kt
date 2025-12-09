@@ -37,10 +37,10 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.ConversationCategoryService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import kotlin.random.Random
 
-private val logger = LoggingUtil.getThreemaLogger("ForwardSecurityNotificationManager")
+private val logger = getThreemaLogger("ForwardSecurityNotificationManager")
 
 class ForwardSecurityNotificationManager(
     private val context: Context,

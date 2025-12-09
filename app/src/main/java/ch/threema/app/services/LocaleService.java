@@ -21,6 +21,9 @@
 
 package ch.threema.app.services;
 
+import ch.threema.base.SessionScoped;
+
+@SessionScoped
 public interface LocaleService {
     String getCountryIsoCode();
 

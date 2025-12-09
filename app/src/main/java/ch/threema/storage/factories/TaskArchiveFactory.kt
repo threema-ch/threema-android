@@ -21,13 +21,13 @@
 
 package ch.threema.storage.factories
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.DatabaseService
 import ch.threema.storage.buildContentValues
 import ch.threema.storage.runDelete
 import ch.threema.storage.runQuery
 
-private val logger = LoggingUtil.getThreemaLogger("TaskArchiveFactory")
+private val logger = getThreemaLogger("TaskArchiveFactory")
 
 class TaskArchiveFactory(databaseService: DatabaseService) :
     ModelFactory(databaseService, "tasks") {
@@ -80,6 +80,18 @@ class TaskArchiveFactory(databaseService: DatabaseService) :
                 numDeleted,
             )
         }
+    }
+
+    /**
+     * Replace all tasks with encoding [oldTaskEncoding] by [newTaskEncoding].
+     */
+    fun replace(oldTaskEncoding: String, newTaskEncoding: String) {
+        writableDatabase.update(
+            tableName,
+            buildContentValues { put(COLUMN_TASK, newTaskEncoding.trim()) },
+            "$COLUMN_TASK = ?",
+            arrayOf(oldTaskEncoding.trim()),
+        )
     }
 
     /**

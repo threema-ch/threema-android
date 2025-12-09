@@ -22,7 +22,6 @@
 package ch.threema.app.emojis;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -47,9 +46,11 @@ import ch.threema.app.services.UserService;
 import ch.threema.app.ui.MentionClickableSpan;
 import ch.threema.app.ui.MentionSpan;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.LazyProperty;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
+import kotlin.Lazy;
+
+import static ch.threema.common.LazyKt.lazy;
 
 public class EmojiMarkupUtil {
 
@@ -60,11 +61,11 @@ public class EmojiMarkupUtil {
     private final Pattern mention;
 
     @NonNull
-    private static final LazyProperty<EmojiMarkupUtil> instance = new LazyProperty<>(EmojiMarkupUtil::new);
+    private static final Lazy<EmojiMarkupUtil> instance = lazy(EmojiMarkupUtil::new);
 
     @NonNull
     public static EmojiMarkupUtil getInstance() {
-        return instance.get();
+        return instance.getValue();
     }
 
     private EmojiMarkupUtil() {

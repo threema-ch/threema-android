@@ -37,11 +37,11 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.SynchronizeContactsService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
 public class SynchronizeContactsUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SynchronizeContactsUtil");
+    private static final Logger logger = getThreemaLogger("SynchronizeContactsUtil");
 
     @RequiresPermission(allOf = {Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS})
     public static void startDirectly() {

@@ -36,10 +36,10 @@ import java.util.Map;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.listeners.SensorListener;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class SensorServiceImpl implements SensorService, SensorEventListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SensorServiceImpl");
+    private static final Logger logger = getThreemaLogger("SensorServiceImpl");
     private static final String WAKELOCK_TAG = BuildConfig.APPLICATION_ID + ":SensorService";
 
     private PowerManager.WakeLock proximityWakelock;

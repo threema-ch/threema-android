@@ -35,7 +35,7 @@ import java.nio.ByteBuffer;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Encapsulate information required for rendering video.
@@ -43,7 +43,7 @@ import ch.threema.base.utils.LoggingUtil;
  * Instances of this class live in `VoipStateService`.
  */
 public class VideoContext {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoContext");
+    private static final Logger logger = getThreemaLogger("VideoContext");
 
     // Camera orientation for VideoContext
     @Retention(RetentionPolicy.SOURCE)
@@ -241,7 +241,7 @@ public class VideoContext {
      * If no target is set using the `setTarget` method, drop frames.
      */
     private static class ProxyVideoSink implements VideoSink {
-        private static final Logger logger = LoggingUtil.getThreemaLogger("ProxyVideoSink");
+        private static final Logger logger = getThreemaLogger("ProxyVideoSink");
 
         private @Nullable VideoSink target;
         private final @NonNull String label;

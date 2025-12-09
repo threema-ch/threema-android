@@ -32,10 +32,10 @@ import com.google.android.material.snackbar.Snackbar;
 
 import org.slf4j.Logger;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class LinearLayoutBehavior extends CoordinatorLayout.Behavior<LinearLayout> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LinearLayoutBehavior");
+    private static final Logger logger = getThreemaLogger("LinearLayoutBehavior");
 
     public LinearLayoutBehavior(Context context, AttributeSet attrs) {
         super(context, attrs);

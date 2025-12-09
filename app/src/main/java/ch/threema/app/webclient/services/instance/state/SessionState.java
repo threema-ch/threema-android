@@ -34,7 +34,7 @@ import java.nio.ByteBuffer;
 import ch.threema.app.webclient.SendMode;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.state.WebClientSessionState;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.logging.ThreemaLogger;
 
 /**
@@ -62,7 +62,7 @@ public abstract class SessionState {
 
     // Logging
     @NonNull
-    protected final Logger logger = LoggingUtil.getThreemaLogger("SessionState");
+    protected final Logger logger = getThreemaLogger("SessionState");
 
     // Session context
     @NonNull

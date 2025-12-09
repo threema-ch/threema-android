@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.csp.messages.ballot
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets
 import org.json.JSONArray
 import org.json.JSONException
 
-private val logger = LoggingUtil.getThreemaLogger("GroupPollVoteMessage")
+private val logger = getThreemaLogger("GroupPollVoteMessage")
 
 /**
  * A group poll vote message.

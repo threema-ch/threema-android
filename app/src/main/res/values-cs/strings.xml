@@ -792,7 +792,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="grace_thirty_minutes">30 minut</string>
     <string name="grace_never">Nikdy (ručně)</string>
     <string name="never">Nikdy</string>
-    <string name="access_protection_cannot_be_removed">Ochranu přístupu nelze odstranit, protože existuje nejméně jedna soukromá konverzace.</string>
+    <string name="access_protection_private_chats_warning">Pokud odstraníte ochranu přístupu, všechny vaše soukromé konverzace se opět zobrazí.</string>
     <string name="verification_started">Ověřování bylo zahájeno</string>
     <string name="cannot_open_file">Soubor se nepodařilo otevřít</string>
     <string name="prefs_title_image_attach_previews">Rychlý výběr médií</string>
@@ -1385,7 +1385,6 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="threema_push_service_description">Trvalé oznámení je zobrazeno, když je služba ${app_name_short} Push aktivní</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push_activated">Služba ${app_name_short} Push aktivována.</string>
-    <string name="add_shortcut_success">Zástupce byl úspěšně vytvořen</string>
     <string name="add_shortcut_error">Během přidání zástupce na plochu došlo k chybě</string>
     <string name="web_link">Odkaz</string>
     <string name="link_copied">%s zkopírován</string>
@@ -1633,6 +1632,8 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikaci není dovoleno udržovat trvalé připojení k serverům, které je nutné pro fungování ${app_name_short} Push. Když bude aplikace na pozadí, nebudete informováni o nových zprávách. Chcete‑li tento problém opravit, klepněte na „Využití baterie“ a vyberte „Neomezeno“.</string>
     <string name="problemsolver_to_settings">Do nastavení</string>
+    <!-- Label on button to dismiss/hide a warning -->
+    <string name="problemsolver_dismiss">Zavřít</string>
     <string name="prefs_advanced_options">Pokročilé možnosti</string>
     <string name="push_service">Služba push</string>
     <string name="edit_and_send">Upravit a odeslat</string>
@@ -1774,16 +1775,14 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="remote_secrets_failed_to_fetch">Token ${remote_secret} se nepodařilo načíst. Zkontrolujte prosím stav vašeho připojení k internetu a zkuste to znovu.</string>
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="fetching_remote_secret">Načítání tokenu ${remote_secret}</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activated_notification_title">${remote_secret} byl aktivován</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
-    <string name="remote_secret_activated_notification_content">Tato funkce udržuje vaše konverzace v bezpečí v případě ztráty nebo odcizení vašeho zařízení.</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_activated_dialog_content">Pokud ztratíte své zařízení, tato funkce umožní vašemu správci aplikaci uzamknout, čímž zajistíte, že vaše konverzace zůstanou zašifrovány i v případě, že nepovolaná osoba dokáže vaše zařízení odemknout.\n[Zjistěte více]</string>
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivated_notification_title">${remote_secret} byl deaktivován</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
-    <string name="remote_secret_deactivated_notification_content">Pokud potřebujete více informací, kontaktujte prosím vašeho administrátora.</string>
-    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
-    <string name="remote_secret_activated_learn_more">Zjistěte více</string>
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_deactivated_dialog_content">Váš administrátor deaktivoval ${remote_secret}. Více informací o funkci ${remote_secret} můžete nalézt v této [sekci Častých dotazů].</string>
     <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating">Aktivování ${remote_secret}</string>
     <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->

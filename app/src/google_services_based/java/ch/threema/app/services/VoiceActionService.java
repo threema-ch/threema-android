@@ -47,13 +47,13 @@ import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING;
 
 public class VoiceActionService extends SearchActionVerificationClientService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VoiceActionService");
+    private static final Logger logger = getThreemaLogger("VoiceActionService");
     private static final String TAG = "VoiceActionService";
 
     private MessageService messageService;

@@ -55,11 +55,11 @@ import java.util.concurrent.RejectedExecutionException;
 
 import ch.threema.app.R;
 import ch.threema.app.ui.CheckableFrameLayout;
-import ch.threema.app.utils.StringConversionUtil;
-import ch.threema.base.utils.LoggingUtil;
+import ch.threema.app.utils.ElapsedTimeFormatter;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.MediaGalleryHolder> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaAttachAdapter");
+    private static final Logger logger = getThreemaLogger("MediaAttachAdapter");
 
     private final Context context;
     private List<MediaAttachItem> mediaAttachItems;
@@ -197,7 +197,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
                             }
 
                             if (mediaAttachItem.getType() == MediaAttachItem.TYPE_VIDEO) {
-                                videoDuration.setText(StringConversionUtil.getDurationString(mediaAttachItem.getDuration()));
+                                videoDuration.setText(ElapsedTimeFormatter.millisecondsToString(mediaAttachItem.getDuration()));
                                 videoIndicator.setVisibility(View.VISIBLE);
                                 contentView.setContentDescription(context.getString(R.string.attach_video) + ": " + mediaAttachItem.getDisplayName());
                             } else {

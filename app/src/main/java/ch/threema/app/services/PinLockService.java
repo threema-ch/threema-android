@@ -36,13 +36,13 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
 import ch.threema.app.services.notification.NotificationService;
-import ch.threema.app.utils.WidgetUtil;
-import ch.threema.base.utils.LoggingUtil;
+import ch.threema.app.widget.WidgetUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 public class PinLockService implements LockAppService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("PinLockService");
+    private static final Logger logger = getThreemaLogger("PinLockService");
 
     private final Context context;
     private final PreferenceService preferencesService;
@@ -142,8 +142,7 @@ public class PinLockService implements LockAppService {
     }
 
     @Override
-    public LockAppService resetLockTimer(boolean restartAfterReset) {
-
+    public void resetLockTimer(boolean restartAfterReset) {
         if (this.lockTimerIntent != null) {
             this.lockTimeStamp = 0;
             alarmManager.cancel(this.lockTimerIntent);
@@ -161,24 +160,12 @@ public class PinLockService implements LockAppService {
                 this.lockTimeStamp = 0;
             }
         }
-
-        return this;
     }
 
     @Override
     public void addOnLockAppStateChanged(OnLockAppStateChanged c) {
         synchronized (this.lockAppStateChangedItems) {
             this.lockAppStateChangedItems.add(c);
-        }
-    }
-
-    @Override
-    public void removeOnLockAppStateChanged(OnLockAppStateChanged c) {
-        synchronized (this.lockAppStateChangedItems) {
-            int index = this.lockAppStateChangedItems.indexOf(c);
-            if (index >= 0) {
-                this.lockAppStateChangedItems.remove(index);
-            }
         }
     }
 }

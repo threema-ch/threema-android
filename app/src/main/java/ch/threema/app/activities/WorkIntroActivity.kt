@@ -57,6 +57,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import ch.threema.android.buildActivityIntent
+import ch.threema.android.context
+import ch.threema.android.showToast
 import ch.threema.app.BuildFlavor
 import ch.threema.app.R
 import ch.threema.app.compose.common.SpacerVertical
@@ -72,14 +75,11 @@ import ch.threema.app.compose.theme.dimens.GridUnit
 import ch.threema.app.compose.theme.dimens.responsive
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LinkifyUtil
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.compose.currentLocaleOrDefault
-import ch.threema.app.utils.context
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.app.utils.showToast
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("WorkIntroActivity")
+private val logger = getThreemaLogger("WorkIntroActivity")
 
 /**
  *  Used to limit only certain ui elements in their width for a good look on tablets
@@ -249,7 +249,7 @@ private fun WorkIntroContent(
                     ).uppercase(
                         locale = currentLocaleOrDefault(),
                     ),
-                    iconLeading = ButtonIconInfo(
+                    leadingIcon = ButtonIconInfo(
                         icon = R.drawable.ic_arrow_right,
                         contentDescription = null,
                     ),
@@ -274,7 +274,7 @@ private fun WorkIntroContent(
                     ).uppercase(
                         locale = currentLocaleOrDefault(),
                     ),
-                    iconLeading = ButtonIconInfo(
+                    leadingIcon = ButtonIconInfo(
                         icon = R.drawable.ic_arrow_right,
                         contentDescription = null,
                     ),
@@ -314,7 +314,7 @@ private fun WorkIntroContent(
                 ).uppercase(
                     locale = currentLocaleOrDefault(),
                 ),
-                iconLeading = ButtonIconInfo(
+                leadingIcon = ButtonIconInfo(
                     icon = R.drawable.ic_arrow_right,
                     contentDescription = null,
                 ),

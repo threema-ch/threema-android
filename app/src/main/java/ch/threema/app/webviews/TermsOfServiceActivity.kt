@@ -22,13 +22,13 @@
 package ch.threema.app.webviews
 
 import android.content.Context
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("TermsOfServiceActivity")
+private val logger = getThreemaLogger("TermsOfServiceActivity")
 
 class TermsOfServiceActivity : SimpleWebViewActivity() {
     init {

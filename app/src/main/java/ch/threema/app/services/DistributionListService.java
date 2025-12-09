@@ -26,12 +26,13 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
+import ch.threema.base.SessionScoped;
 import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
 
+@SessionScoped
 public interface DistributionListService extends AvatarService<DistributionListModel> {
     interface DistributionListFilter {
         boolean sortingByDate();

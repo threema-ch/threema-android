@@ -21,7 +21,6 @@
 
 package ch.threema.domain.protocol.csp.messages;
 
-import org.apache.commons.io.EndianUtils;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
@@ -29,7 +28,10 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static ch.threema.common.OutputStreamExtensionsKt.writeLittleEndianInt;
+import static ch.threema.common.OutputStreamExtensionsKt.writeLittleEndianShort;
+
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
@@ -44,7 +46,7 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
 @Deprecated
 public class GroupAudioMessage extends AbstractGroupMessage {
 
-    private final static Logger logger = LoggingUtil.getThreemaLogger("GroupAudioMessage");
+    private final static Logger logger = getThreemaLogger("GroupAudioMessage");
 
     private int duration;
     private byte[] audioBlobId;
@@ -124,9 +126,9 @@ public class GroupAudioMessage extends AbstractGroupMessage {
         try {
             bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
             bos.write(getApiGroupId().getGroupId());
-            EndianUtils.writeSwappedShort(bos, (short) duration);
+            writeLittleEndianShort(bos, (short) duration);
             bos.write(audioBlobId);
-            EndianUtils.writeSwappedInteger(bos, audioSize);
+            writeLittleEndianInt(bos, audioSize);
             bos.write(encryptionKey);
             return bos.toByteArray();
         } catch (IOException e) {

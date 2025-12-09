@@ -21,18 +21,18 @@
 
 package ch.threema.localcrypto
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.localcrypto.exceptions.CryptoException
 import ch.threema.localcrypto.models.MasterKeyState
 import ch.threema.localcrypto.models.RemoteSecret
 import ch.threema.localcrypto.models.RemoteSecretParameters
 
-private val logger = LoggingUtil.getThreemaLogger("MasterKeyCrypto")
+private val logger = getThreemaLogger("MasterKeyCrypto")
 
 class MasterKeyCrypto(
-    private val converter: MasterKeyStorageStateConverter = MasterKeyStorageStateConverter(),
-    private val version2Crypto: Version2MasterKeyCrypto = Version2MasterKeyCrypto(),
-    private val version1Crypto: Version1MasterKeyCrypto = Version1MasterKeyCrypto,
+    private val converter: MasterKeyStorageStateConverter,
+    private val version2Crypto: Version2MasterKeyCrypto,
+    private val version1Crypto: Version1MasterKeyCrypto,
 ) {
     fun verifyPassphrase(keyState: MasterKeyState.WithPassphrase, passphrase: CharArray): Boolean =
         when (val protection = keyState.protection) {

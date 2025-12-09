@@ -33,10 +33,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.services.MessageServiceImpl;
 import ch.threema.app.ui.MediaItem;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class ThumbnailUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ThumbnailUtil");
+    private static final Logger logger = getThreemaLogger("ThumbnailUtil");
 
     private ThumbnailUtil() {
     }

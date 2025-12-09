@@ -23,11 +23,11 @@ package ch.threema.app.voip.groupcall.sfu.webrtc
 
 import android.content.Context
 import androidx.annotation.WorkerThread
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import org.webrtc.*
 import org.webrtc.audio.JavaAudioDeviceModule
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCall.FactoryCtx")
+private val logger = getThreemaLogger("GroupCall.FactoryCtx")
 
 class FactoryCtx(
     context: Context,

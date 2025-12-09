@@ -21,19 +21,48 @@
 
 package ch.threema.common
 
+import java.nio.ByteOrder
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
 
 class IntExtensionsTest {
     @Test
-    fun `converting ints to unsigned little endian byte representation`() {
-        assertContentEquals(byteArrayOf(0.toByte(), 0.toByte()), 0.toU16littleEndian())
-        assertContentEquals(byteArrayOf(0xEF.toByte(), 0xBE.toByte()), 0xBEEF.toU16littleEndian())
-        assertContentEquals(byteArrayOf(0xFF.toByte(), 0xFF.toByte()), 0xFFFF.toU16littleEndian())
+    fun `int to little-endian`() {
+        val int = 0xaffe1234.toInt()
+        val bytes = int.toByteArray(order = ByteOrder.LITTLE_ENDIAN)
+        assertContentEquals(
+            byteArrayOf(0x34, 0x12, 0xfe.toByte(), 0xaf.toByte()),
+            bytes,
+        )
     }
 
     @Test
-    fun `converting int that are too large truncates to least significant bytes`() {
-        assertContentEquals(byteArrayOf(0xEF.toByte(), 0xBE.toByte()), 0xDEADBEEF.toInt().toU16littleEndian())
+    fun `int to big-endian`() {
+        val int = 0xaffe1234.toInt()
+        val bytes = int.toByteArray(order = ByteOrder.BIG_ENDIAN)
+        assertContentEquals(
+            byteArrayOf(0xaf.toByte(), 0xfe.toByte(), 0x12, 0x34),
+            bytes,
+        )
+    }
+
+    @Test
+    fun `round up to power of 2`() {
+        assertEquals(0, 0.roundUpToPowerOfTwo())
+        assertEquals(1, 1.roundUpToPowerOfTwo())
+        assertEquals(2, 2.roundUpToPowerOfTwo())
+        assertEquals(4, 3.roundUpToPowerOfTwo())
+        assertEquals(4, 4.roundUpToPowerOfTwo())
+        assertEquals(16, 12.roundUpToPowerOfTwo())
+        assertEquals(32, 20.roundUpToPowerOfTwo())
+        assertEquals(32, 32.roundUpToPowerOfTwo())
+        assertEquals(64, 63.roundUpToPowerOfTwo())
+        assertEquals(128, 127.roundUpToPowerOfTwo())
+        assertEquals(256, 255.roundUpToPowerOfTwo())
+        assertEquals(0x10000, 0xFFFF.roundUpToPowerOfTwo())
+        assertEquals(0x100000, 0xFFFFF.roundUpToPowerOfTwo())
+        assertEquals(0x100000, 0x100000.roundUpToPowerOfTwo())
+        assertEquals(0x10000000, 0x10000000.roundUpToPowerOfTwo())
     }
 }

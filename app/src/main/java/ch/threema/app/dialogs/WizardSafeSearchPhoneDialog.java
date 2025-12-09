@@ -49,12 +49,12 @@ import ch.threema.app.services.LocaleService;
 import ch.threema.app.threemasafe.ThreemaSafeService;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.utils.DialogUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardSafeSearchPhoneDialog extends DialogFragment implements SelectorDialog.SelectorDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardSafeSearchPhoneDialog");
+    private static final Logger logger = getThreemaLogger("WizardSafeSearchPhoneDialog");
 
     private static final String DIALOG_TAG_PROGRESS = "pro";
     private static final String DIALOG_TAG_SELECT_ID = "se";

@@ -24,9 +24,8 @@ package ch.threema.app.tasks
 import ch.threema.app.DangerousTest
 import ch.threema.app.TestMultiDeviceManager
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.protocol.ExpectedProfilePictureChange
 import ch.threema.app.protocol.PredefinedMessageIds
-import ch.threema.app.protocol.RemoveProfilePicture
-import ch.threema.app.services.ApiService
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.clearDatabaseAndCaches
@@ -43,16 +42,11 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.domain.protocol.blob.BlobLoader
-import ch.threema.domain.protocol.blob.BlobScope
-import ch.threema.domain.protocol.blob.BlobUploader
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
-import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel
-import ch.threema.testhelpers.MUST_NOT_BE_CALLED
-import java.net.URL
+import io.mockk.mockk
 import java.util.Date
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -82,7 +76,7 @@ class GroupCreateTaskTest {
         typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
         isArchived = false,
         profilePictureBlobId = null,
-        androidContactLookupKey = null,
+        androidContactLookupInfo = null,
         localAvatarExpires = null,
         isRestored = false,
         jobTitle = null,
@@ -91,32 +85,6 @@ class GroupCreateTaskTest {
     )
 
     private val serviceManager by lazy { ThreemaApplication.requireServiceManager() }
-
-    private val noopApiService = object : ApiService {
-        override fun createUploader(
-            data: ByteArray,
-            shouldPersist: Boolean,
-            blobScope: BlobScope,
-        ): BlobUploader {
-            MUST_NOT_BE_CALLED()
-        }
-
-        override fun createLoader(blobId: ByteArray): BlobLoader {
-            MUST_NOT_BE_CALLED()
-        }
-
-        override fun getAuthToken(): String {
-            MUST_NOT_BE_CALLED()
-        }
-
-        override fun invalidateAuthToken() {
-            MUST_NOT_BE_CALLED()
-        }
-
-        override fun getAvatarURL(identity: Identity): URL {
-            MUST_NOT_BE_CALLED()
-        }
-    }
 
     private val testMultiDeviceManagerMdEnabled by lazy {
         TestMultiDeviceManager(
@@ -159,24 +127,24 @@ class GroupCreateTaskTest {
                     notificationTriggerPolicyOverride = null,
                 ),
             )
-        } catch (e: GroupCreateException) {
+        } catch (_: GroupCreateException) {
             // Ignore
         }
     }
 
     @Test
     fun testSimpleGroupMd() = runTest {
-        val predefinedMessageIds = PredefinedMessageIds()
+        val predefinedMessageIds = PredefinedMessageIds.random()
         val groupCreateTask = GroupCreateTask(
             name = "My Group",
-            profilePictureChange = RemoveProfilePicture,
+            expectedProfilePictureChange = ExpectedProfilePictureChange.Remove,
             members = setOf(initialContactModelData.identity),
             groupIdentity = GroupIdentity(myContact.identity, 42),
             predefinedMessageIds = predefinedMessageIds,
             outgoingCspMessageServices = getOutgoingCspMessageServicesMd(),
             groupCallManager = serviceManager.groupCallManager,
             fileService = serviceManager.fileService,
-            apiService = noopApiService,
+            groupProfilePictureUploader = mockk(),
             groupModelRepository = serviceManager.modelRepositories.groups,
         )
 
@@ -209,17 +177,17 @@ class GroupCreateTaskTest {
 
     @Test
     fun testSimpleGroupNonMd() = runTest {
-        val predefinedMessageIds = PredefinedMessageIds()
+        val predefinedMessageIds = PredefinedMessageIds.random()
         val groupCreateTask = GroupCreateTask(
             name = "My Group",
-            profilePictureChange = RemoveProfilePicture,
+            expectedProfilePictureChange = ExpectedProfilePictureChange.Remove,
             members = setOf("12345678"),
             groupIdentity = GroupIdentity(myContact.identity, 42),
             predefinedMessageIds = predefinedMessageIds,
             outgoingCspMessageServices = getOutgoingCspMessageServicesNonMd(),
             groupCallManager = serviceManager.groupCallManager,
             fileService = serviceManager.fileService,
-            apiService = noopApiService,
+            groupProfilePictureUploader = mockk(),
             groupModelRepository = serviceManager.modelRepositories.groups,
         )
 

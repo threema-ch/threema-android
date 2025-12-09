@@ -37,11 +37,11 @@ import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class TranscoderView extends FrameLayout {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("TranscoderView");
+    private static final Logger logger = getThreemaLogger("TranscoderView");
 
     public static final int PROGRESS_MAX = 100;
 

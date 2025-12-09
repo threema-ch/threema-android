@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.connection.data
 
-import ch.threema.base.utils.Utils
+import ch.threema.common.toByteArray
 import ch.threema.common.toHexString
 import ch.threema.domain.protocol.D2mPayloadType
 import ch.threema.domain.protocol.connection.ServerConnectionException
@@ -202,8 +202,8 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
             val outputStream = ByteArrayOutputStream()
             outputStream.write(8)
             outputStream.write(0)
-            outputStream.write(Utils.shortToByteArrayLittleEndian(flags.toShort()))
-            outputStream.write(Utils.intToByteArrayLittleEndian(reflectId.toInt()))
+            outputStream.write(flags.toShort().toByteArray(order = ByteOrder.LITTLE_ENDIAN))
+            outputStream.write(reflectId.toInt().toByteArray(order = ByteOrder.LITTLE_ENDIAN))
             outputStream.write(encryptedEnvelope)
             return D2mContainer(payloadType, outputStream.toByteArray())
         }
@@ -217,7 +217,7 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
         override fun toContainer(): D2mContainer {
             val outputStream = ByteArrayOutputStream()
             outputStream.write(ByteArray(4)) // reserved
-            outputStream.write(Utils.intToByteArrayLittleEndian(reflectId.toInt()))
+            outputStream.write(reflectId.toInt().toByteArray(order = ByteOrder.LITTLE_ENDIAN))
             return D2mContainer(payloadType, outputStream.toByteArray())
         }
     }

@@ -28,14 +28,14 @@ import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import ch.threema.app.R
 import ch.threema.app.utils.RuntimeUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.ExecutionException
 import java8.util.concurrent.CompletableFuture
 import kotlin.concurrent.Volatile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-private val logger = LoggingUtil.getThreemaLogger("EmojiManager")
+private val logger = getThreemaLogger("EmojiManager")
 
 class EmojiManager private constructor(context: Context) {
 

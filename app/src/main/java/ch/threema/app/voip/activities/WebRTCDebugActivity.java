@@ -70,17 +70,18 @@ import ch.threema.app.utils.WebRTCUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.voip.PeerConnectionClient;
 import ch.threema.app.voip.util.SdpPatcher;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ContactModel;
 import ch.threema.protobuf.callsignaling.O2OCall;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 /**
  * An activity to debug problems with WebRTC (in the context of Threema Calls).
  */
 public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerConnectionClient.Events, TextEntryDialog.TextEntryDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WebRTCDebugActivity");
+    private static final Logger logger = getThreemaLogger("WebRTCDebugActivity");
     private static final String DIALOG_TAG_SEND_WEBRTC_DEBUG = "swd";
 
     @NonNull
@@ -118,7 +119,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }

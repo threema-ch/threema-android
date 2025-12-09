@@ -22,23 +22,33 @@
 package ch.threema.app.fragments
 
 import android.annotation.SuppressLint
-import android.os.AsyncTask
 import android.widget.AbsListView
+import androidx.lifecycle.lifecycleScope
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.adapters.UserListAdapter
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ContactService
+import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.utils.ContactUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.app.utils.DispatcherProvider
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.types.Identity
-import ch.threema.storage.models.ContactModel
 import com.bumptech.glide.Glide
-
-private val logger = LoggingUtil.getThreemaLogger("WorkUserMemberListFragment")
+import kotlin.getValue
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 
 class WorkUserMemberListFragment : MemberListFragment() {
+    private val contactService: ContactService by inject()
+    private val blockedIdentitiesService: BlockedIdentitiesService by inject()
+    private val conversationCategoryService: ConversationCategoryService by inject()
+    private val preferenceService: PreferenceService by inject()
+    private val dispatcherProvider: DispatcherProvider by inject()
+
     override fun getBundleName(): String = "WorkerUserMemberListState"
 
     override fun getEmptyText(): Int = R.string.no_matching_work_contacts
@@ -51,67 +61,58 @@ class WorkUserMemberListFragment : MemberListFragment() {
         groups: Boolean,
         profilePics: Boolean,
     ) {
-        @Suppress("DEPRECATION")
-        object : AsyncTask<Void?, Void?, List<ContactModel>>() {
-            @Deprecated("Deprecated in Java")
-            override fun doInBackground(vararg params: Void?): List<ContactModel> {
-                return contactService.find(
+        lifecycleScope.launch {
+            val contactModels = withContext(dispatcherProvider.worker) {
+                contactService.find(
                     object : ContactService.Filter {
-                        override fun states(): Array<IdentityState> =
+                        override fun states() =
                             if (preferenceService.showInactiveContacts()) {
                                 arrayOf(IdentityState.ACTIVE, IdentityState.INACTIVE)
                             } else {
                                 arrayOf(IdentityState.ACTIVE)
                             }
 
-                        override fun requiredFeature(): Long? = if (groups) ThreemaFeature.GROUP_CHAT else null
+                        override fun requiredFeature() = if (groups) ThreemaFeature.GROUP_CHAT else null
 
-                        override fun fetchMissingFeatureLevel(): Boolean = groups
+                        override fun fetchMissingFeatureLevel() = groups
 
-                        override fun includeMyself(): Boolean = false
+                        override fun includeMyself() = false
 
-                        override fun includeHidden(): Boolean = false
-
-                        override fun onlyWithReceiptSettings(): Boolean = false
+                        override fun includeHidden() = false
                     },
-                ).filter { contactModel: ContactModel ->
-                    contactModel.isWorkVerified &&
-                        (!profilePics || !ContactUtil.isEchoEchoOrGatewayContact(contactModel)) &&
-                        (excludedIdentities == null || !excludedIdentities.contains(contactModel.identity))
-                }
+                )
+                    .filter { contactModel ->
+                        contactModel.isWorkVerified &&
+                            (!profilePics || !ContactUtil.isEchoEchoOrGatewayContact(contactModel)) &&
+                            (excludedIdentities == null || !excludedIdentities.contains(contactModel.identity))
+                    }
+            }
+            if (!isAdded) {
+                return@launch
             }
 
-            @Deprecated("Deprecated in Java")
-            override fun onPostExecute(contactModels: List<ContactModel>) {
-                if (!isAdded) {
-                    return
-                } else if (conversationCategoryService == null) {
-                    logger.error("Conversation category service is null")
-                    return
+            adapter = UserListAdapter(
+                activity,
+                contactModels,
+                preselectedIdentities,
+                checkedItemPositions,
+                contactService,
+                blockedIdentitiesService,
+                conversationCategoryService,
+                preferenceService,
+                this@WorkUserMemberListFragment,
+                Glide.with(ThreemaApplication.getAppContext()),
+                true,
+            )
+            setListAdapter(adapter)
+            listView.choiceMode = AbsListView.CHOICE_MODE_MULTIPLE
+            if (listInstanceState != null) {
+                if (isAdded && view != null && getActivity() != null) {
+                    listView.onRestoreInstanceState(listInstanceState)
                 }
-                adapter = UserListAdapter(
-                    activity,
-                    contactModels,
-                    preselectedIdentities,
-                    checkedItemPositions,
-                    contactService,
-                    blockedIdentitiesService,
-                    conversationCategoryService,
-                    preferenceService,
-                    this@WorkUserMemberListFragment,
-                    Glide.with(ThreemaApplication.getAppContext()),
-                    true,
-                )
-                setListAdapter(adapter)
-                listView.choiceMode = AbsListView.CHOICE_MODE_MULTIPLE
-                if (listInstanceState != null) {
-                    if (isAdded && view != null && getActivity() != null) {
-                        listView.onRestoreInstanceState(listInstanceState)
-                    }
-                    listInstanceState = null
-                }
-                onAdapterCreated()
+                listInstanceState = null
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR)
+            onAdapterCreated()
+        }
     }
 }

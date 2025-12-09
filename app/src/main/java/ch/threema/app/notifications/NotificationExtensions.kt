@@ -29,10 +29,9 @@ import androidx.core.app.NotificationChannelGroupCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.net.toUri
 import ch.threema.app.services.ServicesConstants
-import ch.threema.app.utils.SoundUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("NotificationExtensions")
+private val logger = getThreemaLogger("NotificationExtensions")
 
 /**
  * Retrieves the URI for a ringtone (aka. notification sound).
@@ -42,9 +41,6 @@ fun SharedPreferences.getRingtoneUri(key: String): Uri? =
     getString(key, null)
         ?.takeUnless { it == ServicesConstants.PREFERENCES_NULL }
         ?.toUri()
-
-fun NotificationManagerCompat.exists(channelId: String): Boolean =
-    getNotificationChannelCompat(channelId) != null
 
 /**
  * Create a notification channel group with the provided ID and name
@@ -168,8 +164,4 @@ fun NotificationManagerCompat.safelyDeleteChannelGroup(groupId: String) {
     } catch (e: SecurityException) {
         logger.error("Unable to delete notification channel group {}", groupId, e)
     }
-}
-
-fun NotificationChannelCompat.Builder.setSound(sound: Uri?, usage: Int) {
-    setSound(sound, SoundUtil.getAudioAttributesForUsage(usage))
 }

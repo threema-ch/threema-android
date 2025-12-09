@@ -49,12 +49,12 @@ import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class NotificationActionService extends IntentService {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("NotificationActionService");
+    private static final Logger logger = getThreemaLogger("NotificationActionService");
 
     private static final String TAG = "notificationAction";
     public static final String ACTION_REPLY = BuildConfig.APPLICATION_ID + ".REPLY";

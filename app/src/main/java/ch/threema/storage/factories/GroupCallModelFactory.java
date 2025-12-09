@@ -37,13 +37,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.GroupCallModel;
 
 public class GroupCallModelFactory extends ModelFactory {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupCallModelFactory");
+    private static final Logger logger = getThreemaLogger("GroupCallModelFactory");
 
     public GroupCallModelFactory(DatabaseService databaseService) {
         super(databaseService, GroupCallModel.TABLE);

@@ -22,6 +22,7 @@
 package ch.threema.app.debug.patternlibrary
 
 import android.os.Bundle
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -47,6 +48,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -69,6 +71,8 @@ import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import ch.threema.android.Toaster
+import ch.threema.android.showToast
 import ch.threema.app.R
 import ch.threema.app.compose.common.SpacerVertical
 import ch.threema.app.compose.common.text.conversation.ConversationText
@@ -80,9 +84,12 @@ import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.GridUnit
 import ch.threema.app.preference.service.PreferenceService.EmojiStyle_ANDROID
 import ch.threema.app.preference.service.PreferenceService.EmojiStyle_DEFAULT
-import ch.threema.app.utils.Toaster
+import ch.threema.domain.types.Identity
+import org.koin.android.ext.android.inject
 
 class PatternLibraryActivity : AppCompatActivity() {
+
+    private val toaster: Toaster by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -92,6 +99,11 @@ class PatternLibraryActivity : AppCompatActivity() {
                 Content(
                     onClickBack = {
                         finish()
+                    },
+                    onClickMention = { identity ->
+                        toaster.showToast(
+                            message = "Clicked on mention for identity $identity",
+                        )
                     },
                 )
             }
@@ -138,6 +150,7 @@ private val conversationTextInputsMarkup = listOf(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 private fun Content(
     onClickBack: () -> Unit,
+    onClickMention: (Identity) -> Unit,
 ) {
     Scaffold(
         contentWindowInsets = WindowInsets.safeDrawing,
@@ -275,14 +288,14 @@ private fun Content(
                         )
                     }
                 }
-                items(colorSection.colors.size) { index ->
+                items(colorSection.colors) { (color, colorName) ->
                     ColorSpot(
                         modifier = Modifier.padding(
                             vertical = GridUnit.x0_5,
                             horizontal = 12.dp,
                         ),
-                        color = colorSection.colors[index].first,
-                        colorName = colorSection.colors[index].second,
+                        color = color,
+                        colorName = colorName,
                     )
                 }
             }
@@ -327,7 +340,7 @@ private fun Content(
                 }
             }
 
-            items(count = conversationTextInputsMarkup.size) { index ->
+            items(conversationTextInputsMarkup) { rawInput ->
                 ConversationText(
                     modifier = Modifier
                         .padding(
@@ -341,7 +354,7 @@ private fun Content(
                             color = MaterialTheme.colorScheme.surfaceContainer,
                         )
                         .padding(horizontal = GridUnit.x0_5),
-                    rawInput = conversationTextInputsMarkup[index],
+                    rawInput = rawInput,
                     mentionFeature = MentionFeature.Off,
                     markupEnabled = true,
                 )
@@ -544,11 +557,7 @@ private fun Content(
                         mentionFeature = MentionFeature.On(
                             ownIdentity = "01234567",
                             identityNameProvider = PreviewParameterProviderConversationText.mentionedIdentityNameProviderPreviewImpl,
-                            onClickedMention = { identity ->
-                                Toaster.showToast(
-                                    message = "Clicked on mention for identity $identity",
-                                )
-                            },
+                            onClickedMention = onClickMention,
                         ),
                     )
                 }
@@ -679,6 +688,7 @@ private fun ConversationTextEmojiShowcase(
 
 @Composable
 private fun ThreemaTextMentionShowcase(rawInput: String) {
+    val activity = LocalActivity.current
     ConversationText(
         modifier = Modifier.padding(
             vertical = GridUnit.x1,
@@ -692,7 +702,7 @@ private fun ThreemaTextMentionShowcase(rawInput: String) {
             ownIdentity = "01234567",
             identityNameProvider = PreviewParameterProviderConversationText.mentionedIdentityNameProviderPreviewImpl,
             onClickedMention = { identity ->
-                Toaster.showToast(
+                activity?.showToast(
                     message = "Clicked on mention for identity $identity",
                 )
             },
@@ -706,6 +716,7 @@ private fun Content_Preview() {
     ThreemaThemePreview {
         Content(
             onClickBack = {},
+            onClickMention = {},
         )
     }
 }

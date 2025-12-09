@@ -26,14 +26,14 @@ import androidx.annotation.ColorInt
 import androidx.annotation.VisibleForTesting
 import androidx.core.graphics.toColorInt
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.types.Identity
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 
-private val logger = LoggingUtil.getThreemaLogger("IdColor")
+private val logger = getThreemaLogger("IdColor")
 
 class IdColor(index: Int) {
     /**

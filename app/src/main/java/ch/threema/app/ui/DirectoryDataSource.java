@@ -39,7 +39,7 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkDirectory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
@@ -48,7 +48,7 @@ import ch.threema.domain.protocol.api.work.WorkDirectoryFilter;
 import ch.threema.domain.stores.IdentityStore;
 
 public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, WorkDirectoryContact> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DirectoryDataSource");
+    private static final Logger logger = getThreemaLogger("DirectoryDataSource");
     public static final int MIN_SEARCH_STRING_LENGTH = 3;
     public static final String WILDCARD_SEARCH_ALL = "*";
 

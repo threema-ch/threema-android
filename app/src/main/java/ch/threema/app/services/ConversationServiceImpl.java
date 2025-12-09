@@ -49,7 +49,7 @@ import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.DatabaseService;
@@ -67,7 +67,7 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ReceiverModel;
 
 public class ConversationServiceImpl implements ConversationService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationServiceImpl");
+    private static final Logger logger = getThreemaLogger("ConversationServiceImpl");
 
     private final Context context;
     private final @NonNull List<ConversationModel> conversationCache;
@@ -432,15 +432,15 @@ public class ConversationServiceImpl implements ConversationService {
     }
 
     @Override
-    public synchronized void updateContactConversation(@NonNull ContactModel contactModel) {
+    public synchronized void updateContactConversation(@NonNull String identity) {
         synchronized (conversationCache) {
             for (int i = 0; i < conversationCache.size(); i++) {
                 ConversationModel conversationModel = conversationCache.get(i);
-                if (conversationModel.isContactConversation() && contactModel.getIdentity().equals(conversationModel.getContact().getIdentity())) {
+                if (conversationModel.isContactConversation() && identity.equals(conversationModel.getContact().getIdentity())) {
                     ContactConversationModelParser conversationModelParser = new ContactConversationModelParser();
-                    final List<ConversationResult> result = conversationModelParser.select(contactModel.getIdentity());
+                    final List<ConversationResult> result = conversationModelParser.select(identity);
                     if (result.isEmpty() || result.get(0) == null) {
-                        logger.warn("No result for updating identity {}", contactModel.getIdentity());
+                        logger.warn("No result for updating identity {}", identity);
                         return;
                     }
                     ConversationModel updatedModel = conversationModelParser.parseResult(result.get(0), conversationModel, false);

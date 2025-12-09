@@ -22,12 +22,19 @@
 package ch.threema.common
 
 import java.time.Instant
+import java.time.LocalDateTime
 
-fun interface TimeProvider {
+interface TimeProvider {
+    fun get(): Instant
+
+    fun getLocal(): LocalDateTime
+
     companion object {
         @JvmField
-        val default = TimeProvider { Instant.now() }
-    }
+        val default = object : TimeProvider {
+            override fun get() = Instant.now()
 
-    fun get(): Instant
+            override fun getLocal() = LocalDateTime.now()
+        }
+    }
 }

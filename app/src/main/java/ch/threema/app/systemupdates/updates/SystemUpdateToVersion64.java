@@ -30,11 +30,11 @@ import java.io.File;
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.WorkManager;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /* clean up image labeler */
 public class SystemUpdateToVersion64 implements SystemUpdate {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion64");
+    private static final Logger logger = getThreemaLogger("SystemUpdateToVersion64");
     private @NonNull final Context context;
 
     public SystemUpdateToVersion64(Context context) {

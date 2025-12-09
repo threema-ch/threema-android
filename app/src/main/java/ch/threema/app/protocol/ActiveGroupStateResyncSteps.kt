@@ -21,16 +21,17 @@
 
 package ch.threema.app.protocol
 
-import ch.threema.app.services.ApiService
+import ch.threema.app.profilepicture.GroupProfilePictureUploader
+import ch.threema.app.profilepicture.GroupProfilePictureUploader.GroupProfilePictureUploadResult
+import ch.threema.app.profilepicture.RawProfilePicture
 import ch.threema.app.services.FileService
 import ch.threema.app.services.UserService
-import ch.threema.app.tasks.tryUploadingGroupPhoto
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.app.voip.groupcall.GroupCallManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.domain.models.BasicContact
@@ -43,17 +44,16 @@ import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.IncomingGroupSyncRequestLogModel
-import java.io.FileNotFoundException
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("ActiveGroupStateResyncSteps")
+private val logger = getThreemaLogger("ActiveGroupStateResyncSteps")
 
 suspend fun runActiveGroupStateResyncSteps(
     groupModel: GroupModel,
     targetMembers: Set<BasicContact>,
     preGeneratedMessageIds: PreGeneratedMessageIds,
     userService: UserService,
-    apiService: ApiService,
+    groupProfilePictureUploader: GroupProfilePictureUploader,
     fileService: FileService,
     groupCallManager: GroupCallManager,
     databaseService: DatabaseService,
@@ -104,7 +104,7 @@ suspend fun runActiveGroupStateResyncSteps(
             currentTimestamp,
             updatedTargetMembers,
             groupModel,
-            apiService,
+            groupProfilePictureUploader,
             fileService,
         ),
         createGroupCallStartMessageHandle(
@@ -179,14 +179,32 @@ private fun createProfilePictureMessageHandle(
     currentTimestamp: Date,
     receivers: Set<BasicContact>,
     groupModel: GroupModel,
-    apiService: ApiService,
+    groupProfilePictureUploader: GroupProfilePictureUploader,
     fileService: FileService,
 ): OutgoingCspMessageHandle? {
-    val uploadResult = fileService.getGroupAvatar(groupModel)?.let {
-        try {
-            tryUploadingGroupPhoto(it, apiService)
-        } catch (e: FileNotFoundException) {
-            logger.warn("Could not upload group photo. Skipping profile picture message.")
+    val uploadResult = fileService.getGroupProfilePictureBytes(groupModel)?.let { bytes ->
+        groupProfilePictureUploader.tryUploadingGroupProfilePicture(RawProfilePicture(bytes))
+    }
+
+    val groupProfilePictureMessageCreator = when (uploadResult) {
+        is GroupProfilePictureUploadResult.Success -> {
+            {
+                GroupSetProfilePictureMessage().apply {
+                    blobId = uploadResult.blobId
+                    size = uploadResult.size
+                    encryptionKey = uploadResult.encryptionKey
+                }
+            }
+        }
+
+        null -> {
+            {
+                GroupDeleteProfilePictureMessage()
+            }
+        }
+
+        else -> {
+            logger.warn("Could not upload group profile picture. Skipping profile picture message.")
             return null
         }
     }
@@ -198,15 +216,7 @@ private fun createProfilePictureMessageHandle(
             currentTimestamp,
             groupModel.groupIdentity,
         ) {
-            if (uploadResult != null) {
-                GroupSetProfilePictureMessage().apply {
-                    blobId = uploadResult.blobId
-                    size = uploadResult.size
-                    encryptionKey = uploadResult.encryptionKey
-                }
-            } else {
-                GroupDeleteProfilePictureMessage()
-            }
+            groupProfilePictureMessageCreator()
         },
     )
 }

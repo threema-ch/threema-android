@@ -21,17 +21,19 @@
 
 package ch.threema.localcrypto
 
-import android.content.Context
 import java.io.File
 
-object MasterKeyFileProvider {
-    @JvmStatic
-    fun getVersion2MasterKeyFile(context: Context): File =
-        File(context.filesDir, VERSION2_KEY_FILE_NAME)
+class MasterKeyFileProvider(
+    private val directory: File,
+) {
+    fun getVersion2MasterKeyFile(): File =
+        File(directory, VERSION2_KEY_FILE_NAME)
 
-    fun getVersion1MasterKeyFile(context: Context): File =
-        File(context.filesDir, VERSION1_KEY_FILE_NAME)
+    fun getVersion1MasterKeyFile(): File =
+        File(directory, VERSION1_KEY_FILE_NAME)
 
-    private const val VERSION2_KEY_FILE_NAME = "master_key.dat"
-    private const val VERSION1_KEY_FILE_NAME = "key.dat"
+    companion object {
+        private const val VERSION2_KEY_FILE_NAME = "master_key.dat"
+        private const val VERSION1_KEY_FILE_NAME = "key.dat"
+    }
 }

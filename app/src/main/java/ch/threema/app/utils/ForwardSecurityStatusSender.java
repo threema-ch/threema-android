@@ -33,7 +33,7 @@ import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.fs.DHSessionId;
@@ -50,7 +50,7 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel.ForwardSecurityStatusType;
 
 public class ForwardSecurityStatusSender implements ForwardSecurityStatusListener {
-    private final static Logger logger = LoggingUtil.getThreemaLogger("ForwardSecurityStatusSender");
+    private final static Logger logger = getThreemaLogger("ForwardSecurityStatusSender");
     private final boolean debug;
     @NonNull
     private final ContactService contactService;
@@ -188,7 +188,8 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
             // Set the forward security state to on (only required in version 1.0)
             ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
             if (contactModel != null) {
-                contactService.save(contactModel.setForwardSecurityState(ContactModel.FS_ON));
+                contactModel.setForwardSecurityState(ContactModel.FS_ON);
+                contactService.persistForwardSecurityState(contact.getIdentity(), ContactModel.FS_ON);
             }
         }
     }
@@ -229,7 +230,8 @@ public class ForwardSecurityStatusSender implements ForwardSecurityStatusListene
             // For sessions of version 1.0 show warning only once
             ContactModel contactModel = contactService.getByIdentity(contact.getIdentity());
             if (contactModel != null && contactModel.getForwardSecurityState() == ContactModel.FS_ON) {
-                contactService.save(contactModel.setForwardSecurityState(ContactModel.FS_OFF));
+                contactModel.setForwardSecurityState(ContactModel.FS_OFF);
+                contactService.persistForwardSecurityState(contact.getIdentity(), ContactModel.FS_OFF);
                 postStatusMessage(contact, ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY);
             }
         } else if (session.getOutgoingAppliedVersion().getNumber() >= Version.V1_1.getNumber()) {

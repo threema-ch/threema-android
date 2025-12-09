@@ -27,13 +27,13 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.ReflectSettingsSyncTask
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.UnknownContactPolicy
 
-private val logger = LoggingUtil.getThreemaLogger("UnknownContactPolicySetting")
+private val logger = getThreemaLogger("UnknownContactPolicySetting")
 
 /**
  * The setting whether unknown contacts should be blocked. Stores true if unknown contacts should be blocked.

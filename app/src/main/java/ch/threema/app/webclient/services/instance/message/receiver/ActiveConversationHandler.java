@@ -36,7 +36,7 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -45,7 +45,7 @@ import ch.threema.storage.models.GroupModel;
 
 @WorkerThread
 public class ActiveConversationHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ActiveConversationHandler");
+    private static final Logger logger = getThreemaLogger("ActiveConversationHandler");
     private final ConversationService conversationService;
     private final ConversationTagService conversationTagService;
     private final ContactService contactService;

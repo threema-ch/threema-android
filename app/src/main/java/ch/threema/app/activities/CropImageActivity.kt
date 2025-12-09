@@ -34,16 +34,16 @@ import android.view.View
 import android.view.ViewTreeObserver.OnGlobalLayoutListener
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.view.ViewCompat
+import ch.threema.android.buildActivityIntent
+import ch.threema.android.getIntOrNull
+import ch.threema.android.getParcelable
+import ch.threema.android.getSerializable
 import ch.threema.app.R
 import ch.threema.app.ui.InsetSides.Companion.lbr
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.BitmapUtil
-import ch.threema.app.utils.buildActivityIntent
-import ch.threema.app.utils.getIntOrNull
-import ch.threema.app.utils.getParcelable
-import ch.threema.app.utils.getSerializable
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import com.canhub.cropper.CropImageView
 import com.canhub.cropper.CropImageView.CropShape
@@ -52,7 +52,7 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import java.util.concurrent.atomic.AtomicBoolean
 
-private val logger = LoggingUtil.getThreemaLogger("CropImageActivity")
+private val logger = getThreemaLogger("CropImageActivity")
 
 class CropImageActivity : ThreemaToolbarActivity() {
     init {

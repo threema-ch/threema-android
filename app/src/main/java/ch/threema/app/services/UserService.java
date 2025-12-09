@@ -34,6 +34,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.profilepicture.CheckedProfilePicture;
 import ch.threema.app.profilepicture.ProfilePicture;
+import ch.threema.base.SessionScoped;
 import ch.threema.domain.models.LicenseCredentials;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
@@ -42,6 +43,7 @@ import ch.threema.storage.models.ContactModel;
 /**
  * Method and actions for the current Threema-User!
  */
+@SessionScoped
 public interface UserService {
 
     int LinkingState_NONE = 0;
@@ -109,7 +111,8 @@ public interface UserService {
 
     int getMobileLinkingState();
 
-    long getMobileLinkingTime();
+    @Nullable
+    Instant getMobileLinkingTime();
 
     /**
      * Persist the provided phone number as identity link from sync. The change is not reflected.

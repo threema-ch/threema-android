@@ -45,7 +45,7 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.notification.ConversationNotificationGroup;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -56,7 +56,7 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
 
 public class ConversationNotificationUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ConversationNotificationUtil");
+    private static final Logger logger = getThreemaLogger("ConversationNotificationUtil");
 
     protected static final HashMap<String, ConversationNotificationGroup> notificationGroupHashMap = new HashMap<>();
     private static final int MAX_NOTIFICATION_THUMBNAIL_SIZE_BYTES = 1024 * 1024;

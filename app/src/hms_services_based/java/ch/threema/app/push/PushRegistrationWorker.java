@@ -35,11 +35,11 @@ import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 import ch.threema.app.utils.PushUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 public class PushRegistrationWorker extends Worker {
-    private final Logger logger = LoggingUtil.getThreemaLogger("PushRegistrationWorker");
+    private final Logger logger = getThreemaLogger("PushRegistrationWorker");
 
     private final Context appContext;
 

@@ -25,9 +25,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import ch.threema.app.services.PollingHelper
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("FetchMessagesBroadcastReceiver")
+private val logger = getThreemaLogger("FetchMessagesBroadcastReceiver")
 
 class FetchMessagesBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

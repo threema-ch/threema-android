@@ -29,13 +29,13 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 
 public class DatabaseUpdateToVersion38 implements DatabaseUpdate {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DatabaseUpdateToVersion38");
+    private static final Logger logger = getThreemaLogger("DatabaseUpdateToVersion38");
 
     @NonNull
     private final SQLiteDatabase sqLiteDatabase;

@@ -23,7 +23,7 @@ package ch.threema.data.storage
 
 import androidx.core.database.getStringOrNull
 import androidx.sqlite.db.SupportSQLiteOpenHelper
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.repositories.EditHistoryEntryCreateException
 import ch.threema.storage.buildContentValues
 import ch.threema.storage.factories.ContactEditHistoryEntryModelFactory
@@ -33,7 +33,7 @@ import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
-private val logger = LoggingUtil.getThreemaLogger("EditHistoryDaoImpl")
+private val logger = getThreemaLogger("EditHistoryDaoImpl")
 
 class EditHistoryDaoImpl(
     private val sqlite: SupportSQLiteOpenHelper,

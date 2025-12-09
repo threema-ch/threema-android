@@ -25,12 +25,12 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import ch.threema.android.context
 import ch.threema.app.R
 import ch.threema.app.home.HomeActivity
 import ch.threema.app.startup.AppStartupActivity
 import ch.threema.app.startup.AppStartupMonitor
 import ch.threema.app.startup.models.AppSystem
-import ch.threema.app.utils.context
 import ch.threema.common.waitAtMost
 import ch.threema.localcrypto.MasterKeyManager
 import kotlin.time.Duration.Companion.seconds
@@ -61,7 +61,7 @@ class MainActivity : ThreemaAppCompatActivity() {
      * unnecessarily finishing and recreating [HomeActivity], we wait here for a few seconds while
      * displaying the splash screen. In the unlikely event that the service manager does not become ready
      * within this time, we continue normally and let [HomeActivity] handle the waiting.
-     * We only wait for the [AppSystem.SERVICE_MANAGER], not [AppSystem.DATABASE_UPDATES]
+     * We only wait for the [AppSystem.UNLOCKED_MASTER_KEY], not [AppSystem.DATABASE_UPDATES]
      * or [AppSystem.SYSTEM_UPDATES], as those might take significantly longer
      * and we want to display [AppStartupActivity] for those.
      */
@@ -71,7 +71,7 @@ class MainActivity : ThreemaAppCompatActivity() {
         }
         waitAtMost(3.seconds) {
             if (!masterKeyManager.isProtected()) {
-                appStartupMonitor.awaitSystem(AppSystem.SERVICE_MANAGER)
+                appStartupMonitor.awaitSystem(AppSystem.UNLOCKED_MASTER_KEY)
             }
         }
     }

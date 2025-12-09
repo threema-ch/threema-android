@@ -56,4 +56,11 @@ class StringExtensionsTest {
         assertNull("".takeUnlessBlank())
         assertNull("  ".takeUnlessBlank())
     }
+
+    @Test
+    fun `test capitalize`() {
+        assertEquals("Hello worlD", "hello worlD".capitalize())
+        assertEquals("Hello World", "Hello World".capitalize())
+        assertEquals("Äöü", "äöü".capitalize())
+    }
 }

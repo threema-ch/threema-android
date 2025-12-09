@@ -33,8 +33,14 @@ import ch.threema.app.activities.DistributionListAddActivity;
 import ch.threema.app.adapters.DistributionListAdapter;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.storage.models.DistributionListModel;
+import kotlin.Lazy;
+
+import static org.koin.java.KoinJavaComponent.inject;
 
 public class DistributionListFragment extends RecipientListFragment {
+
+    private final Lazy<DistributionListService> distributionListServiceLazy = inject(DistributionListService.class);
+
     @Override
     protected boolean isMultiSelectAllowed() {
         return false;
@@ -70,7 +76,7 @@ public class DistributionListFragment extends RecipientListFragment {
         new AsyncTask<Void, Void, List<DistributionListModel>>() {
             @Override
             protected List<DistributionListModel> doInBackground(Void... voids) {
-                return distributionListService.getAll(new DistributionListService.DistributionListFilter() {
+                return distributionListServiceLazy.getValue().getAll(new DistributionListService.DistributionListFilter() {
                     @Override
                     public boolean sortingByDate() {
                         return true;
@@ -94,7 +100,7 @@ public class DistributionListFragment extends RecipientListFragment {
                     activity,
                     distributionListModels,
                     checkedItemPositions,
-                    distributionListService,
+                    distributionListServiceLazy.getValue(),
                     DistributionListFragment.this
                 );
                 setListAdapter(adapter);

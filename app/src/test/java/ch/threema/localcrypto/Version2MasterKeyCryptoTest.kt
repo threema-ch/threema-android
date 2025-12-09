@@ -31,10 +31,10 @@ import ch.threema.localcrypto.models.RemoteSecret
 import ch.threema.localcrypto.models.RemoteSecretParameters
 import ch.threema.localcrypto.models.Version2MasterKeyStorageInnerData
 import ch.threema.localcrypto.models.Version2MasterKeyStorageOuterData
+import ch.threema.testhelpers.mockSecureRandom
 import com.google.protobuf.kotlin.toByteStringUtf8
 import io.mockk.every
 import io.mockk.mockk
-import java.security.SecureRandom
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -230,16 +230,6 @@ class Version2MasterKeyCryptoTest {
     }
 
     companion object {
-        private fun mockSecureRandom(): SecureRandom =
-            mockk {
-                every { nextBytes(any()) } answers {
-                    val byteArray = firstArg<ByteArray>()
-                    byteArray.indices.forEach { i ->
-                        byteArray[i] = i.toByte()
-                    }
-                }
-            }
-
         private val PASSPHRASE = "passphrase".toCharArray()
         private val PASSPHRASE_ENCRYPTED_DATA = byteArrayOf(
             19, 120, -44, -115, 51, -6, -39, -83, 47, 79, -16,

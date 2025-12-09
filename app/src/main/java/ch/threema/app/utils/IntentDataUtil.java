@@ -54,7 +54,7 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
 import ch.threema.common.models.Coordinates;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
@@ -68,7 +68,7 @@ import ch.threema.storage.models.ballot.BallotModel;
 import static android.app.PendingIntent.FLAG_MUTABLE;
 
 public class IntentDataUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("IntentDataUtil");
+    private static final Logger logger = getThreemaLogger("IntentDataUtil");
 
     public static final String ACTION_LICENSE_NOT_ALLOWED = BuildConfig.APPLICATION_ID + "license_not_allowed";
     public static final String ACTION_CONTACTS_CHANGED = BuildConfig.APPLICATION_ID + "contacts_changed";
@@ -256,7 +256,7 @@ public class IntentDataUtil {
         return null;
     }
 
-    public static void append(BallotModel ballotModel, Intent intent) {
+    public static void append(@NonNull BallotModel ballotModel, @NonNull Intent intent) {
         intent.putExtra(INTENT_DATA_BALLOT_ID, ballotModel.getId());
     }
 
@@ -390,11 +390,6 @@ public class IntentDataUtil {
             return contactService.createReceiver(contactService.getByIdentity(cIdentity));
         } else if (extras.containsKey(AppConstants.INTENT_DATA_GROUP_DATABASE_ID)) {
             int groupId = (int) extras.getLong(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0L);
-
-            // TODO(ANDR-4303): This fallback is currently needed to handle intents coming from pinned shortcuts created before 6.2.0
-            if (groupId == 0) {
-                groupId = extras.getInt(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0);
-            }
             final @Nullable GroupModel groupModel = groupService.getById(groupId);
             if (groupModel != null) {
                 return groupService.createReceiver(groupModel);

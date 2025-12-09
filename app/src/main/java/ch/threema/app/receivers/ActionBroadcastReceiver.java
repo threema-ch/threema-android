@@ -36,13 +36,13 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
 
 public abstract class ActionBroadcastReceiver extends BroadcastReceiver {
     protected static final String TAG = "ActionBroadcastReceiver";
-    private static final Logger logger = LoggingUtil.getThreemaLogger(TAG);
+    private static final Logger logger = getThreemaLogger(TAG);
 
     protected static final int WEARABLE_CONNECTION_LINGER = 1000 * 5;
 

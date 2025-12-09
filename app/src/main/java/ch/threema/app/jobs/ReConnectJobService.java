@@ -29,12 +29,12 @@ import androidx.work.Configuration;
 import org.slf4j.Logger;
 
 import ch.threema.app.services.PollingHelper;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
 
 public class ReConnectJobService extends JobService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ReConnectJobService");
+    private static final Logger logger = getThreemaLogger("ReConnectJobService");
     private static boolean isStopped;
     private PollingHelper pollingHelper = null;
 

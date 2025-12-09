@@ -87,12 +87,9 @@
 // The initiator derives the initial keys as follows:
 //
 //     local-2DHK = BLAKE2b(
-//       key=BLAKE2b(
-//         out-length=64,
-//         input=
-//              X25519HSalsa20(<local.CK>.secret, <remote.CK>.public)
-//           || X25519HSalsa20(<local.FSSK>.secret, <remote.CK>.public)
-//       ),
+//       input=
+//            X25519HSalsa20(<local.CK>.secret, <remote.CK>.public)
+//         || X25519HSalsa20(<local.FSSK>.secret, <remote.CK>.public),
 //       salt='ke-2dh-<local-threema-id>',
 //       personal='3ma-e2e',
 //     )
@@ -126,12 +123,9 @@
 // The responder calculates the initial keys as follows:
 //
 //     remote-2DHK = BLAKE2b(
-//       key=BLAKE2b(
-//         out-length=64,
-//         input=
+//      input=
 //              X25519HSalsa20(<local.CK>.secret, <remote.CK>.public)
-//           || X25519HSalsa20(<local.CK>.secret, <remote.FSSK>.public)
-//       ),
+//           || X25519HSalsa20(<local.CK>.secret, <remote.FSSK>.public),
 //       salt='ke-2dh-<remote-threema-id>',
 //       personal='3ma-e2e',
 //     )

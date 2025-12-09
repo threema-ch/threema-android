@@ -47,7 +47,7 @@ class OutgoingContactDeleteMessageTask(
             ?: throw ThreemaException("No contact message model found for messageModelId=$messageModelId")
 
         val deleteMessage = DeleteMessage(
-            DeleteMessageData(messageId = MessageId.fromString(message.apiMessageId).messageIdLong),
+            DeleteMessageData(messageId = message.messageId!!.messageIdLong),
         )
 
         sendContactMessage(deleteMessage, null, toIdentity, messageId, deletedAt, handle)

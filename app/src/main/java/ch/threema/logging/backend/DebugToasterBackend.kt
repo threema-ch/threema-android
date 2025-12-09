@@ -63,10 +63,10 @@ class DebugToasterBackend(
     private fun createMessage(tag: String, throwable: Throwable?, message: String?): String {
         val detail = when {
             message != null -> message
-            throwable != null -> Log.getStackTraceString(throwable)
+            throwable != null -> throwable.stackTraceToString()
             else -> tag
         }
-        return "Error: $detail"
+        return "❗ $detail"
     }
 
     private fun showToast(message: String) {
@@ -74,7 +74,7 @@ class DebugToasterBackend(
             RuntimeUtil.runOnUiThread {
                 try {
                     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     // do nothing here, we tried our best
                 }
             }
@@ -85,7 +85,7 @@ class DebugToasterBackend(
         try {
             Class.forName("androidx.test.espresso.Espresso")
             true
-        } catch (e: ClassNotFoundException) {
+        } catch (_: ClassNotFoundException) {
             false
         }
     }

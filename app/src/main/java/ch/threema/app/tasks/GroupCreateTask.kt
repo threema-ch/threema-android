@@ -22,21 +22,24 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.profilepicture.GroupProfilePictureUploader
+import ch.threema.app.profilepicture.RawProfilePicture
+import ch.threema.app.protocol.ExpectedProfilePictureChange
 import ch.threema.app.protocol.PredefinedMessageIds
-import ch.threema.app.protocol.ProfilePictureChange
-import ch.threema.app.protocol.RemoveProfilePicture
-import ch.threema.app.protocol.SetProfilePicture
 import ch.threema.app.protocol.runActiveGroupUpdateSteps
-import ch.threema.app.services.ApiService
 import ch.threema.app.services.FileService
+import ch.threema.app.tasks.GroupCreateTask.GroupCreateTaskData.Companion.SerializableExpectedProfilePictureChange
+import ch.threema.app.tasks.GroupCreateTask.GroupCreateTaskData.Companion.SerializablePredefinedMessageIds
+import ch.threema.app.tasks.archive.recovery.TaskRecoveryManager
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
 import ch.threema.app.voip.groupcall.GroupCallManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.GroupModelRepository
+import ch.threema.domain.models.MessageId
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
@@ -47,18 +50,18 @@ import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.protobuf.d2d.MdD2D
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCreateTask")
+private val logger = getThreemaLogger("GroupCreateTask")
 
 class GroupCreateTask(
     private val name: String?,
-    private val profilePictureChange: ProfilePictureChange,
+    private val expectedProfilePictureChange: ExpectedProfilePictureChange,
     private val members: Set<String>,
     private val groupIdentity: GroupIdentity,
     private val predefinedMessageIds: PredefinedMessageIds,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
     private val groupCallManager: GroupCallManager,
     private val fileService: FileService,
-    private val apiService: ApiService,
+    private val groupProfilePictureUploader: GroupProfilePictureUploader,
     private val groupModelRepository: GroupModelRepository,
 ) : ActiveTask<Unit>, PersistableTask {
     private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
@@ -101,7 +104,7 @@ class GroupCreateTask(
 
         checkForGroupSyncRace(groupModel, groupModelData)
         runActiveGroupUpdateSteps(
-            profilePictureChange = profilePictureChange,
+            expectedProfilePictureChange = expectedProfilePictureChange,
             addMembers = members,
             removeMembers = emptySet(),
             predefinedMessageIds = predefinedMessageIds,
@@ -109,7 +112,7 @@ class GroupCreateTask(
             services = outgoingCspMessageServices,
             groupCallManager = groupCallManager,
             fileService = fileService,
-            apiService = apiService,
+            groupProfilePictureUploader = groupProfilePictureUploader,
             handle = handle,
         )
     }
@@ -119,19 +122,20 @@ class GroupCreateTask(
             logger.warn("Group sync race occurred: Group name is not equal")
         }
 
-        val persistedGroupAvatar = fileService.getGroupAvatarBytes(groupModel)
-        when (profilePictureChange) {
-            is SetProfilePicture -> {
-                if (persistedGroupAvatar == null) {
-                    logger.warn("Group sync race occurred: No group avatar is persisted")
-                } else if (!persistedGroupAvatar.contentEquals(profilePictureChange.profilePicture.profilePictureBytes)) {
-                    logger.warn("Group sync race occurred: Different group avatar is persisted")
+        val persistedGroupProfilePicture = fileService.getGroupProfilePictureBytes(groupModel)?.let { bytes -> RawProfilePicture(bytes) }
+        when (expectedProfilePictureChange) {
+            is ExpectedProfilePictureChange.Set -> {
+                val expectedProfilePicture = expectedProfilePictureChange.profilePicture
+                if (persistedGroupProfilePicture == null) {
+                    logger.warn("Group sync race occurred: No group profile picture is persisted")
+                } else if (!persistedGroupProfilePicture.contentEquals(expectedProfilePicture)) {
+                    logger.warn("Group sync race occurred: Different group profile picture is persisted")
                 }
             }
 
-            is RemoveProfilePicture -> {
-                if (persistedGroupAvatar != null) {
-                    logger.warn("Group sync race occurred: Group avatar is persisted")
+            is ExpectedProfilePictureChange.Remove -> {
+                if (persistedGroupProfilePicture != null) {
+                    logger.warn("Group sync race occurred: Group profile picture is persisted")
                 }
             }
         }
@@ -142,33 +146,129 @@ class GroupCreateTask(
     }
 
     override fun serialize(): SerializableTaskData = GroupCreateTaskData(
-        name,
-        profilePictureChange,
-        members,
-        groupIdentity,
-        predefinedMessageIds,
+        name = name,
+        serializableExpectedProfilePictureChange = SerializableExpectedProfilePictureChange.fromExpectedProfilePictureChange(
+            expectedProfilePictureChange = expectedProfilePictureChange,
+        ),
+        members = members,
+        groupIdentity = groupIdentity,
+        serializablePredefinedMessageIds = SerializablePredefinedMessageIds(predefinedMessageIds),
     )
 
+    /**
+     * Do not change the class name or any of its fields. Any modification of it will cause the decoding to fail. If it is modified, then a migration
+     * handler should be added to the [TaskRecoveryManager] that can recover this task data from the previously persisted encoding.
+     */
     @Serializable
     data class GroupCreateTaskData(
         private val name: String?,
-        private val profilePictureChange: ProfilePictureChange,
+        private val serializableExpectedProfilePictureChange: SerializableExpectedProfilePictureChange,
         private val members: Set<String>,
         private val groupIdentity: GroupIdentity,
-        private val predefinedMessageIds: PredefinedMessageIds,
+        private val serializablePredefinedMessageIds: SerializablePredefinedMessageIds,
     ) : SerializableTaskData {
         override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
             GroupCreateTask(
-                name,
-                profilePictureChange,
-                members,
-                groupIdentity,
-                predefinedMessageIds,
-                serviceManager.getOutgoingCspMessageServices(),
-                serviceManager.groupCallManager,
-                serviceManager.fileService,
-                serviceManager.apiService,
-                serviceManager.modelRepositories.groups,
+                name = name,
+                expectedProfilePictureChange = serializableExpectedProfilePictureChange.getExpectedProfilePictureChange(),
+                members = members,
+                groupIdentity = groupIdentity,
+                predefinedMessageIds = serializablePredefinedMessageIds.getPredefinedMessageIds(),
+                outgoingCspMessageServices = serviceManager.getOutgoingCspMessageServices(),
+                groupCallManager = serviceManager.groupCallManager,
+                fileService = serviceManager.fileService,
+                groupProfilePictureUploader = serviceManager.groupProfilePictureUploader,
+                groupModelRepository = serviceManager.modelRepositories.groups,
             )
+
+        companion object {
+            /**
+             * Do not change the class name or any of its fields. Any modification of it will cause the decoding to fail. If it is modified, then a
+             * migration handler should be added to the [TaskRecoveryManager] that can recover this task data from the previously persisted encoding.
+             */
+            @Serializable
+            class SerializablePredefinedMessageIds(
+                private val messageId1: Long,
+                private val messageId2: Long,
+                private val messageId3: Long,
+                private val messageId4: Long,
+            ) {
+                constructor(predefinedMessageIds: PredefinedMessageIds) : this(
+                    messageId1 = predefinedMessageIds.messageId1.messageIdLong,
+                    messageId2 = predefinedMessageIds.messageId2.messageIdLong,
+                    messageId3 = predefinedMessageIds.messageId3.messageIdLong,
+                    messageId4 = predefinedMessageIds.messageId4.messageIdLong,
+                )
+
+                fun getPredefinedMessageIds(): PredefinedMessageIds =
+                    PredefinedMessageIds(
+                        messageId1 = MessageId(messageId1),
+                        messageId2 = MessageId(messageId2),
+                        messageId3 = MessageId(messageId3),
+                        messageId4 = MessageId(messageId4),
+                    )
+            }
+
+            /**
+             * Do not change the interface name or any of its fields or subclasses. Any modification of it will cause the decoding to fail. If it is
+             * modified, then a migration handler should be added to the [TaskRecoveryManager] that can recover this task data from the previously
+             * persisted encoding.
+             */
+            @Serializable
+            sealed interface SerializableExpectedProfilePictureChange {
+
+                fun getExpectedProfilePictureChange(): ExpectedProfilePictureChange
+
+                @Serializable
+                class Set(
+                    val profilePictureBytes: ByteArray,
+                    val blobId: ByteArray,
+                    val encryptionKey: ByteArray,
+                    val size: Int,
+                ) : SerializableExpectedProfilePictureChange {
+                    override fun getExpectedProfilePictureChange() = ExpectedProfilePictureChange.Set.WithUpload(
+                        profilePictureUploadResultSuccess = GroupProfilePictureUploader.GroupProfilePictureUploadResult.Success(
+                            profilePicture = RawProfilePicture(profilePictureBytes),
+                            blobId = blobId,
+                            encryptionKey = encryptionKey,
+                            size = size,
+                        ),
+                    )
+                }
+
+                @Serializable
+                class SetWithoutUpload(
+                    val profilePictureBytes: ByteArray,
+                ) : SerializableExpectedProfilePictureChange {
+                    override fun getExpectedProfilePictureChange() = ExpectedProfilePictureChange.Set.WithoutUpload(
+                        profilePicture = RawProfilePicture(profilePictureBytes),
+                    )
+                }
+
+                @Serializable
+                object Remove : SerializableExpectedProfilePictureChange {
+                    override fun getExpectedProfilePictureChange() = ExpectedProfilePictureChange.Remove
+                }
+
+                companion object {
+                    fun fromExpectedProfilePictureChange(
+                        expectedProfilePictureChange: ExpectedProfilePictureChange,
+                    ): SerializableExpectedProfilePictureChange = when (expectedProfilePictureChange) {
+                        is ExpectedProfilePictureChange.Set.WithUpload -> Set(
+                            profilePictureBytes = expectedProfilePictureChange.profilePictureUploadResultSuccess.profilePicture.bytes,
+                            blobId = expectedProfilePictureChange.profilePictureUploadResultSuccess.blobId,
+                            encryptionKey = expectedProfilePictureChange.profilePictureUploadResultSuccess.encryptionKey,
+                            size = expectedProfilePictureChange.profilePictureUploadResultSuccess.size,
+                        )
+
+                        is ExpectedProfilePictureChange.Set.WithoutUpload -> SetWithoutUpload(
+                            profilePictureBytes = expectedProfilePictureChange.profilePicture.bytes,
+                        )
+
+                        is ExpectedProfilePictureChange.Remove -> Remove
+                    }
+                }
+            }
+        }
     }
 }

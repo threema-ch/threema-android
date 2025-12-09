@@ -88,7 +88,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.CRC32;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * This is a class for reading and writing Exif tags in various image file formats.
@@ -102,7 +102,7 @@ import ch.threema.base.utils.LoggingUtil;
  * outside Exif, will favor the XMP data inside Exif over the one outside.
  */
 public class ExifInterface {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ExifInterface");
+    private static final Logger logger = getThreemaLogger("ExifInterface");
 
     private static final boolean DEBUG = false;
 

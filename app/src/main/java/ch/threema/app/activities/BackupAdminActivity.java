@@ -43,6 +43,8 @@ import com.google.android.material.tabs.TabLayout;
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
+import java.time.Instant;
+
 import ch.threema.app.R;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.fragments.BackupDataFragment;
@@ -52,10 +54,10 @@ import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.HiddenChatUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class BackupAdminActivity extends ThreemaToolbarActivity {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BackupAdminActivity");
+    private static final Logger logger = getThreemaLogger("BackupAdminActivity");
 
     private static final String BUNDLE_IS_UNLOCKED = "biu";
 
@@ -104,12 +106,12 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
         viewPager.setAdapter(new BackupAdminPagerAdapter(getSupportFragmentManager()));
         tabLayout.setupWithViewPager(viewPager);
 
-        if (dependencies.getPreferenceService().getBackupWarningDismissedTime() == 0L) {
+        if (dependencies.getPreferenceService().getBackupWarningDismissedTime() == null) {
             ((TextView) findViewById(R.id.notice_text)).setText(R.string.backup_explain_text);
             final View noticeLayout = findViewById(R.id.notice_layout);
             noticeLayout.setVisibility(View.VISIBLE);
             findViewById(R.id.close_button).setOnClickListener(v -> {
-                dependencies.getPreferenceService().setBackupWarningDismissedTime(System.currentTimeMillis());
+                dependencies.getPreferenceService().setBackupWarningDismissedTime(Instant.now());
                 AnimationUtil.collapse(noticeLayout, null, true);
             });
         } else {

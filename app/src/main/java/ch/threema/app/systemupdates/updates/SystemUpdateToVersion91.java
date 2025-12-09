@@ -36,14 +36,14 @@ import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.SynchronizeContactsUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Fix Contact sync account type for Threema Libre
  */
 public class SystemUpdateToVersion91 implements SystemUpdate {
     public static final int VERSION = 91;
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion91");
+    private static final Logger logger = getThreemaLogger("SystemUpdateToVersion91");
 
     private @NonNull final Context context;
 

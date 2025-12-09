@@ -28,23 +28,26 @@ import android.content.SharedPreferences
 import android.database.sqlite.SQLiteException
 import android.os.Build
 import android.os.Process
-import androidx.annotation.OpenForTesting
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.edit
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.preference.PreferenceManager
+import ch.threema.android.Toaster.Duration.LONG
+import ch.threema.android.showToast
 import ch.threema.app.AppConstants.ACTIVITY_CONNECTION_LIFETIME
-import ch.threema.app.AppLogging.logAppVersionInfo
-import ch.threema.app.AppLogging.logExitReason
 import ch.threema.app.apptaskexecutor.AppTaskExecutor
+import ch.threema.app.crashreporting.ThreemaUncaughtExceptionHandler
 import ch.threema.app.debug.StrictModeMonitor
 import ch.threema.app.di.MasterKeyLockStateChangeHandler
 import ch.threema.app.di.Qualifiers
 import ch.threema.app.di.getOrNull
 import ch.threema.app.di.initDependencyInjection
-import ch.threema.app.drafts.DraftManager
+import ch.threema.app.drafts.DraftManagerImpl
+import ch.threema.app.logging.AppVersionLogger
+import ch.threema.app.logging.DebugLogHelper
+import ch.threema.app.logging.ExitReasonLogger
 import ch.threema.app.managers.CoreServiceManagerImpl
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.notifications.NotificationIDs
@@ -52,6 +55,7 @@ import ch.threema.app.passphrase.PassphraseStateMonitor
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.push.PushService
 import ch.threema.app.restrictions.AppRestrictionService
+import ch.threema.app.services.AvatarCacheService
 import ch.threema.app.services.ServiceManagerProvider
 import ch.threema.app.services.ThreemaPushService
 import ch.threema.app.startup.AppProcessLifecycleObserver
@@ -59,9 +63,9 @@ import ch.threema.app.startup.AppStartupError
 import ch.threema.app.startup.AppStartupMonitorImpl
 import ch.threema.app.startup.MasterKeyEventMonitor
 import ch.threema.app.startup.RemoteSecretMonitorRetryController
+import ch.threema.app.startup.deleteOrphanedUserData
 import ch.threema.app.startup.models.AppSystem
 import ch.threema.app.stores.EncryptedPreferenceStore
-import ch.threema.app.stores.EncryptedPreferenceStoreImpl
 import ch.threema.app.stores.IdentityProvider
 import ch.threema.app.stores.IdentityStoreImpl
 import ch.threema.app.stores.MutableIdentityProvider
@@ -76,20 +80,18 @@ import ch.threema.app.utils.ConnectionIndicatorUtil
 import ch.threema.app.utils.DispatcherProvider
 import ch.threema.app.utils.FileUtil
 import ch.threema.app.utils.LinuxSecureRandom
-import ch.threema.app.utils.LoggingUEH
 import ch.threema.app.utils.PushUtil
 import ch.threema.app.utils.StateBitmapUtil
-import ch.threema.app.utils.Toaster.Companion.showToast
-import ch.threema.app.utils.Toaster.Duration.LONG
 import ch.threema.app.voip.Config
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl
 import ch.threema.app.workers.AutoDeleteWorker
 import ch.threema.app.workers.ContactUpdateWorker
+import ch.threema.app.workers.GatewayProfilePicturesWorker
 import ch.threema.app.workers.ShareTargetUpdateWorker
 import ch.threema.app.workers.WorkSyncWorker
 import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.NonceScope
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
 import ch.threema.data.repositories.ModelRepositories
 import ch.threema.domain.protocol.connection.ConnectionState
@@ -103,6 +105,7 @@ import ch.threema.localcrypto.MasterKeyManagerImpl
 import ch.threema.localcrypto.exceptions.BlockedByAdminException
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException
 import ch.threema.localcrypto.exceptions.RemoteSecretMonitorException
+import ch.threema.localcrypto.models.MasterKeyReadResult
 import ch.threema.logging.LibthreemaLogger
 import ch.threema.storage.DatabaseDowngradeException
 import ch.threema.storage.DatabaseNonceStore
@@ -127,10 +130,9 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
 import org.koin.core.component.inject
 
-private val logger = LoggingUtil.getThreemaLogger("ThreemaApplication")
+private val logger = getThreemaLogger("ThreemaApplication")
 
-@OpenForTesting
-open class ThreemaApplication : Application() {
+class ThreemaApplication : Application() {
 
     // TODO(ANDR-4187): Move these dependencies and the logic that uses them to a better place
     private val passphraseStateMonitor: PassphraseStateMonitor by inject()
@@ -149,26 +151,29 @@ open class ThreemaApplication : Application() {
 
         super.onCreate()
 
+        setUpUnhandledExceptionLogger()
+
         DynamicColorsHelper.applyDynamicColorsIfEnabled(this)
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
 
         initLibthreema(LogLevel.TRACE, LibthreemaLogger())
 
-        setUpUnhandledExceptionLogger()
-
         setUpSecureRandom()
 
         setUpDayNightMode(this)
 
-        logger.info("*** App launched")
-        logAppVersionInfo(applicationContext)
-        logExitReason(applicationContext, PreferenceManager.getDefaultSharedPreferences(applicationContext))
-
         initDependencyInjection(this)
 
+        logger.info("*** App launched")
+
+        // TODO(ANDR-4310): consolidate this logging
+        with(get<AppVersionLogger>()) {
+            logAppVersionInfo()
+            updateAppVersionHistory()
+        }
+        get<ExitReasonLogger>().logExitReason()
         logger.info("Has identity: {}", identityProvider.getIdentity() != null)
-        logger.info("Remote secrets supported: {}", ConfigUtils.isRemoteSecretsSupported())
 
         ProcessLifecycleOwner.get().lifecycle.addObserver(get<AppProcessLifecycleObserver>())
 
@@ -183,7 +188,10 @@ open class ThreemaApplication : Application() {
         coroutineScope.launch {
             try {
                 withContext(dispatcherProvider.io) {
-                    masterKeyManager.readOrGenerateKey()
+                    val result = masterKeyManager.readOrGenerateKey()
+                    if (result == MasterKeyReadResult.NEWLY_GENERATED) {
+                        deleteOrphanedUserData(applicationContext)
+                    }
                 }
             } catch (e: Exception) {
                 logger.error("Failed to read or generate master key", e)
@@ -230,7 +238,7 @@ open class ThreemaApplication : Application() {
     }
 
     private fun setUpUnhandledExceptionLogger() {
-        Thread.setDefaultUncaughtExceptionHandler(LoggingUEH())
+        Thread.setDefaultUncaughtExceptionHandler(ThreemaUncaughtExceptionHandler(this))
     }
 
     private fun setUpSecureRandom() {
@@ -299,10 +307,7 @@ open class ThreemaApplication : Application() {
 
         super.onLowMemory()
         try {
-            get<ServiceManagerProvider>()
-                .getServiceManagerOrNull()
-                ?.avatarCacheService
-                ?.clear()
+            getOrNull<AvatarCacheService>()?.clear()
         } catch (e: Exception) {
             logger.error("Failed to clear avatar cache", e)
         }
@@ -339,7 +344,7 @@ open class ThreemaApplication : Application() {
             try {
                 val preferenceStore: PreferenceStore = get()
                 val mutableIdentityProvider: MutableIdentityProvider = get()
-                val encryptedPreferenceStore = EncryptedPreferenceStoreImpl(appContext, masterKey)
+                val encryptedPreferenceStore: EncryptedPreferenceStore = get()
 
                 setUpSqlCipher()
                 val databaseService = createDatabaseService(appContext, masterKey)
@@ -426,16 +431,18 @@ open class ThreemaApplication : Application() {
                     markUploadingFilesAsFailed(databaseService)
                     SessionWakeUpServiceImpl.getInstance().processPendingWakeupsAsync()
                     serviceManager.threemaSafeService.schedulePeriodicUpload()
-                    scheduleSync(appContext, serviceManager.preferenceService, preferenceStore)
+                    scheduleWorkers(appContext, serviceManager.preferenceService, preferenceStore)
                 }
 
                 coroutineScope.launch {
-                    loadDraftsFromStorage(serviceManager)
+                    get<DraftManagerImpl>().init()
                 }
 
                 coroutineScope.launch {
                     appStartupMonitor.awaitAll()
-                    AppLogging.disableIfNeeded(appContext, preferenceStore)
+
+                    // Unless the user specifically enabled it, we disable logging into the debug log file once the app has successfully started up
+                    get<DebugLogHelper>().disableDebugLogFileIfNeeded()
                 }
             } catch (e: MasterKeyLockedException) {
                 logger.error("Master key was unexpectedly locked during onMasterKeyUnlocked", e)
@@ -532,7 +539,7 @@ open class ThreemaApplication : Application() {
             }
         }
 
-        private fun scheduleSync(
+        private fun scheduleWorkers(
             context: Context,
             preferenceService: PreferenceService,
             preferenceStore: PreferenceStore,
@@ -543,6 +550,7 @@ open class ThreemaApplication : Application() {
                 ShareTargetUpdateWorker.scheduleShareTargetShortcutUpdate(context)
             }
             AutoDeleteWorker.scheduleAutoDelete(context)
+            GatewayProfilePicturesWorker.schedulePeriodicSync(context)
         }
 
         private fun createDatabaseService(
@@ -553,7 +561,7 @@ open class ThreemaApplication : Application() {
                 context = context,
                 password = masterKey.deriveDatabasePassword(),
                 onDatabaseCorrupted = {
-                    showToast("Database corrupted. Please restart your device and try again.", duration = LONG)
+                    context.showToast("Database corrupted. Please restart your device and try again.", duration = LONG)
                     exitProcess(2)
                 },
             )
@@ -653,19 +661,17 @@ open class ThreemaApplication : Application() {
             }
         }
 
-        @WorkerThread
-        private fun loadDraftsFromStorage(serviceManager: ServiceManager) {
-            DraftManager.retrieveMessageDraftsFromStorage(serviceManager.preferenceService)
-        }
-
         // TODO(ANDR-4187): Remove this static method
+        @Deprecated("Do not access service manager directly, use DI instead")
         @JvmStatic
         fun getServiceManager(): ServiceManager? = get<ServiceManagerProvider>().getServiceManagerOrNull()
 
         // TODO(ANDR-4187): Remove this static method
+        @Deprecated("Do not access service manager directly, use DI instead")
         @JvmStatic
         fun requireServiceManager(): ServiceManager = get<ServiceManager>()
 
+        @Deprecated("Use DI instead")
         @JvmStatic
         fun getAppContext(): Context = instance
     }

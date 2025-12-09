@@ -21,7 +21,7 @@
 
 package ch.threema.localcrypto
 
-import ch.threema.base.utils.generateRandomBytes
+import ch.threema.common.generateRandomBytes
 import ch.threema.localcrypto.models.MasterKeyData
 import java.security.SecureRandom
 

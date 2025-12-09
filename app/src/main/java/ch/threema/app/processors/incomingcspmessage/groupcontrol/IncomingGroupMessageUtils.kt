@@ -28,7 +28,7 @@ import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.app.utils.toBasicContact
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.models.BasicContact
@@ -42,7 +42,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.types.Identity
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingGroupMessageUtils")
+private val logger = getThreemaLogger("IncomingGroupMessageUtils")
 
 /**
  * Run the common group receive steps. If the returned group is not null, then the common group receive steps have been run successfully. If null is

@@ -32,7 +32,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.services.MessageService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
@@ -42,7 +42,7 @@ import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.MessageType;
 
 public class DistributionListMessageModelFactory extends AbstractMessageModelFactory {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DistributionListMessageModelFactory");
+    private static final Logger logger = getThreemaLogger("DistributionListMessageModelFactory");
 
     public DistributionListMessageModelFactory(DatabaseService databaseService) {
         super(databaseService, DistributionListMessageModel.TABLE);

@@ -36,7 +36,7 @@ import ch.threema.app.tasks.toFullSyncContact
 import ch.threema.app.tasks.toGroupSync
 import ch.threema.app.voip.groupcall.localGroupId
 import ch.threema.base.crypto.NonceScope
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupIdentity
@@ -68,7 +68,7 @@ import ch.threema.protobuf.identities
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.GroupModel.UserState
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingGroupSetupTask")
+private val logger = getThreemaLogger("IncomingGroupSetupTask")
 
 class IncomingGroupSetupTask(
     message: GroupSetupMessage,

@@ -33,7 +33,9 @@ import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.webclient.services.ServicesContainer;
 import ch.threema.app.webclient.services.SessionService;
 import ch.threema.app.webclient.services.SessionServiceImpl;
+import ch.threema.base.SessionScoped;
 
+@SessionScoped
 @AnyThread
 public class WebClientServiceManager {
     // Services used by web client services

@@ -25,12 +25,12 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.utils.PushUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.WebSessionResumeMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingWebSessionResumeMessageTask")
+private val logger = getThreemaLogger("IncomingWebSessionResumeMessageTask")
 
 class IncomingWebSessionResumeMessageTask(
     message: WebSessionResumeMessage,

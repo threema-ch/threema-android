@@ -36,7 +36,7 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceThreema;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.IdentityStore;
 
@@ -44,7 +44,7 @@ import ch.threema.domain.stores.IdentityStore;
  * Checking the License of current Threema and send a not allowed broadcast
  */
 public class CheckLicenseRoutine implements Runnable {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("CheckLicenseRoutine");
+    private static final Logger logger = getThreemaLogger("CheckLicenseRoutine");
 
     @NonNull
     private final Context context;

@@ -42,7 +42,7 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.fragments.BackupDataFragment.REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS;
 import static ch.threema.app.utils.PowermanagerUtil.isIgnoringBatteryOptimizations;
@@ -55,7 +55,7 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
  * ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS intent is used instead.
  */
 public class DisableBatteryOptimizationsActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DisableBatteryOptimizationsActivity");
+    private static final Logger logger = getThreemaLogger("DisableBatteryOptimizationsActivity");
 
     private static final int REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS = 778;
     private static final String DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS = "des";

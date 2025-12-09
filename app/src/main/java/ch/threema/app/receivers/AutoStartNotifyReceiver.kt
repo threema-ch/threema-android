@@ -30,10 +30,10 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkManager
 import ch.threema.app.workers.AutostartWorker
 import ch.threema.app.workers.WorkerNames
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.TimeUnit
 
-private val logger = LoggingUtil.getThreemaLogger("AutoStartNotifyReceiver")
+private val logger = getThreemaLogger("AutoStartNotifyReceiver")
 
 class AutoStartNotifyReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent?) {

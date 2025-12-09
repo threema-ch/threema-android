@@ -34,9 +34,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 
-/**
- *
- */
 public class BallotWizard1Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public interface OnChoiceListener {

@@ -23,7 +23,7 @@ package ch.threema.domain.protocol.csp.coders;
 
 import androidx.annotation.NonNull;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.stores.IdentityStore;
 import ch.threema.libthreema.CryptoException;
 import ch.threema.libthreema.LibthreemaKt;
@@ -39,7 +39,7 @@ import java.nio.charset.StandardCharsets;
 
 public class MetadataCoder {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MetadataCoder");
+    private static final Logger logger = getThreemaLogger("MetadataCoder");
 
     private final IdentityStore identityStore;
 

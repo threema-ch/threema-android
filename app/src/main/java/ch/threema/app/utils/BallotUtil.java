@@ -46,9 +46,8 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.MessageTooLongException;
@@ -60,70 +59,69 @@ import ch.threema.storage.models.ballot.BallotModel;
 
 @SuppressWarnings("rawtypes")
 public class BallotUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotUtil");
+    private static final Logger logger = getThreemaLogger("BallotUtil");
 
-    public static boolean canVote(BallotModel model, String identity) {
+    public static boolean canVote(@Nullable BallotModel model, @Nullable MessageReceiver messageReceiver) {
         return model != null
-            && identity != null
-            && model.getState() == BallotModel.State.OPEN;
-    }
-
-    public static boolean canViewMatrix(BallotModel model, String identity) {
-        return model != null
-            && identity != null
-            && (
-            model.getType() == BallotModel.Type.INTERMEDIATE
-                || model.getState() == BallotModel.State.CLOSED);
-    }
-
-    public static boolean canCopy(BallotModel model, String identity) {
-        return model != null
-            && identity != null
-            && model.getState() == BallotModel.State.CLOSED;
-    }
-
-    public static boolean canClose(BallotModel model, String identity) {
-        return model != null
-            && identity != null
             && model.getState() == BallotModel.State.OPEN
-            && TestUtil.compare(model.getCreatorIdentity(), identity);
+            && canVote(messageReceiver);
     }
 
-    public static boolean isMine(BallotModel model, UserService userService) {
+    public static boolean canVote(@Nullable MessageReceiver messageReceiver) {
+        return isMember(messageReceiver);
+    }
+
+    private static boolean isMember(@Nullable MessageReceiver messageReceiver) {
+        if (messageReceiver instanceof GroupMessageReceiver) {
+            var groupModel = ((GroupMessageReceiver) messageReceiver).getGroupModel();
+            return groupModel != null && groupModel.isMember();
+        }
+        return true;
+    }
+
+    public static boolean canViewMatrix(@Nullable BallotModel model) {
         return model != null
-            && userService != null
-            && !TestUtil.isEmptyOrNull(userService.getIdentity())
-            && TestUtil.compare(userService.getIdentity(), model.getCreatorIdentity());
+            && (model.getType() == BallotModel.Type.INTERMEDIATE || model.getState() == BallotModel.State.CLOSED);
     }
 
-    public static boolean openDefaultActivity(Context context, FragmentManager fragmentManager, BallotModel ballotModel, String identity) {
-        if (context != null && fragmentManager != null) {
-            if (canVote(ballotModel, identity)) {
-                return openVoteDialog(fragmentManager, ballotModel, identity);
-            } else if (canViewMatrix(ballotModel, identity)) {
-                return openMatrixActivity(context, ballotModel, identity);
-            }
+    public static boolean canClose(@Nullable BallotModel model, @Nullable String myIdentity, @Nullable MessageReceiver messageReceiver) {
+        return isMine(model, myIdentity)
+            && model.getState() == BallotModel.State.OPEN
+            && isMember(messageReceiver);
+    }
+
+    public static boolean isMine(@Nullable BallotModel model, @Nullable String myIdentity) {
+        return model != null
+            && myIdentity != null
+            && myIdentity.equals(model.getCreatorIdentity());
+    }
+
+    public static void openDefaultActivity(@Nullable Context context, @Nullable FragmentManager fragmentManager, @Nullable BallotModel ballotModel, @Nullable MessageReceiver messageReceiver) {
+        if (canVote(ballotModel, messageReceiver)) {
+            openVoteDialog(fragmentManager, ballotModel);
+        } else if (canViewMatrix(ballotModel)) {
+            openMatrixActivity(context, ballotModel);
         }
-        return false;
     }
 
-    public static boolean openVoteDialog(FragmentManager fragmentManager, BallotModel ballotModel, String identity) {
-        if (fragmentManager != null && canVote(ballotModel, identity)) {
+    /**
+     * Must only be called if [canVote] returns true.
+     */
+    public static void openVoteDialog(@Nullable FragmentManager fragmentManager, @Nullable BallotModel ballotModel) {
+        if (fragmentManager != null && ballotModel != null) {
             BallotVoteDialog.newInstance(ballotModel.getId()).show(fragmentManager, "vote");
-            return true;
         }
-        return false;
     }
 
-    public static boolean openMatrixActivity(Context context, BallotModel ballotModel, String identity) {
-        if (context != null && canViewMatrix(ballotModel, identity)) {
+    /**
+     * Must only be called if [canViewMatrix] returns true.
+     */
+    public static void openMatrixActivity(@Nullable Context context, @NonNull BallotModel ballotModel) {
+        if (context != null) {
             Intent intent = new Intent(context, BallotMatrixActivity.class);
             IntentDataUtil.append(ballotModel, intent);
             context.startActivity(intent);
-
-            return intent != null;
         }
-        return false;
     }
 
     public static String getNotificationString(Context context, AbstractMessageModel messageModel) {
@@ -139,7 +137,7 @@ public class BallotUtil {
             }
         }
 
-        if (ballotService != null && messageModel.getBallotData() != null) {
+        if (ballotService != null) {
             BallotModel ballotModel = ballotService.get(messageModel.getBallotData().getBallotId());
             if (ballotModel != null) {
                 if (ballotModel.getState() == BallotModel.State.OPEN) {
@@ -152,20 +150,21 @@ public class BallotUtil {
         return message;
     }
 
-    public static void requestCloseBallot(BallotModel ballotModel, String identity, Fragment targetFragment, AppCompatActivity targetActivity) {
-        if (BallotUtil.canClose(ballotModel, identity)) {
-            FragmentManager fragmentManager = targetActivity != null ? targetActivity.getSupportFragmentManager() : targetFragment.getFragmentManager();
-            if (ThreemaApplication.getServiceManager().getConnection().getConnectionState() == ConnectionState.LOGGEDIN) {
-                GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.ballot_close, R.string.ballot_really_close, R.string.ok, R.string.cancel);
-                dialog.setData(ballotModel);
-                if (targetFragment != null) {
-                    dialog.setTargetFragment(targetFragment, 0);
-                }
-                dialog.show(fragmentManager, AppConstants.CONFIRM_TAG_CLOSE_BALLOT);
-            } else {
-                SimpleStringAlertDialog dialog = SimpleStringAlertDialog.newInstance(R.string.ballot_close, R.string.ballot_not_connected);
-                dialog.show(fragmentManager, "na");
+    /**
+     * Must only be called if [canClose] returns true.
+     */
+    public static void requestCloseBallot(BallotModel ballotModel, Fragment targetFragment, AppCompatActivity targetActivity) {
+        FragmentManager fragmentManager = targetActivity != null ? targetActivity.getSupportFragmentManager() : targetFragment.getFragmentManager();
+        if (ThreemaApplication.getServiceManager().getConnection().getConnectionState() == ConnectionState.LOGGEDIN) {
+            GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.ballot_close, R.string.ballot_really_close, R.string.ok, R.string.cancel);
+            dialog.setData(ballotModel);
+            if (targetFragment != null) {
+                dialog.setTargetFragment(targetFragment, 0);
             }
+            dialog.show(fragmentManager, AppConstants.CONFIRM_TAG_CLOSE_BALLOT);
+        } else {
+            SimpleStringAlertDialog dialog = SimpleStringAlertDialog.newInstance(R.string.ballot_close, R.string.ballot_not_connected);
+            dialog.show(fragmentManager, "na");
         }
     }
 

@@ -23,6 +23,7 @@ package ch.threema.localcrypto
 
 import ch.threema.localcrypto.MasterKeyTestData.MASTER_KEY
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import kotlin.random.Random
 import kotlin.test.Test
@@ -30,7 +31,6 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
-import org.apache.commons.io.output.ByteArrayOutputStream
 
 class MasterKeyImplTest {
     @Test
@@ -52,12 +52,12 @@ class MasterKeyImplTest {
         val testBytes = Random(RANDOM_SEED).nextBytes(testBytesSize)
 
         val outStream = ByteArrayOutputStream()
-        masterKey.getCipherOutputStream(outStream).use { cipherOutStream ->
+        masterKey.encrypt(outStream).use { cipherOutStream ->
             cipherOutStream.write(testBytes)
         }
 
         val inStream = ByteArrayInputStream(outStream.toByteArray())
-        val readBytes = masterKey.getCipherInputStream(inStream).use { cipherInStream ->
+        val readBytes = masterKey.decrypt(inStream).use { cipherInStream ->
             cipherInStream.readAllBytes()
         }
 
@@ -71,7 +71,7 @@ class MasterKeyImplTest {
         val inStream = ByteArrayInputStream(byteArrayOf(1, 2, 3))
 
         assertFailsWith<IOException> {
-            masterKey.getCipherInputStream(inStream)
+            masterKey.decrypt(inStream)
         }
     }
 
@@ -95,7 +95,7 @@ class MasterKeyImplTest {
         masterKey.invalidate()
 
         assertFailsWith<IOException> {
-            masterKey.getCipherInputStream(ByteArrayInputStream(byteArrayOf(1, 2, 3)))
+            masterKey.decrypt(ByteArrayInputStream(byteArrayOf(1, 2, 3)))
         }
     }
 
@@ -106,7 +106,7 @@ class MasterKeyImplTest {
         masterKey.invalidate()
 
         assertFailsWith<IOException> {
-            masterKey.getCipherOutputStream(ByteArrayOutputStream())
+            masterKey.encrypt(ByteArrayOutputStream())
         }
     }
 

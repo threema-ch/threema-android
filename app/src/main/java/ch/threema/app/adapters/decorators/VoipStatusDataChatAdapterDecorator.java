@@ -33,7 +33,7 @@ import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
@@ -64,10 +64,7 @@ public class VoipStatusDataChatAdapterDecorator extends ChatAdapterDecorator {
                 if (status != null && status.getStatus() == VoipStatusDataModel.FINISHED) {
                     // Show duration
                     if (holder.dateView != null) {
-                        this.setDatePrefix(StringConversionUtil.secondsToString(
-                            status.getDuration(),
-                            false
-                        ));
+                        this.setDatePrefix(ElapsedTimeFormatter.secondsToString(status.getDuration()));
                         this.setDuration(status.getDuration());
                     }
                 }

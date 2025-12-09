@@ -21,14 +21,14 @@
 
 package ch.threema.app.services;
 
-import android.accounts.Account;
-
 import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
+import ch.threema.base.SessionScoped;
 
+@SessionScoped
 public interface SynchronizeContactsService {
     @Nullable
     SynchronizeContactsRoutine instantiateSynchronization();

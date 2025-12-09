@@ -41,7 +41,7 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.filters.MessageFilter;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 
 /**
@@ -49,7 +49,7 @@ import ch.threema.storage.models.AbstractMessageModel;
  */
 @WorkerThread
 public class MessageRequestHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageRequestHandler");
+    private static final Logger logger = getThreemaLogger("MessageRequestHandler");
 
     private final MessageDispatcher dispatcher;
     private final MessageService messageService;

@@ -27,14 +27,14 @@ import org.slf4j.Logger;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Functions related to the webclient.
  */
 @AnyThread
 public class ThumbnailUtils {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ThumbnailUtils");
+    private static final Logger logger = getThreemaLogger("ThumbnailUtils");
 
     public static class Size {
         public int width;

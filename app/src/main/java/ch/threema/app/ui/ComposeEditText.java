@@ -50,11 +50,11 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupModel;
 
 public class ComposeEditText extends EmojiEditText implements MentionSelectorPopup.MentionSelectorListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ComposeEditText");
+    private static final Logger logger = getThreemaLogger("ComposeEditText");
 
     private static final int CONTEXT_MENU_BOLD = 700;
     private static final int CONTEXT_MENU_ITALIC = 701;

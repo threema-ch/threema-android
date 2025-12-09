@@ -29,12 +29,12 @@ import java.util.stream.Collectors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.emojis.EmojiSpritemap.emojiCategories;
 
 public class EmojiUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("EmojiUtil");
+    private static final Logger logger = getThreemaLogger("EmojiUtil");
 
     public static final String REPLACEMENT_CHARACTER = "\uFFFD";
     public static final String THUMBS_UP_SEQUENCE = "\uD83D\uDC4D"; // 👍

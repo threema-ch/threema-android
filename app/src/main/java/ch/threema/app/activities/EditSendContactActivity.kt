@@ -45,14 +45,14 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.core.widget.NestedScrollView
 import androidx.core.widget.addTextChangedListener
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
 import ch.threema.app.mediaattacher.EditSendContactViewModel
 import ch.threema.app.ui.VCardPropertyView
 import ch.threema.app.ui.setMargin
 import ch.threema.app.utils.VCardExtractor
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.appbar.AppBarLayout
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -62,7 +62,7 @@ import com.google.android.material.progressindicator.CircularProgressIndicator
 import ezvcard.property.StructuredName
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-private val logger = LoggingUtil.getThreemaLogger("EditSendContactActivity")
+private val logger = getThreemaLogger("EditSendContactActivity")
 
 /**
  * This activity lets the user select which properties of contact should be included before sending

@@ -41,7 +41,6 @@ import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
 import android.renderscript.ScriptIntrinsicBlur;
-import android.view.View;
 
 import org.slf4j.Logger;
 
@@ -59,10 +58,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.webclient.utils.ThumbnailUtils;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import static ch.threema.common.IntExtensionsKt.roundUpToPowerOfTwo;
 
 public class BitmapUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BitmapUtil");
+    private static final Logger logger = getThreemaLogger("BitmapUtil");
 
     private static final int DEFAULT_JPG_QUALITY = 80;
     private static final int DEFAULT_PNG_QUALITY = 100; // PNG is lossless anyway
@@ -92,9 +93,7 @@ public class BitmapUtil {
         // no scaling necessary if width of bitmap is smaller or equal to maxWidth
         if (o.outWidth > maxWidth) {
             float scalingFactor = (float) o.outWidth / (float) maxWidth;
-
-            // round to the next higher power of two
-            return MathUtils.getNextHigherPowerOfTwo((int) Math.ceil(scalingFactor));
+            return roundUpToPowerOfTwo((int) Math.ceil(scalingFactor));
         }
         return 1;
     }
@@ -407,6 +406,7 @@ public class BitmapUtil {
      * @param maxWidth Width of bounding box
      * @return scaled and filtered bitmap, or existing bitmap
      */
+    @NonNull
     public static Bitmap resizeBitmapExactlyToMaxWidth(@NonNull Bitmap bitmap, int maxWidth) {
         if (bitmap.getWidth() > maxWidth) {
             ThumbnailUtils.Size targetSize = getSizeFromTargetWidth(bitmap.getWidth(), bitmap.getHeight(), maxWidth);
@@ -614,24 +614,6 @@ public class BitmapUtil {
             }
         }
         return false;
-    }
-
-    /**
-     * Create bitmap from a view
-     *
-     * @param view source view
-     * @return generated bitmap object
-     */
-    public static Bitmap getBitmapFromView(View view) {
-        Bitmap bitmap = Bitmap.createBitmap(view.getWidth(), view.getHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        Drawable bgDrawable = view.getBackground();
-        if (bgDrawable != null)
-            bgDrawable.draw(canvas);
-        else
-            canvas.drawColor(Color.WHITE);
-        view.draw(canvas);
-        return bitmap;
     }
 
     /**

@@ -33,13 +33,13 @@ import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.stores.PreferenceStore;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * rename account manager accounts
  */
 public class SystemUpdateToVersion48 implements SystemUpdate {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion48");
+    private static final Logger logger = getThreemaLogger("SystemUpdateToVersion48");
 
     private @NonNull final Context context;
 

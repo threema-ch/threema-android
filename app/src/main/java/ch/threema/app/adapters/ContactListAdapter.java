@@ -70,11 +70,11 @@ import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.ViewUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 
 public class ContactListAdapter extends FilterableListAdapter implements SectionIndexer {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactListAdapter");
+    private static final Logger logger = getThreemaLogger("ContactListAdapter");
 
     private static final int MAX_RECENTLY_ADDED_CONTACTS = 1;
 

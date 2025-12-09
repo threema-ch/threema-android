@@ -81,17 +81,19 @@ import ch.threema.app.camera.CameraActivity.KEY_EVENT_EXTRA
 import ch.threema.app.camera.ShutterButtonView.ShutterButtonListener
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.ui.LessObnoxiousMediaActionSound
+import ch.threema.app.ui.postDelayed
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.floor
 import kotlin.math.min
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -99,7 +101,7 @@ import kotlinx.coroutines.flow.takeWhile
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-private val logger = LoggingUtil.getThreemaLogger("CameraFragment")
+private val logger = getThreemaLogger("CameraFragment")
 
 class CameraFragment : Fragment() {
     init {
@@ -806,12 +808,12 @@ class CameraFragment : Fragment() {
                                     it.post {
                                         if (isAdded && !isDetached) {
                                             it.foreground = Color.WHITE.toDrawable()
-                                            it.postDelayed({
+                                            it.postDelayed(50.milliseconds) {
                                                 if (isAdded && !isDetached) {
                                                     it.foreground = null
                                                     progressBar?.visibility = View.VISIBLE
                                                 }
-                                            }, 50L)
+                                            }
                                             mediaActionSound?.play(LessObnoxiousMediaActionSound.SHUTTER_CLICK)
                                         }
                                     }

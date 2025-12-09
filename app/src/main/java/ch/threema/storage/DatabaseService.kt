@@ -24,7 +24,8 @@ package ch.threema.storage
 import android.content.Context
 import android.database.sqlite.SQLiteException
 import androidx.annotation.OpenForTesting
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.SessionScoped
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.DispatcherProvider
 import ch.threema.storage.databaseupdate.*
 import ch.threema.storage.factories.AppTaskPersistenceFactory
@@ -63,9 +64,10 @@ import net.zetetic.database.sqlcipher.SQLiteConnection
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 import net.zetetic.database.sqlcipher.SQLiteDatabaseHook
 
-private val logger = LoggingUtil.getThreemaLogger("DatabaseService")
+private val logger = getThreemaLogger("DatabaseService")
 
 @OpenForTesting
+@SessionScoped
 open class DatabaseService
 @JvmOverloads
 constructor(

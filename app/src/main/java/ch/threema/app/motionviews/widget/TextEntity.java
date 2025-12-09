@@ -140,7 +140,7 @@ public class TextEntity extends MotionEntity {
         Bitmap bmp;
         if (reuseBmp != null && reuseBmp.getWidth() == boundsWidth
             && reuseBmp.getHeight() == bmpHeight) {
-            // if previous bitmap exists, and it's width/height is the same - reuse it
+            // if previous bitmap exists, and its width/height is the same - reuse it
             bmp = reuseBmp;
             bmp.eraseColor(Color.TRANSPARENT); // erase color when reusing
         } else {

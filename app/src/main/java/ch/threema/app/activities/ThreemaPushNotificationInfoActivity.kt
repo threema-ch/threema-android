@@ -25,17 +25,17 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.ScrollView
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.applyDeviceInsetsAsMargin
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.button.MaterialButton
 
-private val logger = LoggingUtil.getThreemaLogger("ThreemaPushNotificationInfoActivity")
+private val logger = getThreemaLogger("ThreemaPushNotificationInfoActivity")
 
 /**
  * Activity that is shown when the user taps on the persistent Threema Push notification.

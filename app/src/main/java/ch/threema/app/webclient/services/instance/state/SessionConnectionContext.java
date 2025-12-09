@@ -78,7 +78,7 @@ import ch.threema.app.webclient.webrtc.TemporaryDataChannelObserver;
 import ch.threema.app.webclient.webrtc.TemporaryTaskEventHandler;
 import ch.threema.app.webrtc.DataChannelObserver;
 import ch.threema.app.webrtc.UnboundedFlowControlledDataChannel;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.logging.ThreemaLogger;
 
 /**
@@ -98,7 +98,7 @@ class SessionConnectionContext {
     static final int C2C_CONNECT_TIMEOUT_MS = 42000;
 
     // Logger
-    private final Logger logger = LoggingUtil.getThreemaLogger("SessionConnectionContext");
+    private final Logger logger = getThreemaLogger("SessionConnectionContext");
 
     // Session context
     @NonNull
@@ -374,7 +374,7 @@ class SessionConnectionContext {
 
         // Create signalling data channel logger
         @SuppressLint("LoggerName")
-        final Logger sdcLogger = LoggingUtil.getThreemaLogger("SignalingDataChannel");
+        final Logger sdcLogger = getThreemaLogger("SignalingDataChannel");
         if (sdcLogger instanceof ThreemaLogger) {
             ((ThreemaLogger) sdcLogger).setPrefix(logPrefix + "." + this.sdc.label() + "/" + this.sdc.id());
         }
@@ -445,7 +445,7 @@ class SessionConnectionContext {
 
                 // Forward buffered amount to flow control
                 // Important: ALWAYS dispatch this event to another thread because webrtc.org!
-                RuntimeUtil.runInAsyncTask(ufcdc::bufferedAmountChange);
+                RuntimeUtil.runOnWorkerThread(ufcdc::bufferedAmountChange);
             }
 
             @Override
@@ -501,7 +501,7 @@ class SessionConnectionContext {
                                 // Note: The data channel MUST NOT be used after this point!
                                 final DataChannel dc = SessionConnectionContext.this.sdc;
                                 SessionConnectionContext.this.sdc = null;
-                                RuntimeUtil.runInAsyncTask(dc::dispose);
+                                RuntimeUtil.runOnWorkerThread(dc::dispose);
                                 break;
                         }
                     }
@@ -635,7 +635,7 @@ class SessionConnectionContext {
 
                 // Forward buffered amount to flow control
                 // Important: ALWAYS dispatch this event to another thread because webrtc.org!
-                RuntimeUtil.runInAsyncTask(SessionConnectionContext.this.dcc.fcdc::bufferedAmountChange);
+                RuntimeUtil.runOnWorkerThread(SessionConnectionContext.this.dcc.fcdc::bufferedAmountChange);
             }
 
             @Override
@@ -683,7 +683,7 @@ class SessionConnectionContext {
 
                                 // Note: The data channel MUST NOT be used after this point!
                                 SessionConnectionContext.this.dcc = null;
-                                RuntimeUtil.runInAsyncTask(dc::dispose);
+                                RuntimeUtil.runOnWorkerThread(dc::dispose);
                                 break;
                         }
                     }

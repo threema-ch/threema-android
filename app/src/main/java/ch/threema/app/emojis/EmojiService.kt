@@ -25,13 +25,15 @@ import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import ch.threema.app.emojis.search.EmojiSearchIndex
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.SessionScoped
+import ch.threema.base.utils.getThreemaLogger
 import java.lang.Exception
 import java.util.Locale
 import kotlinx.coroutines.*
 
-private val logger = LoggingUtil.getThreemaLogger("EmojiService")
+private val logger = getThreemaLogger("EmojiService")
 
+@SessionScoped
 class EmojiService(
     private val preferenceService: PreferenceService,
     private val searchIndex: EmojiSearchIndex,

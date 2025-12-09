@@ -34,14 +34,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
 import ch.threema.base.utils.JSONUtil;
 
 import static java.nio.charset.StandardCharsets.*;
 
 public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> implements Serializable {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipICECandidatesData");
+    private static final Logger logger = getThreemaLogger("VoipICECandidatesData");
 
     // Keys
     private final static String KEY_REMOVED = "removed";

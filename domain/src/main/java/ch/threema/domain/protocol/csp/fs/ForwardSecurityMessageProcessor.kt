@@ -26,7 +26,7 @@ import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.fs.DHSession
 import ch.threema.domain.fs.DHSession.RejectMessageError
 import ch.threema.domain.fs.DHSessionId
@@ -66,7 +66,7 @@ import java.io.ByteArrayOutputStream
 import java.util.Date
 import kotlinx.coroutines.runBlocking
 
-private val logger = LoggingUtil.getThreemaLogger("ForwardSecurityMessageProcessor")
+private val logger = getThreemaLogger("ForwardSecurityMessageProcessor")
 
 class ForwardSecurityMessageProcessor(
     private val dhSessionStoreInterface: DHSessionStoreInterface,

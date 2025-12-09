@@ -70,14 +70,15 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.workers.ShareTargetUpdateWorker;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE;
 import static ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE_EXCEPT_MENTIONS;
 
 public abstract class NotificationsActivity extends ThreemaActivity implements ShowOnceDialog.ShowOnceDialogClickListener, RingtoneSelectorDialog.RingtoneSelectorDialogClickListener {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("NotificationsActivity");
+    private static final Logger logger = getThreemaLogger("NotificationsActivity");
 
     private static final String BUNDLE_ANIMATION_CENTER = "animC";
     private static final String DIALOG_TAG_RINGTONE_SELECTOR = "drs";
@@ -136,7 +137,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements S
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }

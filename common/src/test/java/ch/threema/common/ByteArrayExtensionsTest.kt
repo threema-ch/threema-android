@@ -21,6 +21,7 @@
 
 package ch.threema.common
 
+import java.nio.ByteOrder
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -29,6 +30,20 @@ import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class ByteArrayExtensionsTest {
+    @Test
+    fun `build byte array`() {
+        val bytes = buildByteArray {
+            write(0x12)
+            write(0x34)
+            write(0x56)
+            write(0x78)
+        }
+        assertContentEquals(
+            byteArrayOf(0x12, 0x34, 0x56, 0x78),
+            bytes,
+        )
+    }
+
     @Test
     fun `xor of two byte arrays`() {
         val array1 = byteArrayOf(1, 2, 5, 0, 32, 48)
@@ -63,7 +78,7 @@ class ByteArrayExtensionsTest {
 
     @Test
     fun `chunked empty byte array`() {
-        assertTrue(byteArrayOf().chunked(1).isEmpty())
+        assertTrue(emptyByteArray().chunked(1).isEmpty())
     }
 
     @Test
@@ -111,6 +126,38 @@ class ByteArrayExtensionsTest {
         assertEquals(
             "0001071e2032…",
             bytes.toHexString(maxBytes = 6),
+        )
+    }
+
+    @Test
+    fun `byte array to little-endian long`() {
+        val bytes = byteArrayOf(0x01, 0xa0.toByte(), 0x10.toByte(), 0xff.toByte(), 0xcd.toByte(), 0x66.toByte(), 0x0f.toByte(), 0x22.toByte())
+        val long = bytes.toLong(order = ByteOrder.LITTLE_ENDIAN)
+        assertEquals("220f66cdff10a001".hexToLong(), long)
+    }
+
+    @Test
+    fun `byte array to big-endian long`() {
+        val bytes = byteArrayOf(0x01, 0xa0.toByte(), 0x10.toByte(), 0xff.toByte(), 0xcd.toByte(), 0x66.toByte(), 0x0f.toByte(), 0x22.toByte())
+        val long = bytes.toLong(order = ByteOrder.BIG_ENDIAN)
+        assertEquals("01a010ffcd660f22".hexToLong(), long)
+    }
+
+    @Test
+    fun `read little-endian integer`() {
+        val bytes = byteArrayOf(0x01, 0x12, 0x34, 0x45, 0x56, 0x67)
+        assertEquals(
+            0x56453412,
+            bytes.readLittleEndianInt(offset = 1),
+        )
+    }
+
+    @Test
+    fun `read little-endian short`() {
+        val bytes = byteArrayOf(0x01, 0x12, 0x34, 0x45)
+        assertEquals(
+            0x3412.toShort(),
+            bytes.readLittleEndianShort(offset = 1),
         )
     }
 }

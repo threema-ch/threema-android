@@ -57,14 +57,14 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
 
 import static ch.threema.storage.models.data.MessageContentsType.VOICE_MESSAGE;
 
 abstract public class MediaViewFragment extends Fragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaViewFragment");
+    private static final Logger logger = getThreemaLogger("MediaViewFragment");
 
     // enums are evil
     private final int ImageState_NONE = 0;

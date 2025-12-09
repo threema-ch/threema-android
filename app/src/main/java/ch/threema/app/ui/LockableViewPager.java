@@ -28,10 +28,10 @@ import android.view.MotionEvent;
 import org.slf4j.Logger;
 
 import androidx.viewpager.widget.ViewPager;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class LockableViewPager extends ViewPager {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LockableViewPager");
+    private static final Logger logger = getThreemaLogger("LockableViewPager");
 
     private boolean locked = false;
 

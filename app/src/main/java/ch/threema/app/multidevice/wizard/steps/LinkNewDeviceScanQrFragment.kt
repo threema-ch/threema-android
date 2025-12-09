@@ -52,11 +52,11 @@ import ch.threema.app.ui.LongToast
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceScanQrFragment")
+private val logger = getThreemaLogger("LinkNewDeviceScanQrFragment")
 
 class LinkNewDeviceScanQrFragment : LinkNewDeviceFragment() {
     init {

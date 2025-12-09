@@ -28,9 +28,9 @@ import ch.threema.app.utils.AppVersionProvider
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.ExifInterface
 import ch.threema.app.utils.ShortcutUtil
-import ch.threema.app.utils.contentEquals
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.contentEquals
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -64,7 +64,7 @@ import ch.threema.storage.models.ConversationModel
 import ch.threema.storage.models.ConversationTag
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedContactSyncTask")
+private val logger = getThreemaLogger("ReflectedContactSyncTask")
 
 class ReflectedContactSyncTask(
     private val contactSync: ContactSync,
@@ -713,7 +713,7 @@ class ReflectedContactSyncTask(
         readReceiptPolicy = getReadReceiptPolicyOrNull() ?: ReadReceiptPolicy.DEFAULT,
         typingIndicatorPolicy = getTypingIndicatorPolicyOrNull() ?: TypingIndicatorPolicy.DEFAULT,
         isArchived = getConversationVisibilityArchiveOrNull() ?: false,
-        androidContactLookupKey = null,
+        androidContactLookupInfo = null,
         localAvatarExpires = null,
         isRestored = false,
         profilePictureBlobId = null,

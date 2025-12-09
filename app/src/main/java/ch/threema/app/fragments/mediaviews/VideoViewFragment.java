@@ -64,13 +64,13 @@ import ch.threema.app.activities.MediaViewerActivity;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.VideoUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 @SuppressLint("UnsafeOptInUsageError")
 public class VideoViewFragment extends MediaViewFragment implements Player.Listener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoViewFragment");
+    private static final Logger logger = getThreemaLogger("VideoViewFragment");
 
     private WeakReference<ImageView> previewImageViewRef;
     private WeakReference<CircularProgressIndicator> progressBarRef;

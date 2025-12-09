@@ -34,7 +34,6 @@ import java.security.MessageDigest;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -58,7 +57,7 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.utils.Base64;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
 import ch.threema.domain.taskmanager.TaskManager;
@@ -66,7 +65,7 @@ import ch.threema.domain.taskmanager.TaskManager;
 import static ch.threema.app.utils.AutoDeleteUtil.validateKeepMessageDays;
 
 public class PreferenceServiceImpl implements PreferenceService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("PreferenceServiceImpl");
+    private static final Logger logger = getThreemaLogger("PreferenceServiceImpl");
 
     private static final String CONTACT_PHOTO_BLOB_ID = "id";
     private static final String CONTACT_PHOTO_ENCRYPTION_KEY = "key";
@@ -395,7 +394,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     @Nullable
     public synchronized String getLicenseUsername() {
-        return getEncryptedStringCompat(getKeyName(R.string.preferences__license_username));
+        return encryptedPreferenceStore.getString(getKeyName(R.string.preferences__license_username));
     }
 
     @Override
@@ -405,7 +404,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public synchronized String getLicensePassword() {
-        return getEncryptedStringCompat(getKeyName(R.string.preferences__license_password));
+        return encryptedPreferenceStore.getString(getKeyName(R.string.preferences__license_password));
     }
 
     @Override
@@ -416,27 +415,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     @Nullable
     public synchronized String getOnPremServer() {
-        return getEncryptedStringCompat(getKeyName(R.string.preferences__onprem_server));
-    }
-
-    /**
-     * Get encrypted string preferences in a backwards compatible way.
-     * If no encrypted prefs with given key exist, the current (unencrypted) value will be migrated
-     *
-     * @param key Key of preference
-     * @return Value of preference or null if neither an encrypted nor an unencrypted value is found
-     */
-    private String getEncryptedStringCompat(@NonNull String key) {
-        var value = encryptedPreferenceStore.getString(key);
-        if (value != null && !value.isEmpty()) {
-            return value;
-        }
-        var legacyValue = preferenceStore.getString(key);
-        if (legacyValue != null) {
-            encryptedPreferenceStore.save(key, legacyValue);
-            preferenceStore.remove(key);
-        }
-        return legacyValue;
+        return encryptedPreferenceStore.getString(getKeyName(R.string.preferences__onprem_server));
     }
 
     @Override
@@ -672,13 +651,14 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public long getLastFeatureMaskTransmission() {
-        return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__last_feature_mask_transmission));
+    @Nullable
+    public Instant getLastFeatureMaskTransmission() {
+        return preferenceStore.getInstant(this.getKeyName(R.string.preferences__last_feature_mask_transmission));
     }
 
     @Override
-    public void setLastFeatureMaskTransmission(long timestamp) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__last_feature_mask_transmission), timestamp);
+    public void setLastFeatureMaskTransmission(@Nullable Instant timestamp) {
+        preferenceStore.save(getKeyName(R.string.preferences__last_feature_mask_transmission), timestamp);
     }
 
     @Override
@@ -746,6 +726,10 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     private String getKeyName(@StringRes int resourceId) {
         return this.context.getString(resourceId);
+    }
+
+    private String getKeyName(@StringRes int resourceId, @NonNull String suffix) {
+        return context.getString(resourceId) + suffix;
     }
 
     @Override
@@ -1416,8 +1400,8 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public void setWorkOrganization(WorkOrganization organization) {
-        encryptedPreferenceStore.save(getKeyName(R.string.preferences__work_directory_organization), organization.toJSON());
+    public void setWorkOrganization(@Nullable WorkOrganization organization) {
+        encryptedPreferenceStore.save(getKeyName(R.string.preferences__work_directory_organization), organization != null ? organization.toJSON() : null);
     }
 
     @Override
@@ -1602,13 +1586,14 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public long getBackupWarningDismissedTime() {
-        return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__backup_warning_dismissed_time));
+    @Nullable
+    public Instant getBackupWarningDismissedTime() {
+        return preferenceStore.getInstant(getKeyName(R.string.preferences__backup_warning_dismissed_time));
     }
 
     @Override
-    public void setBackupWarningDismissedTime(long time) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__backup_warning_dismissed_time), time);
+    public void setBackupWarningDismissedTime(@Nullable Instant timestamp) {
+        preferenceStore.save(getKeyName(R.string.preferences__backup_warning_dismissed_time), timestamp);
     }
 
     @Override
@@ -1692,13 +1677,14 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public void setTimeOfLastContactSync(long timeMs) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__contact_sync_time), timeMs);
+    public void setTimeOfLastContactSync(@Nullable Instant timestamp) {
+        preferenceStore.save(getKeyName(R.string.preferences__contact_sync_time), timestamp);
     }
 
     @Override
-    public long getTimeOfLastContactSync() {
-        return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__contact_sync_time));
+    @Nullable
+    public Instant getTimeOfLastContactSync() {
+        return preferenceStore.getInstant(getKeyName(R.string.preferences__contact_sync_time));
     }
 
     @Override
@@ -1723,13 +1709,14 @@ public class PreferenceServiceImpl implements PreferenceService {
     }
 
     @Override
-    public void setLastNotificationPermissionRequestTimestamp(long timestamp) {
-        this.preferenceStore.save(this.getKeyName(R.string.preferences__last_notification_request_timestamp), timestamp);
+    public void setLastNotificationPermissionRequestTimestamp(@Nullable Instant timestamp) {
+        preferenceStore.save(getKeyName(R.string.preferences__last_notification_request_timestamp), timestamp);
     }
 
     @Override
-    public long getLastNotificationPermissionRequestTimestamp() {
-        return this.preferenceStore.getLong(this.getKeyName(R.string.preferences__last_notification_request_timestamp));
+    @Nullable
+    public Instant getLastNotificationPermissionRequestTimestamp() {
+        return preferenceStore.getInstant(getKeyName(R.string.preferences__last_notification_request_timestamp));
     }
 
     @Nullable
@@ -1758,5 +1745,29 @@ public class PreferenceServiceImpl implements PreferenceService {
         for (SynchronizedBooleanSetting setting : booleanSettingsMap.values()) {
             setting.reload();
         }
+    }
+
+    @NonNull
+    @Override
+    public CrashReportingState getCrashReportingState() {
+        var value = preferenceStore.getString(getKeyName(R.string.preferences__crash_reporting));
+        if (context.getString(R.string.crash_reporting_value_always_send).equals(value)) {
+            return CrashReportingState.ALWAYS_SEND;
+        }
+        if (context.getString(R.string.crash_reporting_value_never_send).equals(value)) {
+            return CrashReportingState.NEVER_SEND;
+        }
+        return CrashReportingState.ALWAYS_ASK;
+    }
+
+    @Nullable
+    @Override
+    public Instant getProblemDismissed(@NonNull String problemKey) {
+        return preferenceStore.getInstant(getKeyName(R.string.preferences__problem_dismissed_prefix, problemKey));
+    }
+
+    @Override
+    public void setProblemDismissed(@NonNull String problemKey, @Nullable Instant timestamp) {
+        preferenceStore.save(getKeyName(R.string.preferences__problem_dismissed_prefix, problemKey), timestamp);
     }
 }

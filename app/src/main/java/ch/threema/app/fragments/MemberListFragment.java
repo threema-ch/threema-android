@@ -42,40 +42,21 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.GroupAddActivity;
 import ch.threema.app.activities.MemberChooseActivity;
 import ch.threema.app.activities.ProfilePicRecipientsActivity;
 import ch.threema.app.adapters.FilterResultsListener;
 import ch.threema.app.adapters.FilterableListAdapter;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.services.BlockedIdentitiesService;
-import ch.threema.app.services.ContactService;
-import ch.threema.app.services.ConversationCategoryService;
-import ch.threema.app.services.ConversationService;
-import ch.threema.app.services.DistributionListService;
-import ch.threema.app.services.GroupService;
-import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
-import ch.threema.app.utils.LogUtil;
-import ch.threema.base.ThreemaException;
 import ch.threema.storage.models.ContactModel;
 
 public abstract class MemberListFragment extends ListFragment implements FilterResultsListener {
     public static final String BUNDLE_ARG_PRESELECTED = "pres";
     public static final String BUNDLE_ARG_EXCLUDED = "excl";
 
-    protected ContactService contactService;
-    protected GroupService groupService;
-    protected DistributionListService distributionListService;
-    protected ConversationService conversationService;
-    protected PreferenceService preferenceService;
-    protected BlockedIdentitiesService blockedIdentitiesService;
-    @Nullable
-    protected ConversationCategoryService conversationCategoryService;
     protected Activity activity;
     protected Parcelable listInstanceState;
     protected ExtendedFloatingActionButton floatingActionButton;
@@ -90,21 +71,6 @@ public abstract class MemberListFragment extends ListFragment implements FilterR
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         activity = getActivity();
         selectionListener = (MemberChooseActivity) activity;
-
-        final ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-
-        try {
-            contactService = serviceManager.getContactService();
-            groupService = serviceManager.getGroupService();
-            distributionListService = serviceManager.getDistributionListService();
-            blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
-            conversationService = serviceManager.getConversationService();
-            preferenceService = serviceManager.getPreferenceService();
-            conversationCategoryService = serviceManager.getConversationCategoryService();
-        } catch (ThreemaException e) {
-            LogUtil.exception(e, getActivity());
-            return null;
-        }
 
         Bundle bundle = getArguments();
         if (bundle != null) {

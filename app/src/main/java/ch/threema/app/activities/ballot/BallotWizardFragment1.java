@@ -57,7 +57,7 @@ import ch.threema.app.dialogs.FormatTextEntryDialog;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -65,7 +65,7 @@ import static com.google.android.material.timepicker.TimeFormat.CLOCK_12H;
 import static com.google.android.material.timepicker.TimeFormat.CLOCK_24H;
 
 public class BallotWizardFragment1 extends BallotWizardFragment implements BallotWizardActivity.BallotWizardCallback, BallotWizard1Adapter.OnChoiceListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotWizardFragment1");
+    private static final Logger logger = getThreemaLogger("BallotWizardFragment1");
 
     private static final String DIALOG_TAG_SELECT_DATE = "selectDate";
     private static final String DIALOG_TAG_SELECT_TIME = "selectTime";

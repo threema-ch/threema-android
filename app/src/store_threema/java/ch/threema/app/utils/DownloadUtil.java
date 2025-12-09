@@ -38,7 +38,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * APK Downloader. Only used in Threema Shop version.
@@ -48,7 +48,7 @@ import ch.threema.base.utils.LoggingUtil;
  * UpdateReceiver.
  */
 public class DownloadUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DownloadUtil");
+    private static final Logger logger = getThreemaLogger("DownloadUtil");
 
     /**
      * Starts the download and provides the download state info.

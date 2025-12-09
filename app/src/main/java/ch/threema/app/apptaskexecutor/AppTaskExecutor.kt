@@ -23,26 +23,20 @@ package ch.threema.app.apptaskexecutor
 
 import ch.threema.app.apptaskexecutor.tasks.AppTask
 import ch.threema.app.apptaskexecutor.tasks.PersistableAppTask
-import ch.threema.app.managers.ServiceManager
-import ch.threema.app.services.ServiceManagerProvider
-import ch.threema.app.startup.AppStartupMonitor
-import ch.threema.app.startup.models.AppSystem
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.DispatcherProvider
-import ch.threema.common.awaitNonNull
 import kotlin.jvm.Throws
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 
-private val logger = LoggingUtil.getThreemaLogger("AppTaskExecutor")
+private val logger = getThreemaLogger("AppTaskExecutor")
 
 /**
  * This is a task executor that is bound to the application. There are no restrictions on network connectivity. Note that scheduled tasks may run in
@@ -50,23 +44,13 @@ private val logger = LoggingUtil.getThreemaLogger("AppTaskExecutor")
  *
  * As soon as the database is ready, persistent tasks are loaded and run.
  */
-// TODO(ANDR-4220): Refactor appTaskPersistenceProvider such that it can be injected by Koin
 class AppTaskExecutor(
-    private val appStartupMonitor: AppStartupMonitor,
+    private val appTaskPersistenceProvider: AppTaskPersistenceProvider,
     private val dispatcherProvider: DispatcherProvider,
-    private val serviceManagerProvider: ServiceManagerProvider,
-    private val appTaskPersistenceProvider: suspend (ServiceManager) -> AppTaskPersistence = { serviceManager ->
-        databaseAppTaskPersistenceProvider(
-            serviceManager,
-            appStartupMonitor,
-        )
-    },
 ) {
     private val mutex = Mutex()
 
     private val taskQueue = Channel<Pair<AppTask, CompletableDeferred<Unit>>>(capacity = Channel.UNLIMITED)
-
-    private val taskPersistenceStateFlow = MutableStateFlow<AppTaskPersistence?>(null)
 
     /**
      * Start the task executor. This method never returns as long as the task executor is running tasks or waiting for new tasks to be scheduled.
@@ -76,16 +60,12 @@ class AppTaskExecutor(
     @Throws(IllegalStateException::class)
     suspend fun start() {
         if (!mutex.tryLock()) {
-            throw IllegalStateException("Tasks are already being run")
+            error("Tasks are already being run")
         }
         try {
             coroutineScope {
                 launch {
                     runQueuedTasks()
-                }
-
-                launch {
-                    collectAndMapServiceManager()
                 }
 
                 initPersistedTasks()
@@ -100,7 +80,7 @@ class AppTaskExecutor(
      * Persist and schedule the given [appTask]. Suspends until the task can be persisted in case there is no access to the task persistor.
      */
     suspend fun persistAndScheduleTask(appTask: PersistableAppTask): Deferred<Unit> {
-        taskPersistenceStateFlow.awaitNonNull().persistTask(appTask)
+        appTaskPersistenceProvider.getAppTaskPersistence().persistTask(appTask)
         return schedule(appTask)
     }
 
@@ -114,22 +94,13 @@ class AppTaskExecutor(
         return schedule(appTask)
     }
 
-    private fun schedule(appTask: AppTask): CompletableDeferred<Unit> {
-        val completableDeferred = CompletableDeferred<Unit>()
-        val sendResult = taskQueue.trySend(appTask to completableDeferred)
-        when {
-            sendResult.isSuccess -> return completableDeferred
+    private fun schedule(appTask: AppTask): Deferred<Unit> {
+        val taskCompletionDeferred = CompletableDeferred<Unit>()
+        val sendResult = taskQueue.trySend(appTask to taskCompletionDeferred)
+        return when {
+            sendResult.isSuccess -> taskCompletionDeferred
             sendResult.isClosed -> error("Could not schedule task $appTask because channel is closed")
             else -> error("Scheduling the task was not successful but the channel wasn't closed.")
-        }
-    }
-
-    /**
-     * Collects and maps the service manager to app task persistence.
-     */
-    private suspend fun collectAndMapServiceManager() {
-        serviceManagerProvider.serviceManagerFlow.collect { serviceManager ->
-            taskPersistenceStateFlow.value = serviceManager?.let { appTaskPersistenceProvider(it) }
         }
     }
 
@@ -138,10 +109,9 @@ class AppTaskExecutor(
      */
     private suspend fun initPersistedTasks() {
         logger.info("Loading persisted app tasks")
-        taskPersistenceStateFlow
-            .awaitNonNull()
+        appTaskPersistenceProvider.getAppTaskPersistence()
             .loadAllPersistedTasks()
-            .forEach(this::schedule)
+            .forEach(::schedule)
     }
 
     /**
@@ -167,20 +137,12 @@ class AppTaskExecutor(
                         completableDeferred.completeExceptionally(exception)
                     } finally {
                         if (appTask is PersistableAppTask && !taskWasCancelled) {
-                            taskPersistenceStateFlow.awaitNonNull().removePersistedTask(appTask)
+                            appTaskPersistenceProvider.getAppTaskPersistence().removePersistedTask(appTask)
                         }
                         logger.info("Task {} complete", appTask)
                     }
                 }
             }
         }
-    }
-
-    companion object {
-        private val databaseAppTaskPersistenceProvider: suspend (ServiceManager, AppStartupMonitor) -> AppTaskPersistence =
-            { serviceManager, appStartupMonitor ->
-                appStartupMonitor.awaitSystem(AppSystem.DATABASE_UPDATES)
-                DatabaseAppTaskPersistence(serviceManager.databaseService.appTaskPersistenceFactory)
-            }
     }
 }

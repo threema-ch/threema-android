@@ -44,12 +44,12 @@ import androidx.annotation.UiThread;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.FragmentManager;
 import ch.threema.app.R;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("CancelableHorizontalProgressDialog");
+    private static final Logger logger = getThreemaLogger("CancelableHorizontalProgressDialog");
     private ProgressDialogClickListener callback;
     private Activity activity;
     private DialogInterface.OnClickListener listener;

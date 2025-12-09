@@ -792,7 +792,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="grace_thirty_minutes">30 minutes</string>
     <string name="grace_never">Jamais (manuel)</string>
     <string name="never">Jamais</string>
-    <string name="access_protection_cannot_be_removed">La protection de l’accès ne peut pas être supprimée car il y a au moins un chat privé.</string>
+    <string name="access_protection_private_chats_warning">En supprimant la protection d’accès, toutes vos conversations privées redeviendront visibles.</string>
     <string name="verification_started">La vérification a commencé</string>
     <string name="cannot_open_file">Impossible d\'ouvrir le fichier</string>
     <string name="prefs_title_image_attach_previews">Sélection rapide de l\'image</string>
@@ -1385,7 +1385,6 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="threema_push_service_description">Notification persistante affichée si ${app_name_short} Push est actif</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push_activated">${app_name_short} Push activé.</string>
-    <string name="add_shortcut_success">Raccourci bien créé</string>
     <string name="add_shortcut_error">Erreur lors de l\'ajout du raccourci à l\'écran du lanceur</string>
     <string name="web_link">Lien</string>
     <string name="link_copied">%s copié</string>
@@ -1633,6 +1632,8 @@ Veuillez saisir une question pour votre enquête.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">L\'application n\'est pas autorisée à maintenir une connexion permanente avec les serveurs, ce qui est nécessaire au fonctionnement de ${app_name_short} Push. Vous ne serez pas informé des nouveaux messages lorsque l\'application est en arrière-plan. Pour y remédier, touchez « Utilisation de la batterie par l\'application » et sélectionnez « Sans restriction ».</string>
     <string name="problemsolver_to_settings">Aux paramètres</string>
+    <!-- Label on button to dismiss/hide a warning -->
+    <string name="problemsolver_dismiss">Ignorer</string>
     <string name="prefs_advanced_options">Options avancées</string>
     <string name="push_service">Service Push</string>
     <string name="edit_and_send">Modifier et envoyer</string>
@@ -1772,16 +1773,14 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="remote_secrets_failed_to_fetch">Le jeton ${remote_secret} n’a pas pu être récupéré. Veuillez vérifier votre connexion Internet et réessayer.</string>
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="fetching_remote_secret">Récupération du jeton ${remote_secret}</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activated_notification_title">${remote_secret} a été activé</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been activated -->
-    <string name="remote_secret_activated_notification_content">Cette fonctionnalité protège vos conversations en cas de perte ou de vol de votre téléphone.</string>
-    <!-- Shown as the notification title when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been activated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_activated_dialog_content">Si vous perdez votre appareil, cette fonctionnalité permet à votre administrateur de verrouiller l’application, garantissant ainsi que vos conversations restent cryptées même si des personnes non autorisées parviennent à déverrouiller votre appareil.\n[En savoir plus]</string>
+    <!-- Shown as the title of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivated_notification_title">${remote_secret} a été désactivé</string>
-    <!-- Shown as the notification content when DualLock (a.k.a. "Remote Secret") has been deactivated -->
-    <string name="remote_secret_deactivated_notification_content">Si vous avez besoin de plus d’informations, veuillez contacter votre administrateur.</string>
-    <!-- Button label, shown on notification that informs user that the DualLock (a.k.a. "Remote Secret") feature has been activated -->
-    <string name="remote_secret_activated_learn_more">En savoir plus</string>
+    <!-- Shown as the content of an info dialog when DualLock (a.k.a. "Remote Secret") has been deactivated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. The text in [square brackets] must be translated, and the brackets must be kept around the translation. -->
+    <string name="remote_secret_deactivated_dialog_content">Votre administrateur a désactivé ${remote_secret}. Vous trouverez plus d’informations sur ${remote_secret} dans cette [entrée de la FAQ].</string>
     <!-- Shown on loading indicator while the DualLock (a.k.a. "Remote Secret") feature is being activated. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_activating">Activation de ${remote_secret}</string>
     <!-- Error message shown fullscreen when activating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->

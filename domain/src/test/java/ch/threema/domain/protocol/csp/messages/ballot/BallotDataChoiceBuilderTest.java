@@ -24,8 +24,6 @@ package ch.threema.domain.protocol.csp.messages.ballot;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import ch.threema.base.BuilderException;
-
 public class BallotDataChoiceBuilderTest {
     @Test
     public void buildValidNoVotes() {
@@ -63,7 +61,7 @@ public class BallotDataChoiceBuilderTest {
         try {
             builder.build();
             Assertions.fail("BuilderException not thrown");
-        } catch (BuilderException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.assertEquals("Cannot build BallotDataChoice: id is null", e.getMessage());
         }
     }
@@ -76,7 +74,7 @@ public class BallotDataChoiceBuilderTest {
         try {
             builder.build();
             Assertions.fail("BuilderException not thrown");
-        } catch (BuilderException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.assertEquals("Cannot build BallotDataChoice: description is null", e.getMessage());
         }
     }
@@ -89,7 +87,7 @@ public class BallotDataChoiceBuilderTest {
         try {
             builder.build();
             Assertions.fail("BuilderException not thrown");
-        } catch (BuilderException e) {
+        } catch (IllegalArgumentException e) {
             Assertions.assertEquals("Cannot build BallotDataChoice: sortKey is null", e.getMessage());
         }
     }

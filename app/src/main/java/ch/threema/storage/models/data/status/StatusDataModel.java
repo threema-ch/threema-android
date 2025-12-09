@@ -36,11 +36,11 @@ import java.io.StringWriter;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.data.MessageDataInterface;
 
 public abstract class StatusDataModel {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("StatusDataModel");
+    private static final Logger logger = getThreemaLogger("StatusDataModel");
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({

@@ -50,12 +50,12 @@ import ch.threema.app.motionviews.widget.TextEntity;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ImagePaintKeyboardActivity extends ThreemaToolbarActivity {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ImagePaintKeyboardActivity");
+    private static final Logger logger = getThreemaLogger("ImagePaintKeyboardActivity");
 
     public final static String INTENT_EXTRA_TEXT = "text";
     public final static String INTENT_EXTRA_COLOR = "color"; // resolved color

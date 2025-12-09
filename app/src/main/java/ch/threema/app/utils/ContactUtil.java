@@ -55,7 +55,7 @@ import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.tasks.OnFSFeatureMaskDowngradedTask;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.models.WorkVerificationLevel;
@@ -67,7 +67,7 @@ import ch.threema.storage.models.ContactModel;
  * TODO(ANDR-2985): Most of these could be contact model methods.
  */
 public class ContactUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactUtil");
+    private static final Logger logger = getThreemaLogger("ContactUtil");
 
     private static final String CONTACT_UID_PREFIX = "c-";
 

@@ -51,7 +51,7 @@ import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.app.webclient.services.instance.SessionInstanceServiceImpl;
 import ch.threema.app.webclient.state.WebClientSessionState;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.storage.models.WebClientSessionModel;
 import java8.util.concurrent.CompletableFuture;
@@ -80,7 +80,7 @@ public class SessionServiceImpl implements SessionService {
         }
     }
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SessionServiceImpl");
+    private static final Logger logger = getThreemaLogger("SessionServiceImpl");
 
     // Worker thread
     @NonNull

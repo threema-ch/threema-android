@@ -39,14 +39,14 @@ import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.AppConstants.MAX_BLOB_SIZE;
 import static ch.threema.app.utils.MimeUtil.MIME_AUDIO;
 import static ch.threema.app.utils.MimeUtil.MIME_VIDEO;
 
 public class VideoConfig {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoConfig");
+    private static final Logger logger = getThreemaLogger("VideoConfig");
 
     public static final int BITRATE_LOW = 384000;
     public static final int BITRATE_MEDIUM = 1500000;

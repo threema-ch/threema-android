@@ -23,13 +23,13 @@ package ch.threema.app.location
 
 import androidx.annotation.WorkerThread
 import ch.threema.app.ThreemaApplication
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.ServerAddressProvider
 import java.lang.Exception
 import kotlinx.coroutines.runBlocking
 import org.maplibre.android.geometry.LatLng
 
-private val logger = LoggingUtil.getThreemaLogger("NearbyPoiUtil")
+private val logger = getThreemaLogger("NearbyPoiUtil")
 
 @Deprecated("This object mainly exists as a wrapper around PoiRepository to make it usable from Java, where coroutines cannot be used.")
 object NearbyPoiUtil {

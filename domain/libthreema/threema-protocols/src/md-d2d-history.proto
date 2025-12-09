@@ -244,17 +244,18 @@ message Reaction {
   // Unix-ish timestamp in milliseconds when the reaction happened.
   uint64 at = 1;
 
-  // The reaction type.
-  enum Type {
-    // Message explicitly acknowledged
-    ACKNOWLEDGE = 0;
-    // Message explicitly declined
-    DECLINE = 1;
-  }
-  Type type = 2;
+  // Threema ID of the sender.
+  string identity = 2;
+
+  // A single fully-qualified [emoji codepoint sequence that is part of the
+  // currently supported Unicode standard][emoji-test.txt]
+  //
+  // [emoji-test.txt]:
+  // https://www.unicode.org/Public/emoji/latest/emoji-test.txt
+  bytes reaction = 3;
 }
 
-// A past outgoing message
+// A past outgoing message marked as as _Include in history_.
 message PastOutgoingMessage {
   // Enclosed outgoing message
   d2d.OutgoingMessage message = 1;
@@ -266,11 +267,11 @@ message PastOutgoingMessage {
   // marked as read
   optional uint64 read_at = 3;
 
-  // Optional last reaction to the message
-  Reaction last_reaction_at = 4;
+  // Optional reactions to the message
+  repeated Reaction reactions = 4;
 }
 
-// A past incoming message
+// A past incoming message marked as as _Include in history_.
 message PastIncomingMessage {
   // Enclosed incoming message
   d2d.IncomingMessage message = 1;
@@ -282,6 +283,6 @@ message PastIncomingMessage {
   // marked as read
   optional uint64 read_at = 3;
 
-  // Optional last reaction to the message
-  Reaction last_reaction_at = 4;
+  // Optional reactions to the message
+  repeated Reaction reactions = 4;
 }

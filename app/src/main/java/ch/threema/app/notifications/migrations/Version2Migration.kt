@@ -25,12 +25,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.media.AudioAttributes
 import androidx.core.app.NotificationManagerCompat
+import ch.threema.android.setSound
 import ch.threema.app.R
 import ch.threema.app.notifications.NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_CALLS
 import ch.threema.app.notifications.NotificationChannels.VIBRATE_PATTERN_INCOMING_CALL
 import ch.threema.app.notifications.getRingtoneUri
 import ch.threema.app.notifications.migrateOrCreateChannel
-import ch.threema.app.notifications.setSound
 import ch.threema.app.utils.RingtoneUtil
 
 /**

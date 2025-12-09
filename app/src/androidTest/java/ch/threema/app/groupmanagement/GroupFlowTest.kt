@@ -93,7 +93,7 @@ abstract class GroupFlowTest {
             SetupConfig.MULTI_DEVICE_ENABLED -> testMultiDeviceManagerEnabled
             SetupConfig.MULTI_DEVICE_DISABLED -> testMultiDeviceManagerDisabled
         },
-        serviceManager.apiService,
+        serviceManager.groupProfilePictureUploader,
         serviceManager.apiConnector,
         serviceManager.fileService,
         serviceManager.databaseService,

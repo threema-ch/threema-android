@@ -29,7 +29,7 @@ interface SfuConnection {
     /**
      * Obtain a sfu token from the directory api.
      *
-     * A token should be cached as long as it is valid according to it's expiration date.
+     * A token should be cached as long as it is valid according to its expiration date.
      *
      * @param forceRefresh Force a reload of the token, even if the token is cached and still valid
      *

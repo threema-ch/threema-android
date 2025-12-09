@@ -288,8 +288,8 @@ message Contact {
   // Required towards a new device and for a new contact. Optional for an
   // existing contact.
   enum AcquaintanceLevel {
-    // The contact was explicitly added by the user or a 1:1 conversation with
-    // the contact has been initiated.
+    // The contact was explicitly added by the user, the Work subscription
+    // administrator or a 1:1 conversation with the contact has been initiated.
     DIRECT = 0;
     // This level covers the following cases:
     //

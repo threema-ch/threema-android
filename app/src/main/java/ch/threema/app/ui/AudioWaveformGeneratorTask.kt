@@ -28,13 +28,13 @@ import android.net.Uri
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.video.transcoder.MediaComponent
 import ch.threema.app.video.transcoder.VideoTranscoder
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.AbstractMessageModel
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-private val logger = LoggingUtil.getThreemaLogger("AudioWaveformGeneratorTask")
+private val logger = getThreemaLogger("AudioWaveformGeneratorTask")
 
 /**
  * Waveform generator for voice messages. Accepts 16bit sampled audio data only

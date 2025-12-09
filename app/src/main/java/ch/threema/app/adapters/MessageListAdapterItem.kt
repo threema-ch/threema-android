@@ -45,6 +45,7 @@ class MessageListAdapterItem(
     private val contactService: ContactService,
     private val ringtoneService: RingtoneService,
     private val conversationCategoryService: ConversationCategoryService,
+    private val draftManager: DraftManager,
 ) {
     val groupModel: GroupModel? = conversationModel.groupModel
 
@@ -61,20 +62,20 @@ class MessageListAdapterItem(
     val isPinTagged = conversationModel.isPinTagged
     val isTyping = conversationModel.isTyping
 
-    // This string contains the drafted message (only the first 100 characters); no draft available if null
-    private var lastDraft: CharSequence? = null
+    private var lastDraftMessage: String? = null
     private var lastDraftPadded: CharSequence? = getDraft()
 
     fun getDraft(): CharSequence? {
-        val draft = DraftManager.getMessageDraft(uniqueId)
-        if (draft == lastDraft) {
+        val draft = draftManager.get(uniqueId)
+        val draftMessage = draft?.text
+        if (draft == lastDraftPadded) {
             return lastDraftPadded
         }
-        if (draft?.isNotBlank() == true) {
-            lastDraft = draft
-            lastDraftPadded = "$draft "
+        if (draftMessage != null) {
+            lastDraftMessage = draftMessage
+            lastDraftPadded = "$draftMessage "
         } else {
-            lastDraft = null
+            lastDraftMessage = null
             lastDraftPadded = null
         }
         return lastDraftPadded

@@ -28,10 +28,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class ExponentialBackOffUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ExponentialBackOffUtil");
+    private static final Logger logger = getThreemaLogger("ExponentialBackOffUtil");
     protected final static ExecutorService singleThreadExecutor = Executors.newSingleThreadExecutor();
     private final Random random;
 

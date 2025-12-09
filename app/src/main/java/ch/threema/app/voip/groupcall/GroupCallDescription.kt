@@ -27,14 +27,16 @@ import androidx.annotation.WorkerThread
 import ch.threema.app.voip.groupcall.sfu.CallId
 import ch.threema.app.voip.groupcall.sfu.GroupCallState
 import ch.threema.base.crypto.NaCl
-import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.generateRandomBytes
 import ch.threema.common.now
+import ch.threema.common.secureRandom
 import ch.threema.common.toHexString
 import ch.threema.storage.models.GroupCallModel
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallDescription")
+private val logger = getThreemaLogger("GroupCallDescription")
 
 @AnyThread
 data class GroupCallDescription(
@@ -160,7 +162,7 @@ data class GroupCallDescription(
 
     @WorkerThread
     private fun encrypt(data: ByteArray, key: ByteArray): ByteArray {
-        val nonce = CryptoCallUtils.getSecureRandomBytes(NaCl.NONCE_BYTES)
+        val nonce = secureRandom().generateRandomBytes(NaCl.NONCE_BYTES)
         val encrypted = NaCl.symmetricEncryptData(
             data = data,
             key = key,

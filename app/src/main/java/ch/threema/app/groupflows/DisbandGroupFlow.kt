@@ -30,7 +30,7 @@ import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.app.voip.groupcall.GroupCallManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.MessageId
@@ -42,7 +42,7 @@ import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.storage.models.GroupModel.UserState
 import kotlinx.coroutines.runBlocking
 
-private val logger = LoggingUtil.getThreemaLogger("DisbandGroupFlow")
+private val logger = getThreemaLogger("DisbandGroupFlow")
 
 /**
  * The intent of the group leave.

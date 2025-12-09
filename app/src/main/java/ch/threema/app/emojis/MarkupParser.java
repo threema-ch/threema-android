@@ -42,10 +42,10 @@ import java.util.regex.Pattern;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class MarkupParser {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MarkupParser");
+    private static final Logger logger = getThreemaLogger("MarkupParser");
 
     private static final String BOUNDARY_PATTERN = "[\\s.,!?¡¿‽⸮;:&(){}\\[\\]⟨⟩‹›«»'\"‘’“”*~\\-_…⋯᠁]";
     private static final String URL_BOUNDARY_PATTERN = "[a-zA-Z0-9\\-._~:/?#\\[\\]@!$&'()*+,;=%]";

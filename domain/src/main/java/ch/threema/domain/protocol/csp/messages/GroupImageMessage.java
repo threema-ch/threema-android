@@ -21,14 +21,15 @@
 
 package ch.threema.domain.protocol.csp.messages;
 
-import org.apache.commons.io.EndianUtils;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
 import androidx.annotation.Nullable;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static ch.threema.common.OutputStreamExtensionsKt.writeLittleEndianInt;
+
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
@@ -43,7 +44,7 @@ import ch.threema.protobuf.csp.e2e.fs.Version;
 @Deprecated
 public class GroupImageMessage extends AbstractGroupMessage {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupImageMessage");
+    private static final Logger logger = getThreemaLogger("GroupImageMessage");
 
     private byte[] blobId;
     private int size;
@@ -121,7 +122,7 @@ public class GroupImageMessage extends AbstractGroupMessage {
             bos.write(getGroupCreator().getBytes(StandardCharsets.US_ASCII));
             bos.write(getApiGroupId().getGroupId());
             bos.write(blobId);
-            EndianUtils.writeSwappedInteger(bos, size);
+            writeLittleEndianInt(bos, size);
             bos.write(encryptionKey);
             return bos.toByteArray();
         } catch (Exception e) {

@@ -33,6 +33,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
 import ch.threema.app.backuprestore.csv.BackupService
 import ch.threema.app.backuprestore.csv.RestoreService
@@ -41,13 +42,12 @@ import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("BackupRestoreProgressActivity")
+private val logger = getThreemaLogger("BackupRestoreProgressActivity")
 
 /**
  * This activity is shown when the user opens Threema while a backup is being created or restored.

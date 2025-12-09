@@ -24,7 +24,7 @@ package ch.threema.data.storage
 import android.database.Cursor
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import ch.threema.app.utils.ThrowingConsumer
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.repositories.EmojiReactionEntryCreateException
 import ch.threema.storage.buildContentValues
 import ch.threema.storage.factories.ContactEmojiReactionModelFactory
@@ -36,7 +36,7 @@ import ch.threema.storage.models.MessageModel
 import ch.threema.storage.runTransaction
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
-private val logger = LoggingUtil.getThreemaLogger("EmojiReactionsDaoImpl")
+private val logger = getThreemaLogger("EmojiReactionsDaoImpl")
 
 class EmojiReactionsDaoImpl(
     private val sqlite: SupportSQLiteOpenHelper,

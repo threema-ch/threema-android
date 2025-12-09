@@ -21,13 +21,13 @@
 
 package ch.threema.domain.protocol.api
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.*
 
-private val logger = LoggingUtil.getThreemaLogger("SfuToken")
+private val logger = getThreemaLogger("SfuToken")
 
 data class SfuToken(
     val sfuBaseUrl: String,

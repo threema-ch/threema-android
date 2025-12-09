@@ -35,10 +35,10 @@ import org.slf4j.Logger;
 
 import ch.threema.app.R;
 import ch.threema.app.mediaattacher.PreviewFragmentInterface;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public abstract class AudioFocusSupportingMediaViewFragment extends MediaViewFragment implements AudioManager.OnAudioFocusChangeListener, PreviewFragmentInterface.AudioFocusActions {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AudioFocusSupportingMediaViewFragment");
+    private static final Logger logger = getThreemaLogger("AudioFocusSupportingMediaViewFragment");
 
     private AudioManager audioManager;
 

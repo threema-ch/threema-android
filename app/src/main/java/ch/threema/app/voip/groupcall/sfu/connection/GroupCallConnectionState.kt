@@ -25,10 +25,10 @@ import androidx.annotation.AnyThread
 import androidx.annotation.WorkerThread
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.sfu.*
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import kotlinx.coroutines.*
 
-private val logger = LoggingUtil.getThreemaLogger("GroupCallConnectionState")
+private val logger = getThreemaLogger("GroupCallConnectionState")
 
 sealed class GroupCallConnectionState constructor(
     val stateName: StateName,

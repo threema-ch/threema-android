@@ -38,10 +38,10 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class VideoUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoUtil");
+    private static final Logger logger = getThreemaLogger("VideoUtil");
 
     /**
      * Get duration of a video represented by uri in Milliseconds

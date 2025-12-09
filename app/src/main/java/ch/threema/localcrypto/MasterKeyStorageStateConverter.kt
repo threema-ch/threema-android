@@ -21,7 +21,7 @@
 
 package ch.threema.localcrypto
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.localcrypto.models.MasterKeyState
 import ch.threema.localcrypto.models.MasterKeyState.WithPassphrase.PassphraseProtection
 import ch.threema.localcrypto.models.MasterKeyStorageData
@@ -30,14 +30,14 @@ import ch.threema.localcrypto.models.Version2MasterKeyStorageInnerData
 import ch.threema.localcrypto.models.Version2MasterKeyStorageOuterData
 import java.io.IOException
 
-private val logger = LoggingUtil.getThreemaLogger("MasterKeyStorageStateConverter")
+private val logger = getThreemaLogger("MasterKeyStorageStateConverter")
 
 /**
  * Can convert back and forth between [MasterKeyState] and [MasterKeyStorageData] formats, where the former is
  * meant to be as storage-version-agnostic as possible while the latter is a representation of how the key data is stored.
  */
 class MasterKeyStorageStateConverter(
-    private val version1KeyVerifier: Version1MasterKeyCrypto = Version1MasterKeyCrypto,
+    private val version1KeyVerifier: Version1MasterKeyCrypto,
 ) {
     fun toKeyState(storageData: MasterKeyStorageData): MasterKeyState =
         when (storageData) {

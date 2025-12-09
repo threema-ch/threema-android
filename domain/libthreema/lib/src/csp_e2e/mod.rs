@@ -13,19 +13,48 @@ use crate::{
         keys::{ClientKey, DeviceGroupKey},
     },
     csp::payload::MessageWithMetadataBox,
-    csp_e2e::{contacts::lookup::ContactLookupCache, incoming_message::task::IncomingMessageTask},
+    csp_e2e::{contacts::lookup::ContactLookupCache, message::task::incoming::IncomingMessageTask},
     https::endpoint::HttpsEndpointError,
     model::provider::{
-        ContactProvider, MessageProvider, NonceStorage, ProviderError, SettingsProvider, ShortcutProvider,
+        ContactProvider, ConversationProvider, NonceStorage, ProviderError, SettingsProvider,
+        ShortcutProvider,
     },
-    utils::sequence_numbers::{SequenceNumberOverflow, SequenceNumberU32, SequenceNumberValue},
+    utils::{
+        debug::Name as _,
+        sequence_numbers::{SequenceNumberOverflow, SequenceNumberU32, SequenceNumberValue},
+        serde::string,
+    },
 };
 
 pub mod contacts;
 pub mod identity;
-pub mod incoming_message;
+pub mod message;
 pub mod reflect;
 pub mod transaction;
+
+/// Cause of an internal error.
+#[derive(Clone, Debug, thiserror::Error)]
+pub enum InternalErrorCause {
+    /// Exhausted the available sequence numbers (e.g. for `ReflectId`s). Should never happen.
+    #[error("Sequence number overflow happened")]
+    SequenceNumberOverflow(#[from] SequenceNumberOverflow),
+
+    /// Unable to encrypt a message or a struct.
+    #[error("Encrypting '{name}' failed")]
+    EncryptionFailed {
+        /// Name of the message or struct
+        name: &'static str,
+    },
+
+    /// Another kind of error occurred
+    #[error("{0}")]
+    Other(String),
+}
+impl<T: Into<String>> From<T> for InternalErrorCause {
+    fn from(message: T) -> Self {
+        Self::Other(message.into())
+    }
+}
 
 /// An error occurred while running the end-to-end encryption layer of the _Chat Server Protocol_.
 ///
@@ -34,6 +63,17 @@ pub mod transaction;
 /// of the protocol can then be created with linear/exponential backoff.
 #[derive(Clone, Debug, thiserror::Error)]
 #[cfg_attr(feature = "uniffi", derive(uniffi::Error), uniffi(flat_error))]
+#[cfg_attr(
+    feature = "wasm",
+    derive(tsify::Tsify, serde::Serialize),
+    serde(
+        tag = "type",
+        content = "details",
+        rename_all = "kebab-case",
+        rename_all_fields = "camelCase"
+    ),
+    tsify(into_wasm_abi)
+)]
 pub enum CspE2eProtocolError {
     /// A foreign function considered infallible returned an error.
     #[cfg(any(test, feature = "uniffi", feature = "cli"))]
@@ -45,19 +85,9 @@ pub enum CspE2eProtocolError {
     InvalidState(&'static str),
 
     /// An internal error happened.
+    #[cfg_attr(feature = "wasm", serde(serialize_with = "string::to_string::serialize"))]
     #[error("Internal error: {0}")]
-    InternalError(String),
-
-    /// Exhausted the available sequence numbers (e.g. for `ReflectId`s). Should never happen.
-    #[error("Sequence number overflow happened")]
-    SequenceNumberOverflow(#[from] SequenceNumberOverflow),
-
-    /// Unable to encrypt a message or a struct.
-    #[error("Encrypting '{name}' failed")]
-    EncryptionFailed {
-        /// Name of the message or struct
-        name: &'static str,
-    },
+    InternalError(#[from] InternalErrorCause),
 
     /// A desync occurred.
     ///
@@ -74,7 +104,7 @@ pub enum CspE2eProtocolError {
     /// If multi-device is active, device group integrity may have been compromised and relinking against
     /// another device is advisable.
     #[error("Desync error: {0}")]
-    DesyncError(&'static str),
+    DesyncError(String),
 
     /// A network error occurred while communicating with a server.
     #[error("Network error: {0}")]
@@ -97,6 +127,11 @@ pub enum CspE2eProtocolError {
     /// When processing this variant, ensure that a new CSP connection attempt is delayed by at least 10s.
     #[error("Rate limit exceeded")]
     RateLimitExceeded,
+}
+impl From<SequenceNumberOverflow> for CspE2eProtocolError {
+    fn from(error: SequenceNumberOverflow) -> Self {
+        Self::InternalError(InternalErrorCause::from(error))
+    }
 }
 impl From<HttpsEndpointError> for CspE2eProtocolError {
     fn from(error: HttpsEndpointError) -> Self {
@@ -144,42 +179,54 @@ impl From<SequenceNumberValue<u32>> for ReflectId {
 pub struct CspE2eContextInit {
     /// The user's identity.
     pub user_identity: ThreemaId,
+
     /// Client key.
     pub client_key: ClientKey,
+
     /// Application flavour.
     pub flavor: Flavor,
+
     /// CSP nonce storage.
     pub nonce_storage: Box<RefCell<dyn NonceStorage>>,
 }
 
-/// Initializer for a [`D2xContext`]
+/// Initializer for a [`D2xContext`].
 pub struct D2xContextInit {
     /// The device's (D2X) ID.
     pub device_id: D2xDeviceId,
+
     /// The device group key.
     pub device_group_key: DeviceGroupKey,
+
     /// D2D nonce storage.
     pub nonce_storage: Box<RefCell<dyn NonceStorage>>,
 }
 
-/// Initializer for a [`CspE2eProtocolContext`]
+/// Initializer for a [`CspE2eProtocolContext`].
 pub struct CspE2eProtocolContextInit {
     /// Client info.
     pub client_info: ClientInfo,
+
     /// Configuration used by the protocol.
     pub config: Rc<Config>,
+
     /// See [`CspE2eContext`].
     pub csp_e2e: CspE2eContextInit,
+
     /// Optional D2X context, only available if multi-device is enabled, see [`D2xContext`].
     pub d2x: Option<D2xContextInit>,
+
     /// See [`ShortcutProvider`].
     pub shortcut: Box<dyn ShortcutProvider>,
+
     /// See [`SettingsProvider`].
     pub settings: Box<RefCell<dyn SettingsProvider>>,
+
     /// See [`ContactProvider`].
     pub contacts: Box<RefCell<dyn ContactProvider>>,
-    /// See [`MessageProvider`].
-    pub messages: Box<RefCell<dyn MessageProvider>>,
+
+    /// See [`ConversationProvider`].
+    pub conversations: Box<RefCell<dyn ConversationProvider>>,
 }
 
 /// The current D2M role.
@@ -187,6 +234,7 @@ pub struct CspE2eProtocolContextInit {
 pub enum D2mRole {
     /// Follower role (i.e. not yet _leader_).
     Follower,
+
     /// Leader role.
     Leader,
 }
@@ -198,10 +246,13 @@ struct ReflectSequenceNumber(SequenceNumberU32);
 pub struct CspE2eContext {
     /// The user's identity.
     user_identity: ThreemaId,
+
     /// Client key.
     client_key: ClientKey,
+
     /// Application flavour.
     flavor: Flavor,
+
     /// CSP nonce storage.
     nonce_storage: Rc<RefCell<dyn NonceStorage>>,
 }
@@ -220,12 +271,16 @@ impl From<CspE2eContextInit> for CspE2eContext {
 pub struct D2xContext {
     /// The device's (D2X) ID.
     device_id: D2xDeviceId,
+
     /// The device group key.
     device_group_key: DeviceGroupKey,
+
     /// D2D nonce storage.
     nonce_storage: Box<RefCell<dyn NonceStorage>>,
+
     /// Sequence number used for outgoing reflections.
     reflect_id: ReflectSequenceNumber,
+
     /// The current D2M role.
     role: D2mRole,
 }
@@ -245,20 +300,28 @@ impl From<D2xContextInit> for D2xContext {
 pub struct CspE2eProtocolContext {
     /// Client info.
     client_info: ClientInfo,
+
     /// Configuration used by the protocol.
     config: Rc<Config>,
+
     /// See [`CspE2eContext`].
     csp_e2e: CspE2eContext,
+
     /// Optional D2X context, only available if multi-device is enabled, see [`D2xContext`].
     d2x: Option<D2xContext>,
+
     /// See [`ShortcutProvider`].
     shortcut: Box<dyn ShortcutProvider>,
+
     /// See [`SettingsProvider`].
     settings: Rc<RefCell<dyn SettingsProvider>>,
+
     /// See [`ContactProvider`].
     contacts: Rc<RefCell<dyn ContactProvider>>,
-    /// See [`MessageProvider`].
-    messages: Rc<RefCell<dyn MessageProvider>>,
+
+    /// See [`ConversationProvider`].
+    conversations: Rc<RefCell<dyn ConversationProvider>>,
+
     /// See [`ContactLookupCache`].
     contact_lookup_cache: ContactLookupCache,
 }
@@ -272,7 +335,7 @@ impl From<CspE2eProtocolContextInit> for CspE2eProtocolContext {
             shortcut: init.shortcut,
             settings: init.settings.into(),
             contacts: init.contacts.into(),
-            messages: init.messages.into(),
+            conversations: init.conversations.into(),
             contact_lookup_cache: ContactLookupCache::new(HashMap::new()),
         }
     }

@@ -34,7 +34,7 @@ import kotlin.Throws
 class MasterKeyStorageManager(
     private val version2KeyFileManager: Version2MasterKeyFileManager,
     private val version1KeyFileManager: Version1MasterKeyFileManager,
-    private val storageStateConverter: MasterKeyStorageStateConverter = MasterKeyStorageStateConverter(),
+    private val storageStateConverter: MasterKeyStorageStateConverter,
 ) {
     fun keyExists() = version2KeyFileManager.keyFileExists() || version1KeyFileManager.keyFileExists()
 

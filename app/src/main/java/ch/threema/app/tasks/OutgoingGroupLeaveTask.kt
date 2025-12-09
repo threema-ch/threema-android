@@ -29,7 +29,7 @@ import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.app.utils.toBasicContacts
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.MessageId
@@ -48,7 +48,7 @@ import ch.threema.storage.models.GroupModel
 import java.util.Date
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupLeaveTask")
+private val logger = getThreemaLogger("OutgoingGroupLeaveTask")
 
 /**
  * This task is used to send out a [GroupLeaveMessage] to each member of the given group. Note that

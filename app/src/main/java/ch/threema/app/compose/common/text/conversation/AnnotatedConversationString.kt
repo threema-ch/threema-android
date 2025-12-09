@@ -42,9 +42,9 @@ import ch.threema.app.emojis.MarkupParser
 import ch.threema.app.emojis.MarkupParser.MarkupParserException
 import ch.threema.app.preference.service.PreferenceService.EmojiStyle
 import ch.threema.app.preference.service.PreferenceService.EmojiStyle_DEFAULT
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("AnnotatedConversationString")
+private val logger = getThreemaLogger("AnnotatedConversationString")
 
 private val styleBold = SpanStyle(fontWeight = FontWeight.Bold)
 private val styleItalic = SpanStyle(fontStyle = FontStyle.Italic)

@@ -22,13 +22,13 @@
 package ch.threema.domain.taskmanager
 
 import ch.threema.base.concurrent.TrulySingleThreadExecutorThreadFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.Executors
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 
-private val logger = LoggingUtil.getThreemaLogger("TaskManagerDispatcher")
+private val logger = getThreemaLogger("TaskManagerDispatcher")
 
 internal interface TaskManagerDispatcherAsserter {
     fun assertDispatcherContext()

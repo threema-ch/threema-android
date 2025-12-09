@@ -62,11 +62,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import ch.threema.android.ResolvableString
+import ch.threema.android.context
 import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.activities.ComposeMessageActivity
 import ch.threema.app.activities.ThreemaToolbarActivity
-import ch.threema.app.compose.common.ResolvableString
 import ch.threema.app.compose.common.SpacerVertical
 import ch.threema.app.compose.conversation.ConversationListItem
 import ch.threema.app.compose.conversation.models.ConversationListItemUiModel
@@ -85,7 +86,6 @@ import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.ThreemaSearchView
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.context
 import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.LocalGroupId
 import ch.threema.common.consume

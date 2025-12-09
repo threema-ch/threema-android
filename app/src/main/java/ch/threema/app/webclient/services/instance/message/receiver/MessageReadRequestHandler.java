@@ -38,7 +38,7 @@ import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
@@ -49,7 +49,7 @@ import ch.threema.storage.models.MessageType;
  */
 @WorkerThread
 public class MessageReadRequestHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MessageReadRequestHandler");
+    private static final Logger logger = getThreemaLogger("MessageReadRequestHandler");
 
     private final ContactService contactService;
     private final GroupService groupService;

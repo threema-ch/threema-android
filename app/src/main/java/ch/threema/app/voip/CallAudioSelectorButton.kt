@@ -29,9 +29,9 @@ import androidx.appcompat.widget.AppCompatImageView
 import ch.threema.app.R
 import ch.threema.app.utils.AudioDevice
 import ch.threema.app.utils.TestUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("CallAudioSelectorButton")
+private val logger = getThreemaLogger("CallAudioSelectorButton")
 
 class CallAudioSelectorButton : AppCompatImageView, View.OnClickListener {
     var audioDevices: Set<AudioDevice> = emptySet()

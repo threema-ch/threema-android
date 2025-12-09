@@ -22,36 +22,14 @@
 package ch.threema.app.services
 
 import ch.threema.app.managers.ServiceManager
-import ch.threema.app.startup.AppStartupMonitor
-import ch.threema.common.awaitNonNull
-import kotlin.time.Duration
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.withTimeoutOrNull
 
-class ServiceManagerProviderImpl(
-    private val appStartupMonitor: AppStartupMonitor,
-) : ServiceManagerProvider {
-    private val _serviceManagerFlow = MutableStateFlow<ServiceManager?>(null)
-    override val serviceManagerFlow = _serviceManagerFlow.asStateFlow()
+class ServiceManagerProviderImpl : ServiceManagerProvider {
+    private var serviceManager: ServiceManager? = null
 
     fun setServiceManager(serviceManager: ServiceManager?) {
-        _serviceManagerFlow.value = serviceManager
+        this.serviceManager = serviceManager
     }
-
-    override fun getServiceManager(): ServiceManager =
-        getServiceManagerOrNull() ?: error("ServiceManager not available, master key still locked?")
 
     override fun getServiceManagerOrNull(): ServiceManager? =
-        serviceManagerFlow.value
-
-    override suspend fun awaitServiceManager(): ServiceManager {
-        appStartupMonitor.awaitAll()
-        return serviceManagerFlow.awaitNonNull()
-    }
-
-    override suspend fun awaitServiceManagerWithTimeout(timeout: Duration): ServiceManager? = withTimeoutOrNull(timeout) {
-        appStartupMonitor.awaitAll()
-        serviceManagerFlow.awaitNonNull()
-    }
+        serviceManager
 }

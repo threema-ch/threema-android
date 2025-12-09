@@ -24,8 +24,9 @@ package ch.threema.domain.protocol.multidevice
 import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.Nonce
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.SecureRandomUtil.generateRandomBytes
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.generateRandomBytes
+import ch.threema.common.secureRandom
 import ch.threema.domain.protocol.connection.data.D2dMessage
 import ch.threema.domain.protocol.connection.data.D2mProtocolException
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
@@ -38,7 +39,7 @@ import ch.threema.protobuf.d2d.MdD2D.TransactionScope
 import ch.threema.protobuf.d2d.MdD2D.TransactionScope.Scope
 import ch.threema.protobuf.d2d.transactionScope
 
-private val logger = LoggingUtil.getThreemaLogger("MultiDeviceKeys")
+private val logger = getThreemaLogger("MultiDeviceKeys")
 
 data class MultiDeviceKeys(val dgk: ByteArray) {
     companion object {
@@ -49,9 +50,8 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
         private const val SALT_DGSDDK = "sdd"
         private const val SALT_DGTSK = "ts"
 
-        private fun createNonce(): ByteArray {
-            return generateRandomBytes(NaCl.NONCE_BYTES)
-        }
+        private fun createNonce(): ByteArray =
+            secureRandom().generateRandomBytes(NaCl.NONCE_BYTES)
 
         @Throws(ThreemaException::class)
         private fun blake2b256(

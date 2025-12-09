@@ -23,35 +23,42 @@ package ch.threema.app.startup
 
 import androidx.lifecycle.LifecycleOwner
 import ch.threema.app.AppConstants
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.LifetimeService
+import ch.threema.app.test.mockAppNotReady
+import ch.threema.app.test.mockAppReady
 import ch.threema.app.test.testDispatcherProvider
-import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import org.koin.core.context.startKoin
+import org.koin.test.ClosingKoinTest
+import org.koin.test.mock.declare
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class AppProcessLifecycleObserverTest {
+class AppProcessLifecycleObserverTest : ClosingKoinTest {
+
+    @BeforeTest
+    fun setUp() {
+        startKoin { }
+    }
+
     @Test
     fun `service manager is available immediately`() = runTest {
         // Arrange
-        val (serviceManagerMock, connectionStateTracker) = getServiceManagerMock()
+        val (lifetimeServiceMock, connectionStateTracker) = createMocks()
         val lifecycleOwnerMock = mockk<LifecycleOwner>()
+        declare { mockAppReady() }
+        declare<LifetimeService> { lifetimeServiceMock }
 
         // Act
         val appProcessLifecycleObserver = AppProcessLifecycleObserver(
-            serviceManagerProvider = mockk {
-                coEvery { awaitServiceManager() } returns serviceManagerMock
-                every { getServiceManagerOrNull() } returns serviceManagerMock
-            },
             reloadAppRestrictions = {},
             dispatcherProvider = testDispatcherProvider(),
         )
@@ -68,10 +75,9 @@ class AppProcessLifecycleObserverTest {
         appProcessLifecycleObserver.onDestroy(lifecycleOwnerMock)
 
         // Assert
-        val lifetimeService = serviceManagerMock.lifetimeService
-        verify(exactly = 2) { lifetimeService.acquireConnection(AppConstants.ACTIVITY_CONNECTION_TAG) }
+        verify(exactly = 2) { lifetimeServiceMock.acquireConnection(AppConstants.ACTIVITY_CONNECTION_TAG) }
         verify(exactly = 2) {
-            lifetimeService.releaseConnectionLinger(
+            lifetimeServiceMock.releaseConnectionLinger(
                 AppConstants.ACTIVITY_CONNECTION_TAG,
                 AppConstants.ACTIVITY_CONNECTION_LIFETIME,
             )
@@ -82,15 +88,12 @@ class AppProcessLifecycleObserverTest {
     @Test
     fun `service manager is not yet available`() = runTest {
         // Arrange
-        val (serviceManagerMock, connectionStateTracker) = getServiceManagerMock()
+        val (lifetimeServiceMock, connectionStateTracker) = createMocks()
         val lifecycleOwnerMock = mockk<LifecycleOwner>()
+        declare { mockAppNotReady() }
 
         // Act
         val appProcessLifecycleObserver = AppProcessLifecycleObserver(
-            serviceManagerProvider = mockk {
-                coEvery { awaitServiceManager() } coAnswers { awaitCancellation() }
-                every { getServiceManagerOrNull() } returns null
-            },
             reloadAppRestrictions = {},
             dispatcherProvider = testDispatcherProvider(),
         )
@@ -106,10 +109,9 @@ class AppProcessLifecycleObserverTest {
         appProcessLifecycleObserver.onDestroy(lifecycleOwnerMock)
 
         // Assert
-        val lifetimeService = serviceManagerMock.lifetimeService
-        verify(exactly = 0) { lifetimeService.acquireConnection(AppConstants.ACTIVITY_CONNECTION_TAG) }
+        verify(exactly = 0) { lifetimeServiceMock.acquireConnection(AppConstants.ACTIVITY_CONNECTION_TAG) }
         verify(exactly = 0) {
-            lifetimeService.releaseConnectionLinger(
+            lifetimeServiceMock.releaseConnectionLinger(
                 AppConstants.ACTIVITY_CONNECTION_TAG,
                 AppConstants.ACTIVITY_CONNECTION_LIFETIME,
             )
@@ -120,16 +122,12 @@ class AppProcessLifecycleObserverTest {
     @Test
     fun `last call wins`() = runTest {
         // Arrange
-        val (_, connectionStateTracker) = getServiceManagerMock()
-
+        val (_, connectionStateTracker) = createMocks()
         val lifecycleOwnerMock = mockk<LifecycleOwner>()
+        declare { mockAppNotReady() }
 
         // Act
         val appProcessLifecycleObserver = AppProcessLifecycleObserver(
-            serviceManagerProvider = mockk {
-                coEvery { awaitServiceManager() } coAnswers { awaitCancellation() }
-                every { getServiceManagerOrNull() } returns null
-            },
             reloadAppRestrictions = {},
             dispatcherProvider = testDispatcherProvider(),
         )
@@ -148,7 +146,7 @@ class AppProcessLifecycleObserverTest {
         assertFalse(connectionStateTracker.isAcquired)
     }
 
-    private fun getServiceManagerMock(): Pair<ServiceManager, ConnectionStateTracker> {
+    private fun createMocks(): Pair<LifetimeService, ConnectionStateTracker> {
         val connectionStateTracker = MutableConnectionStateTracker(false)
 
         val lifetimeServiceMock = mockk<LifetimeService> {
@@ -165,11 +163,7 @@ class AppProcessLifecycleObserverTest {
             }
         }
 
-        val serviceManagerMock = mockk<ServiceManager> {
-            every { lifetimeService } returns lifetimeServiceMock
-        }
-
-        return serviceManagerMock to connectionStateTracker
+        return lifetimeServiceMock to connectionStateTracker
     }
 
     private interface ConnectionStateTracker {

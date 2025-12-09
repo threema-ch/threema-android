@@ -21,17 +21,17 @@
 
 package ch.threema.app.protocol
 
+import ch.threema.app.profilepicture.GroupProfilePictureUploader
+import ch.threema.app.profilepicture.GroupProfilePictureUploader.GroupProfilePictureUploadResult
 import ch.threema.app.profilepicture.ProfilePicture
-import ch.threema.app.services.ApiService
+import ch.threema.app.profilepicture.RawProfilePicture
 import ch.threema.app.services.FileService
-import ch.threema.app.tasks.GroupPhotoUploadResult
-import ch.threema.app.tasks.tryUploadingGroupPhoto
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.app.voip.groupcall.GroupCallManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
@@ -44,53 +44,73 @@ import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import java.io.FileNotFoundException
+import ch.threema.domain.taskmanager.ProtocolException
 import java.util.Date
-import kotlinx.serialization.Serializable
+import kotlin.jvm.Throws
 
-private val logger = LoggingUtil.getThreemaLogger("ActiveGroupUpdateSteps")
+private val logger = getThreemaLogger("ActiveGroupUpdateSteps")
 
-@Serializable
-sealed interface ProfilePictureChange
+sealed interface ExpectedProfilePictureChange {
 
-@Serializable
-class SetProfilePicture(
-    val profilePicture: ProfilePicture,
-    val profilePictureUploadResult: GroupPhotoUploadResult?,
-) : ProfilePictureChange
+    /**
+     * The profile picture is expected to be set.
+     */
+    sealed interface Set : ExpectedProfilePictureChange {
+        val profilePicture: ProfilePicture
 
-@Serializable
-data object RemoveProfilePicture : ProfilePictureChange
+        /**
+         * The profile picture is expected to be set and was uploaded to the blob server. This is the case for groups with at least one member or if
+         * multi device has been active when the group was created or updated.
+         */
+        data class WithUpload(
+            val profilePictureUploadResultSuccess: GroupProfilePictureUploadResult.Success,
+        ) : Set {
+            override val profilePicture: ProfilePicture
+                get() = profilePictureUploadResultSuccess.profilePicture
+        }
 
-@Serializable
-class PredefinedMessageIds private constructor(
-    private val messageIdBytes1: ByteArray,
-    private val messageIdBytes2: ByteArray,
-    private val messageIdBytes3: ByteArray,
-    private val messageIdBytes4: ByteArray,
+        /**
+         * The profile picture is expected to be set but wasn't uploaded to the blob server as when the change was made, the group was a notes group and
+         * multi device wasn't active.
+         */
+        data class WithoutUpload(
+            override val profilePicture: ProfilePicture,
+        ) : Set
+    }
+
+    /**
+     * The profile picture is expected to be removed.
+     */
+    data object Remove : ExpectedProfilePictureChange
+}
+
+data class PredefinedMessageIds(
+    val messageId1: MessageId,
+    val messageId2: MessageId,
+    val messageId3: MessageId,
+    val messageId4: MessageId,
 ) {
-    constructor() : this(
-        MessageId.random().messageId,
-        MessageId.random().messageId,
-        MessageId.random().messageId,
-        MessageId.random().messageId,
-    )
-
-    val messageId1 by lazy { MessageId(messageIdBytes1) }
-
-    val messageId2 by lazy { MessageId(messageIdBytes2) }
-
-    val messageId3 by lazy { MessageId(messageIdBytes3) }
-
-    val messageId4 by lazy { MessageId(messageIdBytes4) }
+    companion object {
+        fun random(): PredefinedMessageIds =
+            PredefinedMessageIds(
+                messageId1 = MessageId.random(),
+                messageId2 = MessageId.random(),
+                messageId3 = MessageId.random(),
+                messageId4 = MessageId.random(),
+            )
+    }
 }
 
 /**
  * The active group update steps are executed with the *expected* changes. It is possible that the
  * group has changed in the meantime. Therefore, it is checked whether the changes are up to date.
+ *
+ * Note that if the group profile picture needs to be uploaded and it fails, a [ProtocolException]
+ * will be thrown.
  */
+@Throws(ProtocolException::class)
 suspend fun runActiveGroupUpdateSteps(
-    profilePictureChange: ProfilePictureChange?,
+    expectedProfilePictureChange: ExpectedProfilePictureChange?,
     addMembers: Set<String>,
     removeMembers: Set<String>,
     predefinedMessageIds: PredefinedMessageIds,
@@ -98,7 +118,7 @@ suspend fun runActiveGroupUpdateSteps(
     services: OutgoingCspMessageServices,
     groupCallManager: GroupCallManager,
     fileService: FileService,
-    apiService: ApiService,
+    groupProfilePictureUploader: GroupProfilePictureUploader,
     handle: ActiveTaskCodec,
 ) {
     // This is the current snapshot that represents the truth. All changes are validated based on
@@ -144,9 +164,9 @@ suspend fun runActiveGroupUpdateSteps(
                 createGroupProfilePictureMessage(
                     members,
                     groupModel,
-                    profilePictureChange,
+                    expectedProfilePictureChange,
                     fileService,
-                    apiService,
+                    groupProfilePictureUploader,
                     predefinedMessageIds.messageId3,
                 ),
                 createGroupCallStartMessage(
@@ -212,59 +232,74 @@ private fun createGroupName(
 private fun createGroupProfilePictureMessage(
     receivers: Set<BasicContact>,
     groupModel: GroupModel,
-    profilePictureChange: ProfilePictureChange?,
+    expectedProfilePictureChange: ExpectedProfilePictureChange?,
     fileService: FileService,
-    apiService: ApiService,
+    groupProfilePictureUploader: GroupProfilePictureUploader,
     messageId: MessageId,
-): OutgoingCspMessageHandle? {
-    val currentGroupProfilePicture = fileService.getGroupAvatarBytes(groupModel)
-    if (currentGroupProfilePicture == null) {
-        if (profilePictureChange is SetProfilePicture) {
-            logger.info("Unexpected change: No profile picture set")
+): OutgoingCspMessageHandle {
+    val currentGroupProfilePicture = fileService.getGroupProfilePictureBytes(groupModel)?.let { bytes -> RawProfilePicture(bytes) }
+
+    when (expectedProfilePictureChange) {
+        is ExpectedProfilePictureChange.Set -> {
+            if (currentGroupProfilePicture == null) {
+                logger.info("Unexpected change: No profile picture set")
+            }
         }
+
+        is ExpectedProfilePictureChange.Remove -> {
+            if (currentGroupProfilePicture != null) {
+                logger.info("Unexpected change: Profile picture available")
+            }
+        }
+
+        null -> Unit
+    }
+
+    if (currentGroupProfilePicture == null) {
         return getDeleteProfilePictureMessageHandle(receivers, messageId, groupModel.groupIdentity)
     }
 
-    if (profilePictureChange is RemoveProfilePicture) {
-        logger.info("Unexpected change: Profile picture available")
-    }
+    val groupPhotoUploadResult = getFinalGroupPhotoUploadResult(expectedProfilePictureChange, currentGroupProfilePicture, groupProfilePictureUploader)
 
-    val groupPhotoUploadResult = getFinalGroupPhotoUploadResult(
-        profilePictureChange, currentGroupProfilePicture, apiService,
-    ) ?: return null
+    when (groupPhotoUploadResult) {
+        is GroupProfilePictureUploadResult.Success -> Unit
+        is GroupProfilePictureUploadResult.Failure.OnPremAuthTokenInvalid ->
+            throw ProtocolException("Could not upload profile picture (onprem auth token invalid)")
+
+        is GroupProfilePictureUploadResult.Failure.UploadFailed ->
+            throw ProtocolException("Could not upload profile picture (upload failed)")
+    }
 
     return getSetProfilePictureMessageHandle(
         receivers = receivers,
         messageId = messageId,
         groupIdentity = groupModel.groupIdentity,
-        groupPhotoUploadResult = groupPhotoUploadResult,
+        groupProfilePictureUploadResultSuccess = groupPhotoUploadResult,
     )
 }
 
 private fun getFinalGroupPhotoUploadResult(
-    profilePictureChange: ProfilePictureChange?,
-    currentGroupProfilePicture: ByteArray,
-    apiService: ApiService,
-): GroupPhotoUploadResult? {
-    if (profilePictureChange is SetProfilePicture &&
-        profilePictureChange.profilePicture.profilePictureBytes.contentEquals(currentGroupProfilePicture)
+    expectedProfilePictureChange: ExpectedProfilePictureChange?,
+    currentGroupProfilePicture: ProfilePicture,
+    groupProfilePictureUploader: GroupProfilePictureUploader,
+): GroupProfilePictureUploadResult {
+    // If the group profile picture has been uploaded and is still equal to the current group profile picture, then we can reuse the blob information
+    // from the previous upload.
+    if (expectedProfilePictureChange is ExpectedProfilePictureChange.Set.WithUpload &&
+        expectedProfilePictureChange.profilePictureUploadResultSuccess.profilePicture.contentEquals(currentGroupProfilePicture)
     ) {
-        return profilePictureChange.profilePictureUploadResult
+        return expectedProfilePictureChange.profilePictureUploadResultSuccess
     }
 
-    try {
-        return tryUploadingGroupPhoto(currentGroupProfilePicture, apiService)
-    } catch (e: FileNotFoundException) {
-        logger.error("Could not upload group photo", e)
-        return null
-    }
+    // Otherwise, we just upload it again.
+    return groupProfilePictureUploader.tryUploadingGroupProfilePicture(currentGroupProfilePicture)
 }
 
 private fun getSetProfilePictureMessageHandle(
     receivers: Set<BasicContact>,
     messageId: MessageId,
     groupIdentity: GroupIdentity,
-    groupPhotoUploadResult: GroupPhotoUploadResult,
+    groupProfilePictureUploadResultSuccess: GroupProfilePictureUploadResult.Success,
 ): OutgoingCspMessageHandle {
     return OutgoingCspMessageHandle(
         receivers,
@@ -274,9 +309,9 @@ private fun getSetProfilePictureMessageHandle(
             groupIdentity,
         ) {
             GroupSetProfilePictureMessage().apply {
-                this.blobId = groupPhotoUploadResult.blobId
-                this.encryptionKey = groupPhotoUploadResult.encryptionKey
-                this.size = groupPhotoUploadResult.size
+                this.blobId = groupProfilePictureUploadResultSuccess.blobId
+                this.encryptionKey = groupProfilePictureUploadResultSuccess.encryptionKey
+                this.size = groupProfilePictureUploadResultSuccess.size
             }
         },
     )

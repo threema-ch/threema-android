@@ -24,7 +24,7 @@ package ch.threema.app.processors.reflectedmessageupdate
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.types.Identity
@@ -41,7 +41,7 @@ import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedIncomingMessageUpdateTask")
+private val logger = getThreemaLogger("ReflectedIncomingMessageUpdateTask")
 
 class ReflectedIncomingMessageUpdateTask(
     private val incomingMessageUpdate: IncomingMessageUpdate,

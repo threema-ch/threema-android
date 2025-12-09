@@ -29,9 +29,9 @@ import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
 import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.utils.ExifInterface
 import ch.threema.app.utils.ShortcutUtil
-import ch.threema.app.utils.contentEquals
 import ch.threema.base.crypto.NaCl
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.contentEquals
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
@@ -39,7 +39,7 @@ import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingGroupSetProfilePictureTask")
+private val logger = getThreemaLogger("IncomingGroupSetProfilePictureTask")
 
 class IncomingGroupSetProfilePictureTask(
     message: GroupSetProfilePictureMessage,
@@ -125,7 +125,7 @@ class IncomingGroupSetProfilePictureTask(
     }
 
     private fun isCurrentProfilePicture(group: GroupModel, newGroupPhoto: ByteArray?): Boolean {
-        return fileService.getGroupAvatarStream(group).contentEquals(newGroupPhoto)
+        return fileService.getGroupProfilePictureStream(group.getDatabaseId()).contentEquals(newGroupPhoto)
     }
 
     private suspend fun reflectGroupPicture(
@@ -147,7 +147,7 @@ class IncomingGroupSetProfilePictureTask(
     ).reflect(handle)
 
     private fun updateGroupPictureLocally(group: GroupModel, blob: ByteArray): ReceiveStepsResult {
-        this.fileService.writeGroupAvatar(group, blob)
+        fileService.writeGroupProfilePicture(group, blob)
 
         ListenerManager.groupListeners.handle { it.onUpdatePhoto(group.groupIdentity) }
 

@@ -32,7 +32,7 @@ import androidx.core.database.getStringOrNull
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import ch.threema.base.crypto.NaCl
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.ContactSyncState
 import ch.threema.domain.models.IdentityState
@@ -137,7 +137,7 @@ private fun Cursor.getBooleanOrNull(@IntRange(from = 0) columnIndex: Int): Boole
  */
 private fun Date.toDateStringOrNull(): String? = CursorHelper.dateAsStringFormat.get()?.format(this)
 
-private val logger = LoggingUtil.getThreemaLogger("data.SqliteDatabaseBackend")
+private val logger = getThreemaLogger("data.SqliteDatabaseBackend")
 
 /**
  * Return the column index for the specified [columName].
@@ -163,7 +163,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             val dbContacts = mutableListOf<DbContact>()
             cursor.use {
                 while (cursor.moveToNext()) {
-                    dbContacts.add(mapCursorToDbContact(cursor))
+                    dbContacts.add(cursor.mapToDbContact())
                 }
             }
             dbContacts
@@ -233,41 +233,42 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             cursor.close()
             return null
         }
-        val dbContact = mapCursorToDbContact(cursor)
+        val dbContact = cursor.mapToDbContact()
         cursor.close()
         return dbContact
     }
 
     /**
-     * @param cursor needs to point to an entry
+     * Maps this cursor at its current position to a [DbContact].
+     *
      * @throws DatabaseException if the cursor does not contain all required columns.
      */
-    private fun mapCursorToDbContact(cursor: Cursor): DbContact {
-        val identity = cursor.getString(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IDENTITY))
-        val publicKey = cursor.getBlob(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_PUBLIC_KEY))
-        val createdAt = cursor.getDate(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_CREATED_AT))
-        val firstName = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_FIRST_NAME)) ?: ""
-        val lastName = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_LAST_NAME)) ?: ""
-        val nickname = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_PUBLIC_NICK_NAME))
-        var colorIndex = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ID_COLOR_INDEX))
-        val verificationLevelRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_VERIFICATION_LEVEL))
-        val isWorkVerifiedRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_WORK))
-        val identityTypeRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_TYPE))
-        val acquaintanceLevelRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ACQUAINTANCE_LEVEL))
-        val activityStateRaw = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_STATE))
-        val syncStateRaw = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_SYNC_STATE))
-        var featureMask = cursor.getLong(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_FEATURE_MASK))
-        val readReceipts = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_READ_RECEIPTS))
-        val typingIndicators = cursor.getInt(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_TYPING_INDICATORS))
-        val isArchived = cursor.getBoolean(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_ARCHIVED))
-        val androidContactLookupKey = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY))
-        val localAvatarExpires = cursor.getDateOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES))
-        val isRestored = cursor.getBooleanOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_IS_RESTORED)) ?: false
-        val profilePictureBlobId = cursor.getBlobOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_PROFILE_PIC_BLOB_ID))
-        val jobTitle = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_JOB_TITLE))
-        val department = cursor.getStringOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_DEPARTMENT))
+    private fun Cursor.mapToDbContact(): DbContact {
+        val identity = getString(getColumnIndexOrThrow(this, ContactModel.COLUMN_IDENTITY))
+        val publicKey = getBlob(getColumnIndexOrThrow(this, ContactModel.COLUMN_PUBLIC_KEY))
+        val createdAt = getDate(getColumnIndexOrThrow(this, ContactModel.COLUMN_CREATED_AT))
+        val firstName = getStringOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_FIRST_NAME)) ?: ""
+        val lastName = getStringOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_LAST_NAME)) ?: ""
+        val nickname = getStringOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_PUBLIC_NICK_NAME))
+        var colorIndex = getInt(getColumnIndexOrThrow(this, ContactModel.COLUMN_ID_COLOR_INDEX))
+        val verificationLevelRaw = getInt(getColumnIndexOrThrow(this, ContactModel.COLUMN_VERIFICATION_LEVEL))
+        val isWorkVerifiedRaw = getInt(getColumnIndexOrThrow(this, ContactModel.COLUMN_IS_WORK))
+        val identityTypeRaw = getInt(getColumnIndexOrThrow(this, ContactModel.COLUMN_TYPE))
+        val acquaintanceLevelRaw = getInt(getColumnIndexOrThrow(this, ContactModel.COLUMN_ACQUAINTANCE_LEVEL))
+        val activityStateRaw = getStringOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_STATE))
+        val syncStateRaw = getInt(getColumnIndexOrThrow(this, ContactModel.COLUMN_SYNC_STATE))
+        var featureMask = getLong(getColumnIndexOrThrow(this, ContactModel.COLUMN_FEATURE_MASK))
+        val readReceipts = getInt(getColumnIndexOrThrow(this, ContactModel.COLUMN_READ_RECEIPTS))
+        val typingIndicators = getInt(getColumnIndexOrThrow(this, ContactModel.COLUMN_TYPING_INDICATORS))
+        val isArchived = getBoolean(getColumnIndexOrThrow(this, ContactModel.COLUMN_IS_ARCHIVED))
+        val androidContactLookupKey = getStringOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY))
+        val localAvatarExpires = getDateOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES))
+        val isRestored = getBooleanOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_IS_RESTORED)) ?: false
+        val profilePictureBlobId = getBlobOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_PROFILE_PIC_BLOB_ID))
+        val jobTitle = getStringOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_JOB_TITLE))
+        val department = getStringOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_DEPARTMENT))
         val notificationTriggerPolicyOverride =
-            cursor.getLongOrNull(getColumnIndexOrThrow(cursor, ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE))
+            getLongOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE))
 
         // Validation and mapping
         if (colorIndex < 0 || colorIndex > 255) {

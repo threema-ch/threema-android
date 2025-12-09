@@ -38,7 +38,7 @@ import java.util.List;
 
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 import ch.threema.storage.CursorHelper;
 import ch.threema.storage.DatabaseService;
@@ -54,7 +54,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 import ch.threema.storage.models.data.media.VideoDataModel;
 
 abstract class AbstractMessageModelFactory extends ModelFactory {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("AbstractMessageModelFactory");
+    private static final Logger logger = getThreemaLogger("AbstractMessageModelFactory");
 
     AbstractMessageModelFactory(DatabaseService databaseService, String tableName) {
         super(databaseService, tableName);

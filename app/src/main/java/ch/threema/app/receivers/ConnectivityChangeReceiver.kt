@@ -31,9 +31,9 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import ch.threema.app.workers.ConnectivityChangeWorker.Companion.buildOneTimeWorkRequest
 import ch.threema.app.workers.WorkerNames
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("ConnectivityChangeReceiver")
+private val logger = getThreemaLogger("ConnectivityChangeReceiver")
 
 class ConnectivityChangeReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {

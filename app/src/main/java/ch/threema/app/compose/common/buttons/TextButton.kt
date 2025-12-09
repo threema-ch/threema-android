@@ -31,6 +31,8 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ShapeDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -42,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewDynamicColors
 import androidx.compose.ui.unit.sp
 import ch.threema.app.R
 import ch.threema.app.compose.common.ThemedText
@@ -57,8 +60,8 @@ fun TextButtonPrimary(
     text: String,
     maxLines: Int = Int.MAX_VALUE,
     enabled: Boolean = true,
-    iconLeading: ButtonIconInfo? = null,
-    iconTrailing: ButtonIconInfo? = null,
+    leadingIcon: ButtonIconInfo? = null,
+    trailingIcon: ButtonIconInfo? = null,
 ) {
     TextButtonBase(
         modifier = modifier.heightIn(min = GridUnit.x6),
@@ -70,8 +73,41 @@ fun TextButtonPrimary(
             fontWeight = FontWeight.SemiBold,
         ),
         contentColor = MaterialTheme.colorScheme.primary,
-        iconLeading = iconLeading,
-        iconTrailing = iconTrailing,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+    )
+}
+
+/**
+ *  A version of the [TextButtonPrimary] that looks and behaves exactly the same, but allows to specify the buttons content color with
+ *  [colorPrimaryOverride]. Usually you don't want to set this color explicitly, as the whole [TextButtonPrimary] component is designed to always
+ *  use the implicit **primary** color from the theme (hence the components name).
+ *
+ *  Note that when setting [colorPrimaryOverride] to a non-theme color, *dynamic colors will not apply* to this component if enabled.
+ */
+@Composable
+fun TextButtonPrimaryOverride(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
+    text: String,
+    colorPrimaryOverride: Color,
+    maxLines: Int = Int.MAX_VALUE,
+    enabled: Boolean = true,
+    leadingIcon: ButtonIconInfo? = null,
+    trailingIcon: ButtonIconInfo? = null,
+) {
+    TextButtonBase(
+        modifier = modifier.heightIn(min = GridUnit.x6),
+        onClick = onClick,
+        text = text,
+        maxLines = maxLines,
+        enabled = enabled,
+        textStyle = MaterialTheme.typography.labelLarge.copy(
+            fontWeight = FontWeight.SemiBold,
+        ),
+        contentColor = colorPrimaryOverride,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
     )
 }
 
@@ -82,8 +118,8 @@ fun TextButtonNeutral(
     text: String,
     maxLines: Int = Int.MAX_VALUE,
     enabled: Boolean = true,
-    iconLeading: ButtonIconInfo? = null,
-    iconTrailing: ButtonIconInfo? = null,
+    leadingIcon: ButtonIconInfo? = null,
+    trailingIcon: ButtonIconInfo? = null,
 ) {
     TextButtonBase(
         modifier = modifier.heightIn(min = GridUnit.x6),
@@ -95,8 +131,8 @@ fun TextButtonNeutral(
             fontWeight = FontWeight.SemiBold,
         ),
         contentColor = MaterialTheme.colorScheme.onSurface,
-        iconLeading = iconLeading,
-        iconTrailing = iconTrailing,
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
     )
 }
 
@@ -109,8 +145,8 @@ private fun TextButtonBase(
     enabled: Boolean = true,
     textStyle: TextStyle,
     contentColor: Color,
-    iconLeading: ButtonIconInfo?,
-    iconTrailing: ButtonIconInfo?,
+    leadingIcon: ButtonIconInfo?,
+    trailingIcon: ButtonIconInfo?,
 ) {
     TextButton(
         modifier = modifier,
@@ -122,18 +158,19 @@ private fun TextButtonBase(
                 alpha = AlphaValues.DISABLED_ON_CONTAINER,
             ),
         ),
+        shape = ShapeDefaults.Medium,
         onClick = onClick,
         enabled = enabled,
     ) {
-        if (iconLeading != null) {
+        if (leadingIcon != null) {
             Icon(
                 modifier = Modifier.size(
                     with(LocalDensity.current) {
                         24.sp.toDp()
                     },
                 ),
-                painter = painterResource(iconLeading.icon),
-                contentDescription = stringResourceOrNull(iconLeading.contentDescription),
+                painter = painterResource(leadingIcon.icon),
+                contentDescription = stringResourceOrNull(leadingIcon.contentDescription),
                 tint = LocalContentColor.current,
             )
             Spacer(Modifier.width(GridUnit.x1_5))
@@ -148,7 +185,7 @@ private fun TextButtonBase(
             textAlign = TextAlign.Center,
         )
 
-        if (iconTrailing != null) {
+        if (trailingIcon != null) {
             Spacer(Modifier.width(GridUnit.x1_5))
             Icon(
                 modifier = Modifier.size(
@@ -156,15 +193,16 @@ private fun TextButtonBase(
                         24.sp.toDp()
                     },
                 ),
-                painter = painterResource(iconTrailing.icon),
-                contentDescription = stringResourceOrNull(iconTrailing.contentDescription),
+                painter = painterResource(trailingIcon.icon),
+                contentDescription = stringResourceOrNull(trailingIcon.contentDescription),
                 tint = LocalContentColor.current,
             )
         }
     }
 }
 
-@Preview
+@Preview(name = "Light")
+@Preview(name = "Dark", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun TextButtonPrimary_Preview() {
     ThreemaThemePreview {
@@ -175,14 +213,15 @@ fun TextButtonPrimary_Preview() {
     }
 }
 
-@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+@Preview(name = "Light - Icon Leading")
+@Preview(name = "Dark - Icon Leading", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun TextButtonPrimary_Preview_Night() {
+fun TextButtonPrimary_Preview_Leading_Icon() {
     ThreemaThemePreview {
         TextButtonPrimary(
             onClick = {},
             text = "Sign In",
-            iconLeading = ButtonIconInfo(
+            leadingIcon = ButtonIconInfo(
                 icon = R.drawable.ic_arrow_upward,
                 contentDescription = null,
             ),
@@ -190,30 +229,15 @@ fun TextButtonPrimary_Preview_Night() {
     }
 }
 
-@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
-@Composable
-fun TextButtonPrimary_Preview_Night_Disabled() {
-    ThreemaThemePreview {
-        TextButtonPrimary(
-            onClick = {},
-            text = "Sign In",
-            iconLeading = ButtonIconInfo(
-                icon = R.drawable.ic_arrow_upward,
-                contentDescription = null,
-            ),
-            enabled = false,
-        )
-    }
-}
-
-@Preview
+@Preview(name = "Light - Icon Trailing")
+@Preview(name = "Dark - Icon Trailing", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun TextButtonPrimary_Preview_Trailing_Icon() {
     ThreemaThemePreview {
         TextButtonPrimary(
             onClick = {},
             text = "Sign In",
-            iconTrailing = ButtonIconInfo(
+            trailingIcon = ButtonIconInfo(
                 icon = R.drawable.ic_arrow_upward,
                 contentDescription = null,
             ),
@@ -221,18 +245,19 @@ fun TextButtonPrimary_Preview_Trailing_Icon() {
     }
 }
 
-@Preview
+@Preview(name = "Light - Icon Both")
+@Preview(name = "Dark - Icon Both", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun TextButtonPrimary_Preview_Both_Icons() {
     ThreemaThemePreview {
         TextButtonPrimary(
             onClick = {},
             text = "Sign In",
-            iconLeading = ButtonIconInfo(
+            leadingIcon = ButtonIconInfo(
                 icon = R.drawable.ic_arrow_upward,
                 contentDescription = null,
             ),
-            iconTrailing = ButtonIconInfo(
+            trailingIcon = ButtonIconInfo(
                 icon = R.drawable.ic_arrow_upward,
                 contentDescription = null,
             ),
@@ -240,14 +265,15 @@ fun TextButtonPrimary_Preview_Both_Icons() {
     }
 }
 
-@Preview
+@Preview(name = "Light - Disabled")
+@Preview(name = "Dark - Disabled", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun TextButtonPrimary_Preview_Disabled() {
     ThreemaThemePreview {
         TextButtonPrimary(
             onClick = {},
             text = "Sign In",
-            iconLeading = ButtonIconInfo(
+            leadingIcon = ButtonIconInfo(
                 icon = R.drawable.ic_arrow_upward,
                 contentDescription = null,
             ),
@@ -256,7 +282,8 @@ fun TextButtonPrimary_Preview_Disabled() {
     }
 }
 
-@Preview
+@Preview(name = "Light - Expanded")
+@Preview(name = "Dark - Expanded", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun TextButtonPrimary_Preview_FullWidth() {
     ThreemaThemePreview {
@@ -264,7 +291,7 @@ fun TextButtonPrimary_Preview_FullWidth() {
             modifier = Modifier.fillMaxWidth(),
             onClick = {},
             text = "Sign In",
-            iconLeading = ButtonIconInfo(
+            leadingIcon = ButtonIconInfo(
                 icon = R.drawable.ic_arrow_upward,
                 contentDescription = null,
             ),
@@ -272,7 +299,59 @@ fun TextButtonPrimary_Preview_FullWidth() {
     }
 }
 
-@Preview
+@PreviewDynamicColors
+@Composable
+fun TextButtonPrimary_Preview_DynamicColors() {
+    ThreemaThemePreview(shouldUseDynamicColors = true) {
+        TextButtonPrimary(
+            onClick = {},
+            text = "Sign In",
+            leadingIcon = ButtonIconInfo(
+                icon = R.drawable.ic_arrow_upward,
+                contentDescription = null,
+            ),
+        )
+    }
+}
+
+@PreviewDynamicColors
+@Composable
+fun TextButtonPrimary_Preview_DynamicColors_Disabled() {
+    ThreemaThemePreview(shouldUseDynamicColors = true) {
+        TextButtonPrimary(
+            onClick = {},
+            text = "Sign In",
+            leadingIcon = ButtonIconInfo(
+                icon = R.drawable.ic_arrow_upward,
+                contentDescription = null,
+            ),
+            enabled = false,
+        )
+    }
+}
+
+@PreviewDynamicColors
+@Composable
+fun TextButtonPrimary_Preview_DynamicColors_Night() {
+    ThreemaThemePreview(
+        isDarkTheme = true,
+        shouldUseDynamicColors = true,
+    ) {
+        Surface(color = MaterialTheme.colorScheme.background) {
+            TextButtonPrimary(
+                onClick = {},
+                text = "Sign In",
+                leadingIcon = ButtonIconInfo(
+                    icon = R.drawable.ic_arrow_upward,
+                    contentDescription = null,
+                ),
+            )
+        }
+    }
+}
+
+@Preview(name = "Light")
+@Preview(name = "Dark", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun TextButtonNeutral_Preview() {
     ThreemaThemePreview {
@@ -283,26 +362,15 @@ fun TextButtonNeutral_Preview() {
     }
 }
 
-@Preview
-@Composable
-fun TextButtonNeutral_Preview_Disabled() {
-    ThreemaThemePreview {
-        TextButtonNeutral(
-            onClick = {},
-            text = "Sign In",
-            enabled = false,
-        )
-    }
-}
-
-@Preview
+@Preview(name = "Light - Icon Leading")
+@Preview(name = "Dark - Icon Leading", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
 fun TextButtonNeutral_Preview_Leading_Icon() {
     ThreemaThemePreview {
         TextButtonNeutral(
             onClick = {},
             text = "Sign In",
-            iconLeading = ButtonIconInfo(
+            leadingIcon = ButtonIconInfo(
                 icon = R.drawable.ic_arrow_upward,
                 contentDescription = null,
             ),
@@ -310,32 +378,86 @@ fun TextButtonNeutral_Preview_Leading_Icon() {
     }
 }
 
-@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+@Preview(name = "Light - Disabled")
+@Preview(name = "Dark - Disabled", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun TextButtonNeutral_Preview_Night() {
+fun TextButtonNeutral_Preview_Disabled() {
     ThreemaThemePreview {
         TextButtonNeutral(
             onClick = {},
             text = "Sign In",
-            iconLeading = ButtonIconInfo(
+            leadingIcon = ButtonIconInfo(
                 icon = R.drawable.ic_arrow_upward,
                 contentDescription = null,
             ),
+            enabled = false,
         )
     }
 }
 
-@Preview(uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+@Preview(name = "Light")
+@Preview(name = "Dark (ignoring)", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
 @Composable
-fun TextButtonNeutral_Preview_Night_Disabled() {
+fun TextButtonPrimaryOverride_Preview() {
     ThreemaThemePreview {
-        TextButtonNeutral(
+        TextButtonPrimaryOverride(
             onClick = {},
             text = "Sign In",
-            iconLeading = ButtonIconInfo(
+            leadingIcon = ButtonIconInfo(
                 icon = R.drawable.ic_arrow_upward,
                 contentDescription = null,
             ),
+            colorPrimaryOverride = Color.Magenta,
+        )
+    }
+}
+
+@Preview(name = "Light - Disabled")
+@Preview(name = "Dark (ignoring) - Disabled", uiMode = UI_MODE_NIGHT_YES, showBackground = true)
+@Composable
+fun TextButtonPrimaryOverride_Preview_Disabled() {
+    ThreemaThemePreview {
+        TextButtonPrimaryOverride(
+            onClick = {},
+            text = "Sign In",
+            leadingIcon = ButtonIconInfo(
+                icon = R.drawable.ic_arrow_upward,
+                contentDescription = null,
+            ),
+            colorPrimaryOverride = Color.Magenta,
+            enabled = false,
+        )
+    }
+}
+
+@PreviewDynamicColors
+@Composable
+fun TextButtonPrimaryOverride_Preview_IgnoringDynamicColors() {
+    ThreemaThemePreview(shouldUseDynamicColors = true) {
+        TextButtonPrimaryOverride(
+            onClick = {},
+            text = "Sign In",
+            leadingIcon = ButtonIconInfo(
+                icon = R.drawable.ic_arrow_upward,
+                contentDescription = null,
+            ),
+            colorPrimaryOverride = Color.Magenta,
+        )
+    }
+}
+
+@PreviewDynamicColors
+@Composable
+fun TextButtonPrimaryOverride_Preview_IgnoringDynamicColors_Disabled() {
+    ThreemaThemePreview(shouldUseDynamicColors = true) {
+        TextButtonPrimaryOverride(
+            onClick = {},
+            text = "Sign In",
+            leadingIcon = ButtonIconInfo(
+                icon = R.drawable.ic_arrow_upward,
+                contentDescription = null,
+            ),
+            colorPrimaryOverride = Color.Magenta,
             enabled = false,
         )
     }

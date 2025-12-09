@@ -55,7 +55,7 @@ import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.GroupUtil
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.GroupMessageModel
 import com.bumptech.glide.Glide
@@ -64,7 +64,7 @@ import com.google.android.material.search.SearchBar
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-private val logger = LoggingUtil.getThreemaLogger("GlobalSearchActivity")
+private val logger = getThreemaLogger("GlobalSearchActivity")
 
 class GlobalSearchActivity : ThreemaToolbarActivity(), SearchView.OnQueryTextListener {
     init {

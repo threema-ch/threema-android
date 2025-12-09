@@ -1,11 +1,6 @@
+use libthreema_macros::concat_fixed_bytes;
 use tracing::{debug, warn};
 
-use super::{
-    ClientCookie, ClientSequenceNumber, CspProtocolContext, CspProtocolError, Extensions, ServerCookie,
-    ServerSequenceNumber, TemporaryClientKey, TemporaryServerKey,
-    handshake_messages::{LoginAck, LoginData, ServerChallengeResponse},
-    payload::{IncomingPayload, OutgoingPayload},
-};
 use crate::{
     common::{
         Nonce,
@@ -18,7 +13,25 @@ use crate::{
         salsa20::XSalsa20Poly1305,
         x25519,
     },
+    csp::{
+        ClientCookie, ClientSequenceNumber, Cookie, CspProtocolContext, CspProtocolError, InternalErrorCause,
+        ServerCookie, ServerSequenceNumber, TemporaryClientKey, TemporaryServerKey,
+        payload::{
+            IncomingPayload, OutgoingPayload,
+            handshake::{Extensions, LoginAck, LoginData, ServerChallengeResponse},
+        },
+    },
+    utils::{debug::Name as _, sequence_numbers::SequenceNumberValue},
 };
+
+/// Concatenate a cookie and a sequence number to create a nonce.
+///
+/// Note: The sequence number is not incremented within this function!
+#[inline]
+#[expect(clippy::needless_pass_by_value, reason = "Prevent sequence number re-use")]
+fn create_nonce(cookie: Cookie, sequence_number: SequenceNumberValue<u64>) -> Nonce {
+    Nonce(concat_fixed_bytes!(cookie.0, sequence_number.0.to_le_bytes()))
+}
 
 /// Decrypt an incoming `server-challenge-response`.
 ///
@@ -32,10 +45,7 @@ pub(super) fn decrypt_server_challenge_response(
     mut server_challenge_response_box: Vec<u8>,
 ) -> Result<(PublicKey, Vec<u8>), CspProtocolError> {
     // Compute the nonce once. Secure because we use different public keys for the same nonce.
-    let nonce = Nonce::from_cookie_and_sequence_number(
-        server_cookie.0,
-        server_sequence_number.0.get_and_increment()?,
-    );
+    let nonce = create_nonce(server_cookie.0, server_sequence_number.0.get_and_increment()?);
 
     // Try to decrypt the server challenge response with all available permanent server keys
     for permanent_server_key in &context.permanent_server_keys {
@@ -115,19 +125,19 @@ pub(super) struct SessionCipher {
 impl SessionCipher {
     /// Encrypt outgoing data in-place
     fn encrypt(&mut self, name: &'static str, mut data: Vec<u8>) -> Result<Vec<u8>, CspProtocolError> {
-        let nonce = Nonce::from_cookie_and_sequence_number(
+        let nonce = create_nonce(
             self.client_cookie.0,
             self.client_sequence_number.0.get_and_increment()?,
         );
         self.cipher
             .encrypt_in_place((&nonce).into(), &[], &mut data)
-            .map_err(|_| CspProtocolError::EncryptionFailed { name })?;
+            .map_err(|_| CspProtocolError::InternalError(InternalErrorCause::EncryptionFailed { name }))?;
         Ok(data)
     }
 
     /// Decrypt incoming data in-place
     fn decrypt(&mut self, name: &'static str, mut data: Vec<u8>) -> Result<Vec<u8>, CspProtocolError> {
-        let nonce = Nonce::from_cookie_and_sequence_number(
+        let nonce = create_nonce(
             self.server_cookie.0,
             self.server_sequence_number.0.get_and_increment()?,
         );

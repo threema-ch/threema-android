@@ -21,9 +21,10 @@
 
 package ch.threema.app.tasks
 
-import android.graphics.Bitmap
 import ch.threema.app.managers.ServiceManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.app.profilepicture.ProfilePicture
+import ch.threema.app.profilepicture.RawProfilePicture
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -32,7 +33,7 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.types.Identity
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingGroupProfilePictureTask")
+private val logger = getThreemaLogger("OutgoingGroupProfilePictureTask")
 
 /**
  * This task sends a set-profile-picture message to the group if there is a group picture. If no
@@ -68,22 +69,22 @@ class OutgoingGroupProfilePictureTask(
             return
         }
 
-        val groupPhoto = fileService.getGroupAvatar(group)
-        if (groupPhoto != null) {
-            sendGroupPhoto(groupPhoto, handle)
+        val groupProfilePicture = fileService.getGroupProfilePictureBytes(group)?.let { bytes -> RawProfilePicture(bytes) }
+        if (groupProfilePicture != null) {
+            sendGroupPhoto(groupProfilePicture, handle)
         } else {
             sendGroupDeletePhoto(handle)
         }
     }
 
-    private suspend fun sendGroupPhoto(groupPhoto: Bitmap, handle: ActiveTaskCodec) {
+    private suspend fun sendGroupPhoto(profilePicture: ProfilePicture, handle: ActiveTaskCodec) {
         OutgoingGroupSetProfilePictureTask(
-            groupId,
-            creatorIdentity,
-            receiverIdentities,
-            groupPhoto,
-            null,
-            serviceManager,
+            groupId = groupId,
+            creatorIdentity = creatorIdentity,
+            recipientIdentities = receiverIdentities,
+            profilePicture = profilePicture,
+            messageId = null,
+            serviceManager = serviceManager,
         ).invoke(handle)
     }
 

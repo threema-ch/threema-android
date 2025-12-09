@@ -21,10 +21,10 @@
 
 package ch.threema.base.concurrent
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.ThreadFactory
 
-private val logger = LoggingUtil.getThreemaLogger("TrulySingleThreadExecutorThreadFactory")
+private val logger = getThreemaLogger("TrulySingleThreadExecutorThreadFactory")
 
 class TrulySingleThreadExecutorThreadFactory(
     val name: String,

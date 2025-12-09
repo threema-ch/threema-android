@@ -22,10 +22,6 @@
 package ch.threema.app.apptaskexecutor
 
 import ch.threema.app.apptaskexecutor.tasks.RemoteSecretDeleteStepsTask
-import ch.threema.app.services.ServiceManagerProvider
-import ch.threema.app.startup.AppStartupMonitor
-import ch.threema.app.test.koinTestModuleRule
-import ch.threema.localcrypto.MasterKeyManager
 import ch.threema.storage.factories.AppTaskPersistenceFactory
 import io.mockk.every
 import io.mockk.mockk
@@ -33,16 +29,8 @@ import io.mockk.verify
 import kotlin.test.Test
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
 
 class DatabaseAppTaskPersistenceTest {
-
-    @get:Rule
-    val koinTestRule = koinTestModuleRule {
-        factory { mockk<ServiceManagerProvider>() }
-        factory { mockk<AppStartupMonitor>() }
-        factory { mockk<MasterKeyManager>() }
-    }
 
     private val validEncodedAppTaskData =
         "{\"type\":\"ch.threema.app.apptaskexecutor.tasks.RemoteSecretDeleteStepsTask.RemoteSecretDeleteStepsTaskData\"," +

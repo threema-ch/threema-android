@@ -35,12 +35,12 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static android.content.Context.POWER_SERVICE;
 
 public class PowermanagerUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("PowermanagerUtil");
+    private static final Logger logger = getThreemaLogger("PowermanagerUtil");
 
     // https://stackoverflow.com/questions/48166206/how-to-start-power-manager-of-all-android-manufactures-to-enable-push-notificati/48166241
     // https://stackoverflow.com/questions/31638986/protected-apps-setting-on-huawei-phones-and-how-to-handle-it

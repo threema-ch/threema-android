@@ -66,7 +66,7 @@ import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ViewUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.domain.models.ReadReceiptPolicy;
 import ch.threema.domain.models.TypingIndicatorPolicy;
@@ -88,7 +88,7 @@ import ch.threema.storage.models.GroupModel;
  * when data changes.
  */
 public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactDetailAdapter");
+    private static final Logger logger = getThreemaLogger("ContactDetailAdapter");
 
     private static final int TYPE_HEADER = 0;
     private static final int TYPE_ITEM = 1;
@@ -351,7 +351,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 
                 Drawable icon = null;
                 try {
-                    icon = AndroidContactUtil.getInstance().getAccountIcon(contactModelData.androidContactLookupKey);
+                    icon = AndroidContactUtil.getInstance().getAccountIcon(contactModelData.androidContactLookupInfo);
                 } catch (SecurityException e) {
                     logger.error("Could not access android account icon", e);
                 }

@@ -25,31 +25,25 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import ch.threema.app.AppConstants
 import ch.threema.app.GlobalAppState
-import ch.threema.app.restrictions.AppRestrictionService
-import ch.threema.app.services.ServiceManagerProvider
-import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.di.awaitSessionScopeReady
+import ch.threema.app.di.getOrNull
+import ch.threema.app.services.LifetimeService
 import ch.threema.app.utils.DispatcherProvider
-import ch.threema.app.utils.RuntimeUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
-private val logger = LoggingUtil.getThreemaLogger("AppProcessLifecycleObserver")
+private val logger = getThreemaLogger("AppProcessLifecycleObserver")
 
 class AppProcessLifecycleObserver(
-    private val serviceManagerProvider: ServiceManagerProvider,
-    private val reloadAppRestrictions: () -> Unit = {
-        if (ConfigUtils.isWorkBuild()) {
-            RuntimeUtil.runOnWorkerThread {
-                AppRestrictionService.getInstance().reload()
-            }
-        }
-    },
+    private val reloadAppRestrictions: () -> Unit,
     dispatcherProvider: DispatcherProvider,
-) : DefaultLifecycleObserver {
+) : DefaultLifecycleObserver, KoinComponent {
 
     /**
      * Note that this object follows a last one wins approach regarding connection acquisition and release. Intermediate connection acquisitions and
@@ -68,7 +62,8 @@ class AppProcessLifecycleObserver(
                 // Wait until release job is complete (or cancelled) to ensure it is acquired afterwards
                 lifetimeServiceReleaseJob?.cancelAndAwaitForCancellation()
 
-                serviceManagerProvider.awaitServiceManager().lifetimeService.acquireConnection(AppConstants.ACTIVITY_CONNECTION_TAG)
+                awaitSessionScopeReady()
+                get<LifetimeService>().acquireConnection(AppConstants.ACTIVITY_CONNECTION_TAG)
                 logger.info("Connection now acquired")
             }
         }
@@ -81,9 +76,9 @@ class AppProcessLifecycleObserver(
                 // Wait until acquisition is complete (or cancelled) to ensure it is released afterwards
                 lifetimeServiceAcquisitionJob?.cancelAndAwaitForCancellation()
 
-                val serviceManager = serviceManagerProvider.getServiceManagerOrNull()
-                if (serviceManager != null) {
-                    serviceManager.lifetimeService.releaseConnectionLinger(
+                val lifetimeService = getOrNull<LifetimeService>()
+                if (lifetimeService != null) {
+                    lifetimeService.releaseConnectionLinger(
                         AppConstants.ACTIVITY_CONNECTION_TAG,
                         AppConstants.ACTIVITY_CONNECTION_LIFETIME,
                     )

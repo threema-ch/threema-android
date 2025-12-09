@@ -22,24 +22,9 @@
 package ch.threema.app.services
 
 import ch.threema.app.managers.ServiceManager
-import kotlin.time.Duration
-import kotlinx.coroutines.flow.StateFlow
 
+@Deprecated("Avoid accessing the service manager directly. Use Koin instead to get dependencies")
 interface ServiceManagerProvider {
-    val serviceManagerFlow: StateFlow<ServiceManager?>
-
-    fun getServiceManager(): ServiceManager
 
     fun getServiceManagerOrNull(): ServiceManager?
-
-    /**
-     * Suspends until a service manager is available and fully usable, i.e., it will also wait for database and system updates to complete first.
-     */
-    suspend fun awaitServiceManager(): ServiceManager
-
-    /**
-     * Suspends until a service manager is available and fully usable, i.e., it will also wait for database and system updates to complete first.
-     * If the [timeout] is exceeded, `null` is returned instead.
-     */
-    suspend fun awaitServiceManagerWithTimeout(timeout: Duration): ServiceManager?
 }

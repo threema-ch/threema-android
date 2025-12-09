@@ -24,14 +24,14 @@ package ch.threema.app.preference.service
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.PersistableTask
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
-private val logger = LoggingUtil.getThreemaLogger("SynchronizedSetting")
+private val logger = getThreemaLogger("SynchronizedSetting")
 
 /**
  * This represents a setting that will be synchronized with MD.

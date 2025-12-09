@@ -24,10 +24,10 @@ package ch.threema.app.processors.reflectedd2dsync
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.profilepicture.RawProfilePicture
 import ch.threema.app.services.ContactService.ProfilePictureUploadData
-import ch.threema.app.services.IdListService
+import ch.threema.app.services.ProfilePictureRecipientsService
 import ch.threema.app.services.UserService
 import ch.threema.base.crypto.SymmetricEncryptionService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.AppVersion
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.blob.BlobScope
@@ -43,7 +43,7 @@ import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile.ProfilePictureShareWit
 import ch.threema.protobuf.d2d.userProfileOrNull
 import okhttp3.OkHttpClient
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedUserProfileSyncTask")
+private val logger = getThreemaLogger("ReflectedUserProfileSyncTask")
 
 class ReflectedUserProfileSyncTask(
     private val userProfileSync: UserProfileSync,
@@ -54,7 +54,7 @@ class ReflectedUserProfileSyncTask(
     private val symmetricEncryptionService: SymmetricEncryptionService,
     private val appVersion: AppVersion,
     private val preferenceService: PreferenceService,
-    private val profilePicRecipientsService: IdListService,
+    private val profilePictureRecipientsService: ProfilePictureRecipientsService,
 ) {
 
     fun run() {
@@ -126,7 +126,7 @@ class ReflectedUserProfileSyncTask(
             ProfilePictureShareWith.PolicyCase.ALLOW_LIST -> {
                 logger.info("Apply sharing profile picture with allow list")
                 preferenceService.profilePicRelease = PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST
-                profilePicRecipientsService.replaceAll(userProfile.profilePictureShareWith.allowList.identitiesList.toTypedArray())
+                profilePictureRecipientsService.replaceAll(userProfile.profilePictureShareWith.allowList.identitiesList.toTypedArray())
             }
             ProfilePictureShareWith.PolicyCase.POLICY_NOT_SET -> {
                 logger.warn("Profile picture share with policy is not set")

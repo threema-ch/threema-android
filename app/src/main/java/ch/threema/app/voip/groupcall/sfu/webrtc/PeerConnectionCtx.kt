@@ -23,11 +23,11 @@ package ch.threema.app.voip.groupcall.sfu.webrtc
 
 import androidx.annotation.WorkerThread
 import ch.threema.app.webrtc.WrappedPeerConnectionObserver
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver
 
-private val logger = LoggingUtil.getThreemaLogger("PeerConnectionCtx")
+private val logger = getThreemaLogger("PeerConnectionCtx")
 
 internal class PeerConnectionCtx(
     val pc: PeerConnection,

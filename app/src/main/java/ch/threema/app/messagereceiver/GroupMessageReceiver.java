@@ -58,7 +58,7 @@ import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.ContactModelRepository;
@@ -87,7 +87,7 @@ import static ch.threema.domain.protocol.csp.ProtocolDefines.DELIVERYRECEIPT_MSG
 import static ch.threema.domain.protocol.csp.ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC;
 
 public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupMessageReceiver");
+    private static final Logger logger = getThreemaLogger("GroupMessageReceiver");
 
     private final GroupModel group;
     @Nullable
@@ -175,7 +175,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         }
 
         // Create and assign a new message id
-        messageModel.setApiMessageId(MessageId.random().toString());
+        messageModel.setMessageId(MessageId.random());
         saveLocalModel(messageModel);
 
         bumpLastUpdate();
@@ -210,7 +210,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         }
 
         // Create and assign a new message id
-        messageModel.setApiMessageId(MessageId.random().toString());
+        messageModel.setMessageId(MessageId.random());
         saveLocalModel(messageModel);
 
         bumpLastUpdate();
@@ -258,7 +258,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         messageModel.setFileData(modelFileData);
 
         // Create a new message id if the given message id is null
-        messageModel.setApiMessageId(messageId != null ? messageId.toString() : MessageId.random().toString());
+        messageModel.setMessageId(messageId != null ? messageId : MessageId.random());
         saveLocalModel(messageModel);
 
         // Note that lastUpdate lastUpdate was bumped when the file message was created
@@ -285,7 +285,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
 
         // Create a new message id if the given message id is null
-        messageModel.setApiMessageId(messageId != null ? messageId.toString() : MessageId.random().toString());
+        messageModel.setMessageId(messageId != null ? messageId : MessageId.random());
         saveLocalModel(messageModel);
 
         bumpLastUpdate();
@@ -518,6 +518,11 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
     @Override
     public Bitmap getNotificationAvatar() {
         return groupService.getAvatar(group, false);
+    }
+
+    @Override
+    public Bitmap getHighResAvatar() {
+        return groupService.getAvatar(group, true);
     }
 
     @Override

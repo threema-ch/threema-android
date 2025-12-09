@@ -21,7 +21,7 @@
 
 package ch.threema.domain.protocol.csp.messages.ballot
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
@@ -33,7 +33,7 @@ import java.nio.charset.StandardCharsets
 import org.json.JSONArray
 import org.json.JSONException
 
-private val logger = LoggingUtil.getThreemaLogger("PollVoteMessage")
+private val logger = getThreemaLogger("PollVoteMessage")
 
 /**
  * A poll vote message.

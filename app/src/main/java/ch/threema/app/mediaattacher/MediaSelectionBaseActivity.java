@@ -89,7 +89,7 @@ import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RecyclerViewUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import me.zhanghai.android.fastscroll.FastScroller;
 import me.zhanghai.android.fastscroll.FastScrollerBuilder;
 
@@ -105,7 +105,7 @@ import static com.google.android.material.bottomsheet.BottomSheetBehavior.STATE_
 
 abstract public class MediaSelectionBaseActivity extends ThreemaActivity implements View.OnClickListener,
     MediaAttachAdapter.ItemClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MediaSelectionBaseActivity");
+    private static final Logger logger = getThreemaLogger("MediaSelectionBaseActivity");
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);

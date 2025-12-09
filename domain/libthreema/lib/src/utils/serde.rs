@@ -1,5 +1,8 @@
 //! Serde utilities.
+
+/// Serialize/deserialize fixed or variable-length bytes from/into Base64 strings.
 pub(crate) mod base64 {
+    /// Serialize/deserialize fixed-length bytes from/into Base64 strings.
     pub(crate) mod fixed_length {
         use core::fmt;
 
@@ -47,6 +50,7 @@ pub(crate) mod base64 {
         }
     }
 
+    /// Serialize/deserialize variable-length bytes from/into Base64 strings.
     pub(crate) mod variable_length {
         use core::fmt;
 
@@ -82,73 +86,91 @@ pub(crate) mod base64 {
     }
 }
 
-pub(crate) mod from_str {
-    use core::{
-        fmt::{self},
-        marker::PhantomData,
-        str::FromStr,
-    };
-
-    use serde::{
-        Deserializer,
-        de::{Error, Visitor},
-    };
-
-    pub(crate) fn deserialize<'de, D: Deserializer<'de>, T>(deserializer: D) -> Result<T, D::Error>
-    where
-        T: FromStr,
-        T::Err: fmt::Display,
-    {
-        struct TVisitor<TI>(PhantomData<TI>);
-        impl<TI: FromStr> Visitor<'_> for TVisitor<TI>
-        where
-            TI::Err: fmt::Display,
-        {
-            type Value = TI;
-
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                write!(formatter, "valid matching string")
-            }
-
-            fn visit_str<E: Error>(self, value: &str) -> Result<Self::Value, E> {
-                value.parse::<Self::Value>().map_err(Error::custom)
-            }
-        }
-        deserializer.deserialize_string(TVisitor(PhantomData))
-    }
-}
-
+/// Serialize/deserialize strings.
 pub(crate) mod string {
-    use core::fmt;
+    /// Serialize a string by [`std::string::ToString`]
+    pub(crate) mod to_string {
+        use serde::{Serialize as _, Serializer};
 
-    use serde::{
-        Deserializer,
-        de::{Error, Visitor},
-    };
-
-    pub(crate) fn empty_to_optional<'de, D: Deserializer<'de>>(
-        deserializer: D,
-    ) -> Result<Option<String>, D::Error> {
-        struct StringVisitor;
-        impl Visitor<'_> for StringVisitor {
-            type Value = Option<String>;
-
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                write!(formatter, "a string")
-            }
-
-            fn visit_string<E: Error>(self, value: String) -> Result<Self::Value, E> {
-                Ok(if value.is_empty() { None } else { Some(value) })
-            }
-
-            fn visit_str<E: Error>(self, value: &str) -> Result<Self::Value, E> {
-                Ok(if value.is_empty() {
-                    None
-                } else {
-                    Some(value.to_owned())
-                })
-            }
+        pub(crate) fn serialize<S: Serializer, T: ToString>(
+            value: &T,
+            serializer: S,
+        ) -> Result<S::Ok, S::Error> {
+            value.to_string().serialize(serializer)
         }
-        deserializer.deserialize_string(StringVisitor)
+    }
+
+    /// Deserialize [`String`] by [`core::str::FromStr`].
+    pub(crate) mod from_str {
+        use core::{
+            fmt::{self},
+            marker::PhantomData,
+            str::FromStr,
+        };
+
+        use serde::{
+            Deserializer,
+            de::{Error, Visitor},
+        };
+
+        pub(crate) fn deserialize<'de, D: Deserializer<'de>, T>(deserializer: D) -> Result<T, D::Error>
+        where
+            T: FromStr,
+            T::Err: fmt::Display,
+        {
+            struct TVisitor<TI>(PhantomData<TI>);
+            impl<TI: FromStr> Visitor<'_> for TVisitor<TI>
+            where
+                TI::Err: fmt::Display,
+            {
+                type Value = TI;
+
+                fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                    write!(formatter, "valid matching string")
+                }
+
+                fn visit_str<E: Error>(self, value: &str) -> Result<Self::Value, E> {
+                    value.parse::<Self::Value>().map_err(Error::custom)
+                }
+            }
+            deserializer.deserialize_string(TVisitor(PhantomData))
+        }
+    }
+
+    /// Deserialize [`Option<String>`] by converting empty strings into [`None`] and non-empty strings into
+    /// [`Some`].
+    pub(crate) mod empty_to_optional {
+        use core::fmt;
+
+        use serde::{
+            Deserializer,
+            de::{Error, Visitor},
+        };
+
+        pub(crate) fn deserialize<'de, D: Deserializer<'de>>(
+            deserializer: D,
+        ) -> Result<Option<String>, D::Error> {
+            struct StringVisitor;
+            impl Visitor<'_> for StringVisitor {
+                type Value = Option<String>;
+
+                fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+                    write!(formatter, "a string")
+                }
+
+                fn visit_string<E: Error>(self, value: String) -> Result<Self::Value, E> {
+                    Ok(if value.is_empty() { None } else { Some(value) })
+                }
+
+                fn visit_str<E: Error>(self, value: &str) -> Result<Self::Value, E> {
+                    Ok(if value.is_empty() {
+                        None
+                    } else {
+                        Some(value.to_owned())
+                    })
+                }
+            }
+            deserializer.deserialize_string(StringVisitor)
+        }
     }
 }

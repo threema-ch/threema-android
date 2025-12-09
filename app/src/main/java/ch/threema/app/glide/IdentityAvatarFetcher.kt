@@ -28,31 +28,32 @@ import ch.threema.app.R
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.AvatarCacheServiceImpl
 import ch.threema.app.services.ContactService
+import ch.threema.app.services.FileService
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.AndroidContactUtil
 import ch.threema.app.utils.AvatarConverterUtil
 import ch.threema.app.utils.ContactUtil
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.data.datatypes.IdColor
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.types.Identity
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.data.DataFetcher
 
-private val logger = LoggingUtil.getThreemaLogger("IdentityAvatarFetcher")
+private val logger = getThreemaLogger("IdentityAvatarFetcher")
 
 /**
  * This class is used to get the avatars from the database or create the default avatars. The results of the loaded bitmaps will be cached by glide (if possible).
  * Avatars are referenced by the threema identity. Therefore, this fetcher can also deal with the user's own profile picture.
  */
 class IdentityAvatarFetcher(
-    context: Context,
-    private val userService: UserService?,
-    private val contactService: ContactService?,
-    private val contactModelRepository: ContactModelRepository?,
+    private val context: Context,
+    private val userService: UserService,
+    private val contactService: ContactService,
+    private val contactModelRepository: ContactModelRepository,
+    private val preferenceService: PreferenceService,
+    private val fileService: FileService,
     private val identityAvatarConfig: AvatarCacheServiceImpl.IdentityAvatarConfig,
-    private val preferenceService: PreferenceService?,
 ) : AvatarFetcher(context) {
     private val identityDefaultAvatar: VectorDrawableCompat? by lazy {
         VectorDrawableCompat.create(
@@ -79,7 +80,7 @@ class IdentityAvatarFetcher(
         val returnDefaultIfNone: Boolean
         when (identityAvatarConfig.options.defaultAvatarPolicy) {
             AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK -> {
-                profilePicReceive = preferenceService?.profilePicReceive == true
+                profilePicReceive = preferenceService.profilePicReceive
                 defaultAvatar = false
                 returnDefaultIfNone = true
             }
@@ -99,7 +100,7 @@ class IdentityAvatarFetcher(
         val backgroundColor = getBackgroundColor(identityAvatarConfig.options)
 
         val identity = identityAvatarConfig.subject
-        val avatar = if (identity != null && userService?.isMe(identity) == true) {
+        val avatar = if (identity != null && userService.isMe(identity)) {
             getUserDefinedProfilePicture(identity, highRes)
                 ?: if (returnDefaultIfNone) {
                     buildDefaultAvatar(identity = identity, highRes, backgroundColor)
@@ -110,7 +111,7 @@ class IdentityAvatarFetcher(
             if (defaultAvatar) {
                 buildDefaultAvatar(identity, highRes, backgroundColor)
             } else {
-                val contactModel = identity?.let { contactModelRepository?.getByIdentity(it) }
+                val contactModel = identity?.let { contactModelRepository.getByIdentity(it) }
                 loadContactAvatar(
                     contactModel,
                     highRes,
@@ -164,7 +165,7 @@ class IdentityAvatarFetcher(
         highRes: Boolean,
     ): Bitmap? {
         try {
-            val result = fileService?.getContactDefinedProfilePicture(identity)
+            val result = fileService.getContactDefinedProfilePicture(identity)
             if (result != null && !highRes) {
                 return AvatarConverterUtil.convert(this.context.resources, result)
             }
@@ -180,7 +181,7 @@ class IdentityAvatarFetcher(
         highRes: Boolean,
     ): Bitmap? {
         return try {
-            var result = fileService?.getUserDefinedProfilePicture(identity)
+            var result = fileService.getUserDefinedProfilePicture(identity)
             if (result != null && !highRes) {
                 result = AvatarConverterUtil.convert(this.context.resources, result)
             }
@@ -202,7 +203,7 @@ class IdentityAvatarFetcher(
         }
         // regular contacts
         return try {
-            var result = fileService?.getAndroidDefinedProfilePicture(contactModel)
+            var result = fileService.getAndroidDefinedProfilePicture(contactModel)
             if (result != null && !highRes) {
                 result = AvatarConverterUtil.convert(this.context.resources, result)
             }
@@ -218,7 +219,7 @@ class IdentityAvatarFetcher(
         highRes: Boolean,
         backgroundColor: Int,
     ): Bitmap {
-        val color = contactService?.getAvatarColor(identity) ?: IdColor.invalid().getThemedColor(context)
+        val color = contactService.getAvatarColor(identity)
         val drawable =
             if (identity != null && ContactUtil.isGatewayContact(identity)) {
                 identityGatewayAvatar

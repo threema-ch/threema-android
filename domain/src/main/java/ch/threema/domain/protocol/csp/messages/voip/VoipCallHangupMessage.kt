@@ -21,14 +21,14 @@
 
 package ch.threema.domain.protocol.csp.messages.voip
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 
-private val logger = LoggingUtil.getThreemaLogger("VoipCallHangupMessage")
+private val logger = getThreemaLogger("VoipCallHangupMessage")
 
 /**
  * This packet is sent to indicate that one of the call participants has ended the call.

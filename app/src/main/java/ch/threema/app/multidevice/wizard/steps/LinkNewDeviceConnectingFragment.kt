@@ -29,9 +29,9 @@ import ch.threema.app.R
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("LinkNewDeviceConnectingFragment")
+private val logger = getThreemaLogger("LinkNewDeviceConnectingFragment")
 
 class LinkNewDeviceConnectingFragment : LinkNewDeviceFragment() {
     init {

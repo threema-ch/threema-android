@@ -26,7 +26,7 @@ import androidx.preference.PreferenceManager
 import ch.threema.app.R
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.PushUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ActiveTask
@@ -36,7 +36,7 @@ import ch.threema.domain.taskmanager.TaskCodec
 import java.nio.charset.StandardCharsets
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("SendPushTokenTask")
+private val logger = getThreemaLogger("SendPushTokenTask")
 
 class SendPushTokenTask(
     private val token: String,

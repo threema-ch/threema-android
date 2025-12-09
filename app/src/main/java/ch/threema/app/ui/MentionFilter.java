@@ -31,11 +31,11 @@ import android.text.style.StrikethroughSpan;
 import org.slf4j.Logger;
 
 import ch.threema.app.emojis.EmojiMarkupUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class MentionFilter implements InputFilter {
     Context context;
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MentionFilter");
+    private static final Logger logger = getThreemaLogger("MentionFilter");
 
     public MentionFilter(Context context) {
         super();

@@ -24,6 +24,7 @@ package ch.threema.app.testutils
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.data.models.GroupIdentity
+import ch.threema.storage.runTransaction
 
 fun clearDatabaseAndCaches(serviceManager: ServiceManager) {
     // First get all available contacts and groups
@@ -42,14 +43,16 @@ fun clearDatabaseAndCaches(serviceManager: ServiceManager) {
         }
 
     // Clear entire database
-    serviceManager.databaseService.writableDatabase.apply {
-        rawExecSQL("PRAGMA writable_schema = 1;")
-        rawExecSQL("DELETE FROM sqlite_master where type in ('table', 'index', 'trigger');")
-        rawExecSQL("PRAGMA writable_schema = 0;")
-        rawExecSQL("VACUUM;")
-        rawExecSQL("PRAGMA integrity_check;")
-        // Recreate the database
-        serviceManager.databaseService.onCreate(this)
+    serviceManager.databaseService.writableDatabase.runTransaction {
+        rawExecSQL("PRAGMA foreign_keys = OFF;")
+
+        query("SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").use { cursor ->
+            while (cursor.moveToNext()) {
+                rawExecSQL("DELETE FROM ${cursor.getString(0)};")
+            }
+        }
+
+        rawExecSQL("PRAGMA foreign_keys = ON;")
     }
 
     // Clear caches in services and trigger listeners to refresh the new models from database

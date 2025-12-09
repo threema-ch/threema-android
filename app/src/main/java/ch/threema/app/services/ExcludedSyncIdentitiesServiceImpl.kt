@@ -24,12 +24,12 @@ package ch.threema.app.services
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.tasks.TaskCreator
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.types.Identity
 import java.lang.ref.WeakReference
 
-private val logger = LoggingUtil.getThreemaLogger("ExcludedSyncIdentitiesServiceImpl")
+private val logger = getThreemaLogger("ExcludedSyncIdentitiesServiceImpl")
 
 class ExcludedSyncIdentitiesServiceImpl(
     private val preferenceService: PreferenceService,

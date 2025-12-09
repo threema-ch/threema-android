@@ -1,14 +1,15 @@
-<!-- Centered README header hack -->
-<!-- Do not replace the obsolete align attribute with inline style, as GitHub may strip it. -->
 <div align="center">
+  <!-- Centered README header hack -->
+  <!-- Note: Do not replace the obsolete align attribute with inline style, as GitHub may strip it. -->
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="logo_dark.svg">
     <source media="(prefers-color-scheme: light)" srcset="logo_light.svg">
     <img width="500" src="logo_light.svg" alt="Threema Logo">
   </picture>
-  <br>
-  <br>
+  <br><br>
 </div>
+
+---
 
 # Threema for Android
 
@@ -194,6 +195,18 @@ assistance for building on macOS, Windows, or other operating systems.
 
 The project can be imported into [Android Studio](https://developer.android.com/studio/).
 To build and deploy it to a device, click the green “Play” icon.
+
+### Troubleshooting
+
+**NDK is not installed**
+
+If you get the following error when building Threema:
+
+> Cause 1: org.gradle.api.InvalidUserDataException: NDK is not installed
+
+...then ensure that you have installed the correct version of NDK (as defined
+by `ndkVersion` in `app/build.gradle.kts`). In Android Studio: *Settings >
+Languages & Frameworks > Android SDK > SDK Tools*.
 
 ## <a name="testing"></a>Testing
 

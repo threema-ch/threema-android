@@ -42,7 +42,7 @@ import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.CoroutinesExtensionKt;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.GroupModelRepository;
@@ -51,7 +51,7 @@ import kotlinx.coroutines.Deferred;
 
 @WorkerThread
 public class DeleteGroupHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DeleteGroupHandler");
+    private static final Logger logger = getThreemaLogger("DeleteGroupHandler");
 
     private static final String TYPE_LEAVE = "leave";
     private static final String TYPE_DELETE = "delete";

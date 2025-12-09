@@ -29,6 +29,7 @@ import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.utils.AppVersionProvider
 import ch.threema.base.crypto.NaCl
 import ch.threema.data.TestDatabaseService
+import ch.threema.data.datatypes.AndroidContactLookupInfo
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData
 import ch.threema.domain.helpers.TransactionAckTaskCodec
@@ -106,7 +107,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
             featureMask: ULong = 0u,
             readReceiptPolicy: ReadReceiptPolicy = ReadReceiptPolicy.DEFAULT,
             typingIndicatorPolicy: TypingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
-            androidContactLookupKey: String? = null,
+            androidContactLookupInfo: AndroidContactLookupInfo? = null,
             localAvatarExpires: Date? = null,
             isRestored: Boolean = false,
             profilePictureBlobId: ByteArray? = null,
@@ -130,7 +131,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
             readReceiptPolicy = readReceiptPolicy,
             typingIndicatorPolicy = typingIndicatorPolicy,
             isArchived = false,
-            androidContactLookupKey = androidContactLookupKey,
+            androidContactLookupInfo = androidContactLookupInfo,
             localAvatarExpires = localAvatarExpires,
             isRestored = isRestored,
             profilePictureBlobId = profilePictureBlobId,
@@ -473,7 +474,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
             expected.notificationTriggerPolicyOverride,
             actual.notificationTriggerPolicyOverride,
         )
-        assertEquals(expected.androidContactLookupKey, actual.androidContactLookupKey)
+        assertEquals(expected.androidContactLookupInfo, actual.androidContactLookupInfo)
 
         // TODO(ANDR-2998): Assert that notification sound policy override are set correctly
 

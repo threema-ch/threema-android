@@ -29,9 +29,9 @@ import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.tasks.ReflectContactSyncUpdateImmediateTask.ReflectContactProfilePicture
 import ch.threema.app.utils.ExifInterface
 import ch.threema.app.utils.ShortcutUtil
-import ch.threema.app.utils.contentEquals
 import ch.threema.base.crypto.NaCl
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.contentEquals
 import ch.threema.domain.protocol.blob.BlobLoader
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
@@ -40,7 +40,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.taskmanager.catchAllExceptNetworkException
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingSetProfilePictureTask")
+private val logger = getThreemaLogger("IncomingSetProfilePictureTask")
 
 class IncomingSetProfilePictureTask(
     message: SetProfilePictureMessage,

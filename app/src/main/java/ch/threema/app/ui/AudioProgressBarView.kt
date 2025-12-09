@@ -44,12 +44,12 @@ import ch.threema.app.ExecutorServices
 import ch.threema.app.R
 import ch.threema.app.cache.ThumbnailCache
 import ch.threema.app.utils.RuntimeUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.AbstractMessageModel
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-private val logger = LoggingUtil.getThreemaLogger("AudioProgressBarView")
+private val logger = getThreemaLogger("AudioProgressBarView")
 
 class AudioProgressBarView :
     AppCompatSeekBar,

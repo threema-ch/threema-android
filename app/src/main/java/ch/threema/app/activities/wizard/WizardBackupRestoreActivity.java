@@ -68,13 +68,14 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implements GenericAlertDialog.DialogClickListener,
     PasswordEntryDialog.PasswordEntryDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WizardBackupRestoreActivity");
+    private static final Logger logger = getThreemaLogger("WizardBackupRestoreActivity");
 
     private static final String DIALOG_TAG_DISABLE_ENERGYSAVE_CONFIRM = "de";
     private static final String DIALOG_TAG_DOWNLOADING_BACKUP = "dwnldBkp";
@@ -106,7 +107,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }
@@ -212,14 +213,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
             GenericProgressDialog.newInstance(R.string.importing_files, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING_BACKUP);
 
             new Thread(() -> {
-                final File file;
-                final File externalFile = dependencies.getFileService().copyUriToTempFile(uri, "backup_restore", ".zip", true);
-                if (externalFile != null) {
-                    file = externalFile;
-                } else {
-                    logger.warn("Could not copy the backup file to temp file; trying to copy it to internal storage instead.");
-                    file = dependencies.getFileService().copyUriToTempFile(uri, "backup_restore", ".zip", false);
-                }
+                final File file = dependencies.getFileService().copyUriToTempFile(uri, "backup_restore", ".zip");
 
                 RuntimeUtil.runOnUiThread(() -> {
                     DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_DOWNLOADING_BACKUP, true);

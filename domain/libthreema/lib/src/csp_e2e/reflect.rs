@@ -1,16 +1,15 @@
 //! Task for reflecting messages.
 use const_format::formatcp;
 use libthreema_macros::Name;
-use prost::Name as _;
 use tracing::{error, warn};
 
 use crate::{
     common::Nonce,
     crypto::aead::AeadRandomNonceAhead as _,
-    csp_e2e::{CspE2eProtocolError, D2xContext, ReflectId},
+    csp_e2e::{CspE2eProtocolError, D2xContext, InternalErrorCause, ReflectId},
     model::message::{MessageLifetime, MessageProperties},
     protobuf::{self},
-    utils::bytes::ProtobufPaddedMessage as _,
+    utils::{debug::Name as _, protobuf::PaddedMessage as _},
 };
 
 /// 1. Let `reflect-ids` be the list of all reflect IDs of `reflect_messages` that do not have the _ephemeral_
@@ -81,7 +80,7 @@ impl ReflectPayload {
             .reflect_key()
             .0
             .encrypt_in_place_random_nonce_ahead(b"", &mut envelope)
-            .map_err(|_| CspE2eProtocolError::EncryptionFailed {
+            .map_err(|_| InternalErrorCause::EncryptionFailed {
                 name: protobuf::d2d::Envelope::NAME,
             })?;
         Ok((
@@ -158,7 +157,7 @@ impl ReflectSubtask {
                 ?acknowledged_reflect_ids,
                 message,
             );
-            return Err(CspE2eProtocolError::DesyncError(message));
+            return Err(CspE2eProtocolError::DesyncError(message.to_owned()));
         }
         if !acknowledged_reflect_ids.is_empty() {
             warn!(

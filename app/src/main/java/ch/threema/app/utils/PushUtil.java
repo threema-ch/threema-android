@@ -27,9 +27,9 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.text.format.DateUtils;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.Map;
@@ -56,22 +56,20 @@ import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
 import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.services.NotificationPreferenceServiceImpl;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.notification.NotificationServiceImpl;
 import ch.threema.app.services.PollingHelper;
 import ch.threema.app.services.RingtoneService;
-import ch.threema.app.stores.PreferenceStoreImpl;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ContactModel;
 import ch.threema.protobuf.d2d.sync.MdD2DSync;
 
 import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
 
 public class PushUtil {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("PushUtil");
+    private static final Logger logger = getThreemaLogger("PushUtil");
 
     public static final String EXTRA_CLEAR_TOKEN = "clear";
     public static final String EXTRA_WITH_CALLBACK = "cb";
@@ -191,10 +189,8 @@ public class PushUtil {
             (int) DateUtils.MINUTE_IN_MILLIS
         );
 
-        PreferenceStoreImpl preferenceStore = new PreferenceStoreImpl(appContext);
-        NotificationPreferenceService preferenceService = new NotificationPreferenceServiceImpl(appContext, preferenceStore);
-
-        if (getMasterKeyManager().isLocked() && preferenceService.isMasterKeyNewMessageNotifications()) {
+        NotificationPreferenceService notificationPreferenceService = KoinJavaComponent.get(NotificationPreferenceService.class);
+        if (getMasterKeyManager().isLocked() && notificationPreferenceService.isMasterKeyNewMessageNotifications()) {
             displayAdHocNotification();
         }
 
@@ -212,9 +208,6 @@ public class PushUtil {
         if (serviceManager != null) {
             notificationService = serviceManager.getNotificationService();
         } else {
-            PreferenceStoreImpl ps = new PreferenceStoreImpl(appContext);
-            NotificationPreferenceService p = new NotificationPreferenceServiceImpl(appContext, ps);
-
             notificationService = new NotificationServiceImpl(
                 appContext,
                 new LockAppService() {
@@ -244,17 +237,12 @@ public class PushUtil {
                     }
 
                     @Override
-                    public LockAppService resetLockTimer(boolean restartAfterReset) {
-                        return null;
+                    public void resetLockTimer(boolean restartAfterReset) {
+                        // not needed in this context
                     }
 
                     @Override
                     public void addOnLockAppStateChanged(OnLockAppStateChanged c) {
-                        //not needed in this context
-                    }
-
-                    @Override
-                    public void removeOnLockAppStateChanged(OnLockAppStateChanged c) {
                         //not needed in this context
                     }
                 },
@@ -330,63 +318,9 @@ public class PushUtil {
                         // Nothing to do
                     }
                 },
-                p,
-                new RingtoneService() {
-                    @Override
-                    public void init() {
-                        //not needed in this context
-                    }
-
-                    @Override
-                    public void setRingtone(String uniqueId, Uri ringtoneUri) {
-                        //not needed in this context
-                    }
-
-                    @Override
-                    public Uri getRingtoneFromUniqueId(String uniqueId) {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean hasCustomRingtone(String uniqueId) {
-                        return false;
-                    }
-
-                    @Override
-                    public void removeCustomRingtone(String uniqueId) {
-                        //not needed in this context
-                    }
-
-                    @Override
-                    public void resetRingtones(Context context) {
-                        //not needed in this context
-                    }
-
-                    @Override
-                    public Uri getContactRingtone(String uniqueId) {
-                        return null;
-                    }
-
-                    @Override
-                    public Uri getGroupRingtone(String uniqueId) {
-                        return null;
-                    }
-
-                    @Override
-                    public Uri getDefaultContactRingtone() {
-                        return null;
-                    }
-
-                    @Override
-                    public Uri getDefaultGroupRingtone() {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean isSilent(String uniqueId, boolean isGroup) {
-                        return false;
-                    }
-                });
+                KoinJavaComponent.get(NotificationPreferenceService.class),
+                KoinJavaComponent.get(RingtoneService.class)
+            );
         }
 
         notificationService.showMasterKeyLockedNewMessageNotification();

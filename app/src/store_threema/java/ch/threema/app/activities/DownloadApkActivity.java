@@ -59,12 +59,12 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.DownloadUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class DownloadApkActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DownloadApkActivity");
+    private static final Logger logger = getThreemaLogger("DownloadApkActivity");
 
     private static final String DIALOG_TAG_DOWNLOAD_UPDATE = "cfu";
     private static final String DIALOG_TAG_DOWNLOADING = "dtd";

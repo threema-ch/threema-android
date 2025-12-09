@@ -49,13 +49,13 @@ import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.DialogUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class TextEntryDialog extends ThreemaDialogFragment {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("TextEntryDialog");
+    private static final Logger logger = getThreemaLogger("TextEntryDialog");
 
     public static final String ARG_TITLE = "title";
     public static final String ARG_MESSAGE = "message";

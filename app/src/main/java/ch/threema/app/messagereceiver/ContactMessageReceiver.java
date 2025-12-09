@@ -65,7 +65,7 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.MessageId;
@@ -97,7 +97,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 
 public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ContactMessageReceiver");
+    private static final Logger logger = getThreemaLogger("ContactMessageReceiver");
 
     private final ContactModel contact;
     private final @Nullable ch.threema.data.models.ContactModel contactModel;
@@ -185,7 +185,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     @Override
     public void createAndSendTextMessage(@NonNull MessageModel messageModel) {
         // Create and assign a new message id
-        messageModel.setApiMessageId(MessageId.random().toString());
+        messageModel.setMessageId(MessageId.random());
         saveLocalModel(messageModel);
 
         // Mark the contact as non-hidden and unarchived
@@ -218,7 +218,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     @Override
     public void createAndSendLocationMessage(@NonNull MessageModel messageModel) {
         // Create and assign a new message id
-        messageModel.setApiMessageId(MessageId.random().toString());
+        messageModel.setMessageId(MessageId.random());
         saveLocalModel(messageModel);
 
         // Mark the contact as non-hidden and unarchived
@@ -271,7 +271,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         messageModel.setFileData(modelFileData);
 
         // Create a new message id if the given message id is null
-        messageModel.setApiMessageId(messageId != null ? messageId.toString() : MessageId.random().toString());
+        messageModel.setMessageId(messageId != null ? messageId : MessageId.random());
         saveLocalModel(messageModel);
 
         // Mark the contact as non-hidden and unarchived
@@ -300,7 +300,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         @NonNull TriggerSource triggerSource
     ) throws ThreemaException {
         // Save the given message id to the model
-        messageModel.setApiMessageId(messageId.toString());
+        messageModel.setMessageId(messageId);
         saveLocalModel(messageModel);
 
         final BallotId ballotId = new BallotId(Utils.hexStringToByteArray(ballotModel.getApiBallotId()));
@@ -535,31 +535,23 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         // fallback to ack/dec
         if (EmojiUtil.isThumbsUpEmoji(emojiSequence)) {
             if (MessageUtil.canSendUserAcknowledge(messageModel)) {
-                try {
-                    sendDeliveryReceipt(
-                        ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK,
-                        new MessageId[] {MessageId.fromString(messageModel.getApiMessageId())},
-                        reactedAt.getTime()
-                    );
-                    return MessageState.USERACK;
-                } catch (ThreemaException e) {
-                    logger.error("Could not sent ack message", e);
-                }
+                sendDeliveryReceipt(
+                    ProtocolDefines.DELIVERYRECEIPT_MSGUSERACK,
+                    new MessageId[] {messageModel.getMessageId()},
+                    reactedAt.getTime()
+                );
+                return MessageState.USERACK;
             } else {
                 logger.error("Unable to send ack message.");
             }
         } else if (EmojiUtil.isThumbsDownEmoji(emojiSequence)) {
             if (MessageUtil.canSendUserDecline(messageModel)) {
-                try {
-                    sendDeliveryReceipt(
-                        ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC,
-                        new MessageId[] {MessageId.fromString(messageModel.getApiMessageId())},
-                        reactedAt.getTime()
-                    );
-                    return MessageState.USERDEC;
-                } catch (ThreemaException e) {
-                    logger.error("Could not sent ack message", e);
-                }
+                sendDeliveryReceipt(
+                    ProtocolDefines.DELIVERYRECEIPT_MSGUSERDEC,
+                    new MessageId[] {messageModel.getMessageId()},
+                    reactedAt.getTime()
+                );
+                return MessageState.USERDEC;
             } else {
                 logger.error("Unable to send dec message");
             }
@@ -643,6 +635,11 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     @Nullable
     public Bitmap getNotificationAvatar() {
         return getAvatar(false);
+    }
+
+    @Override
+    public Bitmap getHighResAvatar() {
+        return getAvatar(true);
     }
 
     @Override

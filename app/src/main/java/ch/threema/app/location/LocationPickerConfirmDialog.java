@@ -46,7 +46,7 @@ import ch.threema.app.R;
 import ch.threema.app.dialogs.ThreemaDialogFragment;
 import ch.threema.app.utils.GeoLocationUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
@@ -59,7 +59,7 @@ public class LocationPickerConfirmDialog extends ThreemaDialogFragment {
     private static final String ARG_LAT_LNG = "latLng";
     private static final String ARG_LAT_LNG_BOUNDS = "latLngBounds";
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LocationPickerConfirmDialog");
+    private static final Logger logger = getThreemaLogger("LocationPickerConfirmDialog");
 
     public static LocationPickerConfirmDialog newInstance(String title, String name, LatLng latLng, LatLngBounds latLngBounds, LocationConfirmDialogClickListener callback) {
         LocationPickerConfirmDialog dialog = new LocationPickerConfirmDialog();

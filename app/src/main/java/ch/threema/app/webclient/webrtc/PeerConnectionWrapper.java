@@ -58,7 +58,7 @@ import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.webclient.Config;
 import ch.threema.app.webclient.listeners.PeerConnectionListener;
 import ch.threema.app.webclient.state.PeerConnectionState;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.logging.ThreemaLogger;
 import java8.util.concurrent.CompletableFuture;
@@ -75,7 +75,7 @@ public class PeerConnectionWrapper {
     private static final String THREEMA_DC_LABEL = "THREEMA";
 
     // Logger
-    private final Logger logger = LoggingUtil.getThreemaLogger("PeerConnectionWrapper");
+    private final Logger logger = getThreemaLogger("PeerConnectionWrapper");
 
     // Worker thread handler
     @NonNull

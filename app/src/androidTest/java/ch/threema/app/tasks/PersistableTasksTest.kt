@@ -640,11 +640,49 @@ class PersistableTasksTest {
     fun testGroupCreateTask() {
         assertValidEncoding(
             GroupCreateTask::class,
-            """{"type":"ch.threema.app.tasks.GroupCreateTask.GroupCreateTaskData","name":"Name","profilePictureChange":""" +
-                """{"type":"ch.threema.app.protocol.RemoveProfilePicture"},"members":["TESTTEST","01234567"],"groupIdentity":""" +
-                """{"creatorIdentity":"01234567","groupId":42},"predefinedMessageIds":{"messageIdBytes1":[-121,-57,86,-82,-126,8,80,89],""" +
-                """"messageIdBytes2":[54,-9,56,45,19,79,-33,80],"messageIdBytes3":[-62,57,-64,-73,-95,78,59,82],""" +
-                """"messageIdBytes4":[-59,-117,93,109,46,-10,-119,118]}}""",
+            """
+                {
+                    "type":"ch.threema.app.tasks.GroupCreateTask.GroupCreateTaskData",
+                    "name":"Name",
+                    "serializableExpectedProfilePictureChange":{
+                        "type":"ch.threema.app.tasks.GroupCreateTask.GroupCreateTaskData.Companion.SerializableExpectedProfilePictureChange.Set",
+                        "profilePictureBytes":[-1,-40,-1,-32,0,16,74,70,73,70,0,1,1,0,0,1,0,1,0,0,-1,-30,2,40,73,67,67,95,80,82,79,70,73,76,69,0],
+                        "blobId":[-111,-102,108,13,-47,127,-69,77,86,-9,80,-104,-19,52,2,96],
+                        "encryptionKey":[-42,-1,-3,3,-1,1,60,66,3,120,82,12,-82,-72,-1,120,-63,91,-119,-40,-112,89,2,-99,120,109,-1,-114,65,14,33,37],
+                        "size":1171
+                    },
+                    "members":["01234567"],
+                    "groupIdentity":{"creatorIdentity":"07654321","groupId":-8035334611319732223},
+                    "serializablePredefinedMessageIds":{
+                        "messageId1":4963550096699540653,
+                        "messageId2":3028276473780066008,
+                        "messageId3":-4433228351225673089,
+                        "messageId4":3269950967196984857
+                    }
+                }
+            """.trimIndent(),
+        )
+
+        assertValidEncoding(
+            GroupCreateTask::class,
+            """
+                {
+                    "type":"ch.threema.app.tasks.GroupCreateTask.GroupCreateTaskData",
+                    "name":"Name",
+                    "serializableExpectedProfilePictureChange":{
+                        "type":"ch.threema.app.tasks.GroupCreateTask.GroupCreateTaskData.Companion.SerializableExpectedProfilePictureChange.SetWithoutUpload",
+                        "profilePictureBytes":[-1,-40,-1,-32,0,16,74,70,73,70,0,1,1,0,0,1,0,1,0,0,-1,-30,2,40,73,67,67,95,80,82,79,70,73,76,69,0]
+                    },
+                    "members":["01234567"],
+                    "groupIdentity":{"creatorIdentity":"07654321","groupId":-8035334611319732223},
+                    "serializablePredefinedMessageIds":{
+                        "messageId1":4963550096699540653,
+                        "messageId2":3028276473780066008,
+                        "messageId3":-4433228351225673089,
+                        "messageId4":3269950967196984857
+                    }
+                }
+            """.trimIndent(),
         )
     }
 
@@ -652,11 +690,76 @@ class PersistableTasksTest {
     fun testGroupUpdateTask() {
         assertValidEncoding(
             GroupUpdateTask::class,
-            """{"type":"ch.threema.app.tasks.GroupUpdateTask.GroupUpdateTaskData","name":"Name","profilePictureChange":""" +
-                """{"type":"ch.threema.app.protocol.RemoveProfilePicture"},"updatedMembers":["01234567"],"addedMembers":["TESTTEST",""" +
-                """"01234567"],"removedMembers":["01234567"],"groupIdentity":{"creatorIdentity":"01234567","groupId":42},""" +
-                """"predefinedMessageIds":{"messageIdBytes1":[5,-23,34,43,-15,49,22,-42],"messageIdBytes2":[-62,55,62,-15,-110,-56,58,-103],""" +
-                """"messageIdBytes3":[-128,28,-10,110,14,-39,105,-105],"messageIdBytes4":[-9,115,118,38,-118,-73,99,89]}}""",
+            """
+                {
+                    "type":"ch.threema.app.tasks.GroupUpdateTask.GroupUpdateTaskData",
+                    "name":null,
+                    "serializableExpectedProfilePictureChange":{
+                        "type":"ch.threema.app.tasks.GroupUpdateTask.GroupUpdateTaskData.Companion.SerializableExpectedProfilePictureChange.Set",
+                        "profilePictureBytes":[-1,-40,-1,-32,0,16,74,70,73,70,0,1,1,0,0,1,0,1,0,0,-1,-30,2,40,73,67,67,95,80,82,79,70,73,76,69,0],
+                        "blobId":[-112,115,-35,44,75,-71,56,34,-35,-28,-18,-49,108,-6,17,-2],
+                        "encryptionKey":[124,-84,89,-29,99,-56,-80,45,4,124,43,99,81,-15,64,-55,25,-54,53,115,27,-6,23,55,39,-5,-50,14,-79,125,24,63],
+                        "size":1179
+                    },
+                    "updatedMembers":["01234567"],
+                    "addedMembers":[],
+                    "removedMembers":[],
+                    "groupIdentity":{"creatorIdentity":"07654321","groupId":5588186647911236286},
+                    "serializablePredefinedMessageIds":{
+                        "messageId1":139294365944476775,
+                        "messageId2":-413801300579649603,
+                        "messageId3":525071018028493227,
+                        "messageId4":-388653292512991891
+                    }
+                }
+            """.trimIndent(),
+        )
+
+        assertValidEncoding(
+            GroupUpdateTask::class,
+            """
+                {
+                    "type":"ch.threema.app.tasks.GroupUpdateTask.GroupUpdateTaskData",
+                    "name":null,
+                    "serializableExpectedProfilePictureChange":{
+                        "type":"ch.threema.app.tasks.GroupUpdateTask.GroupUpdateTaskData.Companion.SerializableExpectedProfilePictureChange.SetWithoutUpload",
+                        "profilePictureBytes":[-1,-40,-1,-32,0,16,74,70,73,70,0,1,1,0,0,1,0,1,0,0,-1,-30,2,40,73,67,67,95,80,82,79,70,73,76,69,0]
+                    },
+                    "updatedMembers":["01234567"],
+                    "addedMembers":[],
+                    "removedMembers":[],
+                    "groupIdentity":{"creatorIdentity":"07654321","groupId":5588186647911236286},
+                    "serializablePredefinedMessageIds":{
+                        "messageId1":139294365944476775,
+                        "messageId2":-413801300579649603,
+                        "messageId3":525071018028493227,
+                        "messageId4":-388653292512991891
+                    }
+                }
+            """.trimIndent(),
+        )
+
+        assertValidEncoding(
+            GroupUpdateTask::class,
+            """
+                {
+                    "type":"ch.threema.app.tasks.GroupUpdateTask.GroupUpdateTaskData",
+                    "name":null,
+                    "serializableExpectedProfilePictureChange":{
+                        "type":"ch.threema.app.tasks.GroupUpdateTask.GroupUpdateTaskData.Companion.SerializableExpectedProfilePictureChange.NoChange"
+                    },
+                    "updatedMembers":["01234567"],
+                    "addedMembers":[],
+                    "removedMembers":[],
+                    "groupIdentity":{"creatorIdentity":"07654321","groupId":5588186647911236286},
+                    "serializablePredefinedMessageIds":{
+                        "messageId1":139294365944476775,
+                        "messageId2":-413801300579649603,
+                        "messageId3":525071018028493227,
+                        "messageId4":-388653292512991891
+                    }
+                }
+            """.trimIndent(),
         )
     }
 
@@ -816,7 +919,7 @@ class PersistableTasksTest {
                 typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
                 readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
                 isArchived = false,
-                androidContactLookupKey = null,
+                androidContactLookupInfo = null,
                 localAvatarExpires = null,
                 isRestored = false,
                 profilePictureBlobId = null,

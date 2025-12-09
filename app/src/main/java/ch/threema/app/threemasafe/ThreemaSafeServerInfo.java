@@ -33,14 +33,14 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import okhttp3.Credentials;
 
 import static ch.threema.app.threemasafe.ThreemaSafeService.BACKUP_ID_LENGTH;
 
 public class ThreemaSafeServerInfo {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ThreemaSafeServerInfo");
+    private static final Logger logger = getThreemaLogger("ThreemaSafeServerInfo");
 
     private static final String SAFE_URL_PREFIX = "https://";
     private static final String BACKUP_DIRECTORY_NAME = "backups/";

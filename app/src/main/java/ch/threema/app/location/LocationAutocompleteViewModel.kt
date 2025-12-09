@@ -25,14 +25,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.io.IOException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.map
 
-private val logger = LoggingUtil.getThreemaLogger("LocationAutocompleteViewModel")
+private val logger = getThreemaLogger("LocationAutocompleteViewModel")
 
 class LocationAutocompleteViewModel(
     private val poiRepository: PoiRepository,

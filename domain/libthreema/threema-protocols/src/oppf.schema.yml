@@ -1,69 +1,114 @@
 $schema: 'http://json-schema.org/draft-07/schema#'
 description: Threema OnPrem Provision File (OPPF) Format
 type: object
+
+required:
+  - version
+  - signatureKey
+  - refresh
+  - license
+  - chat
+  - directory
+  - blob
+  - work
+  - avatar
+  - safe
+
 properties:
   version:
+    description: OPPF file format version, currently always `1.0`.
     type: string
-    description: OPPF file format version, currently always `1.0`
     examples:
       - '1.0'
+
   signatureKey:
+    description: A 32 byte, base64 encoded Ed25519 public key.
     type: string
-    description: A 32 byte, base64 encoded Ed25519 public key
     examples:
       - ek1qBp4DyRmLL9J5sCmsKSfwbsiGNB4veDAODjkwe/k=
+
   refresh:
-    type: integer
     description: |-
-      The refresh interval in seconds
+      The refresh interval in seconds.
 
       Clients should fetch the OPPF after the specified amount of time has
       passed.
+    type: integer
     minimum: 1800
     examples:
       - 86400
+
   license:
+    description: OnPrem license information.
     type: object
-    description: OnPrem license information
-    properties:
-      id:
-        type: string
-        description: License ID, for internal use only
-      expires:
-        type: string
-        description: |-
-          An ISO-Date that holds the expiration date of the license
-
-          Clients should not accept the OPPF after this date.
-        examples:
-          - '2024-03-15'
-      count:
-        type: integer
-        description: |-
-          The number of licenses in the package
-
-          Servers should not accept more user accounts (active Threema IDs) than
-          this.
-        examples:
-          - 1000
     required:
       - id
       - expires
       - count
-  domains:
+    properties:
+      id:
+        description: License ID, for internal use only.
+        type: string
+      expires:
+        description: |-
+          An ISO-Date that holds the expiration date of the license.
+
+          Clients should not accept the OPPF after this date.
+        type: string
+        examples:
+          - '2024-03-15'
+      count:
+        description: |-
+          The number of licenses in the package.
+
+          Servers should not accept more user accounts (active Threema IDs) than
+          this.
+        type: integer
+        examples:
+          - 1000
+
+  features:
+    description: |-
+      Features the server and clients are entitled to use.
+
+      Note: Field presence indicates entitlement for a feature.
     type: object
+    properties:
+      remoteSecret:
+        description: |-
+          Entitled to use the Remote Secret feature.
+
+          When processing this field on the OnPrem Work Directory server:
+
+          1. If the field is not present, the OnPrem Work Directory must
+             always omit the MDM parameter `th_enable_remote_secret` when
+             responding to a Work Sync, regardless of whether Remote Secret is
+             globally enabled or whether there is a user-specific override.¹
+          2. If the field is present, the OnPrem Work Directory must follow the
+             global settings for Remote Secret or a potential user-specific
+             override when responding to a Work Sync.
+
+          ¹: This will eventually disable the Remote Secret feature on the
+          clients.
+        type: object
+
+  domains:
     description: |-
       Configure domains accessed by the Threema clients.
 
       If this key is missing, then no constraints are applied.
+    type: object
+    required:
+      - rules
     properties:
       rules:
         type: array
         items:
-          type: object
           description: |-
             Domain configuration rule to be applied to a domain (and potentially
             subdomains).
+
+            Domains for which no rules apply will not be pinned.
 
             Note: Generally, rules are applied on a first-match basis. However, the
             exact order of which SPKI will be applied is not well-defined and
@@ -73,13 +118,17 @@ properties:
 
             1. If `matchMode` is unknown, log a warning and abort these steps.
             2. If `spkis` is present, run the associated steps for each entry.
+          type: object
+          required:
+            - fqdn
+            - matchMode
           properties:
             fqdn:
+              description: An FQDN.
               type: string
-              description: An FQDN
             matchMode:
-              type: string
               description: How to match domains and apply the respective rules.
+              type: string
               anyOf:
                 - title: Exact
                   description: The rule shall only be applied to the exact FQDN.
@@ -92,210 +141,214 @@ properties:
             spkis:
               type: array
               items:
-                type: object
                 description: |-
                   SPKI for certificate pinning to be applied to one or more domains.
 
                   When processing this entry:
 
                   1. Let `fqdn` and `matchMode` be the associated domain's FQDN and
-                    match mode.
+                     match mode.
                   2. If `algorithm` is unknown, log a warning and abort these steps.
                   3. Pin the SPKI to `fqdn` according to `matchMode`. All subsequent
-                    TLS-based communication must match the SPKI or be rejected.
-                properties:
-                  value:
-                    type: string
-                    description: The base64 encoded public key hash
-                    examples:
-                      - 'DTJU4+0HObYPrx9lF4Kz8hhjcJL3WBL4k829L++UlSk='
-                  algorithm:
-                    type: string
-                    description: The SPKI hashing algorithm.
-                    anyOf:
-                      - const: sha256
-                      - {}
+                     TLS-based communication must match the SPKI or be rejected.
+                type: object
                 required:
                   - value
                   - algorithm
-          required:
-            - fqdn
-            - matchMode
+                properties:
+                  value:
+                    description: The base64 encoded public key hash.
+                    type: string
+                    examples:
+                      - 'DTJU4+0HObYPrx9lF4Kz8hhjcJL3WBL4k829L++UlSk='
+                  algorithm:
+                    description: The SPKI hashing algorithm.
+                    type: string
+                    anyOf:
+                      - const: sha256
+                      - {}
           examples:
-            - fqdn: threemaonprem.initrode.com
+            - fqdn: threemaonprem.example.com
               matchMode: include-subdomains
               spkis:
                 - value: 'DTJU4+0HObYPrx9lF4Kz8hhjcJL3WBL4k829L++UlSk='
                   algorithm: sha256
                 - value: 'C19RmQgZXzwovKRRJ2st7bsokiRchKcYjBo3m63fvn8='
                   algorithm: sha256
-            - fqdn: another-host.initrode.com
+            - fqdn: another-host.example.com
               matchMode: exact
               spkis:
                 - value: 'XIglSWPJ6aJ7LeIz6KsOrr0fNgNZ0PzGgDCDEZq5/U4='
                   algorithm: sha256
-    required:
-      - rules
+
   chat:
+    description: Configuration for the chat server.
     type: object
-    description: Configuration for the chat server
+    required:
+      - hostname
+      - publicKey
+      - ports
     properties:
       hostname:
+        description: Chat server hostname.
         type: string
-        description: Chat server hostname
         examples:
-          - threemaonprem.initrode.com
+          - threemaonprem.example.com
       publicKey:
-        type: string
         description:
-          The 32-byte, base64 encoded permanent public key of the chat server
+          The 32-byte, base64 encoded permanent public key of the chat server.
+        type: string
         examples:
           - r9utIHN9ngo21q9OlZcotsQu1f2HwAW2Wi+u6Psp4Wc=
       ports:
+        description: Array of chat server ports.
         type: array
         items:
           type: integer
           minimum: 1
           maximum: 65535
-        description: Array of chat server ports
         examples:
           - [5222]
-    required:
-      - hostname
-      - publicKey
-      - ports
+
   directory:
+    description: Configuration for the directory server.
     type: object
-    description: Configuration for the directory server
-    properties:
-      url:
-        type: string
-        description: |-
-          Base URL of the directory server (protocol: `https://`, ending with
-          `/`, no parameters, no fragment)
-        pattern: '^https://.*/$'
     required:
       - url
-  blob:
-    type: object
-    description: Configuration for the blob server
     properties:
-      uploadUrl:
-        type: string
+      url:
         description: |-
-          URL to the blob upload endpoint (protocol: `https://`, no parameters,
-          no fragment)
-        pattern: '^https://'
-        examples:
-          - https://blob-threemaonprem.initrode.com/blob/upload
-      downloadUrl:
+          Base URL of the directory server (protocol: `https://`, ending with
+          `/`, no parameters, no fragment).
         type: string
-        description: |-
-          URL to the blob download endpoint (protocol: `https://`, no
-          parameters, no fragment)
+        pattern: '^https://.*/$'
 
-          Valid placeholders:
-
-          - `{blobId}`: The blob ID (32 hex nibbles)
-          - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
-        pattern: '^https://'
-        examples:
-          - https://blob-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}
-      doneUrl:
-        type: string
-        description: |-
-          URL to the blob done endpoint (protocol: `https://`, no parameters, no
-          fragment)
-
-          Valid placeholders:
-
-          - `{blobId}`: The blob ID (32 hex nibbles)
-          - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
-        pattern: '^https://'
-        examples:
-          - https://blob-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}/done
+  blob:
+    description: Configuration for the blob server.
+    type: object
     required:
       - uploadUrl
       - downloadUrl
       - doneUrl
+    properties:
+      uploadUrl:
+        description: |-
+          URL to the blob upload endpoint (protocol: `https://`, no parameters,
+          no fragment).
+        type: string
+        pattern: '^https://'
+        examples:
+          - https://blob-threemaonprem.example.com/blob/upload
+      downloadUrl:
+        description: |-
+          URL to the blob download endpoint (protocol: `https://`, no
+          parameters, no fragment).
+
+          Valid placeholders:
+
+          - `{blobId}`: The blob ID (32 hex nibbles)
+          - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
+        type: string
+        pattern: '^https://'
+        examples:
+          - https://blob-{blobIdPrefix}-threemaonprem.example.com/blob/{blobId}
+      doneUrl:
+        description: |-
+          URL to the blob done endpoint (protocol: `https://`, no parameters, no
+          fragment).
+
+          Valid placeholders:
+
+          - `{blobId}`: The blob ID (32 hex nibbles)
+          - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
+        type: string
+        pattern: '^https://'
+        examples:
+          - https://blob-{blobIdPrefix}-threemaonprem.example.com/blob/{blobId}/done
+
   work:
+    description: Configuration for Threema Work.
     type: object
-    description: Configuration for Threema Work
+    required:
+      - url
     properties:
       url:
-        type: string
         description: |-
           Base URL of the Threema Work server (protocol: `https://`, ending with
-          `/`, no parameters, no fragment)
+          `/`, no parameters, no fragment).
+        type: string
         pattern: '^https://.*/$'
         examples:
-          - https://threemaonprem.initrode.com/work/
-    required:
-      - url
+          - https://threemaonprem.example.com/work/
+
   avatar:
     description:
-      Configuration for the avatar server, used for Threema Gateway IDs
+      Configuration for the avatar server, used for Threema Gateway IDs.
     type: object
+    required:
+      - url
     properties:
       url:
-        type: string
         description: |-
           Base URL of the avatar server (protocol: `https://`, ending with `/`,
-          no parameters, no fragment)
+          no parameters, no fragment).
+        type: string
         pattern: '^https://.*/$'
         examples:
-          - https://threemaonprem.initrode.com/avatar/
+          - https://threemaonprem.example.com/avatar/
+
+  safe:
+    description: Configuration for Threema Safe.
+    type: object
     required:
       - url
-  safe:
-    type: object
-    description: Configuration for Threema Safe
     properties:
       url:
-        type: string
         description: |-
           Base URL of the Threema Safe server (protocol: `https://`, ending with
-          `/`, no parameters, no fragment)
+          `/`, no parameters, no fragment).
+        type: string
         pattern: '^https://.*/$'
         examples:
-          - https://threemaonprem.initrode.com/safe/
+          - https://threemaonprem.example.com/safe/
+
+  web:
+    description: Configuration for Threema Web.
+    type: object
     required:
       - url
-  web:
-    type: object
-    description: Configuration for Threema Web
     properties:
       url:
-        type: string
         description: |-
           URL to the Threema Web endpoint (protocol: `https://`, may have
-          parameters, no fragment)
+          parameters, no fragment).
 
           Not required for app functionality, but is displayed in the app
           (help/info text) so user knows where to go.
+        type: string
         pattern: '^https://'
       overrideSaltyRtcHost:
+        description: Override the SaltyRTC host specified in the QR code.
         type: string
-        description: Override the SaltyRTC host specified in the QR code
       overrideSaltyRtcPort:
+        description: Override the SaltyRTC port specified in the QR code.
         type: integer
         minimum: 1
         maximum: 65535
-        description: Override the SaltyRTC port specified in the QR code
-    required:
-      - url
+
   rendezvous:
-    type: object
     description: |-
-      Configuration for the rendezvous server
+      Configuration for the rendezvous server.
 
       Required for multi-device support.
+    type: object
+    required:
+      - url
     properties:
       url:
-        type: string
         description: |-
           Base URL of the rendezvous server (protocol: `wss://`, ending with
-          `/`, no parameters, no fragment)
+          `/`, no parameters, no fragment).
 
           Valid placeholders:
 
@@ -303,24 +356,26 @@ properties:
             rendezvous path
           - `{rendezvousPathPrefix8}`: The first two hex nibbles (8 bits) of the
             rendezvous path
+        type: string
         pattern: '^wss://.*/$'
         examples:
-          - wss://threemaonprem.initrode.com/rendezvous/
-          - wss://rendezvous-{rendezvousPathPrefix4}.initrode.com/{rendezvousPathPrefix8}/
-    required:
-      - url
+          - wss://threemaonprem.example.com/rendezvous/
+          - wss://rendezvous-{rendezvousPathPrefix4}.example.com/{rendezvousPathPrefix8}/
+
   mediator:
-    type: object
     description: |-
-      Configuration for the mediator server and blob mirror
+      Configuration for the mediator server and blob mirror.
 
       Required for multi-device support.
+    type: object
+    required:
+      - url
+      - blob
     properties:
       url:
-        type: string
         description: |-
           Base URL of the rendezvous server (protocol: `wss://`, ending with
-          `/`, no parameters, no fragment)
+          `/`, no parameters, no fragment).
 
           Valid placeholders:
 
@@ -328,76 +383,113 @@ properties:
             device group ID
           - `{deviceGroupIdPrefix8}`: The first two hex nibbles (8 bits) of the
             device group ID
+        type: string
         pattern: '^wss://.*/$'
         examples:
-          - wss://threemaonprem.initrode.com/mediator/
-          - wss://mediator-{deviceGroupIdPrefix4}.initrode.com/{deviceGroupIdPrefix8}/
+          - wss://threemaonprem.example.com/mediator/
+          - wss://mediator-{deviceGroupIdPrefix4}.example.com/{deviceGroupIdPrefix8}/
       blob:
+        description: Configuration for the blob mirror.
         type: object
-        description: Configuration for the blob mirror
-        properties:
-          uploadUrl:
-            type: string
-            description: |-
-              URL to the blob upload endpoint (protocol: `https://`, no
-              parameters, no fragment)
-            pattern: '^https://'
-            examples:
-              - https://blob-mirror-threemaonprem.initrode.com/blob/upload
-          downloadUrl:
-            type: string
-            description: |-
-              URL to the blob download endpoint (protocol: `https://`, no
-              parameters, no fragment)
-
-              Valid placeholders:
-
-              - `{blobId}`: The blob ID (32 hex nibbles)
-              - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
-            pattern: '^https://'
-            examples:
-              - https://blob-mirror-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}
-          doneUrl:
-            type: string
-            description: |-
-              URL to the blob done endpoint (protocol: `https://`, no
-              parameters, no fragment)
-
-              Valid placeholders:
-
-              - `{blobId}`: The blob ID (32 hex nibbles)
-              - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
-            pattern: '^https://'
-            examples:
-              - https://blob-mirror-{blobIdPrefix}-threemaonprem.initrode.com/blob/{blobId}/done
         required:
           - uploadUrl
           - downloadUrl
           - doneUrl
-    required:
-      - url
-      - blob
-  updates:
+        properties:
+          uploadUrl:
+            description: |-
+              URL to the blob upload endpoint (protocol: `https://`, no
+              parameters, no fragment).
+            type: string
+            pattern: '^https://'
+            examples:
+              - https://blob-mirror-threemaonprem.example.com/blob/upload
+          downloadUrl:
+            description: |-
+              URL to the blob download endpoint (protocol: `https://`, no
+              parameters, no fragment).
+
+              Valid placeholders:
+
+              - `{blobId}`: The blob ID (32 hex nibbles)
+              - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
+            type: string
+            pattern: '^https://'
+            examples:
+              - https://blob-mirror-{blobIdPrefix}-threemaonprem.example.com/blob/{blobId}
+          doneUrl:
+            description: |-
+              URL to the blob done endpoint (protocol: `https://`, no
+              parameters, no fragment).
+
+              Valid placeholders:
+
+              - `{blobId}`: The blob ID (32 hex nibbles)
+              - `{blobIdPrefix}`: The first two hex nibbles of the blob ID
+            type: string
+            pattern: '^https://'
+            examples:
+              - https://blob-mirror-{blobIdPrefix}-threemaonprem.example.com/blob/{blobId}/done
+
+  maps:
+    description: |-
+      Configuration for the map integration.
+
+      Should be provided. If not provided, clients will not be able to display
+      maps, e.g. for location messages and they will not be able to make POI
+      queries, e.g. when creating a location message.
     type: object
-    description: URLs for update checks
+    required:
+      - styleUrl
+      - poiNamesUrl
+      - poiAroundUrl
+    properties:
+      styleUrl:
+        description: |-
+          URL to a JSON file following the [MapLibre Style
+          Spec](https://maplibre.org/maplibre-style-spec/), including any URLs
+          needed from where to fetch map tiles.
+        type: string
+        pattern: '^https://'
+        examples:
+          - https://map.threemaonprem.example.com/styles/threema/style.json
+      poiNamesUrl:
+        description: |-
+          URL for the POI server endpoint to determine a specific POI matching a
+          search query by name.
+
+          Valid placeholders:
+
+          - `{latitude}`: The WGS-84 latitude
+          - `{longitude}`: The WGS-84 longitude
+          - `{query}`: The URI encoded search query
+        type: string
+        pattern: '^https://'
+        examples:
+          - https://poi.threemaonprem.example.com/names/{latitude}/{longitude}/{query}/
+      poiAroundUrl:
+        description: |-
+          URL for the POI server endoint to determine nearby points of interest.
+
+          Valid placeholders:
+
+          - `{latitude}`: The WGS-84 latitude
+          - `{longitude}`: The WGS-84 longitude
+          - `{radius}`: The search radius in meters
+        type: string
+        pattern: '^https://'
+        examples:
+          - https://poi.threemaonprem.example.com/around/{latitude}/{longitude}/{radius}/
+
+  updates:
+    description: URLs for update checks.
+    type: object
     properties:
       desktop:
         type: object
         properties:
           autoUpdate:
-            type: boolean
             description:
               Whether or not the Threema Servers should be called to check if an
-              update is available
-required:
-  - version
-  - signatureKey
-  - refresh
-  - license
-  - chat
-  - directory
-  - blob
-  - work
-  - avatar
-  - safe
-  - web
+              update is available.
+            type: boolean

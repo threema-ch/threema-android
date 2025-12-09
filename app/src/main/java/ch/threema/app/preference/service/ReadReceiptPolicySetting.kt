@@ -27,13 +27,13 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.ReflectSettingsSyncTask.ReflectReadReceiptPolicySyncUpdate
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.protobuf.d2d.sync.MdD2DSync.ReadReceiptPolicy
 
-private val logger = LoggingUtil.getThreemaLogger("ReadReceiptPolicySetting")
+private val logger = getThreemaLogger("ReadReceiptPolicySetting")
 
 /**
  * The (global) setting whether read receipts should be sent. Stores true if they should be sent.

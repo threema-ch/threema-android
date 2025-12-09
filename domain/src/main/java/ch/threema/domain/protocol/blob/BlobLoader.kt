@@ -23,7 +23,7 @@ package ch.threema.domain.protocol.blob
 
 import ch.threema.base.ProgressListener
 import ch.threema.base.ThreemaException
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.Http
 import ch.threema.common.buildNew
 import ch.threema.common.buildRequest
@@ -44,7 +44,7 @@ import okhttp3.OkHttpClient
 import okhttp3.RequestBody.Companion.toRequestBody
 import okio.BufferedSource
 
-private val logger = LoggingUtil.getThreemaLogger("BlobLoader")
+private val logger = getThreemaLogger("BlobLoader")
 
 /**
  * Helper class that loads blobs (images, videos etc.) from the blob server given a blob ID. No

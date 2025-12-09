@@ -68,15 +68,16 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ballot.BallotModel;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class BallotOverviewActivity extends ThreemaToolbarActivity implements ListView.OnItemClickListener, GenericAlertDialog.DialogClickListener, SelectorDialog.SelectorDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotOverviewActivity");
+    private static final Logger logger = getThreemaLogger("BallotOverviewActivity");
 
     private static final String DIALOG_TAG_BALLOT_DELETE = "bd";
     private static final String DIALOG_TAG_CHOOSE_ACTION = "ca";
@@ -172,7 +173,7 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
         }
     }
@@ -273,17 +274,13 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
                 public BallotModel.State[] getStates() {
                     return null;
                 }
-
-                @Override
-                public boolean filter(BallotModel ballotModel) {
-                    return true;
-                }
             });
 
             if (this.ballots != null) {
                 this.listAdapter = new BallotOverviewListAdapter(
                     this,
                     this.ballots,
+                    messageReceiver,
                     dependencies.getBallotService(),
                     dependencies.getContactService(),
                     Glide.with(this)
@@ -294,7 +291,6 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
         } catch (NotAllowedException e) {
             logger.error("Exception", e);
             finish();
-            return;
         }
     }
 
@@ -313,23 +309,22 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
                 ArrayList<SelectorDialogItem> items = new ArrayList<>(3);
                 ArrayList<Integer> values = new ArrayList<>(3);
 
-                var myIdentity = dependencies.getUserService().getIdentity();
-                if (BallotUtil.canVote(ballotModel, myIdentity)) {
+                if (BallotUtil.canVote(ballotModel, messageReceiver)) {
                     items.add(new SelectorDialogItem(getString(R.string.ballot_vote), R.drawable.ic_vote_outline));
                     values.add(SELECTOR_ID_VOTE);
                 }
-                if (BallotUtil.canViewMatrix(ballotModel, myIdentity)) {
+                if (BallotUtil.canViewMatrix(ballotModel)) {
                     items.add(new SelectorDialogItem(getString(ballotModel.getState() == BallotModel.State.CLOSED ? R.string.ballot_result_final : R.string.ballot_result_intermediate), R.drawable.ic_ballot_outline));
                     values.add(SELECTOR_ID_RESULTS);
                 }
-                if (BallotUtil.canClose(ballotModel, myIdentity)) {
+                if (BallotUtil.canClose(ballotModel, dependencies.getUserService().getIdentity(), messageReceiver)) {
                     items.add(new SelectorDialogItem(getString(R.string.ballot_close), R.drawable.ic_check));
                     values.add(SELECTOR_ID_CLOSE);
                 }
 
                 if (items.size() == 1) {
-                    BallotUtil.openDefaultActivity(this, this.getSupportFragmentManager(), ballotModel, myIdentity);
-                } else {
+                    BallotUtil.openDefaultActivity(this, getSupportFragmentManager(), ballotModel, messageReceiver);
+                } else if (!items.isEmpty()) {
                     SelectorDialog selectorDialog = SelectorDialog.newInstance(null, items, values, null);
                     selectorDialog.setData(ballotModel);
                     selectorDialog.show(getSupportFragmentManager(), DIALOG_TAG_CHOOSE_ACTION);
@@ -443,17 +438,16 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
     @Override
     public void onClick(String tag, int which, Object data) {
         final BallotModel ballotModel = (BallotModel) data;
-        var myIdentity = dependencies.getUserService().getIdentity();
 
         switch (which) {
             case SELECTOR_ID_VOTE:
-                BallotUtil.openVoteDialog(this.getSupportFragmentManager(), ballotModel, myIdentity);
+                BallotUtil.openVoteDialog(this.getSupportFragmentManager(), ballotModel);
                 break;
             case SELECTOR_ID_RESULTS:
-                BallotUtil.openMatrixActivity(this, ballotModel, myIdentity);
+                BallotUtil.openMatrixActivity(this, ballotModel);
                 break;
             case SELECTOR_ID_CLOSE:
-                BallotUtil.requestCloseBallot(ballotModel, myIdentity, null, this);
+                BallotUtil.requestCloseBallot(ballotModel, null, this);
                 break;
         }
     }

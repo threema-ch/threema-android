@@ -23,7 +23,7 @@ package ch.threema.domain.taskmanager
 
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.data.InboundMessage
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundMessage
@@ -43,7 +43,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
 
-private val logger = LoggingUtil.getThreemaLogger("TaskRunner")
+private val logger = getThreemaLogger("TaskRunner")
 
 internal class TaskRunner(
     dispatchers: TaskManagerImpl.TaskManagerDispatchers,
@@ -371,7 +371,7 @@ class ConnectionStoppedException internal constructor(message: String, val close
  * This exception indicates that the task has not been scheduled because there is no connection available. It is only thrown for
  * [DropOnDisconnectTask]s as other task will be scheduled anyways.
  */
-class ConnectionUnavailableException : NetworkException("No connection available")
+class ConnectionUnavailableException internal constructor() : NetworkException("No connection available")
 
 /**
  * This exception must be thrown by tasks to enforce a reconnection to the server. The tasks are

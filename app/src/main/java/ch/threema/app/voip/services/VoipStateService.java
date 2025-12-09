@@ -38,6 +38,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 import org.webrtc.IceCandidate;
 import org.webrtc.SessionDescription;
@@ -75,7 +76,7 @@ import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
-import ch.threema.app.utils.DNDUtil;
+import ch.threema.app.utils.DoNotDisturbUtil;
 import ch.threema.app.utils.IdUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.voip.CallState;
@@ -85,8 +86,9 @@ import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.voip.receivers.VoipMediaButtonReceiver;
 import ch.threema.app.voip.util.VoipUtil;
+import ch.threema.base.SessionScoped;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
@@ -123,9 +125,10 @@ import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
  * <p>
  * This class is (intended to be) thread safe.
  */
+@SessionScoped
 @AnyThread
 public class VoipStateService implements AudioManager.OnAudioFocusChangeListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VoipStateService");
+    private static final Logger logger = getThreemaLogger("VoipStateService");
     private final static String LIFETIME_SERVICE_TAG = "VoipStateService";
 
     public static final int VIDEO_RENDER_FLAG_NONE = 0x00;
@@ -140,6 +143,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     private final ContactService contactService;
     private final NotificationPreferenceService notificationPreferenceService;
     private final LifetimeService lifetimeService;
+
+    @NonNull
+    private final DoNotDisturbUtil doNotDisturbUtil = KoinJavaComponent.get(DoNotDisturbUtil.class);
 
     // App context
     private final Context appContext;
@@ -648,7 +654,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
             // A PSTN call is ongoing
             logCallInfo(callId, "Rejecting call from {} (PSTN call ongoing)", contact.getIdentity());
             rejectReason = VoipCallAnswerData.RejectReason.BUSY;
-        } else if (DNDUtil.getInstance().isMutedWork()) {
+        } else if (doNotDisturbUtil.isDoNotDisturbActive()) {
             // Called outside working hours
             logCallInfo(callId, "Rejecting call from {} (called outside of working hours)", contact.getIdentity());
             rejectReason = VoipCallAnswerData.RejectReason.OFF_HOURS;
@@ -1504,6 +1510,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
                     .setSmallIcon(R.drawable.ic_phone_locked_white_24dp)
                     .setGroup(NotificationGroups.CALLS)
                     .setGroupSummary(false)
+                    .setCategory(NotificationCompat.CATEGORY_CALL)
                     .build()
                 );
 

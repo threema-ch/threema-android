@@ -13,17 +13,17 @@
 )]
 
 use core::cell::RefCell;
-use std::io;
+use std::{io, rc::Rc};
 
 use anyhow::bail;
 use clap::Parser;
+use data_encoding::HEXLOWER;
 use libthreema::{
     cli::{FullIdentityConfig, FullIdentityConfigOptions},
     common::ClientInfo,
     csp::{
         CspProtocol, CspProtocolContext, CspProtocolInstruction, CspStateUpdate,
-        frame::OutgoingFrame,
-        payload::{IncomingPayload, MessageAck, MessageWithMetadataBox, OutgoingPayload},
+        payload::{IncomingPayload, MessageAck, MessageWithMetadataBox, OutgoingFrame, OutgoingPayload},
     },
     csp_e2e::{
         CspE2eProtocol, CspE2eProtocolContextInit,
@@ -32,7 +32,9 @@ use libthreema::{
             lookup::ContactsLookupResponse,
             update::{UpdateContactsInstruction, UpdateContactsResponse},
         },
-        incoming_message::task::{IncomingMessageInstruction, IncomingMessageLoop, IncomingMessageResponse},
+        message::task::incoming::{
+            IncomingMessageInstruction, IncomingMessageLoop, IncomingMessageResponse, IncomingMessageTask,
+        },
         reflect::{ReflectInstruction, ReflectResponse},
         transaction::{
             begin::{BeginTransactionInstruction, BeginTransactionResponse},
@@ -58,32 +60,33 @@ struct CspE2eReceiveCommand {
     config: FullIdentityConfigOptions,
 }
 
-enum PayloadForCspE2e {
+enum IncomingPayloadForCspE2e {
     Message(MessageWithMetadataBox),
     MessageAck(MessageAck),
 }
-impl From<PayloadForCspE2e> for OutgoingPayload {
-    fn from(payload: PayloadForCspE2e) -> Self {
+enum OutgoingPayloadForCspE2e {
+    MessageAck(MessageAck),
+}
+impl From<OutgoingPayloadForCspE2e> for OutgoingPayload {
+    fn from(payload: OutgoingPayloadForCspE2e) -> Self {
         match payload {
-            PayloadForCspE2e::Message(message) => OutgoingPayload::MessageWithMetadataBox(message),
-            PayloadForCspE2e::MessageAck(message_ack) => OutgoingPayload::MessageAck(message_ack),
+            OutgoingPayloadForCspE2e::MessageAck(message_ack) => OutgoingPayload::MessageAck(message_ack),
         }
     }
 }
 
 /// Payload queues for the main process
 struct PayloadQueuesForCspE2e {
-    incoming: mpsc::Receiver<PayloadForCspE2e>,
-    outgoing: mpsc::Sender<PayloadForCspE2e>,
+    incoming: mpsc::Receiver<IncomingPayloadForCspE2e>,
+    outgoing: mpsc::Sender<OutgoingPayloadForCspE2e>,
 }
 
 /// Payload queues for the protocol flow runner
 struct PayloadQueuesForCsp {
-    incoming: mpsc::Sender<PayloadForCspE2e>,
-    outgoing: mpsc::Receiver<PayloadForCspE2e>,
+    incoming: mpsc::Sender<IncomingPayloadForCspE2e>,
+    outgoing: mpsc::Receiver<OutgoingPayloadForCspE2e>,
 }
 
-/// The Client Server Protocol connection handler
 struct CspProtocolRunner {
     /// The TCP stream
     stream: TcpStream,
@@ -158,8 +161,8 @@ impl CspProtocolRunner {
             }
 
             // Check if we've completed the handshake
-            if let Some(CspStateUpdate::PostHandshake { queued_messages }) = instruction.state_update {
-                info!(queued_messages, "Handshake complete");
+            if let Some(CspStateUpdate::PostHandshake(login_ack_data)) = instruction.state_update {
+                info!(?login_ack_data, "Handshake complete");
                 break;
             }
         }
@@ -193,7 +196,7 @@ impl CspProtocolRunner {
                             .add_chunks(&[read_buffer.get(..length)
                             .expect("Amount of read bytes should be available")])?;
                         None
-                    }
+                    },
 
                     // Forward any outgoing payloads
                     outgoing_payload = queues.outgoing.recv() => {
@@ -233,13 +236,16 @@ impl CspProtocolRunner {
                     },
                     IncomingPayload::MessageWithMetadataBox(payload) => {
                         // Forward message
-                        queues.incoming.send(PayloadForCspE2e::Message(payload)).await?;
+                        queues
+                            .incoming
+                            .send(IncomingPayloadForCspE2e::Message(payload))
+                            .await?;
                     },
                     IncomingPayload::MessageAck(payload) => {
                         // Forward message ack
                         queues
                             .incoming
-                            .send(PayloadForCspE2e::MessageAck(payload))
+                            .send(IncomingPayloadForCspE2e::MessageAck(payload))
                             .await?;
                     },
 
@@ -359,17 +365,25 @@ impl CspE2eProtocolRunner {
     /// Run the receive flow until stopped.
     #[tracing::instrument(skip_all)]
     async fn run_receive_flow(&mut self, mut queues: PayloadQueuesForCspE2e) -> anyhow::Result<()> {
+        let mut pending_task: Option<IncomingMessageTask> = None;
+
         for iteration in 1_usize.. {
             trace!("Receive flow iteration #{iteration}");
 
             // Handle any incoming payloads until we have a task
-            let mut task = match queues.incoming.recv().await {
-                Some(PayloadForCspE2e::Message(message)) => self.protocol.handle_incoming_message(message),
-                Some(PayloadForCspE2e::MessageAck(message_ack)) => {
-                    warn!(?message_ack, "Unexpected message-ack");
-                    continue;
-                },
-                None => break,
+            let Some(task) = &mut pending_task else {
+                match queues.incoming.recv().await {
+                    Some(IncomingPayloadForCspE2e::Message(message)) => {
+                        trace!(message = HEXLOWER.encode(&message.bytes), "Raw incoming message");
+                        info!(?message, "Incoming message");
+                        pending_task = Some(self.protocol.handle_incoming_message(message));
+                    },
+                    Some(IncomingPayloadForCspE2e::MessageAck(message_ack)) => {
+                        warn!(?message_ack, "Unexpected message-ack");
+                    },
+                    None => {},
+                }
+                continue;
             };
 
             // Handle task
@@ -448,9 +462,10 @@ impl CspE2eProtocolRunner {
                     if let Some(outgoing_message_ack) = result.outgoing_message_ack {
                         queues
                             .outgoing
-                            .send(PayloadForCspE2e::MessageAck(outgoing_message_ack))
+                            .send(OutgoingPayloadForCspE2e::MessageAck(outgoing_message_ack))
                             .await?;
                     }
+                    pending_task = None;
 
                     // TODO(LIB-16). Enqueue outgoing message task, if any
                 },
@@ -528,13 +543,13 @@ async fn main() -> anyhow::Result<()> {
     });
     let csp_e2e_context = CspE2eProtocolContextInit {
         client_info: ClientInfo::Libthreema,
-        config: config.minimal.common.config.clone(),
+        config: Rc::clone(&config.minimal.common.config),
         csp_e2e: config.csp_e2e_context_init(Box::new(RefCell::new(database.csp_e2e_nonce_provider()))),
         d2x: config.d2x_context_init(Box::new(RefCell::new(database.d2d_nonce_provider()))),
         shortcut: Box::new(DefaultShortcutProvider),
         settings: Box::new(RefCell::new(database.settings_provider())),
         contacts: Box::new(RefCell::new(database.contact_provider())),
-        messages: Box::new(RefCell::new(database.message_provider())),
+        conversations: Box::new(RefCell::new(database.message_provider())),
     };
 
     // Create payload queues
@@ -561,7 +576,10 @@ async fn main() -> anyhow::Result<()> {
             .config
             .chat_server_address
             .addresses(config.csp_server_group),
-        config.csp_context().expect("Configuration should be valid"),
+        config
+            .csp_context_init()
+            .try_into()
+            .expect("Configuration should be valid"),
     )
     .await?;
 

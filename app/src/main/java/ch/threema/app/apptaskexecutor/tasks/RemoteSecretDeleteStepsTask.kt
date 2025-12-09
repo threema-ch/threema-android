@@ -21,12 +21,16 @@
 
 package ch.threema.app.apptaskexecutor.tasks
 
-import ch.threema.app.managers.ServiceManager
-import ch.threema.app.services.ServiceManagerProvider
+import ch.threema.app.di.injectNonBinding
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.services.UserService
+import ch.threema.app.services.license.LicenseService
 import ch.threema.app.startup.AppStartupMonitor
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.app.stores.IdentityProvider
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.toCryptographicByteArray
 import ch.threema.domain.models.UserCredentials
+import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.localcrypto.MasterKeyManager
 import ch.threema.localcrypto.models.RemoteSecretAuthenticationToken
 import ch.threema.localcrypto.models.RemoteSecretClientParameters
@@ -37,30 +41,36 @@ import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.get
+import org.koin.core.component.inject
 
-private val logger = LoggingUtil.getThreemaLogger("RemoteSecretDeleteStepsTask")
+private val logger = getThreemaLogger("RemoteSecretDeleteStepsTask")
 
 class RemoteSecretDeleteStepsTask(
-    private val serviceManagerProvider: ServiceManagerProvider,
-    private val appStartupMonitor: AppStartupMonitor,
-    private val masterKeyManager: MasterKeyManager,
     private val authenticationToken: RemoteSecretAuthenticationToken,
-) : PersistableAppTask {
+) : PersistableAppTask, KoinComponent {
+
+    private val appStartupMonitor: AppStartupMonitor by inject()
+    private val masterKeyManager: MasterKeyManager by inject()
+    private val identityProvider: IdentityProvider by inject()
+    private val serverAddressProvider: ServerAddressProvider by injectNonBinding()
+    private val preferenceService: PreferenceService by injectNonBinding()
+    private val userService: UserService by injectNonBinding()
+    private val licenseService: LicenseService<*> by injectNonBinding()
 
     override suspend fun run() {
-        // As app tasks may be run before the app has successfully started up, we need to wait as this task requires the master key manager.
-        appStartupMonitor.awaitAll()
-
         var attempt = 0
         while (true) {
+            // As app tasks may be run before the app has successfully started up, or might still try to run after the app has been locked,
+            // we need to wait here as this task has session-scoped dependencies.
+            appStartupMonitor.awaitAll()
+
             attempt++
-            // Note that we need to collect the client parameters in every loop iteration as they might have changed.
-            val serviceManager = serviceManagerProvider.awaitServiceManager()
-            val clientParameters = getRemoteSecretClientParameters(serviceManager) ?: run {
-                // This will end this task and remove it from persistent storage.
-                error("Cannot delete remote secret due to missing client parameters")
-            }
             try {
+                // Note that we need to collect the client parameters in every loop iteration as they might have changed.
+                val clientParameters = getRemoteSecretClientParameters() ?: run {
+                    // This will end this task and remove it from persistent storage.
+                    error("Cannot delete remote secret due to missing client parameters")
+                }
                 logger.info("Deleting remote secret from server (attempt {})", attempt)
                 masterKeyManager.deleteRemoteSecret(clientParameters, authenticationToken)
                 break
@@ -78,18 +88,17 @@ class RemoteSecretDeleteStepsTask(
         authenticationToken = authenticationToken.value,
     )
 
-    private fun getRemoteSecretClientParameters(serviceManager: ServiceManager): RemoteSecretClientParameters? {
+    private fun getRemoteSecretClientParameters(): RemoteSecretClientParameters? {
         return RemoteSecretClientParameters(
-            workServerBaseUrl = serviceManager.serverAddressProviderService
-                .serverAddressProvider
-                .getWorkServerUrl(serviceManager.isIpv6Preferred)
+            workServerBaseUrl = serverAddressProvider
+                .getWorkServerUrl(preferenceService.isIpv6Preferred)
                 ?: return null,
-            userIdentity = serviceManager.userService.identity
+            userIdentity = identityProvider.getIdentity()
                 ?: return null,
-            clientKey = serviceManager.userService.privateKey
+            clientKey = userService.privateKey
                 ?.toCryptographicByteArray()
                 ?: return null,
-            credentials = serviceManager.licenseService.loadCredentials() as? UserCredentials
+            credentials = licenseService.loadCredentials() as? UserCredentials
                 ?: return null,
         )
     }
@@ -99,9 +108,6 @@ class RemoteSecretDeleteStepsTask(
         private val authenticationToken: ByteArray,
     ) : AppTaskData, KoinComponent {
         override fun createTask() = RemoteSecretDeleteStepsTask(
-            serviceManagerProvider = get(),
-            appStartupMonitor = get(),
-            masterKeyManager = get(),
             authenticationToken = RemoteSecretAuthenticationToken(authenticationToken),
         )
     }

@@ -52,11 +52,11 @@ import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.base.ThreemaException;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 
 public class ContentCommitComposeEditText extends ComposeEditText {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ContentCommitComposeEditText");
+    private static final Logger logger = getThreemaLogger("ContentCommitComposeEditText");
 
     private MessageReceiver messageReceiver;
     private MessageService messageService;

@@ -37,9 +37,9 @@ import ch.threema.app.utils.logScreenVisibility
 import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.app.voip.services.VoipStateService
 import ch.threema.app.voip.util.VoipUtil
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("SettingsCallsFragment")
+private val logger = getThreemaLogger("SettingsCallsFragment")
 
 @Suppress("unused")
 class SettingsCallsFragment : ThreemaPreferenceFragment() {

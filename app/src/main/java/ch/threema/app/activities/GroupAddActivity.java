@@ -45,14 +45,15 @@ import ch.threema.app.dialogs.ShowOnceDialog;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.LogUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.GroupModel;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class GroupAddActivity extends MemberChooseActivity implements GenericAlertDialog.DialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupAddActivity");
+    private static final Logger logger = getThreemaLogger("GroupAddActivity");
 
     private static final String BUNDLE_EXISTING_MEMBERS = "ExMem";
     private static final String DIALOG_TAG_NO_MEMBERS = "NoMem";
@@ -68,7 +69,7 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
         }
     }

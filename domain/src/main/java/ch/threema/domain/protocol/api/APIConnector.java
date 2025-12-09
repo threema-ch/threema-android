@@ -27,6 +27,7 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
+import ch.threema.base.SessionScoped;
 import ch.threema.base.crypto.KeyPair;
 import ch.threema.base.crypto.NaCl;
 
@@ -58,7 +59,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.Version;
 import ch.threema.domain.protocol.api.work.WorkContact;
@@ -79,9 +80,10 @@ import okhttp3.OkHttpClient;
  * <p>
  * All calls run synchronously; if necessary the caller should dispatch a separate thread.
  */
+@SessionScoped
 public class APIConnector {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("APIConnector");
+    private static final Logger logger = getThreemaLogger("APIConnector");
 
     private static final String JSON_FIELD_JOB_TITLE = "jobTitle";
     private static final String JSON_FIELD_DEPARTMENT = "department";
@@ -1262,9 +1264,11 @@ public class APIConnector {
         // Since Release: work-directory
         JSONObject jsonResponseOrganization = jsonResponse.optJSONObject("org");
         if (jsonResponseOrganization != null) {
-            workData.organization.name =
-                jsonResponseOrganization.isNull("name") ? null :
-                    jsonResponseOrganization.optString("name");
+            workData.organization.setName(
+                jsonResponseOrganization.isNull("name")
+                    ? null
+                    : jsonResponseOrganization.optString("name")
+            );
         }
 
         JSONObject directory = jsonResponse.optJSONObject("directory");
@@ -1461,10 +1465,10 @@ public class APIConnector {
                     if (!contact.isNull("org")) {
                         JSONObject jsonResponseOrganization = contact.optJSONObject("org");
 
-                        if (jsonResponseOrganization != null && !jsonResponseOrganization.isNull(
-                            "name")) {
-                            directoryContact.organization.name =
-                                jsonResponseOrganization.optString("name");
+                        if (jsonResponseOrganization != null && !jsonResponseOrganization.isNull("name")) {
+                            directoryContact.organization.setName(
+                                jsonResponseOrganization.optString("name")
+                            );
                         }
                     }
 

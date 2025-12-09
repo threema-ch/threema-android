@@ -38,13 +38,13 @@ import ch.threema.app.ui.MediaItem
 import ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL
 import ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.Rotate
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.progressindicator.CircularProgressIndicator
 
-private val logger = LoggingUtil.getThreemaLogger("BigMediaFragment")
+private val logger = getThreemaLogger("BigMediaFragment")
 
 @UnstableApi
 class BigMediaFragment : Fragment() {

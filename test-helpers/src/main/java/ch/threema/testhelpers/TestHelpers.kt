@@ -69,7 +69,7 @@ fun Any.loadResource(file: String): String =
 fun Any.loadResourceAsBytes(file: String): ByteArray =
     (javaClass.classLoader.getResourceAsStream(file) ?: error("Resource file '$file' not found"))
         .use {
-            it.readAllBytes()
+            it.readBytes()
         }
 
 suspend fun <T> TurbineTestContext<T>.expectItem(expected: T) {

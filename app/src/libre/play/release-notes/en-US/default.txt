@@ -1,3 +1,3 @@
-- Fixed a bug that could occur when using home screen shortcuts
-- Fixed a bug that could cause the app to crash when opening the archive
-- Various UI improvements and small bug fixes
+- Fixed a bug in relation to access of stored files
+- Message drafts are saved while typing
+- Various improvements and bug fixes

@@ -30,11 +30,11 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import ch.threema.app.utils.LogUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.data.MessageDataInterface;
 
 public class BallotDataModel implements MessageDataInterface {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotDataModel");
+    private static final Logger logger = getThreemaLogger("BallotDataModel");
 
     public enum Type {
         BALLOT_CREATED(1), BALLOT_MODIFIED(2), BALLOT_CLOSED(3);

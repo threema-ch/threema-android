@@ -38,6 +38,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import ch.threema.android.buildActivityIntent
+import ch.threema.android.disableEnterTransition
+import ch.threema.android.disableExitTransition
+import ch.threema.android.getParcelable
+import ch.threema.android.showToast
 import ch.threema.app.R
 import ch.threema.app.compose.theme.ThreemaTheme
 import ch.threema.app.passphrase.PassphraseUnlockContract
@@ -47,21 +52,15 @@ import ch.threema.app.startup.components.LoadingState
 import ch.threema.app.startup.components.UnlockRetryDialog
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.ShareUtil
-import ch.threema.app.utils.buildActivityIntent
-import ch.threema.app.utils.disableEnterTransition
-import ch.threema.app.utils.disableExitTransition
-import ch.threema.app.utils.getParcelable
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.app.utils.showToast
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.localcrypto.MasterKeyManager
-import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("AppStartupActivity")
+private val logger = getThreemaLogger("AppStartupActivity")
 
 /**
  * This activity is shown when the app is not (yet) ready to display the screen that the user requested,
@@ -168,16 +167,10 @@ class AppStartupActivity : AppCompatActivity() {
     }
 
     private fun exportLogs() {
+        logger.info("Export logs button clicked")
         val success = ShareUtil.shareLogfile(this)
         if (!success) {
             showToast(R.string.try_again)
-        }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        if (appStartupMonitor.hasErrors()) {
-            exitProcess(2)
         }
     }
 

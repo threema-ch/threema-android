@@ -21,9 +21,9 @@
 
 package ch.threema.domain.protocol.urls
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("ParameterizedUrl")
+private val logger = getThreemaLogger("ParameterizedUrl")
 
 abstract class ParameterizedUrl(
     private val template: String,

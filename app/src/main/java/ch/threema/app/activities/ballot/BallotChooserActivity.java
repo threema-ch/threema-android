@@ -56,13 +56,14 @@ import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ballot.BallotModel;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class BallotChooserActivity extends ThreemaToolbarActivity implements ListView.OnItemClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BallotChooserActivity");
+    private static final Logger logger = getThreemaLogger("BallotChooserActivity");
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
@@ -100,7 +101,7 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
         }
     }
@@ -194,17 +195,13 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
                 public BallotModel.State[] getStates() {
                     return null;
                 }
-
-                @Override
-                public boolean filter(BallotModel ballotModel) {
-                    return true;
-                }
             });
 
             if (ballots != null) {
                 this.listAdapter = new BallotOverviewListAdapter(
                     this,
                     ballots,
+                    null,
                     dependencies.getBallotService(),
                     dependencies.getContactService(),
                     Glide.with(this)

@@ -29,6 +29,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -107,11 +108,10 @@ fun EditHistoryList(
                 Spacer(modifier = Modifier.height(8.dp))
             }
             // edit history
-            items(
-                count = editHistoryUiState.editHistoryEntries.size,
-                key = { index -> editHistoryUiState.editHistoryEntries[index].uid },
-            ) { index ->
-                val entry = editHistoryUiState.editHistoryEntries[index]
+            itemsIndexed(
+                items = editHistoryUiState.editHistoryEntries,
+                key = { _, editHistoryEntry -> editHistoryEntry.uid },
+            ) { index, entry ->
                 val isExpandable by remember {
                     derivedStateOf {
                         isItemExpandableMap[entry.uid] ?: false
@@ -126,8 +126,7 @@ fun EditHistoryList(
                         .then(
                             stringResource(R.string.cd_index_in_edit_history).let {
                                 Modifier.semantics {
-                                    contentDescription =
-                                        it.format(editHistoryUiState.editHistoryEntries.size - index)
+                                    contentDescription = it.format(editHistoryUiState.editHistoryEntries.size - index)
                                 }
                             },
                         )
@@ -149,7 +148,7 @@ fun EditHistoryList(
                             isExpanded = if (isExpandable) isExpanded else true,
                             onClick = if (isExpandable) toggleExpanded else null,
                             shouldFadeOutTimeLineTop = index == 0,
-                            shouldFadeOutTimeLineBottom = index == editHistoryUiState.editHistoryEntries.size - 1,
+                            shouldFadeOutTimeLineBottom = index == editHistoryUiState.editHistoryEntries.lastIndex,
                             textSelectionCallback = textSelectionCallback,
                         )
                     } else {

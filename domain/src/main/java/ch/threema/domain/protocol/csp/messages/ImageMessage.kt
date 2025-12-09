@@ -22,10 +22,12 @@
 package ch.threema.domain.protocol.csp.messages
 
 import ch.threema.base.crypto.NaCl
+import ch.threema.common.buildByteArray
+import ch.threema.common.readLittleEndianInt
+import ch.threema.common.writeLittleEndianInt
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
-import org.apache.commons.io.EndianUtils
 
 /**
  * A message that has an image (stored on the blob server) as its content.
@@ -69,20 +71,12 @@ class ImageMessage(
 
     override fun bumpLastUpdate(): Boolean = true
 
-    override fun getBody(): ByteArray {
-        val body =
-            ByteArray(ProtocolDefines.BLOB_ID_LEN + IMAGE_SIZE_INT_BYTE_LENGTH + NaCl.NONCE_BYTES)
-        System.arraycopy(blobId, 0, body, 0, ProtocolDefines.BLOB_ID_LEN)
-        EndianUtils.writeSwappedInteger(body, ProtocolDefines.BLOB_ID_LEN, size)
-        System.arraycopy(
-            nonce,
-            0,
-            body,
-            ProtocolDefines.BLOB_ID_LEN + IMAGE_SIZE_INT_BYTE_LENGTH,
-            nonce.size,
-        )
-        return body
-    }
+    override fun getBody(): ByteArray =
+        buildByteArray(ProtocolDefines.BLOB_ID_LEN + IMAGE_SIZE_INT_BYTE_LENGTH + NaCl.NONCE_BYTES) {
+            write(blobId)
+            writeLittleEndianInt(size)
+            write(nonce)
+        }
 
     companion object {
         private const val IMAGE_SIZE_INT_BYTE_LENGTH = 4
@@ -138,7 +132,7 @@ class ImageMessage(
             System.arraycopy(data, positionIndex, blobId, 0, ProtocolDefines.BLOB_ID_LEN)
             positionIndex += ProtocolDefines.BLOB_ID_LEN
 
-            val imageSize: Int = EndianUtils.readSwappedInteger(data, positionIndex)
+            val imageSize: Int = data.readLittleEndianInt(positionIndex)
             positionIndex += IMAGE_SIZE_INT_BYTE_LENGTH
 
             val nonce = ByteArray(NaCl.NONCE_BYTES)

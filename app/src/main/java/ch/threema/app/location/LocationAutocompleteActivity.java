@@ -57,7 +57,7 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.NetworkUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.common.models.Coordinates;
 
 import static ch.threema.app.location.LocationAutocompleteViewModel.QUERY_MIN_LENGTH;
@@ -66,7 +66,7 @@ import static ch.threema.app.utils.IntentDataUtil.INTENT_DATA_LOCATION_LNG;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class LocationAutocompleteActivity extends ThreemaActivity {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("LocationAutocompleteActivity");
+    private static final Logger logger = getThreemaLogger("LocationAutocompleteActivity");
 
     private static final String DIALOG_TAG_NO_CONNECTION = "no_connection";
 

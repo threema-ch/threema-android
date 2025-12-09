@@ -39,7 +39,7 @@ import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 import ch.threema.app.utils.BatteryStatusUtil;
 import ch.threema.app.webclient.manager.WebClientListenerManager;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.WebClientSessionModel;
 
 /**
@@ -49,7 +49,7 @@ import ch.threema.storage.models.WebClientSessionModel;
  */
 @WorkerThread
 public class BatteryStatusServiceImpl implements BatteryStatusService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("BatteryStatusServiceImpl");
+    private static final Logger logger = getThreemaLogger("BatteryStatusServiceImpl");
 
     // State
     @NonNull

@@ -25,7 +25,7 @@ import android.content.SharedPreferences
 import androidx.annotation.MainThread
 import androidx.core.content.edit
 import ch.threema.app.systemupdates.updates.SystemUpdate
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.DispatcherProvider
 import java.util.LinkedList
 import java.util.Queue
@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 
-private val logger = LoggingUtil.getThreemaLogger("SystemUpdater")
+private val logger = getThreemaLogger("SystemUpdater")
 
 class SystemUpdater(
     private val sharedPreferences: SharedPreferences,

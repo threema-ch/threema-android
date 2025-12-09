@@ -59,10 +59,10 @@ import org.koin.android.compat.ViewModelCompat;
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.security.MessageDigest;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -84,6 +84,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -95,7 +96,8 @@ import ch.threema.app.activities.DistributionListAddActivity;
 import ch.threema.app.activities.DownloadApkActivity;
 import ch.threema.app.activities.EnterSerialActivity;
 import ch.threema.app.activities.GroupAddActivity;
-import ch.threema.app.activities.ProblemSolverActivity;
+import ch.threema.app.problemsolving.GetProblemsUseCase;
+import ch.threema.app.problemsolving.ProblemSolverActivity;
 import ch.threema.app.activities.ServerMessageActivity;
 import ch.threema.app.activities.StarredMessagesActivity;
 import ch.threema.app.activities.ThreemaActivity;
@@ -112,6 +114,7 @@ import ch.threema.app.asynctasks.ContactCreated;
 import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
+import ch.threema.app.crashreporting.CrashReportingDialog;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
@@ -161,14 +164,12 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ConnectionIndicatorUtil;
-import ch.threema.app.utils.Destroyer;
+import ch.threema.android.Destroyer;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LazyProperty;
-import ch.threema.app.utils.PowermanagerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.utils.Toaster;
+import ch.threema.android.Toaster;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.voip.groupcall.GroupCallDescription;
 import ch.threema.app.voip.groupcall.GroupCallObserver;
@@ -176,7 +177,7 @@ import ch.threema.app.voip.groupcall.sfu.GroupCallController;
 import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.webclient.activities.SessionsActivity;
 import ch.threema.app.webviews.SupportActivity;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.LinkMobileNoException;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.connection.ConnectionStateListener;
@@ -191,7 +192,9 @@ import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.MessageState;
 import kotlin.Lazy;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
+import static ch.threema.common.LazyKt.lazy;
 import static org.koin.java.KoinJavaComponent.inject;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -201,15 +204,13 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     GenericAlertDialog.DialogClickListener,
     LifecycleOwner {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("HomeActivity");
+    private static final Logger logger = getThreemaLogger("HomeActivity");
 
     public static final String THREEMA_CHANNEL_IDENTITY = "*THREEMA";
     private static final String THREEMA_CHANNEL_INFO_COMMAND = "Info";
     private static final String THREEMA_CHANNEL_START_NEWS_COMMAND = "Start News";
     private static final String THREEMA_CHANNEL_START_ANDROID_COMMAND = "Start Android";
     private static final String THREEMA_CHANNEL_WORK_COMMAND = "Start Threema Work";
-
-    private static final long PHONE_REQUEST_DELAY = 10 * DateUtils.MINUTE_IN_MILLIS;
 
     private static final String DIALOG_TAG_VERIFY_CODE = "vc";
     private static final String DIALOG_TAG_VERIFY_CODE_CONFIRM = "vcc";
@@ -248,7 +249,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     private @Nullable IdentityPopup identityPopup = null;
 
     @NonNull
-    private final LazyProperty<BackgroundExecutor> backgroundExecutor = new LazyProperty<>(BackgroundExecutor::new);
+    private final Lazy<BackgroundExecutor> backgroundExecutor = lazy(BackgroundExecutor::new);
 
     private enum UnsentMessageAction {
         ADD,
@@ -764,15 +765,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     }
 
     private boolean shouldShowToolbarWarning() {
-        var appContext = getApplicationContext();
-        boolean isBatteryOptimized = !PowermanagerUtil.isIgnoringBatteryOptimizations(appContext);
-        return
-            ConfigUtils.isBackgroundRestricted(appContext) ||
-                ConfigUtils.isBackgroundDataRestricted(appContext) ||
-                ConfigUtils.isNotificationsDisabled(appContext) ||
-                (dependencies.getPreferenceService().isVoipEnabled() && ConfigUtils.isFullScreenNotificationsDisabled(appContext)) ||
-                ((dependencies.getPreferenceService().useThreemaPush() || BuildFlavor.getCurrent().getForceThreemaPush()) && isBatteryOptimized) ||
-                (dependencies.getSessionService().hasRunningSessions() && isBatteryOptimized);
+        GetProblemsUseCase getProblemsUseCase = KoinJavaComponent.get(GetProblemsUseCase.class);
+        return !getProblemsUseCase.run().isEmpty();
     }
 
     private void showWhatsNew() {
@@ -799,7 +793,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
                     if (previous < 1069) {
                         isWhatsNewShown = true;
 
-                        Intent intent = new Intent(this, WhatsNewActivity.class);
+                        Intent intent = WhatsNewActivity.createIntent(this);
                         startActivityForResult(intent, REQUEST_CODE_WHATSNEW);
                         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
                     }
@@ -952,7 +946,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
             //not registered... ignore exceptions
         }
 
-        if (dependencies.isAvailable()) {
+        if (isSessionScopeReady()) {
             dependencies.getServerConnection().removeConnectionStateListener(connectionStateListener);
         }
 
@@ -1246,9 +1240,21 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
         showWhatsNew();
 
+        if (BuildConfig.CRASH_REPORTING_SUPPORTED) {
+            RuntimeUtil.runOnWorkerThread(() -> {
+                // TODO(ANDR-4339): Depending on the user's preferences and choice in the dialog, the records need to be sent and/or deleted
+                if (dependencies.getCrashReportingHelper().shouldPrompt()) {
+                    RuntimeUtil.runOnUiThread(() -> {
+                        CrashReportingDialog.showDialog(this, "crash");
+                    });
+                }
+                dependencies.getCrashReportingHelper().deleteRecords();
+            });
+        }
+
         dependencies.getNotificationService().cancelRestoreNotification();
 
-        if (dependencies.getPreferenceService().getLastNotificationPermissionRequestTimestamp() == 0) {
+        if (dependencies.getPreferenceService().getLastNotificationPermissionRequestTimestamp() == null) {
             ConfigUtils.requestNotificationPermission(this, notificationPermissionLauncher, dependencies.getPreferenceService());
         }
     }
@@ -1591,7 +1597,8 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
 
     @Override
     public void onCallRequested(String tag) {
-        if (System.currentTimeMillis() < dependencies.getUserService().getMobileLinkingTime() + PHONE_REQUEST_DELAY) {
+        var mobileLinkingTime = dependencies.getUserService().getMobileLinkingTime();
+        if (mobileLinkingTime != null && mobileLinkingTime.isAfter(Instant.now().minus(10, ChronoUnit.MINUTES))) {
             SimpleStringAlertDialog.newInstance(R.string.verify_phonecall_text, getString(R.string.wait_one_minute)).show(getSupportFragmentManager(), "mi");
         } else {
             GenericAlertDialog.newInstance(R.string.verify_phonecall_text, R.string.prepare_call_message, R.string.ok, R.string.cancel).show(getSupportFragmentManager(), DIALOG_TAG_VERIFY_CODE_CONFIRM);
@@ -1784,17 +1791,17 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
         if (!ConfigUtils.isWorkBuild()) {
             return;
         }
-        File customAppIcon = dependencies.getFileService().getAppLogo(
+        @Nullable Bitmap customAppLogo = dependencies.getFileService().getAppLogo(
             ConfigUtils.getAppThemeSettingFromDayNightMode(ConfigUtils.getCurrentDayNightMode(this))
         );
 
-        if (customAppIcon.exists() && this.toolbar != null) {
+        if (customAppLogo != null && this.toolbar != null) {
             ImageView headerImageView = toolbar.findViewById(R.id.toolbar_logo_main);
 
             if (headerImageView != null) {
                 headerImageView.clearColorFilter();
                 Glide.with(this)
-                    .load(customAppIcon)
+                    .load(customAppLogo)
                     .into(headerImageView);
             }
         }
@@ -1804,7 +1811,7 @@ public class HomeActivity extends ThreemaAppCompatActivity implements
     public void addThreemaChannel() {
         var messageService = dependencies.getMessageService();
 
-        backgroundExecutor.get().execute(
+        backgroundExecutor.getValue().execute(
             new BasicAddOrUpdateContactBackgroundTask(
                 THREEMA_CHANNEL_IDENTITY,
                 ContactModel.AcquaintanceLevel.DIRECT,

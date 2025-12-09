@@ -24,7 +24,7 @@ package ch.threema.app.tasks
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.FileMessage
@@ -37,7 +37,7 @@ import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.media.FileDataModel
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingFileMessageTask")
+private val logger = getThreemaLogger("OutgoingFileMessageTask")
 
 class OutgoingFileMessageTask(
     private val messageModelId: Int,

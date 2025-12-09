@@ -26,6 +26,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import ch.threema.android.buildActivityIntent
+import ch.threema.android.showToast
 import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.dialogs.GenericProgressDialog
@@ -36,16 +38,14 @@ import ch.threema.app.services.UserService
 import ch.threema.app.startup.finishAndRestartLaterIfNotReady
 import ch.threema.app.utils.DialogUtil
 import ch.threema.app.utils.DispatcherProvider
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.app.utils.showToast
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.identitybackup.IdentityBackup
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 
-private val logger = LoggingUtil.getThreemaLogger("ExportIDActivity")
+private val logger = getThreemaLogger("ExportIDActivity")
 
 class ExportIDActivity : AppCompatActivity(), PasswordEntryDialogClickListener {
     init {

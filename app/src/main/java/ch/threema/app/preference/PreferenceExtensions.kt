@@ -21,11 +21,12 @@
 
 package ch.threema.app.preference
 
+import androidx.preference.DropDownPreference
 import androidx.preference.Preference
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import kotlin.reflect.KClass
 
-private val logger = LoggingUtil.getThreemaLogger("PreferenceExtensions")
+private val logger = getThreemaLogger("PreferenceExtensions")
 
 fun Preference.onClick(action: () -> Unit) {
     setOnPreferenceClickListener {
@@ -55,5 +56,17 @@ fun <T : Any> Preference.onChange(valueType: KClass<T>, action: (newValue: T) ->
             logger.error("Preference.onChange failed, value of unexpected type: {}", newValue)
             false
         }
+    }
+}
+
+/**
+ * There is a bug in [DropDownPreference], where it can get stuck in an invalid state. If a value is selected but the change listener
+ * returns false, indicating that the selection should not be applied, that option can then no longer be selected until a different option
+ * has been selected. This method fixes this issue by briefly disabling the preference.
+ */
+fun DropDownPreference.refresh() {
+    if (isEnabled) {
+        isEnabled = false
+        isEnabled = true
     }
 }

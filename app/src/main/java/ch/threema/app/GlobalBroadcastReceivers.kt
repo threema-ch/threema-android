@@ -29,20 +29,18 @@ import android.content.IntentFilter
 import android.net.ConnectivityManager
 import android.os.Build
 import android.os.PowerManager
-import androidx.core.content.ContextCompat
 import androidx.core.content.getSystemService
 import ch.threema.app.backuprestore.csv.BackupService
 import ch.threema.app.receivers.ConnectivityChangeReceiver
-import ch.threema.app.receivers.ShortcutAddedReceiver
 import ch.threema.app.restrictions.AppRestrictionService
 import ch.threema.app.services.LifetimeService
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-private val logger = LoggingUtil.getThreemaLogger("GlobalBroadcastReceivers")
+private val logger = getThreemaLogger("GlobalBroadcastReceivers")
 
 object GlobalBroadcastReceivers {
 
@@ -56,7 +54,6 @@ object GlobalBroadcastReceivers {
         registerDeviceIdleModeChangedReceiver(context)
         registerNotificationChannelGroupBlockStateChangedReceiver(context)
         registerAppRestrictionsChangeReceiver(context)
-        registerShortcutAddedReceiver(context)
     }
 
     private fun registerConnectivityChangeReceiver(context: Context) {
@@ -146,15 +143,5 @@ object GlobalBroadcastReceivers {
                 IntentFilter(Intent.ACTION_APPLICATION_RESTRICTIONS_CHANGED),
             )
         }
-    }
-
-    private fun registerShortcutAddedReceiver(context: Context) {
-        // register a receiver for shortcuts that have been added to the launcher
-        ContextCompat.registerReceiver(
-            context,
-            ShortcutAddedReceiver(),
-            IntentFilter(AppConstants.INTENT_ACTION_SHORTCUT_ADDED),
-            ContextCompat.RECEIVER_NOT_EXPORTED,
-        )
     }
 }

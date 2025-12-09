@@ -85,7 +85,13 @@ class MasterKeyManagerImplRemoteSecretTest {
         passphraseStoreMock = mockk(relaxed = true) {
             every { passphrase } returns PASSPHRASE
         }
-        crypto = spyk(MasterKeyCrypto())
+        crypto = spyk(
+            MasterKeyCrypto(
+                converter = mockk(),
+                version2Crypto = mockk(),
+                version1Crypto = mockk(),
+            ),
+        )
         masterKeyManager = MasterKeyManagerImpl(
             keyStorageManager = storageManagerMock,
             lockStateHolder = lockStateHolderMock,
@@ -94,6 +100,7 @@ class MasterKeyManagerImplRemoteSecretTest {
             passphraseStore = passphraseStoreMock,
             crypto = crypto,
             random = mockk(),
+            keyGenerator = mockk(),
         )
         masterKeyManager.readOrGenerateKey()
     }
@@ -121,10 +128,6 @@ class MasterKeyManagerImplRemoteSecretTest {
             crypto.encryptWithRemoteSecret(plain, REMOTE_SECRET, parametersMock)
         } returns withRemoteSecretMock
 
-        val deferredEvent = async(UnconfinedTestDispatcher()) {
-            masterKeyManager.events.first()
-        }
-
         masterKeyManager.updateRemoteSecretProtectionStateIfNeeded(clientParametersMock)
 
         verify(exactly = 1) {
@@ -147,7 +150,6 @@ class MasterKeyManagerImplRemoteSecretTest {
         verify(exactly = 1) {
             passphraseStoreMock.passphrase = null
         }
-        assertEquals(MasterKeyEvent.RemoteSecretActivated, deferredEvent.await())
     }
 
     @Test
@@ -345,6 +347,9 @@ class MasterKeyManagerImplRemoteSecretTest {
             storageStateHolder = mockk {
                 every { getStorageState() } returns storageState
             },
+            random = mockk(),
+            keyGenerator = mockk(),
+            crypto = mockk(),
         )
     }
 

@@ -21,6 +21,7 @@
 
 package ch.threema.app.services
 
+import ch.threema.base.SessionScoped
 import ch.threema.base.ThreemaException
 import ch.threema.domain.protocol.blob.BlobLoader
 import ch.threema.domain.protocol.blob.BlobScope
@@ -29,6 +30,7 @@ import ch.threema.domain.types.Identity
 import java.io.IOException
 import java.net.URL
 
+@SessionScoped
 interface ApiService {
     /**
      * @param blobScope Will only have an effect if multi-device is currently active

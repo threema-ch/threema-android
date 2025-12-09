@@ -28,7 +28,7 @@ import ch.threema.app.tasks.ReflectGroupSyncDeleteTask
 import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.protocol.connection.ConnectionState
@@ -37,7 +37,7 @@ import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TriggerSource
 import kotlinx.coroutines.runBlocking
 
-private val logger = LoggingUtil.getThreemaLogger("RemoveGroupFlow")
+private val logger = getThreemaLogger("RemoveGroupFlow")
 
 class RemoveGroupFlow(
     private val groupModel: GroupModel,

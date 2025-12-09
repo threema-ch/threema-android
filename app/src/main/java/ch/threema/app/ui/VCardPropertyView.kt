@@ -38,14 +38,14 @@ import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory
 import ch.threema.app.R
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.VCardExtractor
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ezvcard.property.FormattedName
 import ezvcard.property.ImageProperty
 import ezvcard.property.StructuredName
 import ezvcard.property.VCardProperty
 import java.io.ByteArrayInputStream
 
-private val logger = LoggingUtil.getThreemaLogger("VCardPropertyView")
+private val logger = getThreemaLogger("VCardPropertyView")
 
 /**
  * This class manages the presentation and the selection of a VCard property.

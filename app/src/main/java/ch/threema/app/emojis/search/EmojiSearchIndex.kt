@@ -27,12 +27,12 @@ import androidx.annotation.WorkerThread
 import androidx.room.Room
 import au.com.bytecode.opencsv.CSVReader
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 
-private val logger = LoggingUtil.getThreemaLogger("EmojiSearchIndex")
+private val logger = getThreemaLogger("EmojiSearchIndex")
 
 class EmojiSearchIndex(
     private val context: Context,

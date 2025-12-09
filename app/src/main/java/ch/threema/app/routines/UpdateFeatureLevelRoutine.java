@@ -36,14 +36,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.services.UserService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ModelDeletedException;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.data.models.ContactModel;
 
 public class UpdateFeatureLevelRoutine implements Runnable {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("UpdateFeatureLevelRoutine");
+    private static final Logger logger = getThreemaLogger("UpdateFeatureLevelRoutine");
 
     private static final Map<String, Long> checkedIdentities = new HashMap<>();
 

@@ -31,7 +31,7 @@ import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.models.BasicContact
 import ch.threema.domain.models.MessageId
@@ -45,7 +45,7 @@ import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.protobuf.d2d.MdD2D
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("IncomingGroupSyncRequestTask")
+private val logger = getThreemaLogger("IncomingGroupSyncRequestTask")
 
 class IncomingGroupSyncRequestTask(
     message: GroupSyncRequestMessage,
@@ -178,7 +178,7 @@ private suspend fun answerGroupSyncRequest(
                 fourthMessageId = MessageId.random(),
             ),
             serviceManager.userService,
-            serviceManager.apiService,
+            serviceManager.groupProfilePictureUploader,
             serviceManager.fileService,
             serviceManager.groupCallManager,
             serviceManager.databaseService,

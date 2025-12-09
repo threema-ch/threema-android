@@ -24,10 +24,10 @@ package ch.threema.app.systemupdates.updates
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.profilepicture.CheckedProfilePicture
 import ch.threema.app.profilepicture.RawProfilePicture
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.TriggerSource
 
-private val logger = LoggingUtil.getThreemaLogger("SystemUpdateToVersion112")
+private val logger = getThreemaLogger("SystemUpdateToVersion112")
 
 class SystemUpdateToVersion112(private val serviceManager: ServiceManager) : SystemUpdate {
 
@@ -50,7 +50,7 @@ class SystemUpdateToVersion112(private val serviceManager: ServiceManager) : Sys
             return
         }
 
-        if (checkedProfilePicture.profilePictureBytes.contentEquals(userProfilePicture.profilePictureBytes)) {
+        if (checkedProfilePicture.bytes.contentEquals(userProfilePicture.bytes)) {
             logger.info("No migration required as profile picture is already a valid jpeg.")
         } else {
             userService.setUserProfilePicture(checkedProfilePicture, TriggerSource.LOCAL).let { success ->

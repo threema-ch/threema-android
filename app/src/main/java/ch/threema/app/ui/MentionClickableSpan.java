@@ -27,10 +27,10 @@ import android.view.View;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class MentionClickableSpan extends ClickableSpan {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MentionClickableSpan");
+    private static final Logger logger = getThreemaLogger("MentionClickableSpan");
     private String text;
 
     public MentionClickableSpan(String text) {

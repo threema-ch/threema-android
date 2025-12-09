@@ -43,6 +43,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.app.NavUtils;
@@ -67,12 +68,13 @@ import ch.threema.app.ui.TooltipPopup;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ExportIDResultActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener, LifecycleOwner {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ExportIDResultActivity");
+    private static final Logger logger = getThreemaLogger("ExportIDResultActivity");
 
     private static final String DIALOG_TAG_QUIT_CONFIRM = "qconf";
     private static final int QRCODE_SMALL_DIMENSION_PIXEL = 200;
@@ -80,7 +82,8 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
-    private Bitmap qrcodeBitmap;
+    private @Nullable Bitmap originalQrCode;
+    private @Nullable Bitmap scaledQrCode;
     private TooltipPopup tooltipPopup;
 
     // Keeping this reference on purpose
@@ -93,7 +96,7 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (!dependencies.isAvailable()) {
+        if (!isSessionScopeReady()) {
             finish();
             return;
         }
@@ -148,12 +151,12 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
         textView.setText(backupData);
 
         final ImageView imageView = findViewById(R.id.qrcode_backup);
-        this.qrcodeBitmap = dependencies.getQrCodeService().getRawQR(backupData, false);
+        originalQrCode = dependencies.getQrCodeGenerator().generate(backupData);
 
         final int px = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, QRCODE_SMALL_DIMENSION_PIXEL, getResources().getDisplayMetrics());
-        Bitmap bmpScaled = Bitmap.createScaledBitmap(qrcodeBitmap, px, px, false);
-        bmpScaled.setDensity(Bitmap.DENSITY_NONE);
-        imageView.setImageBitmap(bmpScaled);
+        scaledQrCode = Bitmap.createScaledBitmap(originalQrCode, px, px, false);
+        scaledQrCode.setDensity(Bitmap.DENSITY_NONE);
+        imageView.setImageBitmap(scaledQrCode);
         if (ConfigUtils.isTheDarkSide(this)) {
             ConfigUtils.invertColors(imageView);
         }
@@ -260,7 +263,7 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
         if (item.getItemId() == android.R.id.home) {
             done();
         } else if (item.getItemId() == R.id.menu_print) {
-            printBitmap(qrcodeBitmap);
+            printBitmap(originalQrCode);
         } else if (item.getItemId() == R.id.menu_backup_share) {
             shareId();
         }
@@ -302,5 +305,16 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
         NavUtils.navigateUpTo(ExportIDResultActivity.this, upIntent);
 
         finish();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (scaledQrCode != null) {
+            scaledQrCode.recycle();
+        }
+        if (originalQrCode != null) {
+            originalQrCode.recycle();
+        }
     }
 }

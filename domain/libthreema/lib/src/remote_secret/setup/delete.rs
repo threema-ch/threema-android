@@ -13,6 +13,7 @@ use crate::{
         RemoteSecretSetupContext, RemoteSecretSetupError, RemoteSecretSetupInstruction,
         RemoteSecretSetupResponse,
     },
+    utils::debug::Name as _,
 };
 
 /// Result of polling a [`RemoteSecretDeleteTask`].

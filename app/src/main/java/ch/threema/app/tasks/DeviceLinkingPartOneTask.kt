@@ -37,9 +37,10 @@ import ch.threema.app.webclient.services.WebSessionQRCodeParser
 import ch.threema.app.webclient.services.WebSessionQRCodeParserImpl
 import ch.threema.base.utils.Base64
 import ch.threema.base.utils.Base64UrlSafe
-import ch.threema.base.utils.LoggingUtil
-import ch.threema.base.utils.SecureRandomUtil.generateRandomBytes
-import ch.threema.base.utils.SecureRandomUtil.generateRandomU64
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.generateRandomBytes
+import ch.threema.common.nextULong
+import ch.threema.common.secureRandom
 import ch.threema.common.toHexString
 import ch.threema.domain.protocol.D2mProtocolDefines
 import ch.threema.domain.protocol.connection.data.DeviceId
@@ -50,6 +51,7 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.protobuf.url_payloads.DeviceGroupJoinRequestOrOffer
 import com.google.protobuf.InvalidProtocolBufferException
 import java.io.IOException
+import java.security.SecureRandom
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
@@ -61,7 +63,7 @@ import kotlinx.coroutines.flow.transformWhile
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 
-private val logger = LoggingUtil.getThreemaLogger("DeviceLinkingPartOneTask")
+private val logger = getThreemaLogger("DeviceLinkingPartOneTask")
 
 private val supportedVersionRange = 0..0
 
@@ -85,6 +87,7 @@ class DeviceLinkingPartOneTask(
     private val taskCreator: TaskCreator by lazy { serviceManager.taskCreator }
 
     private val okHttpClient: OkHttpClient by lazy { serviceManager.okHttpClient }
+    private val secureRandom: SecureRandom by lazy { secureRandom() }
 
     override suspend fun invoke(handle: ActiveTaskCodec): Result<RendezvousConnection> {
         val establishRendezvousConnectionResult: Result<RendezvousConnection> = try {
@@ -170,9 +173,9 @@ class DeviceLinkingPartOneTask(
         PersistedMultiDeviceProperties(
             registrationTime = null,
             deviceLabel = "Android Client",
-            mediatorDeviceId = DeviceId(generateRandomU64()),
-            cspDeviceId = DeviceId(generateRandomU64()),
-            dgk = generateRandomBytes(D2mProtocolDefines.DGK_LENGTH_BYTES),
+            mediatorDeviceId = DeviceId(secureRandom.nextULong()),
+            cspDeviceId = DeviceId(secureRandom.nextULong()),
+            dgk = secureRandom.generateRandomBytes(D2mProtocolDefines.DGK_LENGTH_BYTES),
         )
 
     /**

@@ -21,7 +21,9 @@
 
 package ch.threema.base.crypto
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.generateRandomBytes
+import ch.threema.common.secureRandom
 import ch.threema.libthreema.ChunkedXSalsa20Poly1305Decryptor
 import ch.threema.libthreema.ChunkedXSalsa20Poly1305Encryptor
 import ch.threema.libthreema.CryptoException
@@ -29,10 +31,9 @@ import ch.threema.libthreema.x25519DerivePublicKey
 import ch.threema.libthreema.x25519Hsalsa20DeriveSharedSecret
 import ch.threema.libthreema.xsalsa20Poly1305Decrypt
 import ch.threema.libthreema.xsalsa20Poly1305Encrypt
-import java.security.SecureRandom
 import kotlin.experimental.xor
 
-private val logger = LoggingUtil.getThreemaLogger("NaCl")
+private val logger = getThreemaLogger("NaCl")
 
 /**
  *  Libthreema bridge to the NaCl generated bindings.
@@ -282,11 +283,10 @@ class NaCl(privateKey: ByteArray, publicKey: ByteArray) {
         @JvmOverloads
         @Throws(CryptoException::class, IllegalArgumentException::class)
         fun generateKeypair(seed: ByteArray? = null): KeyPair {
-            if (seed != null && seed.size != SECRET_KEY_BYTES) {
-                throw IllegalArgumentException("Seed must be exactly of length $SECRET_KEY_BYTES")
+            require(seed == null || seed.size == SECRET_KEY_BYTES) {
+                "Seed must be exactly of length $SECRET_KEY_BYTES"
             }
-            val privateKeyRandom = ByteArray(SECRET_KEY_BYTES)
-            SecureRandom().nextBytes(privateKeyRandom)
+            val privateKeyRandom = secureRandom().generateRandomBytes(SECRET_KEY_BYTES)
             if (seed != null) {
                 for (i in 0 until SECRET_KEY_BYTES) {
                     privateKeyRandom[i] = privateKeyRandom[i] xor seed[i]

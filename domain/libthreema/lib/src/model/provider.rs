@@ -1,22 +1,34 @@
 //! A set of providers that must be implemented by the app using the CSP E2EE protocol.
 use super::{
     contact::{Contact, ContactUpdate},
-    message::{IncomingMessage, WebSessionResume},
+    message::{IncomingMessage, WebSessionResumeMessage},
 };
-use crate::common::{ConversationId, MessageId, Nonce, ThreemaId};
+use crate::common::{MessageId, Nonce, ThreemaId};
 
 /// Provider errors.
 #[derive(Debug, thiserror::Error)]
+#[cfg_attr(feature = "uniffi", derive(uniffi::Error))]
+#[cfg_attr(
+    feature = "wasm",
+    derive(tsify::Tsify, serde::Deserialize),
+    serde(
+        tag = "type",
+        content = "details",
+        rename_all = "kebab-case",
+        rename_all_fields = "camelCase"
+    ),
+    tsify(from_wasm_abi)
+)]
 pub enum ProviderError {
     /// The provided parameter was invalid. This may only be used for cases where the API contract has been
     /// violated and it indicates a bug in libthreema.
     #[error("Invalid parameter: {0}")]
-    InvalidParameter(&'static str),
+    InvalidParameter(String),
 
     /// The app's internal state conflicts with the requested action. This can either indicate a bug in the
     /// app or a bug in libthreema.
     #[error("Invalid state: {0}")]
-    InvalidState(&'static str),
+    InvalidState(String),
 
     /// A foreign function considered infallible returned an error.
     #[cfg(any(test, feature = "uniffi", feature = "cli"))]
@@ -74,7 +86,7 @@ pub trait ShortcutProvider {
     /// # Errors
     ///
     /// This function is considered infallible and should not return an error.
-    fn handle_web_session_resume(&self, message: WebSessionResume) -> Result<(), ProviderError>;
+    fn handle_web_session_resume(&mut self, message: WebSessionResumeMessage) -> Result<(), ProviderError>;
 }
 
 /// Settings storage interface.
@@ -199,8 +211,8 @@ pub trait ContactProvider {
     ) -> Result<Option<ProfilePicture>, ProviderError>;
 }
 
-/// Message storage interface.
-pub trait MessageProvider {
+/// Conversation storage interface.
+pub trait ConversationProvider {
     /// TODO(LIB-16): Known problematic because checking the message ID early and bailing may prevent
     /// reflection.
     ///
@@ -210,33 +222,63 @@ pub trait MessageProvider {
     /// # Errors
     ///
     /// This function is considered infallible and should not return an error.
-    fn is_marked_used(&self, sender_identity: ThreemaId, id: MessageId) -> Result<bool, ProviderError>;
+    fn message_is_marked_used(
+        &self,
+        sender_identity: ThreemaId,
+        id: MessageId,
+    ) -> Result<bool, ProviderError>;
 
-    /// Add an incoming message to a specific conversation.
+    /// Set the typing indicator for a specific 1:1 conversation.
     ///
-    /// 1. If `conversation` refers to a distribution list, return [`ProviderError::InvalidParameter`].
-    /// 2. If `conversation` refers to a contact:
-    ///    1. If the referred contact does not equal the `message`'s sender identity, return
-    ///       [`ProviderError::InvalidState`].
-    ///    2. If the referred contact does not exist, return [`ProviderError::InvalidState`].¹
-    /// 3. If `conversation` refers to a group and the referred group does not exist, return
+    /// 1. If the referred contact does not exist, return [`ProviderError::InvalidState`].¹
+    /// 2. If `is_typing` is `true`, start a timer to display that the sender is typing in the associated
+    ///    conversation for the next 15s.
+    /// 3. If `is_typing` is `false`, cancel any running timer displaying that the sender is typing in the
+    ///    associated conversation.
+    ///
+    /// ¹: This must consider contacts existing in storage with any acquaintance level, including _deleted_.
+    ///
+    /// # Errors
+    ///
+    /// In case libthreema provides invalid parameters or an invalid state. Otherwise, this function is
+    /// considered infallible and should not return an error.
+    fn set_typing_indicator(
+        &mut self,
+        sender_identity: ThreemaId,
+        is_typing: bool,
+    ) -> Result<(), ProviderError>;
+
+    /// Add a new visible incoming message or update an existing message's state from an incoming message for
+    /// a specific conversation.
+    ///
+    /// 1. If `message.body` refers to a 1:1 contact conversation:
+    ///    1. If the referred contact does not exist, return [`ProviderError::InvalidState`].¹
+    ///    2. If the referred contact does not have acquaintance level _direct_, log a notice, discard
+    ///       `message` and return.²
+    /// 2. If `message.body` refers to a group conversation and the referred group does not exist, return
     ///    [`ProviderError::InvalidState`].
-    /// 4. If the `message.sender_identity`, `message.id` tuple is already present in `conversation` (i.e. the
-    ///    message has already been added at some point), log a notice, discard `message` and return.²
-    /// 5. Match over the `message`:
-    ///    1. If `message` is a text message, add it to the conversation.
+    /// 3. If the `message.sender_identity`, `message.id` tuple is already present in the referred
+    ///    conversation (i.e. the message has already been added at some point), log a notice, discard
+    ///    `message` and return.³
+    /// 4. Match over the `message.body`:
+    ///    1. If `message` is a 1:1 text message, add it to the conversation.
     ///    2. (Unreachable)
     ///
     /// ¹: This must consider contacts existing in storage with any acquaintance level, including _deleted_.
     ///
-    /// ²: Messages are not acknowledged from the server until they are fully processed, so this can happen
+    /// ²: Not all messages update the acquaintance level, e.g. typing indicators. But considering that
+    /// contacts with an acquaintance level other than _direct_ are invisible and by definition should not
+    /// have an associated conversation with visible messages, there is no reason to process such messages
+    /// further.
+    ///
+    /// ³: Messages are not acknowledged from the server until they are fully processed, so this can happen
     /// even under normal conditions.
     ///
     /// # Errors
     ///
     /// In case libthreema provides invalid parameters or an invalid state. Otherwise, this function is
     /// considered infallible and should not return an error.
-    fn add(&mut self, conversation: ConversationId, message: IncomingMessage) -> Result<(), ProviderError>;
+    fn add_or_update_incoming_message(&mut self, message: IncomingMessage) -> Result<(), ProviderError>;
 }
 
 /// In memory provider implementations for testing / the CLI
@@ -251,29 +293,34 @@ pub mod in_memory {
     use tracing::{info, warn};
 
     use super::{
-        ContactProvider, MessageProvider, NonceStorage, ProfilePicture, ProviderError, SettingsProvider,
+        ContactProvider, ConversationProvider, NonceStorage, ProfilePicture, ProviderError, SettingsProvider,
         ShortcutProvider,
     };
     use crate::{
         common::{ConversationId, GroupIdentity, MessageId, Nonce, ThreemaId},
         model::{
             contact::{Contact, ContactUpdate},
-            message::{IncomingMessage, WebSessionResume},
+            message::{IncomingMessage, IncomingMessageBody, WebSessionResumeMessage},
         },
+        utils::apply::TryApply as _,
     };
 
     /// Default shortcut provider, applying reasonable shortcut defaults.
     pub struct DefaultShortcutProvider;
     impl ShortcutProvider for DefaultShortcutProvider {
-        fn handle_web_session_resume(&self, _message: WebSessionResume) -> Result<(), ProviderError> {
+        fn handle_web_session_resume(
+            &mut self,
+            _message: WebSessionResumeMessage,
+        ) -> Result<(), ProviderError> {
             warn!("Discarding web-session-resume");
             Ok(())
         }
     }
 
     /// In-memory settings.
+    #[derive(Default)]
     pub struct InMemoryDbSettings {
-        /// Whether to block unknown identities.
+        /// Whether unknown identities should be blocked.
         pub block_unknown_identities: bool,
     }
 
@@ -302,17 +349,17 @@ pub mod in_memory {
 
     /// In-memory contacts provider.
     pub struct InMemoryDbContactProvider {
-        user_identity: ThreemaId,
-        blocked_identities: Rc<RefCell<HashSet<ThreemaId>>>,
-        contacts: Rc<RefCell<InMemoryDbContacts>>,
-        _groups: Rc<RefCell<HashMap<GroupIdentity, bool>>>, // TODO(LIB-16): Implement groups
+        pub(crate) user_identity: ThreemaId,
+        pub(crate) blocked_identities: Rc<RefCell<HashSet<ThreemaId>>>,
+        pub(crate) contacts: Rc<RefCell<InMemoryDbContacts>>,
+        pub(crate) _groups: Rc<RefCell<HashMap<GroupIdentity, bool>>>, // TODO(LIB-16): Implement groups
     }
     impl ContactProvider for InMemoryDbContactProvider {
         fn is_explicitly_blocked(&self, identity: ThreemaId) -> Result<bool, ProviderError> {
             // Bail if identity is the user's identity
             if identity == self.user_identity {
                 return Err(ProviderError::InvalidParameter(
-                    "Unexpected encounter of user's identity in contact provider",
+                    "Unexpected encounter of user's identity in contact provider".to_owned(),
                 ));
             }
 
@@ -324,7 +371,7 @@ pub mod in_memory {
             // Bail if identity is the user's identity
             if identity == self.user_identity {
                 return Err(ProviderError::InvalidParameter(
-                    "Unexpected encounter of user's identity in contact provider",
+                    "Unexpected encounter of user's identity in contact provider".to_owned(),
                 ));
             }
 
@@ -337,7 +384,7 @@ pub mod in_memory {
             // Bail if identity is the user's identity
             if identity == self.user_identity {
                 return Err(ProviderError::InvalidParameter(
-                    "Unexpected encounter of user's identity in contact provider",
+                    "Unexpected encounter of user's identity in contact provider".to_owned(),
                 ));
             }
 
@@ -350,7 +397,7 @@ pub mod in_memory {
                 // Bail if identity is the user's identity
                 if *identity == self.user_identity {
                     return Err(ProviderError::InvalidParameter(
-                        "Unexpected encounter of user's identity in contact provider",
+                        "Unexpected encounter of user's identity in contact provider".to_owned(),
                     ));
                 }
 
@@ -367,7 +414,7 @@ pub mod in_memory {
             // Bail if identity is the user's identity
             if identity == self.user_identity {
                 return Err(ProviderError::InvalidParameter(
-                    "Unexpected encounter of user's identity in contact provider",
+                    "Unexpected encounter of user's identity in contact provider".to_owned(),
                 ));
             }
 
@@ -383,7 +430,9 @@ pub mod in_memory {
             for contact in contacts {
                 // Bail if the contact's identity is the user's identity or the contact already exists
                 if self.has(contact.identity)? {
-                    return Err(ProviderError::InvalidState("Contact to be added already exists"));
+                    return Err(ProviderError::InvalidState(
+                        "Contact to be added already exists".to_owned(),
+                    ));
                 }
 
                 // Add the contact
@@ -401,7 +450,7 @@ pub mod in_memory {
                 // Bail if identity is the user's identity
                 if update.identity == self.user_identity {
                     return Err(ProviderError::InvalidParameter(
-                        "Unexpected encounter of user's identity in contact provider",
+                        "Unexpected encounter of user's identity in contact provider".to_owned(),
                     ));
                 }
 
@@ -409,13 +458,13 @@ pub mod in_memory {
                 let mut contacts = self.contacts.borrow_mut();
                 let Some((contact, _)) = contacts.get_mut(&update.identity) else {
                     return Err(ProviderError::InvalidState(
-                        "Contact to be updated does not exist",
+                        "Contact to be updated does not exist".to_owned(),
                     ));
                 };
 
                 // Update the contact
-                update
-                    .apply_to(contact)
+                contact
+                    .try_apply(update)
                     .map_err(|error| ProviderError::Foreign(error.to_string()))?;
             }
 
@@ -429,7 +478,7 @@ pub mod in_memory {
             // Bail if identity is the user's identity
             if identity == self.user_identity {
                 return Err(ProviderError::InvalidParameter(
-                    "Unexpected encounter of user's identity in contact provider",
+                    "Unexpected encounter of user's identity in contact provider".to_owned(),
                 ));
             }
 
@@ -437,7 +486,7 @@ pub mod in_memory {
             let contacts = self.contacts.borrow();
             let Some((_, profile_picture)) = contacts.get(&identity) else {
                 return Err(ProviderError::InvalidState(
-                    "Contact to retrieve the contact-defined profile picture from does not exist",
+                    "Contact to retrieve the contact-defined profile picture from does not exist".to_owned(),
                 ));
             };
 
@@ -452,14 +501,14 @@ pub mod in_memory {
             // Bail if identity is the user's identity
             if identity == self.user_identity {
                 return Err(ProviderError::InvalidParameter(
-                    "Unexpected encounter of user's identity in contact provider",
+                    "Unexpected encounter of user's identity in contact provider".to_owned(),
                 ));
             }
 
             // Ensure the contact exists
             if !self.contacts.borrow().contains_key(&identity) {
                 return Err(ProviderError::InvalidState(
-                    "Contact to retrieve the user-defined profile picture from does not exist",
+                    "Contact to retrieve the user-defined profile picture from does not exist".to_owned(),
                 ));
             }
 
@@ -472,60 +521,59 @@ pub mod in_memory {
 
     /// In-memory message provider.
     pub struct InMemoryDbMessageProvider {
-        contacts: Rc<RefCell<InMemoryDbContacts>>,
-        conversations: Rc<RefCell<InMemoryDbConversations>>,
+        pub(crate) contacts: Rc<RefCell<InMemoryDbContacts>>,
+        pub(crate) conversations: Rc<RefCell<InMemoryDbConversations>>,
     }
-    impl MessageProvider for InMemoryDbMessageProvider {
-        fn is_marked_used(&self, _sender_identity: ThreemaId, _id: MessageId) -> Result<bool, ProviderError> {
-            // TODO(LIB-16): We'll have to figure this out
+    impl ConversationProvider for InMemoryDbMessageProvider {
+        fn message_is_marked_used(
+            &self,
+            sender_identity: ThreemaId,
+            id: MessageId,
+        ) -> Result<bool, ProviderError> {
+            // TODO(LIB-16): This is pretty expensive. We'll have to figure this out.
+            for conversation in self.conversations.borrow().values() {
+                if conversation.contains_key(&(sender_identity, id)) {
+                    return Ok(true);
+                }
+            }
             Ok(false)
         }
 
-        fn add(
+        fn set_typing_indicator(
             &mut self,
-            conversation: ConversationId,
-            message: IncomingMessage,
+            _sender_identity: ThreemaId,
+            _is_typing: bool,
         ) -> Result<(), ProviderError> {
+            // Ignore
+            Ok(())
+        }
+
+        fn add_or_update_incoming_message(&mut self, message: IncomingMessage) -> Result<(), ProviderError> {
             let mut conversations = self.conversations.borrow_mut();
 
             // Get or create the conversation
-            match conversation {
-                ConversationId::Contact(identity) => {
-                    // Ensure the referred identity equals the message's sender identity
-                    if identity != message.sender_identity {
-                        return Err(ProviderError::InvalidState(
-                            "Contact identity did not match message sender identity while adding an \
-                             incoming message",
-                        ));
-                    }
+            let conversation = conversations
+                .entry(match &message.body {
+                    IncomingMessageBody::Contact { .. } => {
+                        // Ensure the referred contact exists
+                        if !self.contacts.borrow().contains_key(&message.sender_identity) {
+                            return Err(ProviderError::InvalidState(
+                                "Contact the incoming message refers to does not exist".to_owned(),
+                            ));
+                        }
 
-                    // Ensure the referred contact exists
-                    if !self.contacts.borrow().contains_key(&identity) {
-                        return Err(ProviderError::InvalidState(
-                            "Contact to be added an incoming message for does not exist",
-                        ));
-                    }
-                },
+                        ConversationId::Contact(message.sender_identity)
+                    },
 
-                ConversationId::DistributionList(_) => {
-                    // Distribution lists may not receive incoming messages
-                    return Err(ProviderError::InvalidParameter(
-                        "Unexpected distribution list while adding an incoming message",
-                    ));
-                },
-
-                ConversationId::Group(_group_identity) => {
-                    // Ensure the referred group exists
-                    // TODO(LIB-16): Implement groups
-                    return Err(ProviderError::Foreign("No group support yet :(".to_owned()));
-                },
-            }
-
-            // Get or create the conversation
-            let messages = conversations.entry(conversation).or_default();
+                    IncomingMessageBody::Group(body) => {
+                        // TODO(LIB-16): Ensure the referred group exists
+                        ConversationId::Group(body.group_identity)
+                    },
+                })
+                .or_default();
 
             // Add, if possible
-            match messages.entry((message.sender_identity, message.id)) {
+            match conversation.entry((message.sender_identity, message.id)) {
                 hash_map::Entry::Occupied(_) => {
                     // A message from the sender with the same message ID already existss
                     warn!(
@@ -557,14 +605,14 @@ pub mod in_memory {
 
     /// In-memory database.
     pub struct InMemoryDb {
-        user_identity: ThreemaId,
-        csp_e2e_nonce_storage: Rc<RefCell<HashSet<Nonce>>>,
-        d2x_nonce_storage: Rc<RefCell<HashSet<Nonce>>>,
-        settings: Rc<RefCell<InMemoryDbSettings>>,
-        blocked_identities: Rc<RefCell<HashSet<ThreemaId>>>,
-        contacts: Rc<RefCell<InMemoryDbContacts>>,
-        groups: Rc<RefCell<HashMap<GroupIdentity, bool>>>, // TODO(LIB-16): Implement groups
-        conversations: Rc<RefCell<InMemoryDbConversations>>,
+        pub(crate) user_identity: ThreemaId,
+        pub(crate) csp_e2e_nonce_storage: Rc<RefCell<HashSet<Nonce>>>,
+        pub(crate) d2x_nonce_storage: Rc<RefCell<HashSet<Nonce>>>,
+        pub(crate) settings: Rc<RefCell<InMemoryDbSettings>>,
+        pub(crate) blocked_identities: Rc<RefCell<HashSet<ThreemaId>>>,
+        pub(crate) contacts: Rc<RefCell<InMemoryDbContacts>>,
+        pub(crate) groups: Rc<RefCell<HashMap<GroupIdentity, bool>>>, // TODO(LIB-16): Implement groups
+        pub(crate) conversations: Rc<RefCell<InMemoryDbConversations>>,
     }
 
     impl From<InMemoryDbInit> for InMemoryDb {
@@ -591,19 +639,19 @@ pub mod in_memory {
         /// CSP nonce provider.
         #[must_use]
         pub fn csp_e2e_nonce_provider(&mut self) -> InMemoryDbNonceProvider {
-            InMemoryDbNonceProvider(self.csp_e2e_nonce_storage.clone())
+            InMemoryDbNonceProvider(Rc::clone(&self.csp_e2e_nonce_storage))
         }
 
         /// D2D nonce provider.
         #[must_use]
         pub fn d2d_nonce_provider(&mut self) -> InMemoryDbNonceProvider {
-            InMemoryDbNonceProvider(self.d2x_nonce_storage.clone())
+            InMemoryDbNonceProvider(Rc::clone(&self.d2x_nonce_storage))
         }
 
         /// Settings provider.
         #[must_use]
         pub fn settings_provider(&self) -> InMemoryDbSettingsProvider {
-            InMemoryDbSettingsProvider(self.settings.clone())
+            InMemoryDbSettingsProvider(Rc::clone(&self.settings))
         }
 
         /// Contact provider.
@@ -611,9 +659,9 @@ pub mod in_memory {
         pub fn contact_provider(&mut self) -> InMemoryDbContactProvider {
             InMemoryDbContactProvider {
                 user_identity: self.user_identity,
-                blocked_identities: self.blocked_identities.clone(),
-                contacts: self.contacts.clone(),
-                _groups: self.groups.clone(),
+                blocked_identities: Rc::clone(&self.blocked_identities),
+                contacts: Rc::clone(&self.contacts),
+                _groups: Rc::clone(&self.groups),
             }
         }
 
@@ -621,8 +669,8 @@ pub mod in_memory {
         #[must_use]
         pub fn message_provider(&mut self) -> InMemoryDbMessageProvider {
             InMemoryDbMessageProvider {
-                contacts: self.contacts.clone(),
-                conversations: self.conversations.clone(),
+                contacts: Rc::clone(&self.contacts),
+                conversations: Rc::clone(&self.conversations),
             }
         }
     }

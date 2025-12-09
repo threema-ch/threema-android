@@ -32,8 +32,8 @@ import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
-import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.fs.BadDHStateException
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
@@ -52,12 +52,11 @@ import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import java.util.Date
 
-private val logger = LoggingUtil.getThreemaLogger("OutgoingCspMessageTask")
+private val logger = getThreemaLogger("OutgoingCspMessageTask")
 
 sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) :
     ActiveTask<Unit>, PersistableTask {
     protected val userService by lazy { serviceManager.userService }
-    private val myIdentity by lazy { userService.identity }
     protected val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
     protected val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
     protected val contactService by lazy { serviceManager.contactService }

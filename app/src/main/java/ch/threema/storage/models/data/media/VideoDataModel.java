@@ -31,13 +31,13 @@ import org.slf4j.Logger;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import ch.threema.app.utils.StringConversionUtil;
-import ch.threema.base.utils.LoggingUtil;
+import ch.threema.app.utils.ElapsedTimeFormatter;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 
 @Deprecated
 public class VideoDataModel implements MediaMessageDataInterface {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("VideoDataModel");
+    private static final Logger logger = getThreemaLogger("VideoDataModel");
 
     private int duration, videoSize;
     private byte[] videoBlobId;
@@ -97,7 +97,7 @@ public class VideoDataModel implements MediaMessageDataInterface {
         try {
             int duration = getDuration();
             if (duration > 0) {
-                return StringConversionUtil.secondsToString(duration, false);
+                return ElapsedTimeFormatter.secondsToString(duration);
             }
         } catch (Exception ignored) {
         }

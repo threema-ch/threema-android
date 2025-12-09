@@ -36,7 +36,7 @@ import ch.threema.app.utils.ExifInterface
 import ch.threema.app.utils.GroupUtil
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.base.crypto.SymmetricEncryptionService
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
@@ -71,7 +71,7 @@ import java.util.Collections
 import java.util.Date
 import okhttp3.OkHttpClient
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectedGroupSyncTask")
+private val logger = getThreemaLogger("ReflectedGroupSyncTask")
 
 class ReflectedGroupSyncTask(
     private val groupSync: GroupSync,
@@ -374,8 +374,8 @@ class ReflectedGroupSyncTask(
     }
 
     private fun removeGroupAvatar(groupModel: GroupModel) {
-        if (fileService.hasGroupAvatarFile(groupModel)) {
-            fileService.removeGroupAvatar(groupModel)
+        if (fileService.hasGroupProfilePicture(groupModel)) {
+            fileService.removeGroupProfilePicture(groupModel)
             ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
             ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(groupModel))
         }
@@ -398,7 +398,7 @@ class ReflectedGroupSyncTask(
                     logger.warn("Received group profile picture that is not a jpeg")
                 }
 
-                fileService.writeGroupAvatar(groupModel, blobLoadingResult.blobBytes)
+                fileService.writeGroupProfilePicture(groupModel, blobLoadingResult.blobBytes)
                 ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
                 ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(groupModel))
             }

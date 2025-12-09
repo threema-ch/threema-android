@@ -72,11 +72,10 @@ import org.slf4j.Logger;
 
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import javax.net.ssl.SSLSocketFactory;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.AttrRes;
@@ -117,7 +116,6 @@ import ch.threema.app.home.HomeActivity;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.NotificationChannels;
-import ch.threema.app.onprem.OnPremSSLSocketFactoryProvider;
 import ch.threema.app.restrictions.AppRestrictionService;
 import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.services.LockAppService;
@@ -125,7 +123,7 @@ import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.ThreemaSafeConfigureActivity;
 import ch.threema.app.workers.RestartWorker;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
@@ -137,7 +135,7 @@ import static ch.threema.app.services.notification.NotificationServiceImpl.APP_R
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
 public class ConfigUtils {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ConfigUtils");
+    private static final Logger logger = getThreemaLogger("ConfigUtils");
 
     private static final int CONTENT_PROVIDER_BATCH_SIZE = 50;
     private static final String WORKER_RESTART_AFTER_RESTORE = "restartAfterRestore";
@@ -319,16 +317,6 @@ public class ConfigUtils {
         } else {
             return !AppRestrictionUtil.isWebDisabled(context);
         }
-    }
-
-    /**
-     * Check, whether remote secrets are supported by this build. Note that support for remote secrets
-     * does not necessarily mean, that the feature is active. This still depends on the app configuration.
-     *
-     * @return `true` if remote secrets are supported by this build, `false` otherwise.
-     */
-    public static boolean isRemoteSecretsSupported() {
-        return BuildConfig.REMOTE_SECRETS_SUPPORTED && isOnPremBuild();
     }
 
     public static boolean isXiaomiDevice() {
@@ -631,7 +619,7 @@ public class ConfigUtils {
     }
 
     public static void scheduleAppRestart(@NonNull Context context) {
-        scheduleAppRestart(context, 1000, null);
+        scheduleAppRestart(context, 0, null);
     }
 
     public static void scheduleAppRestart(@NonNull Context context, int delayMs) {
@@ -663,7 +651,7 @@ public class ConfigUtils {
                 ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
             // use WorkManager to restart the app in the background
-            final WorkManager workManager = WorkManager.getInstance(ThreemaApplication.getAppContext());
+            final WorkManager workManager = WorkManager.getInstance(context);
             final OneTimeWorkRequest workRequest = RestartWorker.Companion.buildOneTimeWorkRequest(delayMs);
             workManager.enqueueUniqueWork(WORKER_RESTART_AFTER_RESTORE, ExistingWorkPolicy.REPLACE, workRequest);
         } else {
@@ -1188,7 +1176,7 @@ public class ConfigUtils {
         String permission = Manifest.permission.POST_NOTIFICATIONS;
         if (checkIfNeedsPermissionRequest(context, new String[]{permission})) {
             if (preferenceService != null) {
-                preferenceService.setLastNotificationPermissionRequestTimestamp(System.currentTimeMillis());
+                preferenceService.setLastNotificationPermissionRequestTimestamp(Instant.now());
             }
             requestPermissionLauncher.launch(permission);
             return false;
@@ -1632,5 +1620,9 @@ public class ConfigUtils {
             logger.error("Could not determine package source", e);
             return null;
         }
+    }
+
+    public static boolean isReferralProgramEnabled() {
+        return !isWorkBuild() && BuildConfig.REFERRAL_PROGRAM_AVAILABLE;
     }
 }

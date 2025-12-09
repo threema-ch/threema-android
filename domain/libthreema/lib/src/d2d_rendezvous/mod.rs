@@ -9,10 +9,10 @@ use rand::{self, Rng as _};
 use tracing::{debug, trace, warn};
 use zeroize::ZeroizeOnDrop;
 
-use self::frame::FrameDecoder;
-pub use self::frame::{IncomingFrame, OutgoingFrame};
+pub use crate::d2d_rendezvous::frame::{IncomingFrame, OutgoingFrame};
 use crate::{
     crypto::x25519,
+    d2d_rendezvous::frame::FrameDecoder,
     protobuf::d2d_rendezvous as protobuf,
     utils::time::{Duration, Instant},
 };

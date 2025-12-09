@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     app:key="pref_screen_header">
     <Preference
         app:fragment="ch.threema.app.preference.SettingsPrivacyFragment"
@@ -63,5 +64,9 @@
         app:layout="@layout/preference_notice_material3"
         app:summary="@string/prefs_threema_work_summary"
         app:title="@string/threema_work" />
-
+    <Preference
+        app:isPreferenceVisible="false"
+        app:key="@string/preferences__referral_banner"
+        app:layout="@layout/referral_banner"
+        tools:isPreferenceVisible="true" />
 </PreferenceScreen>

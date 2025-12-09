@@ -42,6 +42,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.preference.PreferenceManager
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.BuildConfig
 import ch.threema.app.R
 import ch.threema.app.activities.PermissionRequestActivity.Companion.INTENT_PERMISSION_REQUESTS
@@ -50,11 +51,10 @@ import ch.threema.app.ui.PermissionIconView
 import ch.threema.app.ui.PermissionIconView.PermissionIconState
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.PermissionRequest
-import ch.threema.app.utils.buildActivityIntent
 import ch.threema.app.utils.logScreenVisibility
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 
-private val logger = LoggingUtil.getThreemaLogger("PermissionRequestActivity")
+private val logger = getThreemaLogger("PermissionRequestActivity")
 
 /**
  * This activity guides the user through the permission requests. This activity finishes with

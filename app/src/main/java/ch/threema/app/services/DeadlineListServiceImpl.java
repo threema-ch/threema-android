@@ -26,10 +26,10 @@ import org.slf4j.Logger;
 import java.util.HashMap;
 
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class DeadlineListServiceImpl implements DeadlineListService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DeadlineListServiceImpl");
+    private static final Logger logger = getThreemaLogger("DeadlineListServiceImpl");
 
     private final Object lock = new Object();
     private HashMap<String, String> hashMap;

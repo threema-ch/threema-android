@@ -42,6 +42,7 @@ import android.widget.Toast;
 import net.lingala.zip4j.model.FileHeader;
 
 import org.apache.commons.io.IOUtils;
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -96,13 +97,13 @@ import ch.threema.app.utils.JsonUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.ResettableInputStream;
-import ch.threema.app.utils.StringConversionUtil;
+import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ThrowingConsumer;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.NonceScope;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.data.repositories.EmojiReactionsRepository;
 import ch.threema.data.repositories.GroupModelRepository;
@@ -146,7 +147,7 @@ import static ch.threema.storage.models.GroupModel.UserState.LEFT;
 import static ch.threema.storage.models.GroupModel.UserState.MEMBER;
 
 public class RestoreService extends Service implements ComponentCallbacks2 {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("RestoreService");
+    private static final Logger logger = getThreemaLogger("RestoreService");
 
     public static final String RESTORE_PROGRESS_INTENT = "restore_progress_intent";
     public static final String RESTORE_PROGRESS = "restore_progress";
@@ -323,7 +324,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             conversationService = serviceManager.getConversationService();
             userService = serviceManager.getUserService();
             preferenceService = serviceManager.getPreferenceService();
-            notificationPreferenceService = serviceManager.getNotificationPreferenceService();
+            notificationPreferenceService = KoinJavaComponent.get(NotificationPreferenceService.class);
             nonceFactory = serviceManager.getNonceFactory();
             groupModelRepository = serviceManager.getModelRepositories().getGroups();
         } catch (Exception e) {
@@ -466,9 +467,10 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                     databaseService.getIncomingGroupSyncRequestLogModelFactory().deleteAll();
 
                     modelRepositories.getEmojiReaction().deleteAllReactions();
-                    // TODO(ANDR-3207): delete all edit history entries// Remove all media files (don't remove recursively, tmp folder contain the restoring files
+                    // TODO(ANDR-3207): delete all edit history entries
+
                     logger.info("Deleting current media files");
-                    fileService.clearDirectory(fileService.getAppDataPath(), false);
+                    fileService.deleteMediaFiles();
                 }
 
                 List<FileHeader> fileHeaders = zipFileWrapper.getFileHeaders();
@@ -1086,7 +1088,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                     ch.threema.data.models.GroupModel m = groupModelRepository.getByLocalGroupDbId(groupId);
                     if (m != null) {
                         try (InputStream inputStream = getZipFileInputStream(fileHeader)) {
-                            this.fileService.writeGroupAvatar(m, inputStream);
+                            this.fileService.writeGroupProfilePicture(m, inputStream);
                         } catch (Exception e) {
                             //ignore, just the avatar :)
                             success = false;
@@ -1276,7 +1278,8 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
         // Set contact avatar
         try (InputStream inputStream = getZipFileInputStream(fileHeader)) {
-            return fileService.writeUserDefinedProfilePicture(contactModel.getIdentity(), inputStream);
+            fileService.writeUserDefinedProfilePicture(contactModel.getIdentity(), inputStream);
+            return true;
         } catch (Exception e) {
             logger.error("Exception while writing contact avatar", e);
             return false;
@@ -1302,7 +1305,8 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
         // Set contact profile picture
         try (InputStream inputStream = getZipFileInputStream(fileHeader)) {
-            return fileService.writeContactDefinedProfilePicture(contactModel.getIdentity(), inputStream);
+            fileService.writeContactDefinedProfilePicture(contactModel.getIdentity(), inputStream);
+            return true;
         } catch (Exception e) {
             logger.error("Exception while writing contact profile picture", e);
             return false;
@@ -2318,7 +2322,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     private String getRemainingTimeText(int currentStep, int steps) {
         final long millisPassed = System.currentTimeMillis() - startTime;
         final long millisRemaining = millisPassed * steps / currentStep - millisPassed;
-        String timeRemaining = StringConversionUtil.secondsToString(millisRemaining / DateUtils.SECOND_IN_MILLIS, false);
+        String timeRemaining = ElapsedTimeFormatter.millisecondsToString(millisRemaining);
         return String.format(getString(R.string.time_remaining), timeRemaining);
     }
 

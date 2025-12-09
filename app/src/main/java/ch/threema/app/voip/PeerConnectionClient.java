@@ -114,7 +114,7 @@ import ch.threema.app.voip.util.VoipVideoParams;
 import ch.threema.app.webrtc.Camera;
 import ch.threema.app.webrtc.DataChannelObserver;
 import ch.threema.app.webrtc.UnboundedFlowControlledDataChannel;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.protobuf.callsignaling.O2OCall;
 import java8.util.concurrent.CompletableFuture;
@@ -128,7 +128,7 @@ import java8.util.stream.StreamSupport;
  */
 public class PeerConnectionClient {
     // Note: Not static, because we want to set a prefix
-    private final Logger logger = LoggingUtil.getThreemaLogger("PeerConnectionClient");
+    private final Logger logger = getThreemaLogger("PeerConnectionClient");
 
     private static final String AUDIO_TRACK_ID = "3MACALLa0";
     private static final String AUDIO_CODEC_OPUS = "opus";
@@ -387,7 +387,7 @@ public class PeerConnectionClient {
 
         // Create logger for SdpPatcher
         @SuppressLint("LoggerName")
-        final Logger sdpPatcherLogger = LoggingUtil.getThreemaLogger("PeerConnectionClient:SdpPatcher");
+        final Logger sdpPatcherLogger = getThreemaLogger("PeerConnectionClient:SdpPatcher");
         VoipUtil.setLoggerPrefix(sdpPatcherLogger, callId);
 
         // Initialize instance variables
@@ -1619,7 +1619,7 @@ public class PeerConnectionClient {
 
     private class DCObserver extends DataChannelObserver {
         @SuppressLint("LoggerName")
-        private final @NonNull Logger logger = LoggingUtil.getThreemaLogger("SignalingDataChannel");
+        private final @NonNull Logger logger = getThreemaLogger("SignalingDataChannel");
         final @NonNull CompletableFuture<?> openFuture = new CompletableFuture<>();
 
         @Override
@@ -1633,7 +1633,7 @@ public class PeerConnectionClient {
 
             // Forward buffered amount to flow control
             // Important: ALWAYS dispatch this event to another thread because webrtc.org!
-            RuntimeUtil.runInAsyncTask(ufcdc::bufferedAmountChange);
+            RuntimeUtil.runOnWorkerThread(ufcdc::bufferedAmountChange);
         }
 
         @Override
@@ -1674,7 +1674,7 @@ public class PeerConnectionClient {
             copy.flip();
 
             // Notify event listener asychronously
-            RuntimeUtil.runInAsyncTask(() -> {
+            RuntimeUtil.runOnWorkerThread(() -> {
                 try {
                     final @NonNull O2OCall.Envelope envelope = O2OCall.Envelope.parseFrom(copy);
                     if (events != null) {

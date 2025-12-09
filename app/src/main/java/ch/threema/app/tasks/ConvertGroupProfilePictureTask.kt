@@ -23,21 +23,21 @@ package ch.threema.app.tasks
 
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.profilepicture.CheckedProfilePicture
+import ch.threema.app.profilepicture.GroupProfilePictureUploader
+import ch.threema.app.profilepicture.GroupProfilePictureUploader.GroupProfilePictureUploadResult
+import ch.threema.app.protocol.ExpectedProfilePictureChange
 import ch.threema.app.protocol.PredefinedMessageIds
-import ch.threema.app.protocol.ProfilePictureChange
-import ch.threema.app.protocol.RemoveProfilePicture
-import ch.threema.app.protocol.SetProfilePicture
-import ch.threema.app.services.ApiService
 import ch.threema.app.services.FileService
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.voip.groupcall.GroupCallManager
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
+import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.createTransaction
@@ -52,7 +52,7 @@ import ch.threema.protobuf.unit
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("ConvertGroupProfilePictureTask")
+private val logger = getThreemaLogger("ConvertGroupProfilePictureTask")
 
 /**
  * This task will convert the group profile picture to a jpeg and synchronize this change in case MD is active.
@@ -60,7 +60,7 @@ private val logger = LoggingUtil.getThreemaLogger("ConvertGroupProfilePictureTas
 class ConvertGroupProfilePictureTask(
     private val groupIdentity: GroupIdentity,
     private val fileService: FileService,
-    private val apiService: ApiService,
+    private val groupProfilePictureUploader: GroupProfilePictureUploader,
     private val taskManager: TaskManager,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
     private val groupCallManager: GroupCallManager,
@@ -81,14 +81,14 @@ class ConvertGroupProfilePictureTask(
             return
         }
 
-        val groupProfilePictureBytes = fileService.getGroupAvatarBytes(groupModel) ?: run {
+        val groupProfilePictureBytes = fileService.getGroupProfilePictureBytes(groupModel) ?: run {
             logger.info("No group picture set. No conversion needed.")
             return
         }
 
         val convertedProfilePicture = CheckedProfilePicture.getOrConvertFromBytes(groupProfilePictureBytes)
 
-        if (convertedProfilePicture?.profilePictureBytes?.contentEquals(groupProfilePictureBytes) == true) {
+        if (convertedProfilePicture?.bytes?.contentEquals(groupProfilePictureBytes) == true) {
             logger.info("No need to convert group profile picture")
             return
         }
@@ -118,7 +118,12 @@ class ConvertGroupProfilePictureTask(
 
         val uploadResult = handle.runInGroupSyncTransaction(groupModel) {
             logger.info("Uploading group profile picture")
-            val uploadResult = tryUploadingGroupPhoto(updatedProfilePicture.profilePictureBytes, apiService)
+            val uploadResult = groupProfilePictureUploader.tryUploadingGroupProfilePicture(updatedProfilePicture)
+
+            when (uploadResult) {
+                is GroupProfilePictureUploadResult.Success -> Unit
+                is GroupProfilePictureUploadResult.Failure -> throw ProtocolException("Could not upload group profile picture")
+            }
 
             logger.info("Reflecting group update to reflect group profile picture")
             handle.reflect(
@@ -145,9 +150,8 @@ class ConvertGroupProfilePictureTask(
         persistGroupProfilePicture(groupModel, updatedProfilePicture)
         schedulePersistentTaskToRunActiveGroupUpdateSteps(
             groupModel = groupModel,
-            profilePictureChange = SetProfilePicture(
-                profilePicture = updatedProfilePicture,
-                profilePictureUploadResult = uploadResult,
+            expectedProfilePictureChange = ExpectedProfilePictureChange.Set.WithUpload(
+                profilePictureUploadResultSuccess = uploadResult,
             ),
         )
     }
@@ -156,7 +160,7 @@ class ConvertGroupProfilePictureTask(
         logger.warn("Cannot convert group profile picture. Removing instead.")
 
         if (!multiDeviceManager.isMultiDeviceActive) {
-            fileService.removeGroupAvatar(groupModel)
+            fileService.removeGroupProfilePicture(groupModel)
             return
         }
 
@@ -176,34 +180,35 @@ class ConvertGroupProfilePictureTask(
             )
         }
 
-        fileService.removeGroupAvatar(groupModel)
+        fileService.removeGroupProfilePicture(groupModel)
         schedulePersistentTaskToRunActiveGroupUpdateSteps(
             groupModel = groupModel,
-            profilePictureChange = RemoveProfilePicture,
+            expectedProfilePictureChange = ExpectedProfilePictureChange.Remove,
         )
     }
 
     private fun persistGroupProfilePicture(groupModel: GroupModel, checkedProfilePicture: CheckedProfilePicture) {
         logger.info("Persisting profile picture")
-        if (!fileService.writeGroupAvatar(groupModel, checkedProfilePicture.profilePictureBytes)) {
-            logger.error("Could not write updated group profile picture")
-        }
+        fileService.writeGroupProfilePicture(groupModel, checkedProfilePicture.bytes)
     }
 
-    private fun schedulePersistentTaskToRunActiveGroupUpdateSteps(groupModel: GroupModel, profilePictureChange: ProfilePictureChange) {
+    private fun schedulePersistentTaskToRunActiveGroupUpdateSteps(
+        groupModel: GroupModel,
+        expectedProfilePictureChange: ExpectedProfilePictureChange,
+    ) {
         taskManager.schedule(
             GroupUpdateTask(
                 name = null,
-                profilePictureChange = profilePictureChange,
+                expectedProfilePictureChange = expectedProfilePictureChange,
                 updatedMembers = emptySet(),
                 addedMembers = emptySet(),
                 removedMembers = emptySet(),
                 groupIdentity = groupModel.groupIdentity,
-                predefinedMessageIds = PredefinedMessageIds(),
+                predefinedMessageIds = PredefinedMessageIds.random(),
                 outgoingCspMessageServices = outgoingCspMessageServices,
                 groupCallManager = groupCallManager,
                 fileService = fileService,
-                apiService = apiService,
+                groupProfilePictureUploader = groupProfilePictureUploader,
                 groupModelRepository = groupModelRepository,
             ),
         )
@@ -231,7 +236,7 @@ class ConvertGroupProfilePictureTask(
         fun createFromServiceManager(groupIdentity: GroupIdentity, serviceManager: ServiceManager) = ConvertGroupProfilePictureTask(
             groupIdentity = groupIdentity,
             fileService = serviceManager.fileService,
-            apiService = serviceManager.apiService,
+            groupProfilePictureUploader = serviceManager.groupProfilePictureUploader,
             taskManager = serviceManager.taskManager,
             outgoingCspMessageServices = OutgoingCspMessageServices(
                 forwardSecurityMessageProcessor = serviceManager.forwardSecurityMessageProcessor,

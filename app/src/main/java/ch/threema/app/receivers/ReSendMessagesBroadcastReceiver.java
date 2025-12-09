@@ -39,7 +39,7 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.NotificationIDs;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -49,7 +49,7 @@ import ch.threema.storage.models.GroupModel;
 import ch.threema.storage.models.MessageModel;
 
 public class ReSendMessagesBroadcastReceiver extends ActionBroadcastReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("ReSendMessagesBroadcastReceiver");
+    private static final Logger logger = getThreemaLogger("ReSendMessagesBroadcastReceiver");
 
     @Override
     @SuppressLint("StaticFieldLeak")

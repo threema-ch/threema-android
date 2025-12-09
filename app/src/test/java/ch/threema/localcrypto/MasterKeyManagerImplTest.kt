@@ -28,6 +28,7 @@ import ch.threema.localcrypto.MasterKeyTestData.MASTER_KEY
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException
 import ch.threema.localcrypto.models.Argon2Version
 import ch.threema.localcrypto.models.MasterKeyData
+import ch.threema.localcrypto.models.MasterKeyReadResult
 import ch.threema.localcrypto.models.MasterKeyState
 import ch.threema.localcrypto.models.PassphraseLockState
 import ch.threema.localcrypto.models.RemoteSecretProtectionCheckResult
@@ -39,6 +40,7 @@ import io.mockk.mockk
 import io.mockk.runs
 import io.mockk.spyk
 import io.mockk.verify
+import java.security.SecureRandom
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -83,6 +85,7 @@ class MasterKeyManagerImplTest {
             crypto = cryptoMock,
             remoteSecretManager = mockk(),
             random = mockk(),
+            storageStateHolder = createMasterKeyStorageStateHolder(),
         )
     }
 
@@ -94,9 +97,10 @@ class MasterKeyManagerImplTest {
             masterKeyData = masterKeyData,
         )
 
-        masterKeyManager.readOrGenerateKey()
+        val result = masterKeyManager.readOrGenerateKey()
         masterKeyManager.persistKeyDataIfNeeded()
 
+        assertEquals(MasterKeyReadResult.READ_FROM_STORAGE, result)
         assertFalse(masterKeyManager.isProtected())
         assertFalse(masterKeyManager.isProtectedWithPassphrase())
         assertFalse(masterKeyManager.isLockedWithPassphrase())
@@ -114,9 +118,10 @@ class MasterKeyManagerImplTest {
             wasMigrated = true,
         )
 
-        masterKeyManager.readOrGenerateKey()
+        val result = masterKeyManager.readOrGenerateKey()
         masterKeyManager.persistKeyDataIfNeeded()
 
+        assertEquals(MasterKeyReadResult.READ_FROM_STORAGE, result)
         assertFalse(masterKeyManager.isProtectedWithPassphrase())
         assertFalse(masterKeyManager.isLockedWithPassphrase())
         assertFalse(masterKeyManager.isLockedWithRemoteSecret())
@@ -143,9 +148,10 @@ class MasterKeyManagerImplTest {
             ),
         )
 
-        masterKeyManager.readOrGenerateKey()
+        val result = masterKeyManager.readOrGenerateKey()
         masterKeyManager.persistKeyDataIfNeeded()
 
+        assertEquals(MasterKeyReadResult.READ_FROM_STORAGE, result)
         assertTrue(masterKeyManager.isProtectedWithPassphrase())
         assertTrue(masterKeyManager.isLockedWithPassphrase())
         assertSuspendsForever {
@@ -167,9 +173,10 @@ class MasterKeyManagerImplTest {
             ),
         )
 
-        masterKeyManager.readOrGenerateKey()
+        val result = masterKeyManager.readOrGenerateKey()
         masterKeyManager.persistKeyDataIfNeeded()
 
+        assertEquals(MasterKeyReadResult.READ_FROM_STORAGE, result)
         assertTrue(masterKeyManager.isProtected())
         assertTrue(masterKeyManager.isProtectedWithPassphrase())
         assertTrue(masterKeyManager.isLockedWithPassphrase())
@@ -186,9 +193,10 @@ class MasterKeyManagerImplTest {
         every { masterKeyGeneratorMock.generate() } returns MasterKeyData(ByteArray(MasterKeyConfig.KEY_LENGTH))
         every { masterKeyStorageManagerMock.keyExists() } returns false
 
-        masterKeyManager.readOrGenerateKey()
+        val result = masterKeyManager.readOrGenerateKey()
         masterKeyManager.persistKeyDataIfNeeded()
 
+        assertEquals(MasterKeyReadResult.NEWLY_GENERATED, result)
         assertFalse(masterKeyManager.isProtectedWithPassphrase())
         assertFalse(masterKeyManager.isLockedWithPassphrase())
         assertContentEquals(masterKeyData, masterKeyManager.masterKeyProvider.getMasterKey().value)
@@ -226,6 +234,11 @@ class MasterKeyManagerImplTest {
                 every { checkRemoteSecretProtection(any()) } returns RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED
             },
             passphraseStore = passphraseStoreMock,
+            random = mockk(),
+            keyGenerator = mockk(),
+            lockStateHolder = MasterKeyLockStateHolder(),
+            crypto = createCrypto(),
+            storageStateHolder = createMasterKeyStorageStateHolder(),
         )
         masterKeyManager.readOrGenerateKey()
 
@@ -332,6 +345,11 @@ class MasterKeyManagerImplTest {
                 every { checkRemoteSecretProtection(any()) } returns RemoteSecretProtectionCheckResult.SHOULD_ACTIVATE
             },
             passphraseStore = passphraseStoreMock,
+            random = mockk(),
+            keyGenerator = mockk(),
+            lockStateHolder = MasterKeyLockStateHolder(),
+            crypto = createCrypto(),
+            storageStateHolder = createMasterKeyStorageStateHolder(),
         )
         masterKeyManager.readOrGenerateKey()
         masterKeyManager.setPassphrase("hello".toCharArray(), oldPassphrase = null)
@@ -353,17 +371,22 @@ class MasterKeyManagerImplTest {
             wasMigrated = true,
         )
         val passphraseVersion2 = mockk<MasterKeyState.WithPassphrase>()
+        val cryptoMock = mockk<MasterKeyCrypto> {
+            every { decryptWithPassphrase(keyState = passphraseVersion1, passphrase) } returns plain
+            every { encryptWithPassphrase(keyState = plain, passphrase) } returns passphraseVersion2
+            every { verifyPassphrase(any(), any()) } returns true
+        }
         val masterKeyManager = MasterKeyManagerImpl(
             keyStorageManager = masterKeyStorageManagerMock,
-            crypto = mockk<MasterKeyCrypto> {
-                every { decryptWithPassphrase(keyState = passphraseVersion1, passphrase) } returns plain
-                every { encryptWithPassphrase(keyState = plain, passphrase) } returns passphraseVersion2
-                every { verifyPassphrase(any(), any()) } returns true
-            },
+            crypto = cryptoMock,
             remoteSecretManager = mockk {
                 every { checkRemoteSecretProtection(any()) } returns RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED
             },
             passphraseStore = mockk(relaxed = true),
+            random = mockk(),
+            keyGenerator = mockk(),
+            lockStateHolder = MasterKeyLockStateHolder(),
+            storageStateHolder = createMasterKeyStorageStateHolder(cryptoMock),
         )
         every { masterKeyStorageManagerMock.keyExists() } returns true
         every { masterKeyStorageManagerMock.readKey() } returns passphraseVersion1
@@ -414,6 +437,10 @@ class MasterKeyManagerImplTest {
                 every { masterKeyFlow } returns stateFlowOf(null)
                 every { passphraseLockedFlow } returns isLockedWithPassphraseFlow
             },
+            random = mockk(),
+            keyGenerator = mockk(),
+            crypto = createCrypto(),
+            passphraseStore = mockk(),
         )
 
         masterKeyManager.passphraseLockState.test {
@@ -445,4 +472,20 @@ class MasterKeyManagerImplTest {
             expectNoEvents()
         }
     }
+
+    private fun createMasterKeyStorageStateHolder(crypto: MasterKeyCrypto = createCrypto()) =
+        MasterKeyStorageStateHolder(crypto)
+
+    private fun createCrypto() =
+        MasterKeyCrypto(
+            converter = MasterKeyStorageStateConverter(
+                version1KeyVerifier = Version1MasterKeyCrypto(),
+            ),
+            version2Crypto = Version2MasterKeyCrypto(
+                encoder = Version2MasterKeyStorageEncoder(),
+                decoder = Version2MasterKeyStorageDecoder(),
+                random = SecureRandom(),
+            ),
+            version1Crypto = Version1MasterKeyCrypto(),
+        )
 }

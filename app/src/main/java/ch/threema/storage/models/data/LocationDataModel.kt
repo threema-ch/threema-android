@@ -21,7 +21,7 @@
 
 package ch.threema.storage.models.data
 
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.location.Poi
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
@@ -32,7 +32,7 @@ import kotlinx.serialization.json.add
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.jsonPrimitive
 
-private val logger = LoggingUtil.getThreemaLogger("LocationDataModel")
+private val logger = getThreemaLogger("LocationDataModel")
 
 data class LocationDataModel(
     @JvmField val latitude: Double,

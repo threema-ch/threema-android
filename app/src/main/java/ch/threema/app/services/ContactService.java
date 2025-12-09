@@ -35,6 +35,7 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.profilepicture.ProfilePicture;
+import ch.threema.base.SessionScoped;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.IdentityState;
@@ -48,6 +49,7 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.access.AccessModel;
 import java8.util.function.Consumer;
 
+@SessionScoped
 public interface ContactService extends AvatarService<String> {
 
     String ALL_USERS_PLACEHOLDER_ID = "@@@@@@@@";
@@ -185,10 +187,10 @@ public interface ContactService extends AvatarService<String> {
          */
         IdentityState[] states();
 
-        /**
-         * @return feature int
-         */
-        Long requiredFeature();
+        @Nullable
+        default Long requiredFeature() {
+            return null;
+        }
 
         /**
          * Update feature Level of Contacts.
@@ -209,9 +211,11 @@ public interface ContactService extends AvatarService<String> {
         Boolean includeHidden();
 
         /*
-         * Limit to contacts with individual settings fro read receipts and typing indicators
+         * Limit to contacts with individual settings for read receipts and typing indicators
          */
-        Boolean onlyWithReceiptSettings();
+        default boolean onlyWithReceiptSettings() {
+            return false;
+        }
     }
 
     @NonNull
@@ -369,14 +373,13 @@ public interface ContactService extends AvatarService<String> {
     void clearLastUpdate(@NonNull String identity);
 
     /**
-     * Save the given contact model.
-     *
-     * @deprecated This method should not be used anymore as it may override the database with old
-     * data from the model. To perform changes on a contact, the contact model repository should be
-     * used.
+     * Persists the forward security state for the given identity. Note that the old contact model
+     * isn't updated.
      */
-    @Deprecated
-    void save(@NonNull ContactModel model);
+    void persistForwardSecurityState(
+        @NonNull String identity,
+        @ContactModel.ForwardSecurityState int forwardSecurityState
+    );
 
     AccessModel getAccess(@Nullable String identity);
 

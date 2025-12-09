@@ -30,10 +30,10 @@ import org.slf4j.Logger;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import androidx.annotation.NonNull;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class MentionTextWatcher extends SimpleTextWatcher {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("MentionTextWatcher");
+    private static final Logger logger = getThreemaLogger("MentionTextWatcher");
 
     private final EditText editText;
     private final CharSequence hint;

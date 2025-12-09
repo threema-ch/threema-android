@@ -23,6 +23,7 @@ package ch.threema.app.services;
 
 import static android.app.Activity.RESULT_OK;
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
+import static ch.threema.common.FileExtensionsKt.copyTo;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -38,7 +39,6 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.Window;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -48,25 +48,22 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-import javax.crypto.CipherInputStream;
-
 import ch.threema.app.R;
 import ch.threema.app.activities.CropImageActivity;
 import ch.threema.app.dialogs.BottomSheetAbstractDialog;
 import ch.threema.app.dialogs.BottomSheetListDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
+import ch.threema.app.files.WallpaperFileHandleProvider;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.BottomSheetItem;
@@ -74,19 +71,15 @@ import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.MimeUtil;
-import ch.threema.app.utils.TestUtil;
-import ch.threema.base.utils.LoggingUtil;
-import ch.threema.localcrypto.MasterKey;
-import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
-import ch.threema.localcrypto.MasterKeyProvider;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import ch.threema.common.files.FileHandle;
 import java8.util.concurrent.CompletableFuture;
 import java8.util.function.Supplier;
 import kotlin.jvm.functions.Function0;
 
 public class WallpaperServiceImpl implements WallpaperService {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("WallpaperServiceImpl");
+    private static final Logger logger = getThreemaLogger("WallpaperServiceImpl");
 
     private static final String DIALOG_TAG_LOADING_IMAGE = "lit";
     private static final String SELECTOR_TAG_WALLPAPER_DEFAULT = "def";
@@ -94,29 +87,20 @@ public class WallpaperServiceImpl implements WallpaperService {
     private static final String SELECTOR_TAG_WALLPAPER_NONE = "none";
     private static final String DIALOG_TAG_SELECT_WALLPAPER = "selwal";
 
-    private final Context context;
+    private final Context appContext;
     private final PreferenceService preferenceService;
-    private final FileService fileService;
     @NonNull
-    private final MasterKeyProvider masterKeyProvider;
-    private File wallpaperCropFile;
+    private final WallpaperFileHandleProvider wallpaperFileHandleProvider;
+    private FileHandle wallpaperCropFile;
 
     public WallpaperServiceImpl(
-        Context context,
-        FileService fileService,
-        PreferenceService preferenceService,
-        @NonNull
-        MasterKeyProvider masterKeyProvider
+        @NonNull Context appContext,
+        @NonNull WallpaperFileHandleProvider wallpaperFileHandleProvider,
+        PreferenceService preferenceService
     ) {
-        this.context = context;
+        this.appContext = appContext;
         this.preferenceService = preferenceService;
-        this.fileService = fileService;
-        this.masterKeyProvider = masterKeyProvider;
-    }
-
-    @NonNull
-    private MasterKey getMasterKey() throws MasterKeyLockedException {
-        return masterKeyProvider.getMasterKey();
+        this.wallpaperFileHandleProvider = wallpaperFileHandleProvider;
     }
 
     /**
@@ -130,13 +114,17 @@ public class WallpaperServiceImpl implements WallpaperService {
     @Override
     public ActivityResultLauncher<Intent> getWallpaperActivityResultLauncher(@NonNull Fragment fragment, @Nullable Runnable onCropResultAction, @Nullable Function0<MessageReceiver> getMessageReceiver) {
         ActivityResultLauncher<Intent> cropLauncher = fragment.registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
-            final File tempWallpaperFile = new File(fileService.getTempPath() + "/.wp" + MEDIA_IGNORE_FILENAME);
+            final File tempWallpaperFile = getTempWallpaperFile();
 
-            if (result.getResultCode() == Activity.RESULT_OK &&
-                fileService.decryptFileToFile(tempWallpaperFile, this.wallpaperCropFile)) {
-                preferenceService.setCustomWallpaperEnabled(true);
-                if (onCropResultAction != null) {
-                    onCropResultAction.run();
+            if (result.getResultCode() == Activity.RESULT_OK && wallpaperCropFile != null) {
+                try {
+                    copyTo(tempWallpaperFile, wallpaperCropFile);
+                    preferenceService.setCustomWallpaperEnabled(true);
+                    if (onCropResultAction != null) {
+                        onCropResultAction.run();
+                    }
+                } catch (IOException e) {
+                    logger.error("Failed to copy cropped wallpaper");
                 }
             }
             FileUtil.deleteFileOrWarn(tempWallpaperFile, "deleteCropFile", logger);
@@ -150,28 +138,11 @@ public class WallpaperServiceImpl implements WallpaperService {
     }
 
     @Override
-    public boolean removeWallpaper(MessageReceiver messageReceiver) {
-        String path = fileService.getWallpaperFilePath(messageReceiver);
-        if (path != null) {
-            File wallpaperFile = new File(path);
-
-            if (wallpaperFile.exists()) {
-                FileUtil.deleteFileOrWarn(wallpaperFile, "removeWallpaper", logger);
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
     public void removeWallpaper(String uniqueIdString) {
-        String path = fileService.getWallpaperFilePath(uniqueIdString);
-        if (path != null) {
-            File wallpaperFile = new File(path);
-
-            if (wallpaperFile.exists()) {
-                FileUtil.deleteFileOrWarn(wallpaperFile, "removeWallpaper", logger);
-            }
+        try {
+            wallpaperFileHandleProvider.get(uniqueIdString).delete();
+        } catch (IOException e) {
+            logger.error("Failed to delete wallpaper", e);
         }
     }
 
@@ -182,39 +153,28 @@ public class WallpaperServiceImpl implements WallpaperService {
             public Bitmap get() {
                 Bitmap bitmap = null;
 
-                // we can't rewind an inputstream - so we assume an inSampleSize of
-                // 2 to avoid oom on crappy devices
                 final BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 1;
                 options.inPreferredConfig = Bitmap.Config.RGB_565;
 
-                String path = fileService.getWallpaperFilePath(messageReceiver);
-                if (path != null) {
-                    File wallpaperFile = new File(path);
-                    if (wallpaperFile.exists()) {
-                        // decode file
-                        try (FileInputStream fis = new FileInputStream(wallpaperFile); CipherInputStream cis = getMasterKey().getCipherInputStream(fis)) {
-                            bitmap = BitmapFactory.decodeStream(cis, null, options);
+                if (messageReceiver != null) {
+                    var fileHandle = wallpaperFileHandleProvider.get(messageReceiver.getUniqueIdString());
+                    if (fileHandle.exists()) {
+                        try (InputStream inputStream = fileHandle.read()) {
+                            bitmap = BitmapFactory.decodeStream(inputStream, null, options);
                         } catch (Exception e) {
-                            logger.error("Exception", e);
+                            logger.error("Failed to read wallpaper file into bitmap", e);
                         }
                     }
                 }
 
                 if (bitmap == null && preferenceService.isCustomWallpaperEnabled()) {
-                    path = fileService.getGlobalWallpaperFilePath();
-                    if (!TestUtil.isEmptyOrNull(path)) {
-                        File wallpaperFile = new File(path);
-                        if (wallpaperFile.exists()) {
-                            try (FileInputStream fis = new FileInputStream(wallpaperFile); CipherInputStream cis = getMasterKey().getCipherInputStream(fis)) {
-                                bitmap = BitmapFactory.decodeStream(cis, null, options);
-                            } catch (Exception e) {
-                                //
-                            }
-                            if (bitmap == null) {
-                                // fallback to unencrypted bitmap
-                                bitmap = BitmapFactory.decodeFile(path, options);
-                            }
+                    var fileHandle = wallpaperFileHandleProvider.getGlobal();
+                    if (fileHandle.exists() && !fileHandle.isEmpty()) {
+                        try (InputStream inputStream = fileHandle.read()) {
+                            bitmap = BitmapFactory.decodeStream(inputStream, null, options);
+                        } catch (Exception e) {
+                            logger.error("Failed to read global wallpaper file into bitmap", e);
                         }
                     }
                 }
@@ -226,7 +186,7 @@ public class WallpaperServiceImpl implements WallpaperService {
 
                     int resource = isTheDarkside ? R.drawable.wallpaper_dark : R.drawable.wallpaper_light;
                     try {
-                        bitmap = BitmapFactory.decodeResource(context.getResources(), resource, noptions);
+                        bitmap = BitmapFactory.decodeResource(appContext.getResources(), resource, noptions);
                     } catch (Exception e) {
                         logger.error("Exception", e);
                     }
@@ -259,7 +219,7 @@ public class WallpaperServiceImpl implements WallpaperService {
     @Override
     @UiThread
     public boolean setupWallpaperBitmap(MessageReceiver messageReceiver, ImageView wallpaperView, boolean landscape, boolean isTheDarkside) {
-        if (TestUtil.required(messageReceiver, wallpaperView)) {
+        if (messageReceiver != null && wallpaperView != null) {
             Bitmap bitmap = null;
             try {
                 if (!hasEmptyWallpaper(messageReceiver).get()) {
@@ -287,8 +247,8 @@ public class WallpaperServiceImpl implements WallpaperService {
                         R.drawable.ic_notification_small :
                         R.drawable.ic_check,
                     messageReceiver == null ?
-                        context.getString(R.string.wallpaper_threema, context.getString(R.string.app_name)) :
-                        context.getString(R.string.wallpaper_default),
+                        appContext.getString(R.string.wallpaper_threema, appContext.getString(R.string.app_name)) :
+                        appContext.getString(R.string.wallpaper_default),
                     SELECTOR_TAG_WALLPAPER_DEFAULT
                 )
             );
@@ -296,14 +256,14 @@ public class WallpaperServiceImpl implements WallpaperService {
 
         items.add(new BottomSheetItem(
                 R.drawable.ic_image_outline,
-                context.getString(R.string.wallpaper_gallery),
+                appContext.getString(R.string.wallpaper_gallery),
                 SELECTOR_TAG_WALLPAPER_GALLERY
             )
         );
 
         items.add(new BottomSheetItem(
                 R.drawable.ic_delete_outline,
-                context.getString(R.string.wallpaper_none),
+                appContext.getString(R.string.wallpaper_none),
                 SELECTOR_TAG_WALLPAPER_NONE
             )
         );
@@ -373,17 +333,17 @@ public class WallpaperServiceImpl implements WallpaperService {
         dialog.show(fragment.getParentFragmentManager(), DIALOG_TAG_SELECT_WALLPAPER);
     }
 
-    private File deleteWallpaperFile(MessageReceiver messageReceiver) {
-        File file;
-        if (messageReceiver == null) {
-            preferenceService.setCustomWallpaperEnabled(true);
-            file = new File(fileService.getGlobalWallpaperFilePath());
-        } else {
-            file = new File(fileService.getWallpaperFilePath(messageReceiver));
+    private void deleteWallpaperFile(MessageReceiver messageReceiver) {
+        try {
+            if (messageReceiver == null) {
+                preferenceService.setCustomWallpaperEnabled(true);
+                wallpaperFileHandleProvider.getGlobal().delete();
+            } else {
+                wallpaperFileHandleProvider.get(messageReceiver.getUniqueIdString()).delete();
+            }
+        } catch (IOException e) {
+            logger.error("Failed to delete wallpaper", e);
         }
-        FileUtil.deleteFileOrWarn(file, "deleteWallpaperFile", logger);
-
-        return file;
     }
 
     private void setDefaultWallpaper(MessageReceiver messageReceiver) {
@@ -395,7 +355,7 @@ public class WallpaperServiceImpl implements WallpaperService {
     }
 
     private void setEmptyWallpaper(MessageReceiver messageReceiver) {
-        File file = deleteWallpaperFile(messageReceiver);
+        deleteWallpaperFile(messageReceiver);
 
         if (messageReceiver == null) {
             preferenceService.setCustomWallpaperEnabled(true);
@@ -403,9 +363,13 @@ public class WallpaperServiceImpl implements WallpaperService {
 
         // create an empty file
         try {
-            FileUtil.createNewFileOrLog(file, logger);
+            if (messageReceiver == null) {
+                wallpaperFileHandleProvider.getGlobal().create();
+            } else {
+                wallpaperFileHandleProvider.get(messageReceiver.getUniqueIdString()).create();
+            }
         } catch (IOException e) {
-            logger.error("Exception", e);
+            logger.error("Failed to create empty wallpaper file", e);
         }
     }
 
@@ -416,103 +380,87 @@ public class WallpaperServiceImpl implements WallpaperService {
     @Override
     public boolean hasGalleryWallpaper(MessageReceiver messageReceiver) {
         if (messageReceiver != null) {
-            String path = fileService.getWallpaperFilePath(messageReceiver);
-            if (path != null) {
-                File file = new File(path);
-
-                return file.exists() && file.length() > 0;
-            }
+            var fileHandle = wallpaperFileHandleProvider.get(messageReceiver.getUniqueIdString());
+            return fileHandle.exists() && !fileHandle.isEmpty();
         }
         return false;
     }
 
     private CompletableFuture<Boolean> hasEmptyWallpaper(MessageReceiver messageReceiver) {
-        return CompletableFuture.supplyAsync(new Supplier<Boolean>() {
-            @Override
-            public Boolean get() {
-                if (messageReceiver != null) {
-
-                    String path = fileService.getWallpaperFilePath(messageReceiver);
-                    if (path != null) {
-                        File file = new File(path);
-                        return file.exists() && file.length() == 0;
-                    }
-                }
-                return false;
+        return CompletableFuture.supplyAsync(() -> {
+            if (messageReceiver != null) {
+                var fileHandle = wallpaperFileHandleProvider.get(messageReceiver.getUniqueIdString());
+                return fileHandle.isEmpty();
             }
+            return false;
         });
     }
 
     @Override
     public boolean hasGlobalGalleryWallpaper() {
-        File wallpaperFile = new File(fileService.getGlobalWallpaperFilePath());
-        return wallpaperFile.exists() && wallpaperFile.length() > 0;
+        var globalWallpaper = wallpaperFileHandleProvider.getGlobal();
+        return globalWallpaper.exists() && !globalWallpaper.isEmpty();
     }
 
     @Override
     public boolean hasGlobalEmptyWallpaper() {
-        File wallpaperFile = new File(fileService.getGlobalWallpaperFilePath());
-        return wallpaperFile.exists() && wallpaperFile.length() == 0;
+        var globalWallpaper = wallpaperFileHandleProvider.getGlobal();
+        return globalWallpaper.exists() && globalWallpaper.isEmpty();
     }
 
     @Override
-    public void removeAll(Context context, boolean silent) {
+    public void deleteAll() throws IOException {
         try {
-            FileUtils.cleanDirectory(fileService.getWallpaperDirPath());
-            if (!silent) {
-                Toast.makeText(context, context.getString(R.string.wallpapers_removed), Toast.LENGTH_SHORT).show();
-            }
+            wallpaperFileHandleProvider.deleteAll();
         } catch (IOException e) {
-            logger.debug("Unable to empty wallpaper dir");
+            logger.error("Failed to delete wallpapers", e);
         }
     }
 
     @SuppressLint("StaticFieldLeak")
     private void onImageSelected(@NonNull Fragment fragment, @NonNull Intent data, @NonNull ActivityResultLauncher<Intent> cropLauncher, @Nullable MessageReceiver messageReceiver) {
-        try {
-            this.wallpaperCropFile = this.fileService.createWallpaperFile(messageReceiver);
-        } catch (IOException e) {
-            LogUtil.exception(e, fragment.getActivity());
-            return;
-        }
+        wallpaperCropFile = messageReceiver != null
+            ? wallpaperFileHandleProvider.get(messageReceiver.getUniqueIdString())
+            : wallpaperFileHandleProvider.getGlobal();
 
-        final File tempWallpaperFile = new File(fileService.getTempPath() + "/.wp" + MEDIA_IGNORE_FILENAME);
+        final File tempWallpaperFile = getTempWallpaperFile();
 
-        if (this.wallpaperCropFile != null) {
-            // input stream might be a cloud file, so put loading into an asynctask
-            new AsyncTask<Void, Void, Boolean>() {
-                @Override
-                protected void onPreExecute() {
-                    super.onPreExecute();
-                    GenericProgressDialog.newInstance(R.string.download, R.string.please_wait).show(fragment.getParentFragmentManager(), DIALOG_TAG_LOADING_IMAGE);
-                }
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                GenericProgressDialog.newInstance(R.string.download, R.string.please_wait).show(fragment.getParentFragmentManager(), DIALOG_TAG_LOADING_IMAGE);
+            }
 
-                @Override
-                protected Boolean doInBackground(Void... params) {
-                    Activity activity = fragment.getActivity();
-                    if (activity != null) {
-                        try (InputStream inputStream = activity.getContentResolver().openInputStream(data.getData()); FileOutputStream fos = new FileOutputStream(tempWallpaperFile)) {
-                            if (inputStream != null) {
-                                IOUtils.copy(inputStream, fos);
-                                return true;
-                            }
-                        } catch (Exception e) {
-                            logger.error("Exception", e);
+            @Override
+            protected Boolean doInBackground(Void... params) {
+                Activity activity = fragment.getActivity();
+                if (activity != null) {
+                    try (InputStream inputStream = activity.getContentResolver().openInputStream(data.getData()); FileOutputStream fos = new FileOutputStream(tempWallpaperFile)) {
+                        if (inputStream != null) {
+                            IOUtils.copy(inputStream, fos);
+                            return true;
                         }
+                    } catch (Exception e) {
+                        logger.error("Exception", e);
                     }
-                    return false;
                 }
+                return false;
+            }
 
-                @Override
-                protected void onPostExecute(Boolean success) {
-                    super.onPostExecute(success);
-                    DialogUtil.dismissDialog(fragment.getParentFragmentManager(), DIALOG_TAG_LOADING_IMAGE, true);
-                    if (success) {
-                        doCrop(fragment, Uri.fromFile(tempWallpaperFile), cropLauncher);
-                    }
+            @Override
+            protected void onPostExecute(Boolean success) {
+                super.onPostExecute(success);
+                DialogUtil.dismissDialog(fragment.getParentFragmentManager(), DIALOG_TAG_LOADING_IMAGE, true);
+                if (success) {
+                    doCrop(fragment, Uri.fromFile(tempWallpaperFile), cropLauncher);
                 }
-            }.execute();
-        }
+            }
+        }.execute();
+    }
+
+    private File getTempWallpaperFile() {
+        return new File(appContext.getCacheDir(), ".wp" + MEDIA_IGNORE_FILENAME);
     }
 
     private void doCrop(Fragment fragment, Uri imageUri, ActivityResultLauncher<Intent> launcher) {

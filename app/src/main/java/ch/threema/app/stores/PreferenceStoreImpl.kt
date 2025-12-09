@@ -21,33 +21,21 @@
 
 package ch.threema.app.stores
 
-import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import androidx.preference.PreferenceManager
-import ch.threema.app.listeners.PreferenceListener
-import ch.threema.app.managers.ListenerManager
-import ch.threema.base.utils.LoggingUtil
 import ch.threema.base.utils.Utils
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.takeUnlessEmpty
 import ch.threema.common.toHexString
 import org.json.JSONArray
 import org.json.JSONObject
 
-private val logger = LoggingUtil.getThreemaLogger("PreferenceStoreImpl")
+private val logger = getThreemaLogger("PreferenceStoreImpl")
 
-class PreferenceStoreImpl
-@JvmOverloads
-constructor(
+class PreferenceStoreImpl(
     private val sharedPreferences: SharedPreferences,
-    private val onChanged: (key: String, value: Any?) -> Unit = { key, value ->
-        ListenerManager.preferenceListeners.handle { listener: PreferenceListener ->
-            listener.onChanged(key, value)
-        }
-    },
+    private val onChanged: (key: String, value: Any?) -> Unit,
 ) : BasePreferenceStore() {
-
-    constructor(context: Context) : this(PreferenceManager.getDefaultSharedPreferences(context))
 
     override fun remove(key: String) {
         sharedPreferences.edit {

@@ -31,13 +31,13 @@ import java.util.stream.Collectors;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.utils.Base32;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.Contact;
 import ch.threema.storage.models.GroupModel;
 
 public class GroupUtil {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("GroupUtil");
+    private static final Logger logger = getThreemaLogger("GroupUtil");
 
     public static String CENTRALLY_MANAGED_GATEWAY_GROUP_PREFIX = "☁";
 

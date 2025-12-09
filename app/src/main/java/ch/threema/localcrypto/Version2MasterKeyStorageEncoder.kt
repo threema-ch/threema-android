@@ -22,7 +22,7 @@
 package ch.threema.localcrypto
 
 import ch.threema.base.utils.toByteString
-import ch.threema.common.toU16littleEndian
+import ch.threema.common.toByteArray
 import ch.threema.localcrypto.models.Argon2Version
 import ch.threema.localcrypto.models.MasterKeyStorageData
 import ch.threema.localcrypto.models.Version2MasterKeyStorageInnerData
@@ -42,6 +42,7 @@ import com.google.protobuf.Internal
 import com.google.protobuf.MessageLite
 import com.google.protobuf.kotlin.plus
 import com.google.protobuf.kotlin.toByteString
+import java.nio.ByteOrder
 
 class Version2MasterKeyStorageEncoder {
     fun encodeMasterKeyStorageData(masterKeyStorageData: MasterKeyStorageData.Version2): ByteString =
@@ -106,5 +107,5 @@ class Version2MasterKeyStorageEncoder {
         version.toByteString() + message.toByteString()
 
     private fun Internal.EnumLite.toByteString(): ByteString =
-        number.toU16littleEndian().toByteString()
+        number.toShort().toByteArray(order = ByteOrder.LITTLE_ENDIAN).toByteString()
 }

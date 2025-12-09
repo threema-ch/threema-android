@@ -42,9 +42,11 @@ import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -65,7 +67,7 @@ import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 import androidx.preference.TwoStatePreference;
 import ch.threema.app.AppConstants;
-import ch.threema.app.AppLogging;
+import ch.threema.app.logging.AppVersionLogger;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
@@ -107,7 +109,7 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.voip.activities.WebRTCDebugActivity;
 import ch.threema.app.webclient.activities.WebDiagnosticsActivity;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
@@ -116,10 +118,10 @@ import ch.threema.logging.backend.DebugLogFileBackend;
 import static ch.threema.app.utils.PowermanagerUtil.RESULT_DISABLE_AUTOSTART;
 import static ch.threema.app.utils.PowermanagerUtil.RESULT_DISABLE_POWERMANAGER;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
-import static ch.threema.app.utils.ToasterKt.showToast;
+import static ch.threema.android.ToasterKt.showToast;
 
 public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment implements GenericAlertDialog.DialogClickListener, SharedPreferences.OnSharedPreferenceChangeListener, TextEntryDialog.TextEntryDialogClickListener, CancelableHorizontalProgressDialog.ProgressDialogClickListener {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("SettingsAdvancedOptionsFragment");
+    private static final Logger logger = getThreemaLogger("SettingsAdvancedOptionsFragment");
 
     private static final String DIALOG_TAG_REMOVE_WALLPAPERS = "removeWP";
     private static final String DIALOG_TAG_PUSH_REGISTER = "pushReg";
@@ -207,6 +209,25 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
 
         PreferenceScreen preferenceScreen = getPref("pref_key_advanced_options");
 
+        if (BuildConfig.CRASH_REPORTING_SUPPORTED) {
+            var causeCrashPreference = getPref(getString(R.string.preferences__cause_crash));
+            causeCrashPreference.setVisible(true);
+            causeCrashPreference.setOnPreferenceClickListener(preference -> {
+                throw new RuntimeException("Test crash");
+            });
+
+            final String[] crashReportingOptions = getResources().getStringArray(R.array.list_crash_reporting);
+            final List<String> crashReportingOptionValues = Arrays.asList(getResources().getStringArray(R.array.list_crash_reporting_values));
+            DropDownPreference crashReportingPreference = getPref(getString(R.string.preferences__crash_reporting));
+            // TODO(ANDR-4339): The following preference should be visible by default
+            crashReportingPreference.setVisible(true);
+            crashReportingPreference.setSummary(crashReportingOptions[crashReportingOptionValues.indexOf(crashReportingPreference.getValue())]);
+            crashReportingPreference.setOnPreferenceChangeListener((preference, newValue) -> {
+                preference.setSummary(crashReportingOptions[crashReportingOptionValues.indexOf(newValue.toString())]);
+                return true;
+            });
+        }
+
         sharedPreferences = getPreferenceManager().getSharedPreferences();
         pushServicesInstalled = PushService.servicesInstalled(getContext());
 
@@ -261,7 +282,9 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
 
             DebugLogFileBackend.setEnabled(newCheckedValue);
             if (newCheckedValue) {
-                AppLogging.logAppVersionInfo(requireContext());
+                AppVersionLogger appVersionLogger = KoinJavaComponent.get(AppVersionLogger.class);
+                appVersionLogger.logAppVersionInfo();
+                appVersionLogger.logAppVersionHistory();
             }
 
             return true;
@@ -617,7 +640,14 @@ public class SettingsAdvancedOptionsFragment extends ThreemaPreferenceFragment i
     public void onYes(String tag, Object data) {
         switch (tag) {
             case DIALOG_TAG_REMOVE_WALLPAPERS:
-                wallpaperService.removeAll(getActivity(), false);
+                try {
+                    wallpaperService.deleteAll();
+                } catch (IOException e) {
+                    logger.error("Failed to delete wallpapers", e);
+                    Toast.makeText(getActivity(), getString(R.string.an_error_occurred), Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                Toast.makeText(getActivity(), getString(R.string.wallpapers_removed), Toast.LENGTH_SHORT).show();
                 preferenceService.setCustomWallpaperEnabled(false);
                 break;
             case DIALOG_TAG_RESET_RINGTONES:

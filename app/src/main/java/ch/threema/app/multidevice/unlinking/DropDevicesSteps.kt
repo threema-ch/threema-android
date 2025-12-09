@@ -23,7 +23,7 @@ package ch.threema.app.multidevice.unlinking
 
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.IS_FS_SUPPORTED_WITH_MD
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.d2m.socket.D2mCloseCode
 import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseReason
 import ch.threema.domain.protocol.connection.data.DeviceId
@@ -38,7 +38,7 @@ import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.protobuf.d2d.MdD2D.TransactionScope
 
-private val logger = LoggingUtil.getThreemaLogger("DropDevicesSteps")
+private val logger = getThreemaLogger("DropDevicesSteps")
 
 /**
  * The intent for running the drop devices steps.

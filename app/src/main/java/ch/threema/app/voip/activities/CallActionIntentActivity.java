@@ -40,7 +40,7 @@ import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactLookupUtil;
 import ch.threema.app.voip.util.VoipUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
@@ -51,7 +51,7 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
  * start the call activity.
  */
 public class CallActionIntentActivity extends ThreemaActivity {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("CallActionIntentActivity");
+    private static final Logger logger = getThreemaLogger("CallActionIntentActivity");
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);

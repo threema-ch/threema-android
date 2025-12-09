@@ -27,7 +27,7 @@ import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ExcludedSyncIdentitiesService
 import ch.threema.base.crypto.NonceFactory
-import ch.threema.base.utils.LoggingUtil
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
@@ -41,7 +41,7 @@ import ch.threema.protobuf.d2d.sync.settings
 import ch.threema.protobuf.identities
 import kotlinx.serialization.Serializable
 
-private val logger = LoggingUtil.getThreemaLogger("ReflectSettingsSyncTask")
+private val logger = getThreemaLogger("ReflectSettingsSyncTask")
 
 /**
  * Note that the setting reflection tasks currently deviate from the protocol specification. We

@@ -51,8 +51,12 @@ if [[ -z ${_no_container+x} ]] ; then
     source ./.devcontainer/env.sh
 fi
 
+# Ensure consistent target dir, even if `build.target-dir` config option is set for Cargo
+export CARGO_TARGET_DIR=target
+
 # Build library as WASM
 cargo build \
+    --locked \
     -F wasm \
     -p libthreema \
     --target wasm32-unknown-unknown \

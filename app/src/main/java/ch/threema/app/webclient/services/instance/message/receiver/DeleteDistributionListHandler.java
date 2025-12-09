@@ -38,12 +38,12 @@ import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.DistributionListModel;
 
 @WorkerThread
 public class DeleteDistributionListHandler extends MessageReceiver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("DeleteDistributionListHandler");
+    private static final Logger logger = getThreemaLogger("DeleteDistributionListHandler");
 
     private final MessageDispatcher responseDispatcher;
     private final DistributionListService distributionListService;

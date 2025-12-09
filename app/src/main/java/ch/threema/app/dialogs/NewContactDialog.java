@@ -40,14 +40,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import ch.threema.app.R;
 import ch.threema.app.emojis.EmojiEditText;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class NewContactDialog extends ThreemaDialogFragment {
 
-    private static final Logger logger = LoggingUtil.getThreemaLogger("NewContactDialog");
+    private static final Logger logger = getThreemaLogger("NewContactDialog");
     private NewContactDialogClickListener callback;
     private Activity activity;
     private AlertDialog alertDialog;

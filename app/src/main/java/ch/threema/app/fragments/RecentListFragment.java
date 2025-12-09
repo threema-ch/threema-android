@@ -34,10 +34,24 @@ import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.activities.RecipientListBaseActivity;
 import ch.threema.app.adapters.RecentListAdapter;
+import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationService;
+import ch.threema.app.services.DistributionListService;
+import ch.threema.app.services.GroupService;
 import ch.threema.storage.models.ConversationModel;
+import kotlin.Lazy;
+
+import static org.koin.java.KoinJavaComponent.inject;
 
 public class RecentListFragment extends RecipientListFragment {
+
+    private final Lazy<PreferenceService> preferenceServiceLazy = inject(PreferenceService.class);
+    private final Lazy<ConversationService> conversationServiceLazy = inject(ConversationService.class);
+    private final Lazy<ContactService> contactServiceLazy = inject(ContactService.class);
+    private final Lazy<GroupService> groupServiceLazy = inject(GroupService.class);
+    private final Lazy<DistributionListService> distributionListServiceLazy = inject(DistributionListService.class);
+
     private boolean showDistributionLists;
 
     @Override
@@ -87,7 +101,7 @@ public class RecentListFragment extends RecipientListFragment {
 
             @Override
             public boolean noHiddenChats() {
-                return preferenceService.isPrivateChatsHidden();
+                return preferenceServiceLazy.getValue().isPrivateChatsHidden();
             }
 
             @Override
@@ -98,7 +112,7 @@ public class RecentListFragment extends RecipientListFragment {
 
         //create a copied list!
         final List<ConversationModel> all;
-        final List<ConversationModel> original = conversationService.getAll(false, filter);
+        final List<ConversationModel> original = conversationServiceLazy.getValue().getAll(false, filter);
 
         synchronized (original) {
             //create a copy)
@@ -110,9 +124,9 @@ public class RecentListFragment extends RecipientListFragment {
             activity,
             all,
             checkedItemPositions,
-            contactService,
-            groupService,
-            distributionListService,
+            contactServiceLazy.getValue(),
+            groupServiceLazy.getValue(),
+            distributionListServiceLazy.getValue(),
             this
         );
         setListAdapter(adapter);

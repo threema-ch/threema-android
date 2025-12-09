@@ -37,24 +37,30 @@ import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.qrcodes.ContactUrlUtil;
+import ch.threema.app.qrcodes.QrCodeGenerator;
+import ch.threema.app.services.UserService;
 import ch.threema.app.utils.AnimationUtil;
-import ch.threema.base.utils.LoggingUtil;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleObserver {
-    private static final Logger logger = LoggingUtil.getThreemaLogger("QRCodePopup");
+    private static final Logger logger = getThreemaLogger("QRCodePopup");
 
     private ImageView imageView;
     private View topLayout;
     private View parentView;
 
     private final int[] location = new int[2];
+
+    private @Nullable Bitmap bitmap;
 
     public QRCodePopup(Context context, View parentView, LifecycleOwner lifecycleOwner) {
         super(context);
@@ -89,15 +95,21 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
      * Show a popup with a QR code
      *
      * @param sourceView  starting point for animation
-     * @param text        text to display as QR code
+     * @param text        text to display as QR code, or null to display a QR code for the user's identity and public key
      */
-    public void show(@NonNull final View sourceView, String text) {
-        Bitmap bitmap;
+    public void show(@NonNull final View sourceView, @Nullable String text) {
+        QrCodeGenerator qrCodeGenerator = KoinJavaComponent.get(QrCodeGenerator.class);
 
         if (text != null) {
-            bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getRawQR(text, true);
+            bitmap = qrCodeGenerator.generateWithUnicodeSupport(text);
         } else {
-            bitmap = ThreemaApplication.getServiceManager().getQRCodeService().getUserQRCode();
+            UserService userService = KoinJavaComponent.get(UserService.class);
+            ContactUrlUtil contactUrlUtil = KoinJavaComponent.get(ContactUrlUtil.class);
+            var content = contactUrlUtil.generate(
+                userService.getIdentity(),
+                userService.getPublicKey()
+            );
+            bitmap = qrCodeGenerator.generate(content);
         }
 
         if (bitmap == null) {
@@ -137,7 +149,13 @@ public class QRCodePopup extends DimmingPopupWindow implements DefaultLifecycleO
 
     @Override
     public void dismiss() {
-        AnimationUtil.popupAnimateOut(getContentView(), QRCodePopup.super::dismiss);
+        AnimationUtil.popupAnimateOut(getContentView(), () -> {
+            QRCodePopup.super.dismiss();
+            if (bitmap != null) {
+                bitmap.recycle();
+                bitmap = null;
+            }
+        });
     }
 
     /**
