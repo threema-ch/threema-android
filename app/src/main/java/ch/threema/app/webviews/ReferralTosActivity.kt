@@ -4,7 +4,7 @@
  *   |_| |_||_|_| \___\___|_|_|_\__,_(_)
  *
  * Threema for Android
- * Copyright (c) 2022-2025 Threema GmbH
+ * Copyright (c) 2013-2025 Threema GmbH
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License, version 3,
@@ -28,16 +28,16 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
 
-private val logger = getThreemaLogger("EulaActivity")
+private val logger = getThreemaLogger("ReferralTosActivity")
 
-class EulaActivity : SimpleWebViewActivity() {
+class ReferralTosActivity : SimpleWebViewActivity() {
     init {
         logScreenVisibility(logger)
     }
 
-    override fun getWebViewTitle() = R.string.eula
+    override fun getWebViewTitle() = R.string.terms_of_service
 
-    override fun getWebViewUrl(isDarkTheme: Boolean) = ConfigUtils.getEulaURL(
+    override fun getWebViewUrl(isDarkTheme: Boolean) = ConfigUtils.getReferralTermsOfServiceURL(
         /* context = */
         this,
         /* isDarkTheme = */
@@ -45,6 +45,7 @@ class EulaActivity : SimpleWebViewActivity() {
     )
 
     companion object {
-        fun createIntent(context: Context) = buildActivityIntent<EulaActivity>(context)
+        @JvmStatic
+        fun createIntent(context: Context) = buildActivityIntent<ReferralTosActivity>(context)
     }
 }

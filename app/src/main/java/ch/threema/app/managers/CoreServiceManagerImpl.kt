@@ -33,6 +33,7 @@ import ch.threema.app.utils.DeviceCookieManagerImpl
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.domain.models.AppVersion
 import ch.threema.domain.stores.IdentityStore
+import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TaskManagerConfiguration
 import ch.threema.domain.taskmanager.TaskManagerProvider
@@ -51,6 +52,7 @@ class CoreServiceManagerImpl(
     override val encryptedPreferenceStore: EncryptedPreferenceStore,
     override val identityStore: IdentityStore,
     private val nonceDatabaseStoreProvider: () -> DatabaseNonceStore,
+    private val getDebugString: Task<*, *>.() -> String,
 ) : CoreServiceManager {
     /**
      * The task archiver. Note that this must only be used to load the persisted tasks when the
@@ -60,6 +62,7 @@ class CoreServiceManagerImpl(
         TaskArchiverImpl(
             taskArchiveFactory = databaseService.taskArchiveFactory,
             taskRecoveryManager = TaskRecoveryManagerImpl(),
+            getDebugString = getDebugString,
         )
     }
 
@@ -78,9 +81,10 @@ class CoreServiceManagerImpl(
     override val taskManager: TaskManager by lazy {
         TaskManagerProvider.getTaskManager(
             TaskManagerConfiguration(
-                { taskArchiver },
-                deviceCookieManager,
-                ConfigUtils.isDevBuild(),
+                taskArchiver = { taskArchiver },
+                deviceCookieManager = deviceCookieManager,
+                assertContext = ConfigUtils.isDevBuild(),
+                getDebugString = getDebugString,
             ),
         )
     }

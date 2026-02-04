@@ -8,6 +8,7 @@
     <string name="webclient_info_url" translatable="false">https://threema.com/threema-web</string>
     <string name="privacy_policy_url" translatable="false">https://threema.com/privacy_policy/?lang=%1$s&amp;version=%2$s&amp;theme=%3$s&amp;platform=android</string>
     <string name="terms_of_service_url" translatable="false">https://threema.com/tos/?lang=%1$s&amp;version=%2$s&amp;theme=%3$s&amp;platform=android</string>
+    <string name="referral_terms_of_service_url" translatable="false">https://threema.com/referral-tos/?lang=%1$s&amp;theme=%2$s</string>
     <string name="eula_url" translatable="false">https://threema.com/eula/?lang=%1$s&amp;version=%2$s&amp;theme=%3$s&amp;platform=android</string>
     <string name="support_url" translatable="false">https://threema.com/android/support/</string>
     <!-- The marketing name of the remote secret feature -->

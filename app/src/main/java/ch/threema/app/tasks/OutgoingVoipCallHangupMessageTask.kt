@@ -36,6 +36,8 @@ class OutgoingVoipCallHangupMessageTask(
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingVoipCallHangupMessageTask"
 
+    override val shortLogInfo: String = "cid=${voipCallHangupData.callId}"
+
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = VoipCallHangupMessage().apply {
             this.data = voipCallHangupData

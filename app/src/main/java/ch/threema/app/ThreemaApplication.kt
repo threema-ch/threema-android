@@ -73,6 +73,7 @@ import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.systemupdates.SystemUpdateException
 import ch.threema.app.systemupdates.SystemUpdateProvider
 import ch.threema.app.systemupdates.SystemUpdater
+import ch.threema.app.tasks.getDebugString
 import ch.threema.app.ui.DynamicColorsHelper
 import ch.threema.app.utils.AppVersionProvider.appVersion
 import ch.threema.app.utils.ConfigUtils
@@ -515,6 +516,7 @@ class ThreemaApplication : Application() {
                     logger.info("Nonce count (d2d): {}", databaseNonceStore.getCount(NonceScope.D2D))
                     databaseNonceStore
                 },
+                getDebugString = getDebugString,
             )
 
         private fun cancelNewMessageNotification(context: Context) {

@@ -209,16 +209,17 @@ class BypassTest {
     private fun createTaskManager() = TaskManagerImpl(
         { noopTaskArchiver },
         noopDeviceCookieManager,
-        TaskManagerImpl.TaskManagerDispatchers(
-            SingleThreadedTaskManagerDispatcher(
+        dispatchers = TaskManagerImpl.TaskManagerDispatchers(
+            executorDispatcher = SingleThreadedTaskManagerDispatcher(
                 assertContext = true,
                 threadName = "ExecutorDispatcher",
             ),
-            SingleThreadedTaskManagerDispatcher(
+            scheduleDispatcher = SingleThreadedTaskManagerDispatcher(
                 assertContext = true,
                 threadName = "ScheduleDispatcher",
             ),
         ),
+        getDebugString = { "" },
     )
 
     private fun createLayer5Codec(taskManager: InternalTaskManager): Layer5Codec =

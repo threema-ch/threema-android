@@ -758,7 +758,7 @@
     <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="new_wizard_anonymous_confirm">Ви не зв\'язали номер телефону або адресу ел. пошти з ID ${app_name_short}, а тому не з\'явитесь у списках контактів своїх друзів. Справді використовувати ${app_name} анонімно?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_anonymous_confirm_phone_only">Ви не зв\'язали номер телефону чи адресу ел. пошти зі своїм ID ${app_name_short}, а тому не з\'явитесь у списках контактів інших людей. Справді використовувати ${app_name} анонімно?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">Ви не зв\'язали номер телефону\tз ID ${app_name_short}, а тому не з\'явитесь у списках контактів своїх друзів. Справді використовувати ${app_name} анонімно?</string>
     <string name="new_wizard_scan_id_backup">Відсканувати QR-код</string>
     <string name="error_saving_file">Не вдалося зберегти файл. Перевірте дозволи.</string>
     <string name="wait_one_minute">Якщо SMS не надійде протягом 10 хвилин, зробіть запит на дзвінок.</string>
@@ -842,7 +842,7 @@
     <string name="really_reset_ringtones">Скинути налаштування звуку сповіщень до значень за умовчанням?</string>
     <string name="reset_ringtones_confirm">Налаштування звуку сповіщень скинуто.</string>
     <string name="prefs_language_override">Мова</string>
-    <string name="threema_channel_intro">Канал Threema Channel публікує всі новини, пов\'язані з Threema. Підписатися на Threema Channel і додати цей канал у контакти? Це безкоштовно, і ви завжди зможете відписатися.</string>
+    <string name="threema_channel_intro">Канал ${app_name_short} Channel публікує всі новини, пов\'язані з ${app_name_short}. Підписатися на ${app_name_short} Channel і додати цей канал у контакти? Це безкоштовно, і ви завжди зможете відписатися.</string>
     <string name="quote">Цитувати</string>
     <string name="contacts_deleted">Контакти видалено</string>
     <string name="take_photo">Зробити фото</string>
@@ -1015,7 +1015,7 @@
     <string name="safe_learn_more_button">Докладніше</string>
     <string name="safe_enable_explain">Усе, що потрібно для спілкування, зберігається лише на вашому пристрої. Ми не створюємо облікові записи користувачів і не зможемо допомогти, якщо ви втратите пристрій або випадково видалите свої дані.\n\n${app_name_short} Safe автоматично й анонімно зберігає найважливіші дані, зокрема ваші ключі, список контактів та інформацію про участь у групах (але не самі повідомлення), у вигляді резервних копій на вибраному вами безпечному сервері.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_disable_confirm">Продовжити без ${app_name_short} Safe? За допомогою цієї функції ви зможете відновити ID ${app_name_short}, контакти та групи, якщо втратите доступ до свого пристрою.</string>
+    <string name="safe_disable_confirm">Продовжити без ${app_name_short} Safe? За допомогою цієї функції ви зможете відновити ID ${app_name_short}, контакти та групи із ${app_name_short} Safe, якщо втратите доступ до свого пристрою.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_configure_choose_password">Установіть надійний пароль. Він знадобиться вам, щоб відновити резервну копію ${app_name_short} Safe.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1049,7 +1049,7 @@
     <string name="safe_delete_success">Резервну копію видалено із сервера</string>
     <string name="safe_error_preparing">Не вдалося підготувати резервну копію ${app_name_short} Safe</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_configure_choose_password_force">Установіть надійний пароль, щоб захистити свій ID в ${app_name_short} Safe. Запам\'ятайте цей пароль!</string>
+    <string name="safe_configure_choose_password_force">Установіть надійний пароль, щоб захистити свій ID ${app_name_short} за допомогою ${app_name_short} Safe. Запам\'ятайте цей пароль!</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_deactivate">Вимкнути ${app_name_short} Safe</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1149,7 +1149,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_safe_forced_explain">Ваш адміністратор увімкнув ${app_name_short} Safe на вашому пристрої.</string>
     <string name="pin_locked_cannot_send">Додаток заблоковано. Неможливо надіслати.</string>
-    <string name="prefs_summary_hide_screenshots_notice">Коли в меню \"Безпека\" ввімкнено функцію \"Блокувати додаток\", ми приховуємо вміст ${app_name_short} та блокуємо зйомку екрана, щоб захистити вашу конфіденційність.</string>
+    <string name="prefs_summary_hide_screenshots_notice">Коли в меню \"Безпека\" ввімкнено функцію \"Блокувати додаток\", ми приховуємо вміст ${app_name_short} та блокуємо зйомку екрана задля конфіденційності</string>
     <string name="work_select_categories">Виберіть категорії</string>
     <string name="my_profile">Мій профіль</string>
     <string name="message_too_long">Повідомлення задовге. Неможливо надіслати.</string>
@@ -1230,7 +1230,7 @@
     <string name="message_id">ID повідомлення</string>
     <string name="mime_type">Тип MIME</string>
     <string name="password_does_not_comply">Пароль не відповідає вимогам, які встановив адміністратор.</string>
-    <string name="audio_mute_due_to_focus_loss">Звук ${app_name_short} тимчасово вимкнено через відтворення звуку в іншому додатку</string>
+    <string name="audio_mute_due_to_focus_loss">Звук тимчасово вимкнено через відтворення звуку в іншому додатку</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="restore_data_backup_explain">Щоб відновити дані з резервної копії, спершу видаліть свій ID ${app_name_short} на екрані \"Мій профіль\".\n\nКоли додаток перезапуститься, натисніть \"Відновити з рез. копії\" &gt; \"Інші варіанти відновлення\" &gt; \"Резервне копіювання\" і виберіть файл резервної копії, з якого потрібно відновити дані.</string>
     <string name="audio_focus_loss_complete">Виклик завершено через відтворення звуку в іншому додатку.</string>
@@ -1572,7 +1572,7 @@
     <string name="prefs_dynamic_colors">Динамічний колір</string>
     <string name="prefs_dynamic_colors_sum">Використовувати кольори системи</string>
     <string name="apply_changes">Застосувати зміни</string>
-    <string name="prefs_threema_work_summary">Шукаєте рішення для робочого спілкування? Натисніть тут, щоб дізнатися більше про Threema Work.</string>
+    <string name="prefs_threema_work_summary">Шукаєте професійне рішення для бізнес-спілкування? Натисніть тут, щоб дізнатися більше про Threema Work.</string>
     <string name="notification_channel_voice_message_player">Програвач голосових повідомлень</string>
     <string name="voice_message_from">Голосове повідомлення від \"%s\"</string>
     <string name="vm_fg_service_not_allowed">Помилка відтворення голосового повідомлення</string>
@@ -1825,6 +1825,23 @@
     <string name="remote_secret_deactivating">Вимкнення ${remote_secret}</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">Не вдалося вимкнути ${remote_secret}. Перевірте інтернет-з\'єднання і повторіть спробу.</string>
+    <string name="referral_banner_title">Отримайте винагороду за рекомендацію</string>
+    <string name="referral_banner_body">Порекомендуйте друзям використовувати Threema Work у компанії та отримайте бонус!</string>
+    <string name="referral_screen_title">Отримайте винагороду за рекомендацію</string>
+    <string name="referral_screen_subtitle">Отримайте до 10 % від суми першого рахунка залученої компанії.</string>
+    <string name="referral_how_it_works_title">Як це працює</string>
+    <string name="referral_how_it_works_referral_title">Рекомендація</string>
+    <string name="referral_how_it_works_referral_body">Порекомендуйте друзям або їхній компанії приєднатися до Threema Work. Щоб рекомендацію було зараховано, обов\'язково попросіть їх указати ваш ID Threema під час реєстрації або придбання ліцензій.</string>
+    <string name="referral_how_it_works_requirements_title">Вимоги</string>
+    <string name="referral_how_it_works_requirements_body">Компанія, якій ви надсилаєте рекомендацію, має замовити ліцензії і бути нашим новим клієнтом</string>
+    <string name="referral_how_it_works_confirmation_title">Підтвердження</string>
+    <string name="referral_how_it_works_confirmation_body">Щоб правильно присвоїти та перевірити вашу рекомендацію, ми зв\'яжемося з вами перед здійсненням оплати. Вас буде поінформовано, щойно ми завершимо перевірку.</string>
+    <string name="referral_your_reward_title">Ваша винагорода</string>
+    <string name="referral_your_reward_subtitle">Отримайте бонус за рекомендацію</string>
+    <string name="referral_your_reward_body">За рекомендацію ви отримаєте до 10 % від суми першого рахунка залученої компанії (не враховуючи податки та комісії). Ми нарахуємо ваш бонус протягом 30–60 днів після отримання оплати.</string>
+    <string name="referral_share_invitation_link">Поділитися посиланням-запрошенням</string>
+    <string name="referral_view_terms_and_conditions">Переглянути Умови та положення</string>
+    <string name="referral_invitation_message_content">Вітаю! Пропоную використовувати Threema Work — чудове рішення для безпечного бізнес-спілкування. Ось посилання на нього: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакти</item>

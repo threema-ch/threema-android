@@ -747,6 +747,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             PackageManager packageManager = getPackageManager();
             if (packageManager == null || !(packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
                 packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY))) {
+                logger.info("No camera found, closing");
                 Toast.makeText(getApplicationContext(), R.string.no_camera_installed, Toast.LENGTH_LONG).show();
                 finish();
                 return;

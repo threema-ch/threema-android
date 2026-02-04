@@ -221,6 +221,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 
         String configuredPassword = getConfiguredPassword();
         if (configuredPassword != null) {
+            logger.info("A password is configured, disabling password field");
             passwordText.setEnabled(false);
         }
 

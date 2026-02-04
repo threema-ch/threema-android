@@ -36,7 +36,7 @@ class LicenseActivity : SimpleWebViewActivity() {
 
     override fun getWebViewTitle() = R.string.os_licenses
 
-    override fun getWebViewUrl() = "file:///android_asset/license.html"
+    override fun getWebViewUrl(isDarkTheme: Boolean) = "file:///android_asset/license.html"
 
     override fun requiresConnection() = false
 

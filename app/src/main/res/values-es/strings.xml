@@ -104,7 +104,7 @@
     <!-- Text shown when a task which shows a loading spinner takes longer than expected (e.g. creating a group) -->
     <string name="please_wait_timeout">Esto está tardando más de lo esperado</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="wizard_first_create_id">Se están generando las claves…</string>
+    <string name="wizard_first_create_id">Creando tu ID de ${app_name_short}…</string>
     <string name="wizard1_sync_contacts">Se están sincronizando los contactos…</string>
     <string name="wizard2_email_hint">Su dirección de correo electrónico</string>
     <string name="wizard2_email_linking">Vincular correo electrónico</string>
@@ -166,7 +166,7 @@
     <string name="delete_id_message">A menos que haya creado una copia de seguridad o exportado y guardado una copia de este ID, no podrá volver a enviar ni recibir
 		mensajes con esta ID.\n\nSi no quiere volver a usar esta ID, le recomendamos que establezca una contraseña de anulación y anule la ID en myid.threema.ch/revoke antes de eliminarla.</string>
     <string name="delete_id_message2">Último aviso: ¿está seguro de que desea eliminar su ID?</string>
-    <string name="delete_id_sum">Eliminar el ID y todos los chats de este dispositivo de forma permanente</string>
+    <string name="delete_id_sum">Eliminar permanentemente tu ID de ${app_name_short} y todos los datos de este dispositivo</string>
     <string name="delete_all_data_prompt">¿Quieres eliminar todos los datos de la ap?</string>
     <string name="backup_password_summary">Tu ID exportada se encriptará con una contraseña. Usa una combinación de letras, números y símbolos. ¡No olvides lo que has elegido!</string>
     <string name="backup_password_again_summary">Vuelva a introducir la misma contraseña.</string>
@@ -187,7 +187,7 @@
     <string name="prefs_title_masterkey_passphrase">Frase para la contraseña</string>
     <string name="setting_masterkey_passphrase">Establecer frase de contraseña para clave maestra</string>
     <string name="masterkey_passphrase_title">Frase de contraseña para clave maestra</string>
-    <string name="masterkey_passphrase_summary">Establezca una frase de contraseña para proteger su clave maestra. Tenga en cuenta que deberá introducir esta frase cada vez ${app_name_short} se reinicie.</string>
+    <string name="masterkey_passphrase_summary">Establece una frase de contraseña para proteger tu clave maestra. Ten en cuenta que deberás introducirla cada vez que la aplicación se reinicie.</string>
     <string name="masterkey_passphrase_again_summary">Vuelva a introducir la misma frase de contraseña.</string>
     <string name="masterkey_passphrase_hint">Frase para la contraseña</string>
     <string name="master_key_locked_want_exit">La clave maestra sigue bloqueada. ¿Desea volver a intentarlo?</string>
@@ -245,11 +245,11 @@
     <string name="masterkey_is_unlocked">La clave maestra está desbloqueada</string>
     <string name="file_too_large">El archivo ocupa más espacio del permitido (%1$d MB)</string>
     <string name="deleting_thread">El chat se está eliminando</string>
-    <string name="enter_serial_body"><![CDATA[Introduzca una clave de licencia válida para activar ${app_name_short}.]]></string>
+    <string name="enter_serial_body"><![CDATA[Introduzca la clave de licencia de su tienda. Puede <a href="https://shop.threema.ch/">comprar</a> una licencia o <a href="https://shop.threema.ch/retrieve_keys">recuperar</a> sus claves si ya adquirió una licencia anteriormente.]]></string>
     <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_enter_serial_body">Introduzca las credenciales de ${app_name_short} proporcionadas por su empresa.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="enter_serial_title">Validación de licencia</string>
+    <string name="enter_serial_title">Desbloquear ${app_name}</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="serial_required_want_exit">La clave de licencia no es válida. ¿Desea volver a intentarlo o salir de ${app_name}?</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
@@ -298,15 +298,14 @@
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="pinentry_enter_pin">Introducir PIN ${app_name}</string>
     <string name="pinentry_wrong_pin">PIN incorrecto</string>
-    <string name="prefs_sum_security_pin">Bloquear el acceso a la interfaz de usuario de ${app_name_short}</string>
+    <string name="prefs_sum_security_pin">Bloquear el acceso a la interfaz de usuario</string>
     <string name="prefs_title_pin_switch">Protección de la app</string>
     <string name="prefs_title_pin_code">Cambiar PIN</string>
     <string name="prefs_pin_grace">Tiempo hasta el bloqueo</string>
     <string name="prefs_sum_pin_grace">Seleccionar intervalo de tiempo</string>
     <string name="click_here_to_change_pin">Haga clic aquí para cambiar el PIN</string>
     <string name="set_pin_menu_title">Establecer PIN nuevo</string>
-    <string name="set_pin_summary_intro">Proteja su privacidad dotando a ${app_name_short} de un bloqueo con PIN. El bloqueo se activa de forma automática
- cuando se agota el tiempo de espera especificado (solo cifras).</string>
+    <string name="set_pin_summary_intro">Protege tu privacidad configurando un PIN numérico (solo dígitos). Este PIN puede usarse para bloquear el acceso a la interfaz de la aplicación tras un período de gracia o para proteger chats privados</string>
     <string name="set_pin_again_summary">Vuelva a introducir el PIN.</string>
     <string name="set_pin_hint">PIN</string>
     <string name="title_addgroup">Grupo nuevo</string>
@@ -411,7 +410,7 @@
     <string name="prefs_sum_fullscreen_ime_on">El teclado llena toda la pantalla en orientación horizontal</string>
     <string name="prefs_sum_fullscreen_ime_off">Encima del teclado se ve un fragmento del chat</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="add_acount_from_within_threema">Cree un ID nuevo a partir de la aplicación ${app_name_short}.</string>
+    <string name="add_acount_from_within_threema">Gestiona tu ID de ${app_name_short} desde ${app_name_short}.</string>
     <string name="save_image">Guardar imagen</string>
     <string name="share_image">Compartir imagen</string>
     <string name="view_in_gallery">Ver en galería</string>
@@ -666,14 +665,14 @@ almacenado.</string>
     <string name="off">no</string>
     <string name="new_wizard_select_country">Código de país</string>
     <string name="new_wizard_lets_get_started">Comencemos</string>
-    <string name="new_wizard_setup_threema">Configurar ${app_name_short}</string>
+    <string name="new_wizard_setup_threema">Configurar ahora</string>
     <!-- Label on call-to-action button in setup wizard when app is first opened, to allow the user to start setting up the app. ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_new_wizard_setup_threema">Configurar ${app_name}</string>
     <string name="new_wizard_restore_id_backup">Restablecer ID exportada</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="new_wizard_welcome">Bienvenido a ${app_name}</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_move_finger">Desplace el dedo por la pantalla.</string>
+    <string name="new_wizard_move_finger">Mueve el dedo por la pantalla para generar un nuevo ID de ${app_name_short}.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_this_is_your_id">Su ID de ${app_name_short} es:</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -730,7 +729,7 @@ almacenado.</string>
     <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="new_wizard_anonymous_confirm">No ha introducido ni un número de teléfono ni una dirección de correo electrónico para vincular a su ID de ${app_name_short}. Usted no aparecerá en la lista de contactos de sus amigos. ¿Seguro que desea utilizar ${app_name} de esta forma completamente anónima?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_anonymous_confirm_phone_only">No ha introducido un número de móvil para vincular con su ID de ${app_name_short}. No aparecerá en la lista de contactos de sus amigos. ¿Quiere usar ${app_name} de forma anónima?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">No has introducido un número de teléfono para vincularlo a tu ID de ${app_name_short}. Por lo tanto, no se te añadirá automáticamente a las listas de contactos. ¿Realmente quieres usar ${app_name} de forma anónima?</string>
     <string name="new_wizard_scan_id_backup">O escanea el código QR de tu ID exportada.</string>
     <string name="error_saving_file">Error al guardar archivo. Compruebe los permisos.</string>
     <string name="wait_one_minute">Espere al menos 10 minutos a que llegue el SMS antes de realizar una llamada.</string>
@@ -892,9 +891,9 @@ almacenado.</string>
     <string name="prefs_summary_force_turn_off">Establecer una conexión directa y, si es posible, transmitir llamadas a contactos no verificados solo a través de los servidores de ${company_name}. Su dirección IP puede quedar al descubierto.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_summary_force_turn_on">Forzar la transmisión de todas las llamadas a través de los servidores de ${company_name}, protegiendo su dirección IP. Puede afectar a la calidad de la llamada.</string>
-    <string name="permission_record_audio_required">Para hacer llamadas encriptadas y enviar mensajes de voz, permita que ${app_name_short} acceda al micrófono.</string>
+    <string name="permission_record_audio_required">Para realizar llamadas cifradas y enviar mensajes de voz, permite el acceso al micrófono.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="prefs_voice_call_notifications">Llamadas de voz</string>
+    <string name="prefs_voice_call_notifications">Llamadas de ${app_name_short}</string>
     <string name="prefs_voice_call_sound">Tono llamada</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_sum_voice_call_sound">Seleccionar tono de llamada para llamadas entrantes ${app_name_short}</string>
@@ -963,7 +962,7 @@ almacenado.</string>
     <string name="webclient_session_stop_all">Cerrar todo</string>
     <string name="passphrase_service_name">Servicio de contraseña</string>
     <string name="passphrase_service_description">Notificación cuando se desbloquea la contraseña</string>
-    <string name="webclient_service_description">Notificación cuando haya una sesión de ${app_name_short} Web activa</string>
+    <string name="webclient_service_description">Notificación cuando una sesión web/escritorio está activa</string>
     <string name="prefs_title_accept_privacy_policy">Aceptar Política de privacidad</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="privacy_policy_explain">${app_name} protege tu privacidad con más rigor que cualquier otra aplicación de mensajería. Averigua más en nuestro %1$s.</string>
@@ -987,7 +986,7 @@ almacenado.</string>
     <string name="safe_learn_more_button">Descubra más</string>
     <string name="safe_enable_explain">Lo que necesitas para el chat se almacena solo en tu dispositivo. No tienes cuenta con nosotros y no podemos ayudarte si pierdes el teléfono o eliminas tus datos por accidente.\n\n${app_name_short} Safe crea copias de seguridad automáticas de todos los datos importantes, incluidas tus claves, tu lista de contactos y tus suscripciones a grupos (no el contenido de los mensajes), de forma anónima en un servidor seguro que elijas.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_disable_confirm">¿Quieres continuar sin habilitar ${app_name_short} Safe?</string>
+    <string name="safe_disable_confirm">¿Deseas continuar sin habilitar ${app_name_short} Safe? Al usar ${app_name_short} Safe, puedes restaurar tu ID de ${app_name_short}, tus contactos y tus grupos en caso de que pierdas el acceso a tu dispositivo.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_configure_choose_password">Elige una contraseña. Necesitarás una contraseña para restablecer tu copia de seguridad de ${app_name_short} Safe.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1004,7 +1003,7 @@ almacenado.</string>
     <string name="safe_threema_id">Tu ID de ${app_name_short}</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_restore_enter_id">Introduce la ID de ${app_name_short} que quieres recuperar</string>
-    <string name="safe_search_id_title">Introduce el número de móvil o la dirección de correo electrónico vinculados a tu cuenta</string>
+    <string name="safe_search_id_title">Introduce el número de teléfono móvil o la dirección de correo electrónico vinculados a tu ID de ${app_name_short}</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_id_lookup">Buscando ID de ${app_name_short}</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1237,7 +1236,7 @@ almacenado.</string>
     <string name="picture_in_picture_disabled_in_setting">El modo imagen en imagen está desactivado para %s. Actívelo en los ajustes del sistema.</string>
     <string name="delete_everything">Borrar todo</string>
     <string name="prefs_title_voip_video_enable">Permitir vídeo</string>
-    <string name="video_calls">Videollamadas de ${app_name_short}</string>
+    <string name="video_calls">Videollamadas</string>
     <string name="prefs_videocall_profile">Calidad de imagen preferida</string>
     <string name="videocall_profile_auto">Equilibrado (recomendado)</string>
     <string name="videocall_profile_low_bandwidth">Consumo de datos bajo</string>
@@ -1532,7 +1531,7 @@ almacenado.</string>
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) protege una comunicación grabada del descifrado retroactivo incluso si la clave de cifrado a largo plazo se ve comprometida.\n\nLa opción se puede activar si la app es compatible con PFS por ambas partes.</string>
     <string name="group_call_inactivity_left">Llamada grupal abandonada por inactividad</string>
     <string name="missing_permission_external_storage">No se ha podido copiar el archivo. Prueba lo siguiente:\n1. Abre los ajustes.\n2. Ve a \"Aplicaciones\" y selecciona \"Acceso especial a la app\".\n3. Toca en \"Acceso a todos los archivos\".\n4. Toca en los tres puntos de la parte superior derecha y selecciona \"Mostrar sistema\".\n5. Toca en \"Almacenamiento externo\" y verifica que la opción de \"Permitir acceso para gestionar todos los archivos\" está activada.\n6. Vuelve a intentar restaurar la copia de seguridad.</string>
-    <string name="forward_security_downgraded_status_message">Se ha desactivado Perfect Forward Secrecy en esta conversación porque no es compatible con la versión de la app de su compañero de chat.</string>
+    <string name="forward_security_downgraded_status_message">La confidencialidad perfecta hacia adelante \"Perfect Forward Secrecy\" se ha desactivado en este chat porque la versión de la aplicación de tu interlocutor no la admite o se está usando ${app_name_desktop} 2.0 para escritorio (beta).</string>
     <string name="forward_security_illegal_session_status_message">Se ha restablecido la sesión Perfect Forward Secrecy por invalidez.</string>
     <string name="crop_image_title">Recortar imagen</string>
     <string name="scroll_to_bottom">Desplácese hasta abajo</string>
@@ -1597,7 +1596,7 @@ almacenado.</string>
     <string name="status_orphaned_group">*Este grupo está huérfano*\nEl creador del grupo ha abandonado el grupo y ya no se puede mantener. Uno de los miembros que quedan puede clonar el grupo (a través de los detalles del grupo) para convertirse en el nuevo administrador.</string>
     <string name="group_not_a_member_notice">Ya no forma parte de este grupo y no puede usarlo.</string>
     <string name="group_dissolved_notice">Este grupo se ha disuelto y ya no puede usarse.</string>
-    <string name="md_linked_devices">Dispositivos vinculados</string>
+    <string name="md_linked_devices">${app_name_desktop} 2.0 para escritorio (Beta)</string>
     <string name="md_link_device">Vincular nuevo dispositivo</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
@@ -1639,7 +1638,7 @@ almacenado.</string>
     <string name="problemsolver_explain_app_battery_usgae_optimized">La app no tiene permiso para mantener una conexión permanente con los servidores, necesaria para que funcione ${app_name_short} Push. No se le informará de nuevos mensajes cuando la app esté en segundo plano. Para solucionarlo, pulse \"Uso de la batería de la app\" y seleccione \"Sin restricciones\".</string>
     <string name="problemsolver_to_settings">A la configuración</string>
     <!-- Label on button to dismiss/hide a warning -->
-    <string name="problemsolver_dismiss">Desestimar</string>
+    <string name="problemsolver_dismiss">Descartar</string>
     <string name="prefs_advanced_options">Opciones avanzadas</string>
     <string name="push_service">Servicio Push</string>
     <string name="edit_and_send">Editar y enviar</string>
@@ -1795,6 +1794,23 @@ almacenado.</string>
     <string name="remote_secret_deactivating">Desactivando ${remote_secret}</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">Error al desactivar ${remote_secret}. Por favor, compruebe su conexión a Internet e inténtelo de nuevo.</string>
+    <string name="referral_banner_title">Recomendar y beneficiarse</string>
+    <string name="referral_banner_body">¡Invita a tus amigos a usar Threema Work en su empresa y gana una bonificación por recomendación!</string>
+    <string name="referral_screen_title">Recomendar y beneficiarse</string>
+    <string name="referral_screen_subtitle">Recibe hasta el 10 % del importe de la primera factura de la empresa contratada.</string>
+    <string name="referral_how_it_works_title">Cómo funciona</string>
+    <string name="referral_how_it_works_referral_title">Recomendación</string>
+    <string name="referral_how_it_works_referral_body">Invita a un amigo o a su empresa a unirse a Threema Work. Es importante que facilites tu ID de Threema durante el registro o al comprar licencias para que tu recomendación pueda tenerse en cuenta.</string>
+    <string name="referral_how_it_works_requirements_title">Requisitos</string>
+    <string name="referral_how_it_works_requirements_body">La empresa recomendada no debe ser ya cliente nuestro y debe solicitar licencias</string>
+    <string name="referral_how_it_works_confirmation_title">Confirmación</string>
+    <string name="referral_how_it_works_confirmation_body">Para garantizar que tu recomendación se asigne y verifique correctamente, nos pondremos en contacto contigo antes de realizar el pago. Te informaremos tan pronto como se complete el proceso de verificación.</string>
+    <string name="referral_your_reward_title">Tu recompensa</string>
+    <string name="referral_your_reward_subtitle">Gana una bonificación por recomendación</string>
+    <string name="referral_your_reward_body">Por tu recomendación, recibirás el 10 % del importe de la primera factura de la empresa contratada (sin incluir impuestos ni tasas). La bonificación se te transferirá entre 30 y 60 días después de recibir el pago.</string>
+    <string name="referral_share_invitation_link">Compartir enlace de invitación</string>
+    <string name="referral_view_terms_and_conditions">Ver términos y condiciones</string>
+    <string name="referral_invitation_message_content">Hola, pensé que esto podría serte útil: Threema Work es una excelente opción para la comunicación empresarial segura. Aquí tienes el enlace de prueba: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>

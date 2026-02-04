@@ -50,10 +50,15 @@ class AppLockUtil(
 
     fun checkBiometrics(): BiometricsState {
         if (ActivityCompat.checkSelfPermission(appContext, Manifest.permission.USE_BIOMETRIC) != PackageManager.PERMISSION_GRANTED) {
+            logger.info("Biometrics permission not granted")
             return BiometricsState.NO_PERMISSION
         }
         val biometricManager = BiometricManager.from(appContext)
-        return when (biometricManager.canAuthenticate(BIOMETRIC_WEAK)) {
+        val canAuthenticate = biometricManager.canAuthenticate(BIOMETRIC_WEAK)
+        if (canAuthenticate != BiometricManager.BIOMETRIC_SUCCESS) {
+            logger.info("Biometrics unavailable ({})", canAuthenticate)
+        }
+        return when (canAuthenticate) {
             BiometricManager.BIOMETRIC_SUCCESS -> BiometricsState.AVAILABLE
             BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE,
             BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE,
@@ -68,17 +73,18 @@ class AppLockUtil(
         val executor = ContextCompat.getMainExecutor(activity)
         val authenticators = when (authType) {
             AuthType.ANY -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    when (checkBiometrics()) {
-                        BiometricsState.AVAILABLE -> DEVICE_CREDENTIAL or BIOMETRIC_WEAK
-                        else -> DEVICE_CREDENTIAL
-                    }
-                } else {
-                    // Android SDK 29 and lower does not support using `DEVICE_CREDENTIALS` on its own
-                    DEVICE_CREDENTIAL or BIOMETRIC_WEAK
+                when (checkBiometrics()) {
+                    BiometricsState.AVAILABLE -> DEVICE_CREDENTIAL or BIOMETRIC_WEAK
+                    else -> getDeviceCredentialAuthenticatorCompat()
                 }
             }
-            AuthType.BIOMETRIC -> BIOMETRIC_WEAK
+            AuthType.BIOMETRIC -> when (checkBiometrics()) {
+                BiometricsState.AVAILABLE -> BIOMETRIC_WEAK
+                else -> {
+                    logger.warn("Biometrics not available, fallback to credentials")
+                    getDeviceCredentialAuthenticatorCompat()
+                }
+            }
         }
         return suspendCoroutine { continuation ->
             val prompt = BiometricPrompt(
@@ -123,6 +129,15 @@ class AppLockUtil(
                 .build()
 
             prompt.authenticate(promptInfo)
+        }
+    }
+
+    private fun getDeviceCredentialAuthenticatorCompat(): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            DEVICE_CREDENTIAL
+        } else {
+            // Android SDK 29 and lower does not support using `DEVICE_CREDENTIALS` on its own
+            DEVICE_CREDENTIAL or BIOMETRIC_WEAK
         }
     }
 

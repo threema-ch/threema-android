@@ -32,6 +32,7 @@ import kotlinx.coroutines.runBlocking
 internal class TaskQueue(
     taskArchiver: TaskArchiver,
     private val dispatcherAsserters: TaskManagerImpl.TaskManagerDispatcherAsserters,
+    private val getDebugString: Task<*, *>.() -> String,
 ) {
     /**
      * A channel that allows the schedule dispatcher to notify the executor dispatcher that a new
@@ -44,7 +45,10 @@ internal class TaskQueue(
     /**
      * This queue contains the locally created tasks.
      */
-    private val localTaskQueue = LocalTaskQueue(taskArchiver)
+    private val localTaskQueue = LocalTaskQueue(
+        taskArchiver = taskArchiver,
+        getDebugString = getDebugString,
+    )
 
     /**
      * This queue contains the task created from inbound messages.
@@ -96,7 +100,10 @@ internal class TaskQueue(
     internal fun recreateIncomingMessageQueue(incomingMessageProcessor: IncomingMessageProcessor) {
         dispatcherAsserters.executorDispatcher.assertDispatcherContext()
 
-        incomingMessageQueue = IncomingMessageTaskQueue(incomingMessageProcessor)
+        incomingMessageQueue = IncomingMessageTaskQueue(
+            incomingMessageProcessor = incomingMessageProcessor,
+            getDebugString = getDebugString,
+        )
     }
 
     /**

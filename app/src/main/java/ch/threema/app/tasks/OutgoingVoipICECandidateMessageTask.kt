@@ -36,6 +36,8 @@ class OutgoingVoipICECandidateMessageTask(
 ) : OutgoingCspMessageTask(serviceManager) {
     override val type: String = "OutgoingVoipICECandidateMessageTask"
 
+    override val shortLogInfo: String = "cid=${voipICECandidatesData.callId}"
+
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = VoipICECandidatesMessage()
         message.data = voipICECandidatesData

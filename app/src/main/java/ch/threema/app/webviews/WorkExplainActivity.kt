@@ -50,7 +50,7 @@ class WorkExplainActivity : SimpleWebViewActivity() {
 
     override fun getWebViewTitle() = R.string.threema_work
 
-    override fun getWebViewUrl() = ConfigUtils.getWorkExplainURL(this)
+    override fun getWebViewUrl(isDarkTheme: Boolean) = ConfigUtils.getWorkExplainURL(this)
 
     companion object {
         private const val WORK_PACKAGE_NAME = "ch.threema.app.work"

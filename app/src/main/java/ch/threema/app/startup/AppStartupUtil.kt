@@ -34,6 +34,10 @@ import org.koin.android.ext.android.get
  * Once the app is ready, the calling activity will be recreated.
  */
 fun Activity.finishAndRestartLaterIfNotReady(): Boolean {
+    if (isFinishing) {
+        // If the activity is already finishing, there's no point in waiting or recreating the activity later
+        return true
+    }
     if (get<AppStartupMonitor>().isReady()) {
         return false
     }

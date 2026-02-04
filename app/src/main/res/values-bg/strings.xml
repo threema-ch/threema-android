@@ -814,7 +814,7 @@
     <string name="really_reset_ringtones">Наистина ли искате да възстановите настройките на звука на известията?</string>
     <string name="reset_ringtones_confirm">Настройките на известията на звука бяха възстановени.</string>
     <string name="prefs_language_override">Език</string>
-    <string name="threema_channel_intro">Threema каналът Ви предоставя новини за всичко около Threema. Искате ли да се абонирате за канала на Threema и да го добавите като контакт? Безплатно е и винаги можете да се отпишете.</string>
+    <string name="threema_channel_intro">${app_name_short} каналът Ви предоставя новини за всичко около ${app_name_short}. Искате ли да се абонирате за канала на ${app_name_short} и да го добавите като контакт? Безплатно е и винаги можете да се отпишете.</string>
     <string name="quote">Цитирайте</string>
     <string name="contacts_deleted">Контактът е изтрит</string>
     <string name="take_photo">Направете снимка</string>

@@ -22,7 +22,6 @@
 package ch.threema.domain.protocol.taskmanager
 
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.layer.Layer5Codec
 import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.taskmanager.TaskExecutionTest.UnexpectedExceptionTask.UnexpectedException
@@ -32,7 +31,6 @@ import ch.threema.domain.taskmanager.PassiveTask
 import ch.threema.domain.taskmanager.PassiveTaskCodec
 import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.SingleThreadedTaskManagerDispatcher
-import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskManagerImpl
 import io.mockk.every
 import io.mockk.mockk
@@ -68,18 +66,19 @@ class TaskExecutionTest {
      * The task manager that is tested.
      */
     private val taskManager: TaskManagerImpl = TaskManagerImpl(
-        { mockk<TaskArchiver>(relaxed = true) },
-        mockk<DeviceCookieManager>(),
-        TaskManagerImpl.TaskManagerDispatchers(
-            SingleThreadedTaskManagerDispatcher(
-                true,
-                "ExecutorDispatcher",
+        taskArchiverCreator = { mockk(relaxed = true) },
+        deviceCookieManager = mockk(),
+        dispatchers = TaskManagerImpl.TaskManagerDispatchers(
+            executorDispatcher = SingleThreadedTaskManagerDispatcher(
+                assertContext = true,
+                threadName = "ExecutorDispatcher",
             ),
-            SingleThreadedTaskManagerDispatcher(
-                true,
-                "ScheduleDispatcher",
+            scheduleDispatcher = SingleThreadedTaskManagerDispatcher(
+                assertContext = true,
+                threadName = "ScheduleDispatcher",
             ),
         ),
+        getDebugString = { "" },
     )
 
     /**

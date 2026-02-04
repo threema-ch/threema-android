@@ -23,6 +23,7 @@ package ch.threema.domain.taskmanager
 
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
@@ -30,7 +31,10 @@ import kotlinx.coroutines.sync.withLock
 
 private val logger = getThreemaLogger("LocalTaskQueue")
 
-internal class LocalTaskQueue(private val taskArchiver: TaskArchiver) {
+internal class LocalTaskQueue(
+    private val taskArchiver: TaskArchiver,
+    private val getDebugString: Task<*, *>.() -> String,
+) {
     /**
      * The mutex is required to access [taskQueue].
      */
@@ -94,8 +98,16 @@ internal class LocalTaskQueue(private val taskArchiver: TaskArchiver) {
 
         override suspend fun run(handle: TaskCodec) {
             logger.info("Running task {}", task.getDebugString())
-            done.complete(task.invoke(handle))
-            logger.info("Completed task {}", task.getDebugString())
+            try {
+                done.complete(task.invoke(handle))
+            } catch (e: Exception) {
+                when (e) {
+                    is CancellationException -> logger.info("Cancelled task {}", task.getDebugString())
+                    else -> logger.warn("Stopped task {} exceptionally", task.getDebugString())
+                }
+                throw e
+            }
+            logger.info("Completed task {} successfully", task.getDebugString())
             mutex.withLock {
                 taskQueue.remove(this)
                 taskArchiver.removeTask(task)
@@ -105,7 +117,7 @@ internal class LocalTaskQueue(private val taskArchiver: TaskArchiver) {
         override fun isCompleted() = done.isCompleted
 
         override suspend fun completeExceptionally(exception: Throwable) {
-            logger.warn("Completing task {} exceptionally", task.getDebugString(), exception)
+            logger.warn("Completed task {} exceptionally", task.getDebugString(), exception)
             done.completeExceptionally(exception)
             mutex.withLock {
                 taskQueue.remove(this)

@@ -37,7 +37,12 @@ class TermsOfServiceActivity : SimpleWebViewActivity() {
 
     override fun getWebViewTitle() = R.string.terms_of_service
 
-    override fun getWebViewUrl() = ConfigUtils.getTermsOfServiceURL(this)
+    override fun getWebViewUrl(isDarkTheme: Boolean) = ConfigUtils.getTermsOfServiceURL(
+        /* context = */
+        this,
+        /* isDarkTheme = */
+        isDarkTheme,
+    )
 
     companion object {
         fun createIntent(context: Context) = buildActivityIntent<TermsOfServiceActivity>(context)

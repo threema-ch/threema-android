@@ -38,6 +38,8 @@ class OutgoingVoipCallRingingMessageTask(
 
     override val type: String = "OutgoingVoipCallRingingMessageTask"
 
+    override val shortLogInfo: String = "cid=${voipCallRingingData.callId}"
+
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         val message = VoipCallRingingMessage()
         message.data = voipCallRingingData

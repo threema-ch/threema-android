@@ -1,3 +1,4 @@
-- Behebung eines Fehlers beim Zugriff auf gespeicherte Dateien
-- Nachrichtenentwürfe werden während des Tippens gespeichert
-- Verbesserungen und Behebung verschiedener Fehler
+- Neu: Empfehlen Sie Threema Work und erhalten Sie einen Referral-Bonus!
+- Emoji-Reaktionen lassen sich nun von TalkBack vorlesen
+- Behebung eines Fehlers bei Ruftönen von Threema-Anrufen
+- Behebung eines Fehlers, der bei Verwendung der App-Sperre auftreten konnte

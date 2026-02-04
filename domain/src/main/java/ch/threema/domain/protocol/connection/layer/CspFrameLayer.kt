@@ -34,8 +34,8 @@ private val logger = ConnectionLoggingUtil.getConnectionLogger("CspFrameLayer")
 
 internal class CspFrameLayer : Layer1Codec {
     override val encoder: PipeProcessor<OutboundL2Message, ByteArray, Unit> = MappingPipe {
-        logger.trace("Handle outbound message of type `{}`", it.type)
         if (it is ByteContainer) {
+            logger.info("Encoding ByteContainer of type={}, {} bytes", it.type, it.bytes.size)
             it.bytes
         } else {
             throw ServerConnectionException("OutboundL2Message has invalid type `${it.type}`")

@@ -34,12 +34,13 @@ interface Task<out R, in TaskCodecType> {
      * The type of the task. This is only used for logging purposes.
      */
     val type: String
-}
 
-/**
- * Get the task as debug string. This is only used for debugging.
- */
-fun <R, T> Task<R, T>.getDebugString(): String = "$type@${hashCode()}"
+    /**
+     * Tasks may provide some short information that will be appended to the [type] when logging the task.
+     */
+    val shortLogInfo: String?
+        get() = null
+}
 
 /**
  * An active task may send messages.

@@ -51,7 +51,7 @@ if (gradle.startParameter.taskRequests.toString().contains("Hms")) {
 /**
  * Only use the scheme "<major>.<minor>.<patch>" for the appVersion
  */
-val appVersion = "6.3.0"
+val appVersion = "6.3.1"
 
 /**
  * betaSuffix with leading dash (e.g. `-beta1`).
@@ -60,7 +60,7 @@ val appVersion = "6.3.0"
  */
 val betaSuffix = ""
 
-val defaultVersionCode = 1113
+val defaultVersionCode = 1116
 
 /**
  * Map with keystore paths (if found).
@@ -150,9 +150,6 @@ android {
         booleanBuildConfigField("MD_SYNC_DISTRIBUTION_LISTS", false)
         booleanBuildConfigField("AVAILABILITY_STATUS_ENABLED", BuildFeatureFlags["availability_status"] ?: false)
         booleanBuildConfigField("CRASH_REPORTING_SUPPORTED", BuildFeatureFlags["crash_reporting"] ?: false)
-
-        // TODO(ANDR-4376): Remove this build flag
-        booleanBuildConfigField("REFERRAL_PROGRAM_AVAILABLE", BuildFeatureFlags["referral_program_available"] ?: false)
 
         // config fields for action URLs / deep links
         stringBuildConfigField("uriScheme", "threema")
@@ -291,9 +288,6 @@ android {
             stringBuildConfigField("MAP_POI_NAMES_URL", "https://poi.test.threema.ch/names/{latitude}/{longitude}/{query}/")
             stringBuildConfigField("BLOB_MIRROR_SERVER_URL", "https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
             booleanBuildConfigField("CRASH_REPORTING_SUPPORTED", true)
-
-            // TODO(ANDR-4376): Remove this build flag
-            booleanBuildConfigField("REFERRAL_PROGRAM_AVAILABLE", true)
         }
         create("sandbox_work") {
             versionName = "${appVersion}k$betaSuffix"

@@ -753,10 +753,10 @@
     <string name="status_ballot_user_modified_vote">“%1$s” has changed the vote for “%2$s”</string>
     <string name="status_ballot_all_votes">Votes for “%1$s” complete</string>
     <string name="restore">Restore</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">You have entered neither a mobile number nor an email address to link to your ${app_name_short} ID. You will not appear on contact lists. Do you really want to use ${app_name} anonymously?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_anonymous_confirm_phone_only">You have not entered a phone number or an email address to link to your ${app_name_short} ID. You will therefore not automatically be added to contact lists. Do you really want to use ${app_name} anonymously?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">You have not entered a phone number to link to your ${app_name_short} ID. You will therefore not automatically be added to contact lists. Do you really want to use ${app_name} anonymously?</string>
     <string name="new_wizard_scan_id_backup">Or scan the QR code of your ID export</string>
     <string name="error_saving_file">Some files could not be saved</string>
     <string name="wait_one_minute">Please wait for at least 10 minutes for the SMS to arrive before requesting a call.</string>
@@ -840,7 +840,8 @@
     <string name="really_reset_ringtones">Really reset notification sound settings to defaults?</string>
     <string name="reset_ringtones_confirm">Notification sound settings have been reset.</string>
     <string name="prefs_language_override">Language</string>
-    <string name="threema_channel_intro">Threema Channel provides you with news about all things Threema. Would you like to subscribe to Threema Channel and add it to your contacts? It’s free and you can unsubscribe at any time.</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="threema_channel_intro">${app_name_short} Channel provides you with news about all things ${app_name_short}. Would you like to subscribe to ${app_name_short} Channel and add it to your contacts? It’s free and you can unsubscribe at any time.</string>
     <string name="quote">Quote</string>
     <string name="contacts_deleted">Contacts have been deleted</string>
     <string name="take_photo">Take photo</string>
@@ -1856,7 +1857,7 @@
     <string name="referral_your_reward_body">For your referral, you will receive 10% of the first invoice amount of the recruited company (excluding taxes/fees). The bonus will be transferred to you 30–60 days after receipt of payment.</string>
     <string name="referral_share_invitation_link">Share Invitation Link</string>
     <string name="referral_view_terms_and_conditions">View Terms &amp; Conditions</string>
-    <string name="referral_invitation_message_content">Hey! Try Threema Work for free with this invitation link: %1$s</string>
+    <string name="referral_invitation_message_content">Hi, I thought this could be useful for you: Threema Work is an excellent option for secure business communication. Here’s your test link: %1$s</string>
 
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>

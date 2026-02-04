@@ -30,6 +30,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AppCompatDelegate;
 
@@ -53,6 +54,8 @@ public abstract class SimpleWebViewActivity extends ThreemaToolbarActivity imple
     private LinearProgressIndicator progressBar;
     private WebView webView;
 
+    private boolean isDarkThemeForced = false;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -61,23 +64,18 @@ public abstract class SimpleWebViewActivity extends ThreemaToolbarActivity imple
         toolbar.setTitle(getWebViewTitle());
 
         Intent intent = getIntent();
-        Bundle extras = intent.getExtras();
-        final boolean darkThemeForced;
+        final @Nullable Bundle extras = intent.getExtras();
 
         if (extras != null && extras.getBoolean(FORCE_DARK_THEME, false)) {
-            darkThemeForced = true;
+            isDarkThemeForced = true;
             if (getConnectionIndicator() != null) {
-                // hide connection indicator when launched from wizard
+                // hide connection indicator when dark theme is forced
                 getConnectionIndicator().setVisibility(View.INVISIBLE);
             }
-        } else {
-            darkThemeForced = false;
         }
 
-        if (!ConfigUtils.isTheDarkSide(this)) {
-            if (darkThemeForced) {
-                getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-            }
+        if (!ConfigUtils.isTheDarkSide(this) && isDarkThemeForced) {
+            getDelegate().setLocalNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }
 
         progressBar = findViewById(R.id.progress);
@@ -121,7 +119,8 @@ public abstract class SimpleWebViewActivity extends ThreemaToolbarActivity imple
     }
 
     private void loadWebView() {
-        webView.loadUrl(getWebViewUrl());
+        final boolean isDarkTheme = ConfigUtils.isTheDarkSide(this) || isDarkThemeForced;
+        webView.loadUrl(getWebViewUrl(isDarkTheme));
     }
 
     private void checkConnection() {
@@ -149,7 +148,8 @@ public abstract class SimpleWebViewActivity extends ThreemaToolbarActivity imple
 
     protected abstract @StringRes int getWebViewTitle();
 
-    protected abstract String getWebViewUrl();
+    @NonNull
+    protected abstract String getWebViewUrl(boolean isDarkTheme);
 
     protected boolean requiresConnection() {
         return true;

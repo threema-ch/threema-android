@@ -83,10 +83,19 @@ import ch.threema.app.compose.theme.dimens.responsive
 import ch.threema.app.framework.EventHandler
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.MimeUtil
+import ch.threema.app.utils.logScreenVisibility
+import ch.threema.app.webviews.ReferralTosActivity
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.types.Identity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+private val logger = getThreemaLogger("ReferralActivity")
+
 class ReferralActivity : ThreemaActivity() {
+
+    init {
+        logScreenVisibility(logger)
+    }
 
     val viewModel by viewModel<ReferralViewModel>()
 
@@ -109,8 +118,8 @@ class ReferralActivity : ThreemaActivity() {
                     onClickShareInvitationLink = {
                         viewModel.onClickShareInvitationLink()
                     },
-                    onClickViewTerms = {
-                        // TODO(ANDR-4376): Open terms & conditions when provided
+                    onClickViewTos = {
+                        startActivity(ReferralTosActivity.createIntent(this))
                     },
                 )
             }
@@ -146,7 +155,7 @@ class ReferralActivity : ThreemaActivity() {
 private fun ReferralScreenContent(
     onClickedBack: () -> Unit,
     onClickShareInvitationLink: () -> Unit,
-    onClickViewTerms: () -> Unit,
+    onClickViewTos: () -> Unit,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
 
@@ -311,7 +320,7 @@ private fun ReferralScreenContent(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.referral_view_terms_and_conditions),
                     colorPrimaryOverride = colorResource(R.color.work_primary_fixed),
-                    onClick = onClickViewTerms,
+                    onClick = onClickViewTos,
                     maxLines = 1,
                 )
             }
@@ -367,7 +376,7 @@ private fun ReferralScreenContent_Preview() {
         ReferralScreenContent(
             onClickedBack = {},
             onClickShareInvitationLink = {},
-            onClickViewTerms = {},
+            onClickViewTos = {},
         )
     }
 }
@@ -381,7 +390,7 @@ private fun ReferralScreenContent_Preview_DynamicColors() {
         ReferralScreenContent(
             onClickedBack = {},
             onClickShareInvitationLink = {},
-            onClickViewTerms = {},
+            onClickViewTos = {},
         )
     }
 }

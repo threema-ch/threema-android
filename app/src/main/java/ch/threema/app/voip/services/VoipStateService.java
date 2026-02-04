@@ -28,15 +28,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
@@ -60,7 +56,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
+import androidx.core.app.Person;
 import androidx.core.content.LocusIdCompat;
+import androidx.core.graphics.drawable.IconCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
@@ -1459,7 +1457,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     @WorkerThread
     private Notification showNotification(
         @NonNull ContactModel contact,
-        @Nullable PendingIntent accept,
+        @NonNull PendingIntent accept,
         @NonNull PendingIntent reject,
         final VoipCallOfferMessage msg) {
         final long timestamp = System.currentTimeMillis();
@@ -1467,10 +1465,12 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         final PendingIntent inCallPendingIntent = createLaunchPendingIntent(contact.getIdentity(), msg);
         Notification notification = null;
 
+        String callerName = NameUtil.getDisplayNameOrNickname(contact, true);
+
         if (notificationManagerCompat.areNotificationsEnabled()) {
             final NotificationCompat.Builder nbuilder = new NotificationCompat.Builder(this.appContext, NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_CALLS)
                 .setContentTitle(appContext.getString(R.string.voip_notification_title))
-                .setContentText(appContext.getString(R.string.voip_notification_text, NameUtil.getDisplayNameOrNickname(contact, true)))
+                .setContentText(appContext.getString(R.string.voip_notification_text, callerName))
                 .setOngoing(true)
                 .setWhen(timestamp)
                 .setAutoCancel(false)
@@ -1514,23 +1514,29 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
                     .build()
                 );
 
+            Person.Builder personBuilder = new Person.Builder()
+                .setName(callerName)
+                .setKey(ContactUtil.getUniqueIdString(contact.getIdentity()));
+            Bitmap callerProfilePicture = contactService.getAvatar(contact.getIdentity(), false);
+            if (callerProfilePicture != null) {
+                personBuilder.setIcon(IconCompat.createWithBitmap(callerProfilePicture));
+            }
             // Add identity to notification for DND priority override
             String contactLookupUri = contactService.getAndroidContactLookupUriString(contact);
             if (contactLookupUri != null) {
-                nbuilder.addPerson(contactLookupUri);
+                personBuilder.setUri(contactLookupUri);
             }
+            Person person = personBuilder.build();
 
             nbuilder.setLocusId(new LocusIdCompat(ContactUtil.getUniqueIdString(contact.getIdentity())));
-
-            // Actions
-            final SpannableString rejectString = new SpannableString(appContext.getString(R.string.voip_reject));
-            rejectString.setSpan(new ForegroundColorSpan(Color.RED), 0, rejectString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            final SpannableString acceptString = new SpannableString(appContext.getString(R.string.voip_accept));
-            acceptString.setSpan(new ForegroundColorSpan(Color.GREEN), 0, acceptString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-            nbuilder.addAction(R.drawable.ic_call_end_grey600_24dp, rejectString, reject)
-                .addAction(R.drawable.ic_call_grey600_24dp, acceptString, accept != null ? accept : inCallPendingIntent);
+            nbuilder.addPerson(person);
+            nbuilder.setStyle(
+                NotificationCompat.CallStyle.forIncomingCall(
+                    person,
+                    reject,
+                    accept
+                )
+            );
 
             // Build notification
             notification = nbuilder.build();

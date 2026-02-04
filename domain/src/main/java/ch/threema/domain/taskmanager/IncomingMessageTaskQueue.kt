@@ -25,12 +25,14 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.InboundMessage
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 
 private val logger = getThreemaLogger("IncomingMessageTaskQueue")
 
 internal class IncomingMessageTaskQueue(
     private val incomingMessageProcessor: IncomingMessageProcessor,
+    private val getDebugString: Task<*, *>.() -> String,
 ) {
     /**
      * True if an incoming message task is currently being executed.
@@ -160,9 +162,17 @@ internal class IncomingMessageTaskQueue(
 
         override suspend fun run(handle: TaskCodec) {
             logger.info("Running task {}", task.getDebugString())
-            task.invoke(handle)
+            try {
+                task.invoke(handle)
+            } catch (e: Exception) {
+                when (e) {
+                    is CancellationException -> logger.info("Cancelled task {}", task.getDebugString())
+                    else -> logger.warn("Stopped task {} exceptionally", task.getDebugString())
+                }
+                throw e
+            }
             isCompleted = true
-            logger.info("Completed task {}", task.getDebugString())
+            logger.info("Completed task {} successfully", task.getDebugString())
             // Note that we do not need to set 'hasRunningTask' to false here. It suffices to set it
             // to false if 'getNextOrNull' returns null.
         }
@@ -170,7 +180,7 @@ internal class IncomingMessageTaskQueue(
         override fun isCompleted() = isCompleted
 
         override suspend fun completeExceptionally(exception: Throwable) {
-            logger.warn("Completing task {} exceptionally", task.getDebugString(), exception)
+            logger.warn("Completed task {} exceptionally", task.getDebugString(), exception)
             isCompleted = true
             // Note that we do not need to set 'hasRunningTask' to false here. It suffices to set it
             // to false if 'getNextOrNull' returns null.

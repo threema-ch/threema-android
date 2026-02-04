@@ -428,22 +428,26 @@ private class OutgoingCspMessageSender(
      * It is safe to call this method even if multi device is deactivated.
      */
     suspend fun reflectMessage(handle: ActiveTaskCodec) {
-        if (multiDeviceProperties != null && genericMessage.reflectOutgoing()) {
-            genericMessage.logMessage("Reflecting")
-            val cspNonces = receiverPairs.map { it.second }.toList()
-            val encryptedEnvelopeResult = getEncryptedOutgoingMessageEnvelope(
-                genericMessage,
-                cspNonces,
-                multiDeviceProperties.mediatorDeviceId,
-                multiDeviceProperties.keys,
-            )
+        if (multiDeviceProperties == null || !genericMessage.reflectOutgoing()) {
+            genericMessage.logMessage("Skipping reflection of")
+            return
+        }
 
-            if (encryptedEnvelopeResult != null) {
-                val reflectId: UInt = handle.reflect(encryptedEnvelopeResult)
-                pendingReflectAck = reflectId to encryptedEnvelopeResult.nonce
-            } else {
-                logger.error("Cannot reflect message")
-            }
+        genericMessage.logMessage("Reflecting")
+        val cspNonces = receiverPairs.map { it.second }.toList()
+        val encryptedEnvelopeResult = getEncryptedOutgoingMessageEnvelope(
+            genericMessage,
+            cspNonces,
+            multiDeviceProperties.mediatorDeviceId,
+            multiDeviceProperties.keys,
+        )
+
+        if (encryptedEnvelopeResult != null) {
+            val reflectId: UInt = handle.reflect(encryptedEnvelopeResult)
+            genericMessage.logMessage("Reflected (with reflect id $reflectId)")
+            pendingReflectAck = reflectId to encryptedEnvelopeResult.nonce
+        } else {
+            logger.error("Cannot reflect message")
         }
     }
 
@@ -455,13 +459,17 @@ private class OutgoingCspMessageSender(
      * @return the reflected at timestamp or null if there is nothing to await
      */
     suspend fun awaitReflectAck(handle: PassiveTaskCodec): ULong? {
-        val (reflectId, d2dNonce) = pendingReflectAck ?: return null
+        val (reflectId, d2dNonce) = pendingReflectAck ?: run {
+            logger.info("No pending reflect ack to await")
+            return null
+        }
+        logger.info("Awaiting reflect ack for message with reflect id {}", reflectId)
         val reflectedAt = handle.awaitReflectAck(reflectId)
         if (genericMessage.protectAgainstReplay()) {
             nonceFactory.store(NonceScope.D2D, d2dNonce)
         }
         pendingReflectAck = null
-        genericMessage.logMessage("Received reflect ack for")
+        logger.info("Received reflect ack for message with reflect id {}", reflectId)
         return reflectedAt
     }
 
@@ -470,7 +478,7 @@ private class OutgoingCspMessageSender(
      * not already a forward security envelope message.
      */
     suspend fun sendMessage(handle: ActiveTaskCodec) {
-        genericMessage.logMessage("Sending")
+        genericMessage.logMessage("Preparing to send")
         receiverPairs.mapNotNull { (receiver, nonce) ->
             // Encapsulate the messages with the given nonce. Note that this may lead to two
             // messages in total if an fs init or empty message needs to be sent too.
@@ -510,6 +518,7 @@ private class OutgoingCspMessageSender(
                     nonceFactory.store(NonceScope.CSP, nonce)
                 }
 
+                message.logMessage("Sending")
                 // Send the message
                 handle.write(
                     message.toCspMessage(
@@ -531,9 +540,12 @@ private class OutgoingCspMessageSender(
         handle: PassiveTaskCodec,
     ) {
         pendingCspMessageAcks.forEach { (receiverIdentity, messageId) ->
+            logger.info("Awaiting server ack of message {} to {}", messageId, receiverIdentity)
             handle.awaitOutgoingMessageAck(messageId, receiverIdentity)
+            logger.info("Awaited server ack of message {} to {}", messageId, receiverIdentity)
         }
         pendingCspMessageAcks.clear()
+        logger.info("Received all required server acks")
     }
 
     /**
@@ -546,6 +558,7 @@ private class OutgoingCspMessageSender(
             forwardSecurityMessageProcessor.commitSessionState(it)
         }
         forwardSecurityResults.clear()
+        logger.info("All forward security sessions committed")
     }
 
     /**
@@ -553,16 +566,20 @@ private class OutgoingCspMessageSender(
      * add the reflect ids to [pendingReflectAck].
      */
     suspend fun reflectMessageUpdateSent(handle: ActiveTaskCodec) {
-        if (multiDeviceProperties != null && genericMessage.reflectSentUpdate()) {
-            genericMessage.logMessage("Reflecting outgoing message sent update for")
-            val encryptedEnvelopeResult = getEncryptedOutgoingMessageUpdateSentEnvelope(
-                genericMessage,
-                multiDeviceProperties.mediatorDeviceId,
-                multiDeviceProperties.keys,
-            )
-            val reflectId: UInt = handle.reflect(encryptedEnvelopeResult)
-            pendingReflectAck = reflectId to encryptedEnvelopeResult.nonce
+        if (multiDeviceProperties == null || !genericMessage.reflectSentUpdate()) {
+            genericMessage.logMessage("Skipping reflection of message update sent for")
+            return
         }
+
+        genericMessage.logMessage("Reflecting outgoing message sent update for")
+        val encryptedEnvelopeResult = getEncryptedOutgoingMessageUpdateSentEnvelope(
+            genericMessage,
+            multiDeviceProperties.mediatorDeviceId,
+            multiDeviceProperties.keys,
+        )
+        val reflectId: UInt = handle.reflect(encryptedEnvelopeResult)
+        genericMessage.logMessage("Reflected outgoing message sent update (with reflect id $reflectId) for")
+        pendingReflectAck = reflectId to encryptedEnvelopeResult.nonce
     }
 
     fun storeForwardSecurityStateInfo() {

@@ -144,8 +144,13 @@ internal class D2mSocket(
     private suspend fun writeOutput() {
         while (!ioProcessingStopped) {
             val data = outbound.take()
-            logger.debug("Write {} bytes to output", data.size)
-            webSocket!!.send(data.toByteString())
+            logger.info("Sending {} bytes to web socket", data.size)
+            val successfullyEnqueued = webSocket!!.send(data.toByteString())
+            if (successfullyEnqueued) {
+                logger.info("Sent {} bytes successfully to web socket", data.size)
+            } else {
+                logger.warn("Failed to send {} bytes to web socket", data.size)
+            }
         }
     }
 

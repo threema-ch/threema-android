@@ -104,7 +104,7 @@
     <!-- Text shown when a task which shows a loading spinner takes longer than expected (e.g. creating a group) -->
     <string name="please_wait_timeout">Das dauert etwas länger als erwartet</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="wizard_first_create_id">Schlüsselpaar wird erzeugt…</string>
+    <string name="wizard_first_create_id">Ihre ${app_name_short}-ID wird erstellt…</string>
     <string name="wizard1_sync_contacts">Kontakte werden synchronisiert…</string>
     <string name="wizard2_email_hint">Ihre E-Mail-Adresse</string>
     <string name="wizard2_email_linking">E-Mail verknüpfen</string>
@@ -488,7 +488,7 @@
     <string name="really_delete_media">Möchten Sie diese %d Medien-Nachricht(en) wirklich löschen?</string>
     <string name="check_updates">Auf Updates prüfen</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
-    <string name="masterkey_lock_explain">${app_name} hält die Passphrase im RAM-Speicher. Wenn Sie häufig nach der Passphrase gefragt werden, kann dies an einer Task-Killer- oder Akku-Spar-App liegen, welche die Passphrase aus dem Speicher entfernt.</string>
+    <string name="masterkey_lock_explain">${app_name} hält die Passphrase im RAM-Speicher. Wenn Sie häufig nach der Passphrase gefragt werden, kann dies an einer Task-Killer- oder Akku-Spar-App liegen, welche ${app_name_short} frühzeitig beendet.</string>
     <string name="identity_already_exists">Diese ID ist bereits in Ihrer Kontaktliste</string>
     <string name="share_contact">Kontakt teilen</string>
     <string name="add_shortcut">Verknüpfung erstellen</string>
@@ -558,8 +558,7 @@
     <string name="show_as_qrcode">Als QR-Code anzeigen</string>
     <string name="qr_code">QR-Code</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="really_leave_id_export">Vergewissern Sie sich, dass Sie die Zeichenfolge des ID-Exports oder den QR-Code an einen
-sicheren Ort gesichert oder ausgedruckt haben.</string>
+    <string name="really_leave_id_export">Vergewissern Sie sich, dass Sie die Zeichenfolge des ID-Exports oder den QR-Code an einen sicheren Ort gesichert oder ausgedruckt haben. Ihre ${app_name_short}-ID kann ohne ein Backup nicht wiederhergestellt werden.</string>
     <string name="revocation_key_title">ID-Widerruf</string>
     <string name="revocation_key_not_set">Kein Widerrufspasswort gesetzt</string>
     <string name="revocation_key_set_at">Passwort gesetzt %1$s</string>
@@ -669,11 +668,11 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="prefs_exportlog">Logdatei teilen</string>
     <string name="prefs_exportlog_summary">Logdatei für Problemanalyse teilen</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="permission_storage_required">Aktivieren Sie die Speicher-Berechtigung, um Medien zu sichern oder zu senden.</string>
+    <string name="permission_storage_required">Aktivieren Sie die Speicher-Berechtigung für ${app_name}, um Medien zu sichern oder zu senden.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="permission_location_required">Aktivieren Sie die Standort-Berechtigung, um Ihre Position zu senden.</string>
+    <string name="permission_location_required">Aktivieren Sie die Standort-Berechtigung für ${app_name}, um Ihre Position zu senden.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="permission_contacts_required">Aktivieren Sie die Kontakte-Berechtigung, um einen Kontakt zu senden.</string>
+    <string name="permission_contacts_required">Aktivieren Sie die Kontakte-Berechtigung für ${app_name}, um einen Kontakt zu senden.</string>
     <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
     <string name="message_acknowledged">«Daumen hoch» gesendet</string>
     <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
@@ -729,10 +728,10 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="new_wizard_phone_invalid">Die angegebene Handynummer ist ungültig\nBitte korrigieren oder löschen Sie die markierten Angaben, bevor Sie fortfahren.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_fingerprint">Durch die Bewegung des Fingers erzeugen Sie Zufallsdaten (sogenannte Entropie), die für die Erzeugung des Schlüsselpaars genutzt werden. Dieses Schlüsselpaar wird mit Ihrer neuen ${app_name_short}-ID verbunden. Es besteht aus einem <b>öffentlichen Schlüssel</b>, der an Ihre Kontakte verteilt wird und einem <b>privaten Schlüssel</b>, der auf Ihrem Gerät verbleibt. Bei Ihren Kontakten wird der öffentliche Schlüssel genutzt, um Nachrichten an Sie zu verschlüsseln. Nur der Inhaber des privaten Schlüssels und niemand anderes kann die Nachrichten wieder entschlüsseln.</string>
-    <string name="new_wizard_info_id">Sie haben mit der ${app_name_short}-ID ein Schlüsselpaar erzeugt. Der öffentliche Schlüssel wurde an unseren Server gesendet.
+    <string name="new_wizard_info_id">Sie haben auch ein Schlüsselpaar erzeugt. Der öffentliche Schlüssel wurde sicher an unseren Server gesendet.
         Der private Schlüssel verlässt Ihr Gerät nie. Dies stellt sicher, dass niemand anderes Ihre Nachrichten lesen kann.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_sync_contacts">Wenn Sie diese Option aktivieren, werden E-Mail-Adressen und Telefonnummern aus Ihrem Adressbuch einwegverschlüsselt (gehasht), bevor sie zum Kontaktabgleich an der Server geschickt werden. Wir speichern keinerlei Adressbuchdaten.</string>
+    <string name="new_wizard_info_sync_contacts">Wenn Sie diese Option aktivieren, werden E-Mail-Adressen und Telefonnummern aus Ihrem Adressbuch von ${app_name_short} einwegverschlüsselt (gehasht), bevor sie zum Kontaktabgleich an der Server geschickt werden. Wir speichern keinerlei Adressbuchdaten.</string>
     <string name="new_wizard_info_sync_contacts_dialog">Die Kontakt-Synchronisation hilft Ihnen, Ihre Kontakte automatisch zu finden. Wenn Sie zustimmen, werden Handynummern und E-Mail-Adressen aus Ihrem Telefonbuch verschlüsselt an unseren Server gesendet und dort verglichen, um passende Kontakte zu finden. Die Daten werden weder gespeichert noch weitergegeben.\n\nMöchten Sie die Kontakt-Synchronisation aktivieren?</string>
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">Wenn Sie Ihre eigene Handynummer und/oder E-Mail-Adresse angeben, kann ${app_name_short} Ihren Kontakten helfen, Sie automatisch zu finden, wenn Sie in deren Adressbuch eingetragen sind. Die Angaben werden dazu in einwegverschlüsselter (gehashter) Form auf unserem Server gespeichert. Sie können diesen Schritt auch einfach übespringen, wenn Sie ${app_name} anonym benutzen möchten.</string>
@@ -752,9 +751,9 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="status_ballot_all_votes">Umfrage «%1$s» vollständig</string>
     <string name="restore">Wiederherstellen</string>
     <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
-    <string name="new_wizard_anonymous_confirm">Sie haben weder eine Handynummer noch eine E-Mail-Adresse zur Verknüpfung angegeben, weshalb Sie nicht automatisch zu Kontaktlisten hinzugefügt werden. Möchten Sie ${app_name} wirklich komplett anonym nutzen?</string>
+    <string name="new_wizard_anonymous_confirm">Sie haben weder eine Handynummer noch eine E-Mail-Adresse zur Verknüpfung mit Ihrer ${app_name_short}-ID angegeben, weshalb Sie nicht automatisch zu Kontaktlisten hinzugefügt werden. Möchten Sie ${app_name} wirklich komplett anonym nutzen?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_anonymous_confirm_phone_only">Sie haben keine Handynummer zur Verknüpfung angegeben, weshalb Sie nicht automatisch zu Kontaktlisten hinzugefügt werden. Möchten Sie ${app_name} wirklich komplett anonym nutzen?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">Sie haben keine Handynummer zur Verknüpfung mit Ihrer ${app_name_short}-ID angegeben, weshalb Sie nicht automatisch zu Kontaktlisten hinzugefügt werden. Möchten Sie ${app_name} wirklich komplett anonym nutzen?</string>
     <string name="new_wizard_scan_id_backup">Oder scannen Sie den QR-Code Ihres ID-Exports</string>
     <string name="error_saving_file">Einige Dateien konnten nicht gesichert werden</string>
     <string name="wait_one_minute">Bitte warten Sie mindestens 10 Minuten auf die SMS, bevor Sie einen Anruf anfordern.</string>
@@ -810,7 +809,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="lock_option_pin">PIN</string>
     <string name="lock_option_screenlock">System-Displaysperre</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="hide_chat_message_explain">Sie können den Zugriff auf bestimmte Chats mittels PIN schützen und die Chats temporär in der Chatliste ausblenden. Um diese Funktion zu nutzen, legen Sie bitte zuerst einen Zugriffsschutz fest.</string>
+    <string name="hide_chat_message_explain">${app_name_short} ermöglicht, den Zugriff auf bestimmte Chats mittels PIN zu schützen und die Chats temporär in der Chatliste auszublenden. Um diese Funktion zu nutzen, legen Sie bitte zuerst einen Zugriffsschutz fest.</string>
     <string name="set_lock">Jetzt aktivieren</string>
     <string name="prefs_title_access_protection">Zugriffsschutz</string>
     <string name="private_chat_subject">Privat</string>
@@ -833,12 +832,12 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="draft">Entwurf</string>
     <string name="prefs_bigger_single_emojis">Einzelne Emojis vergrössern</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="wizard1_sync_work">Synchronisierung läuft…</string>
+    <string name="wizard1_sync_work">${app_name}-Daten werden synchronisiert…</string>
     <string name="notification_hidden_text">Inhalte ausgeblendet</string>
     <string name="really_reset_ringtones">Benachrichtigungstöne auf Werkseinstellung zurücksetzen?</string>
     <string name="reset_ringtones_confirm">Benachrichtigungstöne wurden zurückgesetzt</string>
     <string name="prefs_language_override">Sprache</string>
-    <string name="threema_channel_intro">Der Threema Channel versorgt Sie mit Neuigkeiten zu Threema. Möchten Sie Threema Channel abonnieren und zu Ihren Kontakten hinzufügen? Es ist kostenlos und Sie können sich jederzeit abmelden.</string>
+    <string name="threema_channel_intro">Der ${app_name_short} Channel versorgt Sie mit Neuigkeiten zu ${app_name_short}. Möchten Sie ${app_name_short} Channel abonnieren und zu Ihren Kontakten hinzufügen? Es ist kostenlos und Sie können sich jederzeit abmelden.</string>
     <string name="quote">Zitieren</string>
     <string name="contacts_deleted">Kontakte wurden gelöscht</string>
     <string name="take_photo">Foto aufnehmen</string>
@@ -916,7 +915,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="prefs_summary_force_turn_off">Wenn möglich, direkte Verbindung nutzen und nur Anrufe an unverifizierte Kontakte über ${company_name}-Server leiten. Kann Ihre IP-Adresse preisgeben.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_summary_force_turn_on">Alle Anrufe über ${company_name}-Server leiten. Schützt Ihre IP-Adresse, kann aber zu schlechterer Anrufqualität führen.</string>
-    <string name="permission_record_audio_required">Aktivieren Sie die Mikrofon-Berechtigung, um verschlüsselte ${app_name_short}-Anrufe zu tätigen und Sprachnachrichten aufzunehmen.</string>
+    <string name="permission_record_audio_required">Aktivieren Sie die Mikrofon-Berechtigung, um verschlüsselte Anrufe zu tätigen und Sprachnachrichten aufzunehmen.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_voice_call_notifications">${app_name_short}-Anrufe</string>
     <string name="prefs_voice_call_sound">Klingelton</string>
@@ -1009,15 +1008,15 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="disable_autostart_title">Autostart</string>
     <string name="unchanged">unverändert</string>
     <string name="safe_learn_more_button">Mehr erfahren</string>
-    <string name="safe_enable_explain">Bei ${app_name_short} haben Sie kein zentrales Benutzerkonto. Ihre Daten befinden sich nur bei Ihnen auf diesem Gerät und sind so bestmöglich vor Fremdzugriff geschützt.\n\n${app_name_short} Safe erstellt regelmässig ein verschlüsseltes, anonymes Backup Ihrer <b>Schlüssel, Kontakte, Gruppen und Einstellungen</b> (aber keine Nachrichteninhalte) auf einem Server Ihrer Wahl. Ihre ID und das gewählte Passwort genügen, um diese Daten auf einem anderen Gerät wiederherzustellen.</string>
+    <string name="safe_enable_explain">Bei uns haben Sie kein zentrales Benutzerkonto. Ihre Daten befinden sich nur bei Ihnen auf diesem Gerät und sind so bestmöglich vor Fremdzugriff geschützt.\n\n${app_name_short} Safe erstellt regelmässig ein verschlüsseltes, anonymes Backup Ihrer <b>Schlüssel, Kontakte, Gruppen und Einstellungen</b> (aber keine Nachrichteninhalte) auf einem Server Ihrer Wahl. Ihre ID und das gewählte Passwort genügen, um diese Daten auf einem anderen Gerät wiederherzustellen.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_disable_confirm">Wollen Sie fortfahren, ohne ${app_name_short} Safe zu aktivieren? ${app_name_short} Safe erlaubt, Ihre ${app_name_short}-ID, Kontakte und Gruppen wiederherzustellen, falls Sie Ihr Gerät verlieren.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_configure_choose_password">Wählen Sie ein sicheres Passwort. Sie benötigen dieses Passwort, um Ihr ${app_name_short} Safe-Backup wiederherzustellen.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_configure_choose_server">Server auswählen</string>
+    <string name="safe_configure_choose_server">${app_name_short} Safe-Server auswählen</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_configure_server_explain">Speichern Sie Ihr ${app_name_short} Safe-Backup bei ${company_name} oder auf einem beliebigen Server Ihrer Wahl.</string>
+    <string name="safe_configure_server_explain">Sie können den Server von ${company_name} oder einen beliebigen Backup-Server Ihrer Wahl verwenden.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="onprem_safe_configure_server_explain">Speichern Sie Ihr ${app_name_short} Safe-Backup auf dem Server Ihrer Organisation, oder legen Sie einen anderen Backup-Server fest.</string>
     <string name="safe_use_default_server">Standardserver</string>
@@ -1045,7 +1044,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="safe_delete_success">Backup wurde erfolgreich vom Server gelöscht</string>
     <string name="safe_error_preparing">Fehler beim Vorbereiten des ${app_name_short} Safe-Backups</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_configure_choose_password_force">Setzen Sie ein starkes Passwort, um Ihre ID mit ${app_name_short} Safe abzusichern. Vergessen Sie nicht, was Sie hier eingeben!</string>
+    <string name="safe_configure_choose_password_force">Setzen Sie ein starkes Passwort, um Ihre ${app_name_short}-ID mit ${app_name_short} Safe abzusichern. Vergessen Sie nicht, was Sie hier eingeben!</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_deactivate">${app_name_short} Safe deaktivieren</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1126,8 +1125,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="hide_chat_enter_message_explain">Dieser Chat ist als privat markiert. Um ihn anzuzeigen, legen Sie bitte zuerst einen Zugriffsschutz fest.</string>
     <string name="unknown">Unbekannt</string>
     <string name="miui_notification_title">Wichtiger Hinweis für MIUI-Nutzer</string>
-    <string name="miui_notification_body">MIUI 10 unterbindet standardmässig Töne, LED und Popups für neu erstellte Benachrichtigungskanäle (ausser für einige Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen deshalb diese Parameter in den ${app_name_short}-spezifischen Benachrichtigungseinstellungen Ihres Handys für jeden Kanal aktivieren. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
-    <string name="miui12_notification_body">MIUI unterbindet standardmässig Töne, LED und Popups (ausser für einige sehr populäre Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen deshalb leider diese Optionen in den ${app_name_short}-spezifischen Benachrichtigungseinstellungen Ihres Handys manuell aktivieren und die Prozedur nach jedem App-Update wiederholen. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
+    <string name="miui_notification_body">MIUI 10 unterbindet standardmässig Töne und LED für neu erstellte Benachrichtigungskanäle (ausser für einige Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen deshalb diese Parameter in den App-spezifischen Benachrichtigungseinstellungen Ihres Handys für jeden Kanal aktivieren. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
+    <string name="miui12_notification_body">MIUI unterbindet standardmässig Töne, LED und Popups (ausser für einige sehr populäre Apps, die von Xiaomi als «wichtig» erachtet werden). Sie müssen diese Optionen deshalb in den App-spezifischen Benachrichtigungseinstellungen Ihres Handys manuell aktivieren und die Prozedur nach jedem App-Update wiederholen. Kontaktieren Sie den Hersteller Ihres Handys für weitere Informationen.</string>
     <string name="dont_show_again">Nicht mehr anzeigen</string>
     <string name="miui_notification_prefs">MIUI-Einstellungen</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1154,7 +1153,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="url_warning_body">Die Website, die Sie öffnen möchten ist verdächtig:\n\nAngezeigter Hostname: <b>%s</b>\nTatsächlicher Hostname: <b>%s</b>\n\nEs könnte sich um einen Versuch handeln, Sie auf eine gefälschte Website umzuleiten.\n\nMöchten Sie trotzdem fortfahren?</string>
     <string name="url_warning_title">Phishing-Warnung</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="permission_camera_qr_required">Um QR-Codes zu scannen wird Zugriff auf die Kamera benötigt</string>
+    <string name="permission_camera_qr_required">Um QR-Codes zu scannen, benötigt ${app_name} Zugriff auf die Kamera</string>
     <string name="voice_action_title">Sprachbefehle</string>
     <string name="voice_action_body">Sprachbefehl wird verarbeitet</string>
     <string name="permission_camera_photo_required">Um ein Foto zu machen, bitte Zugriff auf die Kamera erlauben</string>
@@ -1245,7 +1244,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="prefs_work_time_end">Arbeitsende</string>
     <string name="prefs_work_time_end_sum">Legen Sie das Arbeitsende fest</string>
     <string name="prefs_working_days_enable_title">Ruhezeit-Regelung</string>
-    <string name="prefs_working_days_enable_sum">Ausserhalb der Arbeitszeit keine Benachrichtigungen anzeigen und ${app_name_short}-Anrufe ablehnen</string>
+    <string name="prefs_working_days_enable_sum">Ausserhalb der Arbeitszeit keine Benachrichtigungen anzeigen und Anrufe ablehnen</string>
     <string name="work_life_dnd_active">Ruhezeit aktiv</string>
     <string name="warning">Warnung</string>
     <string name="password_remember_warning">Merken Sie sich, was Sie hier eingeben! Da %s keine Passwörter auf Servern speichert, können wir Ihnen nicht helfen, wenn Sie die PIN oder die Passphrase vergessen haben.</string>
@@ -1514,7 +1513,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="read_phone_state_dialog_message">Um zu verhindern, dass ${app_name_short} Anrufe reguläre Anrufe unterbrechen, wird die Telefon-Berechtigung benötigt. Falls diese Berechtigung nicht gegeben ist, wird ein ${app_name_short} Anruf einen regulären Anruf unterbrechen und umgekehrt.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="read_phone_state_short_message">Um laufende Anrufe zu berücksichtigen, wird die Telefon-Berechtigung benötigt.</string>
+    <string name="read_phone_state_short_message">Um laufende Anrufe zu berücksichtigen, benötigt ${app_name} die Telefon-Berechtigung.</string>
     <string name="prefs_title_read_phone_state">Telefon-Berechtigung erteilen</string>
     <string name="prefs_title_hibernation">Nicht verwendete Apps</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1533,14 +1532,14 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="checking_compatibility">Die Kompatibilität wird überprüft…</string>
     <string name="group_call_mic_permission_rationale">Um Gruppenanrufe tätigen zu können, müssen Sie unter «Berechtigungen» %s den Zugriff aufs Mikrofon erlauben.</string>
     <string name="group_call_mic_permission_description">Um Gruppenanrufe zu benutzen, wird die Mikrofon-Berechtigung benötigt, damit die anderen Sie hören können.</string>
-    <string name="call_mic_permission_description">Um ${app_name_short} Anrufe zu benutzen, wird die Mikrofon-Berechtigung benötigt, damit Sie gehört werden können.</string>
+    <string name="call_mic_permission_description">Für Anrufe wird die Mikrofon-Berechtigung benötigt, damit Sie gehört werden können.</string>
     <string name="group_call_camera_permission_rationale">Damit die anderen Teilnehmer Ihr Bild sehen können, müssen Sie unter «Berechtigungen» %s den Zugriff auf die Kamera erlauben.</string>
     <string name="group_call_phone_permission_description">Um Gruppenanrufe zu benutzen, wird die Telefon-Berechtigung benötigt, damit der Gruppenanruf beendet werden kann, wenn Sie einen anderen Anruf annehmen.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="call_phone_permission_description">Um ${app_name_short} Anrufe zu benutzen, wird die Telefon-Berechtigung benötigt, damit der ${app_name_short} Anruf beendet werden kann, wenn Sie einen anderen Anruf annehmen.</string>
-    <string name="group_call_nearby_devices_permission_description">Um Gruppenanrufe mit Bluetooth-Headset zu benutzen, wird die «Geräte in der Nähe»-Berechtigung benötigt, damit ${app_name} ein Bluetooth-Headset erkennen kann.</string>
+    <string name="group_call_nearby_devices_permission_description">Um Gruppenanrufe mit Bluetooth-Headset zu führen, wird die «Geräte in der Nähe»-Berechtigung benötigt, damit Bluetooth-Headsets erkannt werden können.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="call_nearby_devices_permission_description">Um ${app_name_short} Anrufe mit Bluetooth-Headset zu benutzen, wird die «Geräte in der Nähe»-Berechtigung benötigt, damit ${app_name} ein Bluetooth-Headset erkennen kann.</string>
+    <string name="call_nearby_devices_permission_description">Um ${app_name_short}-Anrufe mit Bluetooth-Headset zu führen, wird die «Geräte in der Nähe»-Berechtigung benötigt, damit Bluetooth-Headsets erkannt werden können.</string>
     <string name="settings">Einstellungen</string>
     <string name="leave">Verlassen</string>
     <string name="fs_key_mismatch">schlüsselfehler</string>
@@ -1772,7 +1771,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Im Verzeichnis suchen</string>
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
-    <string name="work_directory_empty_view_text">Bitte geben Sie mindestens 3 Zeichen eines Namens ein, um mit der Suche im Unternehmensverzeichnis zu beginnen oder wählen Sie eine Kategorie, indem Sie auf das Filter-Symbol tippen.</string>
+    <string name="work_directory_empty_view_text">Bitte geben Sie mindestens 3 Zeichen eines Namens ein, um im Unternehmensverzeichnis nach ${app_name_short}-Kontakten zu suchen.</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">Diese Datei ist ungültig und kann nicht geteilt werden</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
@@ -1819,10 +1818,8 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="remote_secret_deactivating">${remote_secret} wird deaktiviert</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">${remote_secret} konnte nicht deaktiviert werden. Bitte prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.</string>
-
     <string name="referral_banner_title">Empfehlen und profitieren</string>
     <string name="referral_banner_body">Laden Sie Ihre Freunde ein, Threema Work für ihr Unternehmen zu nutzen, und sichern Sie sich einen Empfehlungsbonus!</string>
-
     <string name="referral_screen_title">Empfehlen und profitieren</string>
     <string name="referral_screen_subtitle">Erhalten Sie bis zu 10% vom ersten Rechnungsbetrag des angeworbenen Unternehmens.</string>
     <string name="referral_how_it_works_title">So funktioniert’s</string>
@@ -1837,8 +1834,7 @@ sicheren Ort gesichert oder ausgedruckt haben.</string>
     <string name="referral_your_reward_body">Für Ihre Empfehlung erhalten Sie 10% des ersten Rechnungsbetrags des angeworbenen Unternehmens (exkl. Steuern/Gebühren). Der Bonus wird 30–60 Tage nach Zahlungseingang an Sie überwiesen.</string>
     <string name="referral_share_invitation_link">Einladungslink teilen</string>
     <string name="referral_view_terms_and_conditions">AGB ansehen</string>
-    <string name="referral_invitation_message_content">Hey! Teste Threema Work kostenlos mit diesem Einladungslink:  %1$s</string>
-
+    <string name="referral_invitation_message_content">Hi, ich dachte, das könnte für dich interessant sein: Threema Work ist eine hervorragende Lösung für die sichere Unternehmenskommunikation. Hier ist dein Testlink: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontakte</item>

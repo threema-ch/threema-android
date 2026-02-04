@@ -161,11 +161,12 @@ internal class CspSocket(
     private suspend fun writeOutput(outputStream: OutputStream) {
         while (!ioProcessingStopped) {
             val data = outbound.take()
-            logger.debug("Write {} bytes to output", data.size)
+            logger.info("Sending {} bytes to output stream", data.size)
             runInterruptible(Dispatchers.IO) {
                 outputStream.write(data)
                 outputStream.flush()
             }
+            logger.info("Sent {} bytes to output stream", data.size)
         }
     }
 

@@ -1,3 +1,4 @@
-- Fixed a bug in relation to access of stored files
-- Message drafts are saved while typing
-- Various improvements and bug fixes
+- New: Recommend Threema Work and earn a referral bonus!
+- Emoji reactions can now be read by TalkBack
+- Fixed a bug in relation to ringtones for Threema calls
+- Fixed a bug that could occur when the app lock is used

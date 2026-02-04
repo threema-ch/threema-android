@@ -104,7 +104,7 @@
     <!-- Text shown when a task which shows a loading spinner takes longer than expected (e.g. creating a group) -->
     <string name="please_wait_timeout">Das gaht länger als erwartet</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="wizard_first_create_id">Schlüsselpaar wird erzüügt…</string>
+    <string name="wizard_first_create_id">Ihri ${app_name_short}-ID wird erstellt…</string>
     <string name="wizard1_sync_contacts">Kontäkt werded synchronisiert…</string>
     <string name="wizard2_email_hint">Ihri E-Mail-Adrässe</string>
     <string name="wizard2_email_linking">E-Mail verchnüpfe</string>
@@ -409,7 +409,7 @@
     <string name="prefs_sum_fullscreen_ime_on">D’Tastatur füllt im Querformat de ganz Bildschirm</string>
     <string name="prefs_sum_fullscreen_ime_off">Oberhalb vode Tastatur wird en Uusschnitt vom Chat aazeigt</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="add_acount_from_within_threema">Erstelled Sie e neui ID vo de ${app_name_short}-App us.</string>
+    <string name="add_acount_from_within_threema">Verwalted Sie Ihri ${app_name_short}-ID vo de ${app_name_short}-App us.</string>
     <string name="save_image">Bild speichere</string>
     <string name="share_image">Bild teile</string>
     <string name="view_in_gallery">Ide Galerie aluege</string>
@@ -465,7 +465,7 @@
     <string name="really_delete_media">Wänd Sie die %d Medienachricht(e) würklich lösche?</string>
     <string name="check_updates">Uf Updates prüefe</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
-    <string name="masterkey_lock_explain">${app_name} halted d’Passphrase im RAM-Speicher. Wenn Sie hüüfig nach de Passphrase gfrögt werded, cha das anere Taskkiller- oder Akkuspar-App ligge, wo d’Passphrase usem Speicher entfernt.</string>
+    <string name="masterkey_lock_explain">${app_name} halted d’Passphrase im RAM-Speicher. Wenn Sie hüüfig nach de Passphrase gfrögt werded, deaktiviered Sie Taskkiller- oder Akkuspar-Apps, wo verursache chönnted, dass ${app_name_short} vorzitig beendet wird.</string>
     <string name="identity_already_exists">Die ID isch scho i Ihrere Kontaktliste</string>
     <string name="share_contact">Kontakt teile</string>
     <string name="add_shortcut">Verchnüpfig erstelle</string>
@@ -533,7 +533,7 @@
     <string name="show_as_qrcode">Als QR-Code aazeige</string>
     <string name="qr_code">QR-Code</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="really_leave_id_export">Vergwüssered Sie sich, dass Sie d’Zeichefolg vom ID-Export oder de QR-Code amene sichere Ort gspeicheret oder usdruckt händ.</string>
+    <string name="really_leave_id_export">Vergwüssered Sie sich, dass Sie d’Zeichefolg vom ID-Export oder de QR-Code amene sichere Ort gspeicheret oder usdruckt händ. Ihri ${app_name_short}-ID cha ohni es Backup nüme wiederhergstellt werde.</string>
     <string name="revocation_key_title">ID-Widerruef</string>
     <string name="revocation_key_not_set">Keis Widerruefspasswort gsetzt</string>
     <string name="revocation_key_set_at">Passwort gsetzt am %1$s</string>
@@ -636,11 +636,11 @@
     <string name="prefs_exportlog">Logdatei teile</string>
     <string name="prefs_exportlog_summary">Logdatei für Problemanalyse teile</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="permission_storage_required">Aktiviered Sie d’Speicher-Berächtigung, zum Medie z’sichere oder z’schicke.</string>
+    <string name="permission_storage_required">Aktiviered Sie d’Speicher-Berächtigung für ${app_name}, zum Medie z’sichere oder z’schicke.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="permission_location_required">Aktiviered Sie d’Standort-Berächtigung, zum Ihri Position z’schicke.</string>
+    <string name="permission_location_required">Aktiviered Sie d’Standort-Berächtigung für ${app_name}, zum en Standort z’schicke.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="permission_contacts_required">Aktiviered Sie d’Kontakt-Berächtigung, zum en Kontakt z’schicke.</string>
+    <string name="permission_contacts_required">Aktiviered Sie d’Kontakt-Berächtigung für ${app_name}, zum en Kontakt z’schicke.</string>
     <!-- "Thumbs up" should be translated by the name of the emoji 👍 -->
     <string name="message_acknowledged">«Duume ufe» gschickt</string>
     <!-- "Thumbs down" should be translated by the name of the emoji 👎 -->
@@ -695,9 +695,9 @@
     <string name="new_wizard_phone_invalid">D’Handynummere, wo Sie ageh händ, isch ungültig. Bitte korrigiered oder lösched Sie die markierte Agabe, bevor Sie wiitermached.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_fingerprint">Dur d’Bewegig vom Finger erzüüged Sie Zuefallsdate (sog. Entropie), wo für d’Erstellig vom Schlüsselpaar gnutzt werded. Das Schlüsselpaar wird mit Ihrere neue ${app_name_short}-ID verbunde. Es bestaht useme <b>öffentliche Schlüssel</b>, wo a Ihri Fründe verteilt wird, und eme <b>private Schlüssel</b>, wo uf Ihrem Grät bliibt. Bi Ihrne Fründe wird de öffentlich Schlüssel gnutzt, zum Nachrichte a Sie z’verschlüssle. Nur de Inhaber vom private Schlüssel und niemer sust cha d’Nachrichte wieder entschlüssle.</string>
-    <string name="new_wizard_info_id">Sie händ mit de ${app_name_short}-ID es Schlüsselpaar erzüügt. De öffentlich Schlüssel isch a üse Server gschickt worde. De privat Schlüssel verlaht Ihres Grät nie. Das stellt sicher, dass niemer anders Ihri Nachrichte läse cha.</string>
+    <string name="new_wizard_info_id">Sie händ au es Schlüsselpaar erzüügt. De öffentlich Schlüssel isch sicher a üse Server gschickt worde. De privat Schlüssel verlaht Ihres Grät nie. Das stellt sicher, dass niemer anders Ihri Nachrichte läse cha.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_sync_contacts">Wenn Sie die Option aktiviered, werded E-Mail-Adrässe und Telefonnummere us Ihrem Adrässbuech einwegverschlüsslet (ghasht), bevor sie zum Kontaktabgliich an Server gschickt werded. Mir speichered kei Adrässbuechdate.</string>
+    <string name="new_wizard_info_sync_contacts">Wenn Sie die Option aktiviered, werded E-Mail-Adrässe und Telefonnummere us Ihrem Adrässbuech dur ${app_name_short} einwegverschlüsslet (ghasht), bevor sie zum Kontaktabgliich an Server gschickt werded. Mir speichered kei Adrässbuechdate.</string>
     <string name="new_wizard_info_sync_contacts_dialog">D’Kontakt-Synchronisation hilft Ihne, Ihri Fründe automatisch z’finde. Wenn Sie zuestimmed, werded Handynummere und E-Mail-Adrässe us Ihrem Telefonbuech verschlüsslet a üsere Server gschickt und deet vergliche, zum passendi Kontäkt z’finde. Die Date werded weder gspeicheret no wiitergeh.\n\nWänd Sie d’Kontakt-Synchronisation aktiviere?</string>
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">Wenn Sie Ihri eigeni Telefonnummere und/oder E-Mail-Adrässe agebed, chan ${app_name_short} Ihrne Kontäkt helfe, Sie automatisch z’finde, wenn Sie i ihrem Adrässbuech iitreit sind. D’Agabe werded für das in einwegverschlüssleter (ghashter) Form uf üsem Server gspeicheret. Sie chönd de Schritt au eifach überspringe, wenn Sie ${app_name} anonym wänd nutze.</string>
@@ -717,9 +717,9 @@
     <string name="status_ballot_all_votes">Umfrag «%1$s» vollständig</string>
     <string name="restore">Wiederherstelle</string>
     <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
-    <string name="new_wizard_anonymous_confirm">Sie händ weder e Handynummere no e E-Mail-Adrässe zur Verchnüpfig ageh. Sie werded drum nöd automatisch in Kontaktliste ufgfüehrt. Wänd Sie ${app_name} würklich komplett anonym nutze?</string>
+    <string name="new_wizard_anonymous_confirm">Sie händ weder e Handynummere no e E-Mail-Adrässe zur Verchnüpfig mit Ihrere ${app_name_short}-ID ageh. Sie werded drum nöd automatisch in Kontaktliste ufgfüehrt. Wänd Sie ${app_name} würklich komplett anonym nutze?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_anonymous_confirm_phone_only">Sie händ kei Handynummere zur Verchnüpfig ageh. Sie werded drum nöd automatisch in Kontaktliste. Wänd Sie ${app_name} würklich komplett anonym nutze?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">Sie händ kei Handynummere zur Verchnüpfig mit Ihrere ${app_name_short}-ID ageh. Sie werded drum nöd automatisch in Kontaktliste azeigt. Wänd Sie ${app_name} würklich komplett anonym nutze?</string>
     <string name="new_wizard_scan_id_backup">Oder scanned Sie de QR-Code vo Ihrem ID-Export</string>
     <string name="error_saving_file">Es paar Dateie händ nöd chöne gsicheret werde</string>
     <string name="wait_one_minute">Bitte warted Sie mindestens 10 Minute uf das SMS, bevor Sie en Aruef aaforderet.</string>
@@ -775,7 +775,7 @@
     <string name="lock_option_pin">PIN</string>
     <string name="lock_option_screenlock">System-Displaysperri</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="hide_chat_message_explain">Sie chönd de Zuegriff uf bestimmti Chats mittels PIN schütze und d’Chats temporär ide Chatliste usblände. Zum die Funktion z’nutze, legged Sie bitte zerscht en Zuegriffsschutz fest.</string>
+    <string name="hide_chat_message_explain">${app_name_short} ermöglicht, de Zuegriff uf bestimmti Chats mittels PIN z’schütze und d’Chats temporär ide Chatliste uszblände. Zum die Funktion z’nutze, legged Sie bitte zerscht ide Iistellige en PIN oder e Gräte-Sperri fest.</string>
     <string name="set_lock">Jetzt aktiviere</string>
     <string name="prefs_title_access_protection">Zuegriffsschutz</string>
     <string name="private_chat_subject">Privat</string>
@@ -798,7 +798,7 @@
     <string name="draft">Entwurf</string>
     <string name="prefs_bigger_single_emojis">Einzelni Emojis vergrössere</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="wizard1_sync_work">Synchronisierig lauft…</string>
+    <string name="wizard1_sync_work">${app_name}-Date werded synchronisiert…</string>
     <string name="notification_hidden_text">Inhält usbländet</string>
     <string name="really_reset_ringtones">Benachrichtigungstön uf Werchsiistellige zruggsetze?</string>
     <string name="reset_ringtones_confirm">Benachrichtigungstön sind zrugggsetzt worde</string>
@@ -881,7 +881,7 @@
     <string name="prefs_summary_force_turn_off">Wenn möglich, direkti Verbindig nutze und nur Arüef a unverifizierti Kontäkt über ${company_name}-Server leite. Cha Ihri IP-Adrässe priisgeh.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_summary_force_turn_on">All Arüef über ${company_name}-Server leite. Schützt Ihri IP-Adrässe, cha aber zu schlächterer Aruefqualität füehre.</string>
-    <string name="permission_record_audio_required">Aktiviered Sie d’Mikrofon-Berächtigung, zum verschlüssleti ${app_name_short}-Arüef z’mache und Sprachnachrichte ufzneh.</string>
+    <string name="permission_record_audio_required">Aktiviered Sie d’Mikrofon-Berächtigung, zum verschlüssleti Arüef z’mache und Sprachnachrichte ufzneh.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_voice_call_notifications">${app_name_short}-Arüef</string>
     <string name="prefs_voice_call_sound">Klingelton</string>
@@ -974,15 +974,15 @@
     <string name="disable_autostart_title">Autostart</string>
     <string name="unchanged">unveränderet</string>
     <string name="safe_learn_more_button">Meh erfahre</string>
-    <string name="safe_enable_explain">Bi ${app_name_short} händ Sie keis zentrals Benutzerkonto. Ihri Date befindet sich nur bi Ihne uf dem Grät und sind so bestmöglich vor Fremdzuegriff gschützt.\n\n${app_name_short} Safe erstellt regelmässig es verschlüsslets, anonyms Backup vo Ihrne <b>Schlüssel, Kontäkt, Gruppe und Iistellige</b> (aber nöd vo Ihrne Nachrichteinhält) ufeme Server Ihrer Wahl. Ihri ID und s’gwählte Passwort langed, zum die Date ufeme andere Grät wiederherzstelle.</string>
+    <string name="safe_enable_explain">Alles, was Sie zum chatte bruched, isch nume uf Ihrem Grät gspeicheret. Es git keis zentrals Benutzerkonto, und falls Sie Ihres Handy verlüred oder us Versehe Ihri Date lösched, chönd mir die Date nüme wiederherstelle.\n\n${app_name_short} Safe erstellt regelmässig es verschlüsslets, anonyms Backup vo wichtige Date wie Schlüssel, Kontäkt und Gruppezueghörigkeite (aber nöd vo Nachrichteinhält) ufeme Server Ihrer Wahl.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_disable_confirm">Wänd Sie wiitermache, ohni ${app_name_short} Safe z’aktiviere? ${app_name_short} Safe erlaubt, Ihri ${app_name_short}-ID, Kontäkt und Gruppe wiederherzstelle, falls Sie Ihres Grät verlüüred.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_configure_choose_password">Wähled Sie es sichers Passwort. Sie benötiged das Passwort, zum Ihres ${app_name_short} Safe-Backup wiederherzstelle.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_configure_choose_server">Server uswähle</string>
+    <string name="safe_configure_choose_server">${app_name_short} Safe-Server uswähle</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_configure_server_explain">Speichered Sie Ihres ${app_name_short} Safe-Backup bi ${company_name} oder ufeme beliebige Server Ihrer Wahl.</string>
+    <string name="safe_configure_server_explain">Sie chönd de Server vo ${company_name} oder en beliebige Backup-Server Ihrer Wahl bruuche.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="onprem_safe_configure_server_explain">Speichered Sie Ihres ${app_name_short} Safe-Backup ufem Server vo Ihrere Organisation, oder legged Sie en andere Backup-Server fest.</string>
     <string name="safe_use_default_server">Standardserver</string>
@@ -1010,7 +1010,7 @@
     <string name="safe_delete_success">Backup isch erfolgriich vom Server glöscht worde</string>
     <string name="safe_error_preparing">Fehler bim Vorbereite vom ${app_name_short} Safe-Backup</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_configure_choose_password_force">Setzed Sie es starchs Passwort, zum Ihri ID mit ${app_name_short} Safe abzsichere. Vergässed Sie nöd, was Sie da iigebed!</string>
+    <string name="safe_configure_choose_password_force">Setzed Sie es starchs Passwort, zum Ihri ${app_name_short}-ID mit ${app_name_short} Safe abzsichere. Vergässed Sie nöd, was Sie da iigebed!</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_deactivate">${app_name_short} Safe deaktiviere</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1091,8 +1091,8 @@
     <string name="hide_chat_enter_message_explain">De Chat isch als privat markiert. Zum ihn aa z’zeige, legged Sie bitte zerscht en Zuegriffsschutz fest.</string>
     <string name="unknown">Unbekannt</string>
     <string name="miui_notification_title">Wichtige Hiiwis für MIUI-Nutzer</string>
-    <string name="miui_notification_body">MIUI 10 underbindet standardmässig Tön, LED und Popups für neu erstellti Benachrichtigungskanäl (usser für eigeni Apps, wo vo Xiaomi als «wichtig» erachtet werded). Sie müend drum die Parameter ide ${app_name_short}-spezifische Benachrichtigungsiistellige vo Ihrem Handy für jede Kanal aktiviere. Kontaktiered Sie de Hersteller vo Ihrem Handy für wiiteri Informatione.</string>
-    <string name="miui12_notification_body">MIUI underbindet standardmässig Tön, LED und Popups für neu erstellti Benachrichtigungskanäl (usser für sehr populäri Apps, wo vo Xiaomi als «wichtig» erachtet werded). Sie müend drum die Optione ide ${app_name_short}-spezifische Benachrichtigungsiistellige vo Ihrem Handy manuell aktiviere und die Prozedur nach jedem App-Update wiederhole. Kontaktiered Sie de Hersteller vo Ihrem Handy für wiiteri Informatione.</string>
+    <string name="miui_notification_body">MIUI 10 underbindet standardmässig Tön und LED für neu erstellti Benachrichtigungskanäl (usser für es paar Apps, wo vo Xiaomi als «wichtig» erachtet werded). Sie müend drum die Parameter ide App-spezifische Benachrichtigungsiistellige vo Ihrem Handy für jede Kanal aktiviere. Kontaktiered Sie de Hersteller vo Ihrem Handy für wiiteri Informatione.</string>
+    <string name="miui12_notification_body">MIUI underbindet standardmässig Tön, LED und Popups für neu erstellti Benachrichtigungskanäl (usser für sehr populäri Apps, wo vo Xiaomi als «wichtig» erachtet werded). Sie müend drum die Optione ide App-spezifische Benachrichtigungsiistellige vo Ihrem Handy manuell aktiviere und die Prozedur nach jedem App-Update wiederhole. Kontaktiered Sie de Hersteller vo Ihrem Handy für wiiteri Informatione.</string>
     <string name="dont_show_again">Nüme aazeige</string>
     <string name="miui_notification_prefs">MIUI-Iistellige</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1119,7 +1119,7 @@
     <string name="url_warning_body">D’Website, wo Sie wänd ufmache, isch verdächtig: \n\nDe aazeigt Hostname: <b>%s</b> \nDe tatsächlich Hostname:<b>%s</b>\n\nEs chönnt sich um en Versuech handle, Sie uf e gfälschti Website umzleite. \n\nWänd Sie trotzdem wiitermache?</string>
     <string name="url_warning_title">Phishing-Warnig</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="permission_camera_qr_required">Zum QR-Codes z’scanne, wird Zuegriff uf d’Kamera benötigt</string>
+    <string name="permission_camera_qr_required">Zum QR-Codes z’scanne, brucht ${app_name} Zuegriff uf d’Kamera</string>
     <string name="voice_action_title">Sprachbefehl</string>
     <string name="voice_action_body">Sprachbefehl wird verarbeitet</string>
     <string name="permission_camera_photo_required">Zum es Foti z’mache, erlaubed Sie bitte de Zuegriff uf d’Kamera</string>
@@ -1783,6 +1783,23 @@
     <string name="remote_secret_deactivating">${remote_secret} wird deaktiviert</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">${remote_secret} hät nöd chöne deaktiviert werde. Bitte prüefed Sie Ihri Internetverbindig und versueched Sie’s nomal.</string>
+    <string name="referral_banner_title">Empfehle und profitiere</string>
+    <string name="referral_banner_body">Laded Sie Ihri Fründe ii, Threema Work im Gschäft z’bruche, und sichered Sie sich en Empfehligsbonus!</string>
+    <string name="referral_screen_title">Empfehle und profitiere</string>
+    <string name="referral_screen_subtitle">Staubed Sie bis zu 10% vom erste Rechnigsbetrag vode aagworbene Firma ab.</string>
+    <string name="referral_how_it_works_title">So funktioniert’s</string>
+    <string name="referral_how_it_works_referral_title">Empfehlig</string>
+    <string name="referral_how_it_works_referral_body">Laded Sie en Fründ bzw. dem sini Firma zu Threema Work ii. Wichtig isch, dass Ihri Threema-ID bide Registrierig oder bim Chauf vo Lizänze aageh wird, damit Ihri Empfehlig berücksichtigt werde cha.</string>
+    <string name="referral_how_it_works_requirements_title">Voruussetzige</string>
+    <string name="referral_how_it_works_requirements_body">Di aagworbe Firma dörf no kein Chund vo üs sii und mues e choschtepflichtigi Bstellig vo Lizänze ufgeh.</string>
+    <string name="referral_how_it_works_confirmation_title">Bestätigung</string>
+    <string name="referral_how_it_works_confirmation_body">Damit Ihri Empfehlig cha richtig zuegordnet und überprüeft werde, mäldet mir üs vor de Uszahlig bi Ihne. Sobald d’Prüefig abgschlosse isch, tüend mir Sie informiere.</string>
+    <string name="referral_your_reward_title">Ihri Belohnig</string>
+    <string name="referral_your_reward_subtitle">Staubed Sie en Empfehligsbonus ab</string>
+    <string name="referral_your_reward_body">Für Ihri Empfehlig chömed Sie 10% über vom erste Rechnigsbetrag vode aagworbne Firma (exkl. Stüüre/Gebühre). De Bonus wird 30–60 Täg nach Zahligsiigang a Sie überwise.</string>
+    <string name="referral_share_invitation_link">Iiladigslink teile</string>
+    <string name="referral_view_terms_and_conditions">AGB aluege</string>
+    <string name="referral_invitation_message_content">Hoi, das chönnt für dich no interessant sii: Threema Work isch e hervorragendi Lösig für sicheri Gschäftskommunikation. Da isch din Testlink: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontäkt</item>

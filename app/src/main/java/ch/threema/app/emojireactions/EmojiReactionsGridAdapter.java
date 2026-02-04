@@ -98,7 +98,6 @@ public class EmojiReactionsGridAdapter extends BaseAdapter {
         }
 
         if (view.setEmoji(item.emojiSequence, false, diverseHintColor) != null) {
-            view.setContentDescription(item.emojiSequence);
             view.setOnClickListener(v -> keyClickListener.onEmojiReactionClicked(item.emojiSequence));
             view.post(() -> view.setSelected(item.isSender));
         } else {

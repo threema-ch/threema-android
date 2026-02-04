@@ -47,7 +47,7 @@ class SupportActivity : SimpleWebViewActivity() {
 
     override fun getWebViewTitle() = R.string.support
 
-    override fun getWebViewUrl(): String =
+    override fun getWebViewUrl(isDarkTheme: Boolean) =
         getBaseUrl().toUri()
             .buildUpon()
             .appendQueryParameter("lang", LocaleUtil.getAppLanguage())

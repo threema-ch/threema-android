@@ -29,7 +29,6 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.taskmanager.getDebugString
 import ch.threema.storage.factories.TaskArchiveFactory
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -39,6 +38,7 @@ private val logger = getThreemaLogger("TaskArchiverImpl")
 class TaskArchiverImpl(
     private val taskArchiveFactory: TaskArchiveFactory,
     private val taskRecoveryManager: TaskRecoveryManager,
+    private val getDebugString: Task<*, *>.() -> String,
 ) : TaskArchiver {
     private var serviceManager: ServiceManager? = null
 

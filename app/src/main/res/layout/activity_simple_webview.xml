@@ -50,7 +50,6 @@
             android:id="@+id/simple_webview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="@dimen/grid_unit_x1"
             android:background="?android:attr/colorBackground"
             android:scrollbars="none" />
 

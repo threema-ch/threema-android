@@ -33,7 +33,6 @@ import android.widget.Toast;
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import androidx.annotation.NonNull;
@@ -64,6 +63,9 @@ import ch.threema.app.utils.executor.BackgroundTask;
 import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.ThreemaException;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.common.Http;
+import ch.threema.common.HttpResponseException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
@@ -85,6 +87,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
     private static final String DIALOG_TAG_WORK_SYNC = "workSync";
     private static final String DIALOG_TAG_PASSWORD_PRESET_CONFIRM = "safe_pw_preset";
     private static final String DIALOG_TAG_APPLICATION_SETUP_RETRY = "app-setup-retry";
+    private static final String ERROR_WITHOUT_DETAILS = "";
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
@@ -253,10 +256,14 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
                     return null;
                 } catch (ThreemaException | IOException e) {
                     logger.error("Failed to restore backup", e);
-                    if (e instanceof FileNotFoundException) {
+                    if (e instanceof HttpResponseException && ((HttpResponseException) e).getCode() == Http.StatusCode.NOT_FOUND) {
                         return getString(R.string.safe_no_backup_found);
                     }
-                    return e.getLocalizedMessage();
+                    if (e instanceof ThreemaException) {
+                        // TODO(ANDR-4447): The error message should be localized
+                        return e.getMessage();
+                    }
+                    return ERROR_WITHOUT_DETAILS;
                 }
             }
 
@@ -272,9 +279,13 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
                 if (failureMessage == null) {
                     runApplicationSetupStepsAndFinish();
                 } else {
+                    var message = getString(R.string.safe_restore_failed);
+                    if (!failureMessage.equals(ERROR_WITHOUT_DETAILS)) {
+                        message += ". " + failureMessage;
+                    }
                     LongToast.makeText(
                         WizardSafeRestoreActivity.this,
-                        getString(R.string.safe_restore_failed) + ". " + failureMessage,
+                        message,
                         Toast.LENGTH_LONG
                     ).show();
                     if (safeMDMConfig.isRestoreForced()) {

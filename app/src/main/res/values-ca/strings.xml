@@ -156,7 +156,6 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="delete_id_title">Eliminar ID</string>
     <string name="delete_id_message">A menys que hàgiu creat una còpia de seguretat o exportat i desat una còpia d\'aquesta ID, mai més podreu tornar a enviar o rebre missatges amb aquesta ID.\n\nSi no voleu tornar a utilitzar aquesta ID, es recomana definir una contrasenya de revocació i revocar la ID a myid.threema.ch/revoke abans d\'esborrar-la.</string>
     <string name="delete_id_message2">Darrera advertència: segur que voleu eliminar la vostra ID en aquest dispositiu?</string>
-    <string name="delete_id_sum">Eliminar permanentment la vostra ID i totes les dades en aquest dispositiu</string>
     <string name="backup_password_summary">La vostra exportació d\'ID serà xifrada amb una contrasenya. Utilitzeu una combinació de lletres, números i símbols. No l\'oblideu!</string>
     <string name="backup_password_again_summary">Torneu a entrar la contrasenya</string>
     <string name="password_hint">Contrasenya</string>
@@ -825,7 +824,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="prefs_summary_force_turn_on">Forçar la retransmissió de totes les trucades a través dels servidors de ${company_name}, protegint la vostra adreça IP. Podria afectar la qualitat de la trucada.</string>
     <string name="permission_record_audio_required">Per fer trucades xifrades i enviar missatges de veu permeteu accés al micròfon.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="prefs_voice_call_notifications">Trucades de veu</string>
     <string name="prefs_voice_call_sound">To de trucada</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_sum_voice_call_sound">Seleccionar el to de trucada per les trucades entrants de ${app_name_short}</string>
@@ -933,7 +931,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="safe_threema_id">La vostra ID de ${app_name_short}</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_restore_enter_id">Entreu la ID de ${app_name_short} que voldríeu recuperar</string>
-    <string name="safe_search_id_title">Entreu el número de mòbil o l\'adreça de correu electrònic enllaçada amb la vostra ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_id_lookup">Buscant la ID de ${app_name_short}</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->

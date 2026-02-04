@@ -30,7 +30,7 @@ import ch.threema.app.receivers.WidgetProvider
 object WidgetUtil {
     @JvmStatic
     fun updateWidgets(context: Context) {
-        val appWidgetManager = AppWidgetManager.getInstance(context)
+        val appWidgetManager = AppWidgetManager.getInstance(context) ?: return
         val widgetIds = appWidgetManager.getAppWidgetIds(ComponentName(context, WidgetProvider::class.java))
         appWidgetManager.notifyAppWidgetViewDataChanged(widgetIds, R.id.widget_list)
     }

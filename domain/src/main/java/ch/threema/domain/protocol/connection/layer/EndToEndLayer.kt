@@ -96,7 +96,7 @@ internal class EndToEndLayer(
 
         CoroutineScope(outputDispatcher).launch {
             val l5Message = mapMessage(message)
-            logger.debug("Send outbound message of type `{}`", l5Message.type)
+            logger.info("Queuing outbound message of type `{}`", l5Message.type)
             outbound.send(l5Message)
         }
     }

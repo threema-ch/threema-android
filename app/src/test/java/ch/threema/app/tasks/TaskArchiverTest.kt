@@ -39,6 +39,9 @@ import kotlin.test.assertTrue
 class TaskArchiverTest {
     private val serviceManagerMock = mockk<ServiceManager>()
 
+    // For this test we do not need to log debug info of tasks
+    private val getDebugString: Task<*, *>.() -> String = { "" }
+
     @Test
     fun `old task encoding is recovered`() {
         val oldTaskEncoding = "oldTaskEncoding"
@@ -58,6 +61,7 @@ class TaskArchiverTest {
         val taskArchiver = TaskArchiverImpl(
             taskArchiveFactory = taskArchiveFactoryMock,
             taskRecoveryManager = taskRecoveryManagerMock,
+            getDebugString = getDebugString,
         )
 
         taskArchiver.setServiceManager(serviceManagerMock)
@@ -84,6 +88,7 @@ class TaskArchiverTest {
         val taskArchiver = TaskArchiverImpl(
             taskArchiveFactory = taskArchiveFactoryMock,
             taskRecoveryManager = taskRecoveryManagerMock,
+            getDebugString = getDebugString,
         )
 
         taskArchiver.setServiceManager(serviceManagerMock)
@@ -123,6 +128,7 @@ class TaskArchiverTest {
         val taskArchiver = TaskArchiverImpl(
             taskArchiveFactory = taskArchiveFactoryMock,
             taskRecoveryManager = taskRecoveryManagerMock,
+            getDebugString = getDebugString,
         )
 
         taskArchiver.setServiceManager(serviceManagerMock)

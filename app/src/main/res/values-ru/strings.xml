@@ -15,7 +15,7 @@
     <string name="title_invite_friend">Пригласить друга</string>
     <string name="invite_via">Пригласить друга через…</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="invite_email_body">Привет!\n\nЯ использую %1$s – приложение для безопасного мгновенного обмена сообщениями, защищающее конфиденциальность пользователей.\n\nМой ${app_name_short} ID: https://threema.id/%2$s\n\nДавайте общаться в %1$s!\n\nУдачи!\n</string>
+    <string name="invite_email_body">Привет!\n\nЯ использую %1$s — приложение для безопасного мгновенного обмена сообщениями, защищающее конфиденциальность пользователей.\n\nМой ${app_name_short} ID: https://threema.id/%2$s\n\nДавайте общаться в %1$s!\n\nУдачи!\n</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="invite_sms_body">Давайте использовать %1$s для безопасной и конфиденциальной связи! Мой ${app_name_short} ID: https://threema.id/%2$s</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -160,12 +160,12 @@
     <string name="check_incoming_sms">Проверка входящего SMS</string>
     <string name="backup_title">Экспорт ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="backup_sum">Экспортировать свой ID ${app_name_short}</string>
+    <string name="backup_sum">Экспортировать свой ${app_name_short} ID</string>
     <string name="backup_and_delete">Резервное копирование и удаление</string>
     <string name="delete_id_title">Удалить ID</string>
     <string name="delete_id_message">Если у вас нет созданной или экспортированной резервной копии этого ID, вы больше никогда не сможете отправлять или получать сообщения, используя этот ID.\n\nЕсли вы больше не хотите использовать этот ID, рекомендуется задать пароль аннулирования и отозвать ID на сайте myid.threema.ch/revoke перед его удалением.</string>
     <string name="delete_id_message2">Последнее предупреждение: вы действительно хотите удалить свой ID?</string>
-    <string name="delete_id_sum">Навсегда удалить свой ID и все данные на этом устройстве</string>
+    <string name="delete_id_sum">Навсегда удалить свой ${app_name_short} ID и все данные на этом устройстве</string>
     <string name="delete_all_data_prompt">Удалить все данные приложения?</string>
     <string name="backup_password_summary">Ваш экспорт ID будет зашифрован паролем. Используйте сочетание латинских букв, цифр и специальных символов. Не забудьте записать или запомнить свой новый пароль!</string>
     <string name="backup_password_again_summary">Введите пароль ещё раз</string>
@@ -667,7 +667,7 @@
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="new_wizard_welcome">Добро пожаловать в ${app_name}!</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_move_finger">Двигайте пальцем по экрану</string>
+    <string name="new_wizard_move_finger">Двигайте пальцем по экрану для создания нового ${app_name_short} ID.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_this_is_your_id">Это ваш ${app_name_short} ID:</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -801,12 +801,12 @@
     <string name="draft">Черновик</string>
     <string name="prefs_bigger_single_emojis">Большие одиночные эмоции</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="wizard1_sync_work">Синхронизация данных…</string>
+    <string name="wizard1_sync_work">Синхронизация данных ${app_name}…</string>
     <string name="notification_hidden_text">Содержимое скрыто</string>
     <string name="really_reset_ringtones">Сбросить настройки звуковых уведомлений по умолчанию?</string>
     <string name="reset_ringtones_confirm">Настройки звуковых уведомлений были сброшены.</string>
     <string name="prefs_language_override">Язык</string>
-    <string name="threema_channel_intro">Канал Threema предоставляет вам новости обо всех событиях Threema. Подписаться на канал и добавить его в список контактов? Это бесплатно и вы можете отписаться в любое время.</string>
+    <string name="threema_channel_intro">Канал ${app_name_short} предоставляет вам новости обо всех событиях ${app_name_short}. Подписаться на канал и добавить его в список контактов? Это бесплатно и вы можете отписаться в любое время.</string>
     <string name="quote">Цитировать</string>
     <string name="contacts_deleted">Контакты были удалены</string>
     <string name="take_photo">Сфотографировать</string>
@@ -884,7 +884,7 @@
     <string name="prefs_summary_force_turn_off">По возможности устанавливать прямое соединение и ретранслировать звонки непроверенным контактам только через серверы ${company_name}. Может быть виден ваш IP-адрес.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_summary_force_turn_on">Принудительно ретранслировать все звонки через серверы ${company_name} с защитой вашего IP-адреса. Может ухудшаться качество связи.</string>
-    <string name="permission_record_audio_required">Для совершения шифрованных звонков и отправки голосовых сообщений предоставьте приложению Threema доступ к микрофону.</string>
+    <string name="permission_record_audio_required">Для совершения шифрованных звонков и отправки голосовых сообщений предоставьте приложению ${app_name_short} доступ к микрофону.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_voice_call_notifications">Звонки ${app_name_short}</string>
     <string name="prefs_voice_call_sound">Сигнал звонка</string>
@@ -985,7 +985,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_configure_choose_server">Выберите сервер ${app_name_short} Safe</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_configure_server_explain">Можно использовать сервер ${app_name_short} Safe или указать сторонний сервер для резервного копирования.</string>
+    <string name="safe_configure_server_explain">Можно использовать сервер ${company_name} Safe или указать сторонний сервер для резервного копирования.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="onprem_safe_configure_server_explain">Сохраните резервную копию ${app_name_short} Safe на сервере своей организации или укажите другой сервер для резервного копирования.</string>
     <string name="safe_use_default_server">Сервер по умолчанию</string>
@@ -993,17 +993,17 @@
     <string name="safe_advanced_options">Расширенные настройки</string>
     <string name="safe_enter_password">Введите пароль ${app_name_short} Safe</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_threema_id">Ваш ID ${app_name_short}</string>
+    <string name="safe_threema_id">Ваш ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_restore_enter_id">Введите ID ${app_name_short}, который вы хотите восстановить</string>
-    <string name="safe_search_id_title">Введите номер телефона или эл. почту, связанную с вашим ID</string>
+    <string name="safe_restore_enter_id">Введите ${app_name_short} ID, который вы хотите восстановить</string>
+    <string name="safe_search_id_title">Введите номер телефона или эл. почту, связанную с вашим ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_id_lookup">Поиск ID ${app_name_short}</string>
+    <string name="safe_id_lookup">Поиск ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_no_id_found">${app_name_short} ID не найден</string>
     <string name="safe_no_backup_found">На сервере не найдена резервная копия. Проверьте ID и пароль.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_select_id">Найдено несколько ID ${app_name_short}. Выберите ID для использования:</string>
+    <string name="safe_select_id">Найдено несколько ${app_name_short} ID. Выберите ID для использования:</string>
     <string name="safe_backup_now">Создать копию</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_enable_explain_short">Включите ${app_name_short} Safe для автоматического создания защищённых анонимных резервных копий всех ваших важных данных.</string>
@@ -1229,7 +1229,7 @@
     <string name="picture_in_picture_disabled_in_setting">Режим «картинка в картинке» отключён для %s. Включите его в системных настройках.</string>
     <string name="delete_everything">Удалить все</string>
     <string name="prefs_title_voip_video_enable">Разрешить видео</string>
-    <string name="video_calls">Видеозвонки Threema</string>
+    <string name="video_calls">Видеозвонки</string>
     <string name="prefs_videocall_profile">Желаемое качество изображения</string>
     <string name="videocall_profile_auto">Сбалансированное (рекомендовано)</string>
     <string name="videocall_profile_low_bandwidth">Экономия данных</string>
@@ -1355,7 +1355,7 @@
     <string name="prefs_sum_reset_receipts">Сброс уведомлений о прочтении и индикатора ввода текста для конкретных контактов до настроек по умолчанию</string>
     <string name="reset_successful">Успешно сброшено до настроек по умолчанию</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="no_threema_qr_info">Это не QR-Code ${app_name_short}. Расшифрованное содержимое:</string>
+    <string name="no_threema_qr_info">Это не QR-код ${app_name_short}. Расшифрованное содержимое:</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Сканируйте QR-код контакта для проверки его личности. Чтобы показать код, попросите контакта нажать на аватар в левом верхнем углу на главном экране ${app_name_short}.</string>
     <string name="enable_storage_access_for_media">Предоставьте доступ к памяти устройства для просмотра изображений и видео на нём.</string>
@@ -1570,7 +1570,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_managed_password_confirm">Подготовлен управляемый пароль для вашей резервной копии ${app_name_short} Safe.\n\nИспользовать этот пароль? Если сомневаетесь, обратитесь к администратору.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="safe_managed_new_password_confirm">Подготовлен управляемый пароль для для вашей резервной копии ${app_name_short} Safe.\n\nЗаменить текущий пароль новым, управляемым? Если сомневаетесь, обратитесь к администратору.</string>
+    <string name="safe_managed_new_password_confirm">Подготовлен управляемый пароль для вашей резервной копии ${app_name_short} Safe.\n\nЗаменить текущий пароль новым, управляемым? Если сомневаетесь, обратитесь к администратору.</string>
     <string name="real_not_now">Не сейчас</string>
     <string name="add_contact_in">Добавить контакт в…</string>
     <string name="really_remove_all_stars">Убрать звёздочки со всех сообщений?</string>
@@ -1589,7 +1589,7 @@
     <string name="status_orphaned_group">*Группа осталась без создателя*\nСоздатель группы покинул её, она больше не будет поддерживаться. Кто-то из оставшихся участников может клонировать группу (с экрана сведений о группе) и стать её новым администратором.</string>
     <string name="group_not_a_member_notice">Вы больше не состоите в этой группе и не можете её использовать.</string>
     <string name="group_dissolved_notice">Группа распущена и больше не может использоваться.</string>
-    <string name="md_linked_devices">Привязанные устройства</string>
+    <string name="md_linked_devices">${app_name_desktop} 2.0 для ПК (бета)</string>
     <string name="md_link_device">Привязать новое устройство</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
@@ -1789,6 +1789,23 @@
     <string name="remote_secret_deactivating">Деактивация ${remote_secret}</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">Невозможно деактивировать ${remote_secret}. Проверьте соединение с интернетом и повторите попытку.</string>
+    <string name="referral_banner_title">Рекомендуйте и получайте выгоду</string>
+    <string name="referral_banner_body">Пригласите друзей использовать Threema Work в их компании и получите бонус за привлечение!</string>
+    <string name="referral_screen_title">Рекомендовать и получить выгоду</string>
+    <string name="referral_screen_subtitle">Получите до 10% от суммы первого счёта привлечённой компании.</string>
+    <string name="referral_how_it_works_title">Как это работает</string>
+    <string name="referral_how_it_works_referral_title">Привлечение</string>
+    <string name="referral_how_it_works_referral_body">Пригласите друга или его компанию присоединиться к Threema Work. Важно, чтобы ваш Threema ID был указан при регистрации или покупке лицензий, чтобы ваше участие в привлечении могло быть учтено.</string>
+    <string name="referral_how_it_works_requirements_title">Требования</string>
+    <string name="referral_how_it_works_requirements_body">Приглашённая компания ещё не должна быть нашим клиентом и должна купить лицензии</string>
+    <string name="referral_how_it_works_confirmation_title">Подтверждение</string>
+    <string name="referral_how_it_works_confirmation_body">Чтобы убедиться, что привлечённый вами будет правильно назначен и подтверждён, мы свяжемся с вами перед совершением платежа. Мы сообщим вам, как только процесс проверки будет завершён.</string>
+    <string name="referral_your_reward_title">Ваша награда</string>
+    <string name="referral_your_reward_subtitle">Получите бонус за привлечение</string>
+    <string name="referral_your_reward_body">За каждого привлечённого вы получите 10% от суммы его первого счёта (без учёта налогов и сборов). Бонус будет перечислен вам в течение 30–60 дней после получения оплаты.</string>
+    <string name="referral_share_invitation_link">Поделиться ссылкой-приглашением</string>
+    <string name="referral_view_terms_and_conditions">Посмотреть условия и положения</string>
+    <string name="referral_invitation_message_content">Здравствуйте! Думаю, это может быть полезно для вас: Threema Work — отличный вариант для безопасного делового общения. Вот тестовая ссылка: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакта</item>

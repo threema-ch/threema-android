@@ -34,6 +34,7 @@ import ch.threema.app.services.FileService
 import ch.threema.app.services.LifetimeService
 import ch.threema.app.tasks.archive.TaskArchiverImpl
 import ch.threema.app.tasks.archive.recovery.TaskRecoveryManagerImpl
+import ch.threema.app.tasks.getDebugString
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
@@ -422,7 +423,7 @@ open class MessageProcessorProvider {
             serviceManager.databaseService,
             serviceManager.preferenceStore,
             serviceManager.encryptedPreferenceStore,
-            TaskArchiverImpl(serviceManager.databaseService.taskArchiveFactory, TaskRecoveryManagerImpl()),
+            TaskArchiverImpl(serviceManager.databaseService.taskArchiveFactory, TaskRecoveryManagerImpl(), getDebugString),
             serviceManager.deviceCookieManager,
             taskManager,
             serviceManager.multiDeviceManager as MultiDeviceManagerImpl,

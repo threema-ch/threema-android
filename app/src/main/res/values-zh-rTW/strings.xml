@@ -15,9 +15,9 @@
     <string name="title_invite_friend">邀請好友</string>
     <string name="invite_via">透過…邀請好友</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="invite_email_body">你好，\n\n我使用%1$s，這是保護使用者隱私的安全即時通訊工具。\n\n我的${app_name_short} ID：https://threema.id/%2$s\n\n讓我們透過%1$s進行通訊吧！\n\n\n關心您</string>
+    <string name="invite_email_body">你好，\n\n我使用 %1$s ，這是保護使用者隱私的安全即時通訊工具。\n\n我的 ${app_name_short} ID：https://threema.id/%2$s\n\n讓我們透過 %1$s 進行通訊吧！\n\n\n關心您</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="invite_sms_body">嘿！讓我們使用%1$s以安全和符合隱私的方式進行通訊！我的 ${app_name_short} ID：https://threema.id/%2$s</string>
+    <string name="invite_sms_body">嘿！讓我們使用 %1$s 以安全和符合隱私的方式進行通訊！我的 ${app_name_short} ID：https://threema.id/%2$s</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="invite_email_subject">${app_name_short}，保護隱私的安全即時通訊工具。</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -167,7 +167,7 @@
     <string name="delete_id_title">刪除ID</string>
     <string name="delete_id_message">除非您已建立備份或匯出並儲存了此ID的副本，否則您將永遠無法使用該ID再次傳送或接收訊息。\n\n如果您不想再使用此ID，建議在刪除ID之前，在 myid.threema.ch/revoke 上設定撤銷密碼並撤銷該ID。</string>
     <string name="delete_id_message2">最後警告：您確定要刪除此裝置上的ID嗎？</string>
-    <string name="delete_id_sum">永久刪除您的ID和此裝置上的所有資料</string>
+    <string name="delete_id_sum">永久刪除您的 ${app_name_short} ID和此裝置上的所有資料</string>
     <string name="delete_all_data_prompt">刪除所有應用程式資料？</string>
     <string name="backup_password_summary">您的ID匯出將使用密碼進行加密。使用字母，數字和符號的組合。千萬不能忘記這裡輸入的內容！</string>
     <string name="backup_password_again_summary">再次輸入密碼</string>
@@ -179,8 +179,7 @@
 電子郵件分享或使用其他裝置掃描QR碼。</string>
     <string name="support">説明</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="backup_share_content">以下文字字串可以與所選密碼一起使用
-        ，以還原您的 ${app_name_short} ID。</string>
+    <string name="backup_share_content">以下文字字串可以與所選密碼一起使用，以還原您的 ${app_name_short} ID。</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_share_subject">${app_name_short} ID 匯出為</string>
     <string name="add_attachment">新增附件</string>
@@ -386,7 +385,7 @@
     <string name="verified">已驗證</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="want_to_add_to_exclude_list">此聯絡人已連結至電話通訊錄中的記錄。如果您
-在 ${app_name_short} 中將其刪除，在聯絡人同步之後他會重新出現。 \n是否要從同步中排除他？</string>
+        在 ${app_name_short} 中將其刪除，在聯絡人同步之後他會重新出現。 \n是否要從同步中排除他？</string>
     <string name="no">否</string>
     <string name="yes">是</string>
     <string name="deleting_contact">正在刪除聯絡人</string>
@@ -441,7 +440,6 @@
     <string name="is_typing">輸入中…</string>
     <string name="push_not_available_title">找不到推播服務</string>
     <string name="push_not_available_text1">我們無法在您的裝置上找到推播服務，因為 Google Play 服務未安裝或過期。</string>
-    <string name="push_not_available_text2">%s 將在背景持續地與伺服器連線。如果您的裝置啟用了電池最佳化，這可能會干擾背景連線，${app_name_short} Push 將可能無法可靠地執行。</string>
     <string name="backup_in_progress">正在進行備份</string>
     <string name="backup_or_restore_success_body">資料備份成功完成</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -515,7 +513,8 @@ http://www.7-zip.org 或 https://itunes.apple.com/us/app/the-unarchiver/id425424
     <string name="ballot_no_ballots_yet">還沒有人投票。</string>
     <string name="print">列印</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="ballot_wizard0_explain">您可以直接用 ${app_name_short} 快速建立線上投票，例如安排活動、建立問卷調查或向好友問任何問題。</string>
+    <string name="ballot_wizard0_explain">您可以直接用 ${app_name_short} 快速建立線上投票，例如安排活動、建立
+        問卷調查或向好友問任何問題。</string>
     <string name="ballot_add_choices">新增答案</string>
     <string name="blocked_cannot_send">您無法將訊息傳送給被封鎖的聯絡人</string>
     <string name="invalid_some_cannot_send">無法選擇傳送至某些收件者。</string>
@@ -715,23 +714,27 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="new_wizard_phone_email_invalid">您輸入的電話號碼或電子郵件地址無效。\n請先更正，然後再繼續。</string>
     <string name="new_wizard_phone_invalid">您輸入的電話號碼無效。\n請先更正，然後再繼續。</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_fingerprint">透過移動手指，您可以建立隨機資料（稱為熵），該資料用於生成與全新而唯一的 ${app_name_short} ID 相關的金鑰對。該金鑰對包括一個<b>公鑰</b>，分配給您的好友，而<b>私鑰</b>安全地儲存在您的電話上。您的好友將使用您的公鑰加密傳送給您的訊息。只有私鑰的擁有者才能解密這些訊息，其他人都不能解密。</string>
+    <string name="new_wizard_info_fingerprint">透過移動手指，您可以建立隨機資料（稱為熵），該資料用於生成
+        與全新而唯一的 ${app_name_short} ID 相關的金鑰對。該金鑰對包括一個<b>公鑰</b>，分配給您的好友，
+        而<b>私鑰</b>安全地儲存在您的電話上。您的好友將使用您的公鑰加密傳送給您的訊息。
+        只有私鑰的擁有者才能解密這些訊息，其他人都不能解密。</string>
     <string name="new_wizard_info_id">您還建立了一個金鑰對。金鑰已安全地傳輸到我們的伺服器。
 私鑰永遠不會離開您的裝置。這樣可以確保沒有其他人可以閱讀您的訊息。</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_sync_contacts">如果開啟此選項，${app_name_short} 會將電子郵件地址和電話號碼單向加密（雜湊），
-然後將其傳送到伺服器以尋找相符的聯絡人。我們不會儲存任何通訊錄資料。</string>
+        然後將其傳送到伺服器以尋找相符的聯絡人。我們不會儲存任何通訊錄資料。</string>
     <string name="new_wizard_info_sync_contacts_dialog">聯絡人同步可以協助您找到您的好友。如果選擇同意，電話簿中的電話號碼和電郵地址將先以加密的形式傳送到我們的伺服器，來尋找相符的聯絡人。我們絕對不會儲存或分享任何資料。\n\n是否要開啟聯絡人同步？</string>
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">透過提供您的電話號碼和電子郵件地址，${app_name_short} 可以協助您的好友自動在您的電話通訊錄中找到您。\n資料將以單向加密（雜湊）形式儲存在我們的伺服器上。\n如果您想完全匿名使用 ${app_name}，則可以跳過此步驟。</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_link_phone_only">透過提供您的電話號碼，${app_name_short} 可以協助您的好友自動在您的電話通訊錄中找到您。
-電話號碼將單向加密（雜湊）形式儲存在我們的伺服器上。
-如果您想完全匿名使用 ${app_name_short}，則可以跳過此步驟。</string>
+    <string name="new_wizard_info_link_phone_only">透過提供您的電話號碼，${app_name_short} 可以協助您的好友
+        自動在您的電話通訊錄中找到您。
+        電話號碼將單向加密（雜湊）形式儲存在我們的伺服器上。
+        如果您想完全匿名使用 ${app_name_short}，則可以跳過此步驟。</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_nickname">暱稱用於裝置上的推播通知，或向尚未將您儲存在通訊錄的使用者識別您的身份。
-我們建議您僅提供您的名字或化名作為暱稱。
-如果您未設定暱稱，在預設情況下，我們將使用您的 ${app_name_short} ID。</string>
+        我們建議您僅提供您的名字或化名作為暱稱。
+        如果您未設定暱稱，在預設情況下，我們將使用您的 ${app_name_short} ID。</string>
     <string name="not_linked">尚未連結</string>
     <string name="linked">已連結</string>
     <string name="pending_sms_verification_notice">您的電話號碼尚未驗證。</string>
@@ -830,7 +833,7 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="really_reset_ringtones">真的將通知音效設定重設為預設值嗎？</string>
     <string name="reset_ringtones_confirm">通知音效設定已重設。</string>
     <string name="prefs_language_override">語言</string>
-    <string name="threema_channel_intro">Threema 頻道為您提供關於 Threema 的所有新聞。您想訂閱 Threema 頻道並將其新增到您的聯絡人中嗎？這是免費的，您可以隨時退訂。</string>
+    <string name="threema_channel_intro">${app_name_short} 頻道為您提供關於 ${app_name_short} 的所有新聞。您想訂閱 ${app_name_short} 頻道並將其新增到您的聯絡人中嗎？這是免費的，您可以隨時退訂。</string>
     <string name="quote">引用</string>
     <string name="contacts_deleted">聯絡人已被刪除</string>
     <string name="take_photo">拍攝照片</string>
@@ -1532,7 +1535,7 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="call_phone_permission_description">如要進行 ${app_name_short} 通話，您必須允許取用電話權限，以防止語音通話中斷 ${app_name_short} 通話。</string>
     <string name="group_call_nearby_devices_permission_description">如要使用藍牙耳機進行群組通話，您必須允許取用「鄰近裝置」權限以檢測藍牙耳機。</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="call_nearby_devices_permission_description">如要使用藍牙耳機進行 ${app_name} 通話，您必須允許取用「鄰近裝置」權限以檢測藍牙耳機。</string>
+    <string name="call_nearby_devices_permission_description">如要使用藍牙耳機進行 ${app_name_short} 通話，您必須允許取用「鄰近裝置」權限以檢測藍牙耳機。</string>
     <string name="settings">設定</string>
     <string name="leave">離開</string>
     <string name="fs_key_mismatch">密鑰不相符</string>
@@ -1548,7 +1551,6 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="forward_security_explanation">完全正向保密（PFS）可以保護對話記錄不被追溯解密，即使長期加密密鑰已被盜用。\n\n如果雙方的應用程式都支援完全正向保密的話，就可以啟用此選項。</string>
     <string name="group_call_inactivity_left">因為長時間未使用，群組通話自動退出</string>
     <string name="missing_permission_external_storage">無法複製檔案，請嘗試以下步驟以解決問題：\n1. 開啟系統設定。\n2. 前往「應用程式」，然後按一下右上角的三個點，選擇「特殊存取」權限。\n3. 按一下「所有檔案存取」。\n4. 按一下右上角的三個點，選擇「顯示系統應用程式」。\n5. 按一下「外部儲存空間」並確保授予「允許存取所有檔案」權限。\n6. 再次嘗試還原備份。</string>
-    <string name="forward_security_downgraded_status_message">因為對方使用的應用程式版本不支援「完全正向保密」功能，所以在此對話中已停用「完全正向保密」。</string>
     <string name="forward_security_illegal_session_status_message">這個之前已啟用「完全正向保密」的工作階段，因無效而被重設保密狀態。</string>
     <string name="crop_image_title">裁剪圖片</string>
     <string name="scroll_to_bottom">回到頁尾</string>
@@ -1810,6 +1812,23 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="remote_secret_deactivating">正在停用 ${remote_secret}</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">停用 ${remote_secret} 失敗，請檢查您的網路連線並再試一次。</string>
+    <string name="referral_banner_title">推薦獎金</string>
+    <string name="referral_banner_body">邀請您的好友在公司使用 Threema Work，即可賺取推薦獎金！</string>
+    <string name="referral_screen_title">推薦獎金</string>
+    <string name="referral_screen_subtitle">最高可取得被招募公司首張發票金額的10%作為佣金。</string>
+    <string name="referral_how_it_works_title">運作原理</string>
+    <string name="referral_how_it_works_referral_title">推薦</string>
+    <string name="referral_how_it_works_referral_body">邀請好友或其公司加入 Threema Work。請注意：在註冊或購買授權時必須提供您的 Threema ID，以便我們計算您的推薦獎勵。</string>
+    <string name="referral_how_it_works_requirements_title">要求</string>
+    <string name="referral_how_it_works_requirements_body">被推薦的公司不可以是我們已有的客戶，並且必須訂購許可證。</string>
+    <string name="referral_how_it_works_confirmation_title">確認</string>
+    <string name="referral_how_it_works_confirmation_body">為確保您的推薦獎勵能夠正確分配和驗證，我們會在付款前與您聯絡。一旦驗證過程完成，我們會立即通知您。</string>
+    <string name="referral_your_reward_title">您的獎勵</string>
+    <string name="referral_your_reward_subtitle">賺取推薦獎勵</string>
+    <string name="referral_your_reward_body">您將獲得被推薦公司首張發票金額的10%作為推薦獎勵（不包括稅費/費用），獎金將在收到款項後30至60天內轉入您的帳戶。</string>
+    <string name="referral_share_invitation_link">分享邀請連結</string>
+    <string name="referral_view_terms_and_conditions">檢視條款及細則</string>
+    <string name="referral_invitation_message_content">您好，我推薦您使用這款即時通訊軟體：Threema Work 是企業安全通訊的絕佳選擇。這是您的試用連結：%1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

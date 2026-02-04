@@ -86,7 +86,6 @@ class EmojiListAdapter(
             emojiInfo.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT,
             diverseHintColor,
         )
-        holder.emojiView.contentDescription = emojiSequence
         holder.emojiView.setOnClickListener {
             keyClickListener.onEmojiKeyClicked(emojiService.getPreferredDiversity(emojiInfo.emojiSequence))
         }

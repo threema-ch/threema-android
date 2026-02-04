@@ -37,7 +37,12 @@ class PrivacyPolicyActivity : SimpleWebViewActivity() {
 
     override fun getWebViewTitle() = R.string.privacy_policy
 
-    override fun getWebViewUrl() = ConfigUtils.getPrivacyPolicyURL(this)
+    override fun getWebViewUrl(isDarkTheme: Boolean) = ConfigUtils.getPrivacyPolicyURL(
+        /* context = */
+        this,
+        /* isDarkTheme = */
+        isDarkTheme,
+    )
 
     companion object {
         @JvmStatic

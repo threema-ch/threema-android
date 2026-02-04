@@ -27,6 +27,7 @@ data class TaskManagerConfiguration(
     val taskArchiver: () -> TaskArchiver,
     val deviceCookieManager: DeviceCookieManager,
     val assertContext: Boolean,
+    val getDebugString: Task<*, *>.() -> String,
 )
 
 interface TaskManagerProvider {
@@ -34,18 +35,19 @@ interface TaskManagerProvider {
         @JvmStatic
         fun getTaskManager(configuration: TaskManagerConfiguration): TaskManager =
             TaskManagerImpl(
-                configuration.taskArchiver,
-                configuration.deviceCookieManager,
-                TaskManagerImpl.TaskManagerDispatchers(
-                    SingleThreadedTaskManagerDispatcher(
-                        configuration.assertContext,
-                        "ExecutorDispatcher",
+                taskArchiverCreator = configuration.taskArchiver,
+                deviceCookieManager = configuration.deviceCookieManager,
+                dispatchers = TaskManagerImpl.TaskManagerDispatchers(
+                    executorDispatcher = SingleThreadedTaskManagerDispatcher(
+                        assertContext = configuration.assertContext,
+                        threadName = "ExecutorDispatcher",
                     ),
-                    SingleThreadedTaskManagerDispatcher(
-                        configuration.assertContext,
-                        "ScheduleDispatcher",
+                    scheduleDispatcher = SingleThreadedTaskManagerDispatcher(
+                        assertContext = configuration.assertContext,
+                        threadName = "ScheduleDispatcher",
                     ),
                 ),
+                getDebugString = configuration.getDebugString,
             )
     }
 }

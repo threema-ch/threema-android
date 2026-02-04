@@ -119,8 +119,8 @@
     <string name="copy_message_action">Zkopírovat</string>
     <string name="delete_contact_action">Odstranit kontakt</string>
     <string name="delete_multiple_contact_action">Odstranit kontakty</string>
-    <string name="scan_id">Skenovat ID</string>
-    <string name="id_scanned">ID oskenováno</string>
+    <string name="scan_id">Naskenovat ID</string>
+    <string name="id_scanned">ID naskenováno</string>
     <string name="id_mismatch">Naskenovaný veřejný klíč se neshoduje s klíčem, který je uložen na serveru pro toto ID. To znamená, že někdo s naskenovaným kódem manipuloval, a klíč proto nelze považovat za důvěryhodný.</string>
     <string name="scan_successful">ID bylo úspěšně naskenováno a kontakt je nyní ověřen.</string>
     <string name="scan_duplicate">Toto ID již bylo naskenováno a ověřeno.</string>
@@ -1791,6 +1791,23 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="remote_secret_deactivating">Deaktivování ${remote_secret}</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">Deaktivování ${remote_secret} selhalo. Zkontrolujte prosím stav vašeho připojení k internetu a zkuste to znovu.</string>
+    <string name="referral_banner_title">Doporučte a získejte výhody</string>
+    <string name="referral_banner_body">Pozvěte přátele, aby používali aplikaci Threema Work ve své společnosti a získejte bonus za doporučení!</string>
+    <string name="referral_screen_title">Doporučte a získejte výhody</string>
+    <string name="referral_screen_subtitle">Získejte až 10 % z částky z první faktury přizvané společnosti.</string>
+    <string name="referral_how_it_works_title">Jak to funguje</string>
+    <string name="referral_how_it_works_referral_title">Doporučení</string>
+    <string name="referral_how_it_works_referral_body">Vyzvěte přítele nebo jeho společnost, aby začal používat Threema Work. Je důležité, aby bylo vaše Threema ID poskytnuto během registrace, nebo při nákupu licencí, aby vaše doporučení mohlo být uplatněno.</string>
+    <string name="referral_how_it_works_requirements_title">Požadavky</string>
+    <string name="referral_how_it_works_requirements_body">Společnost, kterou doporučíte, nesmí být naším stávajícím zákazníkem a musí si u nás objednat licence</string>
+    <string name="referral_how_it_works_confirmation_title">Potvrzení</string>
+    <string name="referral_how_it_works_confirmation_body">Abychom zajistili správné přiřazení a ověření vašeho doporučení, budeme vás před provedením platby kontaktovat. Jakmile bude proces ověření dokončen, budeme vás informovat.</string>
+    <string name="referral_your_reward_title">Vaše odměna</string>
+    <string name="referral_your_reward_subtitle">Získejte bonus za doporučení</string>
+    <string name="referral_your_reward_body">Za vaše doporučení obdržíte 10 % z částky z první platby přizvané společnosti (bez daní/poplatků). Bonus vám bude odeslán 30–60 dní po přijetí platby.</string>
+    <string name="referral_share_invitation_link">Sdílet zvací odkaz</string>
+    <string name="referral_view_terms_and_conditions">Zobrazit obchodní podmínky</string>
+    <string name="referral_invitation_message_content">Ahoj! Toto by tě možná mohlo zajímat: Threema Work je výborná volba pro bezpečnou podnikovou komunikaci. Tady ti posílám testovací odkaz: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>

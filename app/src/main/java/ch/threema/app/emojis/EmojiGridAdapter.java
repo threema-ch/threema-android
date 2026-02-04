@@ -119,7 +119,6 @@ public class EmojiGridAdapter extends BaseAdapter {
         }
 
         view.setEmoji(emojiSequence, pageNumber != 0 && item.diversityFlag == EmojiSpritemap.DIVERSITY_PARENT, diverseHintColor);
-        view.setContentDescription(emojiSequence);
         view.setOnClickListener(v -> keyClickListener.onEmojiKeyClicked(getKey(item.emojiSequence)));
         view.setOnLongClickListener(v -> {
             if (pageNumber != 0) {

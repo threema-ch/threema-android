@@ -237,6 +237,7 @@ public class AppRestrictionService {
      * Reload restriction (without fetching work data)
      */
     public void reload() {
+        logger.info("Reloading restrictions");
         Context context = ThreemaApplication.getAppContext();
         RestrictionsManager restrictionsManager = (RestrictionsManager) context.getSystemService(Context.RESTRICTIONS_SERVICE);
         this.appRestrictions = restrictionsManager.getApplicationRestrictions();
@@ -274,6 +275,8 @@ public class AppRestrictionService {
         }
 
         ApplyAppRestrictionsWorker.Companion.applyAppRestrictions(context);
+
+        logger.info("Reloaded restrictions, MDM source = {}", getMdmSource());
     }
 
     public Bundle getAppRestrictions() {
@@ -335,12 +338,13 @@ public class AppRestrictionService {
     private void updateUserCredentials() {
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         if (serviceManager != null) {
+            logger.info("Updating user credentials");
             Context context = serviceManager.getContext();
             @Nullable String mdmUsername = getStringRestriction(context.getString(R.string.restriction__license_username));
             @Nullable String mdmPassword = getStringRestriction(context.getString(R.string.restriction__license_password));
 
             if (TestUtil.isEmptyOrNull(mdmUsername) && TestUtil.isEmptyOrNull(mdmPassword)) {
-                logger.debug("No credentials provided via mdm");
+                logger.info("No credentials provided via mdm");
                 return;
             }
 

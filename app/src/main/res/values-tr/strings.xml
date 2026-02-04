@@ -375,7 +375,8 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="prefs_sum_blocked_contacts">Burada listelenen kimliklerden gelen mesajlar yok sayılacak.</string>
     <string name="verified">Doğrulandı</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="want_to_add_to_exclude_list">Bu kişi, telefonunuzun adres defterindeki bir kayda bağlıdır. Eğer  uygulamadan silerseniz, eşitlemeden sonra yeniden görünüyor olacaktır. Eşitlemeden hariç tutmak ister misiniz?</string>
+    <string name="want_to_add_to_exclude_list">Bu kişi, telefonunuzun adres defterindeki bir kayda bağlıdır. Eğer
+${app_name_short} uygulamasında silerseniz, kişi senkronizasyonundan sonra tekrar görünecektir.\nSenkronizasyondan hariç tutmak ister misiniz?</string>
     <string name="no">Hayır</string>
     <string name="yes">Evet</string>
     <string name="deleting_contact">Kişi siliniyor</string>
@@ -410,7 +411,7 @@ tekrar denemeden önce girdiğiniz numaranın doğru olduğundan ve mobil ağa b
     <string name="prefs_sum_fullscreen_ime_on">Cihazınız yatay durumda ise klavye uygulamayı kapsar</string>
     <string name="prefs_sum_fullscreen_ime_off">Yer varsa, klavyenin üzerinde sohbetin bir ön izlemesini görüntüle</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="add_acount_from_within_threema">${app_name_short} kimliğinizi uygulama içinden yönetin</string>
+    <string name="add_acount_from_within_threema">${app_name_short} uygulamasının içinden ${app_name_short} ID\'nizi yönetin.</string>
     <string name="save_image">Resmi kaydet</string>
     <string name="share_image">Resmi paylaş</string>
     <string name="view_in_gallery">Galeride görüntüle</string>
@@ -721,7 +722,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="new_wizard_anonymous_confirm">${app_name_short} kimliğinize bağlamak için telefon numarası veya e-posta adresi girmediniz. Arkadaşlarınızın kişi listelerinde görünmezsiniz. ${app_name}\'ı tamamen anonim şekilde kullanmak istiyor musunuz?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_anonymous_confirm_phone_only">${app_name_short} kimliğinize bağlamak için telefon numarası girmediniz. Arkadaşlarınızın kişi listelerinde görünmezsiniz. ${app_name}\'ı tamamen anonim şekilde kullanmak istiyor musunuz?</string>
+    <string name="new_wizard_anonymous_confirm_phone_only">${app_name_short} kimliğinize bağlamak için bir telefon numarası girmediniz. Bu nedenle, otomatik olarak kişi listelerine eklenmeyeceksiniz. ${app_name} uygulamasını gerçekten anonim olarak kullanmak istiyor musunuz?</string>
     <string name="new_wizard_scan_id_backup">ya da dışa aktarılan kimliğin kare kodunu tarayın</string>
     <string name="error_saving_file">Dosya kaydedilirken hata oluştu. İzinleri kontrol edin.</string>
     <string name="wait_one_minute">Lütfen arama talebinde bulunmadan önce kısa mesajın gelmesi için en az 10 dakika bekleyin.</string>
@@ -805,7 +806,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="really_reset_ringtones">Bildirim tonunu gerçekten varsayılan ayarlara sıfırlamak istiyor musunuz?</string>
     <string name="reset_ringtones_confirm">Bildirim tonu ayarları sıfırlandı.</string>
     <string name="prefs_language_override">Dil</string>
-    <string name="threema_channel_intro">Threema Kanalı, uygulama hakkında her şeyi size haber verir. Bu kanala abone olmak ve kişilerinize eklemek ister misiniz? Ücretsizdir ve istediğiniz zaman abonelikten çıkabilirsiniz.</string>
+    <string name="threema_channel_intro">${app_name_short} Kanalı size ${app_name_short} ile ilgili her şey hakkında haberler sunuyor. ${app_name_short} Kanalına abone olmak ve rehberinize eklemek ister misiniz? Ücretsizdir ve istediğiniz zaman aboneliğinizi iptal edebilirsiniz.</string>
     <string name="quote">Alıntıla</string>
     <string name="contacts_deleted">Kişiler silindi</string>
     <string name="take_photo">Fotoğraf çek</string>
@@ -1000,7 +1001,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="safe_id_lookup">${app_name_short} kimliği aranıyor</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_no_id_found">${app_name_short} kimliği bulunamadı</string>
-    <string name="safe_no_backup_found">Sunucuda yedek bulunamadı. Lütfen ${app_name_short} kimliğini ve şifreyi kontrol edin.</string>
+    <string name="safe_no_backup_found">Sunucuda yedekleme bulunamadı. Kimlik ve şifreyi kontrol edin.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_select_id">Birden fazla ${app_name_short} kimliği bulundu. Lütfen kullanılacak kimliği seçin:</string>
     <string name="safe_backup_now">Şimdi yedekle</string>
@@ -1044,7 +1045,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="safe_restore">${app_name_short} Safe\'i geri yükle</string>
     <string name="backup_restore_in_progress">Yedekleme veya geri yükleme devam ediyor. Son durum için bildirimleri kontrol edin</string>
     <string name="restore_error_body">Geri yükleme başarıyla tamamlanmadı</string>
-    <string name="forgot_your_id">${app_name_short} kimliğinizi mi unuttunuz?</string>
+    <string name="forgot_your_id">Kimliğinizi mi unuttunuz?</string>
     <string name="restore_success_body">Geri yükleme başarıyla tamamlandı</string>
     <string name="work_data_sync">Veri eşitlemesi</string>
     <string name="private_contact">Özel kişi</string>
@@ -1506,7 +1507,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="call_phone_permission_description">${app_name_short} aramalarını gerçekleştirmek için, başka bir aramanın ${app_name_short} aramasını ne zaman kesintiye uğrattığını algılamak için telefon izni gerekmektedir.</string>
     <string name="group_call_nearby_devices_permission_description">Bluetooth kulaklıkla grup araması yapmak için, \"yakındaki cihazlar\"ın bluetooth kulaklıkları algılamasına izin vermeniz gerekmektedir.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="call_nearby_devices_permission_description">Bluetooth kulaklıkla ${app_name} aramaları gerçekleştirmek için, \"yakındaki cihazlar\"ın bluetooth kulaklıkları algılamasına izin vermeniz gerekmektedir.</string>
+    <string name="call_nearby_devices_permission_description">Bluetooth kulaklık kullanarak ${app_name_short} aramaları gerçekleştirmek için, \"yakındaki cihazlar\" izninin Bluetooth kulaklıkları algılamasına izin vermeniz gerekir.</string>
     <string name="settings">Ayarlar</string>
     <string name="leave">Ayrıl</string>
     <string name="fs_key_mismatch">anahtar uyuşmazlığı</string>
@@ -1522,7 +1523,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="forward_security_explanation">Mükemmel İletme Gizliliği (Perfect Forward Secrecy) (PFS), uzun süreli şifreleme anahtarı ele geçirilmiş olsa bile kaydedilmiş bir iletişimi geriye dönük şifre çözme işleminden korur.\n\nHer iki taraftaki uygulama PFS\'yi destekliyorsa bu seçenek etkinleştirilebilir.</string>
     <string name="group_call_inactivity_left">Hareketsizlik nedeniyle grup araması sonlandırıldı</string>
     <string name="missing_permission_external_storage">Dosya kopyalanamıyor. Aşağıdaki adımları deneyin:\n1. Ayarlar uygulamasını açın.\n2. \"Uygulamalar\"a gidin ve \"Özel uygulama erişimi\"ni seçin.\n3. “Tüm dosyalara erişim” seçeneğine dokunun.\n4. Sağ üst köşedeki üç noktaya dokunun ve \"Sistemi göster\"i seçin.\n5. \"Harici Depolama\" üzerine dokunun ve \"Tüm dosyaları yönetmek için erişime izin ver\" seçeneğinin verildiğinden emin olun.\n6. Yedeği tekrar geri yüklemeyi deneyin.</string>
-    <string name="forward_security_downgraded_status_message">Sohbet ortağınızın uygulama sürümü desteklemediği için Mükemmel İletme Gizliliği bu görüşmede devre dışı bırakıldı.</string>
+    <string name="forward_security_downgraded_status_message">Bu sohbette Mükemmel İleri Gizlilik özelliği devre dışı bırakıldı çünkü sohbet ortağınızın uygulama sürümü bunu desteklemiyor veya Masaüstü için ${app_name_desktop} 2.0 (beta) kullanılıyor.</string>
     <string name="forward_security_illegal_session_status_message">Mükemmel İletme Gizliliği oturumu geçersizlik nedeniyle sıfırlandı.</string>
     <string name="crop_image_title">Görüntüyü kırp</string>
     <string name="scroll_to_bottom">Aşağı kaydır</string>
@@ -1587,7 +1588,6 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="status_orphaned_group">*Bu grup öksüz kaldı*\nGrubu oluşturan kişi gruptan ayrılmıştır ve grup artık sürdürülemez. Kalan üyelerden biri yeni yönetici olmak için grubu klonlayabilir (grup ayrıntıları aracılığıyla).</string>
     <string name="group_not_a_member_notice">Artık bu grubun bir parçası değilsiniz ve bu grubu kullanamazsınız.</string>
     <string name="group_dissolved_notice">Bu grup dağıtılmıştır ve artık kullanılamaz.</string>
-    <string name="md_linked_devices">Bağlantılı cihazlar</string>
     <string name="md_link_device">Yeni cihaz bağla</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
@@ -1785,6 +1785,23 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="remote_secret_deactivating">${remote_secret}\'u Etkinleştirme</string>
     <!-- Error message shown fullscreen when deactivating the DualLock (a.k.a. "Remote Secret") feature failed. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secret_deactivating_failed">${remote_secret} devre dışı bırakılamadı. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="referral_banner_title">Tavsiye Edin ve Faydalanın</string>
+    <string name="referral_banner_body">Arkadaşlarınızı şirketlerinde Threema Work\'ü kullanmaya davet edin ve yönlendirme bonusu kazanın!</string>
+    <string name="referral_screen_title">Tavsiye Edin ve Faydalanın</string>
+    <string name="referral_screen_subtitle">ilk şirketin ilk fatura tutarının %10\'una kadar komisyon kazanın.</string>
+    <string name="referral_how_it_works_title">Nasıl Çalışır?</string>
+    <string name="referral_how_it_works_referral_title">Yönlendirme</string>
+    <string name="referral_how_it_works_referral_body">Bir arkadaşınızı veya şirketini Threema Work\'e katılmaya davet edin. Referansınızın dikkate alınabilmesi için kayıt sırasında veya lisans satın alırken Threema kimliğinizi belirtmeniz önemlidir.</string>
+    <string name="referral_how_it_works_requirements_title">Gereksinimler</string>
+    <string name="referral_how_it_works_requirements_body">Bahsi geçen şirket halihazırda müşterimiz olmamalı ve lisans siparişi vermelidir.</string>
+    <string name="referral_how_it_works_confirmation_title">Onay</string>
+    <string name="referral_how_it_works_confirmation_body">Referansınızın doğru bir şekilde atanıp doğrulanabilmesi için ödeme yapmadan önce sizinle iletişime geçeceğiz. Doğrulama işlemi tamamlanır tamamlanmaz sizi bilgilendireceğiz.</string>
+    <string name="referral_your_reward_title">Ödülünüz</string>
+    <string name="referral_your_reward_subtitle">Referans Bonusu Kazanın</string>
+    <string name="referral_your_reward_body">Referansınız karşılığında, yönlendirdiğiniz şirketin ilk fatura tutarının %10\'unu (vergi/ücretler hariç) bonus olarak alacaksınız. Bonus, ödemenin alınmasından 30-60 gün sonra hesabınıza aktarılacaktır.</string>
+    <string name="referral_share_invitation_link">Davet Bağlantısını Paylaş</string>
+    <string name="referral_view_terms_and_conditions">Şartlar ve Koşulları Görüntüle</string>
+    <string name="referral_invitation_message_content">Merhaba, bunun sizin için faydalı olabileceğini düşündüm: Threema iş, güvenli iş iletişimi için mükemmel bir seçenektir. İşte test bağlantınız: %1$s</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kişi</item>
         <item quantity="other">%d kişi</item>

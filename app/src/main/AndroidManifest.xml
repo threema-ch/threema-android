@@ -445,6 +445,10 @@
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
+            android:name=".webviews.ReferralTosActivity"
+            android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
+            android:theme="@style/Theme.Threema.WithToolbar" />
+        <activity
             android:name=".activities.ServerMessageActivity"
             android:label="server_message"
             android:theme="@style/Theme.Threema.WithToolbar" />

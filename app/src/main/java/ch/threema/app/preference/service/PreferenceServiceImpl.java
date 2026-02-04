@@ -394,7 +394,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     @Nullable
     public synchronized String getLicenseUsername() {
-        return encryptedPreferenceStore.getString(getKeyName(R.string.preferences__license_username));
+        return takeUnlessEmpty(encryptedPreferenceStore.getString(getKeyName(R.string.preferences__license_username)));
     }
 
     @Override
@@ -404,7 +404,7 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     public synchronized String getLicensePassword() {
-        return encryptedPreferenceStore.getString(getKeyName(R.string.preferences__license_password));
+        return takeUnlessEmpty(encryptedPreferenceStore.getString(getKeyName(R.string.preferences__license_password)));
     }
 
     @Override
@@ -415,7 +415,7 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     @Nullable
     public synchronized String getOnPremServer() {
-        return encryptedPreferenceStore.getString(getKeyName(R.string.preferences__onprem_server));
+        return takeUnlessEmpty(encryptedPreferenceStore.getString(getKeyName(R.string.preferences__onprem_server)));
     }
 
     @Override
@@ -1769,5 +1769,13 @@ public class PreferenceServiceImpl implements PreferenceService {
     @Override
     public void setProblemDismissed(@NonNull String problemKey, @Nullable Instant timestamp) {
         preferenceStore.save(getKeyName(R.string.preferences__problem_dismissed_prefix, problemKey), timestamp);
+    }
+
+    @Nullable
+    private static String takeUnlessEmpty(@Nullable String string) {
+        if (string == null || string.isEmpty()) {
+            return null;
+        }
+        return string;
     }
 }

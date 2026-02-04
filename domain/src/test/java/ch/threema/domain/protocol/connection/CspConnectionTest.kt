@@ -143,15 +143,16 @@ internal class CspConnectionTest : ServerConnectionTest() {
         }
         val taskManager = TaskManagerProvider.getTaskManager(
             TaskManagerConfiguration(
-                {
+                taskArchiver = {
                     object : TaskArchiver {
                         override fun addTask(task: Task<*, TaskCodec>) {}
                         override fun removeTask(task: Task<*, TaskCodec>) {}
                         override fun loadAllTasks(): List<Task<*, TaskCodec>> = emptyList()
                     }
                 },
-                TestNoopDeviceCookieManager(),
-                true,
+                deviceCookieManager = TestNoopDeviceCookieManager(),
+                assertContext = true,
+                getDebugString = { "" },
             ),
         )
         return CspConnectionConfiguration(

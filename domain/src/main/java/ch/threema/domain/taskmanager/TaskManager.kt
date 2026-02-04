@@ -102,6 +102,7 @@ internal class TaskManagerImpl(
     taskArchiverCreator: () -> TaskArchiver,
     private val deviceCookieManager: DeviceCookieManager,
     private val dispatchers: TaskManagerDispatchers,
+    private val getDebugString: Task<*, *>.() -> String,
 ) : InternalTaskManager, TaskManager {
     private val queueSendCompleteListeners: MutableSet<QueueSendCompleteListener> = mutableSetOf()
 
@@ -112,7 +113,11 @@ internal class TaskManagerImpl(
      * tasks.
      */
     private val taskQueue by lazy {
-        TaskQueue(taskArchiverCreator(), dispatchers)
+        TaskQueue(
+            taskArchiver = taskArchiverCreator(),
+            dispatcherAsserters = dispatchers,
+            getDebugString = getDebugString,
+        )
     }
 
     /**

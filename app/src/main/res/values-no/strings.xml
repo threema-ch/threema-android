@@ -161,7 +161,6 @@ når den første meldingen mottas.</string>
     <string name="delete_id_title">Slett ID</string>
     <string name="delete_id_message">Du vil ikke ha muligheten til å sende eller motta meldinger med denne IDen igjen, med mindre du har tatt en sikkerhetskopi eller eksportert og lagret en kopi av IDen.\n\nOm du ikke har planer om å bruke denne IDen igjen, er det anbefalt å opprette et tilbakekallingspassord og tilbakekalle IDen på myid.threema.ch/revoke før du sletter den.</string>
     <string name="delete_id_message2">Siste advarsel: Vil du virkelig slette din ID på denne enheten?</string>
-    <string name="delete_id_sum">Permanent slett din ID og all data på denne enheten</string>
     <string name="backup_password_summary">Eksporten av din ID blir kryptert med et passord. Bruk en kombinasjon av bokstaver, tall og symboler. Ikke glem hva du skriver her!</string>
     <string name="backup_password_again_summary">Oppgi passord igjen</string>
     <string name="password_hint">Passord</string>
@@ -385,7 +384,6 @@ når den første meldingen mottas.</string>
     <string name="prefs_sum_fullscreen_ime_on">Tastaturet kommer til å dekke over applikasjonen om enheten er i landskapsmodus</string>
     <string name="prefs_sum_fullscreen_ime_off">Vis en forhåndsvisning av samtalen over tastaturet om det er plass</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="add_acount_from_within_threema">Behandle ${app_name_short} IDen din internt i applikasjonen</string>
     <string name="save_image">Lagre bilde</string>
     <string name="share_image">Del bilde</string>
     <string name="view_in_gallery">Vis i galleri</string>
@@ -940,7 +938,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="safe_threema_id">Din ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_restore_enter_id">Vennligst skriv ${app_name_short} IDen du vil gjenopprette</string>
-    <string name="safe_search_id_title">Vennligst skriv mobilnummeret eller e-postadressen som er koblet til din ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_id_lookup">Sjekker ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1038,7 +1035,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="hide_chat_enter_message_explain">Denne samtalen er merket som privat samtale. For å åpne, vennligst opprett tilgangsbeskyttelse først.</string>
     <string name="unknown">Ukjent</string>
     <string name="miui_notification_title">Viktig melding om varsler i MIUI</string>
-    <string name="miui_notification_body">MIUI 10 deaktiverer lyd og lys for alle nylig opprettede varslinger som standard (bortsett fra noen applikasjoner som Xiaomi har merket som \"viktig\"). Du må spesifikt aktivere lyd og lys i innstillingene for varsler, for ${app_name_short}. Kontakt produsenten av mobilen din for mer informasjon.</string>
     <string name="miui12_notification_body">MIUI lyd, lys og svevende varsler for alle apper som standard (bortsett fra noen veldig populære applikasjoner som Xiaomi har merket som \"viktig\"). Du må manuelt aktivere slike varsler i innstillingene for din mobil. Dette må også gjentas etter hver oppdatering av appen. Kontakt Xiaomi for mer informasjon.</string>
     <string name="dont_show_again">Ikke vis igjen</string>
     <string name="miui_notification_prefs">MIUI innstillinger</string>
@@ -1247,7 +1243,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="video_size_explain">Store videofiler kan bli komprimert uavhengig av denne innstillingen.</string>
     <string name="status_create_notes">*Du er den eneste medlemmen i denne gruppen*\nBruk denne samtalen som en sikker notatbok for tekst, media eller dokumenter.</string>
     <string name="status_create_notes_off">*Du er ikke lenger alene i denne samtalen*\nNye meldinger vil bli sendt til alle gruppemedlemmer.</string>
-    <string name="note_group_howto">Tips: Om du ikke legger til andre medlemmer i gruppen, så vil meldinger forbli lokale. Det er ideelt for å lagre notater, media og dokumenter på en sikker måte, eller å overføre til en annen enhet (via ${app_name_short} Web).</string>
     <string name="mark_unread">Merk som ulest</string>
     <string name="mark_read_short">Merk som lest</string>
     <string name="unread">Ulest</string>
@@ -1278,7 +1273,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="edit_answer">Rediger svar</string>
     <string name="share_media">Del med en annen app…</string>
     <string name="group_image">Gruppebilde</string>
-    <string name="miui_battery_optimization">Vennligst deaktiver batterioptimalisering for %s, slik at den kan gjøre denne operasjonen. Siden Xiaomi ikke tillter apper å åpne denne innstillingen direkte, så må du gjøre det manuelt i innstillingene. Vennligst kontakt Xiaomi brukerstøtte om du trenger assistanse med å deaktivere batterioptimalisering for ${app_name_short}-appen.</string>
     <string name="forward_captions">Inkluder kommentarer</string>
     <string name="importing_files_failed">Ikke mulig å importere sikkerhetskopi. Sørg for at det er nok ledig plass på det interne minnet.</string>
     <string name="label_continue">Fortsett</string>
@@ -1315,7 +1309,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push_notification_info_text_1">${app_name_short} Push er aktiv i bakgrunnen, for å kunne varsle deg om innkommende meldinger og anrop.</string>
     <string name="threema_push_notification_info_text_2">Apper kan ikke kjøre i bakgrunnen uten å vise en vedvarende varsel. Ved å vise dette varselet så kan vi sørge for at ${app_name_short} Push vil forbli aktiv, selv om du ikke aktivt bruker appen.</string>
-    <string name="threema_push_notification_info_text_3">Om du fortsatt får problemer med forsinket eller manglende varsler, vennligst endre systeminnstillinger for å sørge for at appen kan være aktiv i bakgrunnen uten noen begrensninger og all batterisparing er deaktivert for ${app_name_short}.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push_service_description">Vedvarende varsel blir vist når ${app_name_short} er aktiv</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1428,7 +1421,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="prefs_summary_hibernation_api">For å unngå at ${app_name} blir pauset av systemet etter en periode med inaktivitet, vennligst slå av innstillingen: \"Sett en app i dvale om den er ubrukt\"</string>
     <string name="unable_to_fetch_configuration">Ute av stand til å hente data fra konfigurasjonsserver. Prøv igjen senere.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="rogue_device_warning"><![CDATA[Serveren har oppdaget en tilkobling med den samme ${app_name_short} IDen, men fra en annen enhet. Har du nylig brukt ${app_name_short} på en annen enhet? <br><br>Om du har gjort det, så kan du ignorere denne meldingen. <br><br>Om du ikke har brukt din ${app_name_short} ID på en annen enhet eller brukt en eldre versjon av ${app_name_short}, vennligst kontakt brukerstøtte og send en loggfil om det er mulig. Vennligst <a href="https://threema.com/faq/another_connection">følg våre råd</a> for å beskytte din enhet og dine data før du lager en ny ID.]]></string>
     <string name="fetch2_failure">Synkronisering med server mislyktes.</string>
     <string name="no_members_support_group_calls">Det er ingen andre medlemmer i denne gruppen som er i stand til å svare på gruppesamtale</string>
     <string name="group_calls">Gruppesamtaler</string>
@@ -1445,7 +1437,7 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="call_phone_permission_description">For å starte et anrop i ${app_name_short}, må du aktivere tilgang til telefon, for å oppdage om det kommer et annet anrop som kan forstyrre anropet i ${app_name_short}.</string>
     <string name="group_call_nearby_devices_permission_description">For å starte en gruppesamtale med bluetooth hodetelefoner, så må du aktivere \"Enheter i nærheten\"-tillatelsen for å oppdage bluetooth enheter.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="call_nearby_devices_permission_description">For å starte et anrop i ${app_name} med bluetooth hodetelefoner, så må du aktivere \"Enheter i nærheten\"-tillatelsen for å oppdage bluetooth enheter.</string>
+    <string name="call_nearby_devices_permission_description">For å starte et anrop i ${app_name_short} med bluetooth hodetelefoner, så må du aktivere \"Enheter i nærheten\"-tillatelsen for å oppdage bluetooth enheter.</string>
     <string name="settings">Innstillinger</string>
     <string name="leave">Forlat</string>
     <string name="fs_key_mismatch">Nøkler er ikke lik</string>
@@ -1461,7 +1453,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beskytter kommunikasjonen fra å kunne bli dekryptert i fremtiden, selv om den langsiktige krypteringsnøkkelen er kompromittert.\n\nDette kan skrus på om appen på begge sider av kommunikasjonen støtter PFS.</string>
     <string name="group_call_inactivity_left">Gruppesamtale avsluttet på grunn av inaktivitet</string>
     <string name="missing_permission_external_storage">Ikke mulig å kopiere filen. Prøv følgende: \n1. Åpne innstillinger på enheten.\n2. Gå til \"Apper\" og velg \"Spesiell tilgang\" på menyen med tre prikker eller en nedtrekksmeny.\n3. Trykk på \"Lagring\" eller \"Tilgang til filer\".\n4. Trykk på de tre prikkene oppe i høyre hjørne og velg \"Vis systemet\". \n5. Trykk på \"Ekstern lagring\" og sørg for at \"Tilgang til alle filer\" er gitt.\n6. Prøv igjen å gjenopprette sikkerhetskopien.</string>
-    <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy har blitt deaktivert for denne samtalen fordi app-versjonen til den du chattet med ikke støtter det.</string>
     <string name="forward_security_illegal_session_status_message">Perfect Forward Secrecy økten ble resatt fordi den er ugyldig.</string>
     <string name="crop_image_title">Bekjær bilde</string>
     <string name="scroll_to_bottom">Rull til bunnen</string>
@@ -1526,7 +1517,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="status_orphaned_group">*Gruppen mangler en administrator*\nGruppens grunnlegger har forlatt gruppen og den kan ikke lenger administreres. En av de gjenværende medlemmene kan klone gruppen (via gruppedetaljer) for å bli den nye administratoren.</string>
     <string name="group_not_a_member_notice">Du er ikke lenger medlem av gruppen og kan ikke bruke den lenger.</string>
     <string name="group_dissolved_notice">Gruppen har blitt oppløst og kan ikke bli brukt lenger.</string>
-    <string name="md_linked_devices">Tilkoblede enheter</string>
     <string name="md_link_device">Koble til ny enhet</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->

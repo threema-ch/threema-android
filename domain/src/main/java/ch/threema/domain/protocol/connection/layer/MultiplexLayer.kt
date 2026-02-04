@@ -113,8 +113,8 @@ internal class MultiplexLayer(private val controller: ServerConnectionController
      * not required for further processing (will be passed on as a [CspFrame]).
      * Note: The conversion to a [CspLoginMessage] or a [CspFrame] will be completed in [handleInboundCspMessage].
      *
-     * When the [ch.threema.domain.protocol.connection.CspConnection] is used, the differentiation between
-     * login messages and frames is already performed in the [ch.threema.domain.protocol.connection.socket.CspSocket].
+     * When the [ch.threema.domain.protocol.connection.csp.CspConnection] is used, the differentiation between
+     * login messages and frames is already performed in the [ch.threema.domain.protocol.connection.csp.socket.CspSocket].
      */
     private fun getCspDataFromD2mProxyMessage(container: D2mContainer): CspData {
         if (container.payloadType != D2mPayloadType.PROXY) {
@@ -167,10 +167,12 @@ internal class MultiplexLayer(private val controller: ServerConnectionController
         } else {
             data
         }
+        logger.info("Sending outbound CspData of type {}", outboundData.type)
         outbound.send(outboundData)
     }
 
     private fun handleOutboundD2mMessage(message: OutboundD2mMessage) {
+        logger.info("Sending outbound D2mMessage of type `{}`", message.type)
         outbound.send(message.toContainer())
     }
 }

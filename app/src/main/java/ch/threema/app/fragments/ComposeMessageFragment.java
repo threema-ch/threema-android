@@ -1841,7 +1841,9 @@ public class ComposeMessageFragment extends Fragment implements
             }
 
             //remove wallpaper
-            this.wallpaperView.setImageBitmap(null);
+            if (wallpaperView != null) {
+                wallpaperView.setImageBitmap(null);
+            }
 
             removeIsTypingFooter();
             this.isTypingView = null;

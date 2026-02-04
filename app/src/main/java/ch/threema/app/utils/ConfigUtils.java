@@ -123,6 +123,7 @@ import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.threemasafe.ThreemaSafeConfigureActivity;
 import ch.threema.app.workers.RestartWorker;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
@@ -153,6 +154,9 @@ public class ConfigUtils {
 
     @PreferenceService.EmojiStyle
     public static int emojiStyle = 0;
+
+    private static final String LICENSE_URL_THEME_VALUE_LIGHT = "light";
+    private static final String LICENSE_URL_THEME_VALUE_DARK = "dark";
 
     private static Boolean isTablet = null, isBiggerSingleEmojis = null;
     private static int preferredThumbnailWidth = -1, preferredAudioMessageWidth = -1, currentDayNightMode;
@@ -505,6 +509,11 @@ public class ConfigUtils {
         return emojiStyle == EmojiStyle_DEFAULT;
     }
 
+    @NonNull
+    private static String getVersionUrlParamValue() {
+        return getAppVersion();
+    }
+
     /**
      * Get user-facing application version string including alpha/beta version suffix
      */
@@ -570,43 +579,66 @@ public class ConfigUtils {
         return info.toString();
     }
 
-    public static String getPrivacyPolicyURL(Context context) {
-        return getLicenceURL(context, R.string.privacy_policy_url);
+    @NonNull
+    public static String getPrivacyPolicyURL(@NonNull Context context, boolean isDarkTheme) {
+        return String.format(
+            context.getString(R.string.privacy_policy_url),
+            getLanguageUrlParamValue(),
+            getVersionUrlParamValue(),
+            getThemeUrlParamValue(isDarkTheme)
+        );
     }
 
-    public static String getTermsOfServiceURL(Context context) {
-        return getLicenceURL(context, R.string.terms_of_service_url);
+    @NonNull
+    public static String getTermsOfServiceURL(@NonNull Context context, boolean isDarkTheme) {
+        return String.format(
+            context.getString(R.string.terms_of_service_url),
+            getLanguageUrlParamValue(),
+            getVersionUrlParamValue(),
+            getThemeUrlParamValue(isDarkTheme)
+        );
     }
 
-    public static String getEulaURL(Context context) {
-        return getLicenceURL(context, R.string.eula_url);
+    @NonNull
+    public static String getReferralTermsOfServiceURL(@NonNull Context context, boolean isDarkTheme) {
+        return String.format(
+            context.getString(R.string.referral_terms_of_service_url),
+            getLanguageUrlParamValue(),
+            getThemeUrlParamValue(isDarkTheme)
+        );
     }
 
-    private static String getLicenceURL(Context context, @StringRes int url) {
-        String language = LocaleUtil.getAppLanguage();
-        String lang = language.startsWith("de") || language.startsWith("gsw")
+    @NonNull
+    public static String getEulaURL(@NonNull Context context, boolean isDarkTheme) {
+        return String.format(
+            context.getString(R.string.eula_url),
+            getLanguageUrlParamValue(),
+            getVersionUrlParamValue(),
+            getThemeUrlParamValue(isDarkTheme)
+        );
+    }
+
+    @NonNull
+    private static String getLanguageUrlParamValue() {
+        final @NonNull String language = LocaleUtil.getAppLanguage();
+        return language.startsWith("de") || language.startsWith("gsw")
             ? "de"
             : "en";
-        String version = ConfigUtils.getAppVersion();
-        boolean darkModeOverride = false;
-        if (context instanceof AppCompatActivity) {
-            darkModeOverride = ((AppCompatActivity) context).getDelegate().getLocalNightMode() == MODE_NIGHT_YES;
-        }
-
-        String theme = isTheDarkSide(context) || darkModeOverride ? "dark" : "light";
-
-        return String.format(context.getString(url), lang, version, theme);
     }
 
-    public static String getWorkExplainURL(Context context) {
-        String lang = LocaleUtil.getAppLanguage();
+    @NonNull
+    static String getThemeUrlParamValue(boolean isDarkTheme) {
+        return isDarkTheme ? LICENSE_URL_THEME_VALUE_DARK : LICENSE_URL_THEME_VALUE_LIGHT;
+    }
 
+    @NonNull
+    public static String getWorkExplainURL(Context context) {
+        @NonNull String lang = LocaleUtil.getAppLanguage();
         if (lang.length() >= 2) {
             lang = lang.substring(0, 2);
         } else {
             lang = "en";
         }
-
         return String.format(context.getString(R.string.work_explain_url), lang);
     }
 
@@ -1531,7 +1563,7 @@ public class ConfigUtils {
     /**
      * Check whether the user has restricted the app from network use when in the background
      *
-     * @param context           A context
+     * @param context A context
      * @return true if the app cannot access the network when in background
      */
     public static boolean isBackgroundDataRestricted(@NonNull Context context) {
@@ -1623,6 +1655,6 @@ public class ConfigUtils {
     }
 
     public static boolean isReferralProgramEnabled() {
-        return !isWorkBuild() && BuildConfig.REFERRAL_PROGRAM_AVAILABLE;
+        return !isWorkBuild();
     }
 }

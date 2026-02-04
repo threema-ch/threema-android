@@ -599,12 +599,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         preferenceService.setThreemaSafeMasterKey(masterKey);
         preferenceService.setThreemaSafeServerInfo(serverInfo);
 
-        byte[] threemaSafeEncryptedBackup;
-        try {
-            threemaSafeEncryptedBackup = threemaSafeApiClient.downloadEncryptedBackup(serverInfo, getThreemaSafeBackupId());
-        } catch (IOException e) {
-            throw new ThreemaException("Failed to get backup", e);
-        }
+        byte[] threemaSafeEncryptedBackup = threemaSafeApiClient.downloadEncryptedBackup(serverInfo, getThreemaSafeBackupId());
 
         byte[] nonce = new byte[NaCl.NONCE_BYTES];
         byte[] gzippedData = new byte[threemaSafeEncryptedBackup.length - NaCl.NONCE_BYTES];

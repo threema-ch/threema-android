@@ -371,6 +371,9 @@ class CameraFragment : Fragment() {
         cameraProviderFuture.addListener({
             // CameraProvider
             cameraProvider = cameraProviderFuture.get()
+            if (cameraProvider == null) {
+                logger.warn("Camera provider is null")
+            }
 
             // Select lensFacing depending on the available cameras
             if (viewModel.lensFacing == CameraSelector.LENS_FACING_BACK && !hasBackCamera()) {
@@ -901,6 +904,7 @@ class CameraFragment : Fragment() {
         return try {
             cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
         } catch (e: Exception) {
+            logger.error("Failed to check for presence of back camera", e)
             false
         }
     }
@@ -910,6 +914,7 @@ class CameraFragment : Fragment() {
         return try {
             return cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) ?: false
         } catch (e: Exception) {
+            logger.error("Failed to check for presence of front camera", e)
             false
         }
     }

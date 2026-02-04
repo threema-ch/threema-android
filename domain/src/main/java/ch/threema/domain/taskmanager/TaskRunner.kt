@@ -40,8 +40,8 @@ import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.withContext
 
 private val logger = getThreemaLogger("TaskRunner")
 
@@ -200,7 +200,7 @@ internal class TaskRunner(
         this.layer5Codec = layer5Codec
 
         // Clear incoming message queue to get rid of old unprocessed messages
-        runBlocking(executorCoroutineContext) {
+        withContext(executorCoroutineContext) {
             logger.info("Flushing incoming message queues")
             // As the connection just has been initiated, we will again receive un-acked messages
             taskQueue.recreateIncomingMessageQueue(incomingMessageProcessor)

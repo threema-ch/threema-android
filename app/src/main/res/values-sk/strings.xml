@@ -164,11 +164,9 @@
     <string name="backup_sum">Exportovať vaše ${app_name_short} ID</string>
     <string name="backup_and_delete">Záloha a odstránenie</string>
     <string name="delete_id_title">Vymazať ID</string>
-    <string name="delete_id_message">Pokiaľ ste nevytvorili zálohu alebo neexportovali a neuložili kópiu tohto ID, už nikdy nebudete môcť odosielať ani prijímať správy s týmto ID.\n\nAk už toto ID nechcete používať, odporúčame nastaviť heslo na zrušenie ${app_name_short} ID a pred odstránením tohto ID ho odvolať na stránke myid.threema.ch/revoke.</string>
     <string name="delete_id_message2">Posledné varovanie: naozaj chcete z tohto zariadenia vymazať vaše ID?</string>
     <string name="delete_id_sum">Z tohto zariadenia sa natrvalo odstráni vaše ID a všetky údaje aplikácie ${app_name_short}</string>
     <string name="delete_all_data_prompt">Odstrániť všetky údaje aplikácie?</string>
-    <string name="backup_password_summary">Export vášho ${app_name_short} ID bude zašifrovaný heslom. Použite kombináciu písmen, číslic a symbolov. Nezabudnite, čo sem zadáte!</string>
     <string name="backup_password_again_summary">Vložte heslo znovu</string>
     <string name="password_hint">Heslo</string>
     <string name="generating_backup_data">Generujú sa údaje zálohy</string>
@@ -189,7 +187,6 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="prefs_title_masterkey_passphrase">Heslo</string>
     <string name="setting_masterkey_passphrase">Zadanie hesla hlavného kľúča</string>
     <string name="masterkey_passphrase_title">Heslo hlavného kľúča</string>
-    <string name="masterkey_passphrase_summary">Zadajte heslo pre ochranu hlavného kľúča. Toto heslo bude nutné zadať po každom reštarte aplikácie ${app_name_short}.</string>
     <string name="masterkey_passphrase_again_summary">Vložte heslo znovu</string>
     <string name="masterkey_passphrase_hint">Heslo</string>
     <string name="master_key_locked_want_exit">Hlavný kľúč je stále uzamknutý. Chcete to skúsiť znovu?</string>
@@ -538,8 +535,6 @@ Naplánujte udalosti, vytvorte prieskum, alebo sa niečo spýtajte svojich priat
     <string name="qr_code">QR kód</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="really_leave_id_export">Pokiaľ ste tak ešte neurobili, uložte si váš vyexportovaný ID textový reťazec alebo jemu zodpovedajúci QR kód na bezpečné miesto, alebo si ho vytlačte. Bez tejto zálohy nebude možné váš ${app_name_short} ID obnoviť.</string>
-    <string name="revocation_key_title">Zrušenie ${app_name_short} ID</string>
-    <string name="revocation_key_not_set">Heslo pre zrušenie ${app_name_short} ID nenastavené</string>
     <string name="revocation_key_set_at">Heslo nastavené %1$s</string>
     <string name="prefs_sum_remove_wallpapers">Vymazať všetky individuálne tapety</string>
     <string name="prefs_title_remove_wallpapers">Odstrániť všetky tapety</string>
@@ -703,7 +698,6 @@ Už ich nebude možné obnoviť.</string>
     <string name="new_wizard_info_fingerprint">Posúvaním prstom po displeji vytvoríte náhodné údaje (tzv. entropia), které sa použijú k vygenerovaniu páru šifrovacích kľúčov zviazaných s vaším ${app_name_short} ID. Dvojica šifrovacích kľúčov sa skládá z <b>verejného kľúča</b>, ktorý je distribuovaný vaším priateľom a zo <b>súkromého kľúča</b>, ktorý je bezpečne uložený len vo vašom zariadení. Správy, ktoré vám odošlú vaši priatelia budú zašifrované vaším verejným kľúčom. Tieto správy môže dešifrovať iba ten, kto vlastní súkromný kľúč, nikto iný.</string>
     <string name="new_wizard_info_id">Vytvorili jste dvojicu šifrovacích kľúčov. Verejný kľúč bol bezpečne prenesený na naše servery. Súkromný kľúč nikdy neopustí vaše zariadenie. Tým je zaistené, že nikto nepovolaný se nebude môcť dostať k vašim správam.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_sync_contacts">Pokiaľ túto možnosť povolíte, odošlú sa jednosmerne šifrované (hashe) emailové adresy a telefónne čísla na náš server. Tu sa porovnajú s kontaktmi ostatných užívateľov. Neukladáme žiadne údaje z vášho adresára.</string>
     <string name="new_wizard_info_sync_contacts_dialog">Synchronizácia kontaktov vám pomôže automaticky nájsť priateľov. Ak súhlasíte, telefónne čísla a emailové adresy z vášho telefónneho zoznamu budú zašifrované pred tým, než sa odošlu náš server z dôvodu porovnania zodpovedajúcich kontaktov. Absolútne žiadne údaje nebudú uložené ani zdieľané.\n\nChcete povoliť synchronizáciu kontaktov?</string>
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">Poskytnutím svojho telefónneho čísla a emailovej adresy môže ${app_name} pomôcť vašim priateľom automaticky vás nájsť, ak vás majú v adresári svojho telefónu. Údaje sa uložia do jednosmerne šifrovanej (hashovanej) forme na našom serveri. Tento krok môžete jednoducho preskočiť, ak chcete používať službu ${app_name_short} úplne anonymne.</string>
@@ -808,7 +802,6 @@ Už ich nebude možné obnoviť.</string>
     <string name="really_reset_ringtones">Obnoviť nastavenia zvukových upozornení na východzie hodnoty?</string>
     <string name="reset_ringtones_confirm">Nastavenia zvukových upozornení boli obnovené.</string>
     <string name="prefs_language_override">Jazyk</string>
-    <string name="threema_channel_intro">Kanál ${app_name_short} je informačný kanál aplikácie ${app_name_short}, ktorý vás formou správ informuje o všetkých novinkách. Chcete sa prihlásiť k odberu kanálu a pridať ho medzi kontakty? Je zadarmo a môžete sa z neho kedykoľvek odhlásiť.</string>
     <string name="quote">Citovať</string>
     <string name="contacts_deleted">Kontakty boli vymazané</string>
     <string name="take_photo">Odfotiť</string>
@@ -999,7 +992,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="safe_threema_id">Vaše ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_restore_enter_id">Zadajte ${app_name_short} ID, ktoré chcete obnoviť</string>
-    <string name="safe_search_id_title">Zadajte prosím mobilné číslo, alebo emailovú adresu prepojenú s vašim ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_id_lookup">Vyhľadáva sa ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1592,7 +1584,6 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="status_orphaned_group">*Táto skupina je zastaralá*\nTvorca skupiny opustil skupinu a tá už nemôže byť ďalej udržiavaná. Jeden zo zostávajúcich členov môže skupinu klonovať (prostredníctvom podrobností o skupine) a stať sa novým správcom.</string>
     <string name="group_not_a_member_notice">Už nie ste súčasťou tejto skupiny a nemôžete ju ďalej používať.</string>
     <string name="group_dissolved_notice">Táto skupina bola rozpustená a už sa nedá používať.</string>
-    <string name="md_linked_devices">Prepojené zariadenia</string>
     <string name="md_link_device">Pripojiť nové zariadenie</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
