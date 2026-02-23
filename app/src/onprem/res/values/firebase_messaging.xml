@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2019-2025 Threema GmbH
-  ~ All rights reserved.
-  -->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="project_id" translatable="false">threema-onprem</string>
     <string name="google_app_id" translatable="false">1:510718414732:android:eaed0f724bbfcf09b6d0a9</string>

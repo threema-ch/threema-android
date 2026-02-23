@@ -1,31 +1,6 @@
 #!/usr/bin/env bash
 #
 # A script to verify that a locally compiled APK matches the released APK.
-#
-# Steps taken to achieve this:
-#
-#   1. Unpack both APK files
-#   2. Remove meta information (containing things like the signature)
-#   3. Recursively diff the two directories to ensure they match
-#  _____ _
-# |_   _| |_  _ _ ___ ___ _ __  __ _
-#   | | | ' \| '_/ -_) -_) '  \/ _` |_
-#   |_| |_||_|_| \___\___|_|_|_\__,_(_)
-#
-# Threema for Android
-# Copyright (c) 2020 Threema GmbH
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License, version 3,
-# as published by the Free Software Foundation.
-#
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
-#
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 set -euo pipefail
 

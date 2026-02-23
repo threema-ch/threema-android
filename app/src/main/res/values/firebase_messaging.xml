@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><!--
-  ~ Copyright (c) 2019-2025 Threema GmbH
-  ~ All rights reserved.
-  -->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="google_app_id" translatable="false">1:547934774937:android:8312a582de897c81</string>
     <string name="gcm_defaultSenderId" translatable="false">547934774937</string>
