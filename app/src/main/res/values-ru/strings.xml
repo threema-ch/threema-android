@@ -719,7 +719,7 @@
     <string name="status_ballot_user_modified_vote">«%1$s» изменил(а) голос за «%2$s»</string>
     <string name="status_ballot_all_votes">Голосов за «%1$s»</string>
     <string name="restore">Восстановить</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Вы не указали ни номера мобильного телефона, ни адреса электронной почты для привязки к вашему ${app_name_short} ID. Вы не появитесь в списке контактов ваших друзей. Вы действительно хотите использовать ${app_name} анонимно?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Вы не указали номер мобильного телефона для привязки к своему ${app_name_short} ID. Вы не появитесь в списке контактов ваших друзей. Вы действительно хотите использовать ${app_name} анонимно?</string>
@@ -806,7 +806,8 @@
     <string name="really_reset_ringtones">Сбросить настройки звуковых уведомлений по умолчанию?</string>
     <string name="reset_ringtones_confirm">Настройки звуковых уведомлений были сброшены.</string>
     <string name="prefs_language_override">Язык</string>
-    <string name="threema_channel_intro">Канал ${app_name_short} предоставляет вам новости обо всех событиях ${app_name_short}. Подписаться на канал и добавить его в список контактов? Это бесплатно и вы можете отписаться в любое время.</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="threema_channel_intro">Канал ${app_name_short} предоставляет вам новости обо всех событиях ${app_name_short}. Подписаться на канал ${app_name_short} и добавить его в список контактов? Это бесплатно и вы можете отписаться в любое время.</string>
     <string name="quote">Цитировать</string>
     <string name="contacts_deleted">Контакты были удалены</string>
     <string name="take_photo">Сфотографировать</string>
@@ -884,7 +885,7 @@
     <string name="prefs_summary_force_turn_off">По возможности устанавливать прямое соединение и ретранслировать звонки непроверенным контактам только через серверы ${company_name}. Может быть виден ваш IP-адрес.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_summary_force_turn_on">Принудительно ретранслировать все звонки через серверы ${company_name} с защитой вашего IP-адреса. Может ухудшаться качество связи.</string>
-    <string name="permission_record_audio_required">Для совершения шифрованных звонков и отправки голосовых сообщений предоставьте приложению ${app_name_short} доступ к микрофону.</string>
+    <string name="permission_record_audio_required">Для совершения шифрованных звонков и отправки голосовых сообщений предоставьте приложению доступ к микрофону.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_voice_call_notifications">Звонки ${app_name_short}</string>
     <string name="prefs_voice_call_sound">Сигнал звонка</string>
@@ -1675,6 +1676,12 @@
     <string name="md_drop_device_failed_dialog_title">Возможно, не удалось удалить привязанное устройство</string>
     <string name="md_drop_device_failed_dialog_message">Проверьте подключение к интернету и повторите попытку.</string>
     <string name="md_drop_device_failed_dialog_button_close">Закрыть</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">Возможна потенциальная проблема с выбранной папкой. Если она произойдёт, вы сможете сохранить резервную копию в папке «Documents» вместо выбранной.</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">Использовать выбранную папку</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">Использовать папку «Documents»</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">согласие отправлено</string>
     <string name="cd_dec_icon">несогласие отправлено</string>

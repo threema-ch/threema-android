@@ -680,7 +680,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="status_ballot_user_modified_vote">«%1$s» a canviat el vot a favor de «%2$s»</string>
     <string name="status_ballot_all_votes">Les votacions per «%1$s» s\'han completat</string>
     <string name="restore">Restaurar</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">No heu entrat ni un número de mòbil ni una adreça de correu electrònic per enllaçar a la vostra ID de ${app_name_short}. No apareixereu a les llistes de contactes dels vostres amics. Realment voleu utilitzar ${app_name} anònimament?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">No heu entrat un número de mòbil per enllaçar a la vostra ID de ${app_name_short}. No apareixereu a les llistes de contactes dels vostres amics. Realment voleu utilitzar ${app_name} anònimament?</string>
@@ -750,6 +750,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="really_reset_ringtones">Voleu restablir la configuració del so de notificació a la predeterminada?</string>
     <string name="reset_ringtones_confirm">S\'ha restablert la configuració del so de notificació.</string>
     <string name="prefs_language_override">Idioma</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">El Canal ${app_name_short} us proporciona notícies sobre totes les coses de ${app_name_short}. Voleu subscriure-us al Canal ${app_name_short} i afegir-lo als vostres contactes? És gratuït i podeu revocar la subscripció en qualsevol moment.</string>
     <string name="quote">Citar</string>
     <string name="contacts_deleted">Els contactes s\'han eliminat</string>
@@ -1357,6 +1358,9 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- Label on button to dismiss/hide a warning -->
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
     <!-- accessibility -->
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->

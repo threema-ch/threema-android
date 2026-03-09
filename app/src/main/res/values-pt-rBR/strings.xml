@@ -721,7 +721,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="status_ballot_user_modified_vote">«%1$s» alterou o voto em «%2$s»</string>
     <string name="status_ballot_all_votes">Votos para «%1$s» concluídos</string>
     <string name="restore">Restaurar</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Você não inseriu um número de celular ou um endereço de e-mail para vincular à sua ID do ${app_name_short}. Você não aparecerá na lista de contatos de seus amigos. Você realmente quer usar o ${app_name} de forma completamente anônima?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Você não inseriu um número de telefone para vincular ao seu ID do ${app_name_short}. Você, portanto, não será adicionado automaticamente às listas de contatos. Você realmente deseja usar o ${app_name} anonimamente?</string>
@@ -808,6 +808,7 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="really_reset_ringtones">Redefinir as configurações de sons de notificação para o padrão?</string>
     <string name="reset_ringtones_confirm">As configurações de sons de notificação foram redefinidas.</string>
     <string name="prefs_language_override">Idioma</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">O Canal ${app_name_short} lhe traz todas as novidades sobre o ${app_name_short}. Você gostaria de adicionar o Canal ${app_name_short} aos seus contatos?</string>
     <string name="quote">Citação</string>
     <string name="contacts_deleted">Os contatos foram excluídos</string>
@@ -1676,6 +1677,12 @@ Por favor, insira uma pergunta para a sua enquete.</string>
     <string name="md_drop_device_failed_dialog_title">Pode ter ocorrido uma falha na remoção do dispositivo vinculado</string>
     <string name="md_drop_device_failed_dialog_message">Verifique a conexão com a Internet e tente novamente.</string>
     <string name="md_drop_device_failed_dialog_button_close">Fechar</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">Detectamos um possível problema durante a seleção da pasta. Se o problema persistir, você pode salvar o backup na pasta \"Documentos\", em vez de escolher uma pasta personalizada.</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">Selecionar pasta personalizada</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">Usar a pasta “Documentos”</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">aceitação enviada</string>
     <string name="cd_dec_icon">recusa enviada</string>

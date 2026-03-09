@@ -1,4 +1,2 @@
-- New: Recommend Threema Work and earn a referral bonus!
-- Emoji reactions can now be read by TalkBack
-- Fixed a bug in relation to ringtones for Threema calls
-- Fixed a bug that could occur when the app lock is used
+- Play a sound when establishing Threema calls in individual chats
+- Use the default path for data backups if the system’s picker does not work

@@ -53,14 +53,17 @@ public class PinLockService implements LockAppService {
     public boolean unlock(String pin) {
         logger.debug("unlock");
 
-        if ((PreferenceService.LockingMech_PIN.equals(preferencesService.getLockMechanism()) &&
-            this.preferencesService.isPinCodeCorrect(pin)) ||
+        boolean isLockMechanismPin = PreferenceService.LockingMech_PIN.equals(preferencesService.getLockMechanism());
+
+        if ((isLockMechanismPin && this.preferencesService.isPinCodeCorrect(pin)) ||
             PreferenceService.LockingMech_SYSTEM.equals(preferencesService.getLockMechanism()) ||
             PreferenceService.LockingMech_BIOMETRIC.equals(preferencesService.getLockMechanism())) {
             this.resetLockTimer(false);
             this.updateState(false);
             this.lockTimeStamp = 0;
             return !this.locked;
+        } else if (isLockMechanismPin) {
+            logger.info("Incorrect PIN entered");
         }
         return false;
     }

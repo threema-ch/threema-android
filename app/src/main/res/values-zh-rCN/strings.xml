@@ -440,6 +440,7 @@
     <string name="is_typing">输入中…</string>
     <string name="push_not_available_title">找不到推送服务</string>
     <string name="push_not_available_text1">我们无法在您的设备上找到推送服务，因为 Google Play 服务没有安装或过时。</string>
+    <string name="push_not_available_text2">%s 将在后台持续与服务器连接。如果您的设备启用了电池优化，这可能会干扰后台连接，无法持续运行。</string>
     <string name="backup_in_progress">正在进行备份</string>
     <string name="backup_or_restore_success_body">数据备份成功完成</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -746,7 +747,7 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="status_ballot_user_modified_vote">%1$s 更改了 %2$s 的投票</string>
     <string name="status_ballot_all_votes">已完成 %1$s 的投票</string>
     <string name="restore">恢复</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">您没有输入手机号码或电子邮件地址链接到\n${app_name_short} ID。您将不会出现在朋友的联系人列表中。您确定要匿名使用 ${app_name} 吗？</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">您没有输入手机号码链接到${app_name_short} ID。您将不会出现在朋友的联系人列表中。您确定要匿名使用 ${app_name} 吗？</string>
@@ -833,6 +834,7 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="really_reset_ringtones">真的将通知声音设置重置为默认值吗？</string>
     <string name="reset_ringtones_confirm">通知声音设置已重设。</string>
     <string name="prefs_language_override">语言</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">${app_name_short} 频道为您提供关于 ${app_name_short} 的所有新闻。您想订阅${app_name_short} 频道并将其添加到您的联系人中吗？这是免费的，您可以随时退订。</string>
     <string name="quote">引用</string>
     <string name="contacts_deleted">联系人已被删除</string>
@@ -982,6 +984,7 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="webclient_session_stop_all">关闭所有</string>
     <string name="passphrase_service_name">密码服务</string>
     <string name="passphrase_service_description">密码解锁时的通知</string>
+    <string name="webclient_service_description">网页版/桌面版会话运行时的通知</string>
     <string name="prefs_title_accept_privacy_policy">接受隐私权政策</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="privacy_policy_explain">${app_name}比任何其他即时通讯工具都更加严格地保护您的隐私。在我们的%1$s中了解更多。</string>
@@ -1550,6 +1553,7 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="forward_security_explanation">完全正向保密（PFS）可以保护会话记录不被追溯解密，即使长期加密密钥已被盗用。\n\n如果双方的应用程序都支持完全正向保密的话，就可以启用此选项。</string>
     <string name="group_call_inactivity_left">因为长时间不活动，群组通话自动退出</string>
     <string name="missing_permission_external_storage">无法复制文件，请尝试以下步骤以解決问题：\n1. 打开系统设置。\n2. 前往 “应用程序”，然后点击右上角的三个点，选择 “特殊访问” 权限。\n3. 点击 “所有文件访问”。\n4. 点击右上角的三个点，选择“显示系统应用程序”。\n5. 点击 “外部存储” 并确保授予 “允许访问所有文件” 权限。\n6. 再次尝试恢复备份。</string>
+    <string name="forward_security_downgraded_status_message">因为对方使用的应用程序版本或  ${app_name_desktop} 2.0 桌面版（测试版）不支持 “完全正向保密” 功能，所以在此会话中已禁用 “完全正向保密” 。</string>
     <string name="forward_security_illegal_session_status_message">这个之前已启用 “完全正向保密” 的会话，因无效而被重置保密状态。</string>
     <string name="crop_image_title">裁剪图片</string>
     <string name="scroll_to_bottom">回到底部</string>
@@ -1697,6 +1701,12 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="md_drop_device_failed_dialog_title">移除已链接设备可能失败</string>
     <string name="md_drop_device_failed_dialog_message">请检查您的互联网连接并重试。</string>
     <string name="md_drop_device_failed_dialog_button_close">关闭</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">在选择文件夹时检测到潜在问题。如果问题仍然存在，您可将备份保存至“文档”文件夹，而非选择自定义文件夹。</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">选择自定义文件夹</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">使用“文档”文件夹</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">您对这条消息表示 “同意”。</string>
     <string name="cd_dec_icon">您对这条消息表示 “不同意”。</string>

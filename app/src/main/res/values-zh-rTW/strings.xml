@@ -440,6 +440,7 @@
     <string name="is_typing">輸入中…</string>
     <string name="push_not_available_title">找不到推播服務</string>
     <string name="push_not_available_text1">我們無法在您的裝置上找到推播服務，因為 Google Play 服務未安裝或過期。</string>
+    <string name="push_not_available_text2">%s 將在背景持續與伺服器連線。如果您的裝置啟用了電池最佳化，這可能會干擾背景連線，無法持續執行。</string>
     <string name="backup_in_progress">正在進行備份</string>
     <string name="backup_or_restore_success_body">資料備份成功完成</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -746,7 +747,7 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="status_ballot_user_modified_vote">%1$s 變更了 %2$s 的投票</string>
     <string name="status_ballot_all_votes">已完成 %1$s 的投票</string>
     <string name="restore">還原</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">您沒有輸入電話號碼或電子郵件地址連結至 ${app_name_short} ID，您將不會出現在好友的聯絡人名單中。您確定要匿名使用 ${app_name} 嗎？</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">您沒有輸入電話號碼連結至 ${app_name_short} ID。您將不會出現在好友的聯絡人名單中。您確定要匿名使用 ${app_name} 嗎？</string>
@@ -833,6 +834,7 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="really_reset_ringtones">真的將通知音效設定重設為預設值嗎？</string>
     <string name="reset_ringtones_confirm">通知音效設定已重設。</string>
     <string name="prefs_language_override">語言</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">${app_name_short} 頻道為您提供關於 ${app_name_short} 的所有新聞。您想訂閱 ${app_name_short} 頻道並將其新增到您的聯絡人中嗎？這是免費的，您可以隨時退訂。</string>
     <string name="quote">引用</string>
     <string name="contacts_deleted">聯絡人已被刪除</string>
@@ -1551,6 +1553,7 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="forward_security_explanation">完全正向保密（PFS）可以保護對話記錄不被追溯解密，即使長期加密密鑰已被盜用。\n\n如果雙方的應用程式都支援完全正向保密的話，就可以啟用此選項。</string>
     <string name="group_call_inactivity_left">因為長時間未使用，群組通話自動退出</string>
     <string name="missing_permission_external_storage">無法複製檔案，請嘗試以下步驟以解決問題：\n1. 開啟系統設定。\n2. 前往「應用程式」，然後按一下右上角的三個點，選擇「特殊存取」權限。\n3. 按一下「所有檔案存取」。\n4. 按一下右上角的三個點，選擇「顯示系統應用程式」。\n5. 按一下「外部儲存空間」並確保授予「允許存取所有檔案」權限。\n6. 再次嘗試還原備份。</string>
+    <string name="forward_security_downgraded_status_message">因為對方使用的應用程式版本或 ${app_name_desktop} 2.0 桌面版（測試版）不支援「完全正向保密」功能，所以在此對話中已停用「完全正向保密」。</string>
     <string name="forward_security_illegal_session_status_message">這個之前已啟用「完全正向保密」的工作階段，因無效而被重設保密狀態。</string>
     <string name="crop_image_title">裁剪圖片</string>
     <string name="scroll_to_bottom">回到頁尾</string>
@@ -1698,6 +1701,12 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="md_drop_device_failed_dialog_title">移除已連結的裝置可能失敗</string>
     <string name="md_drop_device_failed_dialog_message">請檢查您的網路連線並再試一次。</string>
     <string name="md_drop_device_failed_dialog_button_close">關閉</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">在選擇資料夾時偵測到潛在問題。如果問題仍然存在，您可將備份儲存至「文件」資料夾，而非選擇自訂資料夾。</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">選擇自訂資料夾</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">使用「文件」資料夾</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">您對這則訊息表示「同意」。</string>
     <string name="cd_dec_icon">您對這則訊息表示「不同意」。</string>

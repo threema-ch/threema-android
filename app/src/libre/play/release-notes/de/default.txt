@@ -1,4 +1,2 @@
-- Neu: Empfehlen Sie Threema Work und erhalten Sie einen Referral-Bonus!
-- Emoji-Reaktionen lassen sich nun von TalkBack vorlesen
-- Behebung eines Fehlers bei Ruftönen von Threema-Anrufen
-- Behebung eines Fehlers, der bei Verwendung der App-Sperre auftreten konnte
+- Abspielen eines Tons während des Rufaufbaus in Einzelchats
+- Verwendung des Standardpfads für Daten-Backups, wenn die Dateiauswahl im Systemdialog nicht funktioniert

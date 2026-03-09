@@ -729,7 +729,7 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="status_ballot_user_modified_vote">«%1$s» zmienił(a) głos oddany na «%2$s»</string>
     <string name="status_ballot_all_votes">Głosowanie na „%1$s” zakończone</string>
     <string name="restore">Przywróć</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Nie podano ani numeru komórki, ani adresu e-mail do połączenia z twoim ID w ${app_name_short}. Nie pojawisz się na listach kontaktów swoich znajomych. Naprawdę chcesz używać ${app_name} anonimowo?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Nie udało Ci się wprowadzić numeru telefonu w celu powiązania go z identyfikatorem ${app_name_short}. Zatem nie wpiszemy Cię automatycznie na listy kontaktów. Czy naprawdę chcesz anonimowo korzystać z aplikacji ${app_name}?</string>
@@ -816,6 +816,7 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="really_reset_ringtones">Czy na pewno chcesz przywrócić domyślne ustawienia dźwiękowe powiadomień?</string>
     <string name="reset_ringtones_confirm">Ustawienia dźwiękowe powiadomień zostały zresetowane.</string>
     <string name="prefs_language_override">Język</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">Kanał ${app_name_short} dostarcza wiadomości na temat wszystkich rzeczy związanych z aplikacją ${app_name_short}. Czy chcesz subskrybować kanał ${app_name_short} oraz dodać go do swoich kontaktów? Jest bezpłatny i w każdej chwili możesz anulować subskrypcję.</string>
     <string name="quote">Cytat</string>
     <string name="contacts_deleted">Kontakty zostały usunięte</string>
@@ -1685,6 +1686,12 @@ podanie wyłącznie imienia lub pseudonimu. Jeśli nie ustawisz pseudonimu, będ
     <string name="md_drop_device_failed_dialog_title">Usuwanie powiązanego urządzenia mogło się nie udać</string>
     <string name="md_drop_device_failed_dialog_message">Sprawdź połączenie z siecią i spróbuj ponownie.</string>
     <string name="md_drop_device_failed_dialog_button_close">Zamknij</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">Wykryto potencjalny problem podczas wybierania folderu. Jeśli problem nie zniknie, możesz zapisać kopię zapasową w folderze „Dokumenty”, zamiast wybierać własny folder.</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">Wybierz własny folder</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">Skorzystaj z folderu „Dokumenty”</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">zgoda została wysłana</string>
     <string name="cd_dec_icon">informacja o braku zgody została wysłana</string>

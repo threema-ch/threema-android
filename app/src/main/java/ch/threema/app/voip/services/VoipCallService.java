@@ -1236,6 +1236,8 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
         };
         VoipListenerManager.messageListener.add(this.voipMessageListener);
 
+        startLoopingSound(callId, R.raw.call_initialization, "call_initialization");
+
         logCallInfo(callId, "Creating offer...");
         this.peerConnectionClient.createOffer();
     }
@@ -2033,8 +2035,9 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
                                                 int rawResource,
                                                 final String soundName) {
         if (this.mediaPlayer != null) {
-            logCallError(callId, "Not looping {} sound, mediaPlayer is not null!", soundName);
-            return;
+            this.mediaPlayer.stop();
+            this.mediaPlayer.release();
+            this.mediaPlayer = null;
         }
         logCallInfo(callId, "Looping {} sound...", soundName);
 

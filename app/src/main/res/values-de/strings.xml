@@ -750,7 +750,7 @@
     <string name="status_ballot_user_modified_vote">«%1$s» hat die Stimme für «%2$s» geändert</string>
     <string name="status_ballot_all_votes">Umfrage «%1$s» vollständig</string>
     <string name="restore">Wiederherstellen</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Sie haben weder eine Handynummer noch eine E-Mail-Adresse zur Verknüpfung mit Ihrer ${app_name_short}-ID angegeben, weshalb Sie nicht automatisch zu Kontaktlisten hinzugefügt werden. Möchten Sie ${app_name} wirklich komplett anonym nutzen?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Sie haben keine Handynummer zur Verknüpfung mit Ihrer ${app_name_short}-ID angegeben, weshalb Sie nicht automatisch zu Kontaktlisten hinzugefügt werden. Möchten Sie ${app_name} wirklich komplett anonym nutzen?</string>
@@ -837,6 +837,7 @@
     <string name="really_reset_ringtones">Benachrichtigungstöne auf Werkseinstellung zurücksetzen?</string>
     <string name="reset_ringtones_confirm">Benachrichtigungstöne wurden zurückgesetzt</string>
     <string name="prefs_language_override">Sprache</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">Der ${app_name_short} Channel versorgt Sie mit Neuigkeiten zu ${app_name_short}. Möchten Sie ${app_name_short} Channel abonnieren und zu Ihren Kontakten hinzufügen? Es ist kostenlos und Sie können sich jederzeit abmelden.</string>
     <string name="quote">Zitieren</string>
     <string name="contacts_deleted">Kontakte wurden gelöscht</string>
@@ -1704,6 +1705,12 @@
     <string name="md_drop_device_failed_dialog_title">Entfernen des Geräts möglicherweise fehlgeschlagen</string>
     <string name="md_drop_device_failed_dialog_message">Bitte überprüfen Sie die Internetverbindung und versuchen Sie es erneut.</string>
     <string name="md_drop_device_failed_dialog_button_close">Schliessen</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">Bei der Auswahl des Ordners scheint ein Fehler aufgetreten zu sein. Wenn das Problem weiterhin besteht, können Sie das Backup im Ordner «Dokumente» speichern, anstatt einen eigenen Ordner auszuwählen.</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">Eigenen Ordner wählen</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">«Dokumente»-Ordner verwenden</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">Nachricht bestätigt</string>
     <string name="cd_dec_icon">Nachricht abgelehnt</string>

@@ -716,7 +716,7 @@ Už ich nebude možné obnoviť.</string>
     <string name="status_ballot_user_modified_vote">“%1$s” zmenil hlasovanie pre “%2$s”</string>
     <string name="status_ballot_all_votes">Hlasy pre anketu „%1$s“ sú kompletné</string>
     <string name="restore">Obnoviť</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Nezadali ste ani číslo mobilného telefónu, ani emailovú adresu, ktoré by boli prepojené s vašim ${app_name_short} ID. Nebudete se zobrazovať v zozname kontaktov vašich priateľov. Naozaj chcete používať aplikáciu ${app_name} anonymne?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Nezadali ste číslo mobilného telefónu, ktoré by bolo prepojené s vašim ${app_name_short} ID. Nebudete se zobrazovať v zozname kontaktov vašich priateľov. Naozaj chcete používať aplikáciu ${app_name} anonymne?</string>
@@ -802,6 +802,7 @@ Už ich nebude možné obnoviť.</string>
     <string name="really_reset_ringtones">Obnoviť nastavenia zvukových upozornení na východzie hodnoty?</string>
     <string name="reset_ringtones_confirm">Nastavenia zvukových upozornení boli obnovené.</string>
     <string name="prefs_language_override">Jazyk</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="quote">Citovať</string>
     <string name="contacts_deleted">Kontakty boli vymazané</string>
     <string name="take_photo">Odfotiť</string>
@@ -1669,6 +1670,9 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="md_drop_device_failed_dialog_title">Odstránenie prepojeného zariadenia mohlo zlyhať</string>
     <string name="md_drop_device_failed_dialog_message">Skontrolujte prosím internetové pripojenie a skúste to znova.</string>
     <string name="md_drop_device_failed_dialog_button_close">Zatvoriť</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
     <!-- accessibility -->
     <string name="cd_ack_icon">súhlas odoslaný</string>
     <string name="cd_dec_icon">nesúhlas odoslaný</string>

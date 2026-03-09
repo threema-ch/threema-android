@@ -191,18 +191,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     //       the call ID for every logging call. These helper methods provide some boilerplate
     //       code to make this easier.
 
-    private static void logCallTrace(long callId, String message) {
-        logger.trace("[cid={}]: {}", callId, message);
-    }
-
-    private static void logCallTrace(long callId, @NonNull String message, Object... arguments) {
-        logger.trace("[cid=" + callId + "]: " + message, arguments);
-    }
-
-    private static void logCallDebug(long callId, String message) {
-        logger.debug("[cid={}]: {}", callId, message);
-    }
-
     private static void logCallDebug(long callId, @NonNull String message, Object... arguments) {
         logger.debug("[cid=" + callId + "]: " + message, arguments);
     }
@@ -221,14 +209,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
     private static void logCallWarning(long callId, @NonNull String message, Object... arguments) {
         logger.warn("[cid=" + callId + "]: " + message, arguments);
-    }
-
-    private static void logCallError(long callId, String message) {
-        logger.error("[cid={}]: {}", callId, message);
-    }
-
-    private static void logCallError(long callId, String message, Throwable t) {
-        logger.error("[cid=" + callId + "]: " + message, t);
     }
 
     private static void logCallError(long callId, @NonNull String message, Object... arguments) {
@@ -765,9 +745,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
                 // Call was rejected
                 case VoipCallAnswerData.Action.REJECT:
                     // TODO(ANDR-XXXX): only for tests!
-                    VoipListenerManager.callEventListener.handle(listener -> {
-                        listener.onRejected(callId, msg.getFromIdentity(), false, callAnswerData.getRejectReason());
-                    });
+                    VoipListenerManager.callEventListener.handle(listener -> listener.onRejected(callId, msg.getFromIdentity(), false, callAnswerData.getRejectReason()));
                     logCallInfo(callId, "Call answer received from {}: reject/{}",
                         msg.getFromIdentity(), callAnswerData.getRejectReasonName());
                     break;
@@ -957,9 +935,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
             final boolean accepted = prevState.isInitializing();
             handleMissedCall(voipCallHangupMessage, callId, accepted);
         } else if (prevState.isCalling() && duration != null) {
-            VoipListenerManager.callEventListener.handle(listener -> {
-                listener.onFinished(callId, voipCallHangupMessage.getFromIdentity(), !incoming, duration);
-            });
+            VoipListenerManager.callEventListener.handle(listener -> listener.onFinished(callId, voipCallHangupMessage.getFromIdentity(), !incoming, duration));
         }
 
         return true;
@@ -1149,13 +1125,10 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     }
 
     /**
-     * Send a call answer method.
+     * Send a call answer message.
      *
      * @param videoCall If set to TRUE, then the `video` call feature
      *                  will be sent along in the answer.
-     * @throws ThreemaException
-     * @throws IllegalArgumentException
-     * @throws IllegalStateException
      */
     private void sendCallAnswerMessage(
         @NonNull ContactModel receiver,
@@ -1164,7 +1137,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         byte action,
         @Nullable Byte rejectReason,
         @Nullable Boolean videoCall
-    ) throws ThreemaException, IllegalArgumentException, IllegalStateException {
+    ) throws IllegalArgumentException, IllegalStateException {
         logCallInfo(callId, "Sending call answer message");
         final VoipCallAnswerData callAnswerData = new VoipCallAnswerData()
             .setCallId(callId)
@@ -1198,7 +1171,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
         contactService.createReceiver(receiver).sendVoipCallAnswerMessage(callAnswerData);
 
-        logCallInfo(callId, "Call answer enqueued to {}: {}", receiver.getIdentity(), callAnswerData.getAction());
+        logCallInfo(callId, "Call answer enqueued to {}: {}", receiver.getIdentity(), callAnswerData.getActionDescription());
         logCallInfo(callId, "  Answer features: {}", callAnswerData.getFeatures());
     }
 
@@ -1227,7 +1200,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         }
         final VoipICECandidatesData voipICECandidatesData = new VoipICECandidatesData()
             .setCallId(callId)
-            .setCandidates(candidates.toArray(new VoipICECandidatesData.Candidate[candidates.size()]));
+            .setCandidates(candidates.toArray(new VoipICECandidatesData.Candidate[0]));
 
         contactService.createReceiver(receiver).sendVoipICECandidateMessage(voipICECandidatesData);
 
@@ -1302,12 +1275,10 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
     /**
      * Accept an incoming call.
-     *
-     * @return true if call was accepted, false otherwise (e.g. if no incoming call was active)
      */
-    public boolean acceptIncomingCall() {
+    public void acceptIncomingCall() {
         if (this.acceptIntent == null) {
-            return false;
+            return;
         }
         try {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -1317,11 +1288,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
                 this.acceptIntent.send();
             }
             this.acceptIntent = null;
-            return true;
         } catch (PendingIntent.CanceledException e) {
             logger.error("Cannot send pending accept intent: It was cancelled");
             this.acceptIntent = null;
-            return false;
         }
     }
 
@@ -1432,9 +1401,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     /**
      * Show a call notification.
      */
-    @Nullable
     @WorkerThread
-    private Notification showNotification(
+    private void showNotification(
         @NonNull ContactModel contact,
         @NonNull PendingIntent accept,
         @NonNull PendingIntent reject,
@@ -1540,8 +1508,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
                 logger.error("Could not send inCallPendingIntent", e);
             }
         }
-
-        return notification;
     }
 
     private PendingIntent createLaunchPendingIntent(

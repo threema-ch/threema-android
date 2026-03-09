@@ -543,6 +543,11 @@ public interface PreferenceService {
     void setDataBackupUri(Uri newUri);
 
     @Nullable
+    Instant getDataBackupPickerLaunched();
+
+    void setDataBackupPickerLaunched(@Nullable Instant timestamp);
+
+    @Nullable
     Instant getLastDataBackupTimestamp();
 
     void setLastDataBackupTimestamp(@Nullable Instant timestamp);

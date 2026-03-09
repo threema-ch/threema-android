@@ -727,7 +727,7 @@
     <string name="status_ballot_user_modified_vote">„%1$s“ промени вота си на „%2$s“</string>
     <string name="status_ballot_all_votes">Гласовете за „%1$s“ приключиха</string>
     <string name="restore">Възстановяване</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Не сте въвели мобилен телефон или имейл, които да се свържат с Вашия ${app_name_short} идентификатор. Вие няма да се виждате в списъка с контакти на Вашите приятели. Наистина ли искате да използвате ${app_name} анонимно?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Не сте въвели мобилен телефон, който да се свърже с Вашия ${app_name_short} идентификатор. Вие няма да се виждате в списъка с контакти на Вашите приятели. Наистина ли искате да използвате ${app_name} анонимно?</string>
@@ -814,6 +814,7 @@
     <string name="really_reset_ringtones">Наистина ли искате да възстановите настройките на звука на известията?</string>
     <string name="reset_ringtones_confirm">Настройките на известията на звука бяха възстановени.</string>
     <string name="prefs_language_override">Език</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">${app_name_short} каналът Ви предоставя новини за всичко около ${app_name_short}. Искате ли да се абонирате за канала на ${app_name_short} и да го добавите като контакт? Безплатно е и винаги можете да се отпишете.</string>
     <string name="quote">Цитирайте</string>
     <string name="contacts_deleted">Контактът е изтрит</string>
@@ -1681,6 +1682,9 @@
     <string name="md_drop_device_failed_dialog_title">Премахването на свързаните устройства може да е неуспешно</string>
     <string name="md_drop_device_failed_dialog_message">Моля, проверете интернет връзката Ви и опитайте отново.</string>
     <string name="md_drop_device_failed_dialog_button_close">Затворете</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
     <!-- accessibility -->
     <string name="cd_ack_icon">изпратено е „съгласие“</string>
     <string name="cd_dec_icon">изпратено е „несъгласие“</string>

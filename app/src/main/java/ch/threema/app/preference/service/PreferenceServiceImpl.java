@@ -1438,6 +1438,17 @@ public class PreferenceServiceImpl implements PreferenceService {
 
     @Override
     @Nullable
+    public Instant getDataBackupPickerLaunched() {
+        return preferenceStore.getInstant(getKeyName(R.string.preferences__data_backup_picker_launched));
+    }
+
+    @Override
+    public void setDataBackupPickerLaunched(@Nullable Instant timestamp) {
+        preferenceStore.save(getKeyName(R.string.preferences__data_backup_picker_launched), timestamp);
+    }
+
+    @Override
+    @Nullable
     public Instant getLastDataBackupTimestamp() {
         return this.preferenceStore.getInstant(this.getKeyName(R.string.preferences__last_data_backup_date));
     }

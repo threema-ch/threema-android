@@ -172,6 +172,7 @@
     <string name="preferences__remove_menu" translatable="false">pref_key_remove_menu</string>
     <string name="preferences__rate" translatable="false">pref_key_rate</string>
     <string name="preferences__data_backup_uri" translatable="false">pref_data_backup_uri</string>
+    <string name="preferences__data_backup_picker_launched" translatable="false">pref_data_backup_picker_launched</string>
     <string name="preferences__show_unread_badge" translatable="false">pref_show_unread_badge</string>
     <string name="preferences__match_token" translatable="false">pref_match_token</string>
     <string name="preferences__auto_download_explain" translatable="false">pref_auto_download_explain</string>

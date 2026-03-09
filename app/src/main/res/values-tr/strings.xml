@@ -719,7 +719,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="status_ballot_user_modified_vote">\"%1$s\", \"%2$s\" için oyunu değiştirdi</string>
     <string name="status_ballot_all_votes">\"%1$s\" için oylar tamamlandı</string>
     <string name="restore">Geri yükle</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">${app_name_short} kimliğinize bağlamak için telefon numarası veya e-posta adresi girmediniz. Arkadaşlarınızın kişi listelerinde görünmezsiniz. ${app_name}\'ı tamamen anonim şekilde kullanmak istiyor musunuz?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">${app_name_short} kimliğinize bağlamak için bir telefon numarası girmediniz. Bu nedenle, otomatik olarak kişi listelerine eklenmeyeceksiniz. ${app_name} uygulamasını gerçekten anonim olarak kullanmak istiyor musunuz?</string>
@@ -806,6 +806,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="really_reset_ringtones">Bildirim tonunu gerçekten varsayılan ayarlara sıfırlamak istiyor musunuz?</string>
     <string name="reset_ringtones_confirm">Bildirim tonu ayarları sıfırlandı.</string>
     <string name="prefs_language_override">Dil</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">${app_name_short} Kanalı size ${app_name_short} ile ilgili her şey hakkında haberler sunuyor. ${app_name_short} Kanalına abone olmak ve rehberinize eklemek ister misiniz? Ücretsizdir ve istediğiniz zaman aboneliğinizi iptal edebilirsiniz.</string>
     <string name="quote">Alıntıla</string>
     <string name="contacts_deleted">Kişiler silindi</string>
@@ -1588,6 +1589,7 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="status_orphaned_group">*Bu grup öksüz kaldı*\nGrubu oluşturan kişi gruptan ayrılmıştır ve grup artık sürdürülemez. Kalan üyelerden biri yeni yönetici olmak için grubu klonlayabilir (grup ayrıntıları aracılığıyla).</string>
     <string name="group_not_a_member_notice">Artık bu grubun bir parçası değilsiniz ve bu grubu kullanamazsınız.</string>
     <string name="group_dissolved_notice">Bu grup dağıtılmıştır ve artık kullanılamaz.</string>
+    <string name="md_linked_devices">${app_name_desktop} 2.0 Masaüstü Sürümü (Beta)</string>
     <string name="md_link_device">Yeni cihaz bağla</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
@@ -1671,6 +1673,12 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <string name="md_drop_device_failed_dialog_title">Bağlantılı cihazın kaldırılması başarısız olmuş olabilir</string>
     <string name="md_drop_device_failed_dialog_message">Lütfen İnternet bağlantısını kontrol edin ve tekrar deneyin.</string>
     <string name="md_drop_device_failed_dialog_button_close">Kapat</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">Klasör seçimi sırasında olası bir sorun tespit edildi. Sorun devam ederse, özel bir klasör seçmek yerine yedeklemeyi \"Belgeler\" klasörüne kaydedebilirsiniz.</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">Özel klasör seçin</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">\"Belgeler\" klasörünü kullanın.</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">\"kabul\" gönderildi</string>
     <string name="cd_dec_icon">\"katılmıyorum\" gönderildi</string>

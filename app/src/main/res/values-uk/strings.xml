@@ -755,7 +755,7 @@
     <string name="status_ballot_user_modified_vote">Контакт \"%1$s\" змінив свій голос в опитуванні \"%2$s\"</string>
     <string name="status_ballot_all_votes">Голосування в опитуванні \"%1$s\" завершено</string>
     <string name="restore">Відновити</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Ви не зв\'язали номер телефону або адресу ел. пошти з ID ${app_name_short}, а тому не з\'явитесь у списках контактів своїх друзів. Справді використовувати ${app_name} анонімно?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Ви не зв\'язали номер телефону\tз ID ${app_name_short}, а тому не з\'явитесь у списках контактів своїх друзів. Справді використовувати ${app_name} анонімно?</string>
@@ -842,6 +842,7 @@
     <string name="really_reset_ringtones">Скинути налаштування звуку сповіщень до значень за умовчанням?</string>
     <string name="reset_ringtones_confirm">Налаштування звуку сповіщень скинуто.</string>
     <string name="prefs_language_override">Мова</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">Канал ${app_name_short} Channel публікує всі новини, пов\'язані з ${app_name_short}. Підписатися на ${app_name_short} Channel і додати цей канал у контакти? Це безкоштовно, і ви завжди зможете відписатися.</string>
     <string name="quote">Цитувати</string>
     <string name="contacts_deleted">Контакти видалено</string>
@@ -1149,7 +1150,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_safe_forced_explain">Ваш адміністратор увімкнув ${app_name_short} Safe на вашому пристрої.</string>
     <string name="pin_locked_cannot_send">Додаток заблоковано. Неможливо надіслати.</string>
-    <string name="prefs_summary_hide_screenshots_notice">Коли в меню \"Безпека\" ввімкнено функцію \"Блокувати додаток\", ми приховуємо вміст ${app_name_short} та блокуємо зйомку екрана задля конфіденційності</string>
+    <string name="prefs_summary_hide_screenshots_notice">Коли в меню \"Безпека\" ввімкнено функцію \"Блокувати додаток\", ми приховуємо вміст і блокуємо зйомку екрана задля конфіденційності</string>
     <string name="work_select_categories">Виберіть категорії</string>
     <string name="my_profile">Мій профіль</string>
     <string name="message_too_long">Повідомлення задовге. Неможливо надіслати.</string>
@@ -1574,7 +1575,7 @@
     <string name="apply_changes">Застосувати зміни</string>
     <string name="prefs_threema_work_summary">Шукаєте професійне рішення для бізнес-спілкування? Натисніть тут, щоб дізнатися більше про Threema Work.</string>
     <string name="notification_channel_voice_message_player">Програвач голосових повідомлень</string>
-    <string name="voice_message_from">Голосове повідомлення від \"%s\"</string>
+    <string name="voice_message_from">Голосове повідомлення від %s</string>
     <string name="vm_fg_service_not_allowed">Помилка відтворення голосового повідомлення</string>
     <string name="vm_fg_service_not_allowed_explain">Натисніть кнопку відтворення в сповіщенні медіа-вмісту, якщо воно досі є, або відкрийте додаток, щоб почати відтворення із чату.</string>
     <string name="use_threema_without_this_permission">Використовувати %s без цього дозволу</string>
@@ -1711,6 +1712,12 @@
     <string name="md_drop_device_failed_dialog_title">Не вдалося вилучити зв\'язаний пристрій</string>
     <string name="md_drop_device_failed_dialog_message">Перевірте з\'єднання з Інтернетом і повторіть спробу.</string>
     <string name="md_drop_device_failed_dialog_button_close">Закрити</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">Не вдалося вибрати власну папку. Якщо ця проблема не зникне, можете зберегти резервну копію в папці \"Documents\".</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">Вибрати власну папку</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">Використовувати папку \"Documents\"</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">\"погоджуюся\" надіслано</string>
     <string name="cd_dec_icon">\"не погоджуюся\" надіслано</string>

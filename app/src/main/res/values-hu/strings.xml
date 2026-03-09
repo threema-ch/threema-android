@@ -681,7 +681,7 @@
     <string name="status_ballot_user_modified_vote">«%1$s» megváltoztatta szavazatát «%2$s»-hoz</string>
     <string name="status_ballot_all_votes">Szavazás «%1$s» befejeződött</string>
     <string name="restore">Visszaállítás</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_scan_id_backup">Vagy szkennelje be az ID export QR-kódját.</string>
     <string name="error_saving_file">Hiba mentés közben. Nincs engedélye?</string>
@@ -747,6 +747,7 @@
     <string name="really_reset_ringtones">Értesítési hangok visszaállítása a gyári beállításokra?</string>
     <string name="reset_ringtones_confirm">Értesítési hangok visszaállítva</string>
     <string name="prefs_language_override">Nyelv</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">A ${app_name_short} Channel a ${app_name_short}-ról szóló hírekkel látja el Önt. Szeretne feliratkozni a ${app_name_short} Channelre és hozzáadni a névjegyzékbe? Ingyenes, és bármikor leiratkozhatsz róla.</string>
     <string name="quote">Idéz</string>
     <string name="contacts_deleted">A névjegyek törölve lettek</string>
@@ -1339,6 +1340,9 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- Label on button to dismiss/hide a warning -->
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
     <!-- accessibility -->
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->

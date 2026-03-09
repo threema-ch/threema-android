@@ -721,7 +721,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="status_ballot_user_modified_vote">« %1$s » a changé le vote pour « %2$s »</string>
     <string name="status_ballot_all_votes">Votes pour « %1$s » terminés</string>
     <string name="restore">Restaurer</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Vous n\'avez saisi ni numéro de téléphone portable, ni adresse e-mail à associer à votre ID ${app_name_short}. Vous n\'apparaîtrez pas dans la liste de contacts de vos amis. Voulez-vous vraiment utiliser ${app_name} de façon complètement anonyme?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Vous n’avez pas saisi de numéro de téléphone à associer à votre identifiant ${app_name_short}. Vous ne serez donc pas automatiquement ajouté aux listes de contacts. Voulez-vous vraiment utiliser ${app_name} de manière anonyme ?</string>
@@ -808,6 +808,7 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="really_reset_ringtones">Vraiment réinitialiser les paramètres sonores des notifications ?</string>
     <string name="reset_ringtones_confirm">Les paramètres sonores des notifications ont été réinitialisés.</string>
     <string name="prefs_language_override">Langue</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">La chaîne ${app_name_short} vous fournit des informations sur tout ce qui concerne ${app_name_short}. Souhaitez-vous vous abonner à la chaîne ${app_name_short} et l’ajouter à vos contacts ? C’est gratuit et vous pouvez vous désabonner à tout moment.</string>
     <string name="quote">Citation</string>
     <string name="contacts_deleted">Les contacts ont été supprimés</string>
@@ -1675,6 +1676,12 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="md_drop_device_failed_dialog_title">Il est possible que le retrait du dispositif lié ait échoué</string>
     <string name="md_drop_device_failed_dialog_message">Veuillez vérifier la connexion Internet et réessayer.</string>
     <string name="md_drop_device_failed_dialog_button_close">Fermer</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">Un problème potentiel a été détecté lors de la sélection du dossier. Si le problème persiste, vous pouvez enregistrer la sauvegarde dans le dossier « Documents » au lieu de choisir un dossier personnalisé.</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">Sélectionner un dossier personnalisé</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">Utiliser le dossier « Documents »</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">accord envoyé</string>
     <string name="cd_dec_icon">désaccord envoyé</string>

@@ -1716,6 +1716,13 @@
     <string name="md_drop_device_failed_dialog_message">Please check the Internet connection and try again.</string>
     <string name="md_drop_device_failed_dialog_button_close">Close</string>
 
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">A potential problem has been detected when selecting the folder. If the issue persists, you can save the backup in the “Documents” folder instead of choosing a custom folder.</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">Select custom folder</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">Use “Documents” folder</string>
+
     <!-- accessibility -->
     <string name="cd_ack_icon">agree sent</string>
     <string name="cd_dec_icon">disagree sent</string>

@@ -721,7 +721,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="status_ballot_user_modified_vote">«%1$s» heeft zijn/haar stem veranderd in «%2$s»</string>
     <string name="status_ballot_all_votes">Stemmen voor «%1$s» voltooid</string>
     <string name="restore">Herstellen</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">U hebt nog geen mobiel nummer of e-mailadres ingevoerd om te koppelen aan uw ${app_name_short} ID. U verschijnt niet op contactlijsten van vrienden. Weet u zeker dat u ${app_name} anoniem wil gebruiken?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">U hebt nog geen mobiel nummer ingevoerd om te koppelen aan uw ${app_name_short}-ID. U wordt daarom niet automatisch aan contactlijsten van vrienden toegevoegd. Weet u zeker dat u ${app_name} anoniem wil gebruiken?</string>
@@ -808,6 +808,7 @@ Voer een vraag in voor uw poll.</string>
     <string name="really_reset_ringtones">Meldingsgeluidsinstellingen echt herstellen naar standaard?</string>
     <string name="reset_ringtones_confirm">Meldingsgeluidsinstellingen zijn hersteld.</string>
     <string name="prefs_language_override">Taal</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">Het ${app_name_short}-kanaal biedt u alle nieuwtjes over ${app_name_short}. Wilt u zich abonneren op het ${app_name_short}-kanaal en dit toevoegen aan uw contactpersonen? Het is gratis en u kunt zich op elk gewenst moment afmelden.</string>
     <string name="quote">Citeren</string>
     <string name="contacts_deleted">Contactpersonen zijn verwijderd</string>
@@ -1676,6 +1677,12 @@ Wanneer u ${app_name_short} Safe gebruikt, kunt u uw ${app_name_short}-ID, conta
     <string name="md_drop_device_failed_dialog_title">Het verwijderen van het gekoppelde apparaat is mogelijk mislukt</string>
     <string name="md_drop_device_failed_dialog_message">Controleer de internetverbinding en probeer het opnieuw.</string>
     <string name="md_drop_device_failed_dialog_button_close">Sluiten</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">Er is een mogelijk probleem gedetecteerd bij het selecteren van de map. Blijft het probleem zich voordoen, dan kunt u de back-up opslaan in de map \'Documenten\' in plaats van een eigen map te kiezen.</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">Eigen map selecteren</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">Map \'Documenten\' gebruiken</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">akkoord verzonden</string>
     <string name="cd_dec_icon">niet akkoord verzonden</string>

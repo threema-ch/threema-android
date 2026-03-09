@@ -737,7 +737,7 @@
     <string name="status_ballot_user_modified_vote">«%1$s» ha modificato il voto per «%2$s»</string>
     <string name="status_ballot_all_votes">Votazioni per «%1$s» completate</string>
     <string name="restore">Ripristina</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Non hai inserito né il numero di cellulare né l\'indirizzo e-mail da collegare al tuo ${app_name_short} ID. Non comparirai nella lista contatti del tuo amico. Vuoi davvero usare ${app_name} in modo totalmente anonimo?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Poiché non hai inserito alcun numero di telefono da associare al tuo ID ${app_name_short}, non verrai aggiunto automaticamente alla rubrica. Vuoi davvero utilizzare ${app_name} in modo anonimo?</string>
@@ -824,6 +824,7 @@
     <string name="really_reset_ringtones">Vuoi davvero reimpostare l\'audio delle notifiche e tornare alle impostazioni predefinite?</string>
     <string name="reset_ringtones_confirm">Le impostazioni relative all\'audio delle notifiche sono state reimpostate.</string>
     <string name="prefs_language_override">Lingua</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">Il canale ${app_name_short} ti offre tutte le notizie riguardanti ${app_name_short}. Vuoi iscriverti al canale ${app_name_short} e aggiungerlo ai tuoi contatti? È gratuito e puoi annullare l\'iscrizione in qualsiasi momento.</string>
     <string name="quote">Quota</string>
     <string name="contacts_deleted">I contatti sono stati cancellati</string>
@@ -1691,6 +1692,12 @@
     <string name="md_drop_device_failed_dialog_title">La rimozione del dispositivo collegato non è riuscita</string>
     <string name="md_drop_device_failed_dialog_message">Controlla la connessione a Internet e riprova.</string>
     <string name="md_drop_device_failed_dialog_button_close">Chiudi</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">È stato rilevato un potenziale problema durante la selezione della cartella. Se il problema persiste, puoi salvare il backup nella cartella \"Documenti\" anziché scegliere una cartella personalizzata.</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">Seleziona cartella personalizzata</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">Utilizza la cartella \"Documenti\"</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">accordo inviato</string>
     <string name="cd_dec_icon">disaccordo inviato</string>

@@ -716,7 +716,7 @@
     <string name="status_ballot_user_modified_vote">«%1$s» hät d’Stimm für «%2$s» gänderet</string>
     <string name="status_ballot_all_votes">Umfrag «%1$s» vollständig</string>
     <string name="restore">Wiederherstelle</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Sie händ weder e Handynummere no e E-Mail-Adrässe zur Verchnüpfig mit Ihrere ${app_name_short}-ID ageh. Sie werded drum nöd automatisch in Kontaktliste ufgfüehrt. Wänd Sie ${app_name} würklich komplett anonym nutze?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Sie händ kei Handynummere zur Verchnüpfig mit Ihrere ${app_name_short}-ID ageh. Sie werded drum nöd automatisch in Kontaktliste azeigt. Wänd Sie ${app_name} würklich komplett anonym nutze?</string>
@@ -803,6 +803,7 @@
     <string name="really_reset_ringtones">Benachrichtigungstön uf Werchsiistellige zruggsetze?</string>
     <string name="reset_ringtones_confirm">Benachrichtigungstön sind zrugggsetzt worde</string>
     <string name="prefs_language_override">Sprach</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">De ${app_name_short} Channel versorgt Sie mit Neuigkeite zu ${app_name_short}. Wänd Sie de ${app_name_short} Channel abonniere und zu Ihrne Kontäkt dezue tue? Das choschtet nüüt, und Sie chönd sich jederziit abmälde.</string>
     <string name="quote">Zitiere</string>
     <string name="contacts_deleted">Kontäkt sind glöscht worde</string>
@@ -1209,7 +1210,7 @@
     <string name="prefs_work_time_end">Arbetsschluss</string>
     <string name="prefs_work_time_end_sum">Legged Sie de Arbetsschluss fest</string>
     <string name="prefs_working_days_enable_title">Ruheziit-Regelig</string>
-    <string name="prefs_working_days_enable_sum">Usserhalb vode Arbetsziit kei Benachrichtigunge aazeige und ${app_name_short}-Arüef ablehne</string>
+    <string name="prefs_working_days_enable_sum">Usserhalb vode Arbetsziit kei Benachrichtigunge aazeige und Arüef ablehne</string>
     <string name="work_life_dnd_active">Ruheziit aktiv</string>
     <string name="warning">Warnig</string>
     <string name="password_remember_warning">Merked Sie sich, was Sie da iigebed! Wil %s kei Passwörter uf Server speicheret, chönd mir Ihne nöd hälfe, wenn Sie d’PIN oder d’Passphrase vergässe händ.</string>
@@ -1478,7 +1479,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="read_phone_state_dialog_message">Zum verhindere, dass ${app_name_short}-Arüef reguläri Arüef underbrächet, wird d’Telefon-Berächtigung benötigt. Falls die Berächtigung nöd geh isch, wird en ${app_name_short}-Aruef en reguläre Aruef underbräche und umgekehrt.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="read_phone_state_short_message">Zum laufendi Arüef z’berücksichtige, wird d’Telefon-Berächtigung benötigt.</string>
+    <string name="read_phone_state_short_message">Zum laufendi Arüef z’berücksichtige, bruucht ${app_name} d’Telefon-Berächtigung.</string>
     <string name="prefs_title_read_phone_state">Telefon-Berächtigung erteile</string>
     <string name="prefs_title_hibernation">Nöd bruuchti Apps</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1497,14 +1498,14 @@
     <string name="checking_compatibility">D’Kompatibilität wird überprüeft…</string>
     <string name="group_call_mic_permission_rationale">Zum Gruppearüef mache z’chöne, müend Sie under «Berächtigunge» in %s de Zuegriff ufs Mikrofon erlaube.</string>
     <string name="group_call_mic_permission_description">Zum Gruppearüef nutze z’chöne, wird d’Mikrofon-Berächtigung benötigt, demit die andere Sie chönd ghöre.</string>
-    <string name="call_mic_permission_description">Zum ${app_name_short}-Arüef nutze z’chöne, wird d’Mikrofon-Berächtigung benötigt, demit Sie ghört werded.</string>
+    <string name="call_mic_permission_description">Für Arüef wird d’Mikrofon-Berächtigung benötigt, demit Sie ghört werded.</string>
     <string name="group_call_camera_permission_rationale">Demit die andere Teilnehmer Ihres Bild chönd gseh, müend Sie under «Berächtigunge» in %s de Zuegriff uf d’Kamera erlaube.</string>
     <string name="group_call_phone_permission_description">Zum Gruppearüef nutze z’chöne, wird d’Telefon-Berächtigung benötigt, demit de Gruppearuef beendet werde cha, wenn Sie en andere Aruef aanehmed.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="call_phone_permission_description">Zum ${app_name_short}-Arüef nutze z’chöne, wird d’Telefon-Berächtigung benötigt, demit de ${app_name_short}-Aruef beendet werde cha, wenn Sie en andere Aruef aanehmed.</string>
-    <string name="group_call_nearby_devices_permission_description">Zum Gruppearüef mit Bluetooth-Headset nutze z’chöne, wird d’Berächtigung «Geräte in der Nähe» benötigt, demit ${app_name_short} es Bluetooth-Headset erchänne cha.</string>
+    <string name="group_call_nearby_devices_permission_description">Für Gruppearüef über Bluetooth-Headset wird d’Berächtigung «Geräte in der Nähe» benötigt, demit s’Bluetooth-Headset chan erchännt werde.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="call_nearby_devices_permission_description">Zum ${app_name_short}-Arüef mit Bluetooth-Headset nutze z’chöne, wird d’Berächtigung «Geräte in der Nähe» benötigt, demit ${app_name_short} es Bluetooth-Headset erchänne cha.</string>
+    <string name="call_nearby_devices_permission_description">Für ${app_name_short}-Arüef über Bluetooth-Headset wird d’Berächtigung «Geräte in der Nähe» benötigt, demit s’Bluetooth-Headset chan erchännt werde.</string>
     <string name="settings">Iistellige</string>
     <string name="leave">Verlaa</string>
     <string name="fs_key_mismatch">Schlüsselfehler</string>
@@ -1669,6 +1670,12 @@
     <string name="md_drop_device_failed_dialog_title">Entferne vom Grät möglicherwiis fehlgschlage</string>
     <string name="md_drop_device_failed_dialog_message">Bitte überprüefed Sie d’Internetverbindig und versueched Sie’s nomal.</string>
     <string name="md_drop_device_failed_dialog_button_close">Schlüsse</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">Bi de Uswahl vom Ordner schiint en Fehler ufträtte z’sii. Wenn s’Problem wiiterhin bestaht, chönd Sie s’Backup im Ordner «Dokumente» speichere, statt en eigene Ordner uszwähle.</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">En eigene Ordner uswähle</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">De «Dokumente»-Ordner wähle</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">Nachricht bestätigt</string>
     <string name="cd_dec_icon">Nachricht abglehnt</string>

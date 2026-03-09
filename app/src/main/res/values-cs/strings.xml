@@ -544,8 +544,8 @@ http://www.7-zip.org nebo https://itunes.apple.com/us/app/the-unarchiver/id42542
     <string name="wallpapers_removed">Tapety byly odstraněny</string>
     <string name="invalid_backup">Neplatná data zálohy. Nelze je obnovit.</string>
     <string name="invalid_zip_restore_failed">Obnova selhala. Neplatný soubor se zálohou: %1$s</string>
-    <string name="revocation_explain">V případě nutnosti zrušit vaše ${app_name_short} ID (například v případě ztráty nebo odcizení) použijte tento odkaz, kde zadáte ID a zde vytvořené heslo.
-https://myid.threema.ch/revoke</string>
+    <string name="revocation_explain">Heslo, které zde zadáte, vám umožňuje zrušit vaše ID na webu
+        https://myid.threema.ch/revoke v případě, že zařízení ztratíte nebo vám bude ukradeno</string>
     <!-- Empty state text shown on home screen widget when there are no unread messages -->
     <string name="no_unread_messages">Žádné nepřečtené zprávy</string>
     <string name="send_media">Odeslat média</string>
@@ -700,8 +700,9 @@ možné je obnovit.</string>
     <string name="new_wizard_info_fingerprint">Přejížděním prstem po displeji vytvoříte náhodná data (tzv. entropii), která se využijí k vygenerování páru šifrovacích klíčů svázaných s vaším ${app_name_short} ID. Dvojice šifrovacích klíčů se skládá z <b>veřejného klíče</b>, který je distribuován vašim kontaktům, a ze <b>soukromého klíče</b>, který je bezpečně uložen pouze ve vašem zařízení. Zprávy, které vám odešlou vaše kontakty, budou zašifrovány vaším veřejným klíčem. Tyto zprávy může dešifrovat pouze ten, kdo vlastní soukromý klíč.</string>
     <string name="new_wizard_info_id">Vytvořili jste dvojici šifrovacích klíčů. Veřejný klíč byl bezpečně přenesen na naše servery. Soukromý klíč nikdy neopustí vaše zařízení. Tím je zajištěno, že nikdo nepovolaný se nebude moci dostat k vašim zprávám.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_sync_contacts">Pokud tuto možnost povolíte, odešlou se jednosměrně šifrované (hashované) e‑mailové adresy a telefonní čísla z vašich kontaktů na náš server. Zde se porovnají s kontakty ostatních uživatelů. V případě shody se u vás kontakt zobrazí v adresáři.
-Na našich serverech neukládáme žádná data z vašeho adresáře.</string>
+    <string name="new_wizard_info_sync_contacts">Když tuto možnost povolíte, ${app_name_short} jednosměrně zašifruje (zahashuje) e-mailové adresy a telefonní čísla
+        předtím, než je odešle na server, aby vyhledala odpovídající kontakty. Žádná data z adresáře
+        kontaktů neukládáme.</string>
     <string name="new_wizard_info_sync_contacts_dialog">Synchronizace kontaktů vám může pomoci najít vaše přátele automaticky. Pokud budete souhlasit, telefonní čísla a e‑mailové adresy z vašeho telefonního seznamu budou před odesláním na naše servery zašifrovány, aby mohly být vyhledány shodující se kontakty. Žádná data nebudou uložena nebo sdílena.\n\nPřejete si povolit synchronizaci kontaktů?</string>
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">Poskytnete‑li svoje telefonní číslo a e‑mailovou adresu, ${app_name_short} může pomoci vašim přátelům najít vás automaticky, pokud vás mají uložené v telefonním adresáři kontaktů. Data budou uložena jednosměrně šifrovaná (hashovaná) na našem serveru. Tento krok můžete přeskočit, pokud chcete používat aplikaci ${app_name} zcela anonymně. Toto nastavení lze později změnit.</string>
@@ -721,7 +722,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="status_ballot_user_modified_vote">Člen „%1$s“ změnil hlas pro „%2$s“</string>
     <string name="status_ballot_all_votes">Hlasy v anketě „%1$s“ jsou kompletní</string>
     <string name="restore">Obnovit</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Nezadali jste ani číslo mobilního telefonu, ani e‑mailovou adresu, které mohou být propojené s vaším ${app_name_short} ID. Nebudete se proto zobrazovat v seznamu kontaktů vašich přátel. Skutečně si přejete používat aplikaci ${app_name} anonymně?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Nezadali jste číslo mobilního telefonu, které může být propojeno s vaším ${app_name_short} ID. Nebudete se proto zobrazovat v seznamu kontaktů vašich přátel. Skutečně si přejete používat aplikaci ${app_name} anonymně?</string>
@@ -808,7 +809,8 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="really_reset_ringtones">Skutečně si přejete obnovit nastavení zvuků oznámení na výchozí hodnoty?</string>
     <string name="reset_ringtones_confirm">Nastavení zvuků oznámení bylo obnoveno.</string>
     <string name="prefs_language_override">Jazyk</string>
-    <string name="threema_channel_intro">${app_name_short} Channel je informační kanál aplikace ${app_name_short}, který vás formou zpráv informuje o všech novinkách. Přejete si přihlásit se k odběru kanálu a přidat jej mezi kontakty? Je zdarma a můžete se z něj kdykoliv odhlásit.</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
+    <string name="threema_channel_intro">Kanál ${app_name_short} vám poskytuje novinky z ekosystému aplikace ${app_name_short}. Máte zájem se ke Kanálu ${app_name_short} přihlásit a přidat jej mezi kontakty? Je zdarma a kdykoliv se z něj můžete odhlásit.</string>
     <string name="quote">Citovat</string>
     <string name="contacts_deleted">Kontakty byly odstraněny</string>
     <string name="take_photo">Pořídit fotku</string>
@@ -886,7 +888,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="prefs_summary_force_turn_off">Pokud to bude možné, naváže se přímé spojení s volaným. Pouze hovory s neověřenými kontakty budou přenášeny skrze ${company_name} servery. Vaše IP adresa může být pro volaného zjistitelná.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_summary_force_turn_on">Všechny hovory se budou přenášet skrze ${company_name} servery, vaše IP adresa tak bude zabezpečena. Kvalita hovorů může být snížena.</string>
-    <string name="permission_record_audio_required">Chcete‑li provádět šifrované hovory a odesílat hlasové zprávy, povolte prosím aplikaci ${app_name_short} přístup k mikrofonu.</string>
+    <string name="permission_record_audio_required">Chcete-li provádět šifrované hovory a odesílat hlasové zprávy, udělte prosím přístup k mikrofonu.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="prefs_voice_call_notifications">Hovory ${app_name_short}</string>
     <string name="prefs_voice_call_sound">Vyzvánění</string>
@@ -998,7 +1000,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="safe_threema_id">Vaše ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_restore_enter_id">Zadejte prosím ${app_name_short} ID, které si přejete obnovit</string>
-    <string name="safe_search_id_title">Zadejte prosím číslo mobilního telefonu nebo e‑mailovou adresu propojenou s vaším ID</string>
+    <string name="safe_search_id_title">Zadejte prosím číslo mobilního telefonu nebo e-mailovou adresu propojenou s vaším ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_id_lookup">Vyhledává se ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1039,7 +1041,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="number_of_days">počet dnů: %d</string>
     <string name="backup_other_restore_options">Další možnosti obnovení</string>
     <string name="safe_size">Velikost zálohy</string>
-    <string name="backup_version_mismatch">Verze této zálohy je vyšší než verze podporovaná. Aktualizujte prosím aplikaci ${app_name_short} na nejnovější verzi.</string>
+    <string name="backup_version_mismatch">Verze této zálohy je vyšší než podporovaná verze. Aktualizujte prosím aplikaci na nejnovější verzi.</string>
     <string name="safe_restore_failed">Obnova selhala</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_failed_notification">Záloha ${app_name_short} Safe se nezdařila %d dní po sobě. Klepněte sem pro další informace.</string>
@@ -1526,7 +1528,7 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) chrání zaznamenanou komunikaci před zpětným dešifrováním i když je dlouhodobý šifrovací klíč kompromitován.\n\nTato možnost může být povolena v případě, když aplikace na obou stranách podporuje PFS.</string>
     <string name="group_call_inactivity_left">Skupinový hovor byl opuštěn z důvodu neaktivity</string>
     <string name="missing_permission_external_storage">Soubor nelze zkopírovat. Vyzkoušejte následující postup:\n1. Otevřete aplikaci nastavení.\n2. Přejděte do kategorie „Aplikace“ a zvolte položku „Aplikace se speciálním přístupem“.\n3. Klepněte na „Přístup ke všem souborům“.\n4. Klepněte na tři tečky v pravém horním rohu obrazovky a zvolte „Zobrazit systémové aplikace“.\n5. Klepněte na „Externí úložiště“ a ujistěte se, že je povolena volba „Povolit přístup ke správě všech souborů“.\n6. Znovu vyzkoušejte obnovit zálohu.</string>
-    <string name="forward_security_downgraded_status_message">Funkce Perfect Forward Secrecy byla v této konverzaci zakázána, protože verze aplikace, kterou používá váš konverzační partner, ji nepodporuje.</string>
+    <string name="forward_security_downgraded_status_message">Funkce Perfect Forward Secrecy byla v této konverzaci zakázána, protože ji nepodporuje verze aplikace vaší protistrany, nebo protistrana používá ${app_name_desktop} 2.0 pro desktop (beta).</string>
     <string name="forward_security_illegal_session_status_message">Relace Perfect Forward Secrecy byla obnovena z důvodu neplatnosti.</string>
     <string name="crop_image_title">Oříznout obrázek</string>
     <string name="scroll_to_bottom">Posunout na konec</string>
@@ -1677,6 +1679,12 @@ přátelům vás automaticky najít, pokud vás mají v adresáři svého telef
     <string name="md_drop_device_failed_dialog_title">Odstraňování propojeného zařízení mohlo selhat</string>
     <string name="md_drop_device_failed_dialog_message">Zkontrolujte prosím připojení k internetu a zkuste to znovu.</string>
     <string name="md_drop_device_failed_dialog_button_close">Zavřít</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <string name="backup_path_selection_message">Během výběru adresáře byl zjištěn potenciální problém. Pokud tyto potíže přetrvávají, uložte zálohu do adresáře „Dokumenty“ namísto výběru vlastního adresáře.</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <string name="backup_path_selection_default">Vybrat vlastní adresář</string>
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
+    <string name="backup_path_selection_documents">Použít adresář „Dokumenty“</string>
     <!-- accessibility -->
     <string name="cd_ack_icon">souhlas odeslán</string>
     <string name="cd_dec_icon">nesouhlas odeslán</string>

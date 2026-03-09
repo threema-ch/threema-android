@@ -715,7 +715,7 @@
     <string name="status_ballot_user_modified_vote">\"%1$s\" змяніў(ла) голас за \"%2$s\"</string>
     <string name="status_ballot_all_votes">Галасоў за «%1$s»</string>
     <string name="restore">Аднавіць</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Вы не ўказалі ні нумар мабільнага тэлефона, ні адрас электроннай пошты для прывязкі да вашага ${app_name_short} ID. Вы не з\'явіцеся ў спісе кантактаў вашых сяброў.  Вы сапраўды хочаце выкарыстоўваць ${app_name} ананімна?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Вы не ўказалі нумар мабільнага тэлефона для прывязкі да свайго ${app_name_short} ID. Вы не з\'явіцеся ў спісе кантактаў вашых сяброў. Вы сапраўды хочаце выкарыстоўваць ${app_name} ананімна?</string>
@@ -801,6 +801,7 @@
     <string name="really_reset_ringtones">Скінуць прадвызначаны налады гукавых апавяшчэнняў?</string>
     <string name="reset_ringtones_confirm">Налады гукавых апавяшчэнняў былі скінутыя.</string>
     <string name="prefs_language_override">Мова</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">Канал ${app_name_short} дае вам навіны аб усім ${app_name_short}.  Вы хочаце падпісацца на канал ${app_name_short} і дадаць яго ў свае кантакты?  Гэта бясплатна, і вы можаце адмовіцца ад падпіскі ў любы час.</string>
     <string name="quote">Цытаваць</string>
     <string name="contacts_deleted">Кантакты былі выдалены</string>
@@ -976,7 +977,6 @@
     <string name="safe_configure_choose_server">Абярыце сэрвер ${app_name_short} Safe</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="onprem_safe_configure_server_explain">Захавайце рэзервовую копію ${app_name_short} на серверы вашай арганізацыі або пазначце іншы сервер рэзервовага капіравання.</string>
     <string name="safe_use_default_server">Прадвызначаны сервер</string>
     <string name="safe_test_server">Тэставы сервер</string>
     <string name="safe_advanced_options">Пашыраныя налады</string>
@@ -1322,7 +1322,6 @@
     <string name="id_backup_info">Аднавіць толькі ID</string>
     <string name="restore_your_id_contacts_and_groups">Аднавіць ID, кантакты і суполкі</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="threema_safe_backup">Бяспечная рэз. копія ${app_name_short}</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Даведка</a>]]></string>
     <string name="download_failed">Не ўдалося спампаваць. Код памылкі: %d</string>
     <string name="edit_answer">Змяніць адказ</string>
@@ -1646,6 +1645,9 @@
     <string name="device_linking_cancel_dialog_continue">Працягнуць</string>
     <string name="md_drop_device_dialog_close_button">Закрыць</string>
     <string name="md_drop_device_failed_dialog_button_close">Закрыць</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
     <!-- accessibility -->
     <string name="cd_ack_icon">згода адпраўлена</string>
     <string name="cd_dec_icon">нязгода адпраўлена</string>

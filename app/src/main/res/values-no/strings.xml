@@ -683,7 +683,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="status_ballot_user_modified_vote">\"%1$s\" har endret stemmen sin til \"%2$s\"</string>
     <string name="status_ballot_all_votes">Stemmer for \"%1$s\" er fullført</string>
     <string name="restore">Gjenopprett</string>
-    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
+    <!-- Shown in prompt dialog during the setup wizard. Only used for work builds (i.e. Threema Work and OnPrem). ${app_name} and ${app_name_short} are placeholders for the app's name, they must be kept as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm">Du har ikke skrevet et telefonnummer eller en e-postadresse for å koble til din ${app_name_short} ID. Du vil ikke dukke opp på dine venners kontaktliste. Vil du virkelig bruke ${app_name} anonymt?</string>
     <!-- ${app_name} and ${app_name_short} are placeholders for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_anonymous_confirm_phone_only">Du har ikke skrevet et telefonnummer for å koble til din ${app_name_short} ID. Du vil ikke dukke opp på dine venners kontaktliste. Vil du virkelig bruke ${app_name} anonymt?</string>
@@ -755,6 +755,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="really_reset_ringtones">Vil du virkelig resette innstillinger for varsellyder til standard?</string>
     <string name="reset_ringtones_confirm">Innstillinger for varsellyder har blitt resatt.</string>
     <string name="prefs_language_override">Språk</string>
+    <!-- ${app_name_short} are placeholders for the app's name, e.g. "Threema". They must be left as-is and not translated. -->
     <string name="threema_channel_intro">${app_name_short} Channel gir deg nyheter om alt som omhandler ${app_name_short}. Vil du abonnere til ${app_name_short} Channel og legge det til dine kontakter? Det er gratis og du kan avslutte abonnementet når som helst.</string>
     <string name="quote">Sitat</string>
     <string name="contacts_deleted">Kontakter har blitt slettet</string>
@@ -1552,6 +1553,9 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="media_gallery_animated_webps">Animerte WebP-er</string>
     <string name="unsupported_image_type">Ustøttet bildeformat: %s</string>
     <string name="application_setup_steps_failed">Det er krav om en aktiv internettforbindelse for å sjekke tilstanden til kontaktene dine. Sørg for at du er tilkoblet internett, og prøv igjen.</string>
+    <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
+    <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
     <!-- accessibility -->
     <!-- Hint shown on message details screen, to let the user know how they can view a message's emoji reactions -->
     <!-- Title shown in popup above emoji reaction buttons on a message, to hint to the user that they can long-press to view the details -->

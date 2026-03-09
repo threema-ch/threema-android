@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,8 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 
 import org.slf4j.Logger;
 
+import java.time.Instant;
+
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -45,6 +49,8 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
+
+import static ch.threema.android.UriExtensionsKt.isFileUri;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class BackupDataFragment extends Fragment implements
@@ -61,6 +67,7 @@ public class BackupDataFragment extends Fragment implements
     private static final String DIALOG_TAG_DISABLE_ENERGY_SAVING = "des";
     private static final String DIALOG_TAG_PASSWORD = "pwd";
     private static final String DIALOG_TAG_PATH_INTRO = "pathintro";
+    private static final String DIALOG_TAG_FALLBACK_PATH = "pathfallback";
 
     private View fragmentView;
     private ExtendedFloatingActionButton fab;
@@ -186,6 +193,12 @@ public class BackupDataFragment extends Fragment implements
         if (directoryTreeUri == null) {
             return getString(R.string.not_set);
         } else {
+            if (isFileUri(directoryTreeUri)) {
+                var dirName = directoryTreeUri.getLastPathSegment();
+                if (dirName != null) {
+                    return dirName;
+                }
+            }
             try {
                 DocumentFile documentFile = DocumentFile.fromTreeUri(getContext(), directoryTreeUri);
                 if (documentFile != null && documentFile.isDirectory()) {
@@ -201,9 +214,29 @@ public class BackupDataFragment extends Fragment implements
     }
 
     private void showPathSelectionIntro() {
+        if (hasDocumentPickerPotentiallyFailedRecently()) {
+            var dialog = GenericAlertDialog.newInstance(
+                R.string.set_backup_path,
+                R.string.backup_path_selection_message,
+                R.string.backup_path_selection_default,
+                R.string.backup_path_selection_documents
+            );
+            dialog.setTargetFragment(this);
+            dialog.show(getFragmentManager(), DIALOG_TAG_FALLBACK_PATH);
+            return;
+        }
+
         GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.set_backup_path, R.string.set_backup_path_intro, R.string.ok, R.string.cancel);
         dialog.setTargetFragment(this);
         dialog.show(getFragmentManager(), DIALOG_TAG_PATH_INTRO);
+    }
+
+    private boolean hasDocumentPickerPotentiallyFailedRecently() {
+        var lastLaunchTime = preferenceService.getDataBackupPickerLaunched();
+        if (lastLaunchTime == null) {
+            return false;
+        }
+        return Instant.now().toEpochMilli() - lastLaunchTime.toEpochMilli() < 10 * DateUtils.MINUTE_IN_MILLIS;
     }
 
     @UiThread
@@ -211,11 +244,15 @@ public class BackupDataFragment extends Fragment implements
         try {
             logger.info("Opening document picker");
             Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            // undocumented APIs according to https://issuetracker.google.com/issues/72053350
-            i.putExtra("android.content.extra.SHOW_ADVANCED", true);
-            i.putExtra("android.content.extra.FANCY", true);
-            i.putExtra("android.content.extra.SHOW_FILESIZE", true);
+            if (!hasDocumentPickerPotentiallyFailedRecently()) {
+                // undocumented APIs according to https://issuetracker.google.com/issues/72053350
+                // if we detected that the document picker might have failed, we excluded these, as they might be part of the problem
+                i.putExtra("android.content.extra.SHOW_ADVANCED", true);
+                i.putExtra("android.content.extra.FANCY", true);
+                i.putExtra("android.content.extra.SHOW_FILESIZE", true);
+            }
             startActivityForResult(i, REQUEST_CODE_DOCUMENT_TREE);
+            preferenceService.setDataBackupPickerLaunched(Instant.now());
         } catch (Exception e) {
             Toast.makeText(getContext(), "Your device is missing an activity for Intent.ACTION_OPEN_DOCUMENT_TREE. Contact the manufacturer of the device.", Toast.LENGTH_SHORT).show();
             logger.error("Broken device. No Activity for Intent.ACTION_OPEN_DOCUMENT_TREE", e);
@@ -230,6 +267,10 @@ public class BackupDataFragment extends Fragment implements
             if (backupUri == null) {
                 showPathSelectionIntro();
             } else {
+                if (isFileUri(backupUri)) {
+                    checkBatteryOptimizations();
+                    return;
+                }
                 DocumentFile documentFile = null;
                 try {
                     documentFile = DocumentFile.fromTreeUri(ThreemaApplication.getAppContext(), backupUri);
@@ -307,6 +348,7 @@ public class BackupDataFragment extends Fragment implements
             case DIALOG_TAG_ENERGY_SAVING_REMINDER:
                 doBackup();
                 break;
+            case DIALOG_TAG_FALLBACK_PATH:
             case DIALOG_TAG_PATH_INTRO:
                 launchDocumentTree();
                 break;
@@ -321,10 +363,27 @@ public class BackupDataFragment extends Fragment implements
             case DIALOG_TAG_DISABLE_ENERGY_SAVING:
                 doBackup();
                 break;
-            case DIALOG_TAG_ENERGY_SAVING_REMINDER:
+            case DIALOG_TAG_FALLBACK_PATH:
+                useFallbackPath();
                 break;
             default:
                 break;
+        }
+    }
+
+    private void useFallbackPath() {
+        logger.info("Using Documents dir as fallback");
+        preferenceService.setDataBackupPickerLaunched(null);
+        var documentsDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS);
+        documentsDirectory.mkdirs();
+        setBackupUri(Uri.fromFile(documentsDirectory));
+    }
+
+    private void setBackupUri(Uri backupUri) {
+        this.backupUri = backupUri;
+        preferenceService.setDataBackupUri(backupUri);
+        if (pathTextView != null) {
+            pathTextView.setText(getDirectoryName(backupUri));
         }
     }
 
@@ -366,6 +425,7 @@ public class BackupDataFragment extends Fragment implements
                 break;
             case REQUEST_CODE_DOCUMENT_TREE:
                 logger.info("Document picker returned, {}", resultCode);
+                preferenceService.setDataBackupPickerLaunched(null);
                 if (resultCode == RESULT_OK) {
                     if (data != null) {
                         Uri treeUri = data.getData();

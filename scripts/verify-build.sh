@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 #
 # A script to verify that a locally compiled APK matches the released APK.
+#
+# Steps taken to achieve this:
+#
+#   1. Unpack both APK files
+#   2. Remove meta information (containing things like the signature)
+#   3. Recursively diff the two directories to ensure they match
 
 set -euo pipefail
 

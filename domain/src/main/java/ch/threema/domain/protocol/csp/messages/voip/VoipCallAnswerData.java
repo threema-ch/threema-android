@@ -47,6 +47,16 @@ public class VoipCallAnswerData extends VoipCallData<VoipCallAnswerData> {
         return this;
     }
 
+    public @NonNull String getActionDescription() {
+        if (action != null && action == Action.ACCEPT) {
+            return "accept";
+        } else if (action != null && action == Action.REJECT) {
+            return "reject/" + getRejectReasonName();
+        } else {
+            return "unknown";
+        }
+    }
+
     //endregion
 
     //region Answer data
