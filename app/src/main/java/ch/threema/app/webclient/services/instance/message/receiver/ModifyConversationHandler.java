@@ -1,6 +1,7 @@
 package ch.threema.app.webclient.services.instance.message.receiver;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
 
@@ -13,7 +14,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Map;
 
 import ch.threema.app.services.ConversationService;
-import ch.threema.app.services.ConversationTagService;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.Utils;
 import ch.threema.app.webclient.exceptions.ConversionException;
@@ -43,16 +43,12 @@ public class ModifyConversationHandler extends MessageReceiver {
 
     private final MessageDispatcher responseDispatcher;
     private final ConversationService conversationService;
-    private final ConversationTagService conversationTagService;
 
     @AnyThread
-    public ModifyConversationHandler(MessageDispatcher responseDispatcher,
-                                     ConversationService conversationService,
-                                     ConversationTagService conversationTagService) {
+    public ModifyConversationHandler(MessageDispatcher responseDispatcher, ConversationService conversationService) {
         super(Protocol.SUB_TYPE_CONVERSATION);
         this.responseDispatcher = responseDispatcher;
         this.conversationService = conversationService;
-        this.conversationTagService = conversationTagService;
     }
 
     @Override
@@ -89,25 +85,20 @@ public class ModifyConversationHandler extends MessageReceiver {
             this.success(temporaryId);
             return;
         }
+
+        // Handle potential pin tag change
         if (data.containsKey(FIELD_IS_PINNED)) {
-            // Get value
-            final Value value = data.get(FIELD_IS_PINNED);
-            if (!value.isBooleanValue()) {
+            final @Nullable Value valueIsPinned = data.get(FIELD_IS_PINNED);
+            if (valueIsPinned == null || !valueIsPinned.isBooleanValue()) {
                 this.failed(temporaryId, Protocol.ERROR_BAD_REQUEST);
                 return;
             }
-            final boolean isPinned = value.asBooleanValue().getBoolean();
-
-            // Tag model
+            final boolean isPinned = valueIsPinned.asBooleanValue().getBoolean();
             if (isPinned) {
-                this.conversationTagService.addTagAndNotify(conversation, ConversationTag.PINNED, TriggerSource.LOCAL);
-                conversation.isPinTagged = true;
+                this.conversationService.tag(conversation, ConversationTag.PINNED, TriggerSource.LOCAL);
             } else {
-                this.conversationTagService.removeTagAndNotify(conversation, ConversationTag.PINNED, TriggerSource.LOCAL);
-                conversation.isPinTagged = false;
+                this.conversationService.untag(conversation, ConversationTag.PINNED, TriggerSource.LOCAL);
             }
-
-            this.conversationService.sort();
         }
 
         this.success(temporaryId);

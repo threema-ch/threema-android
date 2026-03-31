@@ -2,6 +2,7 @@ package ch.threema.app.utils.executor
 
 import android.os.Handler
 import android.os.Looper
+import ch.threema.android.Destroyable
 import java.util.concurrent.Executors
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
@@ -12,8 +13,10 @@ import kotlinx.coroutines.Deferred
  *
  * Note that if any exceptions are thrown in the [BackgroundTask], the completable deferred will be
  * completed exceptionally.
+ *
+ * See also [CoroutineBackgroundExecutor].
  */
-class BackgroundExecutor {
+class BackgroundExecutor : Destroyable {
     private val executor = Executors.newSingleThreadExecutor()
     private val handler = Handler(Looper.getMainLooper())
 
@@ -54,6 +57,10 @@ class BackgroundExecutor {
                 return@Executor
             }
 
+            if (executor.isShutdown) {
+                return@Executor
+            }
+
             // Run final method on main thread and complete the deferred afterwards
             handler.post {
                 try {
@@ -66,6 +73,11 @@ class BackgroundExecutor {
         }
 
         return completableDeferred
+    }
+
+    override fun destroy() {
+        handler.removeCallbacksAndMessages(null)
+        executor.shutdown()
     }
 }
 

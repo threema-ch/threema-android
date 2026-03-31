@@ -8,7 +8,6 @@ import androidx.appcompat.widget.SearchView;
 
 import android.util.AttributeSet;
 
-import ch.threema.app.R;
 import ch.threema.app.preference.service.KeyboardDataCollectionPolicySetting;
 
 public class ThreemaSearchView extends SearchView {

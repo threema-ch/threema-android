@@ -3,7 +3,7 @@ package ch.threema.base.crypto
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.generateRandomBytes
 import ch.threema.common.secureRandom
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
 import java.security.SecureRandom
@@ -101,7 +101,7 @@ class NonceFactory(
      * @return true if all nonces were inserted successfully and false if at least one nonce was skipped
      */
     @Throws(NoSuchAlgorithmException::class, InvalidKeyException::class)
-    fun insertHashedNoncesJava(scope: NonceScope, nonces: List<ByteArray>, identity: Identity?): Boolean {
+    fun insertHashedNoncesJava(scope: NonceScope, nonces: List<ByteArray>, identity: IdentityString?): Boolean {
         val sanitizedNonceHashes = nonces.toHashedNonces(identity)
         insertHashedNonces(scope, sanitizedNonceHashes.filterNotNull())
         return !sanitizedNonceHashes.contains(null)
@@ -114,7 +114,7 @@ class NonceFactory(
      * @throws NoSuchAlgorithmException if the algorithm is not available on the device
      * @throws InvalidKeyException if the [identity] is not null and not suitable as key
      */
-    private fun List<ByteArray>.toHashedNonces(identity: Identity?): List<HashedNonce?> = map { nonceBytes ->
+    private fun List<ByteArray>.toHashedNonces(identity: IdentityString?): List<HashedNonce?> = map { nonceBytes ->
         when (nonceBytes.size) {
             32 -> HashedNonce(nonceBytes)
             NaCl.NONCE_BYTES -> {

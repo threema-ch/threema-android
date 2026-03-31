@@ -1,7 +1,7 @@
 package ch.threema.app.multidevice.linking
 
 import ch.threema.base.ThreemaException
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 open class DeviceLinkingException : ThreemaException {
     constructor(msg: String) : super(msg)
@@ -16,4 +16,9 @@ class DeviceLinkingInvalidQrCodeException(message: String, cause: Throwable? = n
 
 class DeviceLinkingScannedWebQrCodeException(message: String, cause: Throwable? = null) : DeviceLinkingException(message, cause)
 
-class DeviceLinkingInvalidContact(val identity: Identity) : DeviceLinkingException("Invalid contact with identity $identity")
+class DeviceLinkingInvalidContactException(val identity: IdentityString) : DeviceLinkingException("Invalid contact with identity $identity")
+
+class DeviceLinkingInvalidTimestampException(
+    val timestamp: Long,
+    val timestampDescription: String,
+) : DeviceLinkingException("Invalid timestamp $timestamp: $timestampDescription")

@@ -11,12 +11,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.models.OutgoingGroupSyncRequestLogModel;
 
 public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
-    public OutgoingGroupSyncRequestLogModelFactory(DatabaseService databaseService) {
-        super(databaseService, OutgoingGroupSyncRequestLogModel.TABLE);
+    public OutgoingGroupSyncRequestLogModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, OutgoingGroupSyncRequestLogModel.TABLE);
     }
 
     @Nullable
@@ -72,7 +73,7 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
         contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_API_GROUP_ID, outgoingGroupSyncRequestLogModel.getApiGroupId());
         contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_CREATOR_IDENTITY, outgoingGroupSyncRequestLogModel.getCreatorIdentity());
         contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_LAST_REQUEST, outgoingGroupSyncRequestLogModel.getLastRequest() != null
-            ? CursorHelper.dateAsStringFormat.get().format(outgoingGroupSyncRequestLogModel.getLastRequest())
+            ? outgoingGroupSyncRequestLogModel.getLastRequest().getTime()
             : null
         );
         return contentValues;
@@ -83,7 +84,7 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
         contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_API_GROUP_ID, groupIdentity.getGroupIdHexString());
         contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_CREATOR_IDENTITY, groupIdentity.getCreatorIdentity());
         contentValues.put(OutgoingGroupSyncRequestLogModel.COLUMN_LAST_REQUEST, lastRequest != null
-            ? CursorHelper.dateAsStringFormat.get().format(lastRequest)
+            ? lastRequest.getTime()
             : null
         );
         return contentValues;
@@ -122,15 +123,18 @@ public class OutgoingGroupSyncRequestLogModelFactory extends ModelFactory {
             Objects.requireNonNull(cursorHelper.getInt(OutgoingGroupSyncRequestLogModel.COLUMN_ID)),
             Objects.requireNonNull(cursorHelper.getString(OutgoingGroupSyncRequestLogModel.COLUMN_API_GROUP_ID)),
             Objects.requireNonNull(cursorHelper.getString(OutgoingGroupSyncRequestLogModel.COLUMN_CREATOR_IDENTITY)),
-            cursorHelper.getDateByString(OutgoingGroupSyncRequestLogModel.COLUMN_LAST_REQUEST)
+            cursorHelper.getDate(OutgoingGroupSyncRequestLogModel.COLUMN_LAST_REQUEST)
         );
     }
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `m_group_request_sync_log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiGroupId` VARCHAR , `creatorIdentity` VARCHAR , `lastRequest` VARCHAR )",
-            "CREATE UNIQUE INDEX `apiGroupIdAndCreatorGroupRequestSyncLogModel` ON `m_group_request_sync_log` ( `apiGroupId`, `creatorIdentity` );"
-        };
-    }
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String[] getCreationStatements() {
+                return new String[]{
+                    "CREATE TABLE `m_group_request_sync_log` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiGroupId` VARCHAR , `creatorIdentity` VARCHAR , `lastRequestAt` BIGINT )",
+                    "CREATE UNIQUE INDEX `apiGroupIdAndCreatorGroupRequestSyncLogModel` ON `m_group_request_sync_log` ( `apiGroupId`, `creatorIdentity` );"
+                };
+            }
+        }
 }

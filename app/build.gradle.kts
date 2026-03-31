@@ -2,7 +2,9 @@ import com.android.build.gradle.internal.api.ApkVariantOutputImpl
 import com.android.build.gradle.internal.tasks.factory.dependsOn
 import config.BuildFeatureFlags
 import config.PublicKeys
+import config.SentryConfig
 import config.setProductNames
+import config.setSentryConfig
 import org.gradle.api.tasks.testing.logging.TestExceptionFormat
 import org.gradle.kotlin.dsl.lintChecks
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -30,7 +32,7 @@ if (gradle.startParameter.taskRequests.toString().contains("Hms")) {
 /**
  * Only use the scheme "<major>.<minor>.<patch>" for the appVersion
  */
-val appVersion = "6.3.2"
+val appVersion = "6.4.0"
 
 /**
  * betaSuffix with leading dash (e.g. `-beta1`).
@@ -39,7 +41,7 @@ val appVersion = "6.3.2"
  */
 val betaSuffix = ""
 
-val defaultVersionCode = 1118
+val defaultVersionCode = 1136
 
 /**
  * Map with keystore paths (if found).
@@ -100,7 +102,7 @@ android {
         stringBuildConfigField("DIRECTORY_SERVER_IPV6_URL", "https://ds-apip.threema.ch/")
         stringBuildConfigField("WORK_SERVER_URL", null)
         stringBuildConfigField("WORK_SERVER_IPV6_URL", null)
-        stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.threema.ch/{deviceGroupIdPrefix8}")
+        stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.threema.ch/{deviceGroupIdPrefix8}/")
 
         // Base blob url used for "download" and "done" calls
         stringBuildConfigField("BLOB_SERVER_URL", "https://blobp-{blobIdPrefix}.threema.ch")
@@ -128,7 +130,7 @@ android {
         stringArrayBuildConfigField("ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS", emptyArray())
         booleanBuildConfigField("MD_SYNC_DISTRIBUTION_LISTS", false)
         booleanBuildConfigField("AVAILABILITY_STATUS_ENABLED", BuildFeatureFlags["availability_status"] ?: false)
-        booleanBuildConfigField("CRASH_REPORTING_SUPPORTED", BuildFeatureFlags["crash_reporting"] ?: false)
+        booleanBuildConfigField("ERROR_REPORTING_SUPPORTED", false)
 
         // config fields for action URLs / deep links
         stringBuildConfigField("uriScheme", "threema")
@@ -137,6 +139,11 @@ android {
 
         // The OPPF url must be null in the default config. Do not change this.
         stringBuildConfigField("PRESET_OPPF_URL", null)
+
+        setSentryConfig(
+            projectId = 0,
+            publicApikey = "",
+        )
 
         with(manifestPlaceholders) {
             put("uriScheme", "threema")
@@ -235,6 +242,9 @@ android {
             stringBuildConfigField("uriScheme", "threemawork")
             stringBuildConfigField("actionUrl", "work.threema.ch")
 
+            stringBuildConfigField("SCREENSHOT_TEST_WORK_USERNAME", LocalProperties.getString("screenshotTestWorkUsername"))
+            stringBuildConfigField("SCREENSHOT_TEST_WORK_PASSWORD", LocalProperties.getString("screenshotTestWorkPassword"))
+
             with(manifestPlaceholders) {
                 put("uriScheme", "threemawork")
                 put("actionUrl", "work.threema.ch")
@@ -245,6 +255,10 @@ android {
             applicationId = "ch.threema.app.green"
             testApplicationId = "$applicationId.test"
             setProductNames(appName = "Threema Green")
+            setSentryConfig(
+                projectId = SentryConfig.SANDBOX_PROJECT_ID,
+                publicApikey = SentryConfig.SANDBOX_PUBLIC_API_KEY,
+            )
             stringResValue("package_name", applicationId!!)
             stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.$applicationId.profile")
             stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.$applicationId.call")
@@ -255,7 +269,7 @@ android {
             byteArrayBuildConfigField("SERVER_PUBKEY_ALT", PublicKeys.sandboxServer)
             stringBuildConfigField("DIRECTORY_SERVER_URL", "https://apip.test.threema.ch/")
             stringBuildConfigField("DIRECTORY_SERVER_IPV6_URL", "https://ds-apip.test.threema.ch/")
-            stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
+            stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}/")
             stringBuildConfigField("BLOB_SERVER_URL", "https://blobp-{blobIdPrefix}.test.threema.ch")
             stringBuildConfigField("BLOB_SERVER_IPV6_URL", "https://ds-blobp-{blobIdPrefix}.test.threema.ch")
             stringBuildConfigField("BLOB_SERVER_URL_UPLOAD", "https://blobp-upload.test.threema.ch/upload")
@@ -266,7 +280,7 @@ android {
             stringBuildConfigField("MAP_POI_AROUND_URL", "https://poi.test.threema.ch/around/{latitude}/{longitude}/{radius}/")
             stringBuildConfigField("MAP_POI_NAMES_URL", "https://poi.test.threema.ch/names/{latitude}/{longitude}/{query}/")
             stringBuildConfigField("BLOB_MIRROR_SERVER_URL", "https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
-            booleanBuildConfigField("CRASH_REPORTING_SUPPORTED", true)
+            booleanBuildConfigField("ERROR_REPORTING_SUPPORTED", true)
         }
         create("sandbox_work") {
             versionName = "${appVersion}k$betaSuffix"
@@ -275,6 +289,10 @@ android {
             setProductNames(
                 appName = "Threema Sandbox Work",
                 appNameDesktop = "Threema Blue",
+            )
+            setSentryConfig(
+                projectId = SentryConfig.SANDBOX_PROJECT_ID,
+                publicApikey = SentryConfig.SANDBOX_PUBLIC_API_KEY,
             )
             stringResValue("package_name", applicationId!!)
             stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.$applicationId.profile")
@@ -290,7 +308,7 @@ android {
             stringBuildConfigField("DIRECTORY_SERVER_IPV6_URL", "https://ds-apip.test.threema.ch/")
             stringBuildConfigField("WORK_SERVER_URL", "https://apip-work.test.threema.ch/")
             stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.test.threema.ch/")
-            stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
+            stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}/")
             stringBuildConfigField("BLOB_SERVER_URL", "https://blobp-{blobIdPrefix}.test.threema.ch")
             stringBuildConfigField("BLOB_SERVER_IPV6_URL", "https://ds-blobp-{blobIdPrefix}.test.threema.ch")
             stringBuildConfigField("BLOB_SERVER_URL_UPLOAD", "https://blobp-upload.test.threema.ch/upload")
@@ -308,7 +326,7 @@ android {
             stringBuildConfigField("uriScheme", "threemawork")
             stringBuildConfigField("actionUrl", "work.test.threema.ch")
 
-            booleanBuildConfigField("CRASH_REPORTING_SUPPORTED", true)
+            booleanBuildConfigField("ERROR_REPORTING_SUPPORTED", true)
 
             stringBuildConfigField("MD_CLIENT_DOWNLOAD_URL", "https://three.ma/mdw")
 
@@ -357,6 +375,10 @@ android {
 
             stringBuildConfigField("MD_CLIENT_DOWNLOAD_URL", "https://three.ma/mdo")
 
+            stringBuildConfigField("SCREENSHOT_TEST_ONPREM_USERNAME", LocalProperties.getString("screenshotTestOnPremUsername"))
+            stringBuildConfigField("SCREENSHOT_TEST_ONPREM_PASSWORD", LocalProperties.getString("screenshotTestOnPremPassword"))
+            stringBuildConfigField("SCREENSHOT_TEST_ONPREM_SERVER_URL", LocalProperties.getString("screenshotTestOnPremServerUrl"))
+
             with(manifestPlaceholders) {
                 put("uriScheme", uriScheme)
                 put("actionUrl", actionUrl)
@@ -370,6 +392,10 @@ android {
             applicationId = "ch.threema.app.red"
             testApplicationId = "ch.threema.app.blue.test"
             setProductNames(appName = "Threema Blue")
+            setSentryConfig(
+                projectId = SentryConfig.SANDBOX_PROJECT_ID,
+                publicApikey = SentryConfig.SANDBOX_PUBLIC_API_KEY,
+            )
             stringResValue("package_name", applicationId!!)
             stringResValue("contacts_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.blue.profile")
             stringResValue("call_mime_type", "vnd.android.cursor.item/vnd.ch.threema.app.blue.call")
@@ -385,7 +411,7 @@ android {
             stringBuildConfigField("DIRECTORY_SERVER_IPV6_URL", "https://ds-apip.test.threema.ch/")
             stringBuildConfigField("WORK_SERVER_URL", "https://apip-work.test.threema.ch/")
             stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.test.threema.ch/")
-            stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
+            stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}/")
             stringBuildConfigField("BLOB_SERVER_URL", "https://blobp-{blobIdPrefix}.test.threema.ch")
             stringBuildConfigField("BLOB_SERVER_IPV6_URL", "https://ds-blobp-{blobIdPrefix}.test.threema.ch")
             stringBuildConfigField("BLOB_SERVER_URL_UPLOAD", "https://blobp-upload.test.threema.ch/upload")
@@ -398,7 +424,7 @@ android {
             stringBuildConfigField("LOG_TAG", "3mablue")
             stringBuildConfigField("BLOB_MIRROR_SERVER_URL", "https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
 
-            booleanBuildConfigField("CRASH_REPORTING_SUPPORTED", true)
+            booleanBuildConfigField("ERROR_REPORTING_SUPPORTED", true)
 
             // config fields for action URLs / deep links
             stringBuildConfigField("uriScheme", "threemablue")
@@ -520,6 +546,26 @@ android {
             java.srcDir("./build/generated/source/protobuf/main/java")
             java.srcDir("./build/generated/source/protobuf/main/kotlin")
         }
+
+        // Include Dev features only in debug builds and in release builds for flavors used only internally
+        val devFlavors = arrayOf("blue", "none")
+        productFlavors.names
+            .flatMap { productFlavor ->
+                buildList {
+                    add("${productFlavor}Debug" to true)
+                    if (productFlavor != "green" && productFlavor != "sandbox_work") {
+                        add("${productFlavor}Release" to (productFlavor in devFlavors))
+                    }
+                }
+            }
+            .forEach { (name, needsDevFeatures) ->
+                create(name) {
+                    val srcPath = if (needsDevFeatures) "src/with_dev_support" else "src/without_dev_support"
+                    java.srcDir("$srcPath/java")
+                    manifest.srcFile("$srcPath/AndroidManifest.xml")
+                    res.srcDir("$srcPath/res")
+                }
+            }
 
         // Based on Google services
         getByName("none") {
@@ -684,12 +730,12 @@ android {
 
     java {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(21))
         }
     }
 
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain(21)
     }
 
     androidResources {
@@ -779,7 +825,6 @@ dependencies {
     implementation(libs.opencsv)
     implementation(libs.zip4j)
     implementation(libs.taptargetview)
-    implementation(libs.commonsIo)
     implementation(libs.slf4j.api)
     implementation(libs.androidImageCropper)
     implementation(libs.fastscroll)
@@ -831,6 +876,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     debugImplementation(libs.androidx.ui.tooling)
+    debugImplementation(libs.androidx.ui.test.manifest)
     androidTestImplementation(platform(libs.compose.bom))
 
     implementation(libs.bcprov.jdk15to18)
@@ -843,8 +889,6 @@ dependencies {
     implementation(libs.msgpack.core)
     implementation(libs.jackson.core)
     implementation(libs.nvWebsocket.client)
-
-    implementation(libs.streamsupport.cfuture)
 
     implementation(libs.saltyrtc.client) {
         exclude(group = "org.json")
@@ -915,6 +959,7 @@ dependencies {
     androidTestImplementation(libs.androidx.test.uiautomator)
     androidTestImplementation(libs.androidx.test.core)
     androidTestImplementation(libs.kotlinx.coroutines.test)
+    androidTestImplementation(libs.androidx.ui.test.junit4)
     testImplementation(libs.kotlinx.coroutines.test)
 
     // Google Play Services and related libraries
@@ -1084,7 +1129,7 @@ tasks.whenTaskAdded {
 // Let the compose compiler generate stability reports
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
-        val composeCompilerReportsPath = "${project.layout.buildDirectory.get().dir("compose_conpiler").asFile.absolutePath}/reports"
+        val composeCompilerReportsPath = "${project.layout.buildDirectory.get().dir("compose_compiler").asFile.absolutePath}/reports"
         freeCompilerArgs.addAll(
             listOf(
                 "-P",

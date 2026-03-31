@@ -54,6 +54,15 @@ class ModelTypeCache<TIdentifier, TModel : BaseModel<*, *>> {
         this.map.getOrCreate(identifier, miss)
 
     /**
+     *  Add the given [model] to this cache if it is not already present
+     */
+    fun putIfAbsent(identifier: TIdentifier, model: TModel) {
+        if (get(identifier) == null) {
+            this.map.put(identifier, model)
+        }
+    }
+
+    /**
      * Remove the model with the specified [identifier] from the cache and return it.
      */
     fun remove(identifier: TIdentifier): TModel? = this.map.remove(identifier)

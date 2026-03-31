@@ -4,8 +4,8 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
+import ch.threema.android.postDelayed
 import ch.threema.app.R
-import ch.threema.app.ui.postDelayed
 import ch.threema.app.utils.EditTextUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger

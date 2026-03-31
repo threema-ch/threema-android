@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.licensing.StoreLicenseCheck;
+import ch.threema.app.restrictions.AppRestrictions;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.license.LicenseService;
@@ -37,6 +38,8 @@ public class CheckLicenseRoutine implements Runnable {
     private final LicenseService<?> licenseService;
     @NonNull
     private final IdentityStore identityStore;
+    @NonNull
+    private final AppRestrictions appRestrictions;
 
     public CheckLicenseRoutine(
         @NonNull
@@ -50,7 +53,9 @@ public class CheckLicenseRoutine implements Runnable {
         @NonNull
         LicenseService<?> licenseService,
         @NonNull
-        IdentityStore identityStore
+        IdentityStore identityStore,
+        @NonNull
+        AppRestrictions appRestrictions
     ) {
         this.context = context;
         this.apiConnector = apiConnector;
@@ -58,6 +63,7 @@ public class CheckLicenseRoutine implements Runnable {
         this.deviceService = deviceService;
         this.licenseService = licenseService;
         this.identityStore = identityStore;
+        this.appRestrictions = appRestrictions;
     }
 
     private void invalidLicense(String message) {
@@ -113,11 +119,11 @@ public class CheckLicenseRoutine implements Runnable {
             //run update work info route on the work build
             if (ConfigUtils.isWorkBuild()) {
                 (new UpdateWorkInfoRoutine(
-                    this.context,
                     this.apiConnector,
                     this.identityStore,
                     this.deviceService,
-                    this.licenseService
+                    this.licenseService,
+                    this.appRestrictions
                 )).run();
             }
         }

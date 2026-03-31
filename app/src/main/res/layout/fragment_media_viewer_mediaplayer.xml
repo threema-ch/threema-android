@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gallery_background">
@@ -10,9 +10,6 @@
         android:id="@+id/play_pause_layout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:gravity="center"
-        android:orientation="horizontal"
         app:layout_constraintBottom_toTopOf="@id/filename_view"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -34,7 +31,6 @@
         android:id="@+id/progress_bar"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_gravity="center"
         android:indeterminate="true"
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -44,42 +40,43 @@
 
     <TextView
         android:id="@+id/exo_position"
+        style="@style/ExoStyledControls.TimeText.Duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        style="@style/ExoStyledControls.TimeText.Duration"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/filename_view" />
+        android:layout_marginBottom="@dimen/grid_unit_x0_5"
+        app:layout_constraintBottom_toTopOf="@id/filename_view"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <androidx.media3.ui.DefaultTimeBar
         android:id="@+id/time_bar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toTopOf="@id/filename_view"
-        app:layout_constraintStart_toEndOf="@id/exo_position"
-        app:layout_constraintEnd_toStartOf="@id/exo_duration" />
+        app:layout_constraintEnd_toStartOf="@id/exo_duration"
+        app:layout_constraintStart_toEndOf="@id/exo_position" />
 
     <TextView
         android:id="@+id/exo_duration"
+        style="@style/ExoStyledControls.TimeText.Duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        style="@style/ExoStyledControls.TimeText.Duration"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/filename_view" />
+        android:layout_marginBottom="@dimen/grid_unit_x0_5"
+        app:layout_constraintBottom_toTopOf="@id/filename_view"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/filename_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="5dp"
-        android:paddingTop="5dp"
+        android:paddingVertical="@dimen/grid_unit_x0_5"
         android:textAlignment="center"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+        android:textColor="?attr/colorOnBackground"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="filename.mid"
+        tools:textColor="@android:color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

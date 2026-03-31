@@ -85,7 +85,6 @@ public class BitmapUtil {
      * @param height    height of source bitmap
      * @param reqWidth  requested width
      * @param reqHeight requested height
-     * @return SampleResult
      */
     static SampleResult getSampleSize(final int width, final int height, int reqWidth, int reqHeight) {
         SampleResult result = new SampleResult();
@@ -604,6 +603,7 @@ public class BitmapUtil {
      */
     @WorkerThread
     public static Bitmap blurBitmap(@Nullable Bitmap bitmap, Context context) {
+        // TODO(ANDR-4569): Migrate away from deprecated APIs
         if (bitmap != null && (bitmap.getConfig() == Bitmap.Config.RGB_565 || bitmap.getConfig() == Bitmap.Config.ARGB_8888)) {
             final RenderScript rs = RenderScript.create(context);
             final Allocation input = Allocation.createFromBitmap(rs, bitmap);

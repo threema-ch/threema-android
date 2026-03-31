@@ -4,25 +4,17 @@ import android.annotation.TargetApi;
 import android.net.Uri;
 import android.os.Build;
 
-import java.io.File;
-import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.app.Person;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.services.MessageService;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.SessionScoped;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
-import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.MessageType;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.ServerMessageModel;
 
 @SessionScoped
@@ -31,127 +23,6 @@ public interface NotificationService {
     interface FetchCacheUri {
         @Nullable
         Uri fetch();
-    }
-
-    class ConversationNotification {
-        private CharSequence message;
-        private CharSequence rawMessage;
-        private Person senderPerson;
-        private final Date when;
-        private final String uid;
-        private final ConversationNotificationGroup group;
-        private final FetchCacheUri fetchThumbnailUri;
-        private final int id;
-        private Uri thumbnailUri = null;
-        private final String thumbnailMimeType;
-        private final MessageType messageType;
-        private final EmojiMarkupUtil emojiMarkupUtil;
-        private final boolean isMessageDeleted;
-
-        public ConversationNotification(MessageService.MessageString messageString, Date when, int id, String uid,
-                                        ConversationNotificationGroup group, FetchCacheUri fetchThumbnailUri, String thumbnailMimeType,
-                                        Person senderPerson, MessageType messageType, boolean isMessageDeleted) {
-            this.when = when;
-            this.uid = uid;
-            this.id = id;
-            this.group = group;
-            this.fetchThumbnailUri = fetchThumbnailUri;
-            this.thumbnailMimeType = thumbnailMimeType;
-            this.emojiMarkupUtil = EmojiMarkupUtil.getInstance();
-            this.messageType = messageType;
-            this.isMessageDeleted = isMessageDeleted;
-            setMessage(messageString.getMessage());
-            setRawMessage(messageString.getRawMessage());
-            setSenderPerson(senderPerson);
-
-            this.group.conversations.add(this);
-        }
-
-        public CharSequence getMessage() {
-            return this.message;
-        }
-
-        public CharSequence getRawMessage() {
-            return this.rawMessage;
-        }
-
-        private void setMessage(String message) {
-            if (!TestUtil.isEmptyOrNull(message)) {
-                this.message = emojiMarkupUtil.addTextSpans(message);
-            } else {
-                this.message = "";
-            }
-        }
-
-        private void setRawMessage(String rawMessage) {
-            if (!TestUtil.isEmptyOrNull(rawMessage)) {
-                this.rawMessage = rawMessage;
-            } else {
-                this.rawMessage = "";
-            }
-        }
-
-        public Person getSenderPerson() {
-            return this.senderPerson;
-        }
-
-        public void setSenderPerson(Person person) {
-            if (!TestUtil.isBlankOrNull(message)) {
-                this.senderPerson = person;
-            } else {
-                this.senderPerson = null;
-            }
-        }
-
-        public Date getWhen() {
-            return this.when;
-        }
-
-        public int getId() {
-            return this.id;
-        }
-
-        public String getUid() {
-            return this.uid;
-        }
-
-        public ConversationNotificationGroup getGroup() {
-            return this.group;
-        }
-
-        @Nullable
-        public Uri getThumbnailUri() {
-            if (this.thumbnailUri == null && this.fetchThumbnailUri != null) {
-                this.thumbnailUri = this.fetchThumbnailUri.fetch();
-            }
-            return this.thumbnailUri;
-        }
-
-        public MessageType getMessageType() {
-            return this.messageType;
-        }
-
-
-        public boolean isMessageDeleted() {
-            return this.isMessageDeleted;
-        }
-
-        public void destroy() {
-            if (this.thumbnailUri != null) {
-                File thumbnailFile = new File(ThreemaApplication.getAppContext().getCacheDir(), thumbnailUri.getLastPathSegment());
-                if (thumbnailFile.exists()) {
-                    //noinspection ResultOfMethodCallIgnored
-                    thumbnailFile.delete();
-                }
-
-                this.group.conversations.remove(this);
-            }
-        }
-
-        @Nullable
-        public String getThumbnailMimeType() {
-            return thumbnailMimeType;
-        }
     }
 
     @TargetApi(Build.VERSION_CODES.O)
@@ -165,7 +36,7 @@ public interface NotificationService {
      */
     void setVisibleReceiver(MessageReceiver receiver);
 
-    void addGroupCallNotification(@NonNull GroupModel group, @NonNull ContactModelData contactModelData);
+    void addGroupCallNotification(@NonNull GroupModelOld group, @NonNull ContactModelData contactModelData);
 
     void cancelGroupCallNotification(int groupId);
 

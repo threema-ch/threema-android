@@ -33,7 +33,6 @@ public class ExponentialBackOffUtil {
      *
      * @param runnable                Method
      * @param exponentialBackOffCount Count of Retries
-     * @return Future
      */
     public Future<?> run(final BackOffRunnable runnable, final int exponentialBackOffCount, final String messageUid) {
         return singleThreadExecutor.submit(() -> {

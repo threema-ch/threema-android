@@ -1,6 +1,8 @@
 package ch.threema.app.activities.wizard;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.InputFilter;
@@ -16,6 +18,7 @@ import java.io.IOException;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.android.ToastDuration;
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.components.WizardButtonXml;
 import ch.threema.app.di.DependencyContainer;
@@ -35,12 +38,13 @@ import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.utils.executor.BackgroundTask;
 import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.ThreemaException;
+
+import static ch.threema.android.ToastKt.showToast;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import ch.threema.common.Http;
@@ -48,7 +52,7 @@ import ch.threema.common.HttpResponseException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
 import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
-import static ch.threema.app.protocol.ApplicationSetupStepsKt.runApplicationSetupSteps;
+import static ch.threema.app.protocolsteps.ApplicationSetupStepsKt.runApplicationSetupSteps;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class WizardSafeRestoreActivity extends WizardBackgroundActivity implements
@@ -316,9 +320,7 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
                 () -> {
                     // On fail
                     DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_WORK_SYNC, true);
-                    RuntimeUtil.runOnUiThread(
-                        () -> Toast.makeText(WizardSafeRestoreActivity.this, R.string.unable_to_fetch_configuration, Toast.LENGTH_LONG).show()
-                    );
+                    showToast(WizardSafeRestoreActivity.this, R.string.unable_to_fetch_configuration, ToastDuration.LONG);
                     logger.warn("Unable to post work request for fetch2 or preset password was denied");
                     removeIdentity();
                 });
@@ -365,9 +367,9 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
     }
 
     @Override
-    public void onYes(String tag, String text, boolean isChecked, Object data) {
+    public void onYes(@Nullable String tag, @NonNull String text, boolean isChecked, Object data) {
         // safe backup restore
-        if (!TestUtil.isEmptyOrNull(text)) {
+        if (!text.isEmpty()) {
             restoreSafeBackup(text);
         }
     }
@@ -396,11 +398,16 @@ public class WizardSafeRestoreActivity extends WizardBackgroundActivity implemen
     }
 
     @Override
-    public void onNo(String tag) {
+    public void onNo(@Nullable String tag) {
         if (DIALOG_TAG_PASSWORD_PRESET_CONFIRM.equals(tag)) {
             removeIdentity();
         } else if (safeMDMConfig.isRestoreDisabled()) {
             finish();
         }
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context) {
+        return new Intent(context, WizardSafeRestoreActivity.class);
     }
 }

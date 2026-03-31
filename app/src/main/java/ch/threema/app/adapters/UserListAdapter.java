@@ -39,8 +39,8 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.domain.models.Contact;
 import ch.threema.storage.models.ContactModel;
-import java8.util.stream.Collectors;
-import java8.util.stream.StreamSupport;
+import ch.threema.storage.models.MessageModel;
+import java.util.stream.Collectors;
 
 public class UserListAdapter extends FilterableListAdapter {
     private final @NonNull Context context;
@@ -61,6 +61,7 @@ public class UserListAdapter extends FilterableListAdapter {
 
     private final @Nullable ConversationCategoryService conversationCategoryService;
     private final @Nullable FilterResultsListener filterResultsListener;
+    private final @NonNull PreferenceService preferenceService;
     private final @NonNull RequestManager requestManager;
 
     /**
@@ -86,6 +87,7 @@ public class UserListAdapter extends FilterableListAdapter {
         this.contactService = contactService;
         this.conversationCategoryService = conversationCategoryService;
         this.blockedIdentitiesService = blockedIdentitiesService;
+        this.preferenceService = preferenceService;
         this.filterResultsListener = filterResultsListener;
         this.requestManager = requestManager;
 
@@ -157,7 +159,11 @@ public class UserListAdapter extends FilterableListAdapter {
         }
         ViewUtil.showAndSet(
             holder.nameView,
-            highlightMatches(NameUtil.getDisplayNameOrNickname(contactModel, true), filterString));
+            highlightMatches(
+                NameUtil.getContactDisplayNameOrNickname(contactModel, true, preferenceService.getContactNameFormat()),
+                filterString
+            )
+        );
         AdapterUtil.styleContact(holder.nameView, contactModel);
 
         ViewUtil.showAndSet(
@@ -179,7 +185,16 @@ public class UserListAdapter extends FilterableListAdapter {
         String lastMessageDateString = null;
         ContactMessageReceiver messageReceiver = this.contactService.createReceiver(contactModel);
         if (conversationCategoryService != null && !conversationCategoryService.isPrivateChat(messageReceiver.getUniqueIdString())) {
-            lastMessageDateString = MessageUtil.getDisplayDate(this.context, messageReceiver.getLastMessage(), false);
+            final @Nullable MessageModel messageModel = messageReceiver.getLastMessage();
+            if (messageModel != null) {
+                lastMessageDateString = MessageUtil.getDisplayDate(
+                    this.context,
+                    messageModel.getPostedAt(),
+                    messageModel.isOutbox(),
+                    messageModel.getModifiedAt(),
+                    false
+                );
+            }
         }
 
         ViewUtil.showAndSet(
@@ -234,7 +249,7 @@ public class UserListAdapter extends FilterableListAdapter {
                 filterString = constraint.toString();
 
                 for (ContactModel contactModel : originalContactModels) {
-                    if ((NameUtil.getDisplayNameOrNickname(contactModel, false).toUpperCase().contains(filterString.toUpperCase())) ||
+                    if ((NameUtil.getContactDisplayNameOrNickname(contactModel, false, preferenceService.getContactNameFormat()).toUpperCase().contains(filterString.toUpperCase())) ||
                         (contactModel.getIdentity().toUpperCase().contains(filterString.toUpperCase()))) {
                         nContactList.add(contactModel);
                     }
@@ -309,11 +324,11 @@ public class UserListAdapter extends FilterableListAdapter {
         if (preselectedIdentities == null || preselectedIdentities.isEmpty()) {
             return Collections.emptyList();
         }
-        final Set<String> alreadyDisplayedIdentities = StreamSupport.stream(alreadyDisplayedContacts)
+        final Set<String> alreadyDisplayedIdentities = alreadyDisplayedContacts.stream()
             .map(Contact::getIdentity)
             .collect(Collectors.toSet());
 
-        return StreamSupport.stream(preselectedIdentities)
+        return preselectedIdentities.stream()
             .filter(identity -> !alreadyDisplayedIdentities.contains(identity))
             .map(contactService::getByIdentity)
             .filter(contactModel -> {

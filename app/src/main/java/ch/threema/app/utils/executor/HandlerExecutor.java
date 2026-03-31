@@ -5,7 +5,6 @@ import android.os.Handler;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import java8.util.concurrent.CompletableFuture;
 
 /**
  * An executor handler is a simple wrapper around a handler that is to be used as a
@@ -46,27 +45,6 @@ public class HandlerExecutor {
      */
     public boolean post(@NonNull final Runnable runnable) {
         return this.parent.post(runnable);
-    }
-
-    /**
-     * Like {@link #post(Runnable)}, but return a CompletableFuture that resolves
-     * once the runnable has finished running and that is cancelled if the runnable
-     * could not be scheduled.
-     */
-    public CompletableFuture<Void> postFuture(@NonNull final Runnable runnable) {
-        final CompletableFuture<Void> future = new CompletableFuture<>();
-        final boolean posted = this.post(() -> {
-            try {
-                runnable.run();
-            } catch (Exception e) {
-                future.completeExceptionally(e);
-            }
-            future.complete(null);
-        });
-        if (!posted) {
-            future.cancel(false);
-        }
-        return future;
     }
 
     /**

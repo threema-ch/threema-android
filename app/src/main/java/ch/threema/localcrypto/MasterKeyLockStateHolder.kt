@@ -3,10 +3,13 @@ package ch.threema.localcrypto
 import ch.threema.common.mapState
 import ch.threema.localcrypto.models.MasterKeyState
 import ch.threema.localcrypto.models.RemoteSecretParameters
+import ch.threema.localcrypto.models.RemoteSecretProtectionState
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 
 /**
@@ -37,6 +40,16 @@ class MasterKeyLockStateHolder {
         lockStateFlow.mapState { lockState ->
             (lockState as? LockState.Unlocked)?.masterKey
         }
+
+    val remoteSecretProtectionFlow: Flow<RemoteSecretProtectionState>
+        get() = lockStateFlow
+            .filterIsInstance<RemoteSecretLockState>()
+            .map { lockState ->
+                when (lockState.remoteSecretLockData) {
+                    null -> RemoteSecretProtectionState.INACTIVE
+                    else -> RemoteSecretProtectionState.ACTIVE
+                }
+            }
 
     val remoteSecretParametersFlow: StateFlow<RemoteSecretParameters?> =
         lockStateFlow.mapState { lockState ->

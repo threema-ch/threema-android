@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">Ongeldige QR-codegegevens</string>
     <string name="webclient_init_session">Nieuwe sessie beginnen</string>
     <string name="webclient_sessions_really_delete">Weet u zeker dat u deze desktop-/web-sessie wilt verwijderen?</string>
     <string name="webclient_last_usage">Laatste gebruik: %s</string>

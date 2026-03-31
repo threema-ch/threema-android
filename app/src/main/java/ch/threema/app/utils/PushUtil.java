@@ -30,6 +30,7 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.jobs.ReConnectJobService;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.push.PushRegistrationWorker;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
 import ch.threema.app.services.ConversationCategoryService;
@@ -39,9 +40,12 @@ import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.notification.NotificationServiceImpl;
 import ch.threema.app.services.PollingHelper;
 import ch.threema.app.services.RingtoneService;
+import ch.threema.app.stores.IdentityProvider;
 import ch.threema.app.webclient.services.SessionWakeUpServiceImpl;
 import ch.threema.base.ThreemaException;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.data.models.ContactModel;
 import ch.threema.protobuf.d2d.sync.MdD2DSync;
 
@@ -221,7 +225,7 @@ public class PushUtil {
                     }
 
                     @Override
-                    public void addOnLockAppStateChanged(OnLockAppStateChanged c) {
+                    public void addOnLockAppStateListener(OnLockAppStateListener c) {
                         //not needed in this context
                     }
                 },
@@ -298,7 +302,9 @@ public class PushUtil {
                     }
                 },
                 KoinJavaComponent.get(NotificationPreferenceService.class),
-                KoinJavaComponent.get(RingtoneService.class)
+                KoinJavaComponent.get(RingtoneService.class),
+                KoinJavaComponent.get(PreferenceService.class),
+                KoinJavaComponent.get(IdentityProvider.class)
             );
         }
 

@@ -2,7 +2,7 @@ package ch.threema.data.storage
 
 import android.database.sqlite.SQLiteException
 import ch.threema.data.models.GroupIdentity
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 /**
  * This interface fully abstracts the database access.
@@ -24,7 +24,9 @@ interface DatabaseBackend {
     /**
      * Return the contact with the specified [identity].
      */
-    fun getContactByIdentity(identity: Identity): DbContact?
+    fun getContactByIdentity(identity: IdentityString): DbContact?
+
+    fun getContactsByIdentities(identities: Set<IdentityString>): List<DbContact>
 
     /**
      * Update the specified contact (using the identity as lookup key).
@@ -42,13 +44,13 @@ interface DatabaseBackend {
      *
      * Return whether the contact was deleted (true) or wasn't found (false).
      */
-    fun deleteContactByIdentity(identity: Identity): Boolean
+    fun deleteContactByIdentity(identity: IdentityString): Boolean
 
     /**
      * Check whether the contact is currently part of a group. Note that only groups are considered
      * where 'deleted' is set to 0.
      */
-    fun isContactInGroup(identity: Identity): Boolean
+    fun isContactInGroup(identity: IdentityString): Boolean
 
     /**
      * Insert a new group.

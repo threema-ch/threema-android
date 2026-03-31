@@ -1,10 +1,17 @@
 package ch.threema.app.compose.common.text.conversation
 
+import androidx.compose.runtime.Immutable
+import ch.threema.android.ResolvableString
+import ch.threema.android.ResourceIdString
+import ch.threema.app.R
 import ch.threema.app.compose.common.text.conversation.ConversationTextAnalyzer.Result.SearchResult
 import ch.threema.app.emojis.EmojiParser
 import ch.threema.app.emojis.SpriteCoordinates
 import ch.threema.app.services.ContactService
+import ch.threema.data.datatypes.ContactNameFormat
+import ch.threema.data.datatypes.MentionNameData
 import ch.threema.domain.types.Identity
+import ch.threema.domain.types.toIdentityOrNull
 
 object ConversationTextAnalyzer {
 
@@ -15,11 +22,13 @@ object ConversationTextAnalyzer {
      * the [SearchResult] begin (inclusive).
      * @param containsOnlyEmojis Is true when the only contents of input string are emoji characters. Will be false if the input is empty.
      */
+    @Immutable
     data class Result(
         val items: Map<Int, SearchResult>,
         val containsOnlyEmojis: Boolean,
     ) {
 
+        @Immutable
         sealed interface SearchResult {
 
             /**
@@ -32,12 +41,14 @@ object ConversationTextAnalyzer {
             /**
              *  @param length the total character length of the (combined) emoji
              */
+            @Immutable
             data class Emoji(
                 override val startIndex: Int,
                 override val length: Int,
                 val spriteCoordinates: SpriteCoordinates,
             ) : SearchResult
 
+            @Immutable
             data class Mention(
                 override val startIndex: Int,
                 val identity: Identity,
@@ -49,7 +60,7 @@ object ConversationTextAnalyzer {
                 override val length: Int = 11
 
                 val mentionsAll: Boolean
-                    get() = identity == ContactService.ALL_USERS_PLACEHOLDER_ID
+                    get() = identity.value == ContactService.ALL_USERS_PLACEHOLDER_ID
             }
         }
 
@@ -73,8 +84,8 @@ object ConversationTextAnalyzer {
         if (rawInput.isBlank()) {
             return Result.blank
         }
-        val emojis: Map<Int, SearchResult> = searchEmojis(rawInput).associateBy(SearchResult::startIndex)
-        val mentions: Map<Int, SearchResult> = if (searchMentions) {
+        val emojis: Map<Int, SearchResult.Emoji> = searchEmojis(rawInput).associateBy(SearchResult::startIndex)
+        val mentions: Map<Int, SearchResult.Mention> = if (searchMentions) {
             searchMentions(rawInput).associateBy(SearchResult::startIndex)
         } else {
             emptyMap()
@@ -86,7 +97,7 @@ object ConversationTextAnalyzer {
         )
     }
 
-    private fun searchEmojis(rawInput: String): List<SearchResult> {
+    fun searchEmojis(rawInput: String): List<SearchResult.Emoji> {
         if (rawInput.isBlank()) {
             return emptyList()
         }
@@ -110,18 +121,50 @@ object ConversationTextAnalyzer {
         return emojiSearchResults
     }
 
-    private fun searchMentions(rawInput: String): List<SearchResult> {
+    fun searchMentions(rawInput: String): List<SearchResult.Mention> {
         if (rawInput.isBlank()) {
             return emptyList()
         }
         val mentionMatches: List<MatchResult> = Regex(MENTION_SEARCH_REGEX).findAll(rawInput).toList()
         return mentionMatches.mapNotNull { regexMatchResult ->
             val startIndex = regexMatchResult.range.first
-            val identity = regexMatchResult.groups[1]?.value ?: return@mapNotNull null
+            val identity = regexMatchResult.groups[1]?.value?.toIdentityOrNull() ?: return@mapNotNull null
             SearchResult.Mention(
                 startIndex = startIndex,
                 identity = identity,
             )
         }
+    }
+
+    /**
+     * Search for any mentions in the given [input] and determine the correct display name for it utilising [mentionNameData].
+     *
+     * **Special mentions:**
+     * - A mention of the special identity [ContactService.ALL_USERS_PLACEHOLDER_ID] will result in a display name value of "`All`"
+     * - A mention of the current users own identity **might** result in a display name value of "`Me`". See [MentionNameData.Me.getDisplayName]
+     */
+    fun findResolvableMentionNames(
+        input: String,
+        mentionNameData: List<MentionNameData>,
+        contactNameFormat: ContactNameFormat,
+    ): Map<Identity, ResolvableString> {
+        if (input.isBlank()) {
+            return emptyMap()
+        }
+        val mentionedIdentities: Set<Identity> = Regex(pattern = MENTION_SEARCH_REGEX)
+            .findAll(input)
+            .mapNotNull { mentionMatchResult -> mentionMatchResult.groups[1]?.value?.toIdentityOrNull() }
+            .toSet()
+        return mentionedIdentities
+            .mapNotNull { mentionedIdentity ->
+                if (mentionedIdentity.value == ContactService.ALL_USERS_PLACEHOLDER_ID) {
+                    mentionedIdentity to ResourceIdString(resId = R.string.all)
+                } else {
+                    mentionNameData
+                        .firstOrNull { mentionNameData -> mentionNameData.identity == mentionedIdentity }
+                        ?.getDisplayName(contactNameFormat)
+                        ?.let { displayName -> mentionedIdentity to displayName }
+                }
+            }.toMap()
     }
 }

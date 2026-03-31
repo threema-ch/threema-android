@@ -1,9 +1,5 @@
 package ch.threema.app.webclient.webrtc;
 
-import androidx.annotation.AnyThread;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.saltyrtc.chunkedDc.Chunker;
 import org.saltyrtc.chunkedDc.Unchunker;
 import org.saltyrtc.client.crypto.CryptoException;
@@ -20,15 +16,19 @@ import org.webrtc.DataChannel;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 
+import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.annotation.SameThread;
 import ch.threema.app.webclient.exceptions.WouldBlockException;
 import ch.threema.app.webrtc.FlowControlledDataChannel;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.logging.ThreemaLogger;
-import java8.util.concurrent.CompletableFuture;
-import java8.util.function.Function;
+
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Wraps a flow-controlled (sender-side) data channel, applies additional

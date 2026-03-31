@@ -1,5 +1,6 @@
 package ch.threema.domain.protocol.connection.csp.socket
 
+import ch.threema.common.emptyByteArray
 import ch.threema.domain.protocol.connection.socket.BaseSocket
 import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import ch.threema.domain.protocol.connection.socket.ServerSocketException
@@ -152,7 +153,7 @@ internal class CspSocket(
     private suspend fun readNBytes(dis: DataInputStream, n: Int): ByteArray {
         logger.debug("Read {} bytes from input", n)
         return if (n == 0) {
-            ByteArray(0)
+            emptyByteArray()
         } else {
             runInterruptible(Dispatchers.IO) {
                 val bytes = ByteArray(n)

@@ -7,8 +7,9 @@ import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.Nullable;
-import ch.threema.app.services.ContactService;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CALL_ID;
@@ -44,9 +45,9 @@ public class CallRejectService extends IntentService {
 
         // Reject the call
         VoipStateService voipStateService = KoinJavaComponent.getOrNull(VoipStateService.class);
-        ContactService contactService = KoinJavaComponent.getOrNull(ContactService.class);
-        if (voipStateService != null && contactService != null) {
-            CallRejectWorkerKt.rejectCall(voipStateService, contactService, callId, contactIdentity, rejectReason);
+        ContactModelRepository contactModelRepository = KoinJavaComponent.getOrNull(ContactModelRepository.class);
+        if (contactIdentity != null && voipStateService != null && contactModelRepository != null) {
+            CallRejectWorkerKt.rejectCall(voipStateService, contactModelRepository, callId, contactIdentity, rejectReason);
         }
     }
 

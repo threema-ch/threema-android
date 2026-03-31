@@ -9,7 +9,7 @@ class DatabaseUpdateTest {
     @Test
     fun `full description without description`() {
         val databaseUpdate = mockk<DatabaseUpdate> {
-            every { getVersion() } returns 42
+            every { version } returns 42
             every { getDescription() } returns null
         }
 
@@ -19,7 +19,7 @@ class DatabaseUpdateTest {
     @Test
     fun `full description with description`() {
         val databaseUpdate = mockk<DatabaseUpdate> {
-            every { getVersion() } returns 42
+            every { version } returns 42
             every { getDescription() } returns "test stuff"
         }
 

@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -18,28 +19,15 @@ import java.util.List;
 
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
-import ch.threema.storage.models.GroupCallModel;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
+import ch.threema.storage.models.group.GroupCallModel;
 
 public class GroupCallModelFactory extends ModelFactory {
     private static final Logger logger = getThreemaLogger("GroupCallModelFactory");
 
-    public GroupCallModelFactory(DatabaseService databaseService) {
-        super(databaseService, GroupCallModel.TABLE);
-    }
-
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `" + getTableName() + "` (" +
-                "`" + GroupCallModel.COLUMN_CALL_ID + "` TEXT PRIMARY KEY NOT NULL, " +
-                "`" + GroupCallModel.COLUMN_GROUP_ID + "` INTEGER NOT NULL, " +
-                "`" + GroupCallModel.COLUMN_SFU_BASE_URL + "` TEXT NOT NULL, " +
-                "`" + GroupCallModel.COLUMN_GCK + "` TEXT NOT NULL, " +
-                "`" + GroupCallModel.COLUMN_PROTOCOL_VERSION + "` INTEGER DEFAULT 0," +
-                "`" + GroupCallModel.COLUMN_STARTED_AT + "` BIGINT NOT NULL," +
-                "`" + GroupCallModel.COLUMN_PROCESSED_AT + "` BIGINT NOT NULL)"
-        };
+    public GroupCallModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, GroupCallModel.TABLE);
     }
 
     @NonNull
@@ -133,5 +121,22 @@ public class GroupCallModelFactory extends ModelFactory {
                 : new GroupCallModel(protocolVersion, callId, groupId, baseUrl, gck, startedAt, processedAt);
         };
         return new CursorHelper(cursor, getColumnIndexCache()).current(converter);
+    }
+
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE `" + GroupCallModel.TABLE + "` (" +
+                    "`" + GroupCallModel.COLUMN_CALL_ID + "` TEXT PRIMARY KEY NOT NULL, " +
+                    "`" + GroupCallModel.COLUMN_GROUP_ID + "` INTEGER NOT NULL, " +
+                    "`" + GroupCallModel.COLUMN_SFU_BASE_URL + "` TEXT NOT NULL, " +
+                    "`" + GroupCallModel.COLUMN_GCK + "` TEXT NOT NULL, " +
+                    "`" + GroupCallModel.COLUMN_PROTOCOL_VERSION + "` INTEGER DEFAULT 0," +
+                    "`" + GroupCallModel.COLUMN_STARTED_AT + "` BIGINT NOT NULL," +
+                    "`" + GroupCallModel.COLUMN_PROCESSED_AT + "` BIGINT NOT NULL)"
+            };
+        }
     }
 }

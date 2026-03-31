@@ -1,5 +1,6 @@
 package ch.threema.app.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -23,7 +24,6 @@ import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.utils.ConfigUtils;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
-import static ch.threema.app.fragments.BackupDataFragment.REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS;
 import static ch.threema.app.utils.PowermanagerUtil.isIgnoringBatteryOptimizations;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
@@ -36,6 +36,7 @@ import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 public class DisableBatteryOptimizationsActivity extends ThreemaActivity implements GenericAlertDialog.DialogClickListener {
     private static final Logger logger = getThreemaLogger("DisableBatteryOptimizationsActivity");
 
+    private static final int REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS = 441;
     private static final int REQUEST_CODE_IGNORE_BATTERY_OPTIMIZATIONS = 778;
     private static final String DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS = "des";
     private static final String DIALOG_TAG_MIUI_WARNING = "miui";
@@ -123,7 +124,10 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
+        if (tag == null) {
+            return;
+        }
         switch (tag) {
             case DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS:
                 launchDisableFlow();
@@ -187,8 +191,8 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
     }
 
     @Override
-    public void onNo(String tag, Object data) {
-        if (tag.equals(DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS)) {
+    public void onNo(@Nullable String tag, @Nullable Object data) {
+        if (tag != null && tag.equals(DIALOG_TAG_DISABLE_BATTERY_OPTIMIZATIONS)) {
             // The user wants to continue without disabling battery optimizations
             setResult(RESULT_OK);
             finish();
@@ -238,5 +242,12 @@ public class DisableBatteryOptimizationsActivity extends ThreemaActivity impleme
         // used to avoid flickering of status and navigation bar when activity is closed
         super.finish();
         overridePendingTransition(0, 0);
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context, @NonNull String name) {
+        Intent intent = new Intent(context, DisableBatteryOptimizationsActivity.class);
+        intent.putExtra(EXTRA_NAME, name);
+        return intent;
     }
 }

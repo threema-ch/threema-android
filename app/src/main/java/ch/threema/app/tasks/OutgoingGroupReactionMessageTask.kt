@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.base.ThreemaException
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.BadMessageException
@@ -9,7 +8,7 @@ import ch.threema.domain.protocol.csp.messages.ReactionMessageData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.csp.e2e.Reaction.ActionCase
 import com.google.protobuf.ByteString
 import java.util.Date
@@ -22,9 +21,8 @@ class OutgoingGroupReactionMessageTask(
     private val actionCase: ActionCase,
     private val emojiSequence: String,
     private val reactedAt: Date,
-    private val recipientIdentities: Set<Identity>,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+    private val recipientIdentities: Set<IdentityString>,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingGroupReactionMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -66,12 +64,12 @@ class OutgoingGroupReactionMessageTask(
     }
 
     override fun serialize(): SerializableTaskData = OutgoingGroupReactionMessageData(
-        targetMessageModelId,
-        reactionMessageId.messageId,
-        actionCase,
-        emojiSequence,
-        reactedAt.time,
-        recipientIdentities,
+        messageModelId = targetMessageModelId,
+        messageId = reactionMessageId.messageId,
+        actionCase = actionCase,
+        emojiSequence = emojiSequence,
+        reactedAt = reactedAt.time,
+        recipientIdentities = recipientIdentities,
     )
 
     @Serializable
@@ -81,17 +79,16 @@ class OutgoingGroupReactionMessageTask(
         private val actionCase: ActionCase,
         private val emojiSequence: String,
         private val reactedAt: Long,
-        private val recipientIdentities: Set<Identity>,
+        private val recipientIdentities: Set<IdentityString>,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingGroupReactionMessageTask(
-                messageModelId,
-                MessageId(messageId),
-                actionCase,
-                emojiSequence,
-                Date(reactedAt),
-                recipientIdentities,
-                serviceManager,
+                targetMessageModelId = messageModelId,
+                reactionMessageId = MessageId(messageId),
+                actionCase = actionCase,
+                emojiSequence = emojiSequence,
+                reactedAt = Date(reactedAt),
+                recipientIdentities = recipientIdentities,
             )
     }
 }

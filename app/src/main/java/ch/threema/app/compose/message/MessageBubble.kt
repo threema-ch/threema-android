@@ -1,6 +1,7 @@
 package ch.threema.app.compose.message
 
 import android.annotation.SuppressLint
+import android.net.Uri
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.annotation.StyleRes
@@ -28,11 +29,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.threema.app.R
 import ch.threema.app.compose.common.ThemedText
+import ch.threema.app.compose.common.colorReferenceResource
 import ch.threema.app.compose.common.interop.InteropEmojiConversationTextView
 import ch.threema.app.compose.theme.AppTypography
-import ch.threema.app.compose.theme.color.CustomColors
 import ch.threema.app.messagedetails.MessageUiModel
+import ch.threema.app.ui.BottomSheetItem
 import ch.threema.app.ui.CustomTextSelectionCallback
+import ch.threema.app.utils.LinkifyUtil
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.common.now
 import java.util.Date
@@ -44,6 +47,7 @@ fun MessageBubble(
     @StyleRes textAppearanceRes: Int = R.style.Threema_Bubble_Text_Body,
     messageBodyAlpha: Float = 1f,
     isOutbox: Boolean,
+    linkifyListener: LinkifyUtil.LinkifyListener,
     shouldMarkupText: Boolean = true,
     textSelectionCallback: CustomTextSelectionCallback? = null,
     isTextSelectable: Boolean = false,
@@ -52,14 +56,14 @@ fun MessageBubble(
     footerContent: @Composable ((contentColor: Color) -> Unit)? = null,
 ) {
     val bubbleColor: Color = if (isOutbox) {
-        CustomColors.chatBubbleSendContainer
+        colorReferenceResource(R.attr.colorMessageBubbleSendContainer)
     } else {
-        CustomColors.chatBubbleReceiveContainer
+        colorReferenceResource(R.attr.colorMessageBubbleReceiveContainer)
     }
     val contentColor: Color = if (isOutbox) {
-        CustomColors.chatBubbleSendOnContainer
+        colorReferenceResource(R.attr.colorOnMessageBubbleSendContainer)
     } else {
-        CustomColors.chatBubbleReceiveOnContainer
+        colorReferenceResource(R.attr.colorOnMessageBubbleReceiveContainer)
     }
     Column(
         modifier = modifier
@@ -77,6 +81,7 @@ fun MessageBubble(
             contentColor = contentColor.copy(
                 alpha = messageBodyAlpha,
             ),
+            linkifyListener = linkifyListener,
             shouldMarkupText = shouldMarkupText,
             textSelectionCallback = textSelectionCallback,
             isTextSelectable = isTextSelectable,
@@ -91,12 +96,17 @@ fun CompleteMessageBubble(
     modifier: Modifier = Modifier,
     message: MessageUiModel,
     shouldMarkupText: Boolean,
+    linkifyListener: LinkifyUtil.LinkifyListener,
     isTextSelectable: Boolean = false,
     textSelectionCallback: CustomTextSelectionCallback? = null,
 ) {
     val cdMessage = stringResource(R.string.cd_message)
     if (message.isDeleted) {
-        DeletedMessageBubble(message.isOutbox, message.createdAt)
+        DeletedMessageBubble(
+            message.isOutbox,
+            message.createdAt,
+            linkifyListener,
+        )
     } else {
         /**
          * If we encounter a blank/empty value in [MessageUiModel.text] we can
@@ -115,6 +125,7 @@ fun CompleteMessageBubble(
             text = message.text.takeIf(String::isNotBlank)
                 ?: stringResource(R.string.edit_history_file_no_caption),
             isOutbox = message.isOutbox,
+            linkifyListener = linkifyListener,
             shouldMarkupText = shouldMarkupText,
             textSelectionCallback = textSelectionCallback,
             isTextSelectable = isTextSelectable,
@@ -146,6 +157,7 @@ fun CompleteMessageBubble(
 fun DeletedMessageBubble(
     isOutbox: Boolean,
     date: Date,
+    linkifyListener: LinkifyUtil.LinkifyListener,
     onClick: (() -> Unit)? = null,
 ) {
     MessageBubble(
@@ -154,6 +166,7 @@ fun DeletedMessageBubble(
         messageBodyAlpha = 0.6f,
         isOutbox = isOutbox,
         onClick = onClick,
+        linkifyListener = linkifyListener,
         footerContent = { contentColor ->
             MessageBubbleFooter(
                 shouldShowEditedLabel = false,
@@ -201,9 +214,9 @@ fun MessageBubbleFooter(
             Spacer(modifier = Modifier.size(4.dp))
             val formattedDate = LocaleUtil.formatTimeStampString(LocalContext.current, it.time, true)
             ThemedText(
-                modifier = stringResource(R.string.cd_created_at).let {
+                modifier = stringResource(R.string.cd_created_at).let { string ->
                     Modifier.semantics {
-                        contentDescription = it.format(formattedDate)
+                        contentDescription = string.format(formattedDate)
                     }
                 },
                 text = formattedDate,
@@ -232,6 +245,11 @@ private fun MessageBubble_Preview() {
     MessageBubble(
         text = "Lorem ipsum *dolor sit amet*, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam",
         isOutbox = true,
+        linkifyListener = object : LinkifyUtil.LinkifyListener {
+            override fun onLinkNeedsConfirmation(warning: String, uri: Uri) {}
+            override fun showBottomSheetGridDialog(items: ArrayList<BottomSheetItem?>?) {}
+            override fun shouldHandleLinkClick() = false
+        },
         shouldMarkupText = true,
         footerContent = { contentColor: Color ->
             MessageBubbleFooter(

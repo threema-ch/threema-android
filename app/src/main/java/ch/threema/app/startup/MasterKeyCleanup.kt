@@ -4,7 +4,7 @@ import android.content.Context
 import ch.threema.app.stores.EncryptedPreferenceStore
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.storage.DatabaseNonceStore
-import ch.threema.storage.DatabaseService
+import ch.threema.storage.DatabaseOpenHelper
 import ch.threema.storage.SQLDHSessionStore
 import org.koin.mp.KoinPlatform
 
@@ -19,9 +19,9 @@ fun deleteOrphanedUserData(context: Context) {
 }
 
 private fun deleteDatabaseFiles(context: Context) {
-    val defaultDatabaseFile = DatabaseService.getDatabaseFile(context)
+    val defaultDatabaseFile = DatabaseOpenHelper.getDatabaseFile(context)
     if (defaultDatabaseFile.exists()) {
-        val databaseBackup = DatabaseService.getDatabaseBackupFile(context)
+        val databaseBackup = DatabaseOpenHelper.getDatabaseBackupFile(context)
         if (!defaultDatabaseFile.renameTo(databaseBackup)) {
             defaultDatabaseFile.delete()
         }

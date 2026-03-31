@@ -5,6 +5,8 @@ import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import org.jetbrains.annotations.NotNull;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -15,7 +17,8 @@ import ch.threema.app.services.MessageService;
 import ch.threema.domain.models.MessageId;
 import ch.threema.storage.ChunkedSequence;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -25,8 +28,8 @@ import ch.threema.storage.models.MessageType;
 import kotlin.ranges.LongProgression;
 
 public class MessageModelFactory extends AbstractMessageModelFactory {
-    public MessageModelFactory(DatabaseService databaseService) {
-        super(databaseService, MessageModel.TABLE);
+    public MessageModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, MessageModel.TABLE);
     }
 
     public List<MessageModel> getAll() {
@@ -451,60 +454,63 @@ public class MessageModelFactory extends AbstractMessageModelFactory {
         return null;
     }
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            //create table
-            "CREATE TABLE `" + MessageModel.TABLE + "`(" +
-                "`" + MessageModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT , " +
-                "`" + MessageModel.COLUMN_UID + "` VARCHAR , " +
-                "`" + MessageModel.COLUMN_API_MESSAGE_ID + "` VARCHAR , " +
-                "`" + MessageModel.COLUMN_IDENTITY + "` VARCHAR , " +
-                //TODO(ANDR-XXXX): change to TINYINT
-                "`" + MessageModel.COLUMN_OUTBOX + "` SMALLINT , " +
-                "`" + MessageModel.COLUMN_TYPE + "` INTEGER , " +
-                "`" + MessageModel.COLUMN_BODY + "` VARCHAR , " +
-                "`" + MessageModel.COLUMN_CORRELATION_ID + "` VARCHAR , " +
-                "`" + MessageModel.COLUMN_CAPTION + "` VARCHAR , " +
-                //TODO(ANDR-XXXX): change to TINYINT
-                "`" + MessageModel.COLUMN_IS_READ + "` SMALLINT , " +
-                //TODO(ANDR-XXXX): change to TINYINT
-                "`" + MessageModel.COLUMN_IS_SAVED + "` SMALLINT , " +
-                "`" + MessageModel.COLUMN_IS_QUEUED + "` TINYINT , " +
-                "`" + MessageModel.COLUMN_STATE + "` VARCHAR , " +
-                "`" + MessageModel.COLUMN_POSTED_AT + "` BIGINT , " +
-                "`" + MessageModel.COLUMN_CREATED_AT + "` BIGINT , " +
-                "`" + MessageModel.COLUMN_MODIFIED_AT + "` BIGINT , " +
-                //TODO(ANDR-XXXX): change to TINYINT
-                "`" + MessageModel.COLUMN_IS_STATUS_MESSAGE + "` SMALLINT ," +
-                "`" + MessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + "` VARCHAR ," +
-                "`" + MessageModel.COLUMN_MESSAGE_CONTENTS_TYPE + "` TINYINT ," +
-                "`" + MessageModel.COLUMN_MESSAGE_FLAGS + "` INT ," +
-                "`" + MessageModel.COLUMN_DELIVERED_AT + "` DATETIME ," +
-                "`" + MessageModel.COLUMN_READ_AT + "` DATETIME ," +
-                "`" + MessageModel.COLUMN_FORWARD_SECURITY_MODE + "` TINYINT DEFAULT 0 ," +
-                "`" + MessageModel.COLUMN_DISPLAY_TAGS + "` TINYINT DEFAULT 0 ," +
-                "`" + MessageModel.COLUMN_EDITED_AT + "` DATETIME ," +
-                "`" + MessageModel.COLUMN_DELETED_AT + "` DATETIME );",
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                //create table
+                "CREATE TABLE `" + MessageModel.TABLE + "`(" +
+                    "`" + MessageModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT , " +
+                    "`" + MessageModel.COLUMN_UID + "` VARCHAR , " +
+                    "`" + MessageModel.COLUMN_API_MESSAGE_ID + "` VARCHAR , " +
+                    "`" + MessageModel.COLUMN_IDENTITY + "` VARCHAR , " +
+                    //TODO(ANDR-XXXX): change to TINYINT
+                    "`" + MessageModel.COLUMN_OUTBOX + "` SMALLINT , " +
+                    "`" + MessageModel.COLUMN_TYPE + "` INTEGER , " +
+                    "`" + MessageModel.COLUMN_BODY + "` VARCHAR , " +
+                    "`" + MessageModel.COLUMN_CORRELATION_ID + "` VARCHAR , " +
+                    "`" + MessageModel.COLUMN_CAPTION + "` VARCHAR , " +
+                    //TODO(ANDR-XXXX): change to TINYINT
+                    "`" + MessageModel.COLUMN_IS_READ + "` SMALLINT , " +
+                    //TODO(ANDR-XXXX): change to TINYINT
+                    "`" + MessageModel.COLUMN_IS_SAVED + "` SMALLINT , " +
+                    "`" + MessageModel.COLUMN_IS_QUEUED + "` TINYINT , " +
+                    "`" + MessageModel.COLUMN_STATE + "` VARCHAR , " +
+                    "`" + MessageModel.COLUMN_POSTED_AT + "` BIGINT , " +
+                    "`" + MessageModel.COLUMN_CREATED_AT + "` BIGINT , " +
+                    "`" + MessageModel.COLUMN_MODIFIED_AT + "` BIGINT , " +
+                    //TODO(ANDR-XXXX): change to TINYINT
+                    "`" + MessageModel.COLUMN_IS_STATUS_MESSAGE + "` SMALLINT ," +
+                    "`" + MessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + "` VARCHAR ," +
+                    "`" + MessageModel.COLUMN_MESSAGE_CONTENTS_TYPE + "` TINYINT ," +
+                    "`" + MessageModel.COLUMN_MESSAGE_FLAGS + "` INT ," +
+                    "`" + MessageModel.COLUMN_DELIVERED_AT + "` DATETIME ," +
+                    "`" + MessageModel.COLUMN_READ_AT + "` DATETIME ," +
+                    "`" + MessageModel.COLUMN_FORWARD_SECURITY_MODE + "` TINYINT DEFAULT 0 ," +
+                    "`" + MessageModel.COLUMN_DISPLAY_TAGS + "` TINYINT DEFAULT 0 ," +
+                    "`" + MessageModel.COLUMN_EDITED_AT + "` DATETIME ," +
+                    "`" + MessageModel.COLUMN_DELETED_AT + "` DATETIME );",
 
-            //indices
-            "CREATE INDEX `contact_message_uid_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_UID + "` )",
-            "CREATE INDEX `message_identity_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_IDENTITY + "` )",
-            "CREATE INDEX `messageApiMessageIdIdx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_API_MESSAGE_ID + "` )",
-            "CREATE INDEX `message_outbox_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_OUTBOX + "` )",
-            "CREATE INDEX `messageCorrelationIdIx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_CORRELATION_ID + "` )",
-            "CREATE INDEX `message_count_idx` ON `" + MessageModel.TABLE
-                + "`(`" + MessageModel.COLUMN_IDENTITY
-                + "`, `" + MessageModel.COLUMN_OUTBOX
-                + "`, `" + MessageModel.COLUMN_IS_SAVED
-                + "`, `" + MessageModel.COLUMN_IS_READ
-                + "`, `" + MessageModel.COLUMN_IS_STATUS_MESSAGE
-                + "`)",
-            "CREATE INDEX `message_state_idx` ON `" + MessageModel.TABLE
-                + "`(`" + AbstractMessageModel.COLUMN_TYPE
-                + "`, `" + AbstractMessageModel.COLUMN_STATE
-                + "`, `" + AbstractMessageModel.COLUMN_OUTBOX
-                + "`)"
-        };
+                // indices
+                "CREATE INDEX `contact_message_uid_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_UID + "` )",
+                "CREATE INDEX `message_identity_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_IDENTITY + "` )",
+                "CREATE INDEX `messageApiMessageIdIdx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_API_MESSAGE_ID + "` )",
+                "CREATE INDEX `message_outbox_idx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_OUTBOX + "` )",
+                "CREATE INDEX `messageCorrelationIdIx` ON `" + MessageModel.TABLE + "` ( `" + MessageModel.COLUMN_CORRELATION_ID + "` )",
+                "CREATE INDEX `message_count_idx` ON `" + MessageModel.TABLE
+                    + "`(`" + MessageModel.COLUMN_IDENTITY
+                    + "`, `" + MessageModel.COLUMN_OUTBOX
+                    + "`, `" + MessageModel.COLUMN_IS_SAVED
+                    + "`, `" + MessageModel.COLUMN_IS_READ
+                    + "`, `" + MessageModel.COLUMN_IS_STATUS_MESSAGE
+                    + "`)",
+                "CREATE INDEX `message_state_idx` ON `" + MessageModel.TABLE
+                    + "`(`" + AbstractMessageModel.COLUMN_TYPE
+                    + "`, `" + AbstractMessageModel.COLUMN_STATE
+                    + "`, `" + AbstractMessageModel.COLUMN_OUTBOX
+                    + "`)"
+            };
+        }
     }
 }

@@ -136,3 +136,8 @@ Whenever the primary connection closes, the task manager must cancel the
 currently executed task and transfer the current and any other remaining tasks
 of the queue into a new task queue. When doing so, all tasks with type _Drop On
 Disconnect_ must be discarded.
+
+**Distinction**: Tasks can be explicitly _bound_ to something else, e.g. the
+application or a specific group call. In such a case, none of the above
+mentioned semantics apply, meaning such tasks are standalone and executed in
+parallel to tasks managed by the task manager and other bound tasks.

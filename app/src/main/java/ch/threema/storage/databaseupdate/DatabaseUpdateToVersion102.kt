@@ -76,9 +76,5 @@ internal class DatabaseUpdateToVersion102(private val sqLiteDatabase: SQLiteData
 
     override fun getDescription() = "made column `text` nullable in tables `contact_edit_history_entries` and `group_edit_history_entries`"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 102
-    }
+    override val version = 102
 }

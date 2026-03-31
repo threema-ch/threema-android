@@ -1,6 +1,6 @@
 package ch.threema.app.utils
 
-import ch.threema.app.onprem.OnPremSSLSocketFactoryProvider
+import ch.threema.app.onprem.OnPremCertPinning
 import java.security.KeyStore
 import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocketFactory
@@ -28,7 +28,7 @@ object SSLUtil {
     @JvmStatic
     fun getSSLSocketFactory(host: String): SSLSocketFactory {
         val sslSocketFactory = if (ConfigUtils.isOnPremBuild()) {
-            OnPremSSLSocketFactoryProvider.instance.getSslSocketFactory(host)
+            OnPremCertPinning.createSslSocketFactory(host)
         } else {
             defaultSSLSocketFactory
         }

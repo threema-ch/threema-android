@@ -5,8 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
 import android.os.Build
 import androidx.core.graphics.applyCanvas
 import androidx.core.graphics.createBitmap
@@ -17,7 +15,7 @@ object AdaptiveIconUtil {
 
     /**
      * Creates an adaptive icon from the given [bitmap].
-     * The icon is cropped to a circle and includes appropriate amounts of padding, such that on most systems it appears to fill the available
+     * The icon includes appropriate amounts of padding, such that on most systems it appears to fill the available
      * space of the used shape, by accepting small amounts of cropping.
      * Returns `null` if adaptive icons are not supported by the system.
      */
@@ -39,10 +37,7 @@ object AdaptiveIconUtil {
         try {
             paddedBitmap.applyCanvas {
                 drawColor(Color.TRANSPARENT)
-                val paint = Paint(Paint.FILTER_BITMAP_FLAG)
-                paint.isAntiAlias = true
-                drawCircle(outerSize / 2f, outerSize / 2f, innerSize / 2f, paint)
-                paint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SRC_IN)
+                val paint = Paint(Paint.ANTI_ALIAS_FLAG)
                 drawBitmap(scaledBitmap, offset, offset, paint)
             }
             return IconCompat.createWithAdaptiveBitmap(paddedBitmap)
@@ -59,7 +54,7 @@ object AdaptiveIconUtil {
     /**
      * The width and height in dp of the avatar itself centered within the resulting bitmap. Intentionally set to be slightly larger
      * than the 72 dp of the adaptive icon specifications, which can lead to slight cropping of the image when displayed but reduces
-     * the likelihood that the circular cropping will be visible, leading to a nicer appearance on most systems.
+     * the likelihood that the edges of the image will be visible, leading to a nicer appearance on most systems.
      */
-    private const val INNER_SIZE = 78
+    private const val INNER_SIZE = 76
 }

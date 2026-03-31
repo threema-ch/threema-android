@@ -17,13 +17,11 @@ class SystemUpdateToVersion117 : SystemUpdate {
         }
     }
 
-    override fun getVersion() = VERSION
+    override val version = 117
 
     override fun getDescription() = "delete obsolete pinlock key from keystore"
 
     companion object {
-        const val VERSION = 117
-
         private const val ANDROID_KEY_STORE = "AndroidKeyStore"
         private const val KEY_NAME = "threema_pinlock_key"
     }

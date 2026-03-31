@@ -1,6 +1,5 @@
 package ch.threema.app.tasks.archive
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.tasks.PersistableTask
 import ch.threema.app.tasks.SerializableTaskData
 import ch.threema.app.tasks.archive.recovery.TaskRecoveryManager
@@ -19,12 +18,6 @@ class TaskArchiverImpl(
     private val taskRecoveryManager: TaskRecoveryManager,
     private val getDebugString: Task<*, *>.() -> String,
 ) : TaskArchiver {
-    private var serviceManager: ServiceManager? = null
-
-    fun setServiceManager(serviceManager: ServiceManager) {
-        this.serviceManager = serviceManager
-    }
-
     override fun addTask(task: Task<*, TaskCodec>) {
         task.toEncodedTaskData()?.let {
             logger.info("Persisting task {}", task.getDebugString())
@@ -69,15 +62,12 @@ class TaskArchiverImpl(
     }
 
     private fun decodeToTask(encodedTask: String): Task<*, TaskCodec>? {
-        val serviceManager = this@TaskArchiverImpl.serviceManager
-            ?: throw IllegalStateException("Service manager is not set while loading persisted tasks")
-
         return try {
-            Json.decodeFromString<SerializableTaskData>(encodedTask).createTask(serviceManager)
+            Json.decodeFromString<SerializableTaskData>(encodedTask).createTask()
         } catch (e: Exception) {
             logger.warn("Task data decoding error. Trying to recover.", e)
 
-            taskRecoveryManager.recoverTask(encodedTask, serviceManager)?.let { recoveredTask ->
+            taskRecoveryManager.recoverTask(encodedTask)?.let { recoveredTask ->
                 logger.info("Task '{}' could be recovered", recoveredTask.getDebugString())
 
                 // In case the recovered task can be re-encoded (which is expected), we need to replace its representation in the task archive so that

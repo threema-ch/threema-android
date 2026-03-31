@@ -54,5 +54,6 @@ public class StorageLayerTest {
                 DisplayTag.class
             )
             .should().haveSimpleNameEndingWith("Model")
-            .orShould().haveSimpleNameEndingWith("ModelKt");
+            .orShould().haveSimpleNameEndingWith("ModelKt")
+            .orShould().haveSimpleName("GroupModelOld");
 }

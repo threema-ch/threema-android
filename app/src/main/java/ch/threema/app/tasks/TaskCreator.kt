@@ -8,7 +8,7 @@ import ch.threema.domain.models.Contact
 import ch.threema.domain.protocol.rendezvous.RendezvousConnection
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.csp.e2e.fs.Terminate.Cause
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
 import kotlinx.coroutines.CompletableDeferred
@@ -18,9 +18,9 @@ private val logger = getThreemaLogger("TaskCreator")
 
 @SessionScoped
 open class TaskCreator(private val serviceManager: ServiceManager) {
-    fun scheduleProfilePictureSendTaskAsync(toIdentity: Identity): Deferred<Unit> =
+    fun scheduleProfilePictureSendTaskAsync(toIdentity: IdentityString): Deferred<Unit> =
         scheduleTaskAsync {
-            SendProfilePictureTask(toIdentity, serviceManager)
+            SendProfilePictureTask(toIdentity)
         }
 
     fun scheduleDeleteAndTerminateFSSessionsTaskAsync(
@@ -29,14 +29,13 @@ open class TaskCreator(private val serviceManager: ServiceManager) {
     ): Deferred<Unit> =
         scheduleTaskAsync {
             DeleteAndTerminateFSSessionsTask(
-                serviceManager.forwardSecurityMessageProcessor,
-                contact,
-                cause,
+                identity = contact.identity,
+                cause = cause,
             )
         }
 
     fun scheduleSendPushTokenTask(token: String, type: Int): Deferred<Unit> =
-        scheduleTaskAsync { SendPushTokenTask(token, type, serviceManager) }
+        scheduleTaskAsync { SendPushTokenTask(token, type) }
 
     fun scheduleDeviceLinkingPartOneTask(
         deviceLinkingController: DeviceLinkingController,
@@ -68,61 +67,35 @@ open class TaskCreator(private val serviceManager: ServiceManager) {
     }
 
     fun scheduleDeactivateMultiDeviceIfAloneTask(): Deferred<Unit> = scheduleTaskAsync {
-        DeactivateMultiDeviceIfAloneTask(serviceManager)
+        DeactivateMultiDeviceIfAloneTask()
     }
 
-    fun scheduleUserDefinedProfilePictureUpdate(identity: Identity) = scheduleTaskAsync {
+    fun scheduleUserDefinedProfilePictureUpdate(identity: IdentityString) = scheduleTaskAsync {
         ReflectContactSyncUpdateTask.ReflectUserDefinedProfilePictureUpdate(
             identity = identity,
-            contactModelRepository = serviceManager.modelRepositories.contacts,
-            multiDeviceManager = serviceManager.multiDeviceManager,
-            nonceFactory = serviceManager.nonceFactory,
-            fileService = serviceManager.fileService,
-            symmetricEncryptionService = serviceManager.symmetricEncryptionService,
-            apiService = serviceManager.apiService,
         )
     }
 
     fun scheduleReflectUserProfilePictureTask() = scheduleTaskAsync {
-        ReflectUserProfilePictureSyncTask(
-            serviceManager.userService,
-            serviceManager.nonceFactory,
-            serviceManager.multiDeviceManager,
-        )
+        ReflectUserProfilePictureSyncTask()
     }
 
     fun scheduleReflectUserProfileIdentityLinksTask() = scheduleTaskAsync {
-        ReflectUserProfileIdentityLinksTask(
-            userService = serviceManager.userService,
-            nonceFactory = serviceManager.nonceFactory,
-            multiDeviceManager = serviceManager.multiDeviceManager,
-        )
+        ReflectUserProfileIdentityLinksTask()
     }
 
     fun scheduleReflectBlockedIdentitiesTask() = scheduleTaskAsync {
-        ReflectSettingsSyncTask.ReflectBlockedIdentitiesSyncUpdate(
-            multiDeviceManager = serviceManager.multiDeviceManager,
-            nonceFactory = serviceManager.nonceFactory,
-            blockedIdentitiesService = serviceManager.blockedIdentitiesService,
-        )
+        ReflectSettingsSyncTask.ReflectBlockedIdentitiesSyncUpdate()
     }
 
     fun scheduleReflectExcludeFromSyncIdentitiesTask() = scheduleTaskAsync {
-        ReflectSettingsSyncTask.ReflectExcludeFromSyncIdentitiesSyncUpdate(
-            multiDeviceManager = serviceManager.multiDeviceManager,
-            nonceFactory = serviceManager.nonceFactory,
-            excludedSyncIdentitiesService = serviceManager.excludedSyncIdentitiesService,
-        )
+        ReflectSettingsSyncTask.ReflectExcludeFromSyncIdentitiesSyncUpdate()
     }
 
-    fun scheduleReflectContactConversationCategory(contactIdentity: Identity, isPrivateChat: Boolean) = scheduleTaskAsync {
+    fun scheduleReflectContactConversationCategory(contactIdentity: IdentityString, isPrivateChat: Boolean) = scheduleTaskAsync {
         ReflectContactSyncUpdateTask.ReflectConversationCategoryUpdate(
             contactIdentity = contactIdentity,
             isPrivateChat = isPrivateChat,
-            contactModelRepository = serviceManager.modelRepositories.contacts,
-            multiDeviceManager = serviceManager.multiDeviceManager,
-            nonceFactory = serviceManager.nonceFactory,
-            conversationCategoryService = serviceManager.conversationCategoryService,
         )
     }
 
@@ -137,23 +110,16 @@ open class TaskCreator(private val serviceManager: ServiceManager) {
 
         return scheduleTaskAsync {
             ReflectGroupSyncUpdateTask.ReflectGroupConversationCategoryUpdateTask(
-                groupModel = groupModel,
+                groupIdentity = groupModel.groupIdentity,
                 isPrivateChat = isPrivateChat,
-                nonceFactory = serviceManager.nonceFactory,
-                conversationCategoryService = serviceManager.conversationCategoryService,
-                multiDeviceManager = serviceManager.multiDeviceManager,
             )
         }
     }
 
-    fun scheduleReflectConversationVisibilityPinned(identity: Identity, isPinned: Boolean) = scheduleTaskAsync {
+    fun scheduleReflectConversationVisibilityPinned(identity: IdentityString, isPinned: Boolean) = scheduleTaskAsync {
         ReflectContactSyncUpdateTask.ReflectConversationVisibilityPinnedUpdate(
             isPinned = isPinned,
             contactIdentity = identity,
-            conversationTagService = serviceManager.conversationTagService,
-            contactModelRepository = serviceManager.modelRepositories.contacts,
-            multiDeviceManager = serviceManager.multiDeviceManager,
-            nonceFactory = serviceManager.nonceFactory,
         )
     }
 
@@ -167,24 +133,18 @@ open class TaskCreator(private val serviceManager: ServiceManager) {
         scheduleTaskAsync {
             ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityPinnedUpdate(
                 isPinned = isPinned,
-                groupModel = groupModel,
-                conversationTagService = serviceManager.conversationTagService,
-                multiDeviceManager = serviceManager.multiDeviceManager,
-                nonceFactory = serviceManager.nonceFactory,
+                groupIdentity = groupModel.groupIdentity,
             )
         }
     }
 
-    fun scheduleDeactivateMultiDeviceTask() {
+    fun scheduleDeactivateMultiDeviceTask() =
         scheduleTaskAsync {
-            DeactivateMultiDeviceTask(serviceManager)
+            DeactivateMultiDeviceTask()
         }
-    }
 
     fun scheduleReflectMultipleSettingsSyncUpdateTask(settingsCreators: List<(Settings.Builder) -> Unit>): Deferred<Unit> = scheduleTaskAsync {
         ReflectSettingsSyncTask.ReflectMultipleSettingsSyncUpdate(
-            multiDeviceManager = serviceManager.multiDeviceManager,
-            nonceFactory = serviceManager.nonceFactory,
             settingsCreators = settingsCreators,
         )
     }
@@ -194,14 +154,12 @@ open class TaskCreator(private val serviceManager: ServiceManager) {
     ): Deferred<Unit> = scheduleTaskAsync {
         ReflectUserProfileShareWithPolicySyncTask(
             newPolicy = profilePictureSharePolicy,
-            serviceManager = serviceManager,
         )
     }
 
-    fun scheduleReflectUserProfileShareWithAllowListSyncTask(allowedIdentities: Set<Identity>): Deferred<Unit> = scheduleTaskAsync {
+    fun scheduleReflectUserProfileShareWithAllowListSyncTask(allowedIdentities: Set<IdentityString>): Deferred<Unit> = scheduleTaskAsync {
         ReflectUserProfileShareWithAllowListSyncTask(
             allowedIdentities = allowedIdentities,
-            serviceManager,
         )
     }
 

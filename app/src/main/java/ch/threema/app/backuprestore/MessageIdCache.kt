@@ -2,7 +2,7 @@ package ch.threema.app.backuprestore
 
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.domain.types.MessageIdString
 
 private val logger = getThreemaLogger("MessageIdCache")
@@ -44,13 +44,13 @@ class MessageIdCache<K : MessageIdCache.MessageKey>(val computeIfAbsent: (key: K
     }
 
     data class ContactMessageKey(
-        val contactIdentity: Identity,
+        val contactIdentity: IdentityString,
         override val apiMessageId: MessageIdString,
     ) : MessageKey
 
     data class GroupMessageKey(
         val apiGroupId: String,
-        val groupCreatorIdentity: Identity,
+        val groupCreatorIdentity: IdentityString,
         override val apiMessageId: MessageIdString,
     ) : MessageKey
 }

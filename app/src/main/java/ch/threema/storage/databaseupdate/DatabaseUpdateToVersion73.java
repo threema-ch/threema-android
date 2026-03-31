@@ -12,7 +12,6 @@ import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.field
  * Create forwardSecurityMode field in message model and forwardSecurityEnabled field in contact model
  */
 public class DatabaseUpdateToVersion73 implements DatabaseUpdate {
-    public static final int VERSION = 73;
 
     @NonNull
     private final SQLiteDatabase sqLiteDatabase;
@@ -38,6 +37,6 @@ public class DatabaseUpdateToVersion73 implements DatabaseUpdate {
 
     @Override
     public int getVersion() {
-        return VERSION;
+        return 73;
     }
 }

@@ -154,7 +154,7 @@ public abstract class AbstractMessage implements MessageTypeProperties, MessageF
      *
      * @param message the incoming MdD2D message
      */
-    protected void initializeCommonProperties(@NonNull MdD2D.IncomingMessage message) {
+    public void initializeCommonProperties(@NonNull MdD2D.IncomingMessage message) {
         this.fromIdentity = message.getSenderIdentity();
         this.messageId = new MessageId(message.getMessageId());
         this.date = new Date(message.getCreatedAt());

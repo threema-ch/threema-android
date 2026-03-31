@@ -10,8 +10,8 @@ import ch.threema.app.services.ballot.BallotService.BallotFilter
 import ch.threema.storage.ColumnIndexCache
 import ch.threema.storage.DatabaseUtil
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.ballot.BallotModel
+import ch.threema.storage.models.group.GroupModelOld
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkConstructor
@@ -28,6 +28,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import net.zetetic.database.sqlcipher.SQLiteDatabase
+import testdata.TestData
 
 class BallotModelFactoryTest {
 
@@ -397,7 +398,7 @@ class BallotModelFactoryTest {
 
         val filterMock = mockk<BallotFilter>()
         val receiverMock = mockk<GroupMessageReceiver>()
-        val groupMock = mockk<GroupModel>()
+        val groupMock = mockk<GroupModelOld>()
         val convertedArgumentsMock = arrayOf("a", "b", "c")
         val cursorMock = mockk<Cursor>()
 
@@ -442,7 +443,7 @@ class BallotModelFactoryTest {
 
         val filterMock = mockk<BallotFilter>()
         val receiverMock = mockk<ContactMessageReceiver>()
-        val contactModel = ContactModel.create("12345678", ByteArray(32))
+        val contactModel = ContactModel.create(TestData.Identities.ME.value, ByteArray(32))
         val convertedArgumentsMock = arrayOf("a", "b", "c")
         val cursorMock = mockk<Cursor>()
 
@@ -487,7 +488,7 @@ class BallotModelFactoryTest {
         )
         val filterMock = mockk<BallotFilter>()
         val receiverMock = mockk<GroupMessageReceiver>()
-        val groupMock = mockk<GroupModel>()
+        val groupMock = mockk<GroupModelOld>()
         val convertedArgumentsMock = arrayOf("a", "b", "c")
         val cursorMock = mockk<Cursor>()
         every { filterMock.receiver } returns receiverMock
@@ -519,11 +520,11 @@ class BallotModelFactoryTest {
             " ORDER BY b.createdAt DESC"
         val expectedArguments = listOf(
             // Threema ID
-            "12345678",
+            TestData.Identities.ME.value,
         )
         val filterMock = mockk<BallotFilter>()
         val receiverMock = mockk<ContactMessageReceiver>()
-        val contactModel = ContactModel.create("12345678", ByteArray(32))
+        val contactModel = ContactModel.create(TestData.Identities.ME.value, ByteArray(32))
         val convertedArgumentsMock = arrayOf("a", "b", "c")
         val cursorMock = mockk<Cursor>()
         every { filterMock.receiver } returns receiverMock

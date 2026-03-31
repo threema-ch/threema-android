@@ -36,7 +36,6 @@ import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.AnimationUtil;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.app.utils.TestUtil;
@@ -105,13 +104,13 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         if (ConfigUtils.isWorkRestricted()) {
             // Skip privacy policy check if admin pre-set a backup to restore - either Safe or ID
             if (ThreemaSafeMDMConfig.getInstance().isRestoreForced()) {
-                startActivity(new Intent(this, WizardSafeRestoreActivity.class));
+                startActivity(WizardSafeRestoreActivity.createIntent(this));
                 finish();
                 return;
             } else {
-                String backupString = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__id_backup));
-                String backupPassword = AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__id_backup_password));
-                if (!TestUtil.isEmptyOrNull(backupString) && !TestUtil.isEmptyOrNull(backupPassword)) {
+                String backupString = dependencies.getAppRestrictions().getIdBackup();
+                String backupPassword = dependencies.getAppRestrictions().getIdBackupPassword();
+                if (backupString != null && backupPassword != null) {
                     Intent intent = new Intent(this, WizardBackupRestoreActivity.class);
                     intent.putExtra(AppConstants.INTENT_DATA_ID_BACKUP, backupString);
                     intent.putExtra(AppConstants.INTENT_DATA_ID_BACKUP_PW, backupPassword);
@@ -166,7 +165,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         }
     }
 
-    public void setupThreema() {
+    private void setupThreema() {
         if (isContactSyncSettingConflict()) {
             return;
         }
@@ -179,7 +178,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
     }
 
-    public void restoreBackup() {
+    private void restoreBackup() {
         if (isContactSyncSettingConflict()) {
             return;
         }
@@ -195,8 +194,7 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
      */
     private boolean isContactSyncSettingConflict() {
         if (ConfigUtils.isWorkBuild()) {
-            Boolean contactSync = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__contact_sync));
-            if (contactSync != null && contactSync && SynchronizeContactsUtil.isRestrictedProfile(this)) {
+            if (dependencies.getAppRestrictions().isContactSyncEnabled() && SynchronizeContactsUtil.isRestrictedProfile(this)) {
                 showMDMContactsSyncDialog();
                 return true;
             }
@@ -212,5 +210,10 @@ public class WizardIntroActivity extends WizardBackgroundActivity {
         alertDialog.setOnDismissListener(dialog -> finish());
         alertDialog.setOnCancelListener(dialog -> finish());
         alertDialog.show();
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context) {
+        return new Intent(context, WizardIntroActivity.class);
     }
 }

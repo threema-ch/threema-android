@@ -7,16 +7,18 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.preference.service.SynchronizedSettingsService;
 import ch.threema.app.push.PushService;
 import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.restrictions.AppRestrictions;
 import ch.threema.app.services.UserService;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
@@ -74,11 +76,15 @@ public class ClientInfo extends Converter {
         }
 
         PreferenceService preferenceService;
+        SynchronizedSettingsService synchronizedSettingsService;
         UserService userService;
+        AppRestrictions appRestrictions;
 
         try {
             userService = serviceManager.getUserService();
             preferenceService = serviceManager.getPreferenceService();
+            synchronizedSettingsService = serviceManager.getSynchronizedSettingsService();
+            appRestrictions = KoinJavaComponent.get(AppRestrictions.class);
         } catch (Exception e) {
             logger.error("Exception", e);
             throw new ConversionException("Services not available");
@@ -111,7 +117,7 @@ public class ClientInfo extends Converter {
         if (!ConfigUtils.isCallsEnabled()) {
             config.put(VOIP_ENABLED, false);
         }
-        if (preferenceService.getForceTURN()) {
+        if (synchronizedSettingsService.isForceTURN()) {
             config.put(VOIP_FORCE_TURN, true);
         }
         if (!ConfigUtils.isBiggerSingleEmojis(appContext)) {
@@ -136,25 +142,25 @@ public class ClientInfo extends Converter {
         // MDM Flags
         if (ConfigUtils.isWorkRestricted()) {
             final MsgpackObjectBuilder mdm = new MsgpackObjectBuilder();
-            if (AppRestrictionUtil.isAddContactDisabled(appContext)) {
+            if (appRestrictions.isAddContactDisabled()) {
                 mdm.put(DISABLE_ADD_CONTACT, true);
             }
-            if (AppRestrictionUtil.isCreateGroupDisabled(appContext)) {
+            if (appRestrictions.isCreateGroupDisabled()) {
                 mdm.put(DISABLE_CREATE_GROUP, true);
             }
-            if (AppRestrictionUtil.isSaveToGalleryDisabled(appContext)) {
+            if (appRestrictions.isSaveToGalleryDisabled()) {
                 mdm.put(DISABLE_SAVE_TO_GALLERY, true);
             }
-            if (AppRestrictionUtil.isExportDisabled(appContext)) {
+            if (appRestrictions.isExportDisabled()) {
                 mdm.put(DISABLE_EXPORT, true);
             }
-            if (AppRestrictionUtil.isMessagePreviewDisabled(appContext)) {
+            if (appRestrictions.isMessagePreviewDisabled()) {
                 mdm.put(DISABLE_MESSAGE_PREVIEW, true);
             }
-            if (AppRestrictionUtil.isCallsDisabled()) {
+            if (appRestrictions.isCallsDisabled()) {
                 mdm.put(DISABLE_CALLS, true);
             }
-            if (AppRestrictionUtil.isReadonlyProfile(appContext)) {
+            if (appRestrictions.isReadOnlyProfile()) {
                 mdm.put(READONLY_PROFILE, true);
             }
             capabilities.put(MDM, mdm);

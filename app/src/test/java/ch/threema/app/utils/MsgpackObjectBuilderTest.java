@@ -41,9 +41,6 @@ public class MsgpackObjectBuilderTest {
     /**
      * Test with a hex string
      * to generate use https://msgpack.org/ (click Try!)
-     *
-     * @param objectBuilder
-     * @param hexString
      */
     private void doTest(MsgpackObjectBuilder objectBuilder, String hexString) {
         doTest(objectBuilder,

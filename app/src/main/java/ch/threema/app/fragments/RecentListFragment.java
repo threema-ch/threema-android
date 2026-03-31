@@ -80,7 +80,7 @@ public class RecentListFragment extends RecipientListFragment {
 
             @Override
             public boolean noHiddenChats() {
-                return preferenceServiceLazy.getValue().isPrivateChatsHidden();
+                return preferenceServiceLazy.getValue().arePrivateChatsHidden();
             }
 
             @Override
@@ -106,6 +106,7 @@ public class RecentListFragment extends RecipientListFragment {
             contactServiceLazy.getValue(),
             groupServiceLazy.getValue(),
             distributionListServiceLazy.getValue(),
+            preferenceServiceLazy.getValue(),
             this
         );
         setListAdapter(adapter);

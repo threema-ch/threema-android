@@ -36,6 +36,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -46,6 +47,7 @@ import com.google.android.material.search.SearchBar;
 import com.google.android.material.snackbar.BaseTransientBottomBar;
 import com.google.android.material.snackbar.Snackbar;
 
+import org.koin.java.KoinJavaComponent;
 import org.maplibre.android.MapLibre;
 import org.slf4j.Logger;
 
@@ -80,7 +82,6 @@ import androidx.core.view.MenuCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
-import androidx.media3.ui.PlayerView;
 import androidx.preference.PreferenceManager;
 import androidx.window.layout.WindowMetrics;
 import androidx.window.layout.WindowMetricsCalculator;
@@ -95,8 +96,9 @@ import ch.threema.app.home.HomeActivity;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.notifications.NotificationChannels;
+import ch.threema.app.preference.service.SynchronizedSettingsService;
 import ch.threema.app.restrictions.AppRestrictionService;
-import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictions;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.license.LicenseService;
@@ -109,8 +111,7 @@ import static android.content.res.Configuration.UI_MODE_NIGHT_YES;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
 import static androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES;
-import static ch.threema.app.camera.CameraUtil.isInternalCameraSupported;
-import static ch.threema.app.preference.service.PreferenceService.EmojiStyle_DEFAULT;
+import static ch.threema.app.preference.service.PreferenceService.EMOJI_STYLE_DEFAULT;
 import static ch.threema.app.services.notification.NotificationServiceImpl.APP_RESTART_NOTIFICATION_ID;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
@@ -181,16 +182,8 @@ public class ConfigUtils {
         return (Build.MANUFACTURER.equalsIgnoreCase("Huawei") && !Build.MODEL.contains("Nexus"));
     }
 
-    public static boolean isOnePlusDevice() {
-        return (Build.MANUFACTURER.equalsIgnoreCase("OnePlus"));
-    }
-
     public static boolean isSamsungDevice() {
         return (Build.MANUFACTURER.equalsIgnoreCase("Samsung"));
-    }
-
-    public static boolean isMotorolaDevice() {
-        return (Build.MANUFACTURER.equalsIgnoreCase("motorola"));
     }
 
     public static boolean isSonyDevice() {
@@ -203,10 +196,6 @@ public class ConfigUtils {
 
     public static boolean supportsNotificationChannels() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O;
-    }
-
-    public static boolean supportsVideoCapture() {
-        return isInternalCameraSupported();
     }
 
     public static boolean supportsPictureInPicture(Context context) {
@@ -252,8 +241,8 @@ public class ConfigUtils {
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
         if (serviceManager != null) {
-            return serviceManager.getPreferenceService().isVoipEnabled()
-                && !AppRestrictionUtil.isCallsDisabled();
+            return serviceManager.getSynchronizedSettingsService().isVoipEnabled()
+                && !getAppRestrictions().isCallsDisabled();
         }
         return true;
     }
@@ -263,19 +252,18 @@ public class ConfigUtils {
 
         if (serviceManager != null) {
             return BuildConfig.VIDEO_CALLS_ENABLED
-                && serviceManager.getPreferenceService().areVideoCallsEnabled()
-                && !AppRestrictionUtil.isVideoCallsDisabled();
+                && serviceManager.getSynchronizedSettingsService().areVideoCallsEnabled()
+                && !getAppRestrictions().isVideoCallsDisabled();
         }
         return BuildConfig.VIDEO_CALLS_ENABLED;
     }
 
     public static boolean isGroupCallsEnabled() {
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-
+        final @Nullable ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         return serviceManager != null
-            && serviceManager.getPreferenceService().areGroupCallsEnabled()
-            && !AppRestrictionUtil.isGroupCallsDisabled()
-            && !AppRestrictionUtil.isCallsDisabled();
+            && serviceManager.getSynchronizedSettingsService().areGroupCallsEnabled()
+            && !getAppRestrictions().isGroupCallsDisabled()
+            && !getAppRestrictions().isCallsDisabled();
     }
 
     public static boolean isWorkDirectoryEnabled() {
@@ -283,7 +271,7 @@ public class ConfigUtils {
 
         if (serviceManager != null) {
             return serviceManager.getPreferenceService().getWorkDirectoryEnabled()
-                && !AppRestrictionUtil.isWorkDirectoryDisabled();
+                && !getAppRestrictions().isWorkDirectoryDisabled();
         }
         return false;
     }
@@ -293,12 +281,12 @@ public class ConfigUtils {
      * set, then check th_disable_web which is used as fallback when th_disable_multidevice is not
      * set.
      */
-    public static boolean isMultiDeviceEnabled(@NonNull Context context) {
-        Boolean isMultiDeviceDisabled = AppRestrictionUtil.isMultiDeviceDisabled(context);
+    public static boolean isMultiDeviceEnabled() {
+        Boolean isMultiDeviceDisabled = getAppRestrictions().isMultiDeviceDisabledOrNull();
         if (isMultiDeviceDisabled != null) {
             return !isMultiDeviceDisabled;
         } else {
-            return !AppRestrictionUtil.isWebDisabled(context);
+            return !getAppRestrictions().isWebDisabled();
         }
     }
 
@@ -424,12 +412,9 @@ public class ConfigUtils {
     }
 
     public static @ColorInt int getColorFromAttribute(@NonNull Context context, @AttrRes int attr) {
-        TypedArray typedArray = context.getTheme().obtainStyledAttributes(new int[]{attr});
-        @ColorInt int color = typedArray.getColor(0, -1);
-
-        typedArray.recycle();
-
-        return color;
+        try (TypedArray typedArray = context.getTheme().obtainStyledAttributes(new int[]{attr})) {
+            return typedArray.getColor(0, -1);
+        }
     }
 
     /**
@@ -485,7 +470,7 @@ public class ConfigUtils {
     }
 
     public static boolean isDefaultEmojiStyle() {
-        return emojiStyle == EmojiStyle_DEFAULT;
+        return emojiStyle == EMOJI_STYLE_DEFAULT;
     }
 
     @NonNull
@@ -624,7 +609,7 @@ public class ConfigUtils {
     public static void recreateActivity(Activity activity) {
         activity.finish();
 
-        final Intent intent = new Intent(activity, HomeActivity.class);
+        final Intent intent = HomeActivity.createIntent(activity);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         activity.startActivity(intent);
     }
@@ -645,44 +630,64 @@ public class ConfigUtils {
      *                          permission on newer Android versions.
      */
     public static void scheduleAppRestart(@NonNull Context context, int delayMs, @Nullable String eventTriggerTitle) {
-        Intent restartIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
-        Objects.requireNonNull(restartIntent).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(
-            context,
-            0,
-            restartIntent,
-            PendingIntent.FLAG_CANCEL_CURRENT | PENDING_INTENT_FLAG_MUTABLE
-        );
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
             // on older android version we restart directly after delayMs
             AlarmManager manager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            manager.set(AlarmManager.RTC, System.currentTimeMillis() + delayMs, pendingIntent);
+            manager.set(AlarmManager.RTC, System.currentTimeMillis() + delayMs, getRestartPendingIntent(context));
         } else if (
             eventTriggerTitle == null ||
                 ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
         ) {
             // use WorkManager to restart the app in the background
             final WorkManager workManager = WorkManager.getInstance(context);
-            final OneTimeWorkRequest workRequest = RestartWorker.Companion.buildOneTimeWorkRequest(delayMs);
+            final OneTimeWorkRequest workRequest = RestartWorker.buildWorkRequest(delayMs);
             workManager.enqueueUniqueWork(WORKER_RESTART_AFTER_RESTORE, ExistingWorkPolicy.REPLACE, workRequest);
         } else {
             // use a notification to trigger restart (app in background can no longer start activities in Android 12+)
-            String text = context.getString(R.string.tap_to_start, context.getString(R.string.app_name));
-
-            NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
-                    .setSmallIcon(R.drawable.ic_notification_small)
-                    .setContentTitle(eventTriggerTitle)
-                    .setContentText(eventTriggerTitle)
-                    .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
-                    .setPriority(NotificationCompat.PRIORITY_MAX)
-                    .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
-                    .setContentIntent(pendingIntent)
-                    .setAutoCancel(false);
-
-            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-            notificationManagerCompat.notify(APP_RESTART_NOTIFICATION_ID, builder.build());
+            showRestartNotification(context, eventTriggerTitle);
         }
+    }
+
+    public static void showRestartNotification(@NonNull Context context) {
+        showRestartNotification(context, null);
+    }
+
+    public static void showRestartNotification(@NonNull Context context, @Nullable String contentTitle) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            Notification notification = getRestartNotification(context, contentTitle);
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+            notificationManagerCompat.notify(APP_RESTART_NOTIFICATION_ID, notification);
+        } else {
+            logger.warn("Cannot show restart notification because notification permission is not granted");
+        }
+    }
+
+    private static Notification getRestartNotification(@NonNull Context context, @Nullable String contentTitle) {
+        String title = contentTitle != null
+            ? contentTitle
+            : context.getString(R.string.notification_title_restart);
+        String text = context.getString(R.string.tap_to_start, context.getString(R.string.app_name));
+        return new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
+                .setSmallIcon(R.drawable.ic_notification_small)
+                .setContentTitle(title)
+                .setContentText(text)
+                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
+                .setPriority(NotificationCompat.PRIORITY_MAX)
+                .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+                .setContentIntent(getRestartPendingIntent(context))
+                .setAutoCancel(false)
+                .build();
+    }
+
+    private static PendingIntent getRestartPendingIntent(@NonNull Context context) {
+        Intent restartIntent = context.getPackageManager().getLaunchIntentForPackage(context.getPackageName());
+        Objects.requireNonNull(restartIntent).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        return PendingIntent.getActivity(
+            context,
+            0,
+            restartIntent,
+            PendingIntent.FLAG_CANCEL_CURRENT | PENDING_INTENT_FLAG_MUTABLE
+        );
     }
 
     public static boolean checkAvailableMemory(float required) {
@@ -704,14 +709,7 @@ public class ConfigUtils {
     }
 
     public static boolean isDemoOPServer(@NonNull PreferenceService preferenceService) {
-        return preferenceService.getOnPremServer() != null && preferenceService.getOnPremServer().toLowerCase().contains(".3ma.ch/");
-    }
-
-    public static boolean isDevBuild() {
-        String currentBuildFlavorDisplayName = BuildFlavor.getCurrent().getFullDisplayName();
-        return currentBuildFlavorDisplayName.contains("DEBUG") ||
-            currentBuildFlavorDisplayName.equals("Blue") || currentBuildFlavorDisplayName.equals("DEV") ||
-            currentBuildFlavorDisplayName.equals("Green");
+        return preferenceService.getOppfUrl() != null && preferenceService.getOppfUrl().toLowerCase().contains(".3ma.ch/");
     }
 
     public static boolean supportGroupDescription() {
@@ -734,14 +732,15 @@ public class ConfigUtils {
         return restrictions != null && !restrictions.isEmpty();
     }
 
+    /**
+     * Warning: This will misleadingly return false if the service manager is not available!
+     */
     public static boolean isSerialLicenseValid() {
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         if (serviceManager != null) {
-            if (isOnPremBuild()) {
-                // OnPrem needs server info in addition to license
-                if (serviceManager.getPreferenceService().getOnPremServer() == null) {
-                    return false;
-                }
+            // OnPrem needs server info in addition to license
+            if (isOnPremBuild() && serviceManager.getPreferenceService().getOppfUrl() == null) {
+                return false;
             }
 
             LicenseService<?> licenseService = serviceManager.getLicenseService();
@@ -762,19 +761,14 @@ public class ConfigUtils {
         return (ConfigUtils.isOnPremBuild() || ConfigUtils.isWorkBuild()) && ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid();
     }
 
-    /**
-     * Returns true if privacy settings imply that screenshots and app switcher thumbnails should be disabled
-     *
-     * @return true if disabled, false otherwise or in case of failure
-     */
-    public static boolean getScreenshotsDisabled(@Nullable PreferenceService preferenceService, @Nullable LockAppService lockAppService) {
-        return preferenceService != null && lockAppService != null && lockAppService.isLockingEnabled();
-    }
-
-    public static void setScreenshotsAllowed(@NonNull Activity activity, @Nullable PreferenceService preferenceService, @Nullable LockAppService lockAppService) {
+    public static void applyScreenshotPolicy(
+        @NonNull Activity activity,
+        @Nullable SynchronizedSettingsService synchronizedSettingsService,
+        @Nullable LockAppService lockAppService
+    ) {
         // call this before setContentView
-        if (getScreenshotsDisabled(preferenceService, lockAppService) ||
-            (preferenceService != null && preferenceService.areScreenshotsDisabled()) ||
+        if ((lockAppService != null && lockAppService.isLockingEnabled()) ||
+            (synchronizedSettingsService != null && synchronizedSettingsService.areScreenshotsDisabled()) ||
             activity instanceof ThreemaSafeConfigureActivity) {
             activity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE);
         } else {
@@ -788,50 +782,62 @@ public class ConfigUtils {
     }
 
     public static boolean hasProtection(PreferenceService preferenceService) {
-        return !PreferenceService.LockingMech_NONE.equals(preferenceService.getLockMechanism());
+        return !PreferenceService.LOCKING_MECH_NONE.equals(preferenceService.getLockMechanism());
     }
 
-    /*
-     * Returns the height of the status bar (showing battery or network status) on top of the screen
+    /**
+     * @return The height (in pixels) of the system status bar or 0 in case the activity is not attached yet
      */
-    public static int getStatusBarHeight(Context context) {
+    public static int getStatusBarHeight(final @NonNull Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowMetrics windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(context);
-            Insets insets = windowMetrics.getWindowInsets().getInsets(WindowInsetsCompat.Type.statusBars());
-            return insets.top - insets.bottom;
+            final @Nullable WindowInsetsCompat windowInsets = getWindowInsets(activity);
+            if (windowInsets == null) {
+                return 0;
+            }
+            final @NonNull Insets staturBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.statusBars());
+            return staturBarInsets.top - staturBarInsets.bottom;
         }
-
         int result = 0;
         @SuppressLint({"InternalInsetResource", "DiscouragedApi"})
-        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        final int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
-            result = context.getResources().getDimensionPixelSize(resourceId);
+            result = activity.getResources().getDimensionPixelSize(resourceId);
         }
         return result;
     }
 
-    /*
-     * Returns the height of the navigation bar at the bottom of some devices
+    /**
+     * @return the height (in pixels) of the navigation bar at the bottom of some devices
      */
-    public static int getNavigationBarHeight(Activity activity) {
+    public static int getNavigationBarHeight(final @NonNull Activity activity) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            WindowMetrics windowMetrics = WindowMetricsCalculator.getOrCreate().computeCurrentWindowMetrics(activity);
-            androidx.core.graphics.Insets insets = windowMetrics.getWindowInsets().getInsets(WindowInsetsCompat.Type.navigationBars());
-            return insets.bottom - insets.top;
+            final @Nullable WindowInsetsCompat windowInsets = getWindowInsets(activity);
+            if (windowInsets == null) {
+                return 0;
+            }
+            final @NonNull Insets navigationBarInsets = windowInsets.getInsets(WindowInsetsCompat.Type.navigationBars());
+            return navigationBarInsets.bottom - navigationBarInsets.top;
         }
-
         if (activity.isInMultiWindowMode()) {
             return 0;
         }
-
-        NavigationBarDimensions dimensions = new NavigationBarDimensions();
+        final @NonNull NavigationBarDimensions dimensions = new NavigationBarDimensions();
         getNavigationBarDimensions(activity.getWindowManager(), dimensions);
-
         return dimensions.height;
     }
 
+    @Nullable
+    private static WindowInsetsCompat getWindowInsets(final @NonNull Activity activity) {
+        final @Nullable Window window = activity.getWindow();
+        if (window == null) {
+            return null;
+        }
+        final @NonNull View decorView = window.getDecorView();
+        return ViewCompat.getRootWindowInsets(decorView);
+    }
+
     @Deprecated
-    public static void getNavigationBarDimensions(WindowManager windowManager, NavigationBarDimensions dimensions) {
+    public static void getNavigationBarDimensions(final @NonNull WindowManager windowManager, @NonNull NavigationBarDimensions dimensions) {
         dimensions.width = dimensions.height = 0;
 
         DisplayMetrics metrics = new DisplayMetrics();
@@ -848,23 +854,6 @@ public class ConfigUtils {
 
         if (realWidth > usableWidth)
             dimensions.width = realWidth - usableWidth;
-    }
-
-    /**
-     * Get real height of window including system insets in case of a fullscreen window
-     * Also works for floating or split screen windows
-     *
-     * @param windowManager WindowManager
-     * @return Height in pixel
-     */
-    public static int getRealWindowHeight(@NonNull WindowManager windowManager) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            return windowManager.getCurrentWindowMetrics().getBounds().height();
-        } else {
-            DisplayMetrics metrics = new DisplayMetrics();
-            windowManager.getDefaultDisplay().getRealMetrics(metrics);
-            return metrics.heightPixels;
-        }
     }
 
     public static boolean checkManifestPermission(Context context, String packageName, final String permission) {
@@ -1343,19 +1332,19 @@ public class ConfigUtils {
     public static int getPreferredImageDimensions(@PreferenceService.ImageScale int imageScale) {
         int maxSize = 0;
         switch (imageScale) {
-            case PreferenceService.ImageScale_SMALL:
+            case PreferenceService.IMAGE_SCALE_SMALL:
                 maxSize = 640;
                 break;
-            case PreferenceService.ImageScale_MEDIUM:
+            case PreferenceService.IMAGE_SCALE_MEDIUM:
                 maxSize = 1024;
                 break;
-            case PreferenceService.ImageScale_LARGE:
+            case PreferenceService.IMAGE_SCALE_LARGE:
                 maxSize = 1600;
                 break;
-            case PreferenceService.ImageScale_XLARGE:
+            case PreferenceService.IMAGE_SCALE_XLARGE:
                 maxSize = 2592;
                 break;
-            case PreferenceService.ImageScale_ORIGINAL:
+            case PreferenceService.IMAGE_SCALE_ORIGINAL:
                 maxSize = 65535;
                 break;
         }
@@ -1396,13 +1385,6 @@ public class ConfigUtils {
     /**
      * Return whether or not to use Threema Push, based on the build flavor and the preferences.
      */
-    public static boolean useThreemaPush(@NonNull PreferenceService preferenceService) {
-        return BuildFlavor.getCurrent().getForceThreemaPush() || preferenceService.useThreemaPush();
-    }
-
-    /**
-     * Return whether or not to use Threema Push, based on the build flavor and the preferences.
-     */
     public static boolean useThreemaPush(@NonNull SharedPreferences rawSharedPreferences, @NonNull Context context) {
         return BuildFlavor.getCurrent().getForceThreemaPush()
             || rawSharedPreferences.getBoolean(context.getString(R.string.preferences__threema_push_switch), false);
@@ -1425,13 +1407,6 @@ public class ConfigUtils {
 
     public static boolean isGroupAckEnabled() {
         return true;
-    }
-
-    public static void clearAppData(Context context) {
-        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
-        if (manager != null) {
-            manager.clearApplicationUserData();
-        }
     }
 
     /**
@@ -1490,26 +1465,6 @@ public class ConfigUtils {
                 logger.debug("Unable to get layout params for search bar");
             }
         }
-    }
-
-    public static void adjustExoPlayerControllerMargins(@NonNull Context context, @NonNull PlayerView audioView) {
-        final View controllerView = audioView.findViewById(R.id.exo_bottom_bar);
-        ViewCompat.setOnApplyWindowInsetsListener(controllerView, (v, insets) -> {
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-            params.leftMargin = insets.getSystemWindowInsetLeft();
-            params.rightMargin = insets.getSystemWindowInsetRight();
-            params.bottomMargin = insets.getSystemWindowInsetBottom();
-            return insets;
-        });
-
-        final View exoTimeBar = audioView.findViewById(R.id.exo_progress);
-        ViewCompat.setOnApplyWindowInsetsListener(exoTimeBar, (v, insets) -> {
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-            params.leftMargin = insets.getSystemWindowInsetLeft();
-            params.rightMargin = insets.getSystemWindowInsetRight();
-            params.bottomMargin = insets.getSystemWindowInsetBottom() + context.getResources().getDimensionPixelSize(R.dimen.exo_styled_progress_margin_bottom);
-            return insets;
-        });
     }
 
     @UiThread
@@ -1591,6 +1546,7 @@ public class ConfigUtils {
      * @param anchorView Anchor view
      * @return int array of x/y coordinates to be supplied to showAtLocation() as well as the viewable height
      */
+    @NonNull
     public static int[] getPopupWindowPositionAboveAnchor(@NonNull Activity activity, @NonNull View anchorView) {
         int[] windowLocation = {0, 0};
         anchorView.getLocationInWindow(windowLocation);
@@ -1635,5 +1591,9 @@ public class ConfigUtils {
 
     public static boolean isReferralProgramEnabled() {
         return !isWorkBuild();
+    }
+
+    private static AppRestrictions getAppRestrictions() {
+        return KoinJavaComponent.get(AppRestrictions.class);
     }
 }

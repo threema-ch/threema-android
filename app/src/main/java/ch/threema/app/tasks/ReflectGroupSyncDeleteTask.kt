@@ -3,10 +3,10 @@ package ch.threema.app.tasks
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.data.models.GroupModel
+import ch.threema.domain.models.UserState
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncDelete
-import ch.threema.storage.models.GroupModel.UserState
 
 enum class ReflectGroupSyncDeletePrecondition {
     USER_IS_NO_MEMBER,
@@ -21,7 +21,7 @@ class ReflectGroupSyncDeleteTask(
     private val precondition: ReflectGroupSyncDeletePrecondition,
     private val nonceFactory: NonceFactory,
     multiDeviceManager: MultiDeviceManager,
-) : ReflectGroupSyncTask<Unit, Unit>(multiDeviceManager), ActiveTask<ReflectionResult<Unit>> {
+) : ReflectGroupSyncTask<Unit, Unit>(), ActiveTask<ReflectionResult<Unit>> {
     override val type = "ReflectGroupSyncDeleteTask"
 
     override val runPrecondition: () -> Boolean = {

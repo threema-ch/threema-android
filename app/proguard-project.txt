@@ -28,8 +28,6 @@
 -keeppackagenames org.saltyrtc.**
 
 -dontnote android.net.http.*
--dontnote org.apache.commons.codec.**
--dontnote org.apache.http.**
 
 # JNA library classes are needed for Uniffi Bindings
 -keep class com.sun.jna.** { *; }
@@ -162,6 +160,7 @@ public static <fields>;
 
 # WebRTC
 -keep class org.webrtc.** { *; }
+-keep class org.jni_zero.** { *; }
 
 # Messages are serialized using reflection
 -keep class ch.threema.app.webclient.messages.** { *; }
@@ -180,9 +179,6 @@ public static <fields>;
 
 # Firebase analytics removal
 -dontwarn com.google.firebase.analytics.connector.AnalyticsConnector
-
-# keep camera classes - 1.0.0-alpha03 causes VerifyError in Android 4.4
--keep class androidx.camera.** { *; }
 
 # protobuf uses reflection
 -keepclassmembers class * extends com.google.protobuf.GeneratedMessageLite {
@@ -221,8 +217,6 @@ public static <fields>;
 -keep class * extends androidx.startup.Initializer {
    <init>();
 }
-
--keep class java8.util.ImmutableCollections { *; }
 
 # https://stackoverflow.com/questions/73748946/proguard-r8-warnings
 -dontwarn org.conscrypt.**

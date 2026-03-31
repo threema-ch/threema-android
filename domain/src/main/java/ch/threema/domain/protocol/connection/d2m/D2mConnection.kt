@@ -22,7 +22,8 @@ interface D2mConnection
 internal class D2mConnectionImpl(
     dependencyProvider: ServerConnectionDependencyProvider,
     private val closeListener: D2mSocketCloseListener,
-) : D2mConnection, BaseServerConnection(dependencyProvider) {
+    awaitAppReady: suspend () -> Unit,
+) : D2mConnection, BaseServerConnection(dependencyProvider, awaitAppReady) {
     override fun onSocketClosed(reason: ServerSocketCloseReason) {
         closeListener.onSocketClosed(reason)
     }

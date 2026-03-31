@@ -8,6 +8,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.storage.models.data.status.StatusDataModel.StatusType;
 
@@ -107,40 +108,42 @@ public class VoipStatusDataModel implements StatusDataModel.StatusDataModelInter
     /**
      * This is used for hangup messages that indicate a missed call. If it is null, then the
      * current time should be used.
-     *
-     * @return
      */
     @Nullable
     public Date getDate() {
         return date;
     }
 
+    @NonNull
     public static VoipStatusDataModel createRejected(long callId, Byte reason) {
-        VoipStatusDataModel status = (new VoipStatusDataModel());
+        VoipStatusDataModel status = new VoipStatusDataModel();
         status.callId = callId;
         status.reason = reason;
         status.status = REJECTED;
         return status;
     }
 
+    @NonNull
     public static VoipStatusDataModel createFinished(long callId, int duration) {
-        VoipStatusDataModel status = (new VoipStatusDataModel());
+        VoipStatusDataModel status = new VoipStatusDataModel();
         status.callId = callId;
         status.duration = duration;
         status.status = FINISHED;
         return status;
     }
 
+    @NonNull
     public static VoipStatusDataModel createMissed(long callId, @Nullable Date date) {
-        VoipStatusDataModel status = (new VoipStatusDataModel());
+        VoipStatusDataModel status = new VoipStatusDataModel();
         status.callId = callId;
         status.status = MISSED;
         status.date = date;
         return status;
     }
 
+    @NonNull
     public static VoipStatusDataModel createAborted(long callId) {
-        VoipStatusDataModel status = (new VoipStatusDataModel());
+        VoipStatusDataModel status = new VoipStatusDataModel();
         status.callId = callId;
         status.status = ABORTED;
         return status;

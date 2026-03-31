@@ -2,6 +2,7 @@ package ch.threema.app.threemasafe
 
 import ch.threema.app.BuildConfig
 import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.SynchronizedSettingsService
 import ch.threema.app.services.ApiService
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ContactService
@@ -10,15 +11,16 @@ import ch.threema.app.services.ExcludedSyncIdentitiesService
 import ch.threema.app.services.GroupService
 import ch.threema.base.utils.JSONUtil
 import ch.threema.base.utils.Utils
+import ch.threema.common.emptyByteArray
 import ch.threema.common.toHexString
 import ch.threema.data.ModelTypeCache
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.stores.IdentityStore
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
-import ch.threema.storage.models.GroupModel
+import ch.threema.storage.models.group.GroupModelOld
 import ch.threema.testhelpers.mockOkHttpClient
 import ch.threema.testhelpers.nonSecureRandomArray
 import io.mockk.every
@@ -38,6 +40,7 @@ import org.json.JSONObject
 
 class ThreemaSafeServiceTest {
     private val preferenceServiceMock: PreferenceService = mockk(relaxed = true)
+    private val synchronizedSettingsServiceMock: SynchronizedSettingsService = mockk(relaxed = true)
     private val contactServiceMock: ContactService = mockk(relaxed = true)
     private val groupServiceMock: GroupService = mockk(relaxed = true)
     private val distributionListServiceMock: DistributionListService = mockk(relaxed = true)
@@ -62,6 +65,8 @@ class ThreemaSafeServiceTest {
         mockk(),
         /* preferenceService = */
         preferenceServiceMock,
+        /* synchronizedSettingsService = */
+        synchronizedSettingsServiceMock,
         /* userService = */
         mockk(relaxed = true),
         /* contactService = */
@@ -78,7 +83,7 @@ class ThreemaSafeServiceTest {
         blockedIdentitiesServiceMock,
         /* excludedSyncIdentitiesService = */
         excludedSyncIdentitiesServiceMock,
-        /* profilePicRecipientsService = */
+        /* profilePictureRecipientsService = */
         mockk(),
         /* databaseService = */
         mockk(),
@@ -98,12 +103,15 @@ class ThreemaSafeServiceTest {
         contactModelRepository,
         /* okHttpClient */
         mockOkHttpClient { mockk() },
+        /* appRestrictions */
+        mockk(),
     )
 
     @Suppress("DEPRECATION")
     @BeforeTest
     fun prepareMocks() {
         every { identityStoreMock.getPrivateKey() } returns TEST_PRIVATE_KEY_BYTES
+        every { identityStoreMock.getIdentityString() } returns "01234567"
         every { blockedIdentitiesServiceMock.getAllBlockedIdentities() } returns emptySet()
         every { excludedSyncIdentitiesServiceMock.getExcludedIdentities() } returns emptySet()
 
@@ -137,22 +145,22 @@ class ThreemaSafeServiceTest {
 
     @Test
     fun testGetThreemaSafeBackupIdNull() {
-        every { preferenceServiceMock.threemaSafeMasterKey } returns null
+        every { preferenceServiceMock.getThreemaSafeMasterKey() } returns null
         val backupId1: ByteArray? = threemaSafeServiceImpl.threemaSafeBackupId
         assertNull(backupId1)
 
-        every { preferenceServiceMock.threemaSafeMasterKey } returns byteArrayOf()
+        every { preferenceServiceMock.getThreemaSafeMasterKey() } returns emptyByteArray()
         val backupId2: ByteArray? = threemaSafeServiceImpl.threemaSafeBackupId
         assertNull(backupId2)
 
-        every { preferenceServiceMock.threemaSafeMasterKey } returns nonSecureRandomArray(32)
+        every { preferenceServiceMock.getThreemaSafeMasterKey() } returns nonSecureRandomArray(32)
         val backupId3: ByteArray? = threemaSafeServiceImpl.threemaSafeBackupId
         assertNull(backupId3)
     }
 
     @Test
     fun testGetThreemaSafeBackupId() {
-        every { preferenceServiceMock.threemaSafeMasterKey } returns Utils.hexStringToByteArray(MASTER_KEY_HEX)
+        every { preferenceServiceMock.getThreemaSafeMasterKey() } returns Utils.hexStringToByteArray(MASTER_KEY_HEX)
 
         val backupId = threemaSafeServiceImpl.threemaSafeBackupId!!
         val backupIdHex = backupId.toHexString()
@@ -164,22 +172,22 @@ class ThreemaSafeServiceTest {
 
     @Test
     fun testGetThreemaSafeEncryptionKeyNull() {
-        every { preferenceServiceMock.threemaSafeMasterKey } returns null
+        every { preferenceServiceMock.getThreemaSafeMasterKey() } returns null
         val encryptionKey1: ByteArray? = threemaSafeServiceImpl.threemaSafeEncryptionKey
         assertNull(encryptionKey1)
 
-        every { preferenceServiceMock.threemaSafeMasterKey } returns byteArrayOf()
+        every { preferenceServiceMock.getThreemaSafeMasterKey() } returns emptyByteArray()
         val encryptionKey2: ByteArray? = threemaSafeServiceImpl.threemaSafeEncryptionKey
         assertNull(encryptionKey2)
 
-        every { preferenceServiceMock.threemaSafeMasterKey } returns nonSecureRandomArray(32)
+        every { preferenceServiceMock.getThreemaSafeMasterKey() } returns nonSecureRandomArray(32)
         val encryptionKey3: ByteArray? = threemaSafeServiceImpl.threemaSafeEncryptionKey
         assertNull(encryptionKey3)
     }
 
     @Test
     fun testGetThreemaSafeEncryptionKey() {
-        every { preferenceServiceMock.threemaSafeMasterKey } returns Utils.hexStringToByteArray(MASTER_KEY_HEX)
+        every { preferenceServiceMock.getThreemaSafeMasterKey() } returns Utils.hexStringToByteArray(MASTER_KEY_HEX)
 
         val encryptionKey = threemaSafeServiceImpl.threemaSafeEncryptionKey!!
         val encryptionKeyHex = encryptionKey.toHexString()
@@ -287,9 +295,9 @@ class ThreemaSafeServiceTest {
     @Test
     fun testSafeJsonContainsGroupValues() {
         // arrange
-        val groupModel1: GroupModel = GroupModel().setApiGroupId(GroupId(1L)).setCreatorIdentity("GROUPER1").setLastUpdate(null)
-        val groupModel2: GroupModel = GroupModel().setApiGroupId(GroupId(2L)).setCreatorIdentity("GROUPER2").setLastUpdate(testDate1)
-        val groupModel3: GroupModel = GroupModel().setApiGroupId(GroupId(3L)).setCreatorIdentity("GROUPER3").setLastUpdate(testDate2)
+        val groupModel1: GroupModelOld = GroupModelOld().setApiGroupId(GroupId(1L)).setCreatorIdentity("GROUPER1").setLastUpdate(null)
+        val groupModel2: GroupModelOld = GroupModelOld().setApiGroupId(GroupId(2L)).setCreatorIdentity("GROUPER2").setLastUpdate(testDate1)
+        val groupModel3: GroupModelOld = GroupModelOld().setApiGroupId(GroupId(3L)).setCreatorIdentity("GROUPER3").setLastUpdate(testDate2)
 
         every { groupServiceMock.getAll(any()) } returns listOf(groupModel1, groupModel2, groupModel3)
 
@@ -390,13 +398,13 @@ class ThreemaSafeServiceTest {
     @Test
     fun testSafeJsonSettingsContainBlockedContacts() {
         // arrange
-        val blockedIdentities: Set<Identity> = setOf("NONONONO", "BLOCKED0")
+        val blockedIdentities: Set<IdentityString> = setOf("NONONONO", "BLOCKED0")
         every { blockedIdentitiesServiceMock.getAllBlockedIdentities() } returns blockedIdentities
 
         // act
         val settingsJson: JSONObject = requireParsedThreemaSafeJson().getJSONObject("settings")
         val identitiesJson: JSONArray = settingsJson.getJSONArray("blockedContacts")
-        val actualBlockedIdentities: Set<Identity> = setOf(*JSONUtil.getStringArray(identitiesJson))
+        val actualBlockedIdentities: Set<IdentityString> = setOf(*JSONUtil.getStringArray(identitiesJson))
 
         // assert
         assertTrue(blockedIdentities.containsAll(actualBlockedIdentities))

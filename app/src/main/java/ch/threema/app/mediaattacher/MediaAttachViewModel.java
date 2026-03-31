@@ -20,7 +20,7 @@ import java.util.Objects;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
-import java8.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * The view model used by the media attacher.

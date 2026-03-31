@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">無效的QR碼資料</string>
     <string name="webclient_init_session">建立新工作階段</string>
     <string name="webclient_sessions_really_delete">您確定要刪除桌面版/網頁版工作階段嗎？</string>
     <string name="webclient_last_usage">上次使用：%s</string>

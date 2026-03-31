@@ -16,11 +16,7 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.restrictions.AppRestrictionUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.webclient.crypto.LibthreemaNaClCryptoProvider;
 import ch.threema.app.webclient.listeners.WebClientServiceListener;
@@ -33,10 +29,9 @@ import ch.threema.app.webclient.state.WebClientSessionState;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.storage.models.WebClientSessionModel;
-import java8.util.concurrent.CompletableFuture;
-import java8.util.function.Supplier;
-import java8.util.stream.Stream;
-import java8.util.stream.StreamSupport;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 @AnyThread
 public class SessionServiceImpl implements SessionService {
@@ -111,7 +106,7 @@ public class SessionServiceImpl implements SessionService {
 
                         // Remove session if non-persistent
                         if (!model.isPersistent()) {
-                            SessionServiceImpl.this.services.database.getWebClientSessionModelFactory().delete(model);
+                            SessionServiceImpl.this.services.webClientSessionModelFactory.delete(model);
                             reason = DisconnectContext.REASON_SESSION_DELETED;
                         }
 
@@ -161,7 +156,7 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public boolean isEnabled() {
         return this.services.preference.isWebClientEnabled()
-            && !AppRestrictionUtil.isWebDisabled(this.services.appContext)
+            && !services.appRestrictions.isWebDisabled()
             && this.services.license.isLicensed();
     }
 
@@ -178,7 +173,7 @@ public class SessionServiceImpl implements SessionService {
     @Override
     @NonNull
     public List<WebClientSessionModel> getAllSessionModels() {
-        return this.services.database.getWebClientSessionModelFactory().getAll();
+        return this.services.webClientSessionModelFactory.getAll();
     }
 
     @Override
@@ -188,31 +183,27 @@ public class SessionServiceImpl implements SessionService {
         boolean createIfNotExists
     ) {
         // Look up session instance
-        SessionInstanceContainer container = Functional.select(
-            this.instances,
-            new IPredicateNonNull<SessionInstanceContainer>() {
-                @Override
-                @AnyThread
-                public boolean apply(@NonNull final SessionInstanceContainer container) {
-                    final WebClientSessionModel model = container.instance.getModel();
-                    return TestUtil.compare(model.getKey256(), publicKeySha256String);
-                }
+        for (Map.Entry<Integer, SessionInstanceContainer> entry : instances.entrySet()) {
+            var value = entry.getValue();
+            if (value == null) {
+                continue;
             }
-        );
-
-        // If necessary, create new instance
-        SessionInstanceService instance = null;
-        if (container != null) {
-            instance = container.instance;
-        } else if (createIfNotExists) {
-            final WebClientSessionModel model = this.services.database
-                .getWebClientSessionModelFactory()
-                .getByKey256(publicKeySha256String);
-            if (model != null) {
-                instance = this.getInstanceService(model, true);
+            final WebClientSessionModel model = value.instance.getModel();
+            if (publicKeySha256String.equals(model.getKey256())) {
+                return value.instance;
             }
         }
-        return instance;
+
+        // If necessary, create new instance
+        if (createIfNotExists) {
+            final WebClientSessionModel model = this.services
+                .webClientSessionModelFactory
+                .getByKey256(publicKeySha256String);
+            if (model != null) {
+                return this.getInstanceService(model, true);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -337,7 +328,7 @@ public class SessionServiceImpl implements SessionService {
                     // 2. We requested a disconnect and the model is not persistent.
                     boolean removed = false;
                     if (reason.shouldForget() || (reason instanceof DisconnectContext.ByUs && !model.isPersistent())) {
-                        removed = SessionServiceImpl.this.services.database.getWebClientSessionModelFactory()
+                        removed = SessionServiceImpl.this.services.webClientSessionModelFactory
                             .delete(model) > 0;
                     }
 
@@ -399,7 +390,7 @@ public class SessionServiceImpl implements SessionService {
      * Update session model and fire the 'modified' event.
      */
     private synchronized void update(@NonNull final WebClientSessionModel model) {
-        if (this.services.database.getWebClientSessionModelFactory().createOrUpdate(model)) {
+        if (this.services.webClientSessionModelFactory.createOrUpdate(model)) {
             WebClientListenerManager.sessionListener.handle(new ListenerManager.HandleListener<WebClientSessionListener>() {
                 @Override
                 @AnyThread
@@ -432,7 +423,7 @@ public class SessionServiceImpl implements SessionService {
             .setPersistent(isPermanent)
             .setPushToken(this.services.preference.getPushToken())
             .setSelfHosted(isSelfHosted);
-        this.services.database.getWebClientSessionModelFactory().createOrUpdate(model);
+        this.services.webClientSessionModelFactory.createOrUpdate(model);
 
         // Dispatch 'create' event
         WebClientListenerManager.sessionListener.handle(new ListenerManager.HandleListener<WebClientSessionListener>() {
@@ -470,7 +461,7 @@ public class SessionServiceImpl implements SessionService {
     public long getRunningSessionsCount() {
         final Stream<SessionInstanceContainer> stream;
         synchronized (this) {
-            stream = StreamSupport.stream(this.instances.values());
+            stream = this.instances.values().stream();
         }
         try {
             return CompletableFuture.supplyAsync(new Supplier<Long>() {
@@ -559,7 +550,7 @@ public class SessionServiceImpl implements SessionService {
         //       in the UI ASAP.
         if (reason.shouldForget()) {
             // Remove and raise 'removed' event if the session has been removed
-            final boolean removed = this.services.database.getWebClientSessionModelFactory().delete(model) > 0;
+            final boolean removed = this.services.webClientSessionModelFactory.delete(model) > 0;
             if (removed) {
                 WebClientListenerManager.sessionListener.handle(new ListenerManager.HandleListener<WebClientSessionListener>() {
                     @Override

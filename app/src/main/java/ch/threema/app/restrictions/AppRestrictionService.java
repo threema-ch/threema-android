@@ -36,8 +36,7 @@ import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.api.work.WorkData;
 import ch.threema.domain.protocol.api.work.WorkMDMSettings;
-import java8.util.stream.Collectors;
-import java8.util.stream.StreamSupport;
+import java.util.stream.Collectors;
 
 /**
  * Hold all Work App Restrictions
@@ -158,7 +157,7 @@ public class AppRestrictionService {
         synchronized (EXTERNAL_MDM_ONLY_RESTRICTIONS_IDS) {
             Context context = ThreemaApplication.getAppContext();
             if (externalMdmOnlyRestrictions == null) {
-                externalMdmOnlyRestrictions = StreamSupport.stream(EXTERNAL_MDM_ONLY_RESTRICTIONS_IDS)
+                externalMdmOnlyRestrictions = EXTERNAL_MDM_ONLY_RESTRICTIONS_IDS.stream()
                     .map(context::getString)
                     .collect(Collectors.toSet());
             }
@@ -318,7 +317,7 @@ public class AppRestrictionService {
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         if (serviceManager != null) {
             logger.info("Updating user credentials");
-            Context context = serviceManager.getContext();
+            Context context = ThreemaApplication.getAppContext();
             @Nullable String mdmUsername = getStringRestriction(context.getString(R.string.restriction__license_username));
             @Nullable String mdmPassword = getStringRestriction(context.getString(R.string.restriction__license_password));
 

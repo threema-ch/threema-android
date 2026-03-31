@@ -1,8 +1,5 @@
 package ch.threema.app.testutils;
 
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningServiceInfo;
-import android.content.Context;
 import android.util.Log;
 
 import ch.threema.base.crypto.NaCl;
@@ -27,11 +24,13 @@ import ch.threema.domain.models.BasicContact;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
+import ch.threema.domain.models.UserState;
 import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.models.WorkVerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.stores.IdentityStore;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -104,7 +103,11 @@ public class TestHelpers {
                     .deleteMessages(true)
                     .build(),
                 IdentityState.ACTIVE,
-                IdentityType.NORMAL
+                IdentityType.NORMAL,
+                VerificationLevel.UNVERIFIED,
+                WorkVerificationLevel.NONE,
+                null,
+                null
             );
         }
     }
@@ -160,7 +163,7 @@ public class TestHelpers {
         }
 
         @NonNull
-        public GroupModel getGroupModel() {
+        public GroupModelOld getGroupModel() {
             boolean isMember = false;
             for (TestContact member : members) {
                 if (member.identity.equals(userIdentity)) {
@@ -168,12 +171,12 @@ public class TestHelpers {
                     break;
                 }
             }
-            return getGroupModel(isMember ? GroupModel.UserState.MEMBER : GroupModel.UserState.LEFT);
+            return getGroupModel(isMember ? UserState.MEMBER : UserState.LEFT);
         }
 
         @NonNull
-        private GroupModel getGroupModel(@NonNull GroupModel.UserState userState) {
-            return new GroupModel()
+        private GroupModelOld getGroupModel(@NonNull UserState userState) {
+            return new GroupModelOld()
                 .setApiGroupId(apiGroupId)
                 .setCreatedAt(new Date())
                 .setName(this.groupName)
@@ -208,20 +211,6 @@ public class TestHelpers {
             "Notification bar latest event content not found",
             device.wait(Until.findObject(selector), 1000)
         );
-    }
-
-    /**
-     * Source: https://stackoverflow.com/a/5921190/284318
-     */
-    public static boolean iServiceRunning(@NonNull Context appContext, @NonNull Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) appContext.getSystemService(Context.ACTIVITY_SERVICE);
-        assert manager != null;
-        for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

@@ -2,7 +2,7 @@ package ch.threema.domain.models
 
 import ch.threema.base.utils.Utils
 import ch.threema.common.toHexString
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.util.Objects
 
 const val CONTACT_NAME_MAX_LENGTH_BYTES = 256
@@ -11,7 +11,7 @@ const val CONTACT_NAME_MAX_LENGTH_BYTES = 256
  * Base class for contacts.
  */
 open class Contact(
-    val identity: Identity,
+    val identity: IdentityString,
     val publicKey: ByteArray,
     @JvmField var verificationLevel: VerificationLevel = VerificationLevel.UNVERIFIED,
 ) {
@@ -57,28 +57,51 @@ open class Contact(
  * This represents a contact with reduced properties. Note that this is mainly used for caching. A
  * basic contact may be a contact that is not present in the database. The existence of a
  * [BasicContact] does therefore not mean that it is a known contact.
+ *
+ * The [BasicContact] contains attributes that are usually fetched from the directory and/or work server and is therefore well suited for caching
+ * those values.
  */
-open class BasicContact(
-    identity: Identity,
+class BasicContact(
+    identity: IdentityString,
     publicKey: ByteArray,
     val featureMask: ULong,
     val identityState: IdentityState,
     val identityType: IdentityType,
-) : Contact(identity, publicKey) {
+    verificationLevel: VerificationLevel,
+    val workVerificationLevel: WorkVerificationLevel,
+    firstName: String? = null,
+    lastName: String? = null,
+    val jobTitle: String? = null,
+    val department: String? = null,
+) : Contact(identity, publicKey, verificationLevel) {
+    init {
+        this.firstName = firstName
+        this.lastName = lastName
+    }
+
     companion object {
+        @Deprecated("Do not use. This only exists for background compatibility in tests")
         @JvmStatic
         fun javaCreate(
-            identity: Identity,
+            identity: IdentityString,
             publicKey: ByteArray,
             featureMask: Long,
             identityState: IdentityState,
             identityType: IdentityType,
+            verificationLevel: VerificationLevel,
+            workVerificationLevel: WorkVerificationLevel,
+            jobTitle: String?,
+            department: String?,
         ): BasicContact = BasicContact(
-            identity,
-            publicKey,
-            featureMask.toULong(),
-            identityState,
-            identityType,
+            identity = identity,
+            publicKey = publicKey,
+            featureMask = featureMask.toULong(),
+            identityState = identityState,
+            identityType = identityType,
+            verificationLevel = verificationLevel,
+            workVerificationLevel = workVerificationLevel,
+            jobTitle = jobTitle,
+            department = department,
         )
     }
 }

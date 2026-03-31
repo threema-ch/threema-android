@@ -19,9 +19,5 @@ internal class DatabaseUpdateToVersion85(
 
     override fun getDescription() = "add display tags field"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 85
-    }
+    override val version = 85
 }

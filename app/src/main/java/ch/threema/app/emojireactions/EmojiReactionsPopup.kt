@@ -18,15 +18,17 @@ import ch.threema.app.dialogs.SimpleStringAlertDialog
 import ch.threema.app.emojis.EmojiItemView
 import ch.threema.app.emojis.EmojiService
 import ch.threema.app.emojis.EmojiUtil
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.AnimationUtil
 import ch.threema.app.utils.NameUtil
 import ch.threema.app.utils.ViewUtil
+import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.models.EmojiReactionsModel
 import ch.threema.data.repositories.EmojiReactionsRepository
 import ch.threema.storage.models.AbstractMessageModel
-import ch.threema.storage.models.GroupMessageModel
+import ch.threema.storage.models.group.GroupMessageModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -38,12 +40,12 @@ class EmojiReactionsPopup(
     val fragmentManager: FragmentManager,
     private val isSendingReactionsAllowed: Boolean,
     private val shouldHideUnsupportedReactions: Boolean,
-) :
-    PopupWindow(context), View.OnClickListener, KoinComponent {
+) : PopupWindow(context), View.OnClickListener, KoinComponent {
     private val emojiReactionsRepository: EmojiReactionsRepository by inject()
     private val userService: UserService by inject()
     private val emojiService: EmojiService by inject()
     private val contactService: ContactService by inject()
+    private val preferenceService: PreferenceService by inject()
 
     private val addReactionButton: ImageView
     private var emojiReactionsPopupListener: EmojiReactionsPopupListener? = null
@@ -59,8 +61,7 @@ class EmojiReactionsPopup(
         R.drawable.shape_emoji_popup_selected_background,
         null,
     )
-    private val backgroundColor =
-        ResourcesCompat.getColor(context.resources, android.R.color.transparent, null)
+    private val backgroundColor = ResourcesCompat.getColor(context.resources, android.R.color.transparent, null)
     private val topReactions = arrayOf(
         ReactionEntry(R.id.top_0, EmojiUtil.THUMBS_UP_SEQUENCE),
         ReactionEntry(R.id.top_1, EmojiUtil.THUMBS_DOWN_SEQUENCE),
@@ -71,10 +72,8 @@ class EmojiReactionsPopup(
     )
 
     init {
-        val layoutInflater =
-            context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        contentView =
-            layoutInflater.inflate(R.layout.popup_emojireactions, null, true) as FrameLayout
+        val layoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        contentView = layoutInflater.inflate(R.layout.popup_emojireactions, null, true) as FrameLayout
 
         setupTopReactions()
 
@@ -160,33 +159,35 @@ class EmojiReactionsPopup(
         val emojiReactionsModel: EmojiReactionsModel? =
             emojiReactionsRepository.getReactionsByMessage(messageModel)
 
-        contentView.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
-            override fun onGlobalLayout() {
-                contentView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+        contentView.viewTreeObserver.addOnGlobalLayoutListener(
+            object : OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    contentView.viewTreeObserver.removeOnGlobalLayoutListener(this)
 
-                AnimationUtil.popupAnimateIn(contentView)
+                    AnimationUtil.popupAnimateIn(contentView)
 
-                var animationDelay = 10
-                val animationDelayStep = 60
+                    var animationDelay = 10
+                    val animationDelayStep = 60
 
-                for (topReaction in topReactions) {
-                    if (topReaction.emojiItemView != null) {
-                        animationDelay += animationDelayStep
-                        AnimationUtil.bubbleAnimate(
-                            topReaction.emojiItemView,
-                            animationDelay,
-                        )
+                    for (topReaction in topReactions) {
+                        if (topReaction.emojiItemView != null) {
+                            animationDelay += animationDelayStep
+                            AnimationUtil.bubbleAnimate(
+                                topReaction.emojiItemView,
+                                animationDelay,
+                            )
 
-                        if (hasUserReacted(topReaction, emojiReactionsModel)) {
-                            topReaction.emojiItemView?.background = selectedBackgroundColor
-                        } else {
-                            topReaction.emojiItemView?.setBackgroundColor(backgroundColor)
+                            if (hasUserReacted(topReaction, emojiReactionsModel)) {
+                                topReaction.emojiItemView?.background = selectedBackgroundColor
+                            } else {
+                                topReaction.emojiItemView?.setBackgroundColor(backgroundColor)
+                            }
                         }
                     }
+                    AnimationUtil.bubbleAnimate(addReactionButton, animationDelay)
                 }
-                AnimationUtil.bubbleAnimate(addReactionButton, animationDelay)
-            }
-        })
+            },
+        )
     }
 
     private fun hasUserReacted(
@@ -251,7 +252,7 @@ class EmojiReactionsPopup(
         val body = if (messageModel is GroupMessageModel) {
             context.getString(R.string.emoji_reactions_unavailable_group_body)
         } else {
-            messageModel.getDisplayNameOrNickname()
+            messageModel.getDisplayNameOrNickname(preferenceService.getContactNameFormat())
                 ?.let { name -> context.getString(R.string.emoji_reactions_unavailable_body, name) }
         }
 
@@ -265,7 +266,7 @@ class EmojiReactionsPopup(
         val body = if (messageModel is GroupMessageModel) {
             context.getString(R.string.emoji_reactions_cannot_remove_group_body)
         } else {
-            messageModel.getDisplayNameOrNickname()
+            messageModel.getDisplayNameOrNickname(preferenceService.getContactNameFormat())
                 ?.let { name ->
                     context.getString(
                         R.string.emoji_reactions_cannot_remove_body,
@@ -289,9 +290,10 @@ class EmojiReactionsPopup(
         }
     }
 
-    private fun AbstractMessageModel?.getDisplayNameOrNickname(): String? {
-        return this?.let { NameUtil.getDisplayNameOrNickname(context, it, contactService) }
-    }
+    private fun AbstractMessageModel?.getDisplayNameOrNickname(contactNameFormat: ContactNameFormat): String? =
+        this?.let { messageModel ->
+            NameUtil.getContactDisplayNameOrNickname(context, messageModel, contactService, userService, contactNameFormat)
+        }
 
     interface EmojiReactionsPopupListener {
         fun onTopReactionClicked(messageModel: AbstractMessageModel, emojiSequence: String)

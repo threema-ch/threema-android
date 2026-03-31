@@ -250,7 +250,7 @@ public class DHSession {
      */
     public DHSession(@NonNull Contact contact, @NonNull IdentityStore identityStore) {
         this.id = new DHSessionId();
-        this.myIdentity = identityStore.getIdentity();
+        this.myIdentity = identityStore.getIdentityString();
         this.peerIdentity = contact.getIdentity();
 
         this.myEphemeralPublicKey = new byte[NaCl.PUBLIC_KEY_BYTES];
@@ -279,7 +279,7 @@ public class DHSession {
         }
 
         this.id = id;
-        this.myIdentity = identityStore.getIdentity();
+        this.myIdentity = identityStore.getIdentityString();
         this.peerIdentity = contact.getIdentity();
 
         this.myEphemeralPublicKey = completeKeyExchange(peerEphemeralPublicKey, contact, identityStore);
@@ -448,7 +448,7 @@ public class DHSession {
             default:
                 // We expect 4DH versions to be available in these states
                 if (current4DHVersions == null) {
-                    logger.error("getOutgoingOfferedVersion: Missing current4DHVersions in state " + state);
+                    logger.error("getOutgoingOfferedVersion: Missing current4DHVersions in state {}", state);
                     return Version.V1_0;
                 }
 
@@ -481,7 +481,7 @@ public class DHSession {
             default:
                 // We expect 4DH versions to be available in these states
                 if (current4DHVersions == null) {
-                    logger.error("getOutgoingAppliedVersion: Missing current4DHVersions in state " + state);
+                    logger.error("getOutgoingAppliedVersion: Missing current4DHVersions in state {}", state);
                     return Version.V1_0;
                 }
                 return current4DHVersions.local;
@@ -525,7 +525,7 @@ public class DHSession {
             default:
                 // We expect 4DH versions to be available in these states
                 if (current4DHVersions == null) {
-                    logger.error("getMinimumIncomingAppliedVersion: Missing current4DHVersions in state " + state);
+                    logger.error("getMinimumIncomingAppliedVersion: Missing current4DHVersions in state {}", state);
                     return Version.V1_0;
                 }
                 return current4DHVersions.remote;

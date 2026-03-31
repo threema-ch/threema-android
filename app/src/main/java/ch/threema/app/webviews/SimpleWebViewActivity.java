@@ -116,12 +116,12 @@ public abstract class SimpleWebViewActivity extends ThreemaToolbarActivity imple
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
         checkConnection();
     }
 
     @Override
-    public void onNo(String tag, Object data) {
+    public void onNo(@Nullable String tag, @Nullable Object data) {
         finish();
     }
 

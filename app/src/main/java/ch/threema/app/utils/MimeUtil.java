@@ -301,7 +301,7 @@ public class MimeUtil {
     }
 
     public static @NonNull String getMimeDescription(@NonNull Context context, @NonNull String mimeType) {
-        @StringRes Integer description = getMimeDescription(getMimeCategory(mimeType));
+        @StringRes Integer description = getMimeDescriptionRes(getMimeCategory(mimeType));
         if (description == null) {
             return mimeType;
         } else {
@@ -309,7 +309,9 @@ public class MimeUtil {
         }
     }
 
-    public static @StringRes Integer getMimeDescription(@Nullable MimeCategory category) {
+    @Nullable
+    @StringRes
+    public static Integer getMimeDescriptionRes(@Nullable MimeCategory category) {
         return mimeToDescription.get(category);
     }
 

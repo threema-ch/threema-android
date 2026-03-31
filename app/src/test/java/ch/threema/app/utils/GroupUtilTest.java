@@ -3,7 +3,7 @@ package ch.threema.app.utils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 public class GroupUtilTest {
 
@@ -31,7 +31,7 @@ public class GroupUtilTest {
     public void shouldSendMessagesToCreator_WithModel() {
         for (String[] g : this.getGroup_SendToCreator()) {
             Assert.assertTrue(
-                String.format("Send to creator should be true with name: \"%s\" and creator: \"%s\"", g[0], g[1]), GroupUtil.shouldSendMessagesToCreator((new GroupModel())
+                String.format("Send to creator should be true with name: \"%s\" and creator: \"%s\"", g[0], g[1]), GroupUtil.shouldSendMessagesToCreator((new GroupModelOld())
                     .setName(g[0])
                     .setCreatorIdentity(g[1])));
         }
@@ -39,7 +39,7 @@ public class GroupUtilTest {
         for (String[] g : this.getGroup_DontSendToCreator()) {
             Assert.assertFalse(
                 String.format("Send to creator should be false with name: \"%s\" and creator: \"%s\"", g[0], g[1]),
-                GroupUtil.shouldSendMessagesToCreator((new GroupModel())
+                GroupUtil.shouldSendMessagesToCreator((new GroupModelOld())
                     .setName(g[0])
                     .setCreatorIdentity(g[1])));
         }

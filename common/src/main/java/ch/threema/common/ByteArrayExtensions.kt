@@ -40,6 +40,7 @@ fun ByteArray.chunked(size: Int): List<ByteArray> = asIterable()
  *  will be visible in the string representation followed by an ellipsis character.
  */
 @OptIn(ExperimentalStdlibApi::class)
+@JvmOverloads
 fun ByteArray.toHexString(maxBytes: Int = 0): String =
     if (maxBytes in 1 until size) {
         val bytes = copyOfRange(0, maxBytes)

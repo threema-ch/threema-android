@@ -3,7 +3,9 @@ package ch.threema.app.testutils
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.data.models.GroupIdentity
+import ch.threema.storage.DatabaseProvider
 import ch.threema.storage.runTransaction
+import org.koin.mp.KoinPlatform
 
 fun clearDatabaseAndCaches(serviceManager: ServiceManager) {
     // First get all available contacts and groups
@@ -22,7 +24,7 @@ fun clearDatabaseAndCaches(serviceManager: ServiceManager) {
         }
 
     // Clear entire database
-    serviceManager.databaseService.writableDatabase.runTransaction {
+    KoinPlatform.getKoin().get<DatabaseProvider>().writableDatabase.runTransaction {
         rawExecSQL("PRAGMA foreign_keys = OFF;")
 
         query("SELECT name FROM sqlite_schema WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").use { cursor ->
@@ -36,7 +38,7 @@ fun clearDatabaseAndCaches(serviceManager: ServiceManager) {
 
     // Clear caches in services and trigger listeners to refresh the new models from database
     val contactService = serviceManager.contactService
-    val myIdentity = serviceManager.identityStore.getIdentity()
+    val myIdentity = serviceManager.identityStore.getIdentityString()
     contactIdentities.forEach { identity ->
         contactService.invalidateCache(identity)
         ListenerManager.contactListeners.handle { it.onRemoved(identity) }

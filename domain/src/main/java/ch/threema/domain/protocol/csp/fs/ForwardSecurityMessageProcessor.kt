@@ -34,7 +34,7 @@ import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.awaitOutgoingMessageAck
 import ch.threema.domain.taskmanager.toCspMessage
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.libthreema.CryptoException
 import ch.threema.protobuf.Common.GroupIdentity
 import ch.threema.protobuf.csp.e2e.fs.Encapsulated.DHType
@@ -199,7 +199,7 @@ class ForwardSecurityMessageProcessor(
 
         // Check if we already have a session with this contact
         var session = dhSessionStoreInterface.getBestDHSession(
-            identityStore.getIdentity(),
+            identityStore.getIdentityString(),
             contact.identity,
             handle,
         )
@@ -315,7 +315,7 @@ class ForwardSecurityMessageProcessor(
     )
     suspend fun runFsRefreshSteps(contact: Contact, handle: ActiveTaskCodec) {
         val session = dhSessionStoreInterface.getBestDHSession(
-            identityStore.getIdentity(),
+            identityStore.getIdentityString(),
             contact.identity,
             handle,
         )
@@ -339,7 +339,7 @@ class ForwardSecurityMessageProcessor(
         val contact = contactStore.getContactForIdentity(message.fromIdentity) ?: return
         val bestSession = try {
             dhSessionStoreInterface.getBestDHSession(
-                identityStore.getIdentity(),
+                identityStore.getIdentityString(),
                 message.fromIdentity,
                 handle,
             )
@@ -382,7 +382,7 @@ class ForwardSecurityMessageProcessor(
         val dhType = peerRatchetIdentifier.dhType
 
         val session = dhSessionStoreInterface.getDHSession(
-            identityStore.getIdentity(),
+            identityStore.getIdentityString(),
             peerIdentity,
             sessionId,
             handle,
@@ -424,7 +424,7 @@ class ForwardSecurityMessageProcessor(
     ) {
         // Is there already a session with this ID?
         if (dhSessionStoreInterface.getDHSession(
-                identityStore.getIdentity(),
+                identityStore.getIdentityString(),
                 contact.identity,
                 init.sessionId,
                 handle,
@@ -440,7 +440,7 @@ class ForwardSecurityMessageProcessor(
         // We will keep 2DH sessions (which will have been initiated by us), as otherwise messages may
         // be lost during Init race conditions.
         val existingSessionPreempted: Boolean = dhSessionStoreInterface.deleteAllSessionsExcept(
-            identityStore.getIdentity(),
+            identityStore.getIdentityString(),
             contact.identity,
             init.sessionId,
             true,
@@ -513,7 +513,7 @@ class ForwardSecurityMessageProcessor(
         handle: ActiveTaskCodec,
     ) {
         val session = dhSessionStoreInterface.getDHSession(
-            identityStore.getIdentity(),
+            identityStore.getIdentityString(),
             contact.identity,
             accept.sessionId,
             handle,
@@ -560,7 +560,7 @@ class ForwardSecurityMessageProcessor(
             reject.cause,
         )
         val session = dhSessionStoreInterface.getDHSession(
-            identityStore.getIdentity(),
+            identityStore.getIdentityString(),
             contact.identity,
             reject.sessionId,
             handle,
@@ -568,7 +568,7 @@ class ForwardSecurityMessageProcessor(
         if (session != null) {
             // Discard session
             dhSessionStoreInterface.deleteDHSession(
-                identityStore.getIdentity(),
+                identityStore.getIdentityString(),
                 contact.identity,
                 reject.sessionId,
             )
@@ -601,7 +601,7 @@ class ForwardSecurityMessageProcessor(
             message.cause,
         )
         val sessionDeleted = dhSessionStoreInterface.deleteDHSession(
-            identityStore.getIdentity(),
+            identityStore.getIdentityString(),
             contact.identity,
             message.sessionId,
         )
@@ -626,7 +626,7 @@ class ForwardSecurityMessageProcessor(
         val message = envelopeMessage.data as ForwardSecurityDataMessage
 
         val session = dhSessionStoreInterface.getDHSession(
-            identityStore.getIdentity(),
+            identityStore.getIdentityString(),
             contact.identity,
             message.sessionId,
             handle,
@@ -667,7 +667,7 @@ class ForwardSecurityMessageProcessor(
             )
             sendReject(contact, session.id, envelopeMessage, Reject.Cause.STATE_MISMATCH, handle)
             dhSessionStoreInterface.deleteDHSession(
-                identityStore.getIdentity(),
+                identityStore.getIdentityString(),
                 contact.identity,
                 session.id,
             )
@@ -703,7 +703,7 @@ class ForwardSecurityMessageProcessor(
                 handle,
             )
             dhSessionStoreInterface.deleteDHSession(
-                identityStore.getIdentity(),
+                identityStore.getIdentityString(),
                 contact.identity,
                 session.id,
             )
@@ -748,7 +748,7 @@ class ForwardSecurityMessageProcessor(
                 handle,
             )
             dhSessionStoreInterface.deleteDHSession(
-                identityStore.getIdentity(),
+                identityStore.getIdentityString(),
                 contact.identity,
                 session.id,
             )
@@ -784,13 +784,13 @@ class ForwardSecurityMessageProcessor(
             // If this message was sent in what we also consider to be the "best" session (lowest ID),
             // then we can delete any other sessions.
             val bestSession = dhSessionStoreInterface.getBestDHSession(
-                identityStore.getIdentity(),
+                identityStore.getIdentityString(),
                 contact.identity,
                 handle,
             )
             if (bestSession != null && bestSession.id == session.id) {
                 dhSessionStoreInterface.deleteAllSessionsExcept(
-                    identityStore.getIdentity(),
+                    identityStore.getIdentityString(),
                     contact.identity,
                     session.id,
                     false,
@@ -840,7 +840,7 @@ class ForwardSecurityMessageProcessor(
      */
     private suspend fun createAndSendNewSession(contact: Contact, handle: ActiveTaskCodec) {
         val existingSession = dhSessionStoreInterface.getBestDHSession(
-            identityStore.getIdentity(),
+            identityStore.getIdentityString(),
             contact.identity,
             handle,
         )
@@ -1027,7 +1027,7 @@ class ForwardSecurityMessageProcessor(
         // Try to delete the dh session
         try {
             dhSessionStoreInterface.deleteDHSession(
-                identityStore.getIdentity(),
+                identityStore.getIdentityString(),
                 contact.identity,
                 sessionId,
             )
@@ -1036,7 +1036,8 @@ class ForwardSecurityMessageProcessor(
         }
 
         if (options == TerminateOptions.RENEW &&
-            cause == Cause.UNKNOWN_SESSION || cause == Cause.RESET
+            cause == Cause.UNKNOWN_SESSION ||
+            cause == Cause.RESET
         ) {
             createAndSendNewSession(contact, handle)
         }
@@ -1085,7 +1086,7 @@ class ForwardSecurityMessageProcessor(
         handle: ActiveTaskCodec,
     ) {
         try {
-            val myIdentity = identityStore.getIdentity()!!
+            val myIdentity = identityStore.getIdentityString()!!
             val peerIdentity = contact.identity
             val sessions = dhSessionStoreInterface.getAllDHSessions(myIdentity, peerIdentity, handle)
 
@@ -1126,7 +1127,7 @@ class ForwardSecurityMessageProcessor(
     @Throws(DHSessionStoreException::class)
     suspend fun terminateAllInvalidSessions(contact: Contact, handle: ActiveTaskCodec) {
         val invalidSessions = dhSessionStoreInterface.getAllDHSessions(
-            identityStore.getIdentity()!!,
+            identityStore.getIdentityString()!!,
             contact.identity,
             handle,
         ).mapNotNull {
@@ -1160,7 +1161,7 @@ class PeerRatchetIdentifier(
     /**
      * The peer identity of the session.
      */
-    val peerIdentity: Identity,
+    val peerIdentity: IdentityString,
     /**
      * The dh type of the received message.
      */

@@ -5,7 +5,6 @@
     <string name="title_section1">Xats</string>
     <string name="title_compose_message">Iniciar un xat</string>
     <string name="title_choose_recipient">Seleccioneu Destinatari</string>
-    <string name="title_keyfingerprint">Empremta de la clau</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="title_mythreemaid">La meva ID de ${app_name_short}</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -60,9 +59,6 @@ quan arribi el primer missatge.</string>
     <string name="prefs_sum_vibrate">Vibrar quan es rebi un missatge</string>
     <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
-    <string name="prefs_sum_light">Blanca</string>
-    <string name="prefs_title_wallpaper">Seleccionar fons de pantalla</string>
-    <string name="prefs_sum_wallpaper">Seleccionar imatge per al fons</string>
     <string name="prefs_title_wallpaper_switch">Fons de pantalla</string>
     <string name="prefs_title_enter">Retorn per enviar</string>
     <string name="prefs_sum_enter_on">La tecla retorn envia el missatge immediatament</string>
@@ -116,11 +112,12 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="scan_successful">La ID s\'ha escanejat correctament i el contacte ja està verificat.</string>
     <string name="scan_duplicate">Aquesta ID ja ha estat escanejada i verificada.</string>
     <string name="linked_email">Correu electrònic</string>
+    <!-- Pattern for displaying the user's email address on the My Profile screen. %1$s is a placeholder for the email address, %2$s is a placeholder for the verification state (e.g. "pending") -->
     <string name="linked_mobile">Número de mòbil</string>
+    <!-- Pattern for displaying the user's mobile phone number on the My Profile screen. %1$s is a placeholder for the phone number, %2$s is a placeholder for the verification state (e.g. "pending") -->
     <string name="public_nickname">Sobrenom</string>
     <string name="share_via">Compartir per…</string>
     <string name="share_subject">%s conversa</string>
-    <string name="message_delete_undo">Desfer</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="mobile_already_linked">La vostra ID de ${app_name_short} ja està enllaçada amb aquest número de mòbil</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -132,7 +129,6 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="image_placeholder">Imatge</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="invalid_threema_id">ID de ${app_name_short} no vàlid</string>
-    <string name="contact_already_exists">El contacte ja existeix</string>
     <string name="close">Tancar</string>
     <string name="creating_contact">Afegint un contacte nou</string>
     <string name="creating_contact_successful">Contacte afegit satisfactòriament</string>
@@ -148,7 +144,6 @@ per aquesta ID. Això significa que algú ha manipulat el codi escanejat, i que 
     <string name="verify_failed_summary">Ha fallat la verificació del vostre número de mòbil. Assegureu-vos que el número que heu entrat
 és correcte i que esteu connectat a la xarxa mòbil abans de tornar-ho a intentar.</string>
     <string name="verify_failed_not_linked">Ha fallat la verificació del vostre número de mòbil. El procés de verificació s\'ha cancel·lat.</string>
-    <string name="check_incoming_sms">Comprovant els SMS entrants</string>
     <string name="backup_title">Exportar l\'ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_sum">Exportar la vostra ID de ${app_name_short}</string>
@@ -223,7 +218,6 @@ de continuar.</string>
     <string name="acknowledge">D\'acord</string>
     <string name="decline">En desacord</string>
     <string name="forward_message">Reenviar el missatge</string>
-    <string name="file_is_not_a_image">El fitxer seleccionat no és una imatge</string>
     <string name="connection_error">Error de connexió, torneu a provar-ho més tard.</string>
     <string name="me_myself_and_i">Jo</string>
     <string name="really_forward">Reenviar a «%1$s»?</string>
@@ -231,10 +225,8 @@ de continuar.</string>
     <string name="ringtone_none">Silenciós</string>
     <string name="no_camera_installed">No hi ha disponible una càmera adequada</string>
     <string name="save_message_action">Desar</string>
-    <string name="file_is_not_a_video">El fitxer seleccionat no és un vídeo</string>
     <string name="masterkey_is_unlocked">La clau mestra està desbloquejada</string>
     <string name="file_too_large">El fitxer és més gran que el màxim de %1$d MB</string>
-    <string name="deleting_thread">Esborrant el xat</string>
     <string name="enter_serial_body"><![CDATA[Entreu la vostra clau de llicència de la botiga per obtenr la vostra clau:
 https://shop.threema.ch/retrieve_keys]]></string>
     <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
@@ -242,7 +234,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="enter_serial_title">Desbloquejar ${app_name}</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="serial_required_want_exit">La clau de llicència no és vàlida. Voleu intentar-ho de nou o tancar ${app_name}?</string>
-    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Comprovant la llicència</string>
     <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
@@ -253,7 +244,6 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="not_now">Recordar-m\'ho més tard</string>
     <string name="preparing_messages">Preparant missatges</string>
     <string name="select_emoji">emojis</string>
-    <string name="search_contact">Cercar contacte</string>
     <string name="push_reset_title">Restablir testimoni push</string>
     <string name="push_reset_text">El testimoni push s\'ha restablert</string>
     <string name="emoji_recent">Recents</string>
@@ -292,7 +282,6 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="set_pin_again_summary">Torneu a entrar el PIN</string>
     <string name="set_pin_hint">PIN</string>
     <string name="title_addgroup">Nou grup</string>
-    <string name="search_group">Buscar Grup</string>
     <string name="updating_system">Actualitzant el sistema</string>
     <string name="title_select_contacts">Seleccionar membres</string>
     <string name="pin_invalid_not_set">PIN no vàlid. No definit.</string>
@@ -315,8 +304,6 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="backup_delete_confirm">Fitxer de còpia eliminat</string>
     <string name="message_log_title">Detalls del missatge</string>
     <string name="state_read">llegit</string>
-    <string name="state_ack">acordat</string>
-    <string name="state_dec">en desacord</string>
     <string name="state_delivered">lliurat</string>
     <string name="state_sending">enviant</string>
     <string name="state_pending">pendent</string>
@@ -325,9 +312,7 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="state_dialog_created">Creat</string>
     <string name="state_dialog_posted">Enviat</string>
     <string name="state_dialog_modified">Actualitzat</string>
-    <string name="state_dialog_status">Estat</string>
     <string name="no_recent_conversations">No s\'han trobat xats</string>
-    <string name="save_changes">Desar</string>
     <string name="creating_group">Creant el grup</string>
     <string name="updating_group">Actualitzant el grup</string>
     <string name="status_create_group">Grup creat.</string>
@@ -338,11 +323,6 @@ les dades de la vostra còpia de seguretat.</string>
     <string name="status_group_member_kicked">«%1$s» ha estat eliminat del grup.</string>
     <string name="can_not_send_no_group_members">No podeu enviar un missatge a un grup buit</string>
     <string name="you_are_not_a_member_of_this_group">No sou membre d\'aquest grup</string>
-    <string name="can_not_delete_not_valid">No es pot eliminar un objecte no vàlid</string>
-    <string name="can_not_delete_contact_until_in_group">El contacte continua essent un membre o creador d\'un grup
-de conversa i per això no pot ser eliminat. Sortiu o elimineu tots els grup que incloguin aquest contacte i torneu-ho a
-intentar.</string>
-    <string name="can_not_delete_contact">No es pot eliminar el contacte</string>
     <string name="title_public_nickname">Sobrenom</string>
     <string name="prefs_sum_excluded_sync_identities">Les ID llistades aquí seran ignorades quan es sincronitzin els contactes</string>
     <string name="prefs_title_excluded_sync_identities">Llista d\'exclusions</string>
@@ -358,9 +338,7 @@ Si l\'elimineu de ${app_name_short} tornarà a aparèixer després d\'una sincro
     <string name="yes">Sí</string>
     <string name="deleting_contact">Eliminant contacte</string>
     <string name="prefs_contact_soring">Ordre</string>
-    <string name="prefs_sum_contact_soring">Definiu l\'ordenació de les entrades de la llista de contactes</string>
     <string name="prefs_contact_format">Visualització dels noms de contacte</string>
-    <string name="prefs_sum_contact_format">Definiu el format del nom de contacte</string>
     <string name="prefs_contact_list_title">Llista de contactes</string>
     <string name="prefs_default_contact_picture_colored">Fotos dels contactes</string>
     <string name="prefs_show_inactive_contacts">Mostrar IDs inactives</string>
@@ -377,20 +355,8 @@ de contacte</string>
     <string name="contact_format_last_name_first_name">Cognoms Nom</string>
     <string name="block_contact">Bloquejar contacte</string>
     <string name="unblock_contact">Desbloquejar contacte</string>
-    <string name="one_unread_message">1 missatge sense llegir</string>
-    <string name="really_unlink_contact_title">Desenllaçar contacte</string>
-    <string name="really_unlink_contact">Realment voleu desenllaçar aquest contacte?</string>
-    <string name="do_unlink_contact">Desenllaçar Contacte</string>
-    <string name="do_choose_other_contact">Escolliu un altre contacte</string>
-    <string name="touch_to_link">(cap)</string>
-    <string name="prefs_validate_contacts">Enllaç de validació de contactes</string>
-    <string name="prefs_validate_contacts_loading">Enllaços de Validació de Contactes</string>
-    <string name="prefs_title_fullscreen_ime">Teclat a pantalla completa</string>
-    <string name="prefs_sum_fullscreen_ime_on">El teclat cobreix l\'aplicació si el dispositiu està en mode apaïsat</string>
-    <string name="prefs_sum_fullscreen_ime_off">Mostra una previsualització del xat sobre el teclat si hi ha espai suficient</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="add_acount_from_within_threema">Gestioneu la vostra ID de ${app_name_short} des de ${app_name_short}.</string>
-    <string name="save_image">Desar Imatge</string>
     <string name="share_image">Compartir Imatge</string>
     <string name="view_in_gallery">Veure a la Galeria</string>
     <string name="token_register_failed">Error actualitzant el testimoni push, torneu a intentar-ho més tard.</string>
@@ -429,8 +395,6 @@ de contacte</string>
     <string name="prefs_summary_hide_screenshots">No mostrar miniatures al commutador d\'aplicacions i desactivar les captures de pantalla de les pantalles seleccionades</string>
     <string name="media_gallery">Galeria multimèdia</string>
     <string name="media_file_not_found">No s\'ha pogut obrir el fitxer multimèdia. S\'ha eliminat o no s\'ha descarregat del servidor.</string>
-    <string name="no_media_found">%s no s\'ha trobat en aquest xat.</string>
-    <string name="media_gallery_all">Tot</string>
     <string name="media_gallery_pictures">Fotos</string>
     <string name="media_gallery_videos">Vídeos</string>
     <string name="group_membership_title">Membre d\'aquells grups</string>
@@ -446,7 +410,6 @@ de contacte</string>
     <string name="contact_not_found">No hi ha aquest contacte</string>
     <string name="contact_now_blocked">Contacte bloquejat</string>
     <string name="contact_now_unblocked">Contacte desbloquejat</string>
-    <string name="sending_images">Enviant imatges</string>
     <string name="share_conversation_body">Es necessita una eina ZIP moderna amb suport AES per descomprimir el fitxer, p. ex. http://www.7-zip.org or https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">El xat s\'enviarà com a fitxer zip xifrat. Escolliu una contrasenya:</string>
     <string name="ballot_create">Crear una enquesta</string>
@@ -480,8 +443,6 @@ de contacte</string>
     <string name="ballot_result_final">Resultat final</string>
     <string name="invalid_cannot_send">No podeu enviar missatges a un contacte no vàlid</string>
     <string name="ballot_answer_count_error">Entreu almenys dues respostes per a l\'enquesta.</string>
-    <string name="ballot_one_contact_not_supported">Advertiment: %1$s no podrà participar a la vostra enquesta.</string>
-    <string name="ballot_x_contact_not_supported">Advertiment: %1$d contactes no podran participar a la vostra enquesta.</string>
     <string name="contact_state_inactive">Inactiva</string>
     <string name="contact_state_invalid">No vàlida</string>
     <string name="back">Tornar</string>
@@ -524,8 +485,6 @@ de contacte</string>
     <string name="internal_storage">Emmagatzematge intern</string>
     <string name="no_activity_for_mime_type">No s\'ha trobat cap aplicació que obri el fitxer.</string>
     <string name="open_from">Obrir des de</string>
-    <string name="file_one_contact_not_supported">%1$s no pot rebre fitxers.</string>
-    <string name="file_x_contact_not_supported">Atenció: %1$d contactes no poden rebre el vostre fitxer.</string>
     <string name="mime_android_apk">Paquet Android</string>
     <string name="mime_audio">Fitxer d\'àudio</string>
     <string name="mime_certificate">Certificat digital</string>
@@ -610,7 +569,6 @@ de contacte</string>
     <string name="notifications_until">Fins %s</string>
     <string name="notifications_mute">Silenciat</string>
     <string name="notifications_choose_sound">Escollir so</string>
-    <string name="error_video_conversion">Error convertint el vídeo.</string>
     <string name="confirm_your_pin">Confirmeu el vostre PIN</string>
     <string name="too_many_incorrect_attempts">Massa intents incorrectes. Torneu a provar-ho en %s segons.</string>
     <string name="no_lockscreen_set">No s\'ha definit un bloqueig de pantalla del sistema.</string>
@@ -655,10 +613,6 @@ vostres amics i una <b>clau privada</b> que s\'emmagatzema de forma segura al vo
 Els vostres amics xifraran els missatges que us enviïn amb la vostra clau pública. Només el propietari de la clau privada i ningú més és capaç de desxifrar aquests missatges.</string>
     <string name="new_wizard_info_id">També heu creat un parell de claus. La clau pública s\'ha transmès de forma segura als nostres
 servidors. La clau privada mai surt del vostre dispositiu. Això assegura que ningú més pot llegir els vostres missatges.</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_sync_contacts">Si activeu aquesta opció, ${app_name_short} xifra unidireccionalment (hashes) les adreces de correu electrònic i els números de telèfon
-abans d\'enviar-los al servidor per buscar contactes coincidents. Nosaltres no guardem cap
-dada de la llibreta d\'adreces.</string>
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">Facilitant el vostre número de telèfon i adreça de correu electrònic, ${app_name_short} pot ajudar els vostres amics a trobar-vos automàticament si us tenen a la seva llibreta d\'adreces del telèfon. Les dades s\'emmagatzemaran d\'una forma xifrada unidireccionalment (hashed) en el nostre servidor. Simplement podeu obviar aquest pas si voleu utilitzar ${app_name} de forma completament anònima.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -691,9 +645,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="backup_data">Còpia de les dades</string>
     <string name="action_delete_group">Eliminar grup</string>
     <string name="delete_my_group_message">Voleu eliminar aquest grup completament? Tots els missatges s\'esborraran i els membres restants no podran utilitzar més aquest grup.</string>
-    <string name="error_out_of_memory">No hi ha prou memòria per completar aquesta acció</string>
     <string name="configure">Configurar</string>
-    <string name="file_is_not_audio">No és un fitxer d\'àudio</string>
     <string name="disabled_by_policy">Algunes configuracions s\'han desactivat per la política del dispositiu</string>
     <string name="select_all">Seleccionar tots</string>
     <string name="deleting_messages">Eliminant missatges</string>
@@ -761,7 +713,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="text">Text</string>
     <string name="undo">Desfer</string>
     <string name="android_backup_date">Darrera còpia</string>
-    <string name="check_now">Comprovar ara</string>
     <string name="discard">Descartar</string>
     <string name="android_backup_restart_threema">Espereu. L\'aplicació es reiniciarà en uns segons.</string>
     <string name="battery_optimizations_title">Desactivar les optimitzacions de la bateria</string>
@@ -806,7 +757,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="menu_send_profilpic">Afegir com a destinatari de la foto de perfil</string>
     <string name="menu_send_profilpic_off">Eliminar com a destinatari de la foto de perfil</string>
     <string name="menu_send_profilpic_now">Enviar la foto de perfil ara</string>
-    <string name="profile_picture_sent">Foto de perfil enviada</string>
     <string name="sending_messages">Enviant…</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Desant fitxers multimèdia grans a una còpia de seguretat local en ZIP podria superar la capacitat de la CPU i de la memòria del vostre dispositiu i podria trigar molt. ${app_name} no enviarà i rebrà missatges mentre la còpia de seguretat estigui en curs. Continuar de totes maneres?</string>
@@ -840,11 +790,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="italic">Cursiva</string>
     <string name="bold">Negreta</string>
     <string name="shortcut_choice_title">Crear un accés directe per a…</string>
-    <string name="prefs_title_device_info">Informació del dispositiu</string>
     <string name="notifications_disabled_title">Notificacions desactivades</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="notifications_disabled_text">Les notificacions per a ${app_name} s\'han desactivat en la configuració del sistema. No se us notificarà sobre nous missatges.</string>
-    <string name="notifications_disabled_settings">Editar la configuració del sistema</string>
     <string name="error_attaching_files">Error afegint adjunts.</string>
     <string name="prefs_fix_powermanager_problems">Desactivar restriccions d\'energia</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -893,21 +839,17 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="passphrase_service_name">Contrasenya del servei</string>
     <string name="passphrase_service_description">Notificació quan la contrasenya s\'ha desbloquejat</string>
     <string name="webclient_service_description">Notificació quan una sessió de Web/Escriptori està activa</string>
-    <string name="prefs_title_accept_privacy_policy">Acceptar la política de privacitat</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="privacy_policy_explain">${app_name} protegeix la vostra privacitat més rigorosament que qualsevol altra eina de missatgeria. Apreneu-ne més a la nostra %1$s.</string>
-    <string name="privacy_policy_check_confirm">Per usar %s cal que accepteu la política de privacitat.\n\n(Requeriment de la regulació Europea 2016/679)</string>
     <string name="prefs_title_incognito_keyboard">Sol·licitar teclat d\'incògnit</string>
     <string name="prefs_sum_incognito_keyboard">Desactivar la recol·lecció de dades per suggeriments personalitzats (si ho suporta el vostre teclat)</string>
-    <string name="tooltip_mentions">Escriviu el caràcter @ al teclat per adreçar-vos o mencionar directament un membre d\'aquest grup.</string>
-    <string name="tooltip_imagepaint">Sigueu creatius! Toqueu el botó vareta màgica per escriure o afegir adhesius i text a les vostres fotos abans d\'enviar-les.</string>
     <string name="call_ongoing">Trucada en curs</string>
     <string name="ballot_received_votes">Nombre de vots rebuts: %1$d/%2$d</string>
     <string name="quote_not_found">Missatge citat no trobat</string>
     <string name="ballot_secret">secret</string>
     <string name="password_too_short_generic">Contrasenya massa curta</string>
     <string name="passwords_dont_match">Les contrasenyes no coincideixen</string>
-    <string name="test_unsuccessful">Prova no satisfactòria</string>
+    <!-- Error message shown when setting up a custom server for the Threema Safe feature. %s is a placeholder for the details of the error. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="preparing_threema_safe">Preparant ${app_name_short} Safe</string>
     <string name="disable_powermanager_title">Restriccions d\'energia</string>
@@ -956,9 +898,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="add_group_members">Membre nou</string>
     <string name="contact_add_confirm">Voleu afegir el contacte nou «%1$s» a la vostra llista de contactes?</string>
     <string name="password_bad">Contrasenya dèbil</string>
-    <string name="prefs_fix_background_data">Activar dades en segon pla</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="prefs_fix_background_data_desc">Per rebre missatges quan ${app_name} està en segon pla activeu tant les Dades en segon pla com l\'Ús de dades sense restricció</string>
     <string name="prefs_fix_device">Arreglar problemes de configuració del dispositiu</string>
     <string name="safe_successful">Satisfactori</string>
     <string name="safe_unsuccessful">Fallit</string>
@@ -970,7 +909,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="safe_retention">Retenció de còpies</string>
     <string name="safe_result">Resultat de la còpia</string>
     <string name="number_of_days">%d dies</string>
-    <string name="backup_other_restore_options">Altres opcions de restauració</string>
     <string name="safe_size">Mida de la còpia</string>
     <string name="backup_version_mismatch">La versió d\'aquesta còpia és major que la versió suportada. Actualitzeu a la darrera versió de l\'aplicació.</string>
     <string name="safe_restore_failed">Restauració fallida</string>
@@ -997,7 +935,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="delete_group_message">Voleu sortir del grup i eliminar-lo completament? Tots els missatges s\'eliminaran.</string>
     <string name="delete_left_group_message">Segur que voleu eliminar aquest grup? Tots els missatges s\'eliminaran.</string>
     <string name="chats">Xats</string>
-    <string name="notification_setting_ignored">QUALSEVOL CANVI SERÀ IGNORAT!</string>
     <string name="notification_channel_alerts">Avisos i Errors</string>
     <string name="notification_channel_notices">Notícies</string>
     <string name="chat_updates">Actualitzacions de xat</string>
@@ -1005,7 +942,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="tooltip_export_id">Toqueu aquí per compartir o imprimir la vostra ID de ${app_name_short} xifrada ara</string>
     <string name="downloading">Descarregant</string>
-    <string name="today">Avui</string>
     <string name="restore_data_cancelled">Restauració cancelada</string>
     <string name="safe_change_password">Canviar contrasenya</string>
     <string name="safe_configure_choose_password_title">Escollir una contrasenya</string>
@@ -1015,7 +951,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="safe_password_updated">La contrasenya de ${app_name_short} Safe s\'ha actualitzat.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_activated">${app_name_short} Safe ara està activat.</string>
-    <string name="restore_zip_invalid_file">Fitxer de còpia no vàlid.</string>
     <string name="push_token_cleared">S\'ha netejat el testimoni push</string>
     <string name="insert_date">Inserir data</string>
     <string name="add_answer">Afegir resposta</string>
@@ -1024,11 +959,7 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="voip_disabled">Les trucades ${app_name_short} estan desactivades</string>
     <string name="hide_chat_enter_message_explain">El xat està marcat com a xat privat. Per entrar-hi definiu la protecció d\'accés primer.</string>
     <string name="unknown">Desconegut</string>
-    <string name="miui_notification_title">Notícia important sobre les notificacions a MIUI</string>
-    <string name="miui_notification_body">MIUI 10 desactiva per defecte el so i les llums per tots els canals de notificació creats de nou (excepte per algunes aplicacions considerades «importants» per Xiaomi). Haureu d\'activar-les explícitament per cada canal en la pantalla de configuració de notificacions específiques per cada aplicació del vostre telèfon. Contacteu amb el fabricant del vostre telèfon per més informació.</string>
-    <string name="miui12_notification_body">MIUI desactiva el so, les llums i les notificacions flotants per totes les aplicacions per defecte (excepte per aplicacions molt populars que Xiaomi creu que són «importants»). Haureu d\'activar manualment aquests ajustos en la pantalla de configuració de les notificacions específiques de les aplicacions del vostre telèfon i repetir aquest procés per cada actualització de l\'aplicació. Contacteu amb Xiaomi per obtenir més informació.</string>
     <string name="dont_show_again">No m\'ho tornis a mostrar</string>
-    <string name="miui_notification_prefs">Configuració MIUI</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_upload_successful">La còpia de ${app_name_short} Safe s\'ha carregat correctament</string>
     <string name="time_remaining">%s restants</string>
@@ -1038,7 +969,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
     <string name="lock_option_biometric">Biomètric</string>
     <string name="biometric_enter_authentication">Cal autenticar-vos per desbloquejar</string>
-    <string name="biometric_authentication_failed">Error en l\'autenticació</string>
     <string name="biometric_authentication_successful">Autenticat correctament</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_safe_forced_explain">El vostre administrador ha activat ${app_name_short} Safe al vostre dispositiu</string>
@@ -1047,8 +977,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="work_select_categories">Seleccioneu les categories</string>
     <string name="my_profile">El meu perfil</string>
     <string name="message_too_long">Missatge massa llarg. No es pot enviar.</string>
-    <string name="database_migration_no_space">Ha fallat la migració de la base de dades: No queda prou espai disponible al dispositiu.</string>
-    <string name="advanced_options">Opcions avançades</string>
     <string name="url_warning_body">El nom de l\'amfitrió de l\'enllaç que esteu a punt d\'obrir és sospitós:\n\nNom de l\'amfitrió mostrat: <b>%s</b>\nNom de l\'amfitrió real: <b>%s</b>\n\nAixò pot ser un intent per enganyar-vos i obrir un lloc fent veure que és un altre.\n\nVoleu continuar de totes maneres?</string>
     <string name="url_warning_title">Alerta de Phishing</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1064,8 +992,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="lp_or_select_nearby">O escollir un lloc proper</string>
     <string name="lp_use_this_location">Enviar aquesta ubicació?</string>
     <string name="lp_search_place">Entreu la ciutat</string>
-    <string name="lp_no_nearby_places_found">No s\'han trobat llocs propers</string>
-    <string name="select_directory_for_backup">Desar aquí</string>
     <string name="data_backup_headline">Crear una còpia de les dades per guardar les vostres dades, incloent xats i multimèdia</string>
     <string name="data_backup_save_path">Camí de la còpia</string>
     <string name="change">Canviar</string>
@@ -1091,13 +1017,11 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
     <string name="tap_to_start">Toqueu aquí per iniciar %s ara.</string>
     <string name="two_years">2 anys</string>
-    <string name="invalid_backup_path">Camí de còpia no vàlid</string>
     <string name="backup_data_no_permission">No es pot escriure en aquest directori. Escolliu-ne un altre.</string>
     <string name="prefs_sum_show_unread_badge">Mostrar insígnies a les pestanyes de navegació inferiors</string>
     <string name="prefs_title_show_unread_badge">Insígnies</string>
     <string name="open_myid_popup">Obrir la finestra emergent d\'accés ràpid</string>
     <string name="logo">Logo / Desplaçar a dalt</string>
-    <string name="quote_subj_end">Fi de la cita</string>
     <string name="quote_subj">Cita</string>
     <string name="duration">Durada</string>
     <string name="seconds">Segons</string>
@@ -1121,8 +1045,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="restore_data_backup_explain">Per restaurar una còpia de dades, primer elimineu la vostra ID de ${app_name_short} des de la finestra \"El meu perfil\".\n\nQuan es reiniciï l\'aplicació, escolliu \"Restaurar d\'una còpia\", \"Altres opcions de restauració\", \"Còpia de les dades\" i llavors seleccioneu el fitxer de còpia que voleu restaurar.</string>
     <string name="audio_focus_loss_complete">Trucada desconnectada a causa d\'una pèrdua de focus d\'àudio completa.</string>
     <string name="tap_for_picture_hold_for_video">Toqueu per foto, manteniu per vídeo</string>
-    <string name="sending_media">Enviant multimèdia</string>
-    <string name="permission_record_video_audio_required">Per gravar un vídeo doneu permís d\'accés al micròfon</string>
     <string name="media_files">Fitxers</string>
     <string name="auto_download_limit_explain">Els vídeos i fitxers majors de %s sempre es baixaran sota demanda</string>
     <string name="quoted_message_deleted">El missatge citat ja no està disponible</string>
@@ -1139,7 +1061,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="work_life_dnd_active">Fora d\'horari actiu</string>
     <string name="warning">Avís</string>
     <string name="password_remember_warning">Recordeu el que entreu aquí! Com que %s no desa cap contrasenya als servidors no podrem ajudar-vos si oblideu el vostre PIN o contrasenya.</string>
-    <string name="safe_backup_tap_to_restart">Toqueu a la notificació del sistema mostrada per reiniciar l\'aplicació. Si no veieu la notificació arrossegueu avall la barra de notificacions del vostre telèfon.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="send_to_support">Enviar a Suport de ${company_name}</string>
     <string name="menu_legal">Legal</string>
@@ -1183,7 +1104,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="forward_text">Reenviar el text</string>
     <string name="an_error_occurred_during_send">Hi ha hagut un error enviant un o més missatges.</string>
     <string name="state_processing">processant</string>
-    <string name="passphrase_locked">La contrasenya està bloquejada</string>
     <string name="selected_media">La vostra selecció</string>
     <string name="attach_gif">Gif</string>
     <string name="attach_gallery">Galeria</string>
@@ -1197,19 +1117,14 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="media_date_unknown">Data desconeguda</string>
     <string name="max_selectable_media_exceeded">No es poden enviar més de %d objectes a la vegada.</string>
     <string name="error_unable_loading_media_thumb">Error. No s\'ha pogut carregar la miniatura de la imatge</string>
-    <string name="select">Seleccionar</string>
     <string name="filter_list">Filtrar la llista</string>
     <string name="hint_filter_list">Entreu el text del filtre</string>
     <string name="add">Afegir</string>
-    <string name="threema_message_from">Missatge de %s</string>
-    <string name="show_text">Mostrar text</string>
     <string name="only_images_or_videos">Només es poden seleccionar imatges o vídeos</string>
     <string name="media_gallery_gifs">GIFs</string>
     <string name="no_media_found_global">No s\'ha trobat multimèdia en aquest dispositiu</string>
     <string name="original_file_no_longer_avilable">El fitxer original ja no és accessible. Torneu a enviar el missatge.</string>
-    <string name="state_transcoding">transcodificant</string>
     <string name="importing_files">Important fitxers</string>
-    <string name="tooltip_image_resolution_hint">Toqueu aquí per ajustar la resolució de la imatge.</string>
     <string name="ballot_created_successfully">L\'enquesta s\'ha creat correctament.</string>
     <string name="file_size">Mida del fitxer</string>
     <string name="thirty_days_abbrev">30d</string>
@@ -1219,7 +1134,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="blur_faces">Difuminar cares</string>
     <string name="brush">Raspall</string>
     <string name="pencil">Llapis</string>
-    <string name="error_detecting_faces">Error detectant les cares</string>
     <string name="no_faces_detected">No s\'han detectat cares</string>
     <string name="smiley">Emoticona</string>
     <string name="blur">Difuminar</string>
@@ -1234,7 +1148,6 @@ donar només el vostre nom o un pseudònim. Si no definiu un sobrenom utilitzare
     <string name="note_group_howto">Pista: Si no afegiu cap membre al grup, els missatges d\'aquest grup es mantindran locals. Això és ideal per desar de forma segura notes, multimèdia o documents, o transferir-los a l\'escriptori.</string>
     <string name="mark_unread">Marcar com a no llegit</string>
     <string name="mark_read_short">Marcar com a llegit</string>
-    <string name="unread">No llegit</string>
     <string name="missing_app_licence">La botiga d\'aplicacions no ha pogut validar la vostra compra. Si useu Google Play, netegeu les dades de l\'aplicació Google Play i reinicieu el vostre dispositiu.</string>
     <string name="set_backup_path">Definir camí de còpia</string>
     <string name="set_backup_path_intro">A la pantalla següent seleccioneu la carpeta on s\'emmagatzemaran les còpies.</string>
@@ -1250,21 +1163,16 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <string name="app_store_error_code">Codi d\'error de la botiga d\'Apps: %d</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_restore_type"><![CDATA[Quin tipus de còpia de seguretat voleu restaurar?<br/><br/><a href=%s>Apreneu-ne més sobre còpies de seguretat a ${app_name_short}</a>]]></string>
-    <string name="data_backup_info">Restaurar-ho tot incloent xats</string>
     <string name="new_to_threema">Nou a %s?</string>
     <string name="back_to_threema">Tornar a %s?</string>
-    <string name="id_backup_info">Només restaura la vostra ID</string>
-    <string name="restore_your_id_contacts_and_groups">Restaurar la vostra ID, contactes i grups</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_backup">${app_name_short} Safe Backup</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Heu oblidat la contrasenya?</a>]]></string>
     <string name="download_failed">Error en la descàrrega. Codi d\'error: %d</string>
     <string name="edit_answer">Editar la resposta</string>
     <string name="share_media">Compartir amb una altra aplicació…</string>
-    <string name="group_image">Imatge de grup</string>
     <string name="miui_battery_optimization">Desactiveu \"l\'optimització de la bateria\" per %s per realitzar aquesta tasca. Com que Xiaomi no permet a les aplicacions cridar aquesta pantalla de configuració directament, ho haureu de fer manualment a la configuració del vostre telèfon. Contacteu amb l\'assistència de Xiaomi si necessiteu suport desactivant l\'optimització de la bateria.</string>
     <string name="forward_captions">Incloure captures</string>
-    <string name="importing_files_failed">No es pot importar el fitxer de còpia. Assegureu-vos que hi ha prou espai disponible a la memòria interna.</string>
     <string name="label_continue">Continuar</string>
     <string name="select_date">Seleccioneu una data</string>
     <string name="select_time">Seleccioneu una hora</string>
@@ -1278,19 +1186,15 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <string name="prefs_sum_reset_receipts">Restablir les configuracions específiques del contacte per confirmacions i indicador d\'escriptura a les predeterminades</string>
     <string name="reset_successful">Correctament restablertes a predeterminades</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="no_threema_qr_info">Aquest no és un codi QR específic de ${app_name_short}. El contingut descodificat és:</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Escanegeu el codi QR d\'un contacte per verificar la seva identitat. Per mostrar el codi, demaneu al contacte que toqui la foto de perfil a la cantonada de dalt a l\'esquerra de la pantalla d\'inici de ${app_name_short}.</string>
     <string name="enable_storage_access_for_media">Activar l\'accés a l\'emmagatzematge per veure fotos i vídeos del vostre dispositiu</string>
     <string name="take_me_there">Porteu-m\'hi…</string>
-    <string name="custom">altres</string>
     <string name="show_public_key">Mostrar la clau pública</string>
     <string name="public_key_for">Clau pública de %s</string>
     <string name="copied">Copiada</string>
     <string name="no_votes_yet">No s\'ha emès cap vot fins ara.</string>
     <string name="permission_contacts_sync_required">Permeteu accés als vostres contactes per a poder-los sincronitzar.</string>
     <string name="not_voted_user_list">Aquests participants no han votat: %s</string>
-    <string name="invalid_onprem_id">O no existeix (més) aquesta ID, o no és compatible amb la vostra ID.</string>
     <string name="enable_unknown_sources">No es pot instal·lar. Assegureu-vos que \"Instal·lar aplicacions desconegudes\" estigui activar per a %s.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1358,6 +1262,12 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- Label on button to dismiss/hide a warning -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Shown in the advanced settings, shows the user their own Device's uniquely generated ID, which is used for sending error reports -->
+    <!-- The %s is a placeholder for an ID. It must be left as-is. -->
     <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
     <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
     <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
@@ -1381,8 +1291,10 @@ Si esteu canviant a un dispositiu nou, desinstal·leu o desactiveu %s al disposi
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
+    <!-- Description of the notification channel which is used when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Text of the notification which is shown when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->

@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.SQLException;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -14,7 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.sqlite.db.SupportSQLiteQueryBuilder;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.ConversationTagModel;
@@ -22,8 +24,8 @@ import ch.threema.storage.models.ConversationTagModel;
 public class ConversationTagFactory extends ModelFactory {
     private static final Logger logger = getThreemaLogger("ConversationTagFactory");
 
-    public ConversationTagFactory(DatabaseService databaseService) {
-        super(databaseService, ConversationTagModel.TABLE);
+    public ConversationTagFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, ConversationTagModel.TABLE);
     }
 
     public List<ConversationTagModel> getAll() {
@@ -122,7 +124,7 @@ public class ConversationTagFactory extends ModelFactory {
     }
 
     public void create(ConversationTagModel model) {
-        logger.debug("create conversation tag " + model.getConversationUid() + " " + model.getTag());
+        logger.debug("create conversation tag {} {}", model.getConversationUid(), model.getTag());
         ContentValues contentValues = buildContentValues(model);
         getWritableDatabase().insertOrThrow(this.getTableName(), null, contentValues);
     }
@@ -171,22 +173,24 @@ public class ConversationTagFactory extends ModelFactory {
         return null;
     }
 
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE IF NOT EXISTS `" + ConversationTagModel.TABLE + "` (" +
+                    "`" + ConversationTagModel.COLUMN_CONVERSATION_UID + "` VARCHAR NOT NULL, " +
+                    "`" + ConversationTagModel.COLUMN_TAG + "` BLOB NULL," +
+                    "`" + ConversationTagModel.COLUMN_CREATED_AT + "` BIGINT, " +
+                    "PRIMARY KEY (`" + ConversationTagModel.COLUMN_CONVERSATION_UID + "`, `" + ConversationTagModel.COLUMN_TAG + "`) " +
+                    ");",
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE IF NOT EXISTS `" + ConversationTagModel.TABLE + "` (" +
-                "`" + ConversationTagModel.COLUMN_CONVERSATION_UID + "` VARCHAR NOT NULL, " +
-                "`" + ConversationTagModel.COLUMN_TAG + "` BLOB NULL," +
-                "`" + ConversationTagModel.COLUMN_CREATED_AT + "` BIGINT, " +
-                "PRIMARY KEY (`" + ConversationTagModel.COLUMN_CONVERSATION_UID + "`, `" + ConversationTagModel.COLUMN_TAG + "`) " +
-                ");",
-
-            "CREATE UNIQUE INDEX IF NOT EXISTS `conversationTagKeyConversationTag` ON `" + ConversationTagModel.TABLE
-                + "` ( `" + ConversationTagModel.COLUMN_CONVERSATION_UID + "`, `" + ConversationTagModel.COLUMN_TAG + "` );",
-            "CREATE INDEX IF NOT EXISTS `conversationTagConversation` ON `" + ConversationTagModel.TABLE + "` ( `" + ConversationTagModel.COLUMN_CONVERSATION_UID + "` );",
-            "CREATE INDEX IF NOT EXISTS`conversationTagTag` ON `" + ConversationTagModel.TABLE + "` ( `" + ConversationTagModel.COLUMN_TAG + "` );"
-        };
+                "CREATE UNIQUE INDEX IF NOT EXISTS `conversationTagKeyConversationTag` ON `" + ConversationTagModel.TABLE
+                    + "` ( `" + ConversationTagModel.COLUMN_CONVERSATION_UID + "`, `" + ConversationTagModel.COLUMN_TAG + "` );",
+                "CREATE INDEX IF NOT EXISTS `conversationTagConversation` ON `" + ConversationTagModel.TABLE + "` ( `" + ConversationTagModel.COLUMN_CONVERSATION_UID + "` );",
+                "CREATE INDEX IF NOT EXISTS`conversationTagTag` ON `" + ConversationTagModel.TABLE + "` ( `" + ConversationTagModel.COLUMN_TAG + "` );"
+            };
+        }
     }
 
 }

@@ -20,10 +20,6 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.AgeFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -33,8 +29,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -45,17 +41,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.fragment.app.FragmentActivity;
 import ch.threema.app.BuildConfig;
-import ch.threema.app.NamedFileProvider;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
+import ch.threema.app.dialogs.SimpleStringAlertDialog;
 import ch.threema.app.files.AppDirectoryProvider;
 import ch.threema.app.files.AppLogoFileHandleProvider;
 import ch.threema.app.files.MessageFileHandleProvider;
+import ch.threema.app.services.avatarcache.AvatarCacheService;
+import ch.threema.app.utils.ShareUtil;
 import ch.threema.common.files.FileHandle;
 import ch.threema.app.files.GroupProfilePictureFileHandleProvider;
 import ch.threema.app.files.ProfilePictureFileHandleProvider;
@@ -70,16 +68,15 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IconUtil;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.ResettableInputStream;
 import ch.threema.app.utils.RingtoneChecker;
 import ch.threema.app.utils.RingtoneUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.SecureDeleteUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
@@ -92,8 +89,9 @@ import static ch.threema.app.services.MessageServiceImpl.THUMBNAIL_SIZE_PX;
 import static ch.threema.common.FileExtensionsKt.clearDirectoryNonRecursively;
 import static ch.threema.common.FileExtensionsKt.clearDirectoryRecursively;
 import static ch.threema.common.FileExtensionsKt.copyTo;
-import static ch.threema.common.FileExtensionsKt.getTotalSize;
 import static ch.threema.common.InputStreamExtensionsKt.orEmpty;
+import static ch.threema.common.JavaCompat.copyStream;
+import static kotlin.io.ByteStreamsKt.readBytes;
 
 public class FileServiceImpl implements FileService {
     private static final Logger logger = getThreemaLogger("FileServiceImpl");
@@ -105,13 +103,15 @@ public class FileServiceImpl implements FileService {
     private static final String DIALOG_TAG_SAVING_MEDIA = "savingToGallery";
 
     @NonNull
-    private final Context context;
+    private final Context appContext;
     @NonNull
     private final AppDirectoryProvider appDirectoryProvider;
     @NonNull
-    private final AppLogoFileHandleProvider appLogoFileHandleProvider;
-    @NonNull
     private final PreferenceService preferenceService;
+    @NonNull
+    private final AvatarCacheService avatarCacheService;
+    @NonNull
+    private final AppLogoFileHandleProvider appLogoFileHandleProvider;
     @NonNull
     private final MessageFileHandleProvider messageFileHandleProvider;
     @NonNull
@@ -125,11 +125,8 @@ public class FileServiceImpl implements FileService {
     private final File downloadsPath;
     private final File backupPath;
 
-    @NonNull
-    private final AvatarCacheService avatarCacheService;
-
     public FileServiceImpl(
-        @NonNull Context context,
+        @NonNull Context appContext,
         @NonNull AppDirectoryProvider appDirectoryProvider,
         @NonNull PreferenceService preferenceService,
         @NonNull NotificationPreferenceService notificationPreferenceService,
@@ -138,8 +135,8 @@ public class FileServiceImpl implements FileService {
         @NonNull MessageFileHandleProvider messageFileHandleProvider,
         @NonNull ProfilePictureFileHandleProvider profilePictureFileHandleProvider,
         @NonNull GroupProfilePictureFileHandleProvider groupProfilePictureFileHandleProvider
-        ) {
-        this.context = context;
+    ) {
+        this.appContext = appContext;
         this.appDirectoryProvider = appDirectoryProvider;
         this.preferenceService = preferenceService;
         this.avatarCacheService = avatarCacheService;
@@ -166,13 +163,13 @@ public class FileServiceImpl implements FileService {
         getDownloadsPath();
 
         if (!ConfigUtils.supportsNotificationChannels()) {
-            updateLegacyRingtoneIfInvalid(context.getContentResolver(), notificationPreferenceService);
+            updateLegacyRingtoneIfInvalid(appContext.getContentResolver(), notificationPreferenceService);
         }
     }
 
     private static void updateLegacyRingtoneIfInvalid(
-            @NonNull ContentResolver contentResolver,
-            @NonNull NotificationPreferenceService notificationPreferenceService
+        @NonNull ContentResolver contentResolver,
+        @NonNull NotificationPreferenceService notificationPreferenceService
     ) {
         @Nullable final Uri ringtone = notificationPreferenceService.getLegacyVoipCallRingtone();
         @Nullable final String uriString = ringtone != null ? ringtone.toString() : null;
@@ -256,56 +253,12 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public File getTempPath() {
-        return context.getCacheDir();
-    }
-
-    @Override
-    public File getIntTmpPath() {
-        return appDirectoryProvider.getInternalTempDirectory();
+        return appContext.getCacheDir();
     }
 
     @Override
     public File createTempFile(String prefix, String suffix) throws IOException {
         return File.createTempFile(prefix, suffix, getTempPath());
-    }
-
-    @WorkerThread
-    private void cleanDirectory(@NonNull File path, @NonNull Date thresholdDate) {
-        if (!path.isDirectory()) {
-            if (path.delete()) {
-                path.mkdirs();
-            }
-            return;
-        }
-
-        // this will crash if path is not a directory
-        try {
-            final Iterator<File> filesToDelete = FileUtils.iterateFiles(path, new AgeFileFilter(thresholdDate), TrueFileFilter.INSTANCE);
-
-            if (filesToDelete != null && filesToDelete.hasNext()) {
-                while (filesToDelete.hasNext()) {
-                    File file = filesToDelete.next();
-                    try {
-                        SecureDeleteUtil.secureDelete(file);
-                    } catch (IOException e) {
-                        logger.error("Failed to delete file", e);
-                        FileUtils.deleteQuietly(file);
-                    }
-                }
-            }
-        } catch (IllegalArgumentException e) {
-            logger.error("Exception", e);
-        }
-    }
-
-    @Override
-    @WorkerThread
-    public void cleanTempDirs(long ageThresholdMillis) {
-        logger.debug("Cleaning temp files");
-
-        var thresholdDate = new Date(System.currentTimeMillis() - ageThresholdMillis);
-        cleanDirectory(getTempPath(), thresholdDate);
-        cleanDirectory(getIntTmpPath(), thresholdDate);
     }
 
     @Override
@@ -363,7 +316,7 @@ public class FileServiceImpl implements FileService {
                 File decrypted = this.createTempFile(messageModel.getId() + "" + messageModel.getCreatedAt().getTime(), ext);
                 fos = new FileOutputStream(decrypted);
 
-                IOUtils.copy(is, fos);
+                copyStream(is, fos);
 
                 return decrypted;
             }
@@ -395,7 +348,7 @@ public class FileServiceImpl implements FileService {
                 File decrypted = new File(this.getTempPath(), messageModel.getApiMessageId() + "-" + filename);
                 fos = new FileOutputStream(decrypted);
 
-                IOUtils.copy(is, fos);
+                copyStream(is, fos);
                 return decrypted;
             } finally {
                 if (fos != null) {
@@ -455,7 +408,6 @@ public class FileServiceImpl implements FileService {
      * In case of file messages, the provided mime type is used to guess a valid extension.
      * If no mime type is found, as a last resort, the extension provided in the file's file name is used.
      *
-     * @param messageModel
      * @return The extension including a leading "." or null if no extension could be guessed
      */
     private String getMediaFileExtension(AbstractMessageModel messageModel) {
@@ -523,15 +475,15 @@ public class FileServiceImpl implements FileService {
             contentValues.put(MediaStore.MediaColumns.RELATIVE_PATH, relativePath + "/" + BuildConfig.MEDIA_PATH);
             contentValues.put(MediaStore.MediaColumns.IS_PENDING, true);
 
-            Uri fileUri = context.getContentResolver().insert(contentUri, contentValues);
+            Uri fileUri = appContext.getContentResolver().insert(contentUri, contentValues);
 
             if (fileUri != null) {
-                try (OutputStream outputStream = context.getContentResolver().openOutputStream(fileUri)) {
-                    IOUtils.copy(inputStream, outputStream);
+                try (OutputStream outputStream = appContext.getContentResolver().openOutputStream(fileUri)) {
+                    copyStream(inputStream, outputStream);
                 }
                 contentValues.clear();
                 contentValues.put(MediaStore.MediaColumns.IS_PENDING, false);
-                context.getContentResolver().update(fileUri, contentValues, null, null);
+                appContext.getContentResolver().update(fileUri, contentValues, null, null);
             } else {
                 logger.error("Cannot open file '{}' with mime type '{}' at '{}/{}' for content uri '{}'",
                     filename,
@@ -559,9 +511,9 @@ public class FileServiceImpl implements FileService {
             File destFile = new File(destPath, filename);
             destFile = FileUtil.getUniqueFile(destFile.getParent(), destFile.getName());
             try (FileOutputStream outputStream = new FileOutputStream(destFile)) {
-                IOUtils.copy(inputStream, outputStream);
+                copyStream(inputStream, outputStream);
                 // let the system know, media store has changed
-                context.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(destFile)));
+                appContext.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(destFile)));
             }
         }
     }
@@ -599,7 +551,7 @@ public class FileServiceImpl implements FileService {
             return;
         }
 
-        ContentResolver cr = context.getContentResolver();
+        ContentResolver cr = appContext.getContentResolver();
         try (final InputStream inputStream = cr.openInputStream(sourceUri)) {
             if (inputStream != null) {
                 copyMediaFileIntoPublicDirectory(inputStream, mediaFilename, MimeUtil.getMimeTypeFromMessageModel(messageModel));
@@ -635,9 +587,9 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public boolean writeConversationMedia(
-            @NonNull AbstractMessageModel messageModel,
-            @NonNull InputStream inputStream,
-            boolean overwrite
+        @NonNull AbstractMessageModel messageModel,
+        @NonNull InputStream inputStream,
+        boolean overwrite
     ) {
         var messageUid = messageModel.getUid();
         if (messageUid == null) {
@@ -707,7 +659,7 @@ public class FileServiceImpl implements FileService {
     public byte[] getGroupProfilePictureBytes(@NonNull GroupModel groupModel) throws Exception {
         try (InputStream inputStream = getGroupProfilePictureStream(groupModel)) {
             if (inputStream != null) {
-                return IOUtils.toByteArray(inputStream);
+                return readBytes(inputStream);
             } else {
                 return null;
             }
@@ -799,7 +751,7 @@ public class FileServiceImpl implements FileService {
             ServiceManager serviceManager = ThreemaApplication.getServiceManager();
             if (serviceManager != null) {
                 try {
-                    AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel, context);
+                    AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contactModel, appContext);
                 } catch (SecurityException e) {
                     logger.error("Could not update avatar by android contact", e);
                 }
@@ -900,7 +852,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void writeConversationMediaThumbnail(AbstractMessageModel messageModel, @NonNull ResettableInputStream thumbnail) throws Exception {
-        int preferredThumbnailWidth = ConfigUtils.getPreferredThumbnailWidth(context, false);
+        int preferredThumbnailWidth = ConfigUtils.getPreferredThumbnailWidth(appContext, false);
         int maxWidth = THUMBNAIL_SIZE_PX << 1;
         byte[] resizedThumbnailBytes = BitmapUtil.resizeImageToMaxWidth(thumbnail, Math.min(preferredThumbnailWidth, maxWidth));
         if (resizedThumbnailBytes == null) {
@@ -1023,7 +975,7 @@ public class FileServiceImpl implements FileService {
     public File copyUriToTempFile(Uri uri, String prefix, String suffix) {
         try {
             File outputFile = createTempFile(prefix, suffix);
-            if (FileUtil.copyFile(uri, outputFile, context.getContentResolver())) {
+            if (FileUtil.copyFile(uri, outputFile, appContext.getContentResolver())) {
                 return outputFile;
             }
         } catch (Exception e) {
@@ -1062,24 +1014,9 @@ public class FileServiceImpl implements FileService {
     @Override
     public Uri getShareFileUri(@Nullable File destFile, @Nullable String filename) {
         if (destFile != null) {
-            return NamedFileProvider.getShareFileUri(context, destFile, filename);
+            return ShareUtil.getShareFileUri(appContext, destFile, filename);
         }
         return null;
-    }
-
-    @Override
-    public long getInternalStorageUsage() {
-        return getTotalSize(appDirectoryProvider.getLegacyUserFilesDirectory()) + getTotalSize(appDirectoryProvider.getUserFilesDirectory());
-    }
-
-    @Override
-    public long getInternalStorageSize() {
-        return appDirectoryProvider.getUserFilesDirectory().getTotalSpace();
-    }
-
-    @Override
-    public long getInternalStorageFree() {
-        return appDirectoryProvider.getUserFilesDirectory().getUsableSpace();
     }
 
     @WorkerThread
@@ -1111,7 +1048,7 @@ public class FileServiceImpl implements FileService {
 
         if (onDecryptedFilesComplete != null) {
             if (errorCount >= models.size()) {
-                onDecryptedFilesComplete.error(context.getString(R.string.media_file_not_found));
+                onDecryptedFilesComplete.error(appContext.getString(R.string.media_file_not_found));
             } else {
                 // at least some of the provided media could be decrypted. we consider this a success
                 onDecryptedFilesComplete.complete(shareFileUris);
@@ -1147,13 +1084,14 @@ public class FileServiceImpl implements FileService {
                             onDecryptedFileComplete.complete(file);
                         }
                     } else {
-                        throw new FileNotFoundException(context.getString(R.string.media_file_not_found));
+                        throw new FileNotFoundException(appContext.getString(R.string.media_file_not_found));
                     }
                 } catch (Exception e) {
                     if (onDecryptedFileComplete != null) {
+                        // TODO(ANDR-4472): The `error` method should always receive an exception, never a localized or hard-coded string
                         String message = e.getMessage();
                         if (message != null && message.contains("ENOENT")) {
-                            message = context.getString(R.string.media_file_not_found);
+                            message = appContext.getString(R.string.media_file_not_found);
                         }
                         onDecryptedFileComplete.error(message);
                     }
@@ -1165,13 +1103,15 @@ public class FileServiceImpl implements FileService {
     @SuppressLint("StaticFieldLeak")
     @RequiresPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
     @Override
-    public void saveMedia(final AppCompatActivity activity, final View feedbackView, final CopyOnWriteArrayList<AbstractMessageModel> selectedMessages, final boolean quiet) {
+    public void saveMedia(final FragmentActivity activity, final View feedbackView, final CopyOnWriteArrayList<AbstractMessageModel> selectedMessages, final boolean quiet) {
+        var activityWeakReference = new WeakReference<>(activity);
         new AsyncTask<Void, Integer, Integer>() {
             boolean cancelled = false;
 
             @Override
             protected void onPreExecute() {
                 int selectedMessagesCount = selectedMessages.size();
+                var activity = activityWeakReference.get();
                 if (activity != null && selectedMessagesCount > 3) {
                     String title = String.format(ConfigUtils.getSafeQuantityString(activity, R.plurals.saving_media, selectedMessagesCount, selectedMessagesCount));
                     String cancel = activity.getString(R.string.cancel);
@@ -1196,21 +1136,19 @@ public class FileServiceImpl implements FileService {
                     try {
                         insertMessageIntoGallery(messageModel);
                         saved++;
-                        logger.debug("Saved message " + messageModel.getUid());
+                        logger.debug("Saved message {}", messageModel.getUid());
                     } catch (Exception e) {
+                        var activity = activityWeakReference.get();
                         if (activity != null) {
+                            var message = activity.getString(R.string.error_saving_file);
                             if (quiet) {
-                                RuntimeUtil.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        SingleToast.getInstance().showShortText(activity.getString(R.string.error_saving_file));
-                                    }
-                                });
-                            } else {
-                                LogUtil.exception(e, activity);
+                                RuntimeUtil.runOnUiThread(() -> SingleToast.getInstance().showShortText(message));
+                            } else if (!activity.isFinishing()) {
+                                SimpleStringAlertDialog.newInstance(R.string.whoaaa, message)
+                                    .show(activity.getSupportFragmentManager(), "tex");
                             }
                         }
-                        logger.error("Exception", e);
+                        logger.error("Failed to save media", e);
                     }
                 }
                 return saved;
@@ -1218,6 +1156,7 @@ public class FileServiceImpl implements FileService {
 
             @Override
             protected void onPostExecute(Integer saved) {
+                var activity = activityWeakReference.get();
                 if (activity != null) {
                     DialogUtil.dismissDialog(activity.getSupportFragmentManager(), DIALOG_TAG_SAVING_MEDIA, true);
                     if (feedbackView != null) {
@@ -1227,7 +1166,6 @@ public class FileServiceImpl implements FileService {
                     }
                 }
             }
-
 
             @Override
             protected void onProgressUpdate(Integer... index) {
@@ -1292,8 +1230,8 @@ public class FileServiceImpl implements FileService {
 
                 try (InputStream inputStream = fileHandle.read()) {
                     if (inputStream != null) {
-                        try (OutputStream outputStream = context.getContentResolver().openOutputStream(Uri.fromFile(outputFile))) {
-                            int numBytes = IOUtils.copy(inputStream, outputStream);
+                        try (OutputStream outputStream = appContext.getContentResolver().openOutputStream(Uri.fromFile(outputFile))) {
+                            long numBytes = outputStream != null ? copyStream(inputStream, outputStream) : 0L;
                             if (numBytes > 0 && numBytes <= maxSize) {
                                 return getShareFileUri(outputFile, messageModel.getFileData().getFileName());
                             }

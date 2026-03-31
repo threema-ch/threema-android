@@ -1,7 +1,7 @@
 package ch.threema.storage.models.data.status
 
 import android.util.JsonWriter
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.data.status.StatusDataModel.StatusDataModelInterface
 import ch.threema.storage.models.data.status.StatusDataModel.StatusType
 import java.io.IOException
@@ -11,7 +11,7 @@ open class GroupCallStatusDataModel protected constructor() : StatusDataModelInt
         private set
     var groupId = 0
         private set
-    var callerIdentity: Identity? = null
+    var callerIdentity: IdentityString? = null
         private set
     var status = 0
         private set
@@ -72,7 +72,7 @@ open class GroupCallStatusDataModel protected constructor() : StatusDataModelInt
         fun createStarted(
             callId: String,
             groupId: Int,
-            callerIdentity: Identity,
+            callerIdentity: IdentityString,
         ): GroupCallStatusDataModel {
             val status = GroupCallStatusDataModel()
             status.callId = callId

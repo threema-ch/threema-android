@@ -25,6 +25,7 @@ import ch.threema.app.compose.common.anim.AnimatedVisibilityNow
 import ch.threema.app.compose.message.MessageBubble
 import ch.threema.app.compose.theme.AppTypography
 import ch.threema.app.ui.CustomTextSelectionCallback
+import ch.threema.app.utils.LinkifyUtil
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.data.models.EditHistoryEntryData
 import java.util.Date
@@ -36,6 +37,7 @@ fun EditHistoryTimelineItem(
     editHistoryEntry: EditHistoryEntryData,
     isOutbox: Boolean,
     shouldMarkupText: Boolean,
+    linkifyListener: LinkifyUtil.LinkifyListener,
     isExpanded: Boolean = false,
     shouldFadeOutTimeLineTop: Boolean = false,
     shouldFadeOutTimeLineBottom: Boolean = false,
@@ -57,6 +59,7 @@ fun EditHistoryTimelineItem(
             editHistoryEntry = editHistoryEntry,
             isOutbox = isOutbox,
             shouldMarkupText = shouldMarkupText,
+            linkifyListener = linkifyListener,
             isExpanded = isExpanded,
             textSelectionCallback = textSelectionCallback,
             onClick = onClick,
@@ -71,6 +74,7 @@ fun EditHistoryItem(
     editHistoryEntry: EditHistoryEntryData,
     isOutbox: Boolean,
     shouldMarkupText: Boolean,
+    linkifyListener: LinkifyUtil.LinkifyListener,
     isExpanded: Boolean = false,
     textSelectionCallback: CustomTextSelectionCallback? = null,
     onClick: (() -> Unit)? = null,
@@ -83,6 +87,7 @@ fun EditHistoryItem(
             editHistoryEntry = editHistoryEntry,
             isOutbox = isOutbox,
             shouldMarkupText = shouldMarkupText,
+            linkifyListener = linkifyListener,
             isExpanded = isExpanded,
             textSelectionCallback = textSelectionCallback,
             onClick = onClick,
@@ -97,6 +102,7 @@ private fun EditHistoryItemBubble(
     editHistoryEntry: EditHistoryEntryData,
     isOutbox: Boolean,
     shouldMarkupText: Boolean,
+    linkifyListener: LinkifyUtil.LinkifyListener,
     isExpanded: Boolean = false,
     textSelectionCallback: CustomTextSelectionCallback? = null,
     onClick: (() -> Unit)? = null,
@@ -118,6 +124,7 @@ private fun EditHistoryItemBubble(
                 text = editHistoryEntry.text
                     ?: stringResource(R.string.edit_history_file_no_caption),
                 isOutbox = isOutbox,
+                linkifyListener = linkifyListener,
                 shouldMarkupText = shouldMarkupText,
                 onClick = onClick,
                 textSelectionCallback = textSelectionCallback,

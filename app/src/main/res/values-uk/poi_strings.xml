@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+<!--
+These strings are used dynamically, through `resources.getIdentifier(...)`, and as such appear unused even though they aren't.
+Therefore, we suppress the "UnusedResources" error here.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="UnusedResources">
     <string name="hamlet">Поселення</string>
     <string name="village">Село</string>
     <string name="town">Містечко</string>

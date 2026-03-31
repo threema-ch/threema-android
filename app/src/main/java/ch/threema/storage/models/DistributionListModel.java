@@ -1,5 +1,6 @@
 package ch.threema.storage.models;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Date;
@@ -7,15 +8,16 @@ import java.util.Objects;
 
 import ch.threema.data.datatypes.IdColor;
 import ch.threema.base.utils.Utils;
+import ch.threema.domain.models.DistributionListReceiverIdentifier;
 
 public class DistributionListModel implements ReceiverModel {
-    public static final int DISTRIBUTIONLIST_NAME_MAX_LENGTH_BYTES = 256;
+    public static final int DISTRIBUTION_LIST_NAME_MAX_LENGTH_BYTES = 256;
 
     public static final String TABLE = "distribution_list";
     public static final String COLUMN_ID = "id";
     public static final String COLUMN_NAME = "name";
     public static final String COLUMN_CREATED_AT = "createdAt";
-    public static final String COLUMN_LAST_UPDATE = "lastUpdate"; /* date when the conversation was last updated */
+    public static final String COLUMN_LAST_UPDATE = "lastUpdateAt"; /* date when the conversation was last updated */
     public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this distribution list has been archived by user */
     public static final String COLUMN_IS_ADHOC_DISTRIBUTION_LIST = "isHidden"; /* whether this is an ad-hoc distribution list */
 
@@ -32,7 +34,7 @@ public class DistributionListModel implements ReceiverModel {
     }
 
     public DistributionListModel setName(@Nullable String name) {
-        this.name = Utils.truncateUTF8String(name, DISTRIBUTIONLIST_NAME_MAX_LENGTH_BYTES);
+        this.name = Utils.truncateUTF8String(name, DISTRIBUTION_LIST_NAME_MAX_LENGTH_BYTES);
         return this;
     }
 
@@ -100,6 +102,12 @@ public class DistributionListModel implements ReceiverModel {
     public boolean isHidden() {
         // Hide ad-hoc distribution lists from conversation list
         return this.isAdHocDistributionList();
+    }
+
+    @NonNull
+    @Override
+    public DistributionListReceiverIdentifier getIdentifier() {
+        return new DistributionListReceiverIdentifier(id);
     }
 
     public IdColor getIdColor() {

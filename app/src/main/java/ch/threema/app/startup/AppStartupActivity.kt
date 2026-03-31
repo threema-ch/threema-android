@@ -29,8 +29,8 @@ import ch.threema.app.startup.components.AppStartupScreen
 import ch.threema.app.startup.components.ErrorState
 import ch.threema.app.startup.components.LoadingState
 import ch.threema.app.startup.components.UnlockRetryDialog
+import ch.threema.app.usecases.ShareDebugLogUseCase
 import ch.threema.app.utils.IntentDataUtil
-import ch.threema.app.utils.ShareUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.localcrypto.MasterKeyManager
@@ -52,6 +52,7 @@ class AppStartupActivity : AppCompatActivity() {
 
     private val appStartupMonitor: AppStartupMonitor by inject()
     private val masterKeyManager: MasterKeyManager by inject()
+    private val shareDebugLogUseCase: ShareDebugLogUseCase by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -104,8 +105,8 @@ class AppStartupActivity : AppCompatActivity() {
                         errors.isNotEmpty() -> {
                             ErrorState(
                                 errors = errors,
-                                onClickedExportLogs = ::exportLogs,
-                                onClickedRetryRemoteSecrets = RemoteSecretMonitorRetryController::requestRetry,
+                                onClickExportLogs = ::exportLogs,
+                                onClickRetryRemoteSecrets = RemoteSecretMonitorRetryController::requestRetry,
                             )
                         }
                         pendingSystems.isNotEmpty() -> {
@@ -147,9 +148,13 @@ class AppStartupActivity : AppCompatActivity() {
 
     private fun exportLogs() {
         logger.info("Export logs button clicked")
-        val success = ShareUtil.shareLogfile(this)
-        if (!success) {
-            showToast(R.string.try_again)
+        lifecycleScope.launch {
+            try {
+                shareDebugLogUseCase.call()
+            } catch (e: Exception) {
+                logger.error("Failed to export debug log", e)
+                showToast(R.string.an_error_occurred)
+            }
         }
     }
 

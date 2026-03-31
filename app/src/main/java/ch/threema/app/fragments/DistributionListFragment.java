@@ -10,6 +10,7 @@ import java.util.List;
 import ch.threema.app.R;
 import ch.threema.app.activities.DistributionListAddActivity;
 import ch.threema.app.adapters.DistributionListAdapter;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.storage.models.DistributionListModel;
 import kotlin.Lazy;
@@ -19,6 +20,7 @@ import static org.koin.java.KoinJavaComponent.inject;
 public class DistributionListFragment extends RecipientListFragment {
 
     private final Lazy<DistributionListService> distributionListServiceLazy = inject(DistributionListService.class);
+    private final Lazy<PreferenceService> preferenceServiceLazy = inject(PreferenceService.class);
 
     @Override
     protected boolean isMultiSelectAllowed() {
@@ -80,6 +82,7 @@ public class DistributionListFragment extends RecipientListFragment {
                     distributionListModels,
                     checkedItemPositions,
                     distributionListServiceLazy.getValue(),
+                    preferenceServiceLazy.getValue(),
                     DistributionListFragment.this
                 );
                 setListAdapter(adapter);

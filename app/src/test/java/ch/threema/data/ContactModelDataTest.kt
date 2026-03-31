@@ -1,165 +1,194 @@
 package ch.threema.data
 
-import ch.threema.common.now
-import ch.threema.data.datatypes.AndroidContactLookupInfo
-import ch.threema.data.datatypes.IdColor
+import ch.threema.app.managers.CoreServiceManager
+import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.models.ContactModelData
-import ch.threema.domain.models.ContactSyncState
-import ch.threema.domain.models.IdentityState
-import ch.threema.domain.models.IdentityType
-import ch.threema.domain.models.ReadReceiptPolicy
-import ch.threema.domain.models.TypingIndicatorPolicy
-import ch.threema.domain.models.VerificationLevel
-import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import kotlin.random.Random
+import ch.threema.domain.stores.IdentityStore
+import io.mockk.every
+import io.mockk.mockk
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import testdata.TestData
 
 class ContactModelDataTest {
-    private val exampleContactModelData = ContactModelData(
-        identity = "TESTTEST",
-        publicKey = Random.nextBytes(32),
-        createdAt = now(),
-        firstName = "Test",
-        lastName = "Contact",
-        nickname = null,
-        idColor = IdColor(13),
-        verificationLevel = VerificationLevel.FULLY_VERIFIED,
-        workVerificationLevel = WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
-        identityType = IdentityType.NORMAL,
-        acquaintanceLevel = AcquaintanceLevel.DIRECT,
-        activityState = IdentityState.ACTIVE,
-        syncState = ContactSyncState.INITIAL,
-        featureMask = 7uL,
-        readReceiptPolicy = ReadReceiptPolicy.DONT_SEND,
-        typingIndicatorPolicy = TypingIndicatorPolicy.SEND,
-        isArchived = false,
-        androidContactLookupInfo = null,
-        localAvatarExpires = null,
-        isRestored = false,
-        profilePictureBlobId = null,
-        jobTitle = null,
-        department = null,
-        notificationTriggerPolicyOverride = null,
-    )
 
     @Test
-    fun `display name contains first and last name`() {
-        val contactModelData = exampleContactModelData.copy(
-            firstName = "First",
-            lastName = "Last",
-            nickname = "Nickname",
-        )
+    fun `getDisplayName should pick correct values`() {
+        val coreServiceManagerMock = mockk<CoreServiceManager>(relaxed = true) {
+            every { identityStore } returns mockk<IdentityStore> {
+                every { getIdentityString() } returns TestData.Identities.ME.value
+            }
+        }
 
-        val displayName = contactModelData.getDisplayName()
-        assertEquals("First Last", displayName)
+        val testSet = mapOf(
+            TestData.createContactModel(identity = TestData.Identities.OTHER_1, firstname = "Firstname", lastname = "Lastname", nickname = "Nick")
+                to "Firstname Lastname",
+            TestData.createContactModel(identity = TestData.Identities.OTHER_1, firstname = "Firstname", lastname = "", nickname = "Nick")
+                to "Firstname",
+            TestData.createContactModel(identity = TestData.Identities.OTHER_1, firstname = "", lastname = "Lastname", nickname = "Nick")
+                to "Lastname",
+            TestData.createContactModel(identity = TestData.Identities.OTHER_1, firstname = "", lastname = "", nickname = "Nick")
+                to "~Nick",
+            TestData.createContactModel(identity = TestData.Identities.OTHER_1, firstname = "Firstname", lastname = "Lastname", nickname = null)
+                to "Firstname Lastname",
+            TestData.createContactModel(identity = TestData.Identities.OTHER_1, firstname = "Firstname", lastname = "", nickname = null)
+                to "Firstname",
+            TestData.createContactModel(identity = TestData.Identities.OTHER_1, firstname = "", lastname = "Lastname", nickname = null)
+                to "Lastname",
+            TestData.createContactModel(identity = TestData.Identities.OTHER_1, firstname = "", lastname = "", nickname = null)
+                to TestData.Identities.OTHER_1.value,
+            TestData.createContactModel(identity = TestData.Identities.OTHER_1, firstname = "", lastname = "", nickname = "")
+                to TestData.Identities.OTHER_1.value,
+            TestData.createContactModel(identity = TestData.Identities.OTHER_1, firstname = " ", lastname = " ", nickname = " ")
+                to TestData.Identities.OTHER_1.value,
+            TestData.createContactModel(
+                identity = null,
+                firstname = "",
+                lastname = "",
+                nickname = null,
+                coreServiceManagerMock = coreServiceManagerMock,
+            )
+                to ContactModelData.DISPLAY_NAME_INVALID_CONTACT,
+            TestData.createContactModel(
+                identity = TestData.Identities.OTHER_1,
+                firstname = "",
+                lastname = "",
+                nickname = TestData.Identities.OTHER_1.value,
+            )
+                to TestData.Identities.OTHER_1.value,
+        )
+        val actualDisplayNames = testSet.keys.map { contactModel ->
+            contactModel.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.FIRSTNAME_LASTNAME,
+                nicknameHasPrefix = true,
+            )
+        }
+        assertEquals(
+            expected = testSet.values.toList(),
+            actual = actualDisplayNames,
+        )
     }
 
     @Test
-    fun `display name contains only first name`() {
-        val contactModelData = exampleContactModelData.copy(
-            firstName = "First",
-            lastName = "",
-            nickname = "Nickname",
+    fun `getDisplayName handles contactNameFormat correctly`() {
+        val contact1 = TestData.createContactModel(firstname = "Firstname", lastname = "Lastname")
+        assertEquals(
+            expected = "Firstname Lastname",
+            actual = contact1.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.FIRSTNAME_LASTNAME,
+            ),
         )
 
-        val displayName = contactModelData.getDisplayName()
-        assertEquals("First", displayName)
+        val contact2 = TestData.createContactModel(firstname = "Firstname", lastname = "Lastname")
+        assertEquals(
+            expected = "Lastname Firstname",
+            actual = contact2.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.LASTNAME_FIRSTNAME,
+            ),
+        )
+
+        val contact3 = TestData.createContactModel(firstname = "  ", lastname = "Lastname")
+        assertEquals(
+            expected = "Lastname",
+            actual = contact3.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.FIRSTNAME_LASTNAME,
+            ),
+        )
+
+        val contact4 = TestData.createContactModel(firstname = "Firstname", lastname = "  ")
+        assertEquals(
+            expected = "Firstname",
+            actual = contact4.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.FIRSTNAME_LASTNAME,
+            ),
+        )
+
+        val contact5 = TestData.createContactModel(firstname = "  ", lastname = "Lastname")
+        assertEquals(
+            expected = "Lastname",
+            actual = contact5.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.LASTNAME_FIRSTNAME,
+            ),
+        )
+
+        val contact6 = TestData.createContactModel(firstname = "Firstname", lastname = "  ")
+        assertEquals(
+            expected = "Firstname",
+            actual = contact6.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.LASTNAME_FIRSTNAME,
+            ),
+        )
+
+        val contact7 = TestData.createContactModel(firstname = " Firstname ", lastname = " Lastname ")
+        assertEquals(
+            expected = "Firstname Lastname",
+            actual = contact7.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.FIRSTNAME_LASTNAME,
+            ),
+        )
+
+        val contact8 = TestData.createContactModel(firstname = " Firstname ", lastname = " Lastname ")
+        assertEquals(
+            expected = "Lastname Firstname",
+            actual = contact8.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.LASTNAME_FIRSTNAME,
+            ),
+        )
+
+        val contact9 = TestData.createContactModel(firstname = " First Name ", lastname = " Last Name ")
+        assertEquals(
+            expected = "First Name Last Name",
+            actual = contact9.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.FIRSTNAME_LASTNAME,
+            ),
+        )
     }
 
     @Test
-    fun `display name contains only last name`() {
-        val contactModelData = exampleContactModelData.copy(
-            firstName = "",
-            lastName = "Last",
-            nickname = "Nickname",
+    fun `getDisplayName handles nicknameHasPrefix correctly`() {
+        val contact1 = TestData.createContactModel(firstname = "", lastname = "", nickname = "Nick")
+        assertEquals(
+            expected = "~Nick",
+            actual = contact1.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.DEFAULT,
+                nicknameHasPrefix = true,
+            ),
         )
 
-        val displayName = contactModelData.getDisplayName()
-        assertEquals("Last", displayName)
-    }
-
-    @Test
-    fun `display name contains only nickname that is equal to the identity`() {
-        val contactModelData = exampleContactModelData.copy(
-            firstName = "",
-            lastName = "",
-            nickname = "TESTTEST",
+        val contact2 = TestData.createContactModel(firstname = "", lastname = "", nickname = "Nick")
+        assertEquals(
+            expected = "Nick",
+            actual = contact2.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.DEFAULT,
+                nicknameHasPrefix = false,
+            ),
         )
 
-        val displayName = contactModelData.getDisplayName()
-        assertEquals("TESTTEST", displayName)
-    }
-
-    @Test
-    fun `display name contains only nickname`() {
-        val contactModelData = exampleContactModelData.copy(
-            firstName = "",
-            lastName = "",
-            nickname = "Nickname",
+        val contact3 = TestData.createContactModel(firstname = "", lastname = "", nickname = " Nick ")
+        assertEquals(
+            expected = "~Nick",
+            actual = contact3.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.DEFAULT,
+                nicknameHasPrefix = true,
+            ),
         )
 
-        val displayName = contactModelData.getDisplayName()
-        assertEquals("~Nickname", displayName)
-    }
-
-    @Test
-    fun `short name contains only first name`() {
-        val contactModelData = exampleContactModelData.copy(
-            firstName = "First",
-            lastName = "Last",
-            nickname = "Nickname",
+        val contact4 = TestData.createContactModel(firstname = "", lastname = "", nickname = " Nick ")
+        assertEquals(
+            expected = "Nick",
+            actual = contact4.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.DEFAULT,
+                nicknameHasPrefix = false,
+            ),
         )
 
-        val displayName = contactModelData.getShortName()
-        assertEquals("First", displayName)
-    }
-
-    @Test
-    fun `short name contains only last name`() {
-        val contactModelData = exampleContactModelData.copy(
-            firstName = "",
-            lastName = "Last",
-            nickname = "Nickname",
+        val contact5 = TestData.createContactModel(firstname = "", lastname = "", nickname = " ${TestData.Identities.OTHER_1} ")
+        assertEquals(
+            expected = TestData.Identities.OTHER_1.value,
+            actual = contact5.data?.getDisplayName(
+                contactNameFormat = ContactNameFormat.DEFAULT,
+                nicknameHasPrefix = true,
+            ),
         )
-
-        val displayName = contactModelData.getShortName()
-        assertEquals("Last", displayName)
-    }
-
-    @Test
-    fun `short name contains only nickname that is equal to the identity`() {
-        val contactModelData = exampleContactModelData.copy(
-            firstName = "",
-            lastName = "",
-            nickname = "TESTTEST",
-        )
-
-        val displayName = contactModelData.getShortName()
-        assertEquals("TESTTEST", displayName)
-    }
-
-    @Test
-    fun `short name contains only nickname`() {
-        val contactModelData = exampleContactModelData.copy(
-            firstName = "",
-            lastName = "",
-            nickname = "Nickname",
-        )
-
-        val displayName = contactModelData.getShortName()
-        assertEquals("~Nickname", displayName)
-    }
-
-    @Test
-    fun `contact is linked to android if lookup key is not null`() {
-        val linkedContactModelData = exampleContactModelData.copy(androidContactLookupInfo = AndroidContactLookupInfo("lookupKey", 42))
-        assertTrue { linkedContactModelData.isLinkedToAndroidContact() }
-
-        val notLinkedContactModelData = exampleContactModelData.copy(androidContactLookupInfo = null)
-        assertFalse { notLinkedContactModelData.isLinkedToAndroidContact() }
     }
 }

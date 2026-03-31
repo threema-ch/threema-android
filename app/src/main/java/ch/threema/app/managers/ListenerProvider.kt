@@ -81,8 +81,8 @@ class ListenerProvider {
     val threemaSafeListeners: TypedListenerManager<ThreemaSafeListener>
         get() = ListenerManager.threemaSafeListeners
 
-    val chatListener: TypedListenerManager<ChatListener>
-        get() = ListenerManager.chatListener
+    val chatListeners: TypedListenerManager<ChatListener>
+        get() = ListenerManager.chatListeners
 
     val messagePlayerListener: TypedListenerManager<MessagePlayerListener>
         get() = ListenerManager.messagePlayerListener

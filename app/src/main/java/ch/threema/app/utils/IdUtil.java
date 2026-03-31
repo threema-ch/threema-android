@@ -3,8 +3,8 @@ package ch.threema.app.utils;
 import java.util.HashMap;
 import java.util.Map;
 
-import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import androidx.annotation.NonNull;
+import ch.threema.storage.models.group.GroupModelOld;
 
 public class IdUtil {
 
@@ -39,8 +39,8 @@ public class IdUtil {
      * Currently the function is implemented with a sequential positive integer, so the first
      * contact will get the number 1, the second contact will get the number 2, and so on.
      */
-    public static int getTempId(ContactModel contact) {
-        return getTempId(KEY_CONTACT + contact.getIdentity());
+    public static int getContactTempId(@NonNull String identity) {
+        return getTempId(KEY_CONTACT + identity);
     }
 
     /**
@@ -52,7 +52,7 @@ public class IdUtil {
      * Currently the function is implemented with a sequential positive integer, so the first
      * contact will get the number 1, the second contact will get the number 2, and so on.
      */
-    public static int getTempId(GroupModel group) {
+    public static int getGroupTempId(GroupModelOld group) {
         return getTempId(KEY_GROUP + group.getId());
     }
 }

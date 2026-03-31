@@ -53,14 +53,18 @@
     <string name="voip_prefs_video_codec_no_h264hip">Désactiver H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Codecs logiciels</string>
     <string name="voip_connection_failed">Impossible d\'établir la connexion.</string>
-    <string name="voip_connection_lost">Connexion perdue</string>
+    <string name="voip_call_disconnected">Appel interrompu</string>
     <string name="prefs_voip_reject_incoming_calls_title">Rejeter les appels mobiles</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Rejeter les appels mobiles entrants en cas d\'appel Threema actif.</string>
     <string name="voip_contact_not_found">Aucun contact Threema trouvé avec ce numéro.</string>
     <string name="voip_another_pstn_call">Impossible de démarrer l\'appel. Un appel téléphonique standard est en cours.</string>
     <string name="voip_call_status_off_hours">Appel en temps libre</string>
     <string name="voip_peer_video_disabled">Les appels vidéo ont été désactivés par l’autre partie.</string>
-    <string name="voip_reject_channel_name">Changement d\'état d\'appel</string>
+    <string name="voip_error_processing_call_anser">Une erreur s\'est produite lors du traitement de la réponse à l\'appel</string>
+    <string name="voip_error_peer_connection">Erreur de connexion entre pairs</string>
+    <string name="voip_error_determine_common_video_quality_profile">Impossible de déterminer un profil de qualité vidéo commun</string>
+    <string name="voip_audio_focus_lost">Le contrôle audio a été perdu</string>
+    <string name="voip_could_not_initialize">Impossible d\'initialiser l\'appel</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Diagnostics WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Lancez cet outil pour déboguer les problèmes de configuration d\'une connexion d\'appel vocal</string>
@@ -71,13 +75,9 @@
     <string name="voip_webrtc_debug_copied">Copie vers le presse-papier terminée.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Copier vers le presse-papier</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">Tous les membres du groupe ont été informés</string>
-    <string name="voip_gc_notification_channel_description">Appels de groupe</string>
-    <string name="voip_gc_notification_title">Appel de groupe</string>
     <string name="voip_gc_notification_call_started">%1$s a lancé un appel de groupe dans %2$s</string>
     <string name="voip_gc_notification_call_started_generic">%1$s a lancé un appel de groupe</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Vous avez commencé un appel de groupe</string>
-    <string name="voip_gc_dismiss_call">Ignorer</string>
     <string name="voip_gc_join_call">Rejoindre</string>
     <string name="voip_gc_ongoing_call">Appel de groupe en cours</string>
     <string name="voip_gc_waiting_for_participants">En attente des participants</string>

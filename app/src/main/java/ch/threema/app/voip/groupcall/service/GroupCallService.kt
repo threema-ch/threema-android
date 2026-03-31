@@ -27,12 +27,12 @@ import ch.threema.app.notifications.NotificationGroups
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
+import ch.threema.app.services.UserService
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
-import ch.threema.app.voip.groupcall.LocalGroupId
 import ch.threema.app.voip.groupcall.sfu.CallId
 import ch.threema.app.voip.groupcall.sfu.GroupCallController
 import ch.threema.app.voip.groupcall.sfu.GroupCallDependencies
@@ -43,10 +43,11 @@ import ch.threema.app.voip.util.VoipUtil
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.takeUnlessEmpty
+import ch.threema.data.datatypes.LocalGroupId
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.stores.IdentityStore
-import ch.threema.storage.models.GroupModel
+import ch.threema.storage.models.group.GroupModelOld
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
@@ -134,6 +135,7 @@ class GroupCallService : Service() {
     private lateinit var groupService: GroupService
     private lateinit var apiConnector: APIConnector
     private lateinit var contactModelRepository: ContactModelRepository
+    private lateinit var userService: UserService
     private lateinit var sfuConnection: SfuConnection
     private lateinit var preferenceService: PreferenceService
     private lateinit var voipStateService: VoipStateService
@@ -194,6 +196,7 @@ class GroupCallService : Service() {
         groupService = serviceManager.groupService
         apiConnector = serviceManager.apiConnector
         contactModelRepository = serviceManager.modelRepositories.contacts
+        userService = serviceManager.userService
         preferenceService = serviceManager.preferenceService
         voipStateService = serviceManager.voipStateService
     }
@@ -296,11 +299,11 @@ class GroupCallService : Service() {
         )
     }
 
-    private fun getNotificationTitle(groupModel: GroupModel?): String =
+    private fun getNotificationTitle(groupModel: GroupModelOld?): String =
         groupModel?.name?.takeUnlessEmpty()
             ?: groupService.getMembersString(groupModel)
 
-    private fun getAvatar(groupModel: GroupModel?): Bitmap? {
+    private fun getAvatar(groupModel: GroupModelOld?): Bitmap? {
         return groupModel?.let { groupService.getAvatar(it, false, true) }
     }
 
@@ -314,13 +317,13 @@ class GroupCallService : Service() {
 
         CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
             groupCallController = GroupCallControllerImpl(
-                callId,
-                this@GroupCallService::leaveCall,
-                contactService.me,
+                callId = callId,
+                onLeave = this@GroupCallService::leaveCall,
+                myIdentity = identityStore.getIdentity()!!,
             ).also { controller ->
                 controller.parameters = GroupCallParameters(
                     preferenceService.allowWebrtcIpv6(),
-                    preferenceService.aecMode,
+                    preferenceService.getAECMode(),
                     PreferenceService.VIDEO_CODEC_SW,
                 )
                 controller.dependencies = GroupCallDependencies(
@@ -329,6 +332,7 @@ class GroupCallService : Service() {
                     groupService,
                     apiConnector,
                     contactModelRepository,
+                    userService,
                 )
                 CoroutineScope(GroupCallThreadUtil.dispatcher).launch {
                     launch {
@@ -354,7 +358,8 @@ class GroupCallService : Service() {
     @Suppress("DEPRECATION")
     private fun setPSTNCallStateListener() {
         val telephonyManager = getSystemService(TELEPHONY_SERVICE)
-        if (telephonyManager is TelephonyManager && (
+        if (telephonyManager is TelephonyManager &&
+            (
                 Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
                     ContextCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED
                 )

@@ -30,7 +30,7 @@ public class SystemUpdateToVersion55 implements SystemUpdate {
                     if (!success) {
                         Log.w(TAG, "Renaming message log failed");
                     }
-                } else if (hasMessageLog && hasDebugLog) {
+                } else if (hasMessageLog) {
                     // Delete
                     boolean success = messageLog.delete();
                     if (!success) {

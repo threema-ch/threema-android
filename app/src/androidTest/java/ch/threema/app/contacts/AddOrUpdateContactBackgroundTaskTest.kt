@@ -2,7 +2,6 @@ package ch.threema.app.contacts
 
 import android.os.Looper
 import ch.threema.app.TestCoreServiceManager
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy
 import ch.threema.app.asynctasks.AddOrUpdateContactBackgroundTask
 import ch.threema.app.asynctasks.AlreadyVerified
@@ -15,11 +14,11 @@ import ch.threema.app.asynctasks.InvalidThreemaId
 import ch.threema.app.asynctasks.RemotePublicKeyMismatch
 import ch.threema.app.asynctasks.UserIdentity
 import ch.threema.app.managers.CoreServiceManager
-import ch.threema.app.utils.AppVersionProvider
+import ch.threema.app.restrictions.AppRestrictions
+import ch.threema.app.stores.IdentityProvider
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.base.crypto.NaCl
 import ch.threema.common.Http
-import ch.threema.data.TestDatabaseService
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.repositories.ModelRepositories
 import ch.threema.domain.models.IdentityState
@@ -29,8 +28,13 @@ import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.APIConnector.FetchIdentityResult
 import ch.threema.domain.protocol.api.APIConnector.HttpConnectionException
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
+import ch.threema.storage.TestDatabaseProvider
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
+import io.mockk.every
+import io.mockk.mockk
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -41,24 +45,36 @@ import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class AddOrUpdateContactBackgroundTaskTest {
+class AddOrUpdateContactBackgroundTaskTest : KoinComponent {
+    private val appRestrictions: AppRestrictions by inject()
+
     private val backgroundExecutor = BackgroundExecutor()
-    private lateinit var databaseService: TestDatabaseService
+    private lateinit var databaseProvider: TestDatabaseProvider
     private lateinit var coreServiceManager: CoreServiceManager
     private lateinit var contactModelRepository: ContactModelRepository
 
+    private val myIdentity = "00000000"
+
     @BeforeTest
     fun before() {
-        databaseService = TestDatabaseService()
-        val serviceManager = ThreemaApplication.requireServiceManager()
+        databaseProvider = TestDatabaseProvider()
+        val identityProviderMock = mockk<IdentityProvider> {
+            every { getIdentity() } returns Identity(myIdentity)
+            every { getIdentityString() } returns myIdentity
+        }
+        val identityStoreMock = mockk<IdentityStore> {
+            every { getIdentity() } returns Identity(myIdentity)
+            every { getIdentityString() } returns myIdentity
+        }
         coreServiceManager = TestCoreServiceManager(
-            version = AppVersionProvider.appVersion,
-            databaseService = databaseService,
-            preferenceStore = serviceManager.preferenceStore,
-            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
+            databaseProvider = databaseProvider,
+            identityProvider = identityProviderMock,
+            identityStore = identityStoreMock,
         )
-        contactModelRepository = ModelRepositories(coreServiceManager).contacts
+        contactModelRepository = ModelRepositories(coreServiceManager, identityProviderMock).contacts
     }
 
     @Test
@@ -152,7 +168,6 @@ class AddOrUpdateContactBackgroundTaskTest {
 
     @Test
     fun testAddMyIdentity() {
-        val myIdentity = "00000000"
         testAddingContact(
             { identity ->
                 FetchIdentityResult().also {
@@ -204,7 +219,7 @@ class AddOrUpdateContactBackgroundTaskTest {
 
     @Test
     fun testAddExistingContact() {
-        val apiConnectorResult: (identity: Identity) -> FetchIdentityResult = { identity ->
+        val apiConnectorResult: (identity: IdentityString) -> FetchIdentityResult = { identity ->
             FetchIdentityResult().also {
                 it.identity = identity
                 it.publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES)
@@ -235,7 +250,7 @@ class AddOrUpdateContactBackgroundTaskTest {
     fun testVerifyTwice() {
         val publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES).apply { fill(2) }
 
-        val apiConnectorResult: (identity: Identity) -> FetchIdentityResult = { identity ->
+        val apiConnectorResult: (identity: IdentityString) -> FetchIdentityResult = { identity ->
             FetchIdentityResult().also {
                 it.identity = identity
                 it.publicKey = publicKey
@@ -268,7 +283,7 @@ class AddOrUpdateContactBackgroundTaskTest {
     fun testUpgradeGroupContact() {
         val newIdentity = "01234567"
 
-        val apiConnectorResult: (identity: Identity) -> FetchIdentityResult = { identity ->
+        val apiConnectorResult: (identity: IdentityString) -> FetchIdentityResult = { identity ->
             FetchIdentityResult().also {
                 it.identity = identity
                 it.publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES)
@@ -312,7 +327,7 @@ class AddOrUpdateContactBackgroundTaskTest {
     fun testVerificationLevelUpgrade() {
         val newIdentity = "01234567"
 
-        val apiConnectorResult: (identity: Identity) -> FetchIdentityResult = { identity ->
+        val apiConnectorResult: (identity: IdentityString) -> FetchIdentityResult = { identity ->
             FetchIdentityResult().also {
                 it.identity = identity
                 it.publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES)
@@ -357,7 +372,7 @@ class AddOrUpdateContactBackgroundTaskTest {
     fun testAddAndVerifyGroupContact() {
         val newIdentity = "01234567"
 
-        val apiConnectorResult: (identity: Identity) -> FetchIdentityResult = { identity ->
+        val apiConnectorResult: (identity: IdentityString) -> FetchIdentityResult = { identity ->
             FetchIdentityResult().also {
                 it.identity = identity
                 it.publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES)
@@ -432,19 +447,19 @@ class AddOrUpdateContactBackgroundTaskTest {
 
         val addTask = object : AddOrUpdateContactBackgroundTask<Boolean>(
             identity = identity,
-            AcquaintanceLevel.DIRECT,
+            acquaintanceLevel = AcquaintanceLevel.DIRECT,
             myIdentity = myIdentity,
-            unusedAPIConnector,
-            contactModelRepository,
-            AddContactRestrictionPolicy.CHECK,
-            ThreemaApplication.getAppContext(),
-            null,
+            apiConnector = unusedAPIConnector,
+            contactModelRepository = contactModelRepository,
+            addContactRestrictionPolicy = AddContactRestrictionPolicy.CHECK,
+            appRestrictions = appRestrictions,
+            expectedPublicKey = null,
         ) {
             override fun onBefore() {
                 assertEquals(testThreadId, Thread.currentThread().id)
             }
 
-            override fun onContactAdded(result: ContactResult): Boolean {
+            override fun onContactResult(result: ContactResult): Boolean {
                 assertTrue(result is ContactExists)
                 assertNotEquals(testThreadId, Thread.currentThread().id)
                 assertNotEquals(Looper.getMainLooper(), Looper.myLooper())
@@ -463,11 +478,11 @@ class AddOrUpdateContactBackgroundTaskTest {
     }
 
     private fun testAddingContact(
-        fetchIdentity: (identity: Identity) -> FetchIdentityResult,
+        fetchIdentity: (identity: IdentityString) -> FetchIdentityResult,
         runOnFinished: (result: ContactResult) -> Unit,
-        newIdentity: Identity = "01234567",
+        newIdentity: IdentityString = "01234567",
         acquaintanceLevel: AcquaintanceLevel = AcquaintanceLevel.DIRECT,
-        myIdentity: Identity = "00000000",
+        myIdentity: IdentityString = "00000000",
         publicKey: ByteArray? = null,
     ) {
         val apiConnector = getTestApiConnector {
@@ -479,20 +494,22 @@ class AddOrUpdateContactBackgroundTaskTest {
         }
 
         val contactAdded =
-            backgroundExecutor.executeDeferred(object : BasicAddOrUpdateContactBackgroundTask(
-                newIdentity,
-                acquaintanceLevel,
-                myIdentity,
-                apiConnector,
-                contactModelRepository,
-                AddContactRestrictionPolicy.CHECK,
-                ThreemaApplication.getAppContext(),
-                publicKey,
-            ) {
-                override fun onFinished(result: ContactResult) {
-                    runOnFinished(result)
-                }
-            })
+            backgroundExecutor.executeDeferred(
+                object : BasicAddOrUpdateContactBackgroundTask(
+                    identity = newIdentity,
+                    acquaintanceLevel = acquaintanceLevel,
+                    myIdentity = myIdentity,
+                    apiConnector = apiConnector,
+                    contactModelRepository = contactModelRepository,
+                    addContactRestrictionPolicy = AddContactRestrictionPolicy.CHECK,
+                    appRestrictions = appRestrictions,
+                    expectedPublicKey = publicKey,
+                ) {
+                    override fun onFinished(result: ContactResult) {
+                        runOnFinished(result)
+                    }
+                },
+            )
 
         // Assert that the test is not stopped before running the background task completely
         runBlocking {
@@ -500,9 +517,9 @@ class AddOrUpdateContactBackgroundTaskTest {
         }
     }
 
-    private fun getTestApiConnector(onIdentityFetchCalled: (identity: Identity) -> FetchIdentityResult): APIConnector {
+    private fun getTestApiConnector(onIdentityFetchCalled: (identity: IdentityString) -> FetchIdentityResult): APIConnector {
         return object : APIConnector(false, null, false, OkHttpClient(), Version(), null, null) {
-            override fun fetchIdentity(identity: Identity) = onIdentityFetchCalled(identity)
+            override fun fetchIdentity(identity: IdentityString) = onIdentityFetchCalled(identity)
         }
     }
 }

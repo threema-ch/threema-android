@@ -3,12 +3,13 @@ package ch.threema.app.systemupdates.updates
 import android.content.Context
 import ch.threema.base.utils.getThreemaLogger
 import java.io.File
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("SystemUpdateToVersion115")
 
-class SystemUpdateToVersion115(
-    private val appContext: Context,
-) : SystemUpdate {
+class SystemUpdateToVersion115 : SystemUpdate {
+    private val appContext: Context by inject()
+
     override fun run() {
         try {
             // Deletes the directory that was already deleted in SystemUpdateToVersion63, but might have been recreated afterwards
@@ -19,11 +20,7 @@ class SystemUpdateToVersion115(
         }
     }
 
-    override fun getVersion() = VERSION
+    override val version = 115
 
     override fun getDescription() = "delete obsolete external tmp directory"
-
-    companion object {
-        const val VERSION = 115
-    }
 }

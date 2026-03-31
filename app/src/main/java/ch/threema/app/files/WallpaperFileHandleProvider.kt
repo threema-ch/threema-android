@@ -3,7 +3,7 @@ package ch.threema.app.files
 import android.provider.MediaStore.MEDIA_IGNORE_FILENAME
 import ch.threema.common.clearDirectoryRecursively
 import ch.threema.common.files.FileHandle
-import ch.threema.domain.types.ConversationUniqueId
+import ch.threema.domain.types.ConversationUID
 import ch.threema.localcrypto.MasterKeyProvider
 import java.io.File
 import java.io.IOException
@@ -17,7 +17,7 @@ class WallpaperFileHandleProvider(
             .withFallback(appDirectoryProvider.legacyUserFilesDirectory.fileHandle(GLOBAL_WALLPAPER_FILENAME))
             .withEncryption(masterKeyProvider)
 
-    fun get(uniqueId: ConversationUniqueId): FileHandle {
+    fun get(uniqueId: ConversationUID): FileHandle {
         val fileName = ".w-$uniqueId"
         return appDirectoryProvider.userFilesDirectory.fileHandle(
             directory = WALLPAPERS_DIRECTORY,

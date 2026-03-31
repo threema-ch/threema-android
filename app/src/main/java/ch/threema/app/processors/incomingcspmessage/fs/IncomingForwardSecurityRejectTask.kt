@@ -11,13 +11,13 @@ import ch.threema.domain.models.Contact
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityDecryptionResult
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataReject
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.Common
 import ch.threema.storage.models.AbstractMessageModel
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
+import ch.threema.storage.models.group.GroupMessageModel
 import java.util.Date
 
 private val logger = getThreemaLogger("IncomingForwardSecurityRejectTask")
@@ -251,7 +251,7 @@ class IncomingForwardSecurityRejectTask(
 
     private fun Common.GroupIdentity.convert() = GroupIdentity(creatorIdentity, groupId)
 
-    private fun getBasicContact(identity: Identity): BasicContact? =
+    private fun getBasicContact(identity: IdentityString): BasicContact? =
         contactStore.getCachedContact(identity)
             ?: contactModelRepository.getByIdentity(identity)?.data?.toBasicContact()
 }

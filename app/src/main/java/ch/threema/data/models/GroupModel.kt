@@ -7,7 +7,6 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.GroupService.GroupState
 import ch.threema.app.tasks.ReflectGroupSyncUpdateTask
-import ch.threema.app.utils.runtimeAssert
 import ch.threema.base.utils.Utils
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.toByteArray
@@ -17,9 +16,9 @@ import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.repositories.RepositoryToken
 import ch.threema.data.storage.DatabaseBackend
 import ch.threema.data.storage.DbGroup
-import ch.threema.domain.types.Identity
+import ch.threema.domain.models.UserState
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.Common
-import ch.threema.storage.models.GroupModel.UserState
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.Collections
@@ -36,7 +35,7 @@ private val logger = getThreemaLogger("data.GroupModel")
 @Serializable
 data class GroupIdentity(
     /** The creator identity string. Must be 8 characters long. */
-    val creatorIdentity: Identity,
+    val creatorIdentity: IdentityString,
     /** The api group id of the group. */
     val groupId: Long,
 ) {
@@ -85,13 +84,11 @@ data class GroupModelData(
     /** The group description timestamp. */
     @JvmField val groupDescriptionChangedAt: Date?,
     /**
-     * The group members' identities. This does not include the user's identity. The creator identity is included except when the user is the creator.
+     * The group members' identities. This does not include the user's and creator's identity.
      *
-     * Note that this set must not be modified.
-     *
-     * @throws UnsupportedOperationException if the set is being modified
+     * Note that this set cannot be modified.
      */
-    @JvmField val otherMembers: Set<String>,
+    @JvmField val otherMembers: Set<IdentityString>,
     /** The group user state */
     @JvmField val userState: UserState,
     /**
@@ -100,43 +97,9 @@ data class GroupModelData(
      */
     @JvmField val notificationTriggerPolicyOverride: Long?,
 ) {
-    companion object {
-        /**
-         * Factory function using only Java-compatible types.
-         */
-        @JvmStatic
-        fun javaCreate(
-            creatorIdentity: Identity,
-            groupId: Long,
-            name: String?,
-            createdAt: Date,
-            synchronizedAt: Date,
-            lastUpdate: Date?,
-            isArchived: Boolean,
-            colorIndex: Int,
-            groupDescription: String?,
-            groupDescriptionChangedAt: Date?,
-            members: Set<String>,
-            userState: UserState,
-            notificationTriggerPolicyOverride: Long?,
-        ): GroupModelData {
-            if (colorIndex < 0 || colorIndex > 255) {
-                throw IllegalArgumentException("colorIndex must be between 0 and 255")
-            }
-            return GroupModelData(
-                groupIdentity = GroupIdentity(creatorIdentity = creatorIdentity, groupId = groupId),
-                name = name,
-                createdAt = createdAt,
-                synchronizedAt = synchronizedAt,
-                lastUpdate = lastUpdate,
-                isArchived = isArchived,
-                precomputedIdColor = IdColor(colorIndex),
-                groupDescription = groupDescription,
-                groupDescriptionChangedAt = groupDescriptionChangedAt,
-                otherMembers = Collections.unmodifiableSet(members),
-                userState = userState,
-                notificationTriggerPolicyOverride = notificationTriggerPolicyOverride,
-            )
+    init {
+        require(groupIdentity.creatorIdentity !in otherMembers) {
+            "the creator identity must not be included in member list"
         }
     }
 
@@ -148,19 +111,25 @@ data class GroupModelData(
         get() = userState == UserState.MEMBER
 
     /**
+     * The group member's identities including the creator identity. Note that the user's identity is not included unless it is the creator.
+     */
+    val otherMembersAndCreator: Set<IdentityString> =
+        otherMembers + groupIdentity.creatorIdentity
+
+    /**
      * The group members' identities. This includes the user's identity and the creator's identity.
      *
-     * Note that this set must not be modified.
+     * Note that this set cannot be modified.
      *
      * @param myIdentity the user's identity
-     *
-     * @throws UnsupportedOperationException if the set is being modified
      */
-    fun getAllMembers(myIdentity: Identity): Set<String> {
+    fun getAllMembers(myIdentity: IdentityString): Set<IdentityString> {
         return if (isMember) {
-            Collections.unmodifiableSet(otherMembers + myIdentity)
+            // Note that the unmodifiable set is used to enforce immutability in java
+            Collections.unmodifiableSet(setOf(myIdentity, groupIdentity.creatorIdentity) + otherMembers)
         } else {
-            otherMembers
+            // Note that the unmodifiable set is used to enforce immutability in java
+            Collections.unmodifiableSet(setOf(groupIdentity.creatorIdentity) + otherMembers)
         }
     }
 
@@ -195,9 +164,7 @@ class GroupModel(
 ) {
     private val databaseId: Long? by lazy { databaseBackend.getGroupDatabaseId(groupIdentity) }
 
-    private val myIdentity by lazy { coreServiceManager.identityStore.getIdentity()!! }
-
-    private val nonceFactory by lazy { coreServiceManager.nonceFactory }
+    private val myIdentity by lazy { coreServiceManager.identityStore.getIdentityString()!! }
 
     /**
      *  We have to make the bridge over to the old GroupService in order
@@ -212,10 +179,9 @@ class GroupModel(
     }
 
     init {
-        runtimeAssert(
-            groupIdentity == data.groupIdentity,
-            "Group identity mismatch",
-        )
+        require(groupIdentity == data.groupIdentity) {
+            "Group identity mismatch"
+        }
     }
 
     /**
@@ -248,11 +214,43 @@ class GroupModel(
         data?.userState == UserState.KICKED
 
     /**
-     * Checks whether the user is a member of the group or not. Note that a reason for not being a member may be that the group no longer exists.
+     * Checks whether the user is a member of the group or not. The user is also considered a member if the user is the creator and hasn't disbanded
+     * the group.
+     *
+     * Note that a reason for not being a member may be that the group no longer exists.
      */
     fun isMember(): Boolean {
         val groupModelData = data ?: return false
         return groupModelData.isMember
+    }
+
+    /**
+     * Checks whether the group can be left or not. Note that if the group has been deleted, this method returns false.
+     *
+     * A group can be left if the user is *not* the creator and still a member.
+     */
+    fun isLeavable(): Boolean =
+        !isCreator() && isMember()
+
+    /**
+     * Checks whether the group can be disbanded or not. Note that if the group has been deleted, this method returns false.
+     *
+     * A group can be disbanded if the user is the creator and still a member and there is at least one other member.
+     */
+    fun isDisbandable(): Boolean =
+        isCreator() && isMember() && data?.otherMembers?.isNotEmpty() ?: false
+
+    /**
+     * Get the set of identities that should get the messages of the user. This includes all members as well as the creator. Note that the user is
+     * never included in the set - even if they are the creator.
+     */
+    fun getRecipients(): Set<IdentityString> {
+        val groupModelData = data ?: return emptySet()
+        return if (isCreator()) {
+            groupModelData.otherMembers
+        } else {
+            groupModelData.otherMembers + groupIdentity.creatorIdentity
+        }
     }
 
     /**
@@ -305,8 +303,7 @@ class GroupModel(
      */
     fun persistMemberChanges(addedMembers: Set<String>, removedMembers: Set<String>) {
         val data = ensureNotDeleted("persistMemberChanges")
-        val newMemberSet =
-            data.otherMembers.toMutableSet().apply { removeAll(removedMembers) } + addedMembers
+        val newMemberSet = data.otherMembers.toMutableSet().apply { removeAll(removedMembers) } + addedMembers
 
         updateFields(
             methodName = "persistMemberChanges",
@@ -360,10 +357,11 @@ class GroupModel(
      * listeners.
      */
     @Synchronized
-    fun removeLeftMemberFromRemote(memberIdentity: Identity) {
+    fun removeLeftMemberFromRemote(memberIdentity: IdentityString) {
         val data = ensureNotDeleted("removeLeftMemberFromRemote")
         val previousMembers = data.otherMembers
         val newMembers = previousMembers.filter { it != memberIdentity }.toSet()
+        val previousGroupState = if (isNotesGroup()!!) GroupService.NOTES else GroupService.PEOPLE
 
         updateFields(
             methodName = "removeLeftMemberFromRemote",
@@ -372,18 +370,12 @@ class GroupModel(
             updateDatabase = ::updateDatabase,
             onUpdated = {
                 notifyDeprecatedOnMemberLeaveListeners(memberIdentity)
-                val oldState = if (previousMembers.isEmpty()) {
-                    GroupService.NOTES
-                } else {
-                    GroupService.PEOPLE
-                }
-                val newState = if (newMembers.isEmpty()) {
-                    GroupService.NOTES
-                } else {
-                    GroupService.PEOPLE
-                }
-                if (oldState != newState) {
-                    notifyDeprecatedOnGroupStateChangeListeners(oldState, newState)
+                val newGroupState = if (isNotesGroup()!!) GroupService.NOTES else GroupService.PEOPLE
+                if (previousGroupState != newGroupState) {
+                    notifyDeprecatedOnGroupStateChangeListeners(
+                        oldState = previousGroupState,
+                        newState = newGroupState,
+                    )
                 }
             },
         )
@@ -430,9 +422,7 @@ class GroupModel(
                 newNotificationTriggerPolicyOverride = NotificationTriggerPolicyOverride.fromDbValueGroup(
                     notificationTriggerPolicyOverride,
                 ),
-                groupModel = this,
-                nonceFactory = nonceFactory,
-                multiDeviceManager = multiDeviceManager,
+                groupIdentity = groupIdentity,
             ),
         )
     }
@@ -455,9 +445,7 @@ class GroupModel(
             },
             reflectUpdateTask = ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityArchiveUpdate(
                 isArchived = isArchived,
-                groupModel = this,
-                multiDeviceManager = multiDeviceManager,
-                nonceFactory = nonceFactory,
+                groupIdentity = groupIdentity,
             ),
         )
     }
@@ -506,10 +494,9 @@ class GroupModel(
                 return
             }
             val newData = GroupModelDataFactory.toDataType(dbGroup)
-            runtimeAssert(
-                newData.groupIdentity == groupIdentity,
-                "Cannot update group model with data for different group: ${newData.groupIdentity} != $groupIdentity",
-            )
+            check(newData.groupIdentity == groupIdentity) {
+                "Cannot update group model with data for different group: ${newData.groupIdentity} != $groupIdentity"
+            }
             mutableData.value = newData
         }
     }
@@ -531,14 +518,14 @@ class GroupModel(
     /**
      * Synchronously notify new group member listeners.
      */
-    private fun notifyDeprecatedOnNewMemberListeners(newIdentity: Identity) {
+    private fun notifyDeprecatedOnNewMemberListeners(newIdentity: IdentityString) {
         ListenerManager.groupListeners.handle { it.onNewMember(groupIdentity, newIdentity) }
     }
 
     /**
      * Synchronously notify group member left listeners.
      */
-    private fun notifyDeprecatedOnMemberLeaveListeners(leftIdentity: Identity) {
+    private fun notifyDeprecatedOnMemberLeaveListeners(leftIdentity: IdentityString) {
         ListenerManager.groupListeners.handle { it.onMemberLeave(groupIdentity, leftIdentity) }
     }
 
@@ -552,7 +539,7 @@ class GroupModel(
     /**
      * Synchronously notify group member kicked listeners.
      */
-    private fun notifyDeprecatedOnMemberKickedListeners(kickedIdentity: Identity) {
+    private fun notifyDeprecatedOnMemberKickedListeners(kickedIdentity: IdentityString) {
         ListenerManager.groupListeners.handle { it.onMemberKicked(groupIdentity, kickedIdentity) }
     }
 

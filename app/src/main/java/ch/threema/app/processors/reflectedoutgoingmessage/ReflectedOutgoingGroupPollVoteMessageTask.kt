@@ -12,7 +12,7 @@ internal class ReflectedOutgoingGroupPollVoteMessageTask(
     outgoingMessage = outgoingMessage,
     message = GroupPollVoteMessage.fromReflected(outgoingMessage).apply {
         // This property is used for the ballot service to determine who sent the vote.
-        fromIdentity = serviceManager.identityStore.getIdentity()!!
+        fromIdentity = serviceManager.identityStore.getIdentityString()!!
     },
     type = Common.CspE2eMessageType.GROUP_POLL_VOTE,
     serviceManager = serviceManager,

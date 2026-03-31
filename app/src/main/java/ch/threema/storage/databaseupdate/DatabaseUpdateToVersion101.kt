@@ -16,9 +16,5 @@ internal class DatabaseUpdateToVersion101(
 
     override fun getDescription() = "add contacts job title & department field"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 101
-    }
+    override val version = 101
 }

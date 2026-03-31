@@ -5,5 +5,6 @@ import androidx.compose.runtime.Immutable
 @Immutable
 data class ConversationListItemUiModel(
     val model: ConversationUiModel,
-    val isChecked: Boolean,
+    val isChecked: Boolean = false,
+    val isHighlighted: Boolean = false,
 )

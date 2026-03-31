@@ -92,8 +92,7 @@ class BigMediaFragment : Fragment() {
 
     fun setMediaItem(mediaItem: MediaItem) {
         this.mediaItem = mediaItem
-        isVideo =
-            mediaItem.type == MediaItem.TYPE_VIDEO || mediaItem.type == MediaItem.TYPE_VIDEO_CAM
+        isVideo = mediaItem.type == MediaItem.TYPE_VIDEO || mediaItem.type == MediaItem.TYPE_VIDEO_CAM
     }
 
     // Change to drag listener here

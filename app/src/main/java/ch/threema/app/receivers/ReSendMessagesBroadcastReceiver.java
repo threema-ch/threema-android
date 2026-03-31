@@ -23,8 +23,8 @@ import ch.threema.domain.models.MessageId;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupMessageModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageModel;
 
 public class ReSendMessagesBroadcastReceiver extends ActionBroadcastReceiver {
@@ -56,7 +56,7 @@ public class ReSendMessagesBroadcastReceiver extends ActionBroadcastReceiver {
                         List<String> receiverIdentities = new ArrayList<>();
                         if (failedMessage instanceof GroupMessageModel) {
                             GroupMessageModel failedGroupMessage = (GroupMessageModel) failedMessage;
-                            GroupModel group = groupService.getById(failedGroupMessage.getGroupId());
+                            GroupModelOld group = groupService.getById(failedGroupMessage.getGroupId());
                             if (group == null) {
                                 logger.warn("Group model not found for failed message {}", failedGroupMessage.getApiMessageId());
                                 continue;

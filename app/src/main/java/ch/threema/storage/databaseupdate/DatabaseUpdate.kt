@@ -11,12 +11,11 @@ import android.database.SQLException
  * - must not depend on other services
  * - must not reference constants (e.g. table or field names) from other classes
  */
-@JvmDefaultWithCompatibility
 interface DatabaseUpdate {
     @Throws(SQLException::class)
     fun run()
 
-    fun getVersion(): Int
+    val version: Int
 
     /**
      * A brief, human-readable description of what this update does. Only used for logging.
@@ -26,7 +25,7 @@ interface DatabaseUpdate {
 
 val DatabaseUpdate.fullDescription: String
     get() = buildString {
-        append("version ${getVersion()}")
+        append("version $version")
         getDescription()?.let { description ->
             append(" ($description)")
         }

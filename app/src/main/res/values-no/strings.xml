@@ -5,7 +5,6 @@
     <string name="title_section1">Samtaler</string>
     <string name="title_compose_message">Start samtale</string>
     <string name="title_choose_recipient">Velg mottaker</string>
-    <string name="title_keyfingerprint">Fingeravtrykkindikator</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="title_mythreemaid">Min ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -60,9 +59,6 @@ når den første meldingen mottas.</string>
     <string name="prefs_sum_vibrate">Vibrer ved innkommende melding</string>
     <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
-    <string name="prefs_sum_light">Hvit</string>
-    <string name="prefs_title_wallpaper">Velg bakgrunn</string>
-    <string name="prefs_sum_wallpaper">Velg bilde for bakgrunn</string>
     <string name="prefs_title_wallpaper_switch">Bakgrunn</string>
     <string name="prefs_title_enter">Enter for å sende</string>
     <string name="prefs_sum_enter_on">Enter-knappen sender meldingen øyeblikkelig</string>
@@ -121,11 +117,12 @@ når den første meldingen mottas.</string>
     <string name="scan_successful">ID-en har blitt skannet og kontakten er nå verifisert.</string>
     <string name="scan_duplicate">IDen har allerede blitt skannet og verifisert.</string>
     <string name="linked_email">E-post</string>
+    <!-- Pattern for displaying the user's email address on the My Profile screen. %1$s is a placeholder for the email address, %2$s is a placeholder for the verification state (e.g. "pending") -->
     <string name="linked_mobile">Telefonnummer</string>
+    <!-- Pattern for displaying the user's mobile phone number on the My Profile screen. %1$s is a placeholder for the phone number, %2$s is a placeholder for the verification state (e.g. "pending") -->
     <string name="public_nickname">Kallenavn</string>
     <string name="share_via">Del via…</string>
     <string name="share_subject">%s samtale</string>
-    <string name="message_delete_undo">Angre</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="mobile_already_linked">Din ${app_name_short} ID er allerede koblet til dette telefonnummeret</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -138,7 +135,6 @@ når den første meldingen mottas.</string>
     <string name="image_placeholder">Bilde</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="invalid_threema_id">Ugyldig ${app_name_short} ID</string>
-    <string name="contact_already_exists">Kontakten finnes allerede</string>
     <string name="close">Lukk</string>
     <string name="creating_contact">Legger til ny kontakt</string>
     <string name="creating_contact_successful">Kontakt lagt til</string>
@@ -153,7 +149,6 @@ når den første meldingen mottas.</string>
     <string name="verify_failed">Mislyktes</string>
     <string name="verify_failed_summary">Verifisering av telefonnummeret mislyktes. Vennligst sørg for at telefonnummeret du skrev inn er korrekt og at du er tilkoblet mobilt nettverk før du prøver igjen.</string>
     <string name="verify_failed_not_linked">Verifisering av telefonnummeret mislyktes. Verifikasjonsprosessen har blitt avbrutt.</string>
-    <string name="check_incoming_sms">Sjekker for innkommende SMS</string>
     <string name="backup_title">Eksporter ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_sum">Eksporter din ${app_name_short} ID</string>
@@ -224,7 +219,6 @@ når den første meldingen mottas.</string>
     <string name="acknowledge">Enig</string>
     <string name="decline">Uenig</string>
     <string name="forward_message">Videresend melding</string>
-    <string name="file_is_not_a_image">Valgt fil er ikke et bilde</string>
     <string name="connection_error">Tilkoblingsproblem, vennligst prøv igjen senere.</string>
     <string name="me_myself_and_i">Meg</string>
     <string name="really_forward">Videresend til “%1$s”?</string>
@@ -232,17 +226,14 @@ når den første meldingen mottas.</string>
     <string name="ringtone_none">Stille</string>
     <string name="no_camera_installed">Kameraet er ikke tilgjengelig</string>
     <string name="save_message_action">Lagre</string>
-    <string name="file_is_not_a_video">Valgt fil er ikke en video</string>
     <string name="masterkey_is_unlocked">Masternøkkel er låst opp</string>
     <string name="file_too_large">Filen er større enn maksimal tillatt størrelse på %1$d MB</string>
-    <string name="deleting_thread">Sletter samtale</string>
     <string name="enter_serial_body"><![CDATA[Vennligst skriv inn din lisensnøkkel. Du kan <a href="https://shop.threema.ch/">kjøpe</a> en lisens eller <a href="https://shop.threema.ch/retrieve_keys">hente</a> nøklene dine i tilfelle du allerede har kjøpt en lisens.]]></string>
     <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="enter_serial_title">Lås opp ${app_name}</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="serial_required_want_exit">Lisensnøkkelen er ugyldig. Vil du prøve igjen eller lukke ${app_name}?</string>
-    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Sjekker lisens</string>
     <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
@@ -253,7 +244,6 @@ når den første meldingen mottas.</string>
     <string name="not_now">Påminn meg senere</string>
     <string name="preparing_messages">Forbereder meldinger</string>
     <string name="select_emoji">emojier</string>
-    <string name="search_contact">Søk kontakter</string>
     <string name="push_reset_title">Push token resett</string>
     <string name="push_reset_text">Din push token har blitt resatt</string>
     <string name="emoji_recent">Nylig</string>
@@ -291,7 +281,6 @@ når den første meldingen mottas.</string>
     <string name="set_pin_again_summary">Skriv PIN-koden på nytt</string>
     <string name="set_pin_hint">PIN-kode</string>
     <string name="title_addgroup">Ny gruppe</string>
-    <string name="search_group">Søk etter gruppe</string>
     <string name="updating_system">Oppdaterer systemet</string>
     <string name="title_select_contacts">Velg medlemmer</string>
     <string name="pin_invalid_not_set">PIN-kode ugyldig. Ikke valgt.</string>
@@ -314,8 +303,6 @@ når den første meldingen mottas.</string>
     <string name="backup_delete_confirm">Sikkerhetskopien er slettet</string>
     <string name="message_log_title">Meldingsdetaljer</string>
     <string name="state_read">les</string>
-    <string name="state_ack">enig</string>
-    <string name="state_dec">uenig</string>
     <string name="state_delivered">levert</string>
     <string name="state_sending">sender</string>
     <string name="state_pending">avventer</string>
@@ -324,9 +311,7 @@ når den første meldingen mottas.</string>
     <string name="state_dialog_created">Opprettet</string>
     <string name="state_dialog_posted">Sendt</string>
     <string name="state_dialog_modified">Oppdatert</string>
-    <string name="state_dialog_status">Status</string>
     <string name="no_recent_conversations">Ingen samtaler funnet</string>
-    <string name="save_changes">Lagre</string>
     <string name="creating_group">Oppretter gruppe</string>
     <string name="updating_group">Oppdaterer gruppe</string>
     <string name="status_create_group">Gruppe opprettet.</string>
@@ -337,9 +322,6 @@ når den første meldingen mottas.</string>
     <string name="status_group_member_kicked">\"%1$s\" har blitt fjernet fra gruppen.</string>
     <string name="can_not_send_no_group_members">Du kan ikke sende en melding til en tom gruppe</string>
     <string name="you_are_not_a_member_of_this_group">Du er ikke en medlem av denne gruppen</string>
-    <string name="can_not_delete_not_valid">Kan ikke fjerne et ugyldig objekt</string>
-    <string name="can_not_delete_contact_until_in_group">Denne kontakten er fortsatt en medlem eller en oppretter av en gruppesamtale og kan derfor ikke bli slettet. Forlat eller slett alle grupper som inkluderer denne kontakten og prøv igjen.</string>
-    <string name="can_not_delete_contact">Kan ikke slette kontakten</string>
     <string name="title_public_nickname">Kallenavn</string>
     <string name="prefs_sum_excluded_sync_identities">ID-ene som er listet opp her blir ignorert når kontakter synkroniseres</string>
     <string name="prefs_title_excluded_sync_identities">Ekskluderingsliste</string>
@@ -354,9 +336,7 @@ når den første meldingen mottas.</string>
     <string name="yes">Ja</string>
     <string name="deleting_contact">Sletter kontakt</string>
     <string name="prefs_contact_soring">Sortering</string>
-    <string name="prefs_sum_contact_soring">Velg sorteringsrekkefølgen for oppføringer i kontaktlisten</string>
     <string name="prefs_contact_format">Vis navn på kontakter</string>
-    <string name="prefs_sum_contact_format">Angi format for navn på kontakter</string>
     <string name="prefs_contact_list_title">Kontaktliste</string>
     <string name="prefs_default_contact_picture_colored">Standard kontaktbilde</string>
     <string name="prefs_show_inactive_contacts">Vis inaktive IDer</string>
@@ -372,19 +352,7 @@ når den første meldingen mottas.</string>
     <string name="contact_format_last_name_first_name">Etternavn Fornavn</string>
     <string name="block_contact">Blokker kontakt</string>
     <string name="unblock_contact">Fjern kontaktblokkering</string>
-    <string name="one_unread_message">1 ulest melding</string>
-    <string name="really_unlink_contact_title">Fjern kontaktkobling</string>
-    <string name="really_unlink_contact">Vil du virkelig fjerne koblingen til denne kontakten?</string>
-    <string name="do_unlink_contact">Fjern kontaktkobling</string>
-    <string name="do_choose_other_contact">Velg en annen kontakt</string>
-    <string name="touch_to_link">(ingen)</string>
-    <string name="prefs_validate_contacts">Validér kontaktkoblinger</string>
-    <string name="prefs_validate_contacts_loading">Validerer kontaktkoblinger</string>
-    <string name="prefs_title_fullscreen_ime">Fullskjerm tastatur</string>
-    <string name="prefs_sum_fullscreen_ime_on">Tastaturet kommer til å dekke over applikasjonen om enheten er i landskapsmodus</string>
-    <string name="prefs_sum_fullscreen_ime_off">Vis en forhåndsvisning av samtalen over tastaturet om det er plass</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="save_image">Lagre bilde</string>
     <string name="share_image">Del bilde</string>
     <string name="view_in_gallery">Vis i galleri</string>
     <string name="token_register_failed">Push token ble ikke oppdatert, vennligst prøv igjen.</string>
@@ -424,8 +392,6 @@ når den første meldingen mottas.</string>
     <string name="prefs_summary_hide_screenshots">Ikke vis miniatyrbilder i Nylige Apper og deaktiver skjermbilder av utvalgte skjermer</string>
     <string name="media_gallery">Mediagalleri</string>
     <string name="media_file_not_found">Kunne ikke åpne mediefil. Den har enten blitt slettet fra serveren eller ikke lastet ned enda.</string>
-    <string name="no_media_found">Ingen %s ble funnet i denne samtalen.</string>
-    <string name="media_gallery_all">Alle</string>
     <string name="media_gallery_pictures">Bilder</string>
     <string name="media_gallery_videos">Videoer</string>
     <string name="group_membership_title">Medlem av disse gruppene</string>
@@ -447,7 +413,6 @@ når den første meldingen mottas.</string>
     <string name="contact_not_found">Ingen kontakt funnet</string>
     <string name="contact_now_blocked">Kontakten er blokkert</string>
     <string name="contact_now_unblocked">Kontakten er ikke blokkert</string>
-    <string name="sending_images">Sender bilder</string>
     <string name="share_conversation_body">Du trenger et moderne ZIP-verktøy med AES støtte for å åpne denne .zip filen, for eksempel:
 http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Samtalen vil bli sendt som en kryptert .zip fil. Vennligst skriv et passord:</string>
@@ -482,8 +447,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="ballot_result_final">Endelig resultat</string>
     <string name="invalid_cannot_send">Du kan ikke sende meldinger til en ugyldig kontakt</string>
     <string name="ballot_answer_count_error">Vennligst skriv minimum to svar til avstemningen.</string>
-    <string name="ballot_one_contact_not_supported">Varsel: %1$s vil ikke kunne delta i avstemningen.</string>
-    <string name="ballot_x_contact_not_supported">Varsel: %1$d kontakter vil ikke kunne delta i avstemningen.</string>
     <string name="contact_state_inactive">Inaktiv</string>
     <string name="contact_state_invalid">Ugyldig</string>
     <string name="back">Tilbake</string>
@@ -531,8 +494,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="internal_storage">Intern lagring</string>
     <string name="no_activity_for_mime_type">Fant ingen app for å åpne denne filen.</string>
     <string name="open_from">Åpne fra</string>
-    <string name="file_one_contact_not_supported">%1$s kan ikke motta filer.</string>
-    <string name="file_x_contact_not_supported">Varsel: %1$d kontakter kan ikke motta filen.</string>
     <string name="mime_android_apk">Android pakke</string>
     <string name="mime_audio">Lydfil</string>
     <string name="mime_certificate">Digitalt sertifikat</string>
@@ -620,7 +581,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="notifications_until">Frem til %s</string>
     <string name="notifications_mute">Dempet</string>
     <string name="notifications_choose_sound">Velg lyd</string>
-    <string name="error_video_conversion">Feil ved konvertering av video.</string>
     <string name="confirm_your_pin">Bekreft din PIN-kode</string>
     <string name="too_many_incorrect_attempts">For mange feil forsøk. Prøv igjen om %s sekunder.</string>
     <string name="no_lockscreen_set">Ingen låseskjerm er angitt.</string>
@@ -663,8 +623,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_fingerprint">Ved å flytte på fingeren din, lager du tilfeldig data (kalt entropi), som blir brukt til å generere nøkkelparet som er knyttet til din nye unike ${app_name_short} ID. Nøkkelparet består av en <b>offentlig nøkkel</b> som er sendt til dine venner og en <b>privat nøkkel</b> som er trygt lagret på din enhet. Vennene dine krypterer meldinger til deg med din offentlige nøkkel. Bare eieren av den private nøkkelen, og ingen andre, kan dekryptere disse meldingene.</string>
     <string name="new_wizard_info_id">Du har også laget et nøkkelpar. Den offentlige nøkkelen har blitt sendt til våre servere på en sikker måte. Den private nøkkelen forlater aldri din enhet. Dette sørger for at ingen andre kan lese dine meldinger.</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_sync_contacts">Om du aktiverer denne funksjonen, så krypterer ${app_name_short} e-postadresser og telefonnummer på en sikker måte (en-veis ved hjelp av hash), før det blir sendt til serveren for å sjekke om der finnes matcher. Vi lagrer aldri data fra adresseboken din på våre servere.</string>
     <string name="new_wizard_info_sync_contacts_dialog">Kontaktsynkronisering kan hjelpe deg å finne vennene dine automatisk. Om du godtar, så vil telefonnummer og e-postadresser fra din kontaktliste bli kryptert og sendt til vår server for å se etter treff. Ingen data vil bli lagret eller delt med noen. \n\nVil du aktivere kontaktsynkronisering?</string>
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">Ved å oppgi ditt telefonnummer og e-postadresse, så kan ${app_name_short} hjelpe dine venner å finne deg automatisk om de har deg i adresseboken på sin enhet. Informasjonen blir lagret på en sikker måte (en-veis kryptering ved hjelp av hash) på våre servere. Om du vil bruke ${app_name} helt anonymt, så kan du hoppe over dette trinnet.</string>
@@ -696,9 +654,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="action_leave_and_delete_group">Forlat og slett gruppe</string>
     <string name="action_dissolve_and_delete_group">Oppløs og slett gruppe</string>
     <string name="delete_my_group_message">Er du sikker på at du vil slette denne gruppen for godt? Alle meldinger vil bli slettet og gjenværende medlemmer kan ikke lenger bruke gruppen.</string>
-    <string name="error_out_of_memory">Ikke nok minne til å fullføre denne handlingen</string>
     <string name="configure">Konfigurer</string>
-    <string name="file_is_not_audio">Ikke en lydfil</string>
     <string name="disabled_by_policy">Noen innstillinger har blitt deaktivert av enhetspolicy</string>
     <string name="select_all">Velg alle</string>
     <string name="deleting_messages">Sletter meldinger</string>
@@ -766,7 +722,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="text">Tekst</string>
     <string name="undo">Angre</string>
     <string name="android_backup_date">Sikkerhetskopi</string>
-    <string name="check_now">Sjekk nå</string>
     <string name="discard">Forkast</string>
     <string name="android_backup_restart_threema">Vennligst vent. Appen vil bli startet på nytt om noen få sekunder.</string>
     <string name="battery_optimizations_title">Deaktiver batterioptimaliseringer</string>
@@ -811,7 +766,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="menu_send_profilpic">Legg til som mottaker av profilbilde</string>
     <string name="menu_send_profilpic_off">Fjern som mottaker av profilbilde</string>
     <string name="menu_send_profilpic_now">Send profilbilde nå</string>
-    <string name="profile_picture_sent">Profilbilde sendt</string>
     <string name="sending_messages">Sender…</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Å lagre store mediafiler til en lokal ZIP-sikkerhetskopi kan overstige kapasiteten til enhetens prosessor og minne, og det kan ta veldig lang tid å fullføre. ${app_name} vil ikke sende eller motta meldinger mens sikkerhetskopieringen kjører. Fortsette likevel?</string>
@@ -846,11 +800,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="italic">Kursiv</string>
     <string name="bold">Fet</string>
     <string name="shortcut_choice_title">Opprett en snarvei for en…</string>
-    <string name="prefs_title_device_info">Enhetsinformasjon</string>
     <string name="notifications_disabled_title">Varsler er deaktivert</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="notifications_disabled_text">Varsler for ${app_name} har blitt dektivert i systeminnstillingene. Du vil ikke får varsler om nye innkommende meldinger.</string>
-    <string name="notifications_disabled_settings">Endre systeminnstillinger</string>
     <string name="error_attaching_files">Feil når du legger til vedlegg.</string>
     <string name="prefs_fix_powermanager_problems">Skru av strømbegrensninger</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -900,21 +850,17 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="passphrase_service_name">Passfrase Tjeneste</string>
     <string name="passphrase_service_description">Varsel når passfrase er opplåst</string>
     <string name="webclient_service_description">Varsel når Web-/Skrivebordsøkt er aktiv</string>
-    <string name="prefs_title_accept_privacy_policy">Godkjenn Personvernerklæring</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="privacy_policy_explain">${app_name} beskytter ditt personvern strengere enn noen annen meldingsapp. Finn ut mer her %1$s.</string>
-    <string name="privacy_policy_check_confirm">For å bruke %s, vennligst godkjenn Personvernerklæringen.\n(Påkrevd etter EU forordning 2016/679)</string>
     <string name="prefs_title_incognito_keyboard">Be om incognito tastatur</string>
     <string name="prefs_sum_incognito_keyboard">Deaktiver datainnsamling for personaliserte forslag (om det er støttet av tastaturet)</string>
-    <string name="tooltip_mentions">Skriv @-tegnet på tastaturet for å nevne eller adressere direkte til et medlem av denne gruppen.</string>
-    <string name="tooltip_imagepaint">Vær kreativ! Trykk på tryllestaven for å tegne eller for å legge til klistremerker og tekst til bildene dine før de blir sendt.</string>
     <string name="call_ongoing">Pågående samtale</string>
     <string name="ballot_received_votes">Antall stemmer mottatt: %1$d/%2$d</string>
     <string name="quote_not_found">Sitert melding er ikke funnet</string>
     <string name="ballot_secret">hemmelig</string>
     <string name="password_too_short_generic">Passord er for kort</string>
     <string name="passwords_dont_match">Passordene er ikke like</string>
-    <string name="test_unsuccessful">Testen mislyktes</string>
+    <!-- Error message shown when setting up a custom server for the Threema Safe feature. %s is a placeholder for the details of the error. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="preparing_threema_safe">Forbereder ${app_name_short} Safe</string>
     <string name="disable_powermanager_title">Strømbegrensninger</string>
@@ -963,9 +909,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="add_group_members">Legg til ny medlem</string>
     <string name="contact_add_confirm">Vil du legge til den nye kontakten \"%1$s\" til din kontaktliste?</string>
     <string name="password_bad">Svakt passord</string>
-    <string name="prefs_fix_background_data">Skru på bakgrunnsdata</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="prefs_fix_background_data_desc">For å motta meldinger mens ${app_name} er i bakgrunnen, aktiver både bakgrunnsdata og ubegrenset databruk på enheten.</string>
     <string name="prefs_fix_device">Fiks konfigurasjonsproblemer med enheten</string>
     <string name="safe_successful">Vellykket</string>
     <string name="safe_unsuccessful">Mislykket</string>
@@ -977,7 +920,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="safe_retention">Oppbevaringstid</string>
     <string name="safe_result">Resultat av kopi</string>
     <string name="number_of_days">%d dager</string>
-    <string name="backup_other_restore_options">Andre alternativer for gjenoppr.</string>
     <string name="safe_size">Kopistørrelse</string>
     <string name="backup_version_mismatch">Versjonen av sikkerhetskopien er høyere enn den støttede versjonen. Vennligst oppdater til den siste versjonen av applikasjonen.</string>
     <string name="safe_restore_failed">Gjenoppret. mislyktes</string>
@@ -1008,7 +950,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="delete_group_message">Vil du forlate denne gruppen og slette den helt? Alle meldinger blir slettet.</string>
     <string name="delete_left_group_message">Vil du virkelig slette denne gruppen? Alle meldinger vil bli slettet.</string>
     <string name="chats">Samtaler</string>
-    <string name="notification_setting_ignored">ALLE ENDRINGER VIL BLI IGNORERT!</string>
     <string name="notification_channel_alerts">Advarsler og feil</string>
     <string name="notification_channel_notices">Varsler</string>
     <string name="chat_updates">Samtaleoppdateringer</string>
@@ -1016,7 +957,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="tooltip_export_id">Trykk her for å dele eller skrive ut din krypterte ${app_name_short} ID</string>
     <string name="downloading">Laster ned</string>
-    <string name="today">I dag</string>
     <string name="restore_data_cancelled">Gjenoppretting avbrutt</string>
     <string name="safe_change_password">Endre passord</string>
     <string name="safe_configure_choose_password_title">Velg et passord</string>
@@ -1026,7 +966,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="safe_password_updated">${app_name_short} Safe passordet har blitt oppdatert.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_activated">${app_name_short} Safe er nå akivert.</string>
-    <string name="restore_zip_invalid_file">Gjenopprettingsfil er ugyldig.</string>
     <string name="push_token_cleared">Push token har blitt fjernet</string>
     <string name="insert_date">Legg inn dato</string>
     <string name="add_answer">Legg til svar</string>
@@ -1035,10 +974,7 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="voip_disabled">${app_name_short} anrop er deaktivert</string>
     <string name="hide_chat_enter_message_explain">Denne samtalen er merket som privat samtale. For å åpne, vennligst opprett tilgangsbeskyttelse først.</string>
     <string name="unknown">Ukjent</string>
-    <string name="miui_notification_title">Viktig melding om varsler i MIUI</string>
-    <string name="miui12_notification_body">MIUI lyd, lys og svevende varsler for alle apper som standard (bortsett fra noen veldig populære applikasjoner som Xiaomi har merket som \"viktig\"). Du må manuelt aktivere slike varsler i innstillingene for din mobil. Dette må også gjentas etter hver oppdatering av appen. Kontakt Xiaomi for mer informasjon.</string>
     <string name="dont_show_again">Ikke vis igjen</string>
-    <string name="miui_notification_prefs">MIUI innstillinger</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_upload_successful">${app_name_short} Safe sikkerhetskopi er opplastet</string>
     <string name="time_remaining">%s gjenstår</string>
@@ -1048,7 +984,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
     <string name="lock_option_biometric">Biometri</string>
     <string name="biometric_enter_authentication">For å låse opp, vennligst autentiser deg</string>
-    <string name="biometric_authentication_failed">Autentisering feilet</string>
     <string name="biometric_authentication_successful">Vellykket autentisering</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_safe_forced_explain">Din administrator har aktivert ${app_name_short} Safe for din enhet.</string>
@@ -1057,8 +992,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="work_select_categories">Velg kategorier</string>
     <string name="my_profile">Min profil</string>
     <string name="message_too_long">Melding er for lang. Kan ikke sende.</string>
-    <string name="database_migration_no_space">Migrasjon fra database mislyktes: Ikke nok lagringsplass igjen på enheten.</string>
-    <string name="advanced_options">Avanserte valg</string>
     <string name="url_warning_body">Vertsnavnet til linken du er i ferd med å åpne er mistenkelig: \n\nVisningsnavn: <b>%s</b>\nEkte navn: <b>%s</b>\n\nDette kan være et forsøk på å lure deg til å åpne en side som later som den er noe annet.\n\nVil du likevel fortsette?</string>
     <string name="url_warning_title">Phishing-advarsel</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1074,8 +1007,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="lp_or_select_nearby">Eller velg en plass i nærheten</string>
     <string name="lp_use_this_location">Sende denne posisjonen?</string>
     <string name="lp_search_place">Skriv inn by</string>
-    <string name="lp_no_nearby_places_found">Ingen plasser i nærheten funnet</string>
-    <string name="select_directory_for_backup">Lagre her</string>
     <string name="data_backup_headline">Lag en sikkerhetskopi for å lagre all dine data, inkludert samtaler og media.</string>
     <string name="data_backup_save_path">Plassering</string>
     <string name="change">Endre</string>
@@ -1101,13 +1032,11 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
     <string name="tap_to_start">Trykk her for å starte %s nå.</string>
     <string name="two_years">2 år</string>
-    <string name="invalid_backup_path">Ugyldig kopiplassering</string>
     <string name="backup_data_no_permission">Kan ikke skrive til denne plasseringen. Velg en annen plassering.</string>
     <string name="prefs_sum_show_unread_badge">Vis ulest-merker i navigasjonsfaner i bunnen</string>
     <string name="prefs_title_show_unread_badge">Merker</string>
     <string name="open_myid_popup">Åpne hurtigtilgangsvinduet</string>
     <string name="logo">Logo / Scroll til toppen</string>
-    <string name="quote_subj_end">Slutt sitat</string>
     <string name="quote_subj">Sitat</string>
     <string name="duration">Varighet</string>
     <string name="seconds">Sekunder</string>
@@ -1131,8 +1060,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="restore_data_backup_explain">For å gjenopprette en sikkerhetskopi, slett din ${app_name_short} ID fra \"Min profil\" skjerm, først.\n\nNår appen starter på nytt, velg \"Gjenopprett fra sikkerhetskopi\", Andre gjenopprettings-valg\", \"Sikkerhetskopi\" og deretter velg filen du vil gjenopprette.</string>
     <string name="audio_focus_loss_complete">Anrop frakoblet på grunn av tap av lyd-fokus.</string>
     <string name="tap_for_picture_hold_for_video">Trykk for bilde, hold for video</string>
-    <string name="sending_media">Sender media</string>
-    <string name="permission_record_video_audio_required">For å spille inn en video, gi tilgang til mikrofonen.</string>
     <string name="media_files">Filer</string>
     <string name="auto_download_limit_explain">Videoer og filer større enn %s vil alltid bli lastet ned ved behov.</string>
     <string name="quoted_message_deleted">Sitert melding er ikke tilgjengelig lenger</string>
@@ -1149,7 +1076,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="work_life_dnd_active">Utenom arbiedstid: Aktiv</string>
     <string name="warning">Varsel</string>
     <string name="password_remember_warning">Husk det du skriver inn her! Fordi %s ikke lagrer passord på serveren, så kan vi ikke hjelpe om du glemmer passord eller PIN-kode.</string>
-    <string name="safe_backup_tap_to_restart">Trykk på system-varselet for å restarte appen nå. Om du ikke kan se varselet, vennligst sveip ned fra telefonens varselområde.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="send_to_support">Send til ${company_name} Support</string>
     <string name="menu_legal">Lov</string>
@@ -1195,7 +1121,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="forward_text">Videresend tekst</string>
     <string name="an_error_occurred_during_send">En feil skjedde under sending av en eller flere meldinger.</string>
     <string name="state_processing">Behandler</string>
-    <string name="passphrase_locked">Passfrase er låst</string>
     <string name="selected_media">Ditt utvalg</string>
     <string name="attach_gif">GIF</string>
     <string name="attach_gallery">Galleri</string>
@@ -1209,19 +1134,14 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="media_date_unknown">Dato er ukjent</string>
     <string name="max_selectable_media_exceeded">Ikke mer en %d objekter kan bli sendt samtidig.</string>
     <string name="error_unable_loading_media_thumb">Feil. Miniatyrbilde kunne ikke lastes inn</string>
-    <string name="select">Velg</string>
     <string name="filter_list">Filtrer liste</string>
     <string name="hint_filter_list">Skriv inn filter</string>
     <string name="add">Legg til</string>
-    <string name="threema_message_from">Melding fra %s</string>
-    <string name="show_text">Vis tekst</string>
     <string name="only_images_or_videos">Bare biler eller video kan bli valgt</string>
     <string name="media_gallery_gifs">GIF-er</string>
     <string name="no_media_found_global">Ingen medier er funnet på enheten</string>
     <string name="original_file_no_longer_avilable">Den originale filen er ikke tilgjengelig lenger. Send meldingen på nytt.</string>
-    <string name="state_transcoding">Transkoding</string>
     <string name="importing_files">Importerer filer</string>
-    <string name="tooltip_image_resolution_hint">Trykk her for å endre bildeoppløsning</string>
     <string name="ballot_created_successfully">Avstemningen ble opprettet</string>
     <string name="file_size">Filstørrelse</string>
     <string name="thirty_days_abbrev">30d</string>
@@ -1232,7 +1152,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="brush">Børste</string>
     <string name="pencil">Blyant</string>
     <string name="highlighter">Markeringstusj</string>
-    <string name="error_detecting_faces">Feil ved gjenkjenning av ansikter</string>
     <string name="no_faces_detected">Ingen ansikter gjenkjent</string>
     <string name="smiley">Smilefjes</string>
     <string name="blur">Uskarp</string>
@@ -1246,7 +1165,6 @@ http://www.7-zip.org eller https://itunes.apple.com/us/app/the-unarchiver/id4254
     <string name="status_create_notes_off">*Du er ikke lenger alene i denne samtalen*\nNye meldinger vil bli sendt til alle gruppemedlemmer.</string>
     <string name="mark_unread">Merk som ulest</string>
     <string name="mark_read_short">Merk som lest</string>
-    <string name="unread">Ulest</string>
     <string name="missing_app_licence">App-butikken er ikke i stand til å validere ditt kjøp. Om du bruker Google Play Store, vennligst tøm data for appen og restart enheten.</string>
     <string name="set_backup_path">Angi sti for sikkerhetskopi</string>
     <string name="set_backup_path_intro">På den neste skjermen, angi mappen der sikkerhetskopien skal lagres.</string>
@@ -1262,20 +1180,15 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="app_store_error_code">App Store feilkode: %d</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_restore_type"><![CDATA[Hvilken type sikkerhetskopi vil du gjenopprette? <br/><br/> <a href=%s>Lær mer om sikkerhetskopier i ${app_name_short}</a>]]></string>
-    <string name="data_backup_info">Gjenopprett alt, inkludert samtaler</string>
     <string name="new_to_threema">Ny til %s?</string>
     <string name="back_to_threema">Tilbake til %s?</string>
-    <string name="id_backup_info">Bare gjenopprett IDen din</string>
-    <string name="restore_your_id_contacts_and_groups">Gjenopprett din ID, kontakter og grupper</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_backup">${app_name_short} Safe Backup</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Glemt passordet?</a>]]></string>
     <string name="download_failed">Nedlasting feilet. Feilkode: %d</string>
     <string name="edit_answer">Rediger svar</string>
     <string name="share_media">Del med en annen app…</string>
-    <string name="group_image">Gruppebilde</string>
     <string name="forward_captions">Inkluder kommentarer</string>
-    <string name="importing_files_failed">Ikke mulig å importere sikkerhetskopi. Sørg for at det er nok ledig plass på det interne minnet.</string>
     <string name="label_continue">Fortsett</string>
     <string name="select_date">Velg en dato</string>
     <string name="select_time">Velg et tidspunkt</string>
@@ -1289,20 +1202,15 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="prefs_sum_reset_receipts">Resett kontakt-spesifikke innstillinger for lesekvitteringer og \"Skriver…\"-indikator til standard.</string>
     <string name="reset_successful">Vellykket resett til standard</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="no_threema_qr_info">Dette er ikke en QR-kode som hører til ${app_name_short}. Det dekodede innholdet av koden er:</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Skann QR-koden til en kontakt for å verifisere identiteten. For å vise koden, spør kontakten om å trykke på profilbildet i det øvre venstre hjørnet på hovedskjermen til ${app_name_short}-appen.</string>
     <string name="enable_storage_access_for_media">Tillat tilgang til lagring for å se bilder og videoer på enheten din</string>
     <string name="take_me_there">Ta meg dit…</string>
-    <string name="custom">Annen tilpasning</string>
     <string name="show_public_key">Vis offentlig nøkkel</string>
     <string name="public_key_for">Offentlig nøkkel til %s</string>
     <string name="copied">Kopiert</string>
     <string name="no_votes_yet">Ingen stemmer har blitt registrert enda.</string>
     <string name="permission_contacts_sync_required">Vennligst gi systemet tilgang til kontaktene dine for å kunne synkronisere de.</string>
     <string name="not_voted_user_list">Disse deltakerne har ikke avlagt en stemme: %s</string>
-    <string name="contact_update">Oppdaterer kontakt-tilstander</string>
-    <string name="invalid_onprem_id">Enten så eksisterer ikke denne ID-en (lenger), eller så er den ikke kompatibel med din ID.</string>
     <string name="enable_unknown_sources">Ikke mulig å installere. Vennligst sørg for at \"Installer ukjente apper\" er aktivert for %s.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push">${app_name_short} Push</string>
@@ -1353,14 +1261,11 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="relationTypeSpouse">Ektefelle</string>
     <string name="contact_property_key">"Nøkkel"</string>
     <string name="header_nickname_entry">"Kallenavn"</string>
-    <string name="contact_picture_content_description">Kontaktbilde</string>
     <string name="prefs_title_use_system_ringtone">Bruk systemringetone</string>
     <string name="organization_type">Organisasjon</string>
     <string name="permission_bluetooth_connect_required">Aktiver \"Enheter i nærheten\" tillatelse for å finne tilkoblede Blåtann hodetelefoner</string>
     <string name="tooltip_multiple_recipients_title">Flere mottakere</string>
     <string name="tooltip_multiple_recipients_text">Langt trykk for å velge flere mottakere å sende den samme meldingen til.</string>
-    <string name="synchronizing">Synkroniserer…</string>
-    <string name="forward_security">Send meldinger med Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">Ingen</string>
     <string name="clear_forward_security">Resett Perfect Forward Secrecy for denne kontakten</string>
@@ -1406,10 +1311,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="unable_to_restore_identity_because">Ikke mulig å gjenopprette IDen. Årsak: %s</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="share_with_app">Del med ${app_name}</string>
-    <string name="read_phone_state_dialog_allow">Gi tilgang</string>
-    <string name="read_phone_state_dialog_disallow">Fortsett uansett</string>
-    <string name="read_phone_state_dialog_never_ask_again">Ikke spør igjen</string>
-    <string name="read_phone_state_dialog_title">Tilgang er nødvendig</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="read_phone_state_dialog_message">For å unngå at ${app_name_short}-anrop avbryter vanlige anrop, så trenger vi Telefon-tilgang. Om denne tilgangen ikke blir gitt, så vil et anrop til ${app_name_short} ringe, selv om det allerede er et aktivt anrop på telefonen.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1429,7 +1330,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="group_no_members">Denne gruppen har ikke andre medlemmer</string>
     <string name="group_call">Gruppesamtale</string>
     <string name="checking_compatibility">Sjekker kompatibilitet…</string>
-    <string name="group_call_mic_permission_rationale">For å starte gruppesamtaler så må du tillate %s å få tilgang til mikrofon under \"Tillatelser\".</string>
     <string name="group_call_mic_permission_description">For å bli med i en gruppesamtale, må du aktivere tilgang til mikrofonen, slik at andre kan høre deg.</string>
     <string name="call_mic_permission_description">For å starte et anrop, må du aktivere tilgang til mikrofonen, slik at andre kan høre deg.</string>
     <string name="group_call_camera_permission_rationale">For at andre deltakere skal kunne se bildet ditt, så må du tillate %s å få tilgang til kamera under \"Tillatelser\".</string>
@@ -1451,7 +1351,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="forward_security_mode_2dh">En-veis</string>
     <string name="forward_security_mode_all">Full</string>
     <string name="forward_security_mode_partial">Delvis</string>
-    <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) beskytter kommunikasjonen fra å kunne bli dekryptert i fremtiden, selv om den langsiktige krypteringsnøkkelen er kompromittert.\n\nDette kan skrus på om appen på begge sider av kommunikasjonen støtter PFS.</string>
     <string name="group_call_inactivity_left">Gruppesamtale avsluttet på grunn av inaktivitet</string>
     <string name="missing_permission_external_storage">Ikke mulig å kopiere filen. Prøv følgende: \n1. Åpne innstillinger på enheten.\n2. Gå til \"Apper\" og velg \"Spesiell tilgang\" på menyen med tre prikker eller en nedtrekksmeny.\n3. Trykk på \"Lagring\" eller \"Tilgang til filer\".\n4. Trykk på de tre prikkene oppe i høyre hjørne og velg \"Vis systemet\". \n5. Trykk på \"Ekstern lagring\" og sørg for at \"Tilgang til alle filer\" er gitt.\n6. Prøv igjen å gjenopprette sikkerhetskopien.</string>
     <string name="forward_security_illegal_session_status_message">Perfect Forward Secrecy økten ble resatt fordi den er ugyldig.</string>
@@ -1483,7 +1382,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="group_name">Gruppenavn</string>
     <string name="star_message">Stjernemelding</string>
     <string name="starred_message">Stjernemerket melding</string>
-    <string name="starred">Stjernemerket</string>
     <string name="starred_messages">Stjernemerket meldinger</string>
     <string name="sorting">Sortering</string>
     <string name="sort_by">Sorter etter</string>
@@ -1522,7 +1420,6 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
-    <string name="md_link_device_qr_scan_message">Vennligst skann QR-koden</string>
     <string name="directory_request_failed">Katalogforespørsel mislyktes. Prøv igjen.</string>
     <string name="add_shortcut_exists">En snarvei for dette finnes allerede.</string>
     <!-- ${app_name_desktop} is a placeholder for the desktop app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1553,6 +1450,12 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <string name="media_gallery_animated_webps">Animerte WebP-er</string>
     <string name="unsupported_image_type">Ustøttet bildeformat: %s</string>
     <string name="application_setup_steps_failed">Det er krav om en aktiv internettforbindelse for å sjekke tilstanden til kontaktene dine. Sørg for at du er tilkoblet internett, og prøv igjen.</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Shown in the advanced settings, shows the user their own Device's uniquely generated ID, which is used for sending error reports -->
+    <!-- The %s is a placeholder for an ID. It must be left as-is. -->
     <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
     <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
     <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
@@ -1576,8 +1479,10 @@ Om du bytter til en ny enhet, vennligst avinstaller eller deaktiver %s på den g
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
+    <!-- Description of the notification channel which is used when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Text of the notification which is shown when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->

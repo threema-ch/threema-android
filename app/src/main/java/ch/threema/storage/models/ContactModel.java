@@ -13,13 +13,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.Date;
 
 import ch.threema.app.utils.TextUtil;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.data.datatypes.IdColor;
 import ch.threema.base.crypto.NaCl;
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.preference.service.PreferenceService;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.Contact;
-import ch.threema.domain.models.BasicContact;
+import ch.threema.domain.models.ContactReceiverIdentifier;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
@@ -50,7 +51,7 @@ public class ContactModel extends Contact implements ReceiverModel {
     public static final String COLUMN_TYPE = "type";
     public static final String COLUMN_PROFILE_PIC_BLOB_ID = "profilePicBlobID"; /* the blob ID of the profile pic that was last sent to this contact */
     public static final String COLUMN_CREATED_AT = "dateCreated"; /* date when this contact was created locally */
-    public static final String COLUMN_LAST_UPDATE = "lastUpdate"; /* date when the conversation was last updated */
+    public static final String COLUMN_LAST_UPDATE = "lastUpdateAt"; /* date when the conversation was last updated */
     public static final String COLUMN_ACQUAINTANCE_LEVEL = "acquaintanceLevel"; /* 0: DIRECT, 1: GROUP */
     public static final String COLUMN_IS_RESTORED = "isRestored"; /* whether this contact has been restored from a backup and not yet been contacted */
     public static final String COLUMN_IS_ARCHIVED = "isArchived"; /* whether this contact has been archived by user */
@@ -132,7 +133,7 @@ public class ContactModel extends Contact implements ReceiverModel {
     /**
      * Create a contact model with the given identity and public key. Note that this method does not
      * check that the identity is a valid string or that the public key contains
-     * {@link NaCl.PUBLIC_KEY_BYTES} bytes.
+     * {@code NaCl.PUBLIC_KEY_BYTES} bytes.
      * This method should only be used when constructing a contact model from the database as it may
      * contain invalid data. Use {@link #create(String, byte[])} whenever creating a new contact.
      */
@@ -149,6 +150,7 @@ public class ContactModel extends Contact implements ReceiverModel {
 
     /**
      * Create a contact model with the given identity and public key.
+     *
      * @throws IllegalArgumentException if the identity or the public key is of invalid length
      */
     @NonNull
@@ -332,6 +334,12 @@ public class ContactModel extends Contact implements ReceiverModel {
         return this.acquaintanceLevel == AcquaintanceLevel.GROUP;
     }
 
+    @NonNull
+    @Override
+    public ContactReceiverIdentifier getIdentifier() {
+        return new ContactReceiverIdentifier(getIdentity());
+    }
+
     public ContactModel setIsRestored(boolean isRestored) {
         this.isRestored = isRestored;
         return this;
@@ -475,23 +483,6 @@ public class ContactModel extends Contact implements ReceiverModel {
         return this;
     }
 
-    @NonNull
-    public BasicContact toBasicContact() {
-        if (type == null) {
-            logger.warn("Identity type is null. Using normal as default.");
-        }
-        if (state == null) {
-            logger.warn("Identity state is null. Using active as default.");
-        }
-        return BasicContact.javaCreate(
-            getIdentity(),
-            getPublicKey(),
-            featureMask,
-            state != null ? state : IdentityState.ACTIVE,
-            type != null ? type : IdentityType.NORMAL
-        );
-    }
-
     public Object[] getModifiedValueCandidates() {
         return new Object[]{
             this.getPublicKey(),
@@ -521,7 +512,7 @@ public class ContactModel extends Contact implements ReceiverModel {
     @Override
     @NonNull
     public String toString() {
-        return "ContactModel(identity=" + this.getIdentity() + ", display=" + this.getContactListItemTextTopLeft(true) +")";
+        return "ContactModel(identity=" + this.getIdentity() + ", display=" + this.getContactListItemTextTopLeft(ContactNameFormat.DEFAULT) + ")";
     }
 
     /**
@@ -530,11 +521,11 @@ public class ContactModel extends Contact implements ReceiverModel {
      * @return Either the first/lastname, the nickname or the identity. Never returns empty string because the identity is always filled.
      */
     @NonNull
-    public String getContactListItemTextTopLeft(boolean isContactFormatFirstNameLastName) {
+    public String getContactListItemTextTopLeft(@NonNull ContactNameFormat contactNameFormat) {
         final StringBuilder textTopLeftBuilder = new StringBuilder();
         if (getHasFirstOrLastName()) {
-            final @Nullable String firstPart = isContactFormatFirstNameLastName ? getFirstName() : getLastName();
-            final @Nullable String lastPart = isContactFormatFirstNameLastName ? getLastName() : getFirstName();
+            final @Nullable String firstPart = contactNameFormat == ContactNameFormat.FIRSTNAME_LASTNAME ? getFirstName() : getLastName();
+            final @Nullable String lastPart = contactNameFormat == ContactNameFormat.FIRSTNAME_LASTNAME ? getLastName() : getFirstName();
             if (firstPart != null && !firstPart.isBlank()) {
                 textTopLeftBuilder.append(firstPart.trim()).append(SPACE);
             }
@@ -589,7 +580,7 @@ public class ContactModel extends Contact implements ReceiverModel {
         final @NonNull PreferenceService preferenceService,
         final @NonNull String filterQuery
     ) {
-        final @NonNull String contactTextTopLeft = getContactListItemTextTopLeft(preferenceService.isContactFormatFirstNameLastName());
+        final @NonNull String contactTextTopLeft = getContactListItemTextTopLeft(preferenceService.getContactNameFormat());
         final @NonNull String contactTextBottomLeft = getContactListItemTextBottomLeft();
         final @NonNull String contactTextBottomRight = getContactListItemTextBottomRight();
 

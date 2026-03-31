@@ -66,10 +66,10 @@ class LinkNewDevicePFSInfoFragment : LinkNewDeviceFragment() {
                 ThreemaTheme {
                     LinkNewDevicePFSInfoContent(
                         modifier = Modifier.fillMaxSize(),
-                        onClickedLinkDevice = {
+                        onClickLinkDevice = {
                             viewModel.switchToFragment(LinkNewDeviceScanQrFragment::class.java)
                         },
-                        onClickedCancel = viewModel::cancel,
+                        onClickCancel = viewModel::cancel,
                     )
                 }
             }
@@ -80,8 +80,8 @@ class LinkNewDevicePFSInfoFragment : LinkNewDeviceFragment() {
 @Composable
 private fun LinkNewDevicePFSInfoContent(
     modifier: Modifier,
-    onClickedLinkDevice: () -> Unit,
-    onClickedCancel: () -> Unit,
+    onClickLinkDevice: () -> Unit,
+    onClickCancel: () -> Unit,
 ) {
     Surface(
         modifier = modifier.nestedScroll(rememberNestedScrollInteropConnection()),
@@ -121,7 +121,7 @@ private fun LinkNewDevicePFSInfoContent(
 
             ButtonPrimary(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onClickedLinkDevice,
+                onClick = onClickLinkDevice,
                 text = stringResource(R.string.device_linking_pfs_warning_button_continue),
                 maxLines = 2,
             )
@@ -130,7 +130,7 @@ private fun LinkNewDevicePFSInfoContent(
 
             TextButton(
                 modifier = Modifier.heightIn(min = GridUnit.x6),
-                onClick = onClickedCancel,
+                onClick = onClickCancel,
             ) {
                 ThemedText(
                     modifier = Modifier.padding(horizontal = GridUnit.x2),
@@ -151,7 +151,7 @@ private fun LinkNewDevicePFSInfoContent(
 private fun LinkNewDevicePFSInfoFragmentContentPreviewFoldable() = ThreemaThemePreview {
     LinkNewDevicePFSInfoContent(
         modifier = Modifier.fillMaxSize(),
-        onClickedLinkDevice = {},
-        onClickedCancel = {},
+        onClickLinkDevice = {},
+        onClickCancel = {},
     )
 }

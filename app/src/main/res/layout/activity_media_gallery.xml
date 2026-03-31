@@ -95,15 +95,22 @@
 
         </com.google.android.material.chip.ChipGroup>
 
-        <ch.threema.app.ui.EmptyRecyclerView
-            android:id="@+id/item_list"
+        <!-- This wrapper view-group is needed because of the EmptyView inflated manually -->
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
-            android:clipToPadding="false"
-            android:paddingHorizontal="@dimen/grid_spacing"
-            tools:itemCount="3"
-            tools:listitem="@layout/item_media_gallery" />
+            android:layout_weight="1">
+
+            <ch.threema.app.ui.EmptyRecyclerView
+                android:id="@+id/item_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingHorizontal="@dimen/grid_spacing"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_media_gallery" />
+
+        </FrameLayout>
 
     </LinearLayout>
 

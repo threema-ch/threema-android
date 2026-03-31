@@ -5,7 +5,7 @@ import ch.threema.base.SessionScoped;
 @SessionScoped
 public interface LockAppService {
 
-    interface OnLockAppStateChanged {
+    interface OnLockAppStateListener {
         /**
          * return true if the event will be removed from the queue
          */
@@ -39,5 +39,5 @@ public interface LockAppService {
      */
     void resetLockTimer(boolean restartAfterReset);
 
-    void addOnLockAppStateChanged(OnLockAppStateChanged c);
+    void addOnLockAppStateListener(OnLockAppStateListener c);
 }

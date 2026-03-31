@@ -10,27 +10,27 @@ import ch.threema.app.multidevice.MultiDeviceManager;
 import ch.threema.app.tasks.TaskCreator;
 import ch.threema.app.utils.ConversationUtil;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.factories.ConversationTagFactory;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTagModel;
 import ch.threema.storage.models.ConversationTag;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 public class ConversationTagServiceImpl implements ConversationTagService {
     @NonNull
-    private final DatabaseService databaseService;
+    private final ConversationTagFactory conversationTagFactory;
     @NonNull
     private final TaskCreator taskCreator;
     @NonNull
     private final MultiDeviceManager multiDeviceManager;
 
     public ConversationTagServiceImpl(
-        @NonNull DatabaseService databaseService,
+        @NonNull ConversationTagFactory conversationTagFactory,
         @NonNull TaskCreator taskCreator,
         @NonNull MultiDeviceManager multiDeviceManager
     ) {
-        this.databaseService = databaseService;
+        this.conversationTagFactory = conversationTagFactory;
         this.taskCreator = taskCreator;
         this.multiDeviceManager = multiDeviceManager;
     }
@@ -40,10 +40,10 @@ public class ConversationTagServiceImpl implements ConversationTagService {
         if (conversation == null || this.isTaggedWith(conversation, tag)) {
             return;
         }
-        this.databaseService.getConversationTagFactory()
+        conversationTagFactory
             .create(new ConversationTagModel(conversation.getUid(), tag));
-        // Note that we only synchronize the pinned tag and not the unread
         if (tag == ConversationTag.PINNED) {
+            // Note that we only synchronize the pinned tag and not the unread
             reflectConversationCategoryPinnedIfApplicable(conversation, true, triggerSource);
         }
         this.fireOnModifiedConversation(conversation);
@@ -54,47 +54,62 @@ public class ConversationTagServiceImpl implements ConversationTagService {
         if (conversation == null || !this.isTaggedWith(conversation, tag)) {
             return;
         }
-        this.databaseService.getConversationTagFactory().deleteByConversationUidAndTag(conversation.getUid(), tag);
-        // Note that we only synchronize the pinned tag and not the unread
+        conversationTagFactory.deleteByConversationUidAndTag(conversation.getUid(), tag);
         if (tag == ConversationTag.PINNED) {
+            // Note that we only synchronize the pinned tag and not the unread
             reflectConversationCategoryPinnedIfApplicable(conversation, false, triggerSource);
         }
         this.fireOnModifiedConversation(conversation);
     }
 
     @Override
-    public void removeTag(@NonNull String conversationUid, @NonNull ConversationTag tag, @NonNull TriggerSource triggerSource) {
-        this.databaseService.getConversationTagFactory().deleteByConversationUidAndTag(conversationUid, tag);
+    public boolean removeTag(@NonNull String conversationUid, @NonNull ConversationTag tag, @NonNull TriggerSource triggerSource) {
+        if (!isTaggedWith(conversationUid, tag)) {
+            return false;
+        }
+        conversationTagFactory.deleteByConversationUidAndTag(conversationUid, tag);
         // Note that we only synchronize the pinned tag and not the unread
         if (tag == ConversationTag.PINNED) {
             reflectConversationCategoryPinnedIfApplicable(conversationUid, false, triggerSource);
         }
+        return true;
     }
 
     @Override
-    public void toggle(@Nullable ConversationModel conversation, @NonNull ConversationTag tag, boolean silent, @NonNull TriggerSource triggerSource) {
-        if (conversation == null) {
-            return;
+    public boolean addTag(@NonNull String conversationUid, @NonNull ConversationTag tag, @NonNull TriggerSource triggerSource) {
+        if (isTaggedWith(conversationUid, tag)) {
+            return false;
         }
+        conversationTagFactory.create(
+            new ConversationTagModel(conversationUid, tag)
+        );
+        // Note that we only synchronize the pinned tag and not the unread
+        if (tag == ConversationTag.PINNED) {
+            reflectConversationCategoryPinnedIfApplicable(conversationUid, false, triggerSource);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean toggle(@NonNull ConversationModel conversation, @NonNull ConversationTag tag, @NonNull TriggerSource triggerSource) {
         if (this.isTaggedWith(conversation, tag)) {
             // remove
-            this.databaseService.getConversationTagFactory()
+            conversationTagFactory
                 .deleteByConversationUidAndTag(conversation.getUid(), tag);
             // Note that we only synchronize the pinned tag and not the unread
             if (tag == ConversationTag.PINNED) {
                 reflectConversationCategoryPinnedIfApplicable(conversation, false, triggerSource);
             }
+            return false;
         } else {
             // Add
-            this.databaseService.getConversationTagFactory()
+            conversationTagFactory
                 .create(new ConversationTagModel(conversation.getUid(), tag));
             // Note that we only synchronize the pinned tag and not the unread
             if (tag == ConversationTag.PINNED) {
                 reflectConversationCategoryPinnedIfApplicable(conversation, true, triggerSource);
             }
-        }
-        if (!silent) {
-            this.fireOnModifiedConversation(conversation);
+            return true;
         }
     }
 
@@ -109,7 +124,7 @@ public class ConversationTagServiceImpl implements ConversationTagService {
 
     @Override
     public boolean isTaggedWith(@NonNull String conversationUid, @NonNull ConversationTag tag) {
-        return this.databaseService.getConversationTagFactory()
+        return conversationTagFactory
             .getByConversationUidAndTag(conversationUid, tag) != null;
     }
 
@@ -117,7 +132,7 @@ public class ConversationTagServiceImpl implements ConversationTagService {
     public void removeAll(@Nullable ConversationModel conversation, @NonNull TriggerSource triggerSource) {
         if (conversation != null) {
             boolean wasPinTagged = isTaggedWith(conversation, ConversationTag.PINNED);
-            this.databaseService.getConversationTagFactory()
+            conversationTagFactory
                 .deleteByConversationUid(conversation.getUid());
             if (wasPinTagged) {
                 reflectConversationCategoryPinnedIfApplicable(conversation, false, triggerSource);
@@ -129,7 +144,7 @@ public class ConversationTagServiceImpl implements ConversationTagService {
     public void removeAll(@NonNull String conversationUid, @NonNull TriggerSource triggerSource) {
         boolean wasPinTagged = isTaggedWith(conversationUid, ConversationTag.PINNED);
 
-        this.databaseService.getConversationTagFactory()
+        conversationTagFactory
             .deleteByConversationUid(conversationUid);
 
         if (wasPinTagged) {
@@ -139,23 +154,23 @@ public class ConversationTagServiceImpl implements ConversationTagService {
 
     @Override
     public List<ConversationTagModel> getAll() {
-        return this.databaseService.getConversationTagFactory().getAll();
+        return conversationTagFactory.getAll();
     }
 
     @Override
     @NonNull
     public List<String> getConversationUidsByTag(@NonNull ConversationTag tag) {
-        return this.databaseService.getConversationTagFactory().getAllConversationUidsByTag(tag);
+        return conversationTagFactory.getAllConversationUidsByTag(tag);
     }
 
     @Override
     public long getCount(@NonNull ConversationTag tag) {
-        return this.databaseService.getConversationTagFactory().countByTag(tag);
+        return conversationTagFactory.countByTag(tag);
     }
 
     private void fireOnModifiedConversation(final ConversationModel conversationModel) {
         ListenerManager.conversationListeners.handle(
-            listener -> listener.onModified(conversationModel, conversationModel.getPosition())
+            listener -> listener.onModified(conversationModel)
         );
     }
 
@@ -174,7 +189,7 @@ public class ConversationTagServiceImpl implements ConversationTagService {
             return;
         }
 
-        GroupModel groupModel = conversationModel.getGroup();
+        GroupModelOld groupModel = conversationModel.getGroup();
         if (groupModel != null) {
             reflectGroupPinnedIfApplicable(groupModel.getId(), isPinned, triggerSource);
         }

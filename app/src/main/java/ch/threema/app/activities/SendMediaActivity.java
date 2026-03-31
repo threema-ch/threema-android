@@ -1,13 +1,14 @@
 package ch.threema.app.activities;
 
+import static ch.threema.android.ToastKt.showToast;
 import static ch.threema.app.adapters.SendMediaPreviewAdapter.VIEW_TYPE_NORMAL;
 import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
-import static ch.threema.app.preference.service.PreferenceService.ImageScale_SEND_AS_FILE;
-import static ch.threema.app.preference.service.PreferenceService.VideoSize_DEFAULT;
-import static ch.threema.app.preference.service.PreferenceService.VideoSize_MEDIUM;
-import static ch.threema.app.preference.service.PreferenceService.VideoSize_ORIGINAL;
-import static ch.threema.app.preference.service.PreferenceService.VideoSize_SEND_AS_FILE;
-import static ch.threema.app.preference.service.PreferenceService.VideoSize_SMALL;
+import static ch.threema.app.preference.service.PreferenceService.IMAGE_SCALE_SEND_AS_FILE;
+import static ch.threema.app.preference.service.PreferenceService.VIDEO_SIZE_DEFAULT;
+import static ch.threema.app.preference.service.PreferenceService.VIDEO_SIZE_MEDIUM;
+import static ch.threema.app.preference.service.PreferenceService.VIDEO_SIZE_ORIGINAL;
+import static ch.threema.app.preference.service.PreferenceService.VIDEO_SIZE_SEND_AS_FILE;
+import static ch.threema.app.preference.service.PreferenceService.VIDEO_SIZE_SMALL;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE_CAM;
 import static ch.threema.app.ui.MediaItem.TYPE_VIDEO;
@@ -44,7 +45,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
@@ -78,13 +78,13 @@ import java.util.List;
 import java.util.Objects;
 
 import ch.threema.android.ActivityExtensionsKt;
+import ch.threema.android.ToastDuration;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.SendMediaAdapter;
 import ch.threema.app.adapters.SendMediaPreviewAdapter;
 import ch.threema.app.camera.CameraActivity;
-import ch.threema.app.camera.CameraUtil;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.CallbackTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -263,7 +263,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
                 messageReceivers.remove(messageReceiver);
                 @Nullable Integer errorStringRes = ((SendingPermissionValidationResult.Denied) validationResult).getErrorResId();
                 if (errorStringRes != null) {
-                    Toast.makeText(getApplicationContext(), errorStringRes, Toast.LENGTH_LONG).show();
+                    showToast(getApplicationContext(), errorStringRes);
                 }
             }
             if (allReceiverChatsAreHidden && !dependencies.getConversationCategoryService().isPrivateChat(messageReceiver.getUniqueIdString())) {
@@ -476,7 +476,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             }
         });
 
-        if (dependencies.getPreferenceService().getEmojiStyle() != PreferenceService.EmojiStyle_ANDROID) {
+        if (dependencies.getPreferenceService().getEmojiStyle() != PreferenceService.EMOJI_STYLE_ANDROID) {
             addOnSoftKeyboardChangedListener(this);
         }
 
@@ -629,7 +629,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             final @PreferenceService.ImageScale int oldSetting = mediaItem.getImageScale();
             final @PreferenceService.ImageScale int newSetting = item.getOrder();
             mediaItem.setImageScale(newSetting);
-            if (oldSetting != newSetting && (oldSetting == ImageScale_SEND_AS_FILE || newSetting == ImageScale_SEND_AS_FILE)) {
+            if (oldSetting != newSetting && (oldSetting == IMAGE_SCALE_SEND_AS_FILE || newSetting == IMAGE_SCALE_SEND_AS_FILE)) {
                 mediaAdapterManager.updateSendAsFileState(NOTIFY_BOTH_ADAPTERS);
                 updateMenu();
             }
@@ -642,7 +642,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
         }
 
         @PreferenceService.ImageScale int currentScale = mediaItem.getImageScale();
-        if (currentScale == PreferenceService.ImageScale_DEFAULT) {
+        if (currentScale == PreferenceService.IMAGE_SCALE_DEFAULT) {
             currentScale = dependencies.getPreferenceService().getImageScale();
         }
 
@@ -658,10 +658,10 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
             final @PreferenceService.VideoSize int newVideoSize = getVideoSize(item.getItemId());
             final @PreferenceService.VideoSize int oldVideoSize = mediaItem.getVideoSize();
-            if (newVideoSize != VideoSize_DEFAULT && oldVideoSize != newVideoSize) {
+            if (newVideoSize != VIDEO_SIZE_DEFAULT && oldVideoSize != newVideoSize) {
                 mediaItem.setVideoSize(newVideoSize);
-                mediaItem.setRenderingType(newVideoSize == VideoSize_SEND_AS_FILE ? FileData.RENDERING_DEFAULT : FileData.RENDERING_MEDIA);
-                if (oldVideoSize == VideoSize_SEND_AS_FILE || newVideoSize == VideoSize_SEND_AS_FILE) {
+                mediaItem.setRenderingType(newVideoSize == VIDEO_SIZE_SEND_AS_FILE ? FileData.RENDERING_DEFAULT : FileData.RENDERING_MEDIA);
+                if (oldVideoSize == VIDEO_SIZE_SEND_AS_FILE || newVideoSize == VIDEO_SIZE_SEND_AS_FILE) {
                     mediaAdapterManager.updateSendAsFileState(NOTIFY_BOTH_ADAPTERS);
                     updateMenu();
                 }
@@ -679,13 +679,13 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
         // Set video size item checked
         @PreferenceService.VideoSize int currentSize = mediaItem.getVideoSize();
-        if (currentSize == PreferenceService.VideoSize_DEFAULT) {
+        if (currentSize == PreferenceService.VIDEO_SIZE_DEFAULT) {
             currentSize = dependencies.getPreferenceService().getVideoSize();
         }
         popup.getMenu().findItem(getMenuItemId(currentSize)).setChecked(true);
 
         // Update mute option
-        if (mediaItem.getVideoSize() == VideoSize_SEND_AS_FILE) {
+        if (mediaItem.getVideoSize() == VIDEO_SIZE_SEND_AS_FILE) {
             popup.getMenu().removeItem(R.id.mute_item);
         } else {
             popup.getMenu().findItem(R.id.mute_item).setChecked(mediaItem.isMuted());
@@ -715,7 +715,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
 
         final Intent cameraIntent;
         final int requestCode;
-        if (CameraUtil.isInternalCameraSupported() && !useExternalCamera) {
+        if (!useExternalCamera) {
             // use internal camera
             cameraIntent = new Intent(this, CameraActivity.class);
             cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, cameraFilePath);
@@ -727,7 +727,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             if (packageManager == null || !(packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
                 packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY))) {
                 logger.info("No camera found, closing");
-                Toast.makeText(getApplicationContext(), R.string.no_camera_installed, Toast.LENGTH_LONG).show();
+                showToast(getApplicationContext(), R.string.no_camera_installed, ToastDuration.LONG);
                 finish();
                 return;
             }
@@ -955,7 +955,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
                     break;
                 case ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_EXTERNAL:
                 case ThreemaActivity.ACTIVITY_ID_PICK_CAMERA_INTERNAL:
-                    if (ConfigUtils.supportsVideoCapture() && intent != null && intent.getBooleanExtra(CameraActivity.EXTRA_VIDEO_RESULT, false)) {
+                    if (intent != null && intent.getBooleanExtra(CameraActivity.EXTRA_VIDEO_RESULT, false)) {
                         // it's a video file
                         if (!TestUtil.isEmptyOrNull(this.videoFilePath)) {
                             File videoFile = new File(this.videoFilePath);
@@ -999,7 +999,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
                 logger.warn("Received result with resultCode={} for requestCode={}", resultCode, requestCode);
 
                 if (requestCode == ACTIVITY_ID_PICK_CAMERA_INTERNAL || requestCode == ACTIVITY_ID_PICK_CAMERA_EXTERNAL) {
-                    Toast.makeText(this, R.string.error, Toast.LENGTH_SHORT).show();
+                    showToast(this, R.string.an_error_occurred);
                 }
             }
 
@@ -1166,7 +1166,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
             }
 
             @MediaItem.MediaType int type = current.getType();
-            boolean showImageEdit = (type == TYPE_IMAGE || type == TYPE_IMAGE_CAM) && current.getImageScale() != ImageScale_SEND_AS_FILE;
+            boolean showImageEdit = (type == TYPE_IMAGE || type == TYPE_IMAGE_CAM) && current.getImageScale() != IMAGE_SCALE_SEND_AS_FILE;
             boolean showFilenameEdit = current.sendAsFile();
             boolean showSettings = current.getType() == TYPE_IMAGE || current.getType() == TYPE_VIDEO;
 
@@ -1264,7 +1264,7 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
         finish();
     }
 
@@ -1308,30 +1308,30 @@ public class SendMediaActivity extends ThreemaToolbarActivity implements
     @PreferenceService.VideoSize
     private int getVideoSize(@IdRes int itemId) {
         if (itemId == R.id.menu_video_size_small) {
-            return VideoSize_SMALL;
+            return VIDEO_SIZE_SMALL;
         } else if (itemId == R.id.menu_video_size_medium) {
-            return VideoSize_MEDIUM;
+            return VIDEO_SIZE_MEDIUM;
         } else if (itemId == R.id.menu_video_size_original) {
-            return VideoSize_ORIGINAL;
+            return VIDEO_SIZE_ORIGINAL;
         } else if (itemId == R.id.menu_video_send_as_file) {
-            return VideoSize_SEND_AS_FILE;
+            return VIDEO_SIZE_SEND_AS_FILE;
         } else {
-            return VideoSize_DEFAULT;
+            return VIDEO_SIZE_DEFAULT;
         }
     }
 
     @IdRes
     private int getMenuItemId(@PreferenceService.VideoSize int videoSize) {
         switch (videoSize) {
-            case VideoSize_SMALL:
+            case VIDEO_SIZE_SMALL:
                 return R.id.menu_video_size_small;
-            case VideoSize_MEDIUM:
+            case VIDEO_SIZE_MEDIUM:
                 return R.id.menu_video_size_medium;
-            case VideoSize_ORIGINAL:
+            case VIDEO_SIZE_ORIGINAL:
                 return R.id.menu_video_size_original;
-            case VideoSize_SEND_AS_FILE:
+            case VIDEO_SIZE_SEND_AS_FILE:
                 return R.id.menu_video_send_as_file;
-            case VideoSize_DEFAULT:
+            case VIDEO_SIZE_DEFAULT:
             default:
                 logger.error("No menu item for video size {}", videoSize);
                 throw new IllegalArgumentException(String.format("No menu item for video size %d", videoSize));

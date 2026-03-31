@@ -28,9 +28,12 @@ import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
+import ch.threema.app.usecases.OverrideOneTimeHintsUseCase;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.EditTextUtil;
+
+import static ch.threema.android.ToastKt.showToast;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.FetchIdentityException;
 import ch.threema.domain.protocol.connection.ServerConnection;
@@ -178,6 +181,9 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
                 DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_RESTORE_PROGRESS, true);
 
                 if (result.isSuccess()) {
+                    OverrideOneTimeHintsUseCase overrideOneTimeHintsUseCase = KoinJavaComponent.get(OverrideOneTimeHintsUseCase.class);
+                    overrideOneTimeHintsUseCase.call();
+
                     // ID successfully restored from ID backup - cancel reminder
                     dependencies.getPreferenceService().incrementIDBackupCount();
                     setResult(RESULT_OK);
@@ -199,7 +205,8 @@ public class WizardIDRestoreActivity extends WizardBackgroundActivity {
                     backupIdText.setText(scanResult);
                     backupIdText.invalidate();
                 } else {
-                    logger.error(getString(R.string.invalid_threema_qr_code), this);
+                    showToast(this, R.string.invalid_threema_qr_code);
+                    logger.error("Invalid Threema QR code");
                 }
             }
         }

@@ -1,7 +1,7 @@
 package ch.threema.storage.databaseupdate
 
 import ch.threema.base.utils.Utils
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.buildContentValues
 import java.security.MessageDigest
 import net.zetetic.database.sqlcipher.SQLiteDatabase
@@ -62,14 +62,12 @@ class DatabaseUpdateToVersion96(
 
     override fun getDescription() = "remove isActive from group member table"
 
-    override fun getVersion() = VERSION
+    override val version = 96
 
     companion object {
-        const val VERSION = 96
-
         private const val ID_COLORS_SIZE = 16
 
-        private fun computeColorIndex(creatorIdentity: Identity, groupIdString: String): Int {
+        private fun computeColorIndex(creatorIdentity: IdentityString, groupIdString: String): Int {
             val groupIdByteArray = Utils.hexStringToByteArray(groupIdString)
             val groupCreatorIdentity = creatorIdentity.toByteArray()
 

@@ -188,7 +188,7 @@ public class AudioMessagePlayer extends MessagePlayer {
             if (!this.notificationPreferenceService.isShowMessagePreview() || this.conversationCategoryService.isPrivateChat(currentMessageReceiver.getUniqueIdString())) {
                 displayName = getContext().getString(R.string.notification_channel_voice_message_player);
             } else {
-                displayName = currentMessageReceiver.getDisplayName();
+                displayName = currentMessageReceiver.getDisplayName(preferenceService.getContactNameFormat());
                 artworkBitmap = currentMessageReceiver.getAvatar();
             }
 

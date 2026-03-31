@@ -9,12 +9,18 @@ import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public class DateSeparatorChatAdapterDecorator extends ChatAdapterDecorator {
-    public DateSeparatorChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
-        super(context, messageModel, helper);
+    public DateSeparatorChatAdapterDecorator(
+        AbstractMessageModel messageModel,
+        @NonNull ChatAdapterDecoratorListener chatAdapterDecoratorListener,
+        @NonNull LinkifyUtil.LinkifyListener linkifyListener,
+        Helper helper
+    ) {
+        super(messageModel, chatAdapterDecoratorListener, linkifyListener, helper);
     }
 
     @Override
@@ -24,12 +30,12 @@ public class DateSeparatorChatAdapterDecorator extends ChatAdapterDecorator {
     ) {
         super.applyContentColor(viewHolder, contentColor);
         viewHolder.bodyTextView.setTextColor(
-            ConfigUtils.getColorFromAttribute(getContext(), R.attr.colorOnSurface)
+            ConfigUtils.getColorFromAttribute(viewHolder.bodyTextView.getContext(), R.attr.colorOnSurface)
         );
     }
 
     @Override
-    protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
+    protected void configureChatMessage(final ComposeMessageHolder holder, Context context, final int position) {
         Date date = this.getMessageModel().getCreatedAt();
 
         if (this.showHide(holder.bodyTextView, true)) {

@@ -21,9 +21,15 @@ import com.google.android.material.progressindicator.CircularProgressIndicator;
 import ch.threema.app.R;
 
 public class EmptyView extends LinearLayout {
+
+    private static final int NO_IMAGE_RES = -1;
+
     private final TextView emptyText;
     private final ImageView emptyImageView;
     private final CircularProgressIndicator loadingView;
+
+    @DrawableRes
+    private int imageRes = NO_IMAGE_RES;
 
     public EmptyView(Context context) {
         this(context, null, 0);
@@ -68,11 +74,11 @@ public class EmptyView extends LinearLayout {
     }
 
     public void setup(@StringRes int labelRes, @DrawableRes int imageRes) {
+        this.imageRes = imageRes;
         this.emptyImageView.setImageResource(imageRes);
         this.emptyImageView.setVisibility(VISIBLE);
         this.emptyText.setText(labelRes);
     }
-
 
     public void setColorsInt(@ColorInt int background, @ColorInt int foreground) {
         this.setBackgroundColor(background);
@@ -82,6 +88,10 @@ public class EmptyView extends LinearLayout {
     public void setLoading(boolean isLoading) {
         this.loadingView.setVisibility(isLoading ? VISIBLE : GONE);
         this.emptyText.setVisibility(isLoading ? GONE : VISIBLE);
-        this.emptyImageView.setVisibility(isLoading ? GONE : VISIBLE);
+        this.emptyImageView.setVisibility((isLoading || !hasImageRes()) ? GONE : VISIBLE);
+    }
+
+    private boolean hasImageRes() {
+        return this.imageRes != NO_IMAGE_RES;
     }
 }

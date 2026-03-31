@@ -1,20 +1,15 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.common.now
-import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 class OutgoingVoipCallRingingMessageTask(
     private val voipCallRingingData: VoipCallRingingData,
-    private val toIdentity: Identity,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
-    private val voipStateService by lazy { serviceManager.voipStateService }
-
+    private val toIdentity: IdentityString,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingVoipCallRingingMessageTask"
 
     override val shortLogInfo: String = "cid=${voipCallRingingData.callId}"
@@ -23,7 +18,6 @@ class OutgoingVoipCallRingingMessageTask(
         val message = VoipCallRingingMessage()
         message.data = voipCallRingingData
         message.toIdentity = toIdentity
-        message.messageId = MessageId.random()
 
         voipStateService.addRequiredMessageId(voipCallRingingData.callId ?: 0, message.messageId)
 
@@ -31,7 +25,7 @@ class OutgoingVoipCallRingingMessageTask(
             message = message,
             messageModel = null,
             toIdentity = toIdentity,
-            messageId = MessageId.random(),
+            messageId = message.messageId,
             createdAt = now(),
             handle = handle,
         )

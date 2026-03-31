@@ -1,50 +1,59 @@
 package ch.threema.app.adapters.decorators;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
 import org.slf4j.Logger;
 
 import java.io.File;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
+import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.ImageViewUtil;
+import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.TestUtil;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
     private static final Logger logger = getThreemaLogger("VideoChatAdapterDecorator");
 
     private static final String LISTENER_TAG = "decorator";
 
-    public VideoChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
-        super(context, messageModel, helper);
+    @NonNull
+    private final MessagePlayerFactory messagePlayerFactory;
+
+    public VideoChatAdapterDecorator(
+        AbstractMessageModel messageModel,
+        @NonNull ChatAdapterDecoratorListener chatAdapterDecoratorListener,
+        @NonNull LinkifyUtil.LinkifyListener linkifyListener,
+        @NonNull MessagePlayerFactory messagePlayerFactory,
+        Helper helper
+    ) {
+        super(messageModel, chatAdapterDecoratorListener, linkifyListener, helper);
+        this.messagePlayerFactory = messagePlayerFactory;
     }
 
     @Override
-    protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-        super.configureChatMessage(holder, position);
+    protected void configureChatMessage(final ComposeMessageHolder holder, Context context, final int position) {
+        super.configureChatMessage(holder, context, position);
 
-        final MessagePlayer videoMessagePlayer = getMessagePlayerService().createPlayer(getMessageModel(),
-            (Activity) getContext(), helper.getMessageReceiver(), null);
+        final MessagePlayer videoMessagePlayer = messagePlayerFactory.create(getMessageModel(), null);
 
         logger.debug("configureChatMessage Video on position {} instance {} holder {} messageplayer = {}", position, this, holder, videoMessagePlayer);
 
@@ -70,31 +79,30 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
         configureThumbnail(holder);
 
         if (getMessageModel().getType() == MessageType.VIDEO) {
-            configureForMessageTypeVideo(holder);
+            configureForMessageTypeVideo(holder, context);
         } else if (getMessageModel().getType() == MessageType.FILE) {
-            configureForMessageTypeFile(holder);
+            configureForMessageTypeFile(holder, context);
         }
 
-        configureVideoMessagePlayer(holder, videoMessagePlayer);
+        configureVideoMessagePlayer(holder, context, videoMessagePlayer);
     }
 
-    private void configureForMessageTypeVideo(@NonNull ComposeMessageHolder holder) {
+    private void configureForMessageTypeVideo(@NonNull ComposeMessageHolder holder, @NonNull Context context) {
         String datePrefixString = "";
         dateContentDescriptionPrefix = "";
 
         long duration = getMessageModel().getVideoData().getDuration();
         int size = getMessageModel().getVideoData().getVideoSize();
-
         //do not show duration if 0
         if (duration > 0) {
             datePrefixString = ElapsedTimeFormatter.secondsToString(duration);
-            dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + ElapsedTimeFormatter.getDurationStringHuman(getContext(), duration);
+            dateContentDescriptionPrefix = context.getString(R.string.duration) + ": " + ElapsedTimeFormatter.getDurationStringHuman(context, duration);
             setDuration(duration);
         }
 
         if (size > 0) {
-            datePrefixString += " (" + Formatter.formatShortFileSize(getContext(), size) + ")";
-            dateContentDescriptionPrefix = getContext().getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(getContext(), size);
+            datePrefixString += " (" + Formatter.formatShortFileSize(context, size) + ")";
+            dateContentDescriptionPrefix = context.getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(context, size);
         }
 
         setDatePrefix(datePrefixString);
@@ -102,15 +110,14 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
         setDefaultBackground(holder);
     }
 
-    private void configureForMessageTypeFile(@NonNull ComposeMessageHolder holder) {
+    private void configureForMessageTypeFile(@NonNull ComposeMessageHolder holder, @NonNull Context context) {
         String datePrefixString = "";
         long duration = getMessageModel().getFileData().getDurationSeconds();
-
         if (!getMessageModel().getFileData().isDownloaded()) {
             long size = getMessageModel().getFileData().getFileSize();
             if (size > 0) {
-                datePrefixString = Formatter.formatShortFileSize(getContext(), size);
-                dateContentDescriptionPrefix = getContext().getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(getContext(), size);
+                datePrefixString = Formatter.formatShortFileSize(context, size);
+                dateContentDescriptionPrefix = context.getString(R.string.file_size) + ": " + Formatter.formatShortFileSize(context, size);
             }
 
             if (duration > 0) {
@@ -122,7 +129,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
         } else {
             if (duration > 0) {
                 datePrefixString = datePrefixString + getMessageModel().getFileData().getDurationString();
-                dateContentDescriptionPrefix = getContext().getString(R.string.duration) + ": " + ElapsedTimeFormatter.getDurationStringHuman(getContext(), duration);
+                dateContentDescriptionPrefix = context.getString(R.string.duration) + ": " + ElapsedTimeFormatter.getDurationStringHuman(context, duration);
             }
         }
 
@@ -145,7 +152,8 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
         }
     }
 
-    private void configureVideoMessagePlayer(@NonNull ComposeMessageHolder holder, @NonNull MessagePlayer videoMessagePlayer) {
+    private void configureVideoMessagePlayer(@NonNull ComposeMessageHolder holder, @NonNull Context context, @NonNull MessagePlayer videoMessagePlayer) {
+        Context applicationContext = context.getApplicationContext();
         videoMessagePlayer
             // decrypt listener
             .addListener(LISTENER_TAG, new MessagePlayer.DecryptionListener() {
@@ -160,7 +168,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
                         setControllerState(holder);
                         if (!success) {
                             if (!TestUtil.isEmptyOrNull(message)) {
-                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                                Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -192,7 +200,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
                         } else {
                             holder.controller.setReadyToDownload();
                             if (!TestUtil.isEmptyOrNull(message)) {
-                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                                Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -219,7 +227,7 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
         holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
             @Override
             public void onDebouncedClick(View v) {
-                if (actionModeStatus.getActionModeEnabled()) {
+                if (chatAdapterDecoratorListener.isActionModeEnabled()) {
                     propagateControllerClickToParent();
                     return;
                 }
@@ -265,14 +273,13 @@ public class VideoChatAdapterDecorator extends ChatAdapterDecorator {
         }
 
         ImageViewUtil.showBitmapOrMoviePlaceholder(
-            getContext(),
             holder.contentView,
             holder.attachmentImage,
             thumbnail,
             getThumbnailWidth()
         );
         holder.bodyTextView.setWidth(getThumbnailWidth());
-        holder.attachmentImage.setContentDescription(getContext().getString(R.string.video_placeholder));
+        holder.attachmentImage.setContentDescription(holder.attachmentImage.getContext().getString(R.string.video_placeholder));
         showHide(holder.bodyTextView, false);
     }
 

@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.view.ViewCompat;
 import androidx.media3.ui.DefaultTimeBar;
 import androidx.media3.ui.TimeBar;
 
@@ -31,15 +30,18 @@ import java.lang.ref.WeakReference;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.MediaPlayerStateWrapper;
 import ch.threema.app.utils.RuntimeUtil;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Media Player Fragment using traditional Android MediaPlayer. Only used to play MIDI and FLAC files which are not supported by ExoPlayer
  */
 @SuppressLint("UnsafeOptInUsageError")
-public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragment implements TimeBar.OnScrubListener, MediaPlayerStateWrapper.StateListener {
+public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragment implements TimeBar.OnScrubListener, MediaPlayerStateWrapper.CompletionListener {
     private static final Logger logger = getThreemaLogger("MediaPlayerViewFragment");
 
     private WeakReference<TextView> filenameViewRef, positionRef, durationRef;
@@ -75,14 +77,14 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
         }
 
         this.mediaPlayer = new MediaPlayerStateWrapper();
-        this.mediaPlayer.setStateListener(this);
+        this.mediaPlayer.setCompletionListener(this);
 
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
-    protected void created(Bundle savedInstanceState) {
-        ViewGroup rootView = rootViewReference.get();
+    protected void created(@Nullable Bundle savedInstanceState, @NonNull ViewGroup rootView) {
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(rootView, InsetSides.all());
 
         this.filenameViewRef = new WeakReference<>(rootView.findViewById(R.id.filename_view));
         this.positionRef = new WeakReference<>(rootView.findViewById(R.id.exo_position));
@@ -91,13 +93,6 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
         this.playRef = new WeakReference<>(rootView.findViewById(R.id.exo_play));
         this.pauseRef = new WeakReference<>(rootView.findViewById(R.id.exo_pause));
         this.progressBarRef = new WeakReference<>(rootView.findViewById(R.id.progress_bar));
-        ViewCompat.setOnApplyWindowInsetsListener(filenameViewRef.get(), (v, insets) -> {
-            ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-            params.leftMargin = insets.getSystemWindowInsetLeft();
-            params.rightMargin = insets.getSystemWindowInsetRight();
-            params.bottomMargin = insets.getSystemWindowInsetBottom();
-            return insets;
-        });
 
         this.playRef.get().setVisibility(View.GONE);
         this.pauseRef.get().setVisibility(View.GONE);
@@ -146,7 +141,7 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
             this.timeBarRef.get().setVisibility(View.GONE);
             this.durationRef.get().setVisibility(View.GONE);
         }
-        super.showBrokenImage();
+        super.showFileNotFoundContent();
     }
 
     @Override
@@ -291,19 +286,15 @@ public class MediaPlayerViewFragment extends AudioFocusSupportingMediaViewFragme
     }
 
     @Override
-    public void onCompletion(MediaPlayer mp) {
+    public void onCompletion(@NonNull MediaPlayer mp) {
         stopAudio();
     }
 
     @Override
-    public void onPrepared(MediaPlayer mp) {
-    }
-
-    @Override
-    protected void handleFileName(@Nullable String filename) {
+    protected void handleFileName(@Nullable String fileName) {
         if (filenameViewRef != null && filenameViewRef.get() != null) {
-            if (filename != null) {
-                filenameViewRef.get().setText(filename);
+            if (fileName != null) {
+                filenameViewRef.get().setText(fileName);
                 filenameViewRef.get().setVisibility(View.VISIBLE);
             } else {
                 filenameViewRef.get().setVisibility(View.INVISIBLE);

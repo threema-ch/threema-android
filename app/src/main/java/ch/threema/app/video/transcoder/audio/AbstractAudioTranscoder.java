@@ -11,7 +11,7 @@ import java.io.IOException;
 import androidx.annotation.NonNull;
 import ch.threema.app.video.transcoder.VideoTranscoder;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
-import java8.util.Optional;
+import java.util.Optional;
 
 public abstract class AbstractAudioTranscoder {
     private static final Logger logger = getThreemaLogger("AbstractAudioTranscoder");

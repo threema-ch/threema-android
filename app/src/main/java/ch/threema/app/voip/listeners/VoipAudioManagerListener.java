@@ -6,7 +6,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.utils.AudioDevice;
-import ch.threema.app.voip.VoipAudioManager;
 
 /**
  * Events related to the audio device management.

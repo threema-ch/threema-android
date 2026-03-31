@@ -1,17 +1,16 @@
 package ch.threema.app.systemupdates.updates;
 
-import androidx.annotation.NonNull;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.preference.service.PreferenceService;
+import org.koin.java.KoinJavaComponent;
+
+import ch.threema.app.preference.service.SynchronizedSettingsService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.SynchronizeContactsUtil;
+import kotlin.Lazy;
 
 public class SystemUpdateToVersion12 implements SystemUpdate {
-    private final @NonNull ServiceManager serviceManager;
 
-    public SystemUpdateToVersion12(@NonNull ServiceManager serviceManager) {
-        this.serviceManager = serviceManager;
-    }
+    private final Lazy<SynchronizedSettingsService> synchronizedSettingsServiceLazy = KoinJavaComponent.inject(SynchronizedSettingsService.class);
+    private final Lazy<UserService> userServiceLazy = KoinJavaComponent.inject(UserService.class);
 
     @Override
     public void run() {
@@ -21,9 +20,9 @@ public class SystemUpdateToVersion12 implements SystemUpdate {
             // Nothing to do
         }
 
-        PreferenceService preferenceService = serviceManager.getPreferenceService();
-        if (preferenceService.isSyncContacts()) {
-            UserService userService = serviceManager.getUserService();
+        SynchronizedSettingsService synchronizedSettingsService = synchronizedSettingsServiceLazy.getValue();
+        if (synchronizedSettingsService.isSyncContacts()) {
+            UserService userService = userServiceLazy.getValue();
             userService.enableAccountAutoSync(true);
         }
     }

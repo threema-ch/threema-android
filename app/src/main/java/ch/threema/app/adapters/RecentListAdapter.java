@@ -17,6 +17,7 @@ import java.util.List;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.R;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
@@ -29,8 +30,7 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
-import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 public class RecentListAdapter extends FilterableListAdapter {
     private final Context context;
@@ -41,14 +41,18 @@ public class RecentListAdapter extends FilterableListAdapter {
     private final ContactService contactService;
     private final GroupService groupService;
     private final DistributionListService distributionListService;
+    private final PreferenceService preferenceService;
 
-    public RecentListAdapter(Context context,
-                             final List<ConversationModel> values,
-                             final List<Integer> checkedItems,
-                             ContactService contactService,
-                             GroupService groupService,
-                             DistributionListService distributionListService,
-                             FilterResultsListener filterResultsListener) {
+    public RecentListAdapter(
+        Context context,
+        final List<ConversationModel> values,
+        final List<Integer> checkedItems,
+        ContactService contactService,
+        GroupService groupService,
+        DistributionListService distributionListService,
+        PreferenceService preferenceService,
+        FilterResultsListener filterResultsListener
+    ) {
         super(context, R.layout.item_user_list, (List<Object>) (Object) values);
 
         this.context = context;
@@ -57,6 +61,7 @@ public class RecentListAdapter extends FilterableListAdapter {
         this.contactService = contactService;
         this.groupService = groupService;
         this.distributionListService = distributionListService;
+        this.preferenceService = preferenceService;
         this.filterResultsListener = filterResultsListener;
 
         if (checkedItems != null && !checkedItems.isEmpty()) {
@@ -105,7 +110,7 @@ public class RecentListAdapter extends FilterableListAdapter {
         holder.originalPosition = ovalues.indexOf(conversationModel);
 
         final ContactModel contactModel = conversationModel.getContact();
-        final GroupModel groupModel = conversationModel.getGroup();
+        final GroupModelOld groupModel = conversationModel.getGroup();
 
         final @NonNull String subjectText;
         if (conversationModel.isGroupConversation()) {
@@ -130,7 +135,7 @@ public class RecentListAdapter extends FilterableListAdapter {
 
         holder.nameView.setText(
             highlightMatches(
-                conversationModel.messageReceiver.getDisplayName(),
+                conversationModel.messageReceiver.getDisplayName(preferenceService.getContactNameFormat()),
                 filterString
             )
         );
@@ -148,6 +153,7 @@ public class RecentListAdapter extends FilterableListAdapter {
             this.contactService,
             this.groupService,
             this.distributionListService,
+            this.preferenceService.getContactNameFormat(),
             holder,
             Glide.with(holder.avatarView.getContext())
         );
@@ -184,17 +190,29 @@ public class RecentListAdapter extends FilterableListAdapter {
                 for (ConversationModel conversationModel : ovalues) {
 
                     if (conversationModel.isGroupConversation()) {
-                        String text = NameUtil.getDisplayName(conversationModel.getGroup(), groupService);
+                        String text = NameUtil.getGroupDisplayName(
+                            conversationModel.getGroup(),
+                            groupService,
+                            preferenceService.getContactNameFormat()
+                        );
                         if (text.toUpperCase().contains(filterString.toUpperCase())) {
                             conversationList.add(conversationModel);
                         }
                     } else if (conversationModel.isDistributionListConversation()) {
-                        String text = NameUtil.getDisplayName(conversationModel.getDistributionList(), distributionListService);
+                        String text = NameUtil.getDistributionListDisplayName(
+                            conversationModel.getDistributionList(),
+                            distributionListService,
+                            preferenceService.getContactNameFormat()
+                        );
                         if (text.toUpperCase().contains(filterString.toUpperCase())) {
                             conversationList.add(conversationModel);
                         }
                     } else {
-                        String text = NameUtil.getDisplayNameOrNickname(conversationModel.getContact(), false) + conversationModel.getContact().getIdentity();
+                        String text = NameUtil.getContactDisplayNameOrNickname(
+                            conversationModel.getContact(),
+                            false,
+                            preferenceService.getContactNameFormat()
+                        ) + conversationModel.getContact().getIdentity();
                         if (text.toUpperCase().contains(filterString.toUpperCase())) {
                             conversationList.add(conversationModel);
                         }

@@ -59,7 +59,7 @@ import static org.koin.java.KoinJavaComponent.inject;
 
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import kotlin.Lazy;
 
 public abstract class RecipientListFragment extends ListFragment implements ListView.OnItemLongClickListener, FilterResultsListener {
@@ -307,17 +307,31 @@ public abstract class RecipientListFragment extends ListFragment implements List
         }
     }
 
+    @NonNull
     private String getRecipientList() {
         StringBuilder builder = new StringBuilder();
 
+        PreferenceService preferenceService = preferenceServiceLazy.getValue();
         for (Object model : adapter.getCheckedItems()) {
             String name = null;
             if (model instanceof ContactModel) {
-                name = NameUtil.getDisplayNameOrNickname((ContactModel) model, true);
-            } else if (model instanceof GroupModel) {
-                name = NameUtil.getDisplayName((GroupModel) model, groupServiceLazy.getValue());
+                name = NameUtil.getContactDisplayNameOrNickname(
+                    (ContactModel) model,
+                    true,
+                    preferenceService.getContactNameFormat()
+                );
+            } else if (model instanceof GroupModelOld) {
+                name = NameUtil.getGroupDisplayName(
+                    (GroupModelOld) model,
+                    groupServiceLazy.getValue(),
+                    preferenceService.getContactNameFormat()
+                );
             } else if (model instanceof DistributionListModel) {
-                name = NameUtil.getDisplayName((DistributionListModel) model, distributionListServiceLazy.getValue());
+                name = NameUtil.getDistributionListDisplayName(
+                    (DistributionListModel) model,
+                    distributionListServiceLazy.getValue(),
+                    preferenceService.getContactNameFormat()
+                );
             }
             if (name != null) {
                 if (builder.length() > 0) {
@@ -375,7 +389,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
             !isMultiSelectAllowed() ||
                 !multiSelectIdentity ||
                 floatingActionButton == null ||
-                preferenceServiceLazy.getValue().getMultipleRecipientsTooltipCount() >= 1
+                preferenceServiceLazy.getValue().isMultipleRecipientsTooltipShown()
         ) {
             return;
         }
@@ -390,7 +404,7 @@ public abstract class RecipientListFragment extends ListFragment implements List
                     return;
                 }
 
-                preferenceServiceLazy.getValue().incrementMultipleRecipientsTooltipCount();
+                preferenceServiceLazy.getValue().setMultipleRecipientsTooltipShown(true);
 
                 int[] location = new int[2];
                 listView.getLocationOnScreen(location);

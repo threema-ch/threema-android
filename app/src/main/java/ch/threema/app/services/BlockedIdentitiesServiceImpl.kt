@@ -8,7 +8,7 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.tasks.TaskCreator
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.lang.ref.WeakReference
 
 class BlockedIdentitiesServiceImpl(
@@ -21,7 +21,7 @@ class BlockedIdentitiesServiceImpl(
     private var blockedIdentitiesCache: WeakReference<Set<String>> = WeakReference(null)
 
     @Synchronized
-    override fun blockIdentity(identity: Identity, context: Context?) {
+    override fun blockIdentity(identity: IdentityString, context: Context?) {
         if (isBlocked(identity)) {
             return
         }
@@ -36,7 +36,7 @@ class BlockedIdentitiesServiceImpl(
     }
 
     @Synchronized
-    override fun unblockIdentity(identity: Identity, context: Context?) {
+    override fun unblockIdentity(identity: IdentityString, context: Context?) {
         if (!isBlocked(identity)) {
             return
         }
@@ -52,17 +52,17 @@ class BlockedIdentitiesServiceImpl(
     }
 
     @Synchronized
-    override fun isBlocked(identity: Identity): Boolean {
+    override fun isBlocked(identity: IdentityString): Boolean {
         return getBlockedIdentities().contains(identity)
     }
 
     @Synchronized
-    override fun getAllBlockedIdentities(): Set<Identity> {
+    override fun getAllBlockedIdentities(): Set<IdentityString> {
         return HashSet(getBlockedIdentities())
     }
 
     @Synchronized
-    override fun persistBlockedIdentities(blockedIdentities: Set<Identity>) {
+    override fun persistBlockedIdentities(blockedIdentities: Set<IdentityString>) {
         // Find all modified identities (used for triggering the correct listeners)
         val modifiedIdentities = getAllBlockedIdentities().let { previouslyBlockedIdentities ->
             val newUnblockedIdentities = previouslyBlockedIdentities - blockedIdentities
@@ -81,7 +81,7 @@ class BlockedIdentitiesServiceImpl(
         }
     }
 
-    override fun toggleBlocked(identity: Identity, context: Context?) {
+    override fun toggleBlocked(identity: IdentityString, context: Context?) {
         if (isBlocked(identity)) {
             unblockIdentity(identity, context)
         } else {
@@ -89,14 +89,14 @@ class BlockedIdentitiesServiceImpl(
         }
     }
 
-    private fun persistAndReflectIdentities(blockedIdentities: Set<Identity>) {
+    private fun persistAndReflectIdentities(blockedIdentities: Set<IdentityString>) {
         persistBlockedIdentities(blockedIdentities)
         if (multiDeviceManager.isMultiDeviceActive) {
             taskCreator.scheduleReflectBlockedIdentitiesTask()
         }
     }
 
-    private fun getBlockedIdentities(): Set<Identity> {
+    private fun getBlockedIdentities(): Set<IdentityString> {
         return blockedIdentitiesCache.get() ?: run {
             val blockedIdentitiesSet = getFromPreferences()
             blockedIdentitiesCache = WeakReference(blockedIdentitiesSet)
@@ -104,7 +104,6 @@ class BlockedIdentitiesServiceImpl(
         }
     }
 
-    private fun getFromPreferences(): MutableSet<Identity> {
-        return preferenceService.getList(uniqueListName).toMutableSet()
-    }
+    private fun getFromPreferences(): MutableSet<IdentityString> =
+        preferenceService.getEncryptedList(uniqueListName).toMutableSet()
 }

@@ -95,14 +95,14 @@ class RemoveAllPrivateMarksUseCaseTest {
         val useCase = RemoveAllPrivateMarksUseCase(
             conversationService = mockk {
                 every { getAll(false) } returns listOf(
-                    ConversationModel(mockk(), nonPrivateContactReceiver),
-                    ConversationModel(mockk(), privateGroupReceiver),
-                    ConversationModel(mockk(), nonPrivateGroupReceiver),
-                    ConversationModel(mockk(), privateDistributionListReceiver),
-                    ConversationModel(mockk(), nonPrivateDistributionListReceiver),
+                    ConversationModel(nonPrivateContactReceiver),
+                    ConversationModel(privateGroupReceiver),
+                    ConversationModel(nonPrivateGroupReceiver),
+                    ConversationModel(privateDistributionListReceiver),
+                    ConversationModel(nonPrivateDistributionListReceiver),
                 )
                 every { archived } returns listOf(
-                    ConversationModel(mockk(), privateContactReceiver),
+                    ConversationModel(privateContactReceiver),
                 )
             },
             conversationCategoryService = conversationCategoryServiceMock,
@@ -113,7 +113,7 @@ class RemoveAllPrivateMarksUseCaseTest {
 
         useCase.call()
 
-        verify(exactly = 1) { preferenceServiceMock.isPrivateChatsHidden = false }
+        verify(exactly = 1) { preferenceServiceMock.setArePrivateChatsHidden(false) }
         verify(exactly = 1) { widgetUpdaterMock.updateWidgets() }
         verify(exactly = 1) { conversationListenerMock.onModifiedAll() }
         verify(exactly = 1) { contactListenerMock.onModified("ABCD1234") }
@@ -136,9 +136,9 @@ class RemoveAllPrivateMarksUseCaseTest {
         val useCase = RemoveAllPrivateMarksUseCase(
             conversationService = mockk {
                 every { getAll(false) } returns listOf(
-                    ConversationModel(mockk(), nonPrivateContactReceiver),
-                    ConversationModel(mockk(), nonPrivateGroupReceiver),
-                    ConversationModel(mockk(), nonPrivateDistributionListReceiver),
+                    ConversationModel(nonPrivateContactReceiver),
+                    ConversationModel(nonPrivateGroupReceiver),
+                    ConversationModel(nonPrivateDistributionListReceiver),
                 )
                 every { archived } returns emptyList()
             },
@@ -150,7 +150,7 @@ class RemoveAllPrivateMarksUseCaseTest {
 
         useCase.call()
 
-        verify(exactly = 0) { preferenceServiceMock.isPrivateChatsHidden = false }
+        verify(exactly = 0) { preferenceServiceMock.setArePrivateChatsHidden(false) }
         verify(exactly = 0) { widgetUpdaterMock.updateWidgets() }
     }
 }

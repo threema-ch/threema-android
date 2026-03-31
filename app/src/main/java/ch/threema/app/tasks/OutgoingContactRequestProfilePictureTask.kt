@@ -1,11 +1,10 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import kotlinx.serialization.Serializable
 
 private val logger = getThreemaLogger("OutgoingContactRequestProfilePictureTask")
@@ -16,9 +15,8 @@ private val logger = getThreemaLogger("OutgoingContactRequestProfilePictureTask"
  * cleared from the contact.
  */
 class OutgoingContactRequestProfilePictureTask(
-    private val toIdentity: Identity,
-    serviceManager: ServiceManager,
-) : OutgoingProfilePictureTask(serviceManager) {
+    private val toIdentity: IdentityString,
+) : OutgoingProfilePictureTask() {
     override val type = "OutgoingContactRequestProfilePictureTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -59,9 +57,9 @@ class OutgoingContactRequestProfilePictureTask(
 
     @Serializable
     data class OutgoingContactRequestProfilePictureData(
-        private val toIdentity: Identity,
+        private val toIdentity: IdentityString,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-            OutgoingContactRequestProfilePictureTask(toIdentity, serviceManager)
+        override fun createTask(): Task<*, TaskCodec> =
+            OutgoingContactRequestProfilePictureTask(toIdentity)
     }
 }

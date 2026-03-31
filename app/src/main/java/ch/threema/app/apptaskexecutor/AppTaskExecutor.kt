@@ -4,14 +4,17 @@ import ch.threema.app.apptaskexecutor.tasks.AppTask
 import ch.threema.app.apptaskexecutor.tasks.PersistableAppTask
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.DispatcherProvider
+import kotlin.coroutines.Continuation
 import kotlin.jvm.Throws
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.withContext
 
@@ -71,6 +74,34 @@ class AppTaskExecutor(
             logger.warn("Not persisting persistable task {}", appTask)
         }
         return schedule(appTask)
+    }
+
+    /**
+     * Schedule an app task that runs the [runnable].
+     *
+     * @param runnable The [runnable] that will be run inside an app task. The [runnable] can use the continuation to call one suspend function.
+     *
+     * Note that this is mainly for java compatibility and should not be used in kotlin. Kotlin callers should use [scheduleTask] instead.
+     *
+     * Note that implementations of the [runnable] must only resume the continuation **once**, which happens implicitly when calling a suspend
+     * function.
+     */
+    @DelicateCoroutinesApi
+    fun runInAppTask(runnable: (continuation: Continuation<Unit>) -> Unit): Deferred<Unit> = schedule {
+        suspendCancellableCoroutine { continuation ->
+            runnable(continuation)
+        }
+    }
+
+    /**
+     * Schedule an app task that runs the [runnable].
+     *
+     * @param runnable The [runnable] that will be run inside an app task.
+     *
+     * Note that this is mainly for java compatibility and should not be used in kotlin. Kotlin callers should use [scheduleTask] instead.
+     */
+    fun runInAppTask(runnable: () -> Unit): Deferred<Unit> = schedule {
+        runnable()
     }
 
     private fun schedule(appTask: AppTask): Deferred<Unit> {

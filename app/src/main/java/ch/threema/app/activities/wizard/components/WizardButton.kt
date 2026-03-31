@@ -130,7 +130,11 @@ fun WizardButton(
                 fontSize = 16.sp,
             ),
             color = colorResource(contentColorRes).copy(
-                alpha = if (isEnabled) 1f else AlphaValues.DISABLED_ON_CONTAINER,
+                alpha = if (isEnabled) {
+                    AlphaValues.FULLY_OPAQUE
+                } else {
+                    AlphaValues.DISABLED_ON_CONTAINER
+                },
             ),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -143,7 +147,11 @@ fun WizardButton(
                 painter = painterResource(id = trailingIconRes),
                 contentDescription = null,
                 tint = colorResource(contentColorRes).copy(
-                    alpha = if (isEnabled) 1f else AlphaValues.DISABLED_ON_CONTAINER,
+                    alpha = if (isEnabled) {
+                        AlphaValues.FULLY_OPAQUE
+                    } else {
+                        AlphaValues.DISABLED_ON_CONTAINER
+                    },
                 ),
             )
         }

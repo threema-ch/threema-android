@@ -46,6 +46,7 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.ThreemaFeature;
@@ -177,8 +178,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         scheduleTask(new OutgoingTextMessageTask(
             messageModel.getId(),
             Type_CONTACT,
-            Set.of(messageModel.getIdentity()),
-            serviceManager
+            Set.of(messageModel.getIdentity())
         ));
     }
 
@@ -189,8 +189,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         scheduleTask(new OutgoingTextMessageTask(
             messageModel.getId(),
             Type_CONTACT,
-            Set.of(messageModel.getIdentity()),
-            serviceManager
+            Set.of(messageModel.getIdentity())
         ));
     }
 
@@ -210,8 +209,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         scheduleTask(new OutgoingLocationMessageTask(
             messageModel.getId(),
             Type_CONTACT,
-            Set.of(messageModel.getIdentity()),
-            serviceManager
+            Set.of(messageModel.getIdentity())
         ));
     }
 
@@ -224,8 +222,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         scheduleTask(new OutgoingLocationMessageTask(
             messageModel.getId(),
             Type_CONTACT,
-            Set.of(messageModel.getIdentity()),
-            serviceManager
+            Set.of(messageModel.getIdentity())
         ));
     }
 
@@ -235,7 +232,6 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         @Nullable byte[] fileBlobId,
         @Nullable SymmetricEncryptionResult encryptionResult,
         @NonNull MessageModel messageModel,
-        @Nullable MessageId messageId,
         @Nullable Collection<String> recipientIdentities
     ) throws ThreemaException {
         // Enrich file data model with blob id and encryption key
@@ -249,8 +245,9 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
         // and therefore updated.
         messageModel.setFileData(modelFileData);
 
-        // Create a new message id if the given message id is null
-        messageModel.setMessageId(messageId != null ? messageId : MessageId.random());
+        if (messageModel.getMessageId() == null) {
+            messageModel.setMessageId(MessageId.random());
+        }
         saveLocalModel(messageModel);
 
         // Mark the contact as non-hidden and unarchived
@@ -264,8 +261,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
             messageModel.getId(),
             Type_CONTACT,
             Set.of(messageModel.getIdentity()),
-            thumbnailBlobId,
-            serviceManager
+            thumbnailBlobId
         ));
     }
 
@@ -297,8 +293,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
                 Type_CONTACT,
                 Set.of(messageModel.getIdentity()),
                 ballotId,
-                ballotData,
-                serviceManager
+                ballotData
             ));
         }
     }
@@ -313,7 +308,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
 
         if (ballotModel.getType() == BallotModel.Type.RESULT_ON_CLOSE) {
             //if i am the creator do not send anything
-            if (TestUtil.compare(ballotModel.getCreatorIdentity(), identityStore.getIdentity())) {
+            if (TestUtil.compare(ballotModel.getCreatorIdentity(), identityStore.getIdentityString())) {
                 return;
             }
         }
@@ -333,8 +328,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
                 ballotId,
                 ballotModel.getCreatorIdentity(),
                 votes,
-                contact.getIdentity(),
-                serviceManager
+                contact.getIdentity()
             ));
         }
     }
@@ -346,7 +340,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
      * @throws ThreemaException if enqueuing the message fails
      */
     public void sendTypingIndicatorMessage(boolean isTyping) throws ThreemaException {
-        scheduleTask(new OutgoingTypingIndicatorMessageTask(isTyping, contact.getIdentity(), serviceManager));
+        scheduleTask(new OutgoingTypingIndicatorMessageTask(isTyping, contact.getIdentity()));
     }
 
     /**
@@ -358,7 +352,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendDeliveryReceipt(int receiptType, @NonNull MessageId[] messageIds, long time) {
         scheduleTask(
             new OutgoingContactDeliveryReceiptMessageTask(
-                receiptType, messageIds, time, contact.getIdentity(), serviceManager
+                receiptType, messageIds, time, contact.getIdentity()
             )
         );
     }
@@ -375,8 +369,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
                 new OutboundIncomingContactMessageUpdateReadTask(
                     messageIds,
                     timestamp,
-                    contact.getIdentity(),
-                    serviceManager
+                    contact.getIdentity()
                 )
             );
         }
@@ -390,7 +383,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendVoipCallOfferMessage(@NonNull VoipCallOfferData callOfferData) {
         scheduleTask(
             new OutgoingVoipCallOfferMessageTask(
-                callOfferData, contact.getIdentity(), serviceManager
+                callOfferData, contact.getIdentity()
             )
         );
     }
@@ -403,7 +396,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendVoipCallAnswerMessage(@NonNull VoipCallAnswerData callAnswerData) {
         scheduleTask(
             new OutgoingVoipCallAnswerMessageTask(
-                callAnswerData, contact.getIdentity(), serviceManager
+                callAnswerData, contact.getIdentity()
             )
         );
     }
@@ -416,7 +409,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendVoipICECandidateMessage(@NonNull VoipICECandidatesData voipICECandidatesData) {
         scheduleTask(
             new OutgoingVoipICECandidateMessageTask(
-                voipICECandidatesData, contact.getIdentity(), serviceManager
+                voipICECandidatesData, contact.getIdentity()
             )
         );
     }
@@ -429,7 +422,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendVoipCallHangupMessage(@NonNull VoipCallHangupData callHangupData) {
         scheduleTask(
             new OutgoingVoipCallHangupMessageTask(
-                callHangupData, contact.getIdentity(), serviceManager
+                callHangupData, contact.getIdentity()
             )
         );
     }
@@ -442,7 +435,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     public void sendVoipCallRingingMessage(@NonNull VoipCallRingingData callRingingData) {
         scheduleTask(
             new OutgoingVoipCallRingingMessageTask(
-                callRingingData, contact.getIdentity(), serviceManager
+                callRingingData, contact.getIdentity()
             )
         );
     }
@@ -454,8 +447,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
                 messageModelId,
                 MessageId.random(),
                 newText,
-                editedAt,
-                serviceManager
+                editedAt
             )
         );
     }
@@ -466,8 +458,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
                 contact.getIdentity(),
                 messageModelId,
                 MessageId.random(),
-                deletedAt,
-                serviceManager
+                deletedAt
             )
         );
     }
@@ -489,8 +480,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
                     MessageId.random(),
                     actionCase,
                     emojiSequence,
-                    reactedAt,
-                    serviceManager
+                    reactedAt
                 )
             );
             return null;
@@ -539,6 +529,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     }
 
     @Override
+    @NonNull
     public List<MessageModel> loadMessages(MessageService.MessageFilter filter) {
         return databaseService.getMessageModelFactory().find(
             contact.getIdentity(),
@@ -596,17 +587,18 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     }
 
     @Override
-    public String getDisplayName() {
-        return NameUtil.getDisplayNameOrNickname(contact, true);
+    @NonNull
+    public String getDisplayName(@NonNull ContactNameFormat contactNameFormat) {
+        return NameUtil.getContactDisplayNameOrNickname(contact, true, contactNameFormat);
     }
 
     @Override
-    public String getShortName() {
-        return NameUtil.getShortName(contact);
+    public String getShortName(@NonNull ContactNameFormat contactNameFormat) {
+        return NameUtil.getShortName(contact, contactNameFormat);
     }
 
     @Override
-    public void prepareIntent(Intent intent) {
+    public void prepareIntent(@NonNull Intent intent) {
         intent.putExtra(AppConstants.INTENT_DATA_CONTACT, contact.getIdentity());
     }
 
@@ -658,7 +650,7 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     }
 
     @Override
-    public boolean sendMediaData() {
+    public boolean shouldSendMediaData() {
         return true;
     }
 
@@ -723,7 +715,8 @@ public class ContactMessageReceiver implements MessageReceiver<MessageModel> {
     }
 
     @Override
-    public @NonNull String toString() {
+    @NonNull
+    public String toString() {
         return "ContactMessageReceiver (identity = " + contact.getIdentity() + ")";
     }
 

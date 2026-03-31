@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
@@ -35,6 +36,7 @@ public class ReceiversRequestHandler extends MessageReceiver {
     private final ContactService contactService;
     private final GroupService groupService;
     private final DistributionListService distributionListService;
+    private final PreferenceService preferenceService;
 
     private Listener listener;
 
@@ -46,16 +48,20 @@ public class ReceiversRequestHandler extends MessageReceiver {
     }
 
     @AnyThread
-    public ReceiversRequestHandler(@NonNull MessageDispatcher dispatcher,
-                                   @NonNull ContactService contactService,
-                                   @NonNull GroupService groupService,
-                                   @NonNull DistributionListService distributionListService,
-                                   @Nullable Listener listener) {
+    public ReceiversRequestHandler(
+        @NonNull MessageDispatcher dispatcher,
+        @NonNull ContactService contactService,
+        @NonNull GroupService groupService,
+        @NonNull DistributionListService distributionListService,
+        @NonNull PreferenceService preferenceService,
+        @Nullable Listener listener
+    ) {
         super(Protocol.SUB_TYPE_RECEIVERS);
         this.dispatcher = dispatcher;
         this.contactService = contactService;
         this.groupService = groupService;
         this.distributionListService = distributionListService;
+        this.preferenceService = preferenceService;
         this.listener = listener;
     }
 
@@ -70,7 +76,8 @@ public class ReceiversRequestHandler extends MessageReceiver {
             final MsgpackObjectBuilder data = Receiver.convert(
                 this.contactService.find(Contact.getContactFilter()),
                 this.groupService.getAll(Group.getGroupFilter()),
-                this.distributionListService.getAll()
+                this.distributionListService.getAll(),
+                this.preferenceService.getContactNameFormat()
             );
 
             // Notify listeners

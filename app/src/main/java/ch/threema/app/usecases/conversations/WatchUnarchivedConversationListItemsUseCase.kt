@@ -6,8 +6,10 @@ import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.DistributionListService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.RingtoneService
-import ch.threema.app.usecases.WatchGroupCallsUseCase
 import ch.threema.app.usecases.WatchTypingIdentitiesUseCase
+import ch.threema.app.usecases.contacts.WatchAllMentionNamesUseCase
+import ch.threema.app.usecases.contacts.WatchContactNameFormatSettingUseCase
+import ch.threema.app.usecases.groups.WatchGroupCallsUseCase
 
 class WatchUnarchivedConversationListItemsUseCase(
     watchUnarchivedConversationsUseCase: WatchUnarchivedConversationsUseCase,
@@ -18,15 +20,21 @@ class WatchUnarchivedConversationListItemsUseCase(
     groupService: GroupService,
     distributionListService: DistributionListService,
     ringtoneService: RingtoneService,
+    watchAvatarIterationsUseCase: WatchAvatarIterationsUseCase,
+    watchContactNameFormatSettingUseCase: WatchContactNameFormatSettingUseCase,
+    watchAllMentionNamesUseCase: WatchAllMentionNamesUseCase,
     draftManager: DraftManager,
 ) : WatchConversationListItemsUseCase(
+    watchConversationsUseCase = watchUnarchivedConversationsUseCase,
+    watchGroupCallsUseCase = watchGroupCallsUseCase,
+    watchTypingIdentitiesUseCase = watchTypingIdentitiesUseCase,
+    watchAvatarIterationsUseCase = watchAvatarIterationsUseCase,
+    watchContactNameFormatSettingUseCase = watchContactNameFormatSettingUseCase,
+    watchAllMentionNamesUseCase = watchAllMentionNamesUseCase,
+    draftManager = draftManager,
     conversationCategoryService = conversationCategoryService,
     contactService = contactService,
     groupService = groupService,
     distributionListService = distributionListService,
     ringtoneService = ringtoneService,
-    conversationModels = watchUnarchivedConversationsUseCase.call(),
-    watchGroupCallsUseCase = watchGroupCallsUseCase,
-    watchTypingIdentitiesUseCase = watchTypingIdentitiesUseCase,
-    draftManager = draftManager,
 )

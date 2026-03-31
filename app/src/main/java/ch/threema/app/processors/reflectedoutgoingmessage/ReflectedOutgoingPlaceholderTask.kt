@@ -2,6 +2,7 @@ package ch.threema.app.processors.reflectedoutgoingmessage
 
 import ch.threema.app.managers.ServiceManager
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.emptyByteArray
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.protobuf.d2d.MdD2D
 
@@ -52,5 +53,5 @@ private object PlaceholderMessage : AbstractMessage() {
 
     override fun getMinimumRequiredForwardSecurityVersion() = null
 
-    override fun getBody() = byteArrayOf()
+    override fun getBody() = emptyByteArray()
 }

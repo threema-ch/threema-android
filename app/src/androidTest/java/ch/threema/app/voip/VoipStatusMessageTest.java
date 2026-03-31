@@ -11,7 +11,9 @@ import java.util.Locale;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 import ch.threema.app.R;
+import ch.threema.app.ui.models.MessageViewElement;
 import ch.threema.app.utils.MessageUtil;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageModel;
@@ -69,7 +71,7 @@ public class VoipStatusMessageTest {
         }
 
         public void test() {
-            final MessageUtil.MessageViewElement element = MessageUtil.getViewElement(this.context, this.messageModel);
+            final MessageViewElement element = MessageUtil.getViewElement(this.context, this.messageModel, ContactNameFormat.DEFAULT);
             assertEquals((Integer) this.expectedIcon, element.icon);
             assertEquals((Integer) this.expectedColor, element.color);
             assertEquals(this.expectedPlaceholder, element.placeholder);

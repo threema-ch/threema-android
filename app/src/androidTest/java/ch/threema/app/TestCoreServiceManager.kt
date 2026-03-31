@@ -9,10 +9,10 @@ import ch.threema.app.multidevice.linking.DeviceLinkingStatus
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
 import ch.threema.app.stores.EncryptedPreferenceStore
-import ch.threema.app.stores.IdentityProviderImpl
-import ch.threema.app.stores.IdentityStoreImpl
+import ch.threema.app.stores.IdentityProvider
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.TaskCreator
+import ch.threema.app.utils.AppVersionProvider
 import ch.threema.base.crypto.HashedNonce
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.crypto.NonceFactory
@@ -38,8 +38,10 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
+import ch.threema.storage.DatabaseProvider
 import ch.threema.storage.DatabaseService
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
+import io.mockk.mockk
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -48,21 +50,22 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import org.koin.mp.KoinPlatform
 
-class TestCoreServiceManager(
-    override val version: AppVersion,
-    override val databaseService: DatabaseService,
-    override val preferenceStore: PreferenceStore,
-    override val encryptedPreferenceStore: EncryptedPreferenceStore,
+class TestCoreServiceManager
+@JvmOverloads
+constructor(
+    override val version: AppVersion = AppVersionProvider.appVersion,
+    override val databaseProvider: DatabaseProvider,
+    identityProvider: IdentityProvider = mockk(),
+    override val databaseService: DatabaseService = DatabaseService(databaseProvider, identityProvider),
+    override val preferenceStore: PreferenceStore = KoinPlatform.getKoin().get(),
+    override val encryptedPreferenceStore: EncryptedPreferenceStore = KoinPlatform.getKoin().get(),
     override val taskArchiver: TaskArchiver = TestTaskArchiver(),
     override val deviceCookieManager: DeviceCookieManager = TestDeviceCookieManager(),
     override val taskManager: TaskManager = TestTaskManager(TransactionAckTaskCodec()),
     override val multiDeviceManager: MultiDeviceManager = TestMultiDeviceManager(),
-    override val identityStore: IdentityStore = IdentityStoreImpl(
-        identityProvider = IdentityProviderImpl(preferenceStore),
-        preferenceStore = preferenceStore,
-        encryptedPreferenceStore = encryptedPreferenceStore,
-    ),
+    override val identityStore: IdentityStore = mockk(),
     override val nonceFactory: NonceFactory = NonceFactory(TestNonceStore()),
 ) : CoreServiceManager
 

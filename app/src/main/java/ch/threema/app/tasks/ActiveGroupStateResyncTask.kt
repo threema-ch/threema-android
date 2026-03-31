@@ -1,8 +1,9 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.profilepicture.GroupProfilePictureUploader
-import ch.threema.app.protocol.PreGeneratedMessageIds
-import ch.threema.app.protocol.runActiveGroupStateResyncSteps
+import ch.threema.app.protocolsteps.IdentityBlockedSteps
+import ch.threema.app.protocolsteps.PreGeneratedMessageIds
+import ch.threema.app.protocolsteps.runActiveGroupStateResyncSteps
 import ch.threema.app.services.FileService
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.OutgoingCspMessageServices
@@ -35,6 +36,7 @@ class ActiveGroupStateResyncTask(
     private val groupCallManager: GroupCallManager,
     private val databaseService: DatabaseService,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
+    private val identityBlockedSteps: IdentityBlockedSteps,
 ) : ActiveTask<Boolean> {
     override val type = "ActiveGroupStateResyncTask"
 
@@ -72,25 +74,26 @@ class ActiveGroupStateResyncTask(
         val groupModelData = getGroupModelData() ?: return false
 
         runActiveGroupStateResyncSteps(
-            groupModel,
-            groupModelData.otherMembers.toBasicContacts(
+            groupModel = groupModel,
+            targetMembers = groupModelData.otherMembers.toBasicContacts(
                 contactModelRepository,
                 contactStore,
                 apiConnector,
             ).toSet(),
-            PreGeneratedMessageIds(
+            preGeneratedMessageIds = PreGeneratedMessageIds(
                 firstMessageId = MessageId.random(),
                 secondMessageId = MessageId.random(),
                 thirdMessageId = MessageId.random(),
                 fourthMessageId = MessageId.random(),
             ),
-            userService,
-            groupProfilePictureUploader,
-            fileService,
-            groupCallManager,
-            databaseService,
-            outgoingCspMessageServices,
-            handle,
+            userService = userService,
+            groupProfilePictureUploader = groupProfilePictureUploader,
+            fileService = fileService,
+            groupCallManager = groupCallManager,
+            databaseService = databaseService,
+            outgoingCspMessageServices = outgoingCspMessageServices,
+            identityBlockedSteps = identityBlockedSteps,
+            handle = handle,
         )
 
         return true

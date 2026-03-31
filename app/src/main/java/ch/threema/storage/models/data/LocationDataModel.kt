@@ -157,6 +157,7 @@ data class LocationDataModel(
             }
         }
 
+        @JvmStatic
         @Deprecated("Do not use. This only exists to handle places where null cannot be returned")
         fun createEmpty(): LocationDataModel =
             defaultValuesInstance()

@@ -1,9 +1,10 @@
 package ch.threema.app.tasks
 
 import androidx.annotation.CallSuper
-import ch.threema.app.managers.ServiceManager
+import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -12,17 +13,19 @@ import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.domain.taskmanager.getEncryptedUserProfileSyncUpdate
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.sync.MdD2DSync
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("ReflectUserProfileShareWithPolicySyncTaskBase")
 
 abstract class ReflectUserProfileShareWithPolicySyncTaskBase(
     protected val newPolicy: ProfilePictureSharePolicy.Policy,
-    serviceManager: ServiceManager,
-) : ActiveTask<Unit>, PersistableTask {
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
-    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
+) : ActiveTask<Unit>, PersistableTask, KoinComponent {
+    private val multiDeviceManager: MultiDeviceManager by inject()
+    private val nonceFactory: NonceFactory by inject()
+    private val preferenceService: PreferenceService by inject()
+
     private val mdProperties by lazy { multiDeviceManager.propertiesProvider.get() }
-    private val preferenceService by lazy { serviceManager.preferenceService }
 
     abstract fun createUpdatedUserProfile(): MdD2DSync.UserProfile
 
@@ -56,6 +59,6 @@ abstract class ReflectUserProfileShareWithPolicySyncTaskBase(
 
     @CallSuper
     open fun persistLocally(preferenceService: PreferenceService) {
-        preferenceService.profilePicRelease = newPolicy.ordinal
+        preferenceService.setProfilePicRelease(newPolicy.ordinal)
     }
 }

@@ -2,10 +2,8 @@ package ch.threema.data.repositories
 
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestTaskManager
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.testutils.TestHelpers
-import ch.threema.app.utils.AppVersionProvider
-import ch.threema.data.TestDatabaseService
+import ch.threema.app.testutils.mockUser
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModelDataFactory
 import ch.threema.data.storage.DatabaseBackend
@@ -13,7 +11,10 @@ import ch.threema.data.storage.DbGroup
 import ch.threema.data.storage.SqliteDatabaseBackend
 import ch.threema.domain.helpers.UnusedTaskCodec
 import ch.threema.domain.models.GroupId
-import ch.threema.storage.models.GroupModel
+import ch.threema.domain.models.UserState
+import ch.threema.storage.TestDatabaseProvider
+import ch.threema.storage.models.group.GroupModelOld
+import io.mockk.mockk
 import java.util.Date
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -22,7 +23,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertNull
 
 class GroupModelRepositoryTest {
-    private lateinit var databaseService: TestDatabaseService
+    private lateinit var databaseProvider: TestDatabaseProvider
     private lateinit var databaseBackend: DatabaseBackend
     private lateinit var coreServiceManager: TestCoreServiceManager
     private lateinit var groupModelRepository: GroupModelRepository
@@ -40,29 +41,26 @@ class GroupModelRepositoryTest {
             groupDescription = "Description",
             groupDescriptionChangedAt = Date(),
             members = setOf("AAAAAAAA", "BBBBBBBB"),
-            userState = GroupModel.UserState.MEMBER,
+            userState = UserState.MEMBER,
             notificationTriggerPolicyOverride = null,
         )
     }
 
     @BeforeTest
     fun before() {
-        TestHelpers.setIdentity(
-            ThreemaApplication.requireServiceManager(),
-            TestHelpers.TEST_CONTACT,
-        )
-
-        this.databaseService = TestDatabaseService()
-        this.databaseBackend = SqliteDatabaseBackend(databaseService)
-        val serviceManager = ThreemaApplication.requireServiceManager()
+        this.databaseProvider = TestDatabaseProvider()
+        this.databaseBackend = SqliteDatabaseBackend(databaseProvider, mockk())
         this.coreServiceManager = TestCoreServiceManager(
-            version = AppVersionProvider.appVersion,
-            databaseService = databaseService,
-            preferenceStore = serviceManager.preferenceStore,
-            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
+            databaseProvider = databaseProvider,
+            preferenceStore = mockk {
+                mockUser(TestHelpers.TEST_CONTACT)
+            },
+            encryptedPreferenceStore = mockk {
+                mockUser(TestHelpers.TEST_CONTACT)
+            },
             taskManager = TestTaskManager(UnusedTaskCodec()),
         )
-        this.groupModelRepository = ModelRepositories(coreServiceManager).groups
+        this.groupModelRepository = ModelRepositories(coreServiceManager, mockk()).groups
     }
 
     @Test
@@ -83,8 +81,8 @@ class GroupModelRepositoryTest {
         val groupIdentity = GroupIdentity("TESTTEST", 42)
 
         // Create group using the "old" model
-        databaseService.groupModelFactory.create(
-            GroupModel()
+        coreServiceManager.databaseService.groupModelFactory.create(
+            GroupModelOld()
                 .setCreatorIdentity(groupIdentity.creatorIdentity)
                 .setApiGroupId(GroupId(groupIdentity.groupId))
                 .setCreatedAt(Date()),
@@ -101,8 +99,8 @@ class GroupModelRepositoryTest {
         val groupId = GroupId(-42)
 
         // Create group using the "old" model
-        databaseService.groupModelFactory.create(
-            GroupModel()
+        coreServiceManager.databaseService.groupModelFactory.create(
+            GroupModelOld()
                 .setCreatorIdentity(creatorIdentity)
                 .setApiGroupId(groupId)
                 .setCreatedAt(Date()),

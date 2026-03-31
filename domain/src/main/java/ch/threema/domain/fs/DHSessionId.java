@@ -8,6 +8,9 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 
+import static ch.threema.common.SecureRandomExtensionsKt.generateRandomBytes;
+import static ch.threema.common.SecureRandomExtensionsKt.secureRandom;
+
 /**
  * Value Class for a DH session ID (consisting of {@link ProtocolDefines.FS_SESSION_ID_LENGTH} bytes).
  */
@@ -18,9 +21,7 @@ public class DHSessionId implements Comparable<DHSessionId> {
      * Generate a new random session ID.
      */
     public DHSessionId() {
-        SecureRandom random = new SecureRandom();
-        this.value = new byte[ProtocolDefines.FS_SESSION_ID_LENGTH];
-        random.nextBytes(this.value);
+        this.value = generateRandomBytes(secureRandom(), ProtocolDefines.FS_SESSION_ID_LENGTH);
     }
 
     public DHSessionId(@NonNull byte[] value) throws DHSessionId.InvalidDHSessionIdException {

@@ -5,7 +5,6 @@ import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
-import android.os.Build;
 
 import org.slf4j.Logger;
 
@@ -17,7 +16,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.video.transcoder.MediaComponent;
 import ch.threema.app.video.transcoder.VideoTranscoder;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
-import java8.util.Optional;
+import java.util.Optional;
 
 
 /**

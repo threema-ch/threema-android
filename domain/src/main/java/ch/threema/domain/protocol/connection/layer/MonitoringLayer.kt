@@ -1,5 +1,6 @@
 package ch.threema.domain.protocol.connection.layer
 
+import ch.threema.common.emptyByteArray
 import ch.threema.domain.protocol.connection.PayloadProcessingException
 import ch.threema.domain.protocol.connection.PipeProcessor
 import ch.threema.domain.protocol.connection.ProcessingPipe
@@ -125,7 +126,7 @@ internal class MonitoringLayer(
             outbound.send(
                 CspContainer(
                     ProtocolDefines.PLTYPE_UNBLOCK_INCOMING_MESSAGES.toUByte(),
-                    ByteArray(0),
+                    emptyByteArray(),
                 ),
             )
         }

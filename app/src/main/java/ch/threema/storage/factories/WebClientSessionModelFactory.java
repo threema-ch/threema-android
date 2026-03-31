@@ -4,21 +4,25 @@ import android.content.ContentValues;
 
 import android.database.Cursor;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Utils;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.WebClientSessionModel;
 
 public class WebClientSessionModelFactory extends ModelFactory {
-    public WebClientSessionModelFactory(DatabaseService databaseService) {
-        super(databaseService, WebClientSessionModel.TABLE);
+    public WebClientSessionModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, WebClientSessionModel.TABLE);
     }
 
     public List<WebClientSessionModel> getAll() {
@@ -176,33 +180,6 @@ public class WebClientSessionModelFactory extends ModelFactory {
             });
     }
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `" + WebClientSessionModel.TABLE + "` (" +
-                "`" + WebClientSessionModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT , " +
-                "`" + WebClientSessionModel.COLUMN_KEY + "` BLOB NULL," +
-                "`" + WebClientSessionModel.COLUMN_KEY256 + "` VARCHAR NULL," +
-                "`" + WebClientSessionModel.COLUMN_PRIVATE_KEY + "` BLOB NULL," +
-                "`" + WebClientSessionModel.COLUMN_CREATED + "` BIGINT NULL," +
-                "`" + WebClientSessionModel.COLUMN_LAST_CONNECTION + "` BIGINT NULL," +
-                "`" + WebClientSessionModel.COLUMN_CLIENT_DESCRIPTION + "` VARCHAR, " +
-                "`" + WebClientSessionModel.COLUMN_STATE + "` VARCHAR NOT NULL, " +
-                "`" + WebClientSessionModel.COLUMN_IS_PERSISTENT + "` TINYINT NOT NULL DEFAULT 0," +
-                "`" + WebClientSessionModel.COLUMN_LABEL + "` VARCHAR NULL," +
-                "`" + WebClientSessionModel.COLUMN_SELF_HOSTED + "` TINYINT NOT NULL DEFAULT 0," +
-                "`" + WebClientSessionModel.COLUMN_PROTOCOL_VERSION + "` INT NOT NULL," +
-                "`" + WebClientSessionModel.COLUMN_SALTY_RTC_HOST + "` VARCHAR NOT NULL," +
-                "`" + WebClientSessionModel.COLUMN_SALTY_RTC_PORT + "` INT NOT NULL," +
-                "`" + WebClientSessionModel.COLUMN_SERVER_KEY + "` BLOB NULL," +
-                "`" + WebClientSessionModel.COLUMN_PUSH_TOKEN + "` VARCHAR(255) NULL" +
-                ");",
-
-            "CREATE UNIQUE INDEX `webClientSessionKey` ON `" + WebClientSessionModel.TABLE + "` ( `" + WebClientSessionModel.COLUMN_KEY + "` );",
-            "CREATE UNIQUE INDEX `webClientSessionKey256` ON `" + WebClientSessionModel.TABLE + "` ( `" + WebClientSessionModel.COLUMN_KEY256 + "` );"
-        };
-    }
-
     @Nullable
     private WebClientSessionModel getFirst(String selection, String[] selectionArgs) {
         final Cursor cursor = getReadableDatabase().query(
@@ -226,5 +203,35 @@ public class WebClientSessionModelFactory extends ModelFactory {
         }
 
         return null;
+    }
+
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE `" + WebClientSessionModel.TABLE + "` (" +
+                    "`" + WebClientSessionModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT , " +
+                    "`" + WebClientSessionModel.COLUMN_KEY + "` BLOB NULL," +
+                    "`" + WebClientSessionModel.COLUMN_KEY256 + "` VARCHAR NULL," +
+                    "`" + WebClientSessionModel.COLUMN_PRIVATE_KEY + "` BLOB NULL," +
+                    "`" + WebClientSessionModel.COLUMN_CREATED + "` BIGINT NULL," +
+                    "`" + WebClientSessionModel.COLUMN_LAST_CONNECTION + "` BIGINT NULL," +
+                    "`" + WebClientSessionModel.COLUMN_CLIENT_DESCRIPTION + "` VARCHAR, " +
+                    "`" + WebClientSessionModel.COLUMN_STATE + "` VARCHAR NOT NULL, " +
+                    "`" + WebClientSessionModel.COLUMN_IS_PERSISTENT + "` TINYINT NOT NULL DEFAULT 0," +
+                    "`" + WebClientSessionModel.COLUMN_LABEL + "` VARCHAR NULL," +
+                    "`" + WebClientSessionModel.COLUMN_SELF_HOSTED + "` TINYINT NOT NULL DEFAULT 0," +
+                    "`" + WebClientSessionModel.COLUMN_PROTOCOL_VERSION + "` INT NOT NULL," +
+                    "`" + WebClientSessionModel.COLUMN_SALTY_RTC_HOST + "` VARCHAR NOT NULL," +
+                    "`" + WebClientSessionModel.COLUMN_SALTY_RTC_PORT + "` INT NOT NULL," +
+                    "`" + WebClientSessionModel.COLUMN_SERVER_KEY + "` BLOB NULL," +
+                    "`" + WebClientSessionModel.COLUMN_PUSH_TOKEN + "` VARCHAR(255) NULL" +
+                    ");",
+
+                "CREATE UNIQUE INDEX `webClientSessionKey` ON `" + WebClientSessionModel.TABLE + "` ( `" + WebClientSessionModel.COLUMN_KEY + "` );",
+                "CREATE UNIQUE INDEX `webClientSessionKey256` ON `" + WebClientSessionModel.TABLE + "` ( `" + WebClientSessionModel.COLUMN_KEY256 + "` );"
+            };
+        }
     }
 }

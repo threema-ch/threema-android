@@ -51,6 +51,7 @@ import ch.threema.app.multidevice.wizard.LinkingResult
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
+import java.time.Instant
 
 private val logger = getThreemaLogger("LinkNewDeviceResultFragment")
 
@@ -68,7 +69,7 @@ class LinkNewDeviceResultFragment : LinkNewDeviceFragment() {
                     LinkNewDeviceResultContent(
                         modifier = Modifier.fillMaxSize(),
                         linkingResult = linkingResult ?: LinkingResult.Failure.Unexpected,
-                        onClickedPrimary = {
+                        onClickPrimary = {
                             viewModel.switchToFragment(null)
                         },
                     )
@@ -87,7 +88,7 @@ class LinkNewDeviceResultFragment : LinkNewDeviceFragment() {
 fun LinkNewDeviceResultContent(
     modifier: Modifier,
     linkingResult: LinkingResult,
-    onClickedPrimary: () -> Unit,
+    onClickPrimary: () -> Unit,
 ) {
     Surface(
         modifier = modifier.nestedScroll(rememberNestedScrollInteropConnection()),
@@ -134,7 +135,7 @@ fun LinkNewDeviceResultContent(
 
             ButtonPrimary(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onClickedPrimary,
+                onClick = onClickPrimary,
                 text = stringResource(linkingResult.primaryButtonTextRes),
                 maxLines = 2,
             )
@@ -150,7 +151,20 @@ fun LinkNewDeviceResultContentPreviewFailure() = ThreemaThemePreview {
     LinkNewDeviceResultContent(
         modifier = Modifier.fillMaxSize(),
         linkingResult = LinkingResult.Failure.UnknownQrCode,
-        onClickedPrimary = {},
+        onClickPrimary = {},
+    )
+}
+
+@Composable
+@PreviewThreemaPhone
+fun LinkNewDeviceResultContentPreviewFailureInvalidTimestamp() = ThreemaThemePreview {
+    LinkNewDeviceResultContent(
+        modifier = Modifier.fillMaxSize(),
+        linkingResult = LinkingResult.Failure.InvalidTimestamp(
+            description = "Invalid Timestamp XYZ",
+            timestamp = Instant.now().toEpochMilli() * -1,
+        ),
+        onClickPrimary = {},
     )
 }
 
@@ -160,6 +174,6 @@ fun LinkNewDeviceResultContentPreviewSuccess() = ThreemaThemePreview {
     LinkNewDeviceResultContent(
         modifier = Modifier.fillMaxSize(),
         linkingResult = LinkingResult.Success,
-        onClickedPrimary = {},
+        onClickPrimary = {},
     )
 }

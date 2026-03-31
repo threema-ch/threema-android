@@ -11,8 +11,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
 import ch.threema.app.messagereceiver.MessageReceiver
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.MessageService
+import ch.threema.app.stores.IdentityProvider
 import ch.threema.app.ui.AvatarView
 import ch.threema.app.utils.AdapterUtil
 import ch.threema.app.utils.MessageUtil
@@ -23,6 +25,8 @@ import ch.threema.storage.models.AbstractMessageModel
 class EmojiReactionsOverviewListAdapter(
     messageService: MessageService,
     private val contactService: ContactService,
+    private val identityProvider: IdentityProvider,
+    private val preferenceService: PreferenceService,
     val messageModel: AbstractMessageModel?,
     val onItemClickListener: OnItemClickListener?,
 ) :
@@ -74,7 +78,11 @@ class EmojiReactionsOverviewListAdapter(
 
             val contactModel = contactService.getByIdentity(data.senderIdentity)
 
-            contactNameTextView.text = NameUtil.getDisplayNameOrNickname(contactModel, true)
+            contactNameTextView.text = NameUtil.getContactDisplayNameOrNickname(
+                contactModel,
+                true,
+                preferenceService.getContactNameFormat(),
+            )
             AdapterUtil.styleContact(contactNameTextView, contactModel)
 
             contactAvatarView.setImageBitmap(avatar)
@@ -88,7 +96,7 @@ class EmojiReactionsOverviewListAdapter(
                     }
                 }
             }
-            removeIconView.isVisible = data.senderIdentity == contactService.me.identity &&
+            removeIconView.isVisible = data.senderIdentity == identityProvider.getIdentity()?.value &&
                 messageReceiver.emojiReactionSupport != MessageReceiver.Reactions_NONE &&
                 MessageUtil.canEmojiReact(messageModel)
         }

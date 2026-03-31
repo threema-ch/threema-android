@@ -2,7 +2,7 @@ package ch.threema.app.qrcodes
 
 import ch.threema.base.crypto.NaCl
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.time.Instant
 
 class ContactUrlUtil {
@@ -36,7 +36,7 @@ class ContactUrlUtil {
         )
     }
 
-    fun generate(identity: Identity, publicKey: ByteArray): String =
+    fun generate(identity: IdentityString, publicKey: ByteArray): String =
         "$PREFIX$identity,${publicKey.toHexString()}"
 
     companion object {

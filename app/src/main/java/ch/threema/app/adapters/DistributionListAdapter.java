@@ -13,11 +13,10 @@ import com.bumptech.glide.Glide;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import androidx.annotation.NonNull;
 import ch.threema.app.R;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.AvatarView;
@@ -33,6 +32,7 @@ public class DistributionListAdapter extends FilterableListAdapter {
     private List<DistributionListModel> ovalues;
     private DistributionListFilter groupListFilter;
     private final DistributionListService distributionListService;
+    private final PreferenceService preferenceService;
     private final FilterResultsListener filterResultsListener;
 
     public DistributionListAdapter(
@@ -40,6 +40,7 @@ public class DistributionListAdapter extends FilterableListAdapter {
         List<DistributionListModel> values,
         List<Integer> checkedItems,
         DistributionListService distributionListService,
+        PreferenceService preferenceService,
         FilterResultsListener filterResultsListener
     ) {
         super(context, R.layout.item_distribution_list, (List<Object>) (Object) values);
@@ -48,6 +49,7 @@ public class DistributionListAdapter extends FilterableListAdapter {
         this.values = values;
         this.ovalues = values;
         this.distributionListService = distributionListService;
+        this.preferenceService = preferenceService;
         this.filterResultsListener = filterResultsListener;
 
         if (checkedItems != null && !checkedItems.isEmpty()) {
@@ -76,14 +78,11 @@ public class DistributionListAdapter extends FilterableListAdapter {
             holder.avatarView = avatarView;
 
             itemView.setTag(holder);
-            itemView.setOnCheckedChangeListener(new CheckableConstraintLayout.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CheckableConstraintLayout checkableView, boolean isChecked) {
-                    if (isChecked) {
-                        checkedItems.add(((DistributionListHolder) checkableView.getTag()).originalPosition);
-                    } else {
-                        checkedItems.remove(((DistributionListHolder) checkableView.getTag()).originalPosition);
-                    }
+            itemView.setOnCheckedChangeListener((checkableView, isChecked) -> {
+                if (isChecked) {
+                    checkedItems.add(((DistributionListHolder) checkableView.getTag()).originalPosition);
+                } else {
+                    checkedItems.remove(((DistributionListHolder) checkableView.getTag()).originalPosition);
                 }
             });
         } else {
@@ -98,12 +97,21 @@ public class DistributionListAdapter extends FilterableListAdapter {
             filterString = groupListFilter.getFilterString();
         }
 
-        holder.nameView.setText(highlightMatches(NameUtil.getDisplayName(distributionListModel, this.distributionListService), filterString));
+        holder.nameView.setText(
+            highlightMatches(
+                NameUtil.getDistributionListDisplayName(
+                    distributionListModel,
+                    this.distributionListService,
+                    preferenceService.getContactNameFormat()
+                ),
+                filterString
+            )
+        );
         holder.subjectView.setText(this.distributionListService.getMembersString(distributionListModel));
 
         // load avatars asynchronously
         AvatarListItemUtil.loadAvatar(
-            distributionListModel,
+            distributionListModel.getId(),
             this.distributionListService,
             holder,
             Glide.with(context)
@@ -136,12 +144,16 @@ public class DistributionListAdapter extends FilterableListAdapter {
                 // perform filtering
                 filterString = constraint.toString();
 
-                Collection<DistributionListModel> distributionListModelList = Functional.filter(ovalues, new IPredicateNonNull<DistributionListModel>() {
-                    @Override
-                    public boolean apply(@NonNull DistributionListModel distributionListModel) {
-                        return (NameUtil.getDisplayName(distributionListModel, distributionListService).toUpperCase().contains(filterString.toUpperCase()));
-                    }
-                });
+                Collection<DistributionListModel> distributionListModelList = ovalues.stream()
+                    .filter( distributionListModel ->
+                            NameUtil.getDistributionListDisplayName(
+                                distributionListModel,
+                                distributionListService,
+                                preferenceService.getContactNameFormat()
+                            )
+                            .toUpperCase().contains(filterString.toUpperCase())
+                    )
+                    .collect(Collectors.toList());
 
                 results.values = distributionListModelList;
                 results.count = distributionListModelList.size();

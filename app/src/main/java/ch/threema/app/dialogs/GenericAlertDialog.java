@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
@@ -21,6 +22,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.slf4j.Logger;
 
 import ch.threema.app.utils.TestUtil;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -33,8 +35,13 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
     private AlertDialog alertDialog;
     private boolean isHtml;
 
-    public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
-                                                 @StringRes int positive, @StringRes int negative) {
+    @NonNull
+    public static GenericAlertDialog newInstance(
+        @StringRes int title,
+        @StringRes int message,
+        @StringRes int positive,
+        @StringRes int negative
+    ) {
         GenericAlertDialog dialog = new GenericAlertDialog();
         Bundle args = new Bundle();
         args.putInt("title", title);
@@ -46,9 +53,15 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         return dialog;
     }
 
-    public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
-                                                 @StringRes int positive, @StringRes int negative,
-                                                 @StringRes int neutral, @DrawableRes int icon) {
+    @NonNull
+    public static GenericAlertDialog newInstance(
+        @StringRes int title,
+        @StringRes int message,
+        @StringRes int positive,
+        @StringRes int negative,
+        @StringRes int neutral,
+        @DrawableRes int icon
+    ) {
         GenericAlertDialog dialog = new GenericAlertDialog();
         Bundle args = new Bundle();
         args.putInt("title", title);
@@ -62,9 +75,14 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         return dialog;
     }
 
-    public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
-                                                 @StringRes int positive, @StringRes int negative,
-                                                 @DrawableRes int icon) {
+    @NonNull
+    public static GenericAlertDialog newInstance(
+        @StringRes int title,
+        @StringRes int message,
+        @StringRes int positive,
+        @StringRes int negative,
+        @DrawableRes int icon
+    ) {
         GenericAlertDialog dialog = new GenericAlertDialog();
         Bundle args = new Bundle();
         args.putInt("title", title);
@@ -77,8 +95,14 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         return dialog;
     }
 
-    public static GenericAlertDialog newInstance(@StringRes int title, @StringRes int message,
-                                                 @StringRes int positive, @StringRes int negative, boolean cancelable) {
+    @NonNull
+    public static GenericAlertDialog newInstance(
+        @StringRes int title,
+        @StringRes int message,
+        @StringRes int positive,
+        @StringRes int negative,
+        boolean cancelable
+    ) {
         GenericAlertDialog dialog = new GenericAlertDialog();
         Bundle args = new Bundle();
         args.putInt("title", title);
@@ -91,8 +115,14 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         return dialog;
     }
 
-    public static GenericAlertDialog newInstance(@StringRes int title, String messageString,
-                                                 @StringRes int positive, @StringRes int negative, boolean cancelable) {
+    @NonNull
+    public static GenericAlertDialog newInstance(
+        @StringRes int title,
+        String messageString,
+        @StringRes int positive,
+        @StringRes int negative,
+        boolean cancelable
+    ) {
         GenericAlertDialog dialog = new GenericAlertDialog();
         Bundle args = new Bundle();
         args.putInt("title", title);
@@ -105,8 +135,14 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         return dialog;
     }
 
-    public static GenericAlertDialog newInstanceHtml(@StringRes int title, String messageString,
-                                                     @StringRes int positive, @StringRes int negative, boolean cancelable) {
+    @NonNull
+    public static GenericAlertDialog newInstanceHtml(
+        @StringRes int title,
+        String messageString,
+        @StringRes int positive,
+        @StringRes int negative,
+        boolean cancelable
+    ) {
         GenericAlertDialog dialog = new GenericAlertDialog();
         Bundle args = new Bundle();
         args.putInt("title", title);
@@ -120,8 +156,13 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         return dialog;
     }
 
-    public static GenericAlertDialog newInstance(@StringRes int title, CharSequence messageString,
-                                                 @StringRes int positive, @StringRes int negative) {
+    @NonNull
+    public static GenericAlertDialog newInstance(
+        @StringRes int title,
+        CharSequence messageString,
+        @StringRes int positive,
+        @StringRes int negative
+    ) {
         GenericAlertDialog dialog = new GenericAlertDialog();
         Bundle args = new Bundle();
         args.putInt("title", title);
@@ -133,8 +174,13 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         return dialog;
     }
 
-    public static GenericAlertDialog newInstance(String titleString, CharSequence messageString,
-                                                 @StringRes int positive, @StringRes int negative) {
+    @NonNull
+    public static GenericAlertDialog newInstance(
+        String titleString,
+        CharSequence messageString,
+        @StringRes int positive,
+        @StringRes int negative
+    ) {
         GenericAlertDialog dialog = new GenericAlertDialog();
         Bundle args = new Bundle();
         args.putString("titleString", titleString);
@@ -146,8 +192,14 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         return dialog;
     }
 
-    public static GenericAlertDialog newInstance(String titleString, CharSequence messageString,
-                                                 @StringRes int positive, @StringRes int negative, @StringRes int neutral) {
+    @NonNull
+    public static GenericAlertDialog newInstance(
+        String titleString,
+        CharSequence messageString,
+        @StringRes int positive,
+        @StringRes int negative,
+        @StringRes int neutral
+    ) {
         GenericAlertDialog dialog = newInstance(titleString, messageString, positive, negative);
         if (dialog.getArguments() != null) {
             dialog.getArguments().putInt("neutral", neutral);
@@ -157,12 +209,12 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
 
 
     public interface DialogClickListener {
-        void onYes(String tag, @Nullable Object data);
+        void onYes(@Nullable String tag, @Nullable Object data);
 
-        default void onNo(String tag, @Nullable Object data) {
+        default void onNo(@Nullable String tag, @Nullable Object data) {
         }
 
-        default void onNeutral(String tag, @Nullable Object data) {
+        default void onNeutral(@Nullable String tag, @Nullable Object data) {
             // optional interface
         }
     }
@@ -172,26 +224,30 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        if (callback == null) {
-            try {
-                callback = (DialogClickListener) getTargetFragment();
-            } catch (ClassCastException e) {
-                //
-            }
+        if (callback != null) {
+            return;
+        }
 
-            // called from an activity rather than a fragment
-            if (callback == null) {
-                if ((activity instanceof DialogClickListener)) {
-                    callback = (DialogClickListener) activity;
-                } else {
-                    throw new ClassCastException("Calling fragment must implement DialogClickListener interface");
-                }
-            }
+        // Check if the target fragment implements our callback
+        final @Nullable Fragment targetFragment = getTargetFragment();
+        if (targetFragment instanceof DialogClickListener) {
+            callback = (DialogClickListener) targetFragment;
+            return;
+        }
+
+        // called from an activity rather than a fragment
+        if (activity instanceof DialogClickListener) {
+            callback = (DialogClickListener) activity;
+            return;
+        }
+
+        if (callback == null) {
+            throw new ClassCastException("Dialog is missing a DialogClickListener");
         }
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(@NonNull Activity activity) {
         super.onAttach(activity);
         this.activity = activity;
     }
@@ -210,6 +266,7 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
         }
     }
 
+    @NonNull
     @Override
     public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
         int title = getArguments().getInt("title");
@@ -271,7 +328,7 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
     }
 
     @Override
-    public void onCancel(DialogInterface dialogInterface) {
+    public void onCancel(@NonNull DialogInterface dialogInterface) {
         callback.onNo(getTag(), object);
     }
 
@@ -285,8 +342,8 @@ public class GenericAlertDialog extends ThreemaDialogFragment {
      *
      * @param dialogClickListener the listener
      */
-    public void setCallback(DialogClickListener dialogClickListener) {
-        callback = dialogClickListener;
+    public void setCallback(@NonNull DialogClickListener dialogClickListener) {
+        this.callback = dialogClickListener;
     }
 }
 

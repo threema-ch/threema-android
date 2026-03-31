@@ -149,9 +149,8 @@ class MediaGalleryAdapter(
                                 holder.animatedFormatLabelIconView?.setImageResource(R.drawable.ic_gif_24dp)
                                 holder.animatedFormatLabelIconView?.contentDescription =
                                     context.getString(R.string.attach_gif)
-                            } else if (messageModel.messageContentsType == MessageContentsType.IMAGE && MimeUtil.isAnimatedImageFormat(
-                                    messageModel.fileData.mimeType,
-                                )
+                            } else if (messageModel.messageContentsType == MessageContentsType.IMAGE &&
+                                MimeUtil.isAnimatedImageFormat(messageModel.fileData.mimeType)
                             ) {
                                 holder.animatedFormatLabelContainer?.visibility = View.VISIBLE
                                 holder.animatedFormatLabelIconView?.setImageResource(R.drawable.ic_webp)

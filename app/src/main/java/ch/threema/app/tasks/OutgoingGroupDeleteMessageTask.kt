@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.base.ThreemaException
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.DeleteMessageData
@@ -8,7 +7,7 @@ import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.util.Date
 import kotlinx.serialization.Serializable
 
@@ -16,9 +15,8 @@ class OutgoingGroupDeleteMessageTask(
     private val messageModelId: Int,
     private val messageId: MessageId,
     private val deletedAt: Date,
-    private val recipientIdentities: Set<Identity>,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+    private val recipientIdentities: Set<IdentityString>,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingGroupDeleteMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -49,10 +47,10 @@ class OutgoingGroupDeleteMessageTask(
     }
 
     override fun serialize(): SerializableTaskData = OutgoingGroupDeleteMessageData(
-        messageModelId,
-        messageId.messageId,
-        deletedAt.time,
-        recipientIdentities,
+        messageModelId = messageModelId,
+        messageId = messageId.messageId,
+        deletedAt = deletedAt.time,
+        recipientIdentities = recipientIdentities,
     )
 
     @Serializable
@@ -60,15 +58,14 @@ class OutgoingGroupDeleteMessageTask(
         private val messageModelId: Int,
         private val messageId: ByteArray,
         private val deletedAt: Long,
-        private val recipientIdentities: Set<Identity>,
+        private val recipientIdentities: Set<IdentityString>,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingGroupDeleteMessageTask(
-                messageModelId,
-                MessageId(messageId),
-                Date(deletedAt),
-                recipientIdentities,
-                serviceManager,
+                messageModelId = messageModelId,
+                messageId = MessageId(messageId),
+                deletedAt = Date(deletedAt),
+                recipientIdentities = recipientIdentities,
             )
     }
 }

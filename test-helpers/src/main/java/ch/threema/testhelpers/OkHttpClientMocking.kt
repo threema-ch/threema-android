@@ -2,7 +2,12 @@ package ch.threema.testhelpers
 
 import io.mockk.every
 import io.mockk.mockk
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.util.zip.GZIPInputStream
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.test.fail
 import okhttp3.Call
 import okhttp3.Callback
@@ -74,3 +79,36 @@ fun Request.getBodyAsByteArray(): ByteArray? {
 
 fun Request.getBodyAsUtf8String(): String? =
     getBodyAsByteArray()?.toString(Charsets.UTF_8)
+
+fun Request.getGZippedBodyAsUtf8String(): String? {
+    val bytes = getBodyAsByteArray() ?: return null
+    val outputStream = ByteArrayOutputStream()
+    outputStream.use {
+        GZIPInputStream(ByteArrayInputStream(bytes)).use { inputStream ->
+            inputStream.copyTo(outputStream)
+        }
+    }
+    return String(outputStream.toByteArray())
+}
+
+fun Request.assertUrl(expected: String) {
+    assertEquals(expected, url.toString())
+}
+
+fun Request.assertMethod(method: String) {
+    assertEquals(method, this.method)
+}
+
+fun Request.assertHasHeader(name: String, value: String) {
+    assertTrue(
+        headers.any { header -> header.first.equals(name, ignoreCase = true) && header.second == value },
+        "Expected header \"$name: $value\" not found.\n\n$headers",
+    )
+}
+
+fun Request.assertGZippedBody(expected: String) {
+    assertEquals(
+        expected,
+        getGZippedBodyAsUtf8String(),
+    )
+}

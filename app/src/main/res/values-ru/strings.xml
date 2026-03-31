@@ -5,7 +5,6 @@
     <string name="title_section1">Сообщения</string>
     <string name="title_compose_message">Новое сообщение</string>
     <string name="title_choose_recipient">Выбрать получателя</string>
-    <string name="title_keyfingerprint">Отпечаток ключа</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="title_mythreemaid">Мой ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -63,9 +62,6 @@
     <string name="prefs_notification_light">Цвет индикатора уведомления</string>
     <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_notification_light">Использовать цветной светодиод (при наличии) для входящих сообщений</string>
-    <string name="prefs_sum_light">Белый</string>
-    <string name="prefs_title_wallpaper">Выбор обоев</string>
-    <string name="prefs_sum_wallpaper">Выберите изображение для фона</string>
     <string name="prefs_title_wallpaper_switch">Обои</string>
     <string name="prefs_title_enter">Настройка Enter</string>
     <string name="prefs_sum_enter_on">Кнопка Enter выполняет отправку сообщения</string>
@@ -125,11 +121,12 @@
     <string name="scan_successful">ID успешно считан, а контакт проверен.</string>
     <string name="scan_duplicate">Этот ID уже был считан и проверен.</string>
     <string name="linked_email">Электронная почта</string>
+    <!-- Pattern for displaying the user's email address on the My Profile screen. %1$s is a placeholder for the email address, %2$s is a placeholder for the verification state (e.g. "pending") -->
     <string name="linked_mobile">Мобильный телефон</string>
+    <!-- Pattern for displaying the user's mobile phone number on the My Profile screen. %1$s is a placeholder for the phone number, %2$s is a placeholder for the verification state (e.g. "pending") -->
     <string name="public_nickname">Псевдоним</string>
     <string name="share_via">Поделиться…</string>
     <string name="share_subject">Беседа в %s</string>
-    <string name="message_delete_undo">Отмена</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="mobile_already_linked">Ваш ${app_name_short} ID уже привязан к этому номеру мобильного телефона</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -142,7 +139,6 @@
     <string name="image_placeholder">Изображение</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="invalid_threema_id">Неправильный ${app_name_short} ID</string>
-    <string name="contact_already_exists">Контакт уже существует</string>
     <string name="close">Закрыть</string>
     <string name="creating_contact">Добавление нового контакта</string>
     <string name="creating_contact_successful">Контакт успешно добавлен</string>
@@ -157,7 +153,6 @@
     <string name="verify_failed">Не выполнено</string>
     <string name="verify_failed_summary">Невозможно выполнить проверку вашего номера мобильного телефона. Убедитесь, что номер введён правильно и вы подключены к мобильной сети, затем повторите попытку.</string>
     <string name="verify_failed_not_linked">Невозможно проверить номер вашего мобильного телефона. Процесс проверки прерван.</string>
-    <string name="check_incoming_sms">Проверка входящего SMS</string>
     <string name="backup_title">Экспорт ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_sum">Экспортировать свой ${app_name_short} ID</string>
@@ -232,7 +227,6 @@
     <string name="acknowledge">Согласие</string>
     <string name="decline">Несогласие</string>
     <string name="forward_message">Переслать сообщение</string>
-    <string name="file_is_not_a_image">Выбранный файл не является изображением</string>
     <string name="connection_error">Ошибка соединения, попробуйте позже.</string>
     <string name="me_myself_and_i">Вы</string>
     <string name="really_forward">Переслать контакту «%1$s»?</string>
@@ -240,10 +234,8 @@
     <string name="ringtone_none">Без звука</string>
     <string name="no_camera_installed">Нет доступной для использования камеры</string>
     <string name="save_message_action">Сохранить</string>
-    <string name="file_is_not_a_video">Выбранный файл не является видео</string>
     <string name="masterkey_is_unlocked">Главный ключ разблокирован</string>
     <string name="file_too_large">Размер файла превышает допустимые %1$d МБ</string>
-    <string name="deleting_thread">Удаление чата</string>
     <string name="enter_serial_body"><![CDATA[Введите ваш лицензионный ключ. Вы можете <a href="https://shop.threema.ch/">купить</a> лицензию или <a href="https://shop.threema.ch/retrieve_keys">получить</a> ключи, если лицензия уже куплена.]]></string>
     <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_enter_serial_body">Введите учётные данные ${app_name_short}, предоставленные вашей компанией или организацией.</string>
@@ -251,8 +243,6 @@
     <string name="enter_serial_title">Разблокировать ${app_name}</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="serial_required_want_exit">Лицензионный ключ недействительный. Попробовать ещё раз или выйти из ${app_name}?</string>
-    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
-    <string name="work_serial_required_want_exit">Лицензионный ключ недействительный. Попробовать ещё раз или выйти из ${app_name}?</string>
     <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Проверка лицензии</string>
     <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
@@ -265,7 +255,6 @@
     <string name="not_now">Не сейчас</string>
     <string name="preparing_messages">Подготовка сообщений</string>
     <string name="select_emoji">эмоции</string>
-    <string name="search_contact">Поиск контакта</string>
     <string name="push_reset_title">Сброс push-метки</string>
     <string name="push_reset_text">Push-метка сброшена.</string>
     <string name="emoji_recent">Последние</string>
@@ -308,7 +297,6 @@
     <string name="set_pin_again_summary">Введите PIN-код ещё раз</string>
     <string name="set_pin_hint">PIN-код</string>
     <string name="title_addgroup">Новая группа</string>
-    <string name="search_group">Поиск группы</string>
     <string name="updating_system">Обновление системы</string>
     <string name="title_select_contacts">Выбор участников</string>
     <string name="pin_invalid_not_set">PIN-код неправильный. Не установлен.</string>
@@ -331,8 +319,6 @@
     <string name="backup_delete_confirm">Файл резервной копии удалён</string>
     <string name="message_log_title">Журнал сообщений</string>
     <string name="state_read">прочитано</string>
-    <string name="state_ack">согласие</string>
-    <string name="state_dec">несогласие</string>
     <string name="state_delivered">доставлено</string>
     <string name="state_sending">отправка</string>
     <string name="state_pending">ожидание</string>
@@ -343,10 +329,8 @@
     <string name="state_dialog_modified">Обновлено</string>
     <string name="state_dialog_edited">Изменено</string>
     <string name="state_dialog_deleted">Удалено</string>
-    <string name="state_dialog_status">Статус</string>
     <string name="title_tab_recent">Последние</string>
     <string name="no_recent_conversations">Чаты не найдены</string>
-    <string name="save_changes">Сохранить</string>
     <string name="creating_group">Создание группы</string>
     <string name="updating_group">Обновление группы</string>
     <string name="leaving_group">Покидание группы</string>
@@ -361,9 +345,6 @@
     <string name="status_group_member_kicked">«%1$s» исключен(а) из группы.</string>
     <string name="can_not_send_no_group_members">Вы не можете отправить сообщение в пустую группу</string>
     <string name="you_are_not_a_member_of_this_group">Вы не являетесь участником этой группы</string>
-    <string name="can_not_delete_not_valid">Невозможно удалить неправильный объект</string>
-    <string name="can_not_delete_contact_until_in_group">Контакт по-прежнему является участником или создателем групповой беседы, и поэтому не может быть исключён. Покиньте или удалите все группы, в которых есть этот контакт и попробуйте ещё раз.</string>
-    <string name="can_not_delete_contact">Невозможно удалить контакт</string>
     <string name="title_public_nickname">Псевдоним</string>
     <string name="prefs_sum_excluded_sync_identities">Перечисленные здесь ID будут игнорироваться при синхронизации контактов</string>
     <string name="prefs_title_excluded_sync_identities">Список исключений</string>
@@ -379,9 +360,7 @@
     <string name="yes">Да</string>
     <string name="deleting_contact">Удаление контакта</string>
     <string name="prefs_contact_soring">Сортировка</string>
-    <string name="prefs_sum_contact_soring">Установить порядок сортировки записей в списке контактов</string>
     <string name="prefs_contact_format">Показывать имена контактов</string>
-    <string name="prefs_sum_contact_format">Задать формат имени контакта</string>
     <string name="prefs_contact_list_title">Список контактов</string>
     <string name="prefs_default_contact_picture_colored">Аватары контакта по умолчанию</string>
     <string name="prefs_show_inactive_contacts">Показывать неактивные ID</string>
@@ -397,20 +376,8 @@
     <string name="contact_format_last_name_first_name">Фамилия Имя</string>
     <string name="block_contact">Заблокировать контакт</string>
     <string name="unblock_contact">Разблокировать контакт</string>
-    <string name="one_unread_message">Непрочитанных сообщений: 1</string>
-    <string name="really_unlink_contact_title">Отвязать контакт</string>
-    <string name="really_unlink_contact">Отвязать этот контакт?</string>
-    <string name="do_unlink_contact">Отвязать контакт</string>
-    <string name="do_choose_other_contact">Выберите другой контакт</string>
-    <string name="touch_to_link">(нет)</string>
-    <string name="prefs_validate_contacts">Подтвердить привязки контактов</string>
-    <string name="prefs_validate_contacts_loading">Подтверждение привязок контактов</string>
-    <string name="prefs_title_fullscreen_ime">Полноэкранная клавиатура</string>
-    <string name="prefs_sum_fullscreen_ime_on">Клавиатура закрывает приложение, если устройство находится в ландшафтном режиме</string>
-    <string name="prefs_sum_fullscreen_ime_off">Показывать предварительный просмотр чата над клавиатурой, если для этого достаточно места</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="add_acount_from_within_threema">Управляйте своим ${app_name_short} ID из приложения ${app_name_short}.</string>
-    <string name="save_image">Сохранить изображение</string>
     <string name="share_image">Поделиться изображением</string>
     <string name="view_in_gallery">Посмотреть в галерее</string>
     <string name="token_register_failed">Невозможно сбросить push-метку. Попробуйте позже.</string>
@@ -450,8 +417,6 @@
     <string name="prefs_summary_hide_screenshots">Не показывать миниатюры в переключателе приложений и отключить снимки выбранных экранов</string>
     <string name="media_gallery">Галерея мультимедиа</string>
     <string name="media_file_not_found">Невозможно открыть медиафайл. Он удалён или не был загружен с сервера.</string>
-    <string name="no_media_found">В этом чате не найдено %s.</string>
-    <string name="media_gallery_all">Все</string>
     <string name="media_gallery_pictures">Изображения</string>
     <string name="media_gallery_videos">Видео</string>
     <string name="group_membership_title">Участник этих групп</string>
@@ -473,7 +438,6 @@
     <string name="contact_not_found">Такого контакта нет</string>
     <string name="contact_now_blocked">Контакт заблокирован</string>
     <string name="contact_now_unblocked">Контакт разблокирован</string>
-    <string name="sending_images">Отправка изображений</string>
     <string name="share_conversation_body">Чтобы разархивировать файл, нужен ZIP-архиватор с поддержкой AES, например http://www.7-zip.org или https://itunes.apple.com/de/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Чат будет отправлен зашифрованным zip-файлом. Введите пароль:</string>
     <string name="ballot_create">Новый опрос</string>
@@ -511,8 +475,6 @@
     <string name="ballot_result_final">Окончательный результат</string>
     <string name="invalid_cannot_send">Вы не можете отправлять сообщения недействительному контакту</string>
     <string name="ballot_answer_count_error">Задайте не менее двух вариантов ответов для этого опроса.</string>
-    <string name="ballot_one_contact_not_supported">Внимание! %1$s не сможет участвовать в вашем опросе.</string>
-    <string name="ballot_x_contact_not_supported">Внимание! %1$d контакта(ов) не смогут участвовать в вашем опросе.</string>
     <string name="contact_state_inactive">Неактивный</string>
     <string name="contact_state_invalid">Недействительный</string>
     <string name="back">Назад</string>
@@ -561,8 +523,6 @@
     <string name="no_activity_for_mime_type">Приложение для открытия этого файла не найдено.</string>
     <string name="no_activity_for_intent">Приложение не найдено.</string>
     <string name="open_from">Открыть из</string>
-    <string name="file_one_contact_not_supported">%1$s не может принимать файлы.</string>
-    <string name="file_x_contact_not_supported">Внимание: %1$d контакта(ов) не могут принять ваш файл.</string>
     <string name="mime_android_apk">Android-приложение</string>
     <string name="mime_audio">Аудиофайл</string>
     <string name="mime_certificate">Цифровой сертификат</string>
@@ -652,7 +612,6 @@
     <string name="notifications_until">До %s</string>
     <string name="notifications_mute">Приглушённый</string>
     <string name="notifications_choose_sound">Выбрать звук</string>
-    <string name="error_video_conversion">Ошибка преобразования видео.</string>
     <string name="confirm_your_pin">Подтвердите ваш PIN-код</string>
     <string name="too_many_incorrect_attempts">Превышено количество неудачных попыток. Попробуйте снова через %s сек.</string>
     <string name="no_lockscreen_set">В системе не установлена блокировка экрана.</string>
@@ -698,8 +657,6 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_fingerprint">Двигая пальцем по экрану, вы создаете случайные данные (называемые энтропией), используемые для создания пары ключей, связанных с вашим новым уникальным ${app_name_short} ID. Пара ключей состоит из <b>открытого ключа</b>, который рассылается вашим друзьям, и <b>закрытого ключа</b>, который безопасно хранится в вашем телефоне. Ваши друзья будут шифровать сообщения при помощи открытого ключа. Только владелец закрытого ключа, и никто другой, может расшифровать эти сообщения.</string>
     <string name="new_wizard_info_id">Вы создали пару ключей. Открытый ключ по защищённому каналу передан на наши серверы. Закрытый ключ всегда остается на вашем устройстве. Это гарантирует, что никто другой не сможет прочитать ваши сообщения.</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_sync_contacts">Если включить эту функцию, ${app_name_short} будет односторонне шифровать (хэшировать) адреса электронной почты и номера мобильных телефонов перед отправкой их на сервер для поиска соответствующих контактов. Мы не храним данные адресной книги.</string>
     <string name="new_wizard_info_sync_contacts_dialog">Синхронизация контактов поможет вам автоматически найти своих друзей. Если вы согласитесь, номера телефонов и адреса электронной почты из вашей телефонной книги будут зашифрованы перед отправкой на наш сервер для поиска соответствующих контактов. При этом никакие данные не сохраняются и не передаются.\n\nВключить синхронизацию контактов?</string>
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">Если вы укажете свой номер телефона и адрес электронной почты, ${app_name_short} поможет вашим друзьям автоматически найти вас, если вы записаны в их телефонной книге. Адреса электронной почты будут храниться в односторонне зашифрованном (хэшированном) виде на нашем сервере. Вы можете пропустить этот шаг, если хотите использовать ${app_name} анонимно.</string>
@@ -732,9 +689,7 @@
     <string name="action_leave_and_delete_group">Покинуть и удалить группу</string>
     <string name="action_dissolve_and_delete_group">Распустить и удалить группу</string>
     <string name="delete_my_group_message">Полностью удалить эту группу? Все сообщения будут удалены, а оставшиеся участники больше не смогут пользоваться группой.</string>
-    <string name="error_out_of_memory">Недостаточно памяти для завершения операции</string>
     <string name="configure">Настроить</string>
-    <string name="file_is_not_audio">Нет звукового файла</string>
     <string name="disabled_by_policy">Некоторые настройки отключены администратором</string>
     <string name="select_all">Выбрать все</string>
     <string name="deleting_messages">Удаление сообщений</string>
@@ -817,7 +772,6 @@
     <string name="text">Текст</string>
     <string name="undo">Отменить</string>
     <string name="android_backup_date">Последнее рез. копирование</string>
-    <string name="check_now">Проверить</string>
     <string name="discard">Отменить</string>
     <string name="android_backup_restart_threema">Приложение будет перезапущено в течение нескольких секунд.</string>
     <string name="battery_optimizations_title">Отключить энергосбережение</string>
@@ -868,7 +822,6 @@
     <string name="menu_send_profilpic">Добавить в список получателей аватара</string>
     <string name="menu_send_profilpic_off">Удалить из списка получателей аватара</string>
     <string name="menu_send_profilpic_now">Отправить аватар</string>
-    <string name="profile_picture_sent">Аватар отправлен</string>
     <string name="sending_messages">Отправка…</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">При сохранении больших мультимедийных файлов из локальной резервной копии может быть превышена ёмкость памяти устройства, сохранение также может занять много времени. ${app_name} не будет отправлять и получать сообщения во время резервного копирования. Продолжить?</string>
@@ -903,11 +856,7 @@
     <string name="italic">Курсив</string>
     <string name="bold">Полужирный</string>
     <string name="shortcut_choice_title">Создать ярлык для…</string>
-    <string name="prefs_title_device_info">Сведения об устройстве</string>
     <string name="notifications_disabled_title">Уведомления отключены</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="notifications_disabled_text">Уведомления ${app_name} были отключены в настройках системы. Вы не будете получать уведомления о новых сообщениях.</string>
-    <string name="notifications_disabled_settings">Изменить настройки системы</string>
     <string name="error_attaching_files">Ошибка добавления вложений.</string>
     <string name="prefs_fix_powermanager_problems">Отключить ограничения питания</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -957,21 +906,17 @@
     <string name="passphrase_service_name">Служба кодовых фраз</string>
     <string name="passphrase_service_description">Уведомление при разблокировке кодовой фразы</string>
     <string name="webclient_service_description">Уведомление при активной сессии Web</string>
-    <string name="prefs_title_accept_privacy_policy">Принять политику конфиденциальности</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="privacy_policy_explain">${app_name} защищает вашу конфиденциальность тщательнее, чем любой другой мессенджер. Подробнее смотрите в нашей %1$s.</string>
-    <string name="privacy_policy_check_confirm">Для пользования %s примите политику конфиденциальности.\n\n(требуется согласно регламенту ЕС 2016/679)</string>
     <string name="prefs_title_incognito_keyboard">Запрос инкогнито-клавиатуры</string>
     <string name="prefs_sum_incognito_keyboard">Отключить сбор данных для персонализированных предложений (если поддерживается клавиатурой)</string>
-    <string name="tooltip_mentions">Введите символ «@» на клавиатуре, чтобы напрямую обратиться к члену этой группы или упомянуть его.</string>
-    <string name="tooltip_imagepaint">Больше творчества! Нажмите на кнопку с волшебной палочкой и напишите что-то от руки или добавьте стикеры и текст к своим картинкам перед тем, как их отправлять.</string>
     <string name="call_ongoing">Текущий звонок</string>
     <string name="ballot_received_votes">Число полученных голосов: %1$d/%2$d</string>
     <string name="quote_not_found">Цитируемое сообщение не найдено</string>
     <string name="ballot_secret">секретным</string>
     <string name="password_too_short_generic">Слишком короткий пароль</string>
     <string name="passwords_dont_match">Пароли не совпадают</string>
-    <string name="test_unsuccessful">Тест не пройден</string>
+    <!-- Error message shown when setting up a custom server for the Threema Safe feature. %s is a placeholder for the details of the error. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="preparing_threema_safe">Подготовка ${app_name_short} Safe…</string>
     <string name="disable_powermanager_title">Ограничения по питанию</string>
@@ -1022,9 +967,6 @@
     <string name="add_group_members">Добавить больше участников</string>
     <string name="contact_add_confirm">Добавить новый контакт «%1$s» в свой список контактов?</string>
     <string name="password_bad">Ненадёжный пароль</string>
-    <string name="prefs_fix_background_data">Включить фоновую передачу данных</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="prefs_fix_background_data_desc">Чтобы получать сообщения, когда ${app_name} работает в фоновом режиме, включите фоновую передачу данных и неограниченный трафик</string>
     <string name="prefs_fix_device">Исправить проблемы конфигурации устройства</string>
     <string name="safe_successful">Выполнено</string>
     <string name="safe_unsuccessful">Не выполнено</string>
@@ -1036,7 +978,6 @@
     <string name="safe_retention">Сохранение рез. копии</string>
     <string name="safe_result">Результат рез. копирования</string>
     <string name="number_of_days">%d дн.</string>
-    <string name="backup_other_restore_options">Другие варианты восстановления</string>
     <string name="safe_size">Размер рез. копии</string>
     <string name="backup_version_mismatch">Версия резервной копии выше поддерживаемой. Выполните обновление до последней версии приложения.</string>
     <string name="safe_restore_failed">Невозможно восстановить</string>
@@ -1067,7 +1008,6 @@
     <string name="delete_group_message">Выйти из группы и полностью удалить её? Все сообщения в ней будут удалены.</string>
     <string name="delete_left_group_message">Удалить эту группу? Все сообщения в ней будут удалены.</string>
     <string name="chats">Чаты</string>
-    <string name="notification_setting_ignored">ВСЕ ИЗМЕНЕНИЯ БУДУТ ИГНОРИРОВАТЬСЯ!</string>
     <string name="notification_channel_alerts">Предупреждения и ошибки</string>
     <string name="notification_channel_notices">Уведомления</string>
     <string name="chat_updates">Обновления чата</string>
@@ -1075,7 +1015,6 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="tooltip_export_id">Нажмите здесь, чтобы поделиться зашифрованным ${app_name_short} ID или распечатать его</string>
     <string name="downloading">Скачивание…</string>
-    <string name="today">Сегодня</string>
     <string name="restore_data_cancelled">Восстановление отменено</string>
     <string name="safe_change_password">Сменить пароль</string>
     <string name="safe_configure_choose_password_title">Выберите пароль</string>
@@ -1085,7 +1024,6 @@
     <string name="safe_password_updated">Пароль ${app_name_short} Safe обновлён.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_activated">Функция ${app_name_short} Safe активирована.</string>
-    <string name="restore_zip_invalid_file">Ошибка сжатия: неправильный файл резервной копии или пароль.</string>
     <string name="push_token_cleared">Push-метка очищена</string>
     <string name="insert_date">Вставить дату</string>
     <string name="add_answer">Добавить ответ</string>
@@ -1094,11 +1032,7 @@
     <string name="voip_disabled">Звонки ${app_name_short} отключены</string>
     <string name="hide_chat_enter_message_explain">Этот чат помечен как приватный. Чтобы войти в него, сначала настройте защиту доступа.</string>
     <string name="unknown">Неизвестно</string>
-    <string name="miui_notification_title">Важное замечание по уведомлениям в MIUI</string>
-    <string name="miui_notification_body">MIUI 10 по умолчанию отключает звуковые и световые сигналы для всех новосозданных каналов уведомлений (за исключением некоторых приложений, обозначенных Xiaomi как важные). Пользователям необходимо явным образом активировать уведомления для каждого канала на экране настроек уведомлений для каждого приложения в телефоне. Для получения дополнительных сведений обращайтесь к производителю телефона.</string>
-    <string name="miui12_notification_body">MIUI по умолчанию отключает звуковые, световые и плавающие оповещения для всех приложений (за исключением некоторых очень популярных приложений, которые отнесены компанией Xiaomi к категории «важных»). Вы должны будете вручную активировать эти настройки на экране настроек уведомлений для вашего телефона, а также повторять эту процедуру после каждого обновления приложения. Для получения дополнительных сведений обращайтесь в Xiaomi.</string>
     <string name="dont_show_again">Больше не показывать</string>
-    <string name="miui_notification_prefs">Настройки MIUI</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_upload_successful">Резервная копия ${app_name_short} Safe успешно передана</string>
     <string name="time_remaining">%s осталось</string>
@@ -1109,7 +1043,6 @@
     <string name="about_screen_remote_secrets_activated">Активировано</string>
     <string name="lock_option_biometric">Биометрия</string>
     <string name="biometric_enter_authentication">Для разблокирования выполните аутентификацию</string>
-    <string name="biometric_authentication_failed">Аутентификация не выполнена</string>
     <string name="biometric_authentication_successful">Аутентификация успешно пройдена</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_safe_forced_explain">Ваш администратор активировал ${app_name_short} Safe для вашего устройства.</string>
@@ -1118,8 +1051,6 @@
     <string name="work_select_categories">Выберите категории</string>
     <string name="my_profile">Мой профиль</string>
     <string name="message_too_long">Это сообщение слишком длинное и не может быть отправлено.</string>
-    <string name="database_migration_no_space">Перенос базы данных не выполнен: недостаточно места на устройстве.</string>
-    <string name="advanced_options">Расширенные параметры</string>
     <string name="url_warning_body">Узел в ссылке, которую вы собираетесь открыть, вызывает подозрения:\n\nОтображаемое имя узла: <b>%s</b>\nРеальное имя узла: <b>%s</b>\n\nВозможно, этот попытка завлечь вас на поддельный сайт.\n\nПродолжить?</string>
     <string name="url_warning_title">Предупреждение о фишинге</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1135,8 +1066,6 @@
     <string name="lp_or_select_nearby">Или выберите место поблизости</string>
     <string name="lp_use_this_location">Отправить это местоположение?</string>
     <string name="lp_search_place">Введите город или адрес</string>
-    <string name="lp_no_nearby_places_found">Места поблизости не найдены</string>
-    <string name="select_directory_for_backup">Сохранить здесь</string>
     <string name="data_backup_headline">Создайте резервную копию данных для сохранения всех своих данных, в т.ч. чатов и мультимедиа.</string>
     <string name="data_backup_save_path">Путь к рез. копии</string>
     <string name="change">изменить</string>
@@ -1170,13 +1099,11 @@
         ]]></string>
     <string name="tap_to_start">Нажмите здесь, чтобы запустить %s.</string>
     <string name="two_years">2 года</string>
-    <string name="invalid_backup_path">Неправильный путь к рез. копии</string>
     <string name="backup_data_no_permission">Запись в этот каталог невозможна. Выберите другой.</string>
     <string name="prefs_sum_show_unread_badge">Показывать значок с числом непрочитанных сообщений рядом со значком сообщений</string>
     <string name="prefs_title_show_unread_badge">Значок непрочитанных сообщений</string>
     <string name="open_myid_popup">Открыть всплывающее окно быстрого доступа</string>
     <string name="logo">Логотип / Прокрутить вверх</string>
-    <string name="quote_subj_end">Конец цитаты</string>
     <string name="quote_subj">Цитировать</string>
     <string name="duration">Длительность</string>
     <string name="seconds">Секунды</string>
@@ -1200,8 +1127,6 @@
     <string name="restore_data_backup_explain">Чтобы восстановить данные из резервной копии, сначала удалите свой ${app_name_short} ID на экране «Мой профиль».\n\nПосле запуска приложения выберите «Восстановить из резервной копии» → «Другие варианты восстановления» → «Резервная копия данных», после чего выберите файл резервной копии, из которого вы хотите восстановить данные.</string>
     <string name="audio_focus_loss_complete">Звонок прерван в связи с полной потерей фокуса на аудио.</string>
     <string name="tap_for_picture_hold_for_video">Нажмите для съёмки фото, удерживайте для съёмки видео</string>
-    <string name="sending_media">Отправка мультимедиа</string>
-    <string name="permission_record_video_audio_required">Чтобы записать видео, предоставьте доступ к микрофону</string>
     <string name="media_files">Файлы</string>
     <string name="auto_download_limit_explain">Примечание. Видео и файлы размером более %s всегда будут скачиваться по запросу</string>
     <string name="quoted_message_deleted">Цитирование сообщения больше недоступно</string>
@@ -1218,7 +1143,6 @@
     <string name="work_life_dnd_active">Сейчас нерабочее время</string>
     <string name="warning">Внимание!</string>
     <string name="password_remember_warning">Запомните, что вы вводите здесь! Поскольку %s не хранит пароли на серверах, мы не сможем помочь вам, если вы забудете свой PIN-код или парольную фразу.</string>
-    <string name="safe_backup_tap_to_restart">Нажмите на уведомление, чтобы перезапустить приложение сейчас.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="send_to_support">Отправить в службу поддержки ${company_name}</string>
     <string name="menu_legal">Юридическая информация</string>
@@ -1264,7 +1188,6 @@
     <string name="forward_text">Переслать текст</string>
     <string name="an_error_occurred_during_send">При отправке одного или нескольких сообщений произошла ошибка.</string>
     <string name="state_processing">выполнение…</string>
-    <string name="passphrase_locked">Кодовая фраза заблокирована</string>
     <string name="selected_media">Ваш выбор</string>
     <string name="attach_gif">GIF</string>
     <string name="attach_gallery">Галерея</string>
@@ -1278,19 +1201,14 @@
     <string name="media_date_unknown">Дата неизвестна</string>
     <string name="max_selectable_media_exceeded">Одновременно можно отправить не более %d объектов.</string>
     <string name="error_unable_loading_media_thumb">Произошла ошибка. Невозможно загрузить миниатюру мультимедиа.</string>
-    <string name="select">Выбрать</string>
     <string name="filter_list">Список фильтров</string>
     <string name="hint_filter_list">Введите текст фильтра</string>
     <string name="add">Добавить</string>
-    <string name="threema_message_from">Сообщение от %s</string>
-    <string name="show_text">Показать текст</string>
     <string name="only_images_or_videos">Можно выбирать только изображения или видео</string>
     <string name="media_gallery_gifs">GIF-файлы</string>
     <string name="no_media_found_global">На устройстве не найдены файлы мультимедиа</string>
     <string name="original_file_no_longer_avilable">Исходный файл больше недоступен. Отправьте сообщение повторно.</string>
-    <string name="state_transcoding">перекодирование</string>
     <string name="importing_files">Импорт файлов</string>
-    <string name="tooltip_image_resolution_hint">Нажмите здесь для настройки разрешения изображений.</string>
     <string name="ballot_created_successfully">Опрос успешно создан.</string>
     <string name="file_size">Размер файла</string>
     <string name="thirty_days_abbrev">30 дн.</string>
@@ -1301,7 +1219,6 @@
     <string name="brush">Кисть</string>
     <string name="pencil">Карандаш</string>
     <string name="highlighter">Маркер</string>
-    <string name="error_detecting_faces">Ошибка распознавания лиц</string>
     <string name="no_faces_detected">Лица не распознаны</string>
     <string name="smiley">Смайл</string>
     <string name="blur">Размыть</string>
@@ -1316,7 +1233,6 @@
     <string name="note_group_howto">Совет: если не добавлять участников в группу, сообщения этой группе останутся локальными. Это отличный вариант для безопасного хранения заметок, мультимедийных файлов и документов или для передачи данных на ПК.</string>
     <string name="mark_unread">В непрочитанные</string>
     <string name="mark_read_short">В прочитанные</string>
-    <string name="unread">Не прочитано</string>
     <string name="missing_app_licence">Приложение не может проверить вашу покупку. Если вы используете Google Play, очистите данные приложения Google Play и перезагрузите устройство.</string>
     <string name="set_backup_path">Задать путь к рез. копии</string>
     <string name="set_backup_path_intro">На следующем экране выберите папку, в которой следует сохранять резервные копии данных.</string>
@@ -1328,21 +1244,16 @@
     <string name="app_store_error_code">Код ошибки магазина приложений: %d</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_restore_type"><![CDATA[Какую резервную копию вы хотите восстановить? <br/><br/> <a href=%s>Подробнее о резервных копиях в ${app_name_short}</a>]]></string>
-    <string name="data_backup_info">Восстановить всё, в т.ч. чаты</string>
     <string name="new_to_threema">Новичок в %s?</string>
     <string name="back_to_threema">Вернуться к %s?</string>
-    <string name="id_backup_info">Восстановить только ID</string>
-    <string name="restore_your_id_contacts_and_groups">Восстановить ID, контакты и группы</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_backup">Безопасная рез. копия ${app_name_short}</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Помощь</a>]]></string>
     <string name="download_failed">Невозможно скачать. Код ошибки: %d</string>
     <string name="edit_answer">Изменить ответ</string>
     <string name="share_media">Поделиться с другим приложением…</string>
-    <string name="group_image">Изображение группы</string>
     <string name="miui_battery_optimization">Для того, чтобы приложение %s выполнило эту задачу, отключите экономию заряда батареи. Поскольку Xiaomi не разрешает приложениям напрямую вызывать этот экран настроек, вы должны будете сделать это вручную в настройках телефона. Если вам нужна помощь с отключением функции экономии заряда батареи, обращайтесь в службу поддержки компании Xiaomi.</string>
     <string name="forward_captions">Включать подписи</string>
-    <string name="importing_files_failed">Невозможно импортировать файл резервной копии. Убедитесь, что во внутренней памяти достаточно свободного места.</string>
     <string name="label_continue">Продолжить</string>
     <string name="select_date">Выберите дату</string>
     <string name="select_time">Выберите время</string>
@@ -1356,22 +1267,17 @@
     <string name="prefs_sum_reset_receipts">Сброс уведомлений о прочтении и индикатора ввода текста для конкретных контактов до настроек по умолчанию</string>
     <string name="reset_successful">Успешно сброшено до настроек по умолчанию</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="no_threema_qr_info">Это не QR-код ${app_name_short}. Расшифрованное содержимое:</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Сканируйте QR-код контакта для проверки его личности. Чтобы показать код, попросите контакта нажать на аватар в левом верхнем углу на главном экране ${app_name_short}.</string>
     <string name="enable_storage_access_for_media">Предоставьте доступ к памяти устройства для просмотра изображений и видео на нём.</string>
     <string name="select_storage_access_for_media_is_granted">Вы предоставили доступ к определённому количеству фото и видео.</string>
     <string name="take_me_there">Перейти…</string>
     <string name="manage">Управление</string>
-    <string name="custom">другая особая</string>
     <string name="show_public_key">Показать открытый ключ</string>
     <string name="public_key_for">Открытый ключ %s</string>
     <string name="copied">Скопировано</string>
     <string name="no_votes_yet">Голоса ещё не были поданы.</string>
     <string name="permission_contacts_sync_required">Предоставьте доступ к своим контактам для возможности их синхронизировать.</string>
     <string name="not_voted_user_list">Эти участники не голосовали: %s</string>
-    <string name="contact_update">Обновление состояний контактов</string>
-    <string name="invalid_onprem_id">Этот ID либо (больше) не существует, либо несовместим с вашим ID.</string>
     <string name="enable_unknown_sources">Невозможно установить. Убедитесь, что для %s активирован параметр «Устанавливать неизвестные приложения».</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push">${app_name_short} Push</string>
@@ -1423,14 +1329,11 @@
     <string name="relationTypeSpouse">Супруг(а)</string>
     <string name="contact_property_key">"Ключ"</string>
     <string name="header_nickname_entry">"Псевдоним"</string>
-    <string name="contact_picture_content_description">Изображение контакта</string>
     <string name="prefs_title_use_system_ringtone">Использовать системную мелодию</string>
     <string name="organization_type">Организация</string>
     <string name="permission_bluetooth_connect_required">Активируйте разрешение «Устройства поблизости» для поиска подключённых гарнитур Bluetooth</string>
     <string name="tooltip_multiple_recipients_title">Несколько получателей</string>
     <string name="tooltip_multiple_recipients_text">Зажмите кнопку, чтобы выбрать несколько получателей для отправки им одного и того же сообщения.</string>
-    <string name="synchronizing">Синхронизация…</string>
-    <string name="forward_security">Использовать Perfect Forward Secrecy при отправке сообщений</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">Нет</string>
     <string name="clear_forward_security">Сбросить сессию Perfect Forward Secrecy для этого контакта</string>
@@ -1476,10 +1379,6 @@
     <string name="unable_to_restore_identity_because">Невозможно восстановить ID. Причина: %s</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="share_with_app">Поделиться через ${app_name}</string>
-    <string name="read_phone_state_dialog_allow">Предоставить разрешение</string>
-    <string name="read_phone_state_dialog_disallow">Продолжить</string>
-    <string name="read_phone_state_dialog_never_ask_again">Больше не спрашивать</string>
-    <string name="read_phone_state_dialog_title">Требуется разрешение</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="read_phone_state_dialog_message">Чтобы звонки ${app_name_short} не прерывали обычные звонки, требуется разрешение на доступ к телефону. Если это разрешение не предоставить, входящий звонок ${app_name_short} будет звучать даже во время обычного звонка.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1500,7 +1399,6 @@
     <string name="group_no_members">В этой группе нет других участников</string>
     <string name="group_call">Групповой звонок</string>
     <string name="checking_compatibility">Проверка совместимости…</string>
-    <string name="group_call_mic_permission_rationale">Для совершения групповых звонков вы должны предоставить приложению %s доступ к микрофону в меню «Разрешения».</string>
     <string name="group_call_mic_permission_description">Для совершения групповых звонков необходимо разрешение на использование микрофона, чтобы собеседники слышали вас.</string>
     <string name="call_mic_permission_description">Для совершения голосовых звонков необходимо разрешение на использование микрофона, чтобы собеседники слышали вас.</string>
     <string name="group_call_camera_permission_rationale">Чтобы другие участники могли видеть ваше изображение, вы должны предоставить приложению %s доступ к камере в меню «Разрешения».</string>
@@ -1522,7 +1420,6 @@
     <string name="forward_security_mode_2dh">одностороннее</string>
     <string name="forward_security_mode_all">Полный</string>
     <string name="forward_security_mode_partial">Частичный</string>
-    <string name="forward_security_explanation">Протокол Perfect Forward Secrecy (PFS) защищает записанный обмен данными от ретроактивной расшифровки, даже если безопасность ключа долгосрочной расшифровки нарушена.\n\nЭтот параметр можно активировать, если приложение с обеих сторон поддерживает PFS.</string>
     <string name="group_call_inactivity_left">Групповой звонок окончен из-за отсутствия активности</string>
     <string name="missing_permission_external_storage">Невозможно скопировать файл. Попробуйте выполнить следующие шаги:\n1. Откройте приложение «Настройки».\n2. Перейдите на вкладку «Приложения» и выберите «Специальный доступ приложений».\n3. Нажмите «Доступ ко всем файлам».\n4. Нажмите на три точки в правом верхнем углу и выберите «Показать систему».\n5. Нажмите «Внешнее хранилище» и установите «Разрешить доступ для управления всеми файлами».\n6. Ещё раз попробуйте восстановить резервную копию.</string>
     <string name="forward_security_downgraded_status_message">Протокол Perfect Forward Secrecy (PFS) в этой беседе отключён, поскольку версия приложения вашего собеседника в чате его не поддерживает или используется ${app_name_desktop} 2.0 для ПК (бета).</string>
@@ -1555,7 +1452,6 @@
     <string name="group_name">Название группы</string>
     <string name="star_message">Отметить звёздочкой</string>
     <string name="starred_message">Сообщение со звёздочкой</string>
-    <string name="starred">Со звёздочкой</string>
     <string name="starred_messages">Сообщения со звёздочкой</string>
     <string name="sorting">Сортировка</string>
     <string name="sort_by">Порядок…</string>
@@ -1596,7 +1492,6 @@
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
     <string name="md_linked_devices_empty">Перед привязкой нового устройства скачайте и откройте последнюю бета-версию [${app_name_desktop} для ПК].</string>
-    <string name="md_link_device_qr_scan_message">Отсканируйте QR-код</string>
     <string name="directory_request_failed">Сбой запроса каталога. Повторите попытку.</string>
     <string name="add_shortcut_exists">Ярлык для этого элемента уже существует.</string>
     <string name="scan_qr_code">Сканировать QR-код</string>
@@ -1643,7 +1538,6 @@
     <string name="edit_message_not_supported_for_contact">Невозможно отредактировать сообщение, поскольку версия приложения получателя не поддерживает эту функцию.</string>
     <string name="edit_message_not_supported_for_all_group_members">Следующие участники группы не смогут увидеть ваши изменения: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Невозможно отредактировать сообщение, так как ни у одного участника группы нет версии приложения, поддерживающей эту функцию.</string>
-    <string name="prefs_notification_settings">Настройки уведомлений</string>
     <string name="prefs_notification_settings_summary">Изменить настройки звука и вибрации в окне системных настроек</string>
     <string name="new_messages">Новые сообщения</string>
     <string name="new_group_messages">Новые групповые сообщения</string>
@@ -1653,10 +1547,12 @@
     <string name="incoming_calls">Входящие звонки</string>
     <string name="group_chats">Групповые чаты</string>
     <string name="edit_history_file_no_caption">Без заголовка</string>
-    <string name="device_linking_failed">Привязка устройства не выполнена</string>
-    <string name="device_linking_failed_explain">Невозможно привязать устройство. Попробуйте ещё раз.\nПричина: %s.</string>
-    <string name="qr_code_scan_error">Ошибка при сканировании QR-кода</string>
-    <string name="verification_failed">Проверка не выполнена</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Shown in the advanced settings, shows the user their own Device's uniquely generated ID, which is used for sending error reports -->
+    <!-- The %s is a placeholder for an ID. It must be left as-is. -->
     <string name="md_device_currently_active">Сейчас активно</string>
     <string name="md_device_last_active_at">Последняя активность: %s</string>
     <plurals name="md_max_device_slots_reached_info">
@@ -1683,9 +1579,6 @@
     <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
     <string name="backup_path_selection_documents">Использовать папку «Documents»</string>
     <!-- accessibility -->
-    <string name="cd_ack_icon">согласие отправлено</string>
-    <string name="cd_dec_icon">несогласие отправлено</string>
-    <string name="cd_ack_dec_group_count">от %d участников группы</string>
     <string name="cd_edited">сообщение было изменено</string>
     <string name="cd_created_at">создано: %s</string>
     <string name="cd_edited_at">изменено: %s</string>
@@ -1744,7 +1637,6 @@
     <string name="device_linking_error_invalid_contact_title">Недействительный контакт</string>
     <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <string name="device_linking_error_invalid_contact_body">Контакт %1$s неправильно сохранён на этом устройстве и не позволяет привязать новое устройство. Обратитесь в службу поддержки (Главное меню → Поддержка).</string>
-    <string name="device_linking_error_screen_close">Закрыть</string>
     <string name="work_directory_title">Каталог компании</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Поиск в каталоге</string>
@@ -1756,10 +1648,9 @@
     <string name="contact_availability_status_available">Доступен</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Недоступен</string>
-    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
-    <string name="error_preset_onprem_url_mismatch_mdm">Указанный URL сервера неправильный. Обратитесь к администратору.</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">Ссылка активации неправильная. Обратитесь к администратору.</string>
+    <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
     <string name="work_intro_screen_work_title">ВЫСОКОЗАЩИЩЁННАЯ КОММУНИКАЦИЯ ДЛЯ БИЗНЕСА</string>
     <string name="work_intro_screen_work_subtitle">Threema Work — это безопасное коммуникационное решение для компаний, обеспечивающее сквозное шифрование, соответствующее требованиям GDPR и разработанное в Швейцарии.</string>
     <string name="work_intro_screen_work_sign_in_button_label">Войти</string>
@@ -1774,6 +1665,8 @@
     <string name="work_intro_screen_onprem_learn_more_button_label">Узнать больше</string>
     <string name="work_intro_screen_onprem_use_private_hint">Если вы хотите использовать Threema в личных целях, мы рекомендуем приложение Threema Private.</string>
     <string name="work_intro_screen_onprem_download_private_button_label">Скачать</string>
+    <!-- Description of the notification channel which is used when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Text of the notification which is shown when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <string name="remote_secrets_blocked_by_admin">Доступ к приложению заблокирован вашим администратором.\n\nСвяжитесь с ним для получения дополнительной информации.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->

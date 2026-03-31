@@ -21,7 +21,8 @@ interface CspConnection
 
 internal class CspConnectionImpl(
     dependencyProvider: ServerConnectionDependencyProvider,
-) : CspConnection, BaseServerConnection(dependencyProvider) {
+    awaitAppReady: suspend () -> Unit,
+) : CspConnection, BaseServerConnection(dependencyProvider, awaitAppReady) {
     override fun onConnected() {
         socket.let {
             if (it is CspSocket) {

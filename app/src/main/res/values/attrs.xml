@@ -17,6 +17,16 @@
     <attr name="emoji_search_background" format="reference|color" />
     <attr name="emoji_search_stroke" format="reference|color" />
 
+    <!-- message bubbles -->
+    <attr name="colorMessageBubbleSendContainer" format="reference" />
+    <attr name="colorOnMessageBubbleSendContainer" format="reference" />
+    <attr name="colorMessageBubbleSendContainerSelected" format="reference" />
+    <attr name="colorOnMessageBubbleSendContainerSelected" format="reference" />
+    <attr name="colorMessageBubbleReceiveContainer" format="reference" />
+    <attr name="colorOnMessageBubbleReceiveContainer" format="reference" />
+    <attr name="colorMessageBubbleReceiveContainerSelected" format="reference" />
+    <attr name="colorOnMessageBubbleReceiveContainerSelected" format="reference" />
+
     <!-- used to enable/disable elevation overlay -->
     <attr name="elevationOverlayColor" format="reference|color" />
 

@@ -17,7 +17,7 @@ fun AbstractMessage.toCspMessage(
 ): CspMessage {
     // Add missing attributes, if necessary
     if (fromIdentity == null) {
-        fromIdentity = identityStore.getIdentity()
+        fromIdentity = identityStore.getIdentityString()
     }
 
     // Make box

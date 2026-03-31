@@ -24,15 +24,23 @@ import kotlin.coroutines.CoroutineContext
 
 object BaseServerConnectionProvider {
     @JvmStatic
-    fun createConnection(configuration: BaseServerConnectionConfiguration, connectionLockProvider: ConnectionLockProvider): ServerConnection {
+    fun createConnection(
+        configuration: BaseServerConnectionConfiguration,
+        connectionLockProvider: ConnectionLockProvider,
+        awaitAppReady: suspend () -> Unit,
+    ): ServerConnection {
         return when (configuration) {
-            is CspConnectionConfiguration -> createCspConnection(configuration, connectionLockProvider)
-            is D2mConnectionConfiguration -> createD2mConnection(configuration, connectionLockProvider)
+            is CspConnectionConfiguration -> createCspConnection(configuration, connectionLockProvider, awaitAppReady)
+            is D2mConnectionConfiguration -> createD2mConnection(configuration, connectionLockProvider, awaitAppReady)
             else -> throw ServerConnectionException("Unsupported connection configuration")
         }
     }
 
-    private fun createD2mConnection(configuration: D2mConnectionConfiguration, connectionLockProvider: ConnectionLockProvider): ServerConnection {
+    private fun createD2mConnection(
+        configuration: D2mConnectionConfiguration,
+        connectionLockProvider: ConnectionLockProvider,
+        awaitAppReady: suspend () -> Unit,
+    ): ServerConnection {
         val dependencyProvider = ServerConnectionDependencyProvider {
             createD2mDependencies(it, configuration, connectionLockProvider)
         }
@@ -40,6 +48,7 @@ object BaseServerConnectionProvider {
         return D2mConnectionImpl(
             dependencyProvider,
             configuration.closeListener,
+            awaitAppReady,
         )
     }
 
@@ -102,6 +111,7 @@ object BaseServerConnectionProvider {
     private fun createCspConnection(
         configuration: CspConnectionConfiguration,
         connectionLockProvider: ConnectionLockProvider,
+        awaitAppReady: suspend () -> Unit,
     ): ServerConnection {
         val chatServerAddressProvider = ChatServerAddressProviderImpl(configuration)
 
@@ -109,7 +119,7 @@ object BaseServerConnectionProvider {
             createCspDependencies(it, configuration, chatServerAddressProvider, connectionLockProvider)
         }
 
-        return CspConnectionImpl(dependencyProvider)
+        return CspConnectionImpl(dependencyProvider, awaitAppReady)
     }
 
     private fun createCspDependencies(

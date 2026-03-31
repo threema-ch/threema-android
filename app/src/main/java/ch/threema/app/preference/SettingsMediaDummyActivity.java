@@ -11,8 +11,7 @@ public class SettingsMediaDummyActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Intent intent = new Intent(this, SettingsActivity.class);
-        intent.putExtra(SettingsActivity.EXTRA_SHOW_MEDIA_FRAGMENT, true);
+        Intent intent = SettingsActivity.createIntent(this, SettingsActivity.InitialScreen.MEDIA);
         startActivity(intent);
         finish();
     }

@@ -31,13 +31,15 @@ public class ThreemaSafeServerInfo {
     private String customServerName;
     @NonNull
     private final String defaultServerName = getDefaultServerNameFromServerAddressProvider();
+    @Nullable
     private String serverUsername;
+    @Nullable
     private String serverPassword;
 
     public ThreemaSafeServerInfo() {
     }
 
-    public ThreemaSafeServerInfo(String customServerName, String serverUsername, String serverPassword) {
+    public ThreemaSafeServerInfo(@Nullable String customServerName, @Nullable String serverUsername, @Nullable String serverPassword) {
         this.serverUsername = serverUsername;
         this.serverPassword = serverPassword;
         this.setCustomServerName(customServerName);

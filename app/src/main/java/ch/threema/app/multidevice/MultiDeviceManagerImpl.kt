@@ -38,6 +38,7 @@ import ch.threema.domain.protocol.multidevice.MultiDeviceProperties
 import ch.threema.domain.protocol.rendezvous.RendezvousConnection
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.protobuf.csp.e2e.fs.Terminate
+import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.ServerMessageModel
 import java.util.Date
 import kotlinx.coroutines.CancellationException
@@ -242,7 +243,7 @@ class MultiDeviceManagerImpl(
     }
 
     private fun handleD2mSocketClose(reason: D2mSocketCloseReason) {
-        logger.debug("Latest close reason: {}", reason.closeCode.toString())
+        logger.debug("Latest close reason: {}", reason.closeCode)
 
         // Handle close codes which do not allow a reconnect
         when (reason.closeCode.code) {
@@ -322,8 +323,7 @@ class MultiDeviceManagerImpl(
         )
         contactService.all.forEach { contactModel ->
             DeleteAndTerminateFSSessionsTask(
-                fsmp = fsMessageProcessor,
-                contact = contactModel,
+                identity = contactModel.identity,
                 cause = Terminate.Cause.DISABLED_BY_LOCAL,
             ).invoke(handle)
         }
@@ -361,12 +361,10 @@ class MultiDeviceManagerImpl(
         val solicitedContacts = (groupContacts + contactsWithConversation)
             .filter { it.state != IdentityState.INVALID }
             .filter { it.identity != myIdentity }
-            .toSet()
 
         serviceManager.taskManager.schedule(
             FSRefreshStepsTask(
-                solicitedContacts,
-                serviceManager,
+                contactIdentities = solicitedContacts.map(ContactModel::identity).toSet(),
             ),
         )
     }
@@ -409,6 +407,8 @@ class MultiDeviceManagerImpl(
         return withContext(Dispatchers.IO) {
             if (encryptedPreferenceStore.containsKey(EncryptedPreferenceStore.PREFS_MD_PROPERTIES)) {
                 val bytes = encryptedPreferenceStore.getBytes(EncryptedPreferenceStore.PREFS_MD_PROPERTIES)
+                    ?: return@withContext null
+
                 logger.trace("Properties size={}", bytes.size)
                 try {
                     // return:

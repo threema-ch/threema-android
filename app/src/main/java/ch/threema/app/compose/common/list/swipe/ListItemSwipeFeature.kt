@@ -1,13 +1,11 @@
 package ch.threema.app.compose.common.list.swipe
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.FloatRange
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 
 /**
- * @param onSwipe Will be called if the distance of the swipe exceeded the [SWIPE_TRIGGER_FROM_PERCENT]
  * @param hapticFeedback Set to `null` to turn off. If a value is set, there is no guarantee for the feedback to happen, since this is
  * depending on the device and its OS version
  * @param contentColor Must have contrast on [containerColor]
@@ -47,10 +45,9 @@ sealed interface ListItemSwipeFeature<T> {
     companion object {
 
         /**
-         *  Defines the percentage of horizontal pixels the user has to swipe the list item in order to trigger the action
+         * @see androidx.compose.material3.SwipeToDismissBoxState.positionalThreshold
          */
-        @FloatRange(from = 0.0, to = 1.0)
-        const val SWIPE_TRIGGER_FROM_PERCENT = 0.25f
+        val defaultPositionalThreshold: (totalDistance: Float) -> Float = { totalDistance: Float -> totalDistance * 0.4f }
     }
 }
 
@@ -71,4 +68,5 @@ enum class SwipeDirection {
 data class ListItemSwipeFeatureState(
     @DrawableRes val icon: Int,
     val text: String,
+    val enabled: Boolean = true,
 )

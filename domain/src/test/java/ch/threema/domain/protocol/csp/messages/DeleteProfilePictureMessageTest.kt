@@ -1,5 +1,6 @@
 package ch.threema.domain.protocol.csp.messages
 
+import ch.threema.common.emptyByteArray
 import ch.threema.testhelpers.willThrow
 import kotlin.test.Test
 import kotlin.test.assertIs
@@ -9,7 +10,7 @@ class DeleteProfilePictureMessageTest {
     fun testValid() {
         assertIs<DeleteProfilePictureMessage>(
             DeleteProfilePictureMessage.fromByteArray(
-                ByteArray(0),
+                emptyByteArray(),
             ),
         )
     }
@@ -18,7 +19,7 @@ class DeleteProfilePictureMessageTest {
     fun testValidExplicit() {
         assertIs<DeleteProfilePictureMessage>(
             DeleteProfilePictureMessage.fromByteArray(
-                data = ByteArray(0),
+                data = emptyByteArray(),
                 offset = 0,
                 length = 0,
             ),
@@ -29,7 +30,7 @@ class DeleteProfilePictureMessageTest {
     fun testNegativeOffset() {
         val testBlockLazy = {
             DeleteProfilePictureMessage.fromByteArray(
-                data = ByteArray(0),
+                data = emptyByteArray(),
                 offset = -1,
                 length = 0,
             )

@@ -15,19 +15,20 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.NameUtil;
-import ch.threema.app.utils.TestUtil;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 public class AvatarListItemUtil {
 
     public static void loadAvatar(
-        final ConversationModel conversationModel,
-        final ContactService contactService,
-        final GroupService groupService,
-        final DistributionListService distributionListService,
-        AvatarListItemHolder holder,
+        @NonNull final ConversationModel conversationModel,
+        @NonNull final ContactService contactService,
+        @NonNull final GroupService groupService,
+        @NonNull final DistributionListService distributionListService,
+        @NonNull final ContactNameFormat contactNameFormat,
+        @NonNull AvatarListItemHolder holder,
         @NonNull RequestManager requestManager
     ) {
 
@@ -35,9 +36,12 @@ public class AvatarListItemUtil {
         ImageView avatarView = holder.avatarView.getAvatarView();
         if (conversationModel.isContactConversation()) {
             holder.avatarView.setContentDescription(
-                ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
+                ThreemaApplication.getAppContext().getString(
+                    R.string.edit_type_content_description,
                     ThreemaApplication.getAppContext().getString(R.string.mime_contact),
-                    NameUtil.getDisplayNameOrNickname(conversationModel.getContact(), true)));
+                    NameUtil.getContactDisplayNameOrNickname(conversationModel.getContact(), true, contactNameFormat)
+                )
+            );
             ContactModel contact = conversationModel.getContact();
             String identity = contact != null
                 ? contact.getIdentity()
@@ -52,9 +56,12 @@ public class AvatarListItemUtil {
             }
         } else if (conversationModel.isGroupConversation()) {
             holder.avatarView.setContentDescription(
-                ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
+                ThreemaApplication.getAppContext().getString(
+                    R.string.edit_type_content_description,
                     ThreemaApplication.getAppContext().getString(R.string.group),
-                    NameUtil.getDisplayName(conversationModel.getGroup(), groupService)));
+                    NameUtil.getGroupDisplayName(conversationModel.getGroup(), groupService, contactNameFormat)
+                )
+            );
             groupService.loadAvatarIntoImage(
                 conversationModel.getGroup(),
                 avatarView,
@@ -63,11 +70,14 @@ public class AvatarListItemUtil {
             );
         } else if (conversationModel.isDistributionListConversation()) {
             holder.avatarView.setContentDescription(
-                ThreemaApplication.getAppContext().getString(R.string.edit_type_content_description,
+                ThreemaApplication.getAppContext().getString(
+                    R.string.edit_type_content_description,
                     ThreemaApplication.getAppContext().getString(R.string.distribution_list),
-                    NameUtil.getDisplayName(conversationModel.getDistributionList(), distributionListService)));
+                    NameUtil.getDistributionListDisplayName(conversationModel.getDistributionList(), distributionListService, contactNameFormat)
+                )
+            );
             distributionListService.loadAvatarIntoImage(
-                conversationModel.getDistributionList(),
+                conversationModel.getDistributionList().getId(),
                 avatarView,
                 AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE,
                 requestManager
@@ -86,8 +96,8 @@ public class AvatarListItemUtil {
         @NonNull RequestManager requestManager
     ) {
 
-        //do nothing
-        if (!TestUtil.required(subject, avatarService, holder) || holder.avatarView == null) {
+        // do nothing
+        if (subject == null || avatarService == null || holder == null || holder.avatarView == null) {
             return;
         }
 
@@ -100,7 +110,7 @@ public class AvatarListItemUtil {
         AvatarOptions options;
         if (subject instanceof String) {
             options = AvatarOptions.PRESET_DEFAULT_FALLBACK;
-        } else if (subject instanceof GroupModel) {
+        } else if (subject instanceof GroupModelOld) {
             options = AvatarOptions.PRESET_DEFAULT_FALLBACK;
         } else {
             options = AvatarOptions.PRESET_DEFAULT_AVATAR_NO_CACHE;

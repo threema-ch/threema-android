@@ -160,11 +160,13 @@ class MessageCoderTest {
         assertFailsWith<BadMessageException> { encodeAndDecode(textMessage) }
         setAndAssertText(textMessage, "a")
         val body: ByteArray = encode(textMessage).box
-        assertFailsWith<BadMessageException> { // Invalid offset
+        assertFailsWith<BadMessageException> {
+            // Invalid offset
             TextMessage.fromByteArray(body, body.size, body.size)
         }
 
-        assertFailsWith<BadMessageException> { // Invalid length
+        assertFailsWith<BadMessageException> {
+            // Invalid length
             TextMessage.fromByteArray(body, 1, body.size)
         }
     }
@@ -194,11 +196,13 @@ class MessageCoderTest {
 
         setAndAssertText(textMessage, "a")
         val body = encode(textMessage).box
-        assertFailsWith<BadMessageException> { // Invalid offset
+        assertFailsWith<BadMessageException> {
+            // Invalid offset
             GroupTextMessage.fromByteArray(body, body.size, body.size)
         }
 
-        assertFailsWith<BadMessageException> { // Invalid length
+        assertFailsWith<BadMessageException> {
+            // Invalid length
             GroupTextMessage.fromByteArray(body, 1, body.size)
         }
     }

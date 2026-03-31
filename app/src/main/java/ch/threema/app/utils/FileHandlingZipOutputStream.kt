@@ -18,59 +18,17 @@ import net.lingala.zip4j.model.enums.EncryptionMethod
 
 private val logger = getThreemaLogger("FileHandlingZipOutputStream")
 
-class FileHandlingZipOutputStream(
+class FileHandlingZipOutputStream
+@JvmOverloads
+constructor(
     outputStream: OutputStream,
-    password: CharArray?,
-    charset: Charset?,
+    password: CharArray? = null,
+    charset: Charset? = null,
 ) :
     ZipOutputStream(outputStream, password, charset) {
-    constructor(outputStream: OutputStream) : this(outputStream, null, null)
-
-    constructor(outputStream: OutputStream, password: CharArray) : this(
-        outputStream,
-        password,
-        null,
-    )
-
-    companion object {
-        /**
-         * Get a [FileHandlingZipOutputStream] that writes to a provided [OutputStream].
-         * Note that the outputStream will be wrapped by a [BufferedOutputStream].
-         * @param outputStream The [OutputStream] data should be written to
-         * @param password Desired password or null if no encryption is desired
-         * @throws IOException If the stream could not be created
-         */
-        @Throws(IOException::class)
-        @JvmStatic
-        fun initializeZipOutputStream(
-            outputStream: OutputStream,
-            password: String?,
-        ): FileHandlingZipOutputStream {
-            val bufferedOutputStream = BufferedOutputStream(outputStream)
-            return if (password != null) {
-                FileHandlingZipOutputStream(bufferedOutputStream, password.toCharArray())
-            } else {
-                FileHandlingZipOutputStream(bufferedOutputStream)
-            }
-        }
-
-        @Throws(IOException::class)
-        @JvmStatic
-        fun initializeZipOutputStream(
-            zipFile: File,
-            password: String?,
-        ): FileHandlingZipOutputStream {
-            val fileOutputStream = FileOutputStream(zipFile)
-            val bufferedOutputStream = BufferedOutputStream(fileOutputStream)
-            return initializeZipOutputStream(bufferedOutputStream, password)
-        }
-    }
-
     /**
      * Write the contents of [inputStream] to this [FileHandlingZipOutputStream] and close [inputStream]
      * afterwards.
-     * @param inputStream
-     * @param filenameInZip
      * @param compress whether to compress the data (don't use for already compressed data like images)
      * @throws IOException
      */
@@ -147,6 +105,36 @@ class FileHandlingZipOutputStream(
             encryptionMethod = EncryptionMethod.AES
             aesKeyStrength = AesKeyStrength.KEY_STRENGTH_256
             fileNameInZip = filenameInZip
+        }
+    }
+
+    companion object {
+        /**
+         * Get a [FileHandlingZipOutputStream] that writes to a provided [OutputStream].
+         * Note that the outputStream will be wrapped by a [BufferedOutputStream].
+         * @param outputStream The [OutputStream] data should be written to
+         * @param password Desired password or null if no encryption is desired
+         * @throws IOException If the stream could not be created
+         */
+        @Throws(IOException::class)
+        @JvmStatic
+        fun initializeZipOutputStream(
+            outputStream: OutputStream,
+            password: String?,
+        ): FileHandlingZipOutputStream {
+            val bufferedOutputStream = BufferedOutputStream(outputStream)
+            return FileHandlingZipOutputStream(bufferedOutputStream, password?.toCharArray())
+        }
+
+        @Throws(IOException::class)
+        @JvmStatic
+        fun initializeZipOutputStream(
+            zipFile: File,
+            password: String?,
+        ): FileHandlingZipOutputStream {
+            val fileOutputStream = FileOutputStream(zipFile)
+            val bufferedOutputStream = BufferedOutputStream(fileOutputStream)
+            return initializeZipOutputStream(bufferedOutputStream, password)
         }
     }
 }

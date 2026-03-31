@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
@@ -410,7 +411,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
 
     private void moveCamera(LatLng latLng, boolean animate, int zoomLevel) {
         long time = System.currentTimeMillis();
-        logger.debug("moveCamera to " + latLng.toString());
+        logger.debug("moveCamera to {}", latLng);
 
         maplibreMap.cancelTransitions();
         maplibreMap.addOnCameraIdleListener(new MapLibreMap.OnCameraIdleListener() {
@@ -420,7 +421,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
                 RuntimeUtil.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        logger.debug("camera has been moved. Time in ms = " + (System.currentTimeMillis() - time));
+                        logger.debug("camera has been moved. Time in ms = {}", (System.currentTimeMillis() - time));
                     }
                 });
             }
@@ -448,7 +449,7 @@ public class MapActivity extends ThreemaActivity implements GenericAlertDialog.D
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
         if (DIALOG_TAG_ENABLE_LOCATION_SERVICES.equals(tag)) {
             startActivityForResult(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS), REQUEST_CODE_LOCATION_SETTINGS);
         }

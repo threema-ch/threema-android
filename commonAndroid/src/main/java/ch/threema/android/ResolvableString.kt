@@ -18,3 +18,5 @@ data class ResolvedString(val string: String) : ResolvableString {
 data class ResourceIdString(@StringRes val resId: Int) : ResolvableString {
     override fun get(context: Context) = context.resources.getString(resId)
 }
+
+fun String.toResolvedString() = ResolvedString(this)

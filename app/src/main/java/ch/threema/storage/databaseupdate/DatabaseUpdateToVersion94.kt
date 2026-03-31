@@ -39,9 +39,5 @@ internal class DatabaseUpdateToVersion94(
 
     override fun getDescription() = "contact table cleanup and changes"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 94
-    }
+    override val version = 94
 }

@@ -13,7 +13,7 @@ internal class FSDatabaseUpgradeToVersion4(
 
     override fun getDescription() = "add timestamp of last sent fs message"
 
-    override fun getVersion() = VERSION
+    override val version = VERSION
 
     companion object {
         const val VERSION = 4

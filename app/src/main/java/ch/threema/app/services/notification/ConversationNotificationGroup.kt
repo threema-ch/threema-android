@@ -18,7 +18,7 @@ data class ConversationNotificationGroup(
     var lastNotificationDate: Long = 0L
 
     @JvmField
-    val conversations: MutableList<NotificationService.ConversationNotification> = mutableListOf()
+    val conversations: MutableList<ConversationNotification> = mutableListOf()
 
     @JvmField
     val notificationId: Int = messageReceiver.uniqueId

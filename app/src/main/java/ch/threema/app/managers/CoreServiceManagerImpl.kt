@@ -1,13 +1,12 @@
 package ch.threema.app.managers
 
+import ch.threema.app.dev.hasDevFeatures
 import ch.threema.app.multidevice.MultiDeviceManagerImpl
 import ch.threema.app.services.ServerMessageService
-import ch.threema.app.services.ServerMessageServiceImpl
 import ch.threema.app.stores.EncryptedPreferenceStore
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.archive.TaskArchiverImpl
 import ch.threema.app.tasks.archive.recovery.TaskRecoveryManagerImpl
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.DeviceCookieManagerImpl
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.domain.models.AppVersion
@@ -17,7 +16,11 @@ import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TaskManagerConfiguration
 import ch.threema.domain.taskmanager.TaskManagerProvider
 import ch.threema.storage.DatabaseNonceStore
+import ch.threema.storage.DatabaseProvider
 import ch.threema.storage.DatabaseService
+import ch.threema.storage.factories.ServerMessageModelFactory
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 /**
  * The core service manager contains some core services that are used before the other services are
@@ -26,20 +29,23 @@ import ch.threema.storage.DatabaseService
  */
 class CoreServiceManagerImpl(
     override val version: AppVersion,
-    override val databaseService: DatabaseService,
+    override val databaseProvider: DatabaseProvider,
     override val preferenceStore: PreferenceStore,
     override val encryptedPreferenceStore: EncryptedPreferenceStore,
     override val identityStore: IdentityStore,
     private val nonceDatabaseStoreProvider: () -> DatabaseNonceStore,
     private val getDebugString: Task<*, *>.() -> String,
-) : CoreServiceManager {
+) : CoreServiceManager, KoinComponent {
+    override val databaseService: DatabaseService
+        get() = get()
+
     /**
      * The task archiver. Note that this must only be used to load the persisted tasks when the
      * service manager has been set.
      */
     override val taskArchiver: TaskArchiverImpl by lazy {
         TaskArchiverImpl(
-            taskArchiveFactory = databaseService.taskArchiveFactory,
+            taskArchiveFactory = get(),
             taskRecoveryManager = TaskRecoveryManagerImpl(),
             getDebugString = getDebugString,
         )
@@ -50,7 +56,7 @@ class CoreServiceManagerImpl(
      * passed to it.
      */
     override val deviceCookieManager: DeviceCookieManagerImpl by lazy {
-        DeviceCookieManagerImpl(encryptedPreferenceStore, databaseService)
+        DeviceCookieManagerImpl(encryptedPreferenceStore, get<ServerMessageModelFactory>())
     }
 
     /**
@@ -62,18 +68,10 @@ class CoreServiceManagerImpl(
             TaskManagerConfiguration(
                 taskArchiver = { taskArchiver },
                 deviceCookieManager = deviceCookieManager,
-                assertContext = ConfigUtils.isDevBuild(),
+                assertContext = hasDevFeatures(),
                 getDebugString = getDebugString,
             ),
         )
-    }
-
-    /**
-     * The server message service.
-     * TODO(ANDR-2604): Use this wherever server messages are used
-     */
-    private val serverMessageService: ServerMessageService by lazy {
-        ServerMessageServiceImpl(databaseService)
     }
 
     /**
@@ -83,7 +81,7 @@ class CoreServiceManagerImpl(
         MultiDeviceManagerImpl(
             preferenceStore,
             encryptedPreferenceStore,
-            serverMessageService,
+            get<ServerMessageService>(),
             version,
         )
     }

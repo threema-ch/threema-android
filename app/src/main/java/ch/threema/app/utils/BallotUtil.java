@@ -2,7 +2,6 @@ package ch.threema.app.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
 
 import org.slf4j.Logger;
 
@@ -13,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import ch.threema.android.ToastDuration;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
@@ -26,15 +26,16 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ballot.BallotService;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.csp.MessageTooLongException;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId;
 import ch.threema.domain.taskmanager.TriggerSource;
-import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
+
+import static ch.threema.android.ToastKt.showToast;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 @SuppressWarnings("rawtypes")
 public class BallotUtil {
@@ -76,7 +77,17 @@ public class BallotUtil {
     }
 
     public static void openDefaultActivity(@Nullable Context context, @Nullable FragmentManager fragmentManager, @Nullable BallotModel ballotModel, @Nullable MessageReceiver messageReceiver) {
-        if (canVote(ballotModel, messageReceiver)) {
+        boolean canVote = canVote(ballotModel, messageReceiver);
+        openDefaultActivity(context, fragmentManager, ballotModel, canVote);
+    }
+
+    public static void openDefaultActivity(
+        @Nullable Context context,
+        @Nullable FragmentManager fragmentManager,
+        @Nullable BallotModel ballotModel,
+        boolean canVote
+    ) {
+        if (canVote) {
             openVoteDialog(fragmentManager, ballotModel);
         } else if (canViewMatrix(ballotModel)) {
             openMatrixActivity(context, ballotModel);
@@ -103,8 +114,7 @@ public class BallotUtil {
         }
     }
 
-    public static String getNotificationString(Context context, AbstractMessageModel messageModel) {
-        String message = "";
+    public static String getNotificationString(Context context, int ballotId) {
         BallotService ballotService = null;
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
 
@@ -117,16 +127,16 @@ public class BallotUtil {
         }
 
         if (ballotService != null) {
-            BallotModel ballotModel = ballotService.get(messageModel.getBallotData().getBallotId());
+            BallotModel ballotModel = ballotService.get(ballotId);
             if (ballotModel != null) {
                 if (ballotModel.getState() == BallotModel.State.OPEN) {
-                    message += " " + ballotModel.getName();
+                    return ballotModel.getName();
                 } else if (ballotModel.getState() == BallotModel.State.CLOSED) {
-                    message += " " + context.getResources().getString(R.string.ballot_message_closed);
+                    return context.getResources().getString(R.string.ballot_message_closed);
                 }
             }
         }
-        return message;
+        return "";
     }
 
     /**
@@ -262,16 +272,16 @@ public class BallotUtil {
             try {
                 ballotService.modifyFinished(ballotModel, messageId, triggerSource);
                 if (triggerSource == TriggerSource.LOCAL) {
-                    RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.ballot_created_successfully, Toast.LENGTH_LONG).show());
+                    showToast(ThreemaApplication.getAppContext(), R.string.ballot_created_successfully, ToastDuration.LONG);
                 }
             } catch (MessageTooLongException e) {
                 ballotService.remove(ballotModel);
-                RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.message_too_long, Toast.LENGTH_LONG).show());
+                showToast(ThreemaApplication.getAppContext(), R.string.message_too_long, ToastDuration.LONG);
                 logger.error("Exception", e);
             }
             return ballotModel;
         } catch (Exception e) {
-            RuntimeUtil.runOnUiThread(() -> Toast.makeText(ThreemaApplication.getAppContext(), R.string.error, Toast.LENGTH_LONG).show());
+            showToast(ThreemaApplication.getAppContext(), R.string.an_error_occurred, ToastDuration.LONG);
             logger.error("Exception", e);
         }
 

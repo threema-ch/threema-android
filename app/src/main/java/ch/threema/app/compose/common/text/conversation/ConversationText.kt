@@ -2,7 +2,6 @@
 
 package ch.threema.app.compose.common.text.conversation
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -15,6 +14,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,21 +46,17 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat
-import ch.threema.android.ResolvableString
-import ch.threema.android.ResolvedString
 import ch.threema.app.R
 import ch.threema.app.compose.common.emoji.AsyncEmojiImage
 import ch.threema.app.compose.common.text.conversation.ConversationTextAnalyzer.Result.SearchResult
+import ch.threema.app.compose.preview.PreviewData
 import ch.threema.app.compose.theme.ThreemaThemePreview
+import ch.threema.app.preference.service.PreferenceService.Companion.EMOJI_STYLE_ANDROID
 import ch.threema.app.preference.service.PreferenceService.EmojiStyle
-import ch.threema.app.preference.service.PreferenceService.EmojiStyle_ANDROID
 import ch.threema.app.services.ContactService
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.domain.types.Identity
 
 const val SPAN_TAG_BACKGROUND_MENTION = "background_mention"
 const val SPAN_ANNOTATION_BACKGROUND_MENTION_INVERTED = "mention_inverted"
@@ -76,12 +72,14 @@ const val SPAN_ANNOTATION_BACKGROUND_MENTION = "mention"
  *
  *  - **Mentions Support**:
  *  When enabled, styles mentions in the raw form of `@[0123ABCD]` or `@[@@@@@@@@]` with the provided settings from [MentionFeature.On]
- *  and publishes mention click events through [MentionFeature.On.onClickedMention].
+ *  and publishes mention click events through [MentionFeature.On.onClickMention].
  *
  *  - **Markup Support**:
  *  When enabled, formats bold text via `*`, italic text via `_` and strikethrough text via `~`. These format tokens can be combined and nested.
  *  See [ch.threema.app.emojis.MarkupParser]
  *
+ *  - **Highlight Support**:
+ *  When enabled, tries to find and highlight the given [HighlightFeature.On.highlightedContent] in [rawInput].
  */
 @Composable
 fun ConversationText(
@@ -94,24 +92,37 @@ fun ConversationText(
     emojiSettings: EmojiSettings = ConversationTextDefaults.EmojiSettings,
     mentionFeature: MentionFeature = MentionFeature.Off,
     markupEnabled: Boolean = true,
+    highlightFeature: HighlightFeature = HighlightFeature.Off,
 ) {
     val context = LocalContext.current
-
-    val analyzeRawInputResult: ConversationTextAnalyzer.Result = remember {
+    val analyzeRawInputResult: ConversationTextAnalyzer.Result = remember(
+        key1 = rawInput,
+        key2 = mentionFeature,
+    ) {
         ConversationTextAnalyzer.analyze(
             rawInput = rawInput,
             searchMentions = mentionFeature is MentionFeature.On,
         )
     }
 
-    val effectiveFontScalingFactor: Float = remember {
+    val effectiveFontScalingFactor: Float = remember(
+        key1 = emojiSettings.upscalingFeature,
+        key2 = rawInput.length,
+        key3 = analyzeRawInputResult,
+    ) {
         emojiSettings.upscalingFeature.getEffectiveFontScaleFactor(
             rawInputLength = rawInput.length,
             analyzeRawInputResult = analyzeRawInputResult,
         )
     }
 
-    val annotatedString: AnnotatedString = remember {
+    val annotatedString: AnnotatedString = remember(
+        rawInput,
+        mentionFeature,
+        emojiSettings.style,
+        markupEnabled,
+        highlightFeature,
+    ) {
         buildAnnotatedConversationString(
             rawInput = rawInput,
             analyzeRawInputResult = analyzeRawInputResult,
@@ -119,6 +130,7 @@ fun ConversationText(
             context = context,
             emojiStyle = emojiSettings.style,
             markupEnabled = markupEnabled,
+            highlightFeature = highlightFeature,
         )
     }
 
@@ -128,7 +140,11 @@ fun ConversationText(
     )
 
     CompositionLocalProvider(LocalDensity provides effectiveDensity) {
-        val inlineContentEmojiMap: Map<String, InlineTextContent> = remember {
+        val inlineContentEmojiMap: Map<String, InlineTextContent> = remember(
+            key1 = analyzeRawInputResult,
+            key2 = textStyle,
+            key3 = emojiSettings,
+        ) {
             buildInlineContentEmojiMap(
                 analyzeRawInputResult = analyzeRawInputResult,
                 textStyle = textStyle,
@@ -282,11 +298,13 @@ private fun buildInlineContentEmojiMap(
     }
 }
 
+@Immutable
 private data class MentionBackgroundSpan(
     val textLineBounds: List<TextLineBounds>,
     val color: Color,
 )
 
+@Immutable
 private data class TextLineBounds(
     val bounds: Rect,
     val clipEnd: Boolean,
@@ -333,39 +351,12 @@ private fun TextLayoutResult.getBoundingBoxes(
     }
 }
 
+@Immutable
 data class EmojiSettings(
     @EmojiStyle val style: Int,
     val upscalingFeature: EmojiUpscalingFeature,
 ) {
-    internal val useSystemEmojis: Boolean = style == EmojiStyle_ANDROID
-}
-
-sealed interface EmojiUpscalingFeature {
-
-    fun getEffectiveFontScaleFactor(
-        rawInputLength: Int,
-        analyzeRawInputResult: ConversationTextAnalyzer.Result,
-    ): Float = 1f
-
-    data object Off : EmojiUpscalingFeature
-
-    /**
-     * @param maxCount The maximum amount of emojis that are allowed for the upscaling to effectively happen.
-     */
-    data class On(
-        private val maxCount: Int = 3,
-        private val factor: Float = 2f,
-    ) : EmojiUpscalingFeature {
-
-        override fun getEffectiveFontScaleFactor(
-            rawInputLength: Int,
-            analyzeRawInputResult: ConversationTextAnalyzer.Result,
-        ): Float {
-            val emojis: List<SearchResult.Emoji> = analyzeRawInputResult.items.values.filterIsInstance<SearchResult.Emoji>()
-            val containsOnlyEmojis: Boolean = emojis.isNotEmpty() && emojis.sumOf(SearchResult.Emoji::length) == rawInputLength
-            return if (containsOnlyEmojis && emojis.size <= maxCount) factor else 1f
-        }
-    }
+    internal val useSystemEmojis: Boolean = style == EMOJI_STYLE_ANDROID
 }
 
 object ConversationTextDefaults {
@@ -376,51 +367,8 @@ object ConversationTextDefaults {
     )
 }
 
-sealed interface MentionFeature {
-
-    data object Off : MentionFeature
-
-    data class On(
-        val ownIdentity: Identity,
-        val identityNameProvider: (Identity) -> ResolvableString?,
-        val onClickedMention: ((String) -> Unit)? = null,
-        val paddingVertical: TextUnit = 1.sp,
-        val cornerRadius: TextUnit = 4.sp,
-    ) : MentionFeature {
-
-        companion object {
-
-            internal fun colors(context: Context): MentionSpanColors {
-                return MentionSpanColors(
-                    background = Color(ContextCompat.getColor(context, R.color.mention_background)),
-                    textColor = Color(ContextCompat.getColor(context, R.color.mention_text_color)),
-                    textColorAtSign = Color(ContextCompat.getColor(context, R.color.mention_text_color)).copy(
-                        alpha = .3f,
-                    ),
-                )
-            }
-
-            internal fun colorsInverted(context: Context): MentionSpanColors {
-                return MentionSpanColors(
-                    background = Color(ContextCompat.getColor(context, R.color.mention_background_inverted)),
-                    textColor = Color(ContextCompat.getColor(context, R.color.mention_text_color_inverted)),
-                    textColorAtSign = Color(ContextCompat.getColor(context, R.color.mention_text_color_inverted)).copy(
-                        alpha = .3f,
-                    ),
-                )
-            }
-        }
-    }
-}
-
-data class MentionSpanColors(
-    val background: Color,
-    val textColor: Color,
-    val textColorAtSign: Color,
-)
-
 @Suppress("ktlint:standard:discouraged-comment-location")
-internal class ConversationTextPreviewProviderEmojis : PreviewParameterProviderConversationText() {
+internal class ConversationTextPreviewProviderEmojis : PreviewParameterProvider<String> {
 
     override val values = sequenceOf(
         "No emojis at all in this text",
@@ -452,7 +400,7 @@ private fun ConversationText_Preview_Emojis(
                 rawInput = rawInput,
                 textStyle = MaterialTheme.typography.bodyMedium,
                 emojiSettings = EmojiSettings(
-                    style = EmojiStyle_ANDROID,
+                    style = EMOJI_STYLE_ANDROID,
                     upscalingFeature = EmojiUpscalingFeature.On(),
                 ),
                 mentionFeature = MentionFeature.Off,
@@ -462,20 +410,24 @@ private fun ConversationText_Preview_Emojis(
     }
 }
 
-internal class ConversationTextPreviewProviderMentions : PreviewParameterProviderConversationText() {
+internal class ConversationTextPreviewProviderMentions : PreviewParameterProvider<String> {
 
     override val values = sequenceOf(
         "No mentions at all in this text",
-        "Mentioning myself @[01234567].",
-        "Hey @[0123ABCD], how are you?",
-        "Hey @[@@@@@@@@], how are you all?",
-        "Hey @[0123ABCD] and @[3210DCBA], how are the two of you?",
-        "@[0123ABCD] Mention at start",
-        "Mention at end @[0123ABCD]",
-        "Chained mentions: @[0123ABCD] @[3210DCBA] @[@@@@@@@@]",
-        "@[0123ABCD] @[3210DCBA] @[@@@@@@@@] @[0123ABCD] @[3210DCBA] @[@@@@@@@@] @[0123ABCD] @[3210DCBA] @[@@@@@@@@] @[0123ABCD] " +
-            "@[3210DCBA] @[@@@@@@@@] @[0123ABCD] @[3210DCBA] @[@@@@@@@@]",
-        "Mention with an asterisks identity: @[*0123456]",
+        "Mentioning myself @[${PreviewData.IDENTITY_ME}].",
+        "Hey @[${PreviewData.IDENTITY_OTHER_1}], how are you?",
+        "Hey @[${ContactService.ALL_USERS_PLACEHOLDER_ID}], how are you all?",
+        "Hey @[${PreviewData.IDENTITY_OTHER_1}] and @[${PreviewData.IDENTITY_OTHER_2}], how are the two of you?",
+        "@[${PreviewData.IDENTITY_OTHER_1}] Mention at start",
+        "Mention at end @[${PreviewData.IDENTITY_OTHER_1}]",
+        "Chained mentions: @[${PreviewData.IDENTITY_OTHER_1}] @[${PreviewData.IDENTITY_OTHER_2}] @[${ContactService.ALL_USERS_PLACEHOLDER_ID}]",
+        "@[${PreviewData.IDENTITY_OTHER_1}] @[${PreviewData.IDENTITY_OTHER_2}] @[${ContactService.ALL_USERS_PLACEHOLDER_ID}] " +
+            "@[${PreviewData.IDENTITY_OTHER_1}] @[${PreviewData.IDENTITY_OTHER_2}] @[${ContactService.ALL_USERS_PLACEHOLDER_ID}] " +
+            "@[${PreviewData.IDENTITY_OTHER_1}] @[${PreviewData.IDENTITY_OTHER_2}] @[${ContactService.ALL_USERS_PLACEHOLDER_ID}] " +
+            "@[${PreviewData.IDENTITY_OTHER_1}] @[${PreviewData.IDENTITY_OTHER_2}] @[${ContactService.ALL_USERS_PLACEHOLDER_ID}] " +
+            "@[${PreviewData.IDENTITY_OTHER_1}] @[${PreviewData.IDENTITY_OTHER_2}] @[${ContactService.ALL_USERS_PLACEHOLDER_ID}]",
+        "Mention with an asterisks identity: @[${PreviewData.IDENTITY_BROADCAST}]",
+        "Unknown identity mention: @[${PreviewData.IDENTITY_OTHER_3}]",
     )
 }
 
@@ -495,19 +447,8 @@ private fun ConversationText_Preview_Mentions(
                 rawInput = rawInput,
                 textStyle = MaterialTheme.typography.bodyMedium,
                 mentionFeature = MentionFeature.On(
-                    ownIdentity = "01234567",
-                    identityNameProvider = { identity ->
-                        ResolvedString(
-                            when (identity) {
-                                ContactService.ALL_USERS_PLACEHOLDER_ID -> "All"
-                                "01234567" -> "Me"
-                                "0123ABCD" -> "Roberto Diaz"
-                                "3210DCBA" -> "Lisa Goldman"
-                                "*0123456" -> "Broadcast"
-                                else -> identity
-                            },
-                        )
-                    },
+                    ownIdentity = PreviewData.IDENTITY_ME,
+                    identityDisplayNames = PreviewData.mentionNames,
                 ),
                 markupEnabled = false,
             )
@@ -515,7 +456,7 @@ private fun ConversationText_Preview_Mentions(
     }
 }
 
-internal class ConversationTextPreviewProviderMarkup : PreviewParameterProviderConversationText() {
+internal class ConversationTextPreviewProviderMarkup : PreviewParameterProvider<String> {
 
     override val values = sequenceOf(
         // Basic
@@ -639,33 +580,114 @@ private fun ConversationText_Preview_Markup(
     }
 }
 
-internal class ConversationTextPreviewProviderAll : PreviewParameterProviderConversationText() {
+internal class ConversationTextPreviewProviderHighlight : PreviewParameterProvider<Pair<String, String>> {
+
+    override val values = sequenceOf(
+        // Basic
+        "Start mid end" to "Start",
+        "Start mid mid end" to "mid",
+        "Start mid end" to "end",
+        "Start mid end" to "Start mid",
+        "Start mid end" to "mid end",
+        "Start mid end" to "Start ",
+        // Markup
+        "Start *bold* end" to "bold",
+        "Start *bold* end" to "Start bold",
+        "Start *bold* end" to "bold end",
+        "Start *_bold-italic_* end" to "bold-italic",
+        "Start *_bold-italic_* end" to "Start bold-italic",
+        "Start *_bold-italic_* end" to "bold-italic end",
+        "Start *_~bold-italic-strikethrough~_* end" to "bold-italic-strikethrough",
+        "Start *_~bold-italic-strikethrough~_* end" to "Start bold-italic-strikethrough",
+        "Start *_~bold-italic-strikethrough~_* end" to "bold-italic-strikethrough end",
+        "Start *bold* _italic_ end" to "bold italic",
+        "Start *bold* _italic_ end" to "Start bold italic",
+        "Start *bold* _italic_ end" to "bold italic end",
+        "Start *bold* _italic_ end" to "old ita",
+        // Emojis
+        "Start \uD83C\uDF36 end" to "Start \uD83C\uDF36 end",
+        "Start \uD83C\uDF36 end" to "Start \uD83C\uDF36",
+        "Start \uD83C\uDF36 end" to "\uD83C\uDF36 end",
+        "Start \uD83C\uDF36\uD83C\uDF36\uD83C\uDF36 end" to "\uD83C\uDF36",
+        "Start \uD83C\uDF36\uD83C\uDF36\uD83C\uDF36 end" to "\uD83C\uDF36\uD83C\uDF36\uD83C\uDF36",
+        // Mentions
+        "Start @[${PreviewData.IDENTITY_OTHER_1}] mid end" to "Start",
+        "Start @[${PreviewData.IDENTITY_OTHER_1}] mid end" to "mid",
+        "Start @[${PreviewData.IDENTITY_OTHER_1}] mid end" to "Roberto",
+        "Start @[${PreviewData.IDENTITY_OTHER_1}] mid end" to "Diaz",
+        "Start @[${PreviewData.IDENTITY_OTHER_1}] mid end" to "Roberto Diaz",
+        "Start @[${PreviewData.IDENTITY_OTHER_1}] @[${PreviewData.IDENTITY_OTHER_1}] mid end" to "Roberto Diaz",
+        // Spotlight
+        PreviewData.LOREM_IPSUM_WORDS_50 to "sanctus",
+        "*" + PreviewData.LOREM_IPSUM_WORDS_50 + "*" to "sanctus",
+    )
+}
+
+@Preview
+@Composable
+private fun ConversationText_Preview_Highlight(
+    @PreviewParameter(ConversationTextPreviewProviderHighlight::class) input: Pair<String, String>,
+) {
+    ThreemaThemePreview {
+        Surface(
+            color = MaterialTheme.colorScheme.background,
+            contentColor = MaterialTheme.colorScheme.onBackground,
+        ) {
+            ConversationText(
+                modifier = Modifier
+                    .padding(all = 12.dp),
+                rawInput = input.first,
+                textStyle = MaterialTheme.typography.bodyMedium,
+                emojiSettings = ConversationTextDefaults.EmojiSettings.copy(
+                    style = EMOJI_STYLE_ANDROID,
+                ),
+                mentionFeature = MentionFeature.On(
+                    ownIdentity = PreviewData.IDENTITY_ME,
+                    identityDisplayNames = PreviewData.mentionNames,
+                ),
+                markupEnabled = true,
+                highlightFeature = HighlightFeature.On(
+                    highlightedContent = input.second,
+                    ignoreCase = false,
+                    backgroundColor = MaterialTheme.colorScheme.primary,
+                    foregroundColor = MaterialTheme.colorScheme.onPrimary,
+                    spotlight = HighlightFeature.Spotlight.ShowAsSnippet(
+                        maxCharactersBeforeHighlight = 30,
+                    ),
+                ),
+            )
+        }
+    }
+}
+
+internal class ConversationTextPreviewProviderAll : PreviewParameterProvider<String> {
 
     override val values = sequenceOf(
         // Emojis + Mentions
-        "Start @[0123ABCD] mid \uD83C\uDF36 end.",
-        "Start \uD83C\uDF36 mid @[0123ABCD] end.",
+        "Start @[${PreviewData.IDENTITY_OTHER_1}] mid \uD83C\uDF36 end.",
+        "Start \uD83C\uDF36 mid @[${PreviewData.IDENTITY_OTHER_1}] end.",
         "Just \uD83C\uDF36 emojis \uD83D\uDC1F between \uD83D\uDC9A ongoing " +
-            "text also mentioning @[0123ABCD] @[3210DCBA] \uD83C\uDFD4 " +
-            "@[@@@@@@@@] and not to forget @[*0123456] \uD83C\uDFD4.",
+            "text also mentioning @[${PreviewData.IDENTITY_OTHER_1}] @[${PreviewData.IDENTITY_OTHER_2}] \uD83C\uDFD4 " +
+            "@[${ContactService.ALL_USERS_PLACEHOLDER_ID}] and not to forget @[${PreviewData.IDENTITY_BROADCAST}] \uD83C\uDFD4.",
         // Mentions + Markup
-        "Word *bold @[0123ABCD]* word.",
-        "Word *@[0123ABCD] bold* word.",
-        "Word _italic @[0123ABCD]_ word.",
-        "Word _@[0123ABCD] italic_ word.",
-        "Word ~strikethrough @[0123ABCD]~ word.",
-        "Word ~@[0123ABCD] strikethrough~ word.",
-        "Word *_bold-italic @[0123ABCD]_* word.",
-        "Word *_@[0123ABCD] bold-italic _* word.",
-        "Word *_~@[0123ABCD]~_* word.",
-        "Word @[0123ABCD] word *@[0123ABCD]* word _@[0123ABCD]_ word ~@[0123ABCD]~ word.",
+        "Word *bold @[${PreviewData.IDENTITY_OTHER_1}]* word.",
+        "Word *@[${PreviewData.IDENTITY_OTHER_1}] bold* word.",
+        "Word _italic @[${PreviewData.IDENTITY_OTHER_1}]_ word.",
+        "Word _@[${PreviewData.IDENTITY_OTHER_1}] italic_ word.",
+        "Word ~strikethrough @[${PreviewData.IDENTITY_OTHER_1}]~ word.",
+        "Word ~@[${PreviewData.IDENTITY_OTHER_1}] strikethrough~ word.",
+        "Word *_bold-italic @[${PreviewData.IDENTITY_OTHER_1}]_* word.",
+        "Word *_@[${PreviewData.IDENTITY_OTHER_1}] bold-italic _* word.",
+        "Word *_~@[${PreviewData.IDENTITY_OTHER_1}]~_* word.",
+        "Word @[${PreviewData.IDENTITY_OTHER_1}] word *@[${PreviewData.IDENTITY_OTHER_1}]* word _@[${PreviewData.IDENTITY_OTHER_1}]_ word " +
+            "~@[${PreviewData.IDENTITY_OTHER_1}]~ word.",
 
         // Broadcast identity mention + markup
         // TODO(ANDR-4149): Check if these 4 testcases are now rendered correctly
-        "Word @[*0123456] word",
-        "Word @[*0123456] word* word",
-        "Word *word @[*0123456] word",
-        "Word *word @[*0123456] word* word",
+        "Word @[${PreviewData.IDENTITY_BROADCAST}] word",
+        "Word @[${PreviewData.IDENTITY_BROADCAST}] word* word",
+        "Word *word @[${PreviewData.IDENTITY_BROADCAST}] word",
+        "Word *word @[${PreviewData.IDENTITY_BROADCAST}] word* word",
 
         "Word *\uD83C\uDF36* word",
         "Word _\uD83C\uDF36_ word",
@@ -675,7 +697,8 @@ internal class ConversationTextPreviewProviderAll : PreviewParameterProviderConv
         "Word _italic \uD83C\uDF36 italic_ word",
         "Word ~strikethrough \uD83C\uDF36 strikethrough~ word",
 
-        "Word *_bold-italic @[0123ABCD] bold-italic \uD83C\uDFD4_ bold \uD83C\uDFD4 *. Word ~strikethrough \uD83D\uDC9A word~.",
+        "Word *_bold-italic @[${PreviewData.IDENTITY_OTHER_1}] bold-italic \uD83C\uDFD4_ bold \uD83C\uDFD4 *. Word ~strikethrough \uD83D\uDC9A " +
+            "word~.",
     )
 }
 
@@ -695,42 +718,22 @@ private fun ConversationText_Preview_All(
                 rawInput = rawInput,
                 textStyle = MaterialTheme.typography.bodyMedium,
                 emojiSettings = ConversationTextDefaults.EmojiSettings.copy(
-                    style = EmojiStyle_ANDROID,
+                    style = EMOJI_STYLE_ANDROID,
                 ),
                 mentionFeature = MentionFeature.On(
-                    ownIdentity = "01234567",
-                    identityNameProvider = { identity ->
-                        ResolvedString(
-                            when (identity) {
-                                ContactService.ALL_USERS_PLACEHOLDER_ID -> "All"
-                                "01234567" -> "Me"
-                                "0123ABCD" -> "Roberto Diaz"
-                                "3210DCBA" -> "Lisa Goldman"
-                                "*0123456" -> "Broadcast"
-                                else -> identity
-                            },
-                        )
-                    },
+                    ownIdentity = PreviewData.IDENTITY_ME,
+                    identityDisplayNames = PreviewData.mentionNames,
                 ),
                 markupEnabled = true,
-            )
-        }
-    }
-}
-
-internal abstract class PreviewParameterProviderConversationText : PreviewParameterProvider<String> {
-
-    companion object {
-        val mentionedIdentityNameProviderPreviewImpl: (Identity) -> ResolvableString? = { identity ->
-            ResolvedString(
-                when (identity) {
-                    ContactService.ALL_USERS_PLACEHOLDER_ID -> "All"
-                    "01234567" -> "Me"
-                    "0123ABCD" -> "Roberto Diaz"
-                    "3210DCBA" -> "Lisa Goldman"
-                    "*0123456" -> "Broadcast"
-                    else -> identity
-                },
+                highlightFeature = HighlightFeature.On(
+                    highlightedContent = "Word.",
+                    ignoreCase = true,
+                    backgroundColor = MaterialTheme.colorScheme.primary,
+                    foregroundColor = MaterialTheme.colorScheme.onPrimary,
+                    spotlight = HighlightFeature.Spotlight.ShowAsSnippet(
+                        maxCharactersBeforeHighlight = 100,
+                    ),
+                ),
             )
         }
     }

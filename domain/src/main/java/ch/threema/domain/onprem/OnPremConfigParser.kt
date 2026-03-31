@@ -6,9 +6,9 @@ import ch.threema.common.plus
 import ch.threema.common.toIntArray
 import ch.threema.common.toJSONObjectList
 import ch.threema.domain.protocol.urls.BlobUrl
-import ch.threema.domain.protocol.urls.DeviceGroupUrl
 import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
+import ch.threema.domain.protocol.urls.MediatorUrl
 import java.io.IOException
 import java.text.ParseException
 import java.time.Instant
@@ -142,7 +142,7 @@ class OnPremConfigParser {
     private fun parseMediatorConfig(obj: JSONObject?): OnPremConfigMediator? =
         obj?.let {
             OnPremConfigMediator(
-                url = DeviceGroupUrl(obj.getString("url")),
+                url = MediatorUrl(obj.getString("url")),
                 blob = parseBlobConfig(obj.getJSONObject("blob")),
             )
         }

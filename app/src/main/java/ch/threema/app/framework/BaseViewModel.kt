@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import ch.threema.common.awaitAtLeastOneSubscriber
 import ch.threema.common.awaitNonNull
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +29,7 @@ import kotlinx.coroutines.launch
  * and describe the event that triggered them, NOT what the resulting action does. So e.g. if a "Submit" button is clicked in the UI,
  * the corresponding method might be called "onSubmitButtonClicked", not "submitForm" or anything else that indicates the details of the action.
  */
+@OptIn(ExperimentalCoroutinesApi::class)
 abstract class BaseViewModel<ViewState : Any, ViewEvent : Any> : ViewModel() {
 
     private val _viewState = MutableStateFlow<ViewState?>(null)
@@ -112,8 +115,8 @@ abstract class BaseViewModel<ViewState : Any, ViewEvent : Any> : ViewModel() {
      * By default, the action runs on the main thread.
      * If multiple actions are run, there is no guarantee about their execution order.
      */
-    protected fun runAction(action: suspend ViewModelActionScope<ViewState, ViewEvent>.() -> Unit) {
-        viewModelScope.launch {
+    protected fun runAction(action: suspend ViewModelActionScope<ViewState, ViewEvent>.() -> Unit): Job {
+        return viewModelScope.launch {
             try {
                 awaitInitialized()
                 baseViewModelScope.action()
@@ -136,7 +139,7 @@ abstract class BaseViewModel<ViewState : Any, ViewEvent : Any> : ViewModel() {
             _events.emit(event)
         }
 
-        override suspend fun endAction(): Nothing {
+        override fun endAction(): Nothing {
             throw EndAction()
         }
     }
@@ -160,7 +163,7 @@ abstract class BaseViewModel<ViewState : Any, ViewEvent : Any> : ViewModel() {
          */
         suspend fun updateViewState(update: ViewState.() -> ViewState)
 
-        suspend fun endAction(): Nothing
+        fun endAction(): Nothing
     }
 
     protected interface ViewModelScope<ViewState : Any, ViewEvent : Any> : ViewModelInitScope<ViewEvent>, ViewModelActionScope<ViewState, ViewEvent>

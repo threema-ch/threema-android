@@ -8,14 +8,15 @@ import androidx.annotation.Nullable;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.libthreema.CryptoException;
 
+import static ch.threema.common.SecureRandomExtensionsKt.generateRandomBytes;
+import static ch.threema.common.SecureRandomExtensionsKt.secureRandom;
+
 public class SymmetricEncryptionService {
 
     private static final Logger logger = getThreemaLogger("SymmetricEncryptionService");
 
     public byte[] generateSymmetricKey() {
-        final byte[] encryptionKey = new byte[NaCl.SYMM_KEY_BYTES];
-        new SecureRandom().nextBytes(encryptionKey);
-        return encryptionKey;
+        return generateRandomBytes(secureRandom(), NaCl.SYMM_KEY_BYTES);
     }
 
     /**

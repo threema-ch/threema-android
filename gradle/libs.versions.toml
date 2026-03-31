@@ -1,13 +1,13 @@
 [versions]
 activityCompose = "1.10.1"
-androidGradle = "8.12.3"
+androidGradle = "8.13.2"
 androidImageCropper = "4.6.0"
 androidx_activity = "1.10.1"
 androidx_annotation = "1.9.1"
 androidx_appcompat = "1.7.0"
 androidx_biometric = "1.1.0"
 androidx_camera = "1.5.0"
-androidx_composeBom = "2025.06.01"
+androidx_composeBom = "2026.01.00"
 androidx_concurrentFutures = "1.2.0"
 androidx_constraintlayout = "2.2.1"
 androidx_core = "1.15.0"
@@ -18,7 +18,7 @@ androidx_lifecycle = "2.8.7"
 androidx_lifecycleCompose = "2.8.7"
 androidx_lifecycleExtensions = "2.2.0"
 androidx_media = "1.7.1"
-androidx_mmedia3 = "1.8.0"
+androidx_mmedia3 = "1.9.0"
 androidx_pagingRuntime = "3.3.6"
 androidx_palette = "1.0.0"
 androidx_preference = "1.2.1"
@@ -34,10 +34,9 @@ androidx_test_runner = "1.6.2"
 androidx_window = "1.3.0"
 androidx_workRuntime = "2.10.0"
 archunitJunit4 = "0.18.0"
-bcprovJdk15to18 = "1.80"
+bcprovJdk15to18 = "1.83"
 chunkedDc = "1.0.1"
-commonsIo = "2.6" # >2.6 uses JDK8 features not supported by Java 8+ API desugaring, thus requiring Android 8
-composeRuntimeAnnotation = "1.9.4"
+composeRuntimeAnnotation = "1.10.0"
 desugarJdkLibs = "2.1.5"
 eddsa = "0.3.0"
 ezVcard = "0.11.3" # >0.11.3 uses JDK8 features not supported by Java 8+ API desugaring, thus requiring Android 8. See https://github.com/mangstadt/ez-vcard/wiki/Changelog
@@ -56,33 +55,31 @@ kotlin = "2.2.20"
 kotlinx_coroutines = "1.10.1"
 kotlinx_serializationJson = "1.6.3"
 ksp = "2.2.20-2.0.3" # must be kept in sync with kotlin version, see https://github.com/google/ksp/releases
-ktlint = "12.2.0"
+ktlint = "14.0.1"
 leakcanary = "2.14"
 libphonenumber = "9.0.1"
-lintApi = "31.13.0"
+lintApi = "31.13.2"
 maplibre = "11.11.0"
-material = "1.12.0"
+material = "1.13.0"
 mockk = "1.14.0"
 msgpackCore = "0.8.24"
 nvWebsocketClient = "2.9"
 okhttp3 = "5.1.0"
 opencsv = "2.3"
 playServices = "18.6.0"
-protobufKotlinLite = "4.30.2"
+protobufKotlinLite = "4.33.1"
 rustAndroid = "0.9.6"
 saltyrtcClient = "0.14.2"
 saltyrtcTaskWebrtc = "0.18.1"
 slf4j = "2.0.17"
 sonarqube = "4.4.1.3373"
-sqlcipherAndroid = "4.10.0"
-stem = "2.12.0"
-streamsupportCfuture = "1.7.4"
-streamsupportFlow = "1.7.4"
+sqlcipherAndroid = "4.12.0"
+stem = "3.0.0"
 subsamplingScaleImageView = "3.10.0"
 taptargetview = "1.13.3"
 turbine = "1.2.0"
 uiautomator = "2.3.0"
-webrtcAndroid = "134.0.0"
+webrtcAndroid = "144.0.0"
 zip4j = "2.11.5"
 zxing = "3.5.3"
 
@@ -135,6 +132,8 @@ androidx-test-core = { module = "androidx.test:core-ktx", version.ref = "android
 androidx-test-rules = { module = "androidx.test:rules", version.ref = "androidx_test_rules" }
 androidx-test-runner = { module = "androidx.test:runner", version.ref = "androidx_test_runner" }
 androidx-test-uiautomator = { module = "androidx.test.uiautomator:uiautomator", version.ref = "uiautomator" }
+androidx-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
+androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest"}
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 androidx-window = { module = "androidx.window:window", version.ref = "androidx_window" }
@@ -142,7 +141,6 @@ androidx-work-runtime = { module = "androidx.work:work-runtime-ktx", version.ref
 archunit-junit4 = { module = "com.tngtech.archunit:archunit-junit4", version.ref = "archunitJunit4" }
 bcprov-jdk15to18 = { module = "org.bouncycastle:bcprov-jdk15to18", version.ref = "bcprovJdk15to18" }
 chunkedDc = { module = "org.saltyrtc:chunked-dc", version.ref = "chunkedDc" }
-commonsIo = { module = "commons-io:commons-io", version.ref = "commonsIo" }
 compose-annotation = { module = "androidx.compose.runtime:runtime-annotation", version.ref = "composeRuntimeAnnotation" }
 compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx_composeBom" }
 desugarJdkLibs = { module = "com.android.tools:desugar_jdk_libs", version.ref = "desugarJdkLibs" }
@@ -194,8 +192,6 @@ saltyrtc-taskWebrtc = { module = "org.saltyrtc:saltyrtc-task-webrtc", version.re
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
 sqlcipher-android = { module = "net.zetetic:sqlcipher-android", version.ref = "sqlcipherAndroid" }
-streamsupport-cfuture = { module = "net.sourceforge.streamsupport:streamsupport-cfuture", version.ref = "streamsupportCfuture" } # Backport of Streams and CompletableFuture. Remove once only supporting API level 24+
-streamsupport-flow = { module = "net.sourceforge.streamsupport:streamsupport-flow", version.ref = "streamsupportFlow" }
 subsamplingScaleImageView = { module = "com.davemorrissey.labs:subsampling-scale-image-view-androidx", version.ref = "subsamplingScaleImageView" }
 taptargetview = { module = "com.getkeepsafe.taptargetview:taptargetview", version.ref = "taptargetview" }
 turbine = { module = "app.cash.turbine:turbine", version.ref = "turbine" }

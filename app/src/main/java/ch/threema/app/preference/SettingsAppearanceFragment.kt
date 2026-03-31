@@ -11,12 +11,14 @@ import ch.threema.app.R
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.restrictions.AppRestrictionUtil
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.services.WallpaperService
+import ch.threema.app.services.avatarcache.AvatarCacheService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.LocaleUtil.mapLocaleToPredefinedLocales
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.data.datatypes.ContactNameFormat
 import com.google.android.material.color.DynamicColors
 import com.google.android.material.color.DynamicColorsOptions
 import java.util.Locale
@@ -30,6 +32,10 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
         logScreenVisibility(logger)
     }
 
+    private val preferenceService: PreferenceService by inject()
+    private val avatarCacheService: AvatarCacheService by inject()
+    private val appRestrictions: AppRestrictions by inject()
+
     private var oldTheme: Int = 0
 
     private val wallpaperService: WallpaperService by inject()
@@ -37,8 +43,11 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
     private var showBadge: CheckBoxPreference? = null
     private var showBadgeChecked = false
 
-    private val onWallpaperResultLauncher =
-        wallpaperService.getWallpaperActivityResultLauncher(this, null, null)
+    private val onWallpaperResultLauncher = wallpaperService.getWallpaperActivityResultLauncher(
+        this,
+        null,
+        null,
+    )
 
     override fun initializePreferences() {
         super.initializePreferences()
@@ -104,19 +113,25 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
             }
         } else {
             val preferenceCategory = getPref<PreferenceCategory>("pref_key_appearance_cat")
-            preferenceCategory.removePreference(getPref(resources.getString(R.string.preferences__dynamic_color)))
+            preferenceCategory.removePreference(getPref(R.string.preferences__dynamic_color))
         }
     }
 
     private fun initDefaultColoredAvatarPref() {
-        getPrefOrNull<CheckBoxPreference>(R.string.preferences__default_contact_picture_colored)?.onChange {
-            ListenerManager.contactSettingsListeners.handle { listener -> listener.onAvatarSettingChanged() }
+        getPrefOrNull<CheckBoxPreference>(R.string.preferences__default_contact_picture_colored)?.onChange<Boolean> { isColored ->
+            avatarCacheService.clear()
+            ListenerManager.contactSettingsListeners.handle { listener ->
+                listener.onIsDefaultContactPictureColoredChanged(isColored)
+            }
         }
     }
 
     private fun initShowProfilePicPref() {
-        getPrefOrNull<CheckBoxPreference>(R.string.preferences__receive_profilepics)?.onChange {
-            ListenerManager.contactSettingsListeners.handle { listener -> listener.onAvatarSettingChanged() }
+        getPrefOrNull<CheckBoxPreference>(R.string.preferences__receive_profilepics)?.onChange<Boolean> { shouldShow ->
+            avatarCacheService.clear()
+            ListenerManager.contactSettingsListeners.handle { listener ->
+                listener.onShowContactDefinedAvatarsChanged(shouldShow)
+            }
         }
     }
 
@@ -143,7 +158,12 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
             if (newTheme != oldTheme) {
                 ConfigUtils.saveAppThemeToPrefs(newTheme.toString(), requireContext())
                 themePreference.summary = themeArray[newTheme]
-                ListenerManager.contactSettingsListeners.handle { listener -> listener.onAvatarSettingChanged() }
+
+                avatarCacheService.clear()
+                val isDefaultContactPictureColored = preferenceService.isDefaultContactPictureColored()
+                ListenerManager.contactSettingsListeners.handle { listener ->
+                    listener.onIsDefaultContactPictureColoredChanged(isColored = isDefaultContactPictureColored)
+                }
                 activity?.recreate()
             }
         }
@@ -165,7 +185,7 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
         emojiPreference.onChange<String> { newEmojiStyleString ->
             val newEmojiStyle = newEmojiStyleString.toInt()
             if (newEmojiStyle != oldEmojiStyle) {
-                if (newEmojiStyle == PreferenceService.EmojiStyle_ANDROID) {
+                if (newEmojiStyle == PreferenceService.EMOJI_STYLE_ANDROID) {
                     val dialog = GenericAlertDialog.newInstance(
                         R.string.prefs_android_emojis,
                         R.string.android_emojis_warning,
@@ -173,17 +193,19 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
                         R.string.cancel,
                     )
                     dialog.setData(newEmojiStyle)
-                    dialog.setCallback(object : GenericAlertDialog.DialogClickListener {
-                        override fun onYes(tag: String?, data: Any?) {
-                            ConfigUtils.setEmojiStyle(activity, data as Int)
-                            updateEmojiPrefs(data)
-                            ConfigUtils.recreateActivity(activity)
-                        }
+                    dialog.setCallback(
+                        object : GenericAlertDialog.DialogClickListener {
+                            override fun onYes(tag: String?, data: Any?) {
+                                ConfigUtils.setEmojiStyle(activity, data as Int)
+                                updateEmojiPrefs(data)
+                                ConfigUtils.recreateActivity(activity)
+                            }
 
-                        override fun onNo(tag: String?, data: Any?) {
-                            updateEmojiPrefs(PreferenceService.EmojiStyle_DEFAULT)
-                        }
-                    })
+                            override fun onNo(tag: String?, data: Any?) {
+                                updateEmojiPrefs(PreferenceService.EMOJI_STYLE_DEFAULT)
+                            }
+                        },
+                    )
                     dialog.show(parentFragmentManager, "android_emojis")
                 } else {
                     ConfigUtils.setEmojiStyle(activity, newEmojiStyle)
@@ -258,8 +280,18 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
     }
 
     private fun initFormatPref() {
-        getPref<DropDownPreference>(resources.getString(R.string.preferences__contact_format)).onChange {
-            ListenerManager.contactSettingsListeners.handle { listener -> listener.onNameFormatChanged() }
+        getPref<DropDownPreference>(R.string.preferences__contact_format).onChange { nameFormatValue: String ->
+            val newNameFormat = ContactNameFormat.fromValue(
+                value = nameFormatValue,
+                context = requireContext(),
+            )
+            if (newNameFormat != null) {
+                ListenerManager.contactSettingsListeners.handle { listener ->
+                    listener.onNameFormatChanged(newNameFormat)
+                }
+            } else {
+                logger.warn("Could not change name format")
+            }
         }
     }
 
@@ -268,13 +300,9 @@ class SettingsAppearanceFragment : ThreemaPreferenceFragment() {
             onChange {
                 ListenerManager.contactSettingsListeners.handle { listener -> listener.onInactiveContactsSettingChanged() }
             }
-            if (ConfigUtils.isWorkRestricted()) {
-                val value =
-                    AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__hide_inactive_ids))
-                if (value != null) {
-                    isEnabled = false
-                    isSelectable = false
-                }
+            if (appRestrictions.isHideInactiveIdsOrNull() != null) {
+                isEnabled = false
+                isSelectable = false
             }
         }
     }

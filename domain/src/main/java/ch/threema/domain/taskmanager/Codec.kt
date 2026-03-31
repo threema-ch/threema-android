@@ -14,7 +14,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.taskmanager.MessageFilterInstruction.ACCEPT
 import ch.threema.domain.taskmanager.MessageFilterInstruction.BYPASS_OR_BACKLOG
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.d2d.MdD2D.TransactionScope.Scope
 
 /**
@@ -63,7 +63,7 @@ interface TaskCodec : ActiveTaskCodec
 
 private val logger = getThreemaLogger("TaskCodec")
 
-suspend fun PassiveTaskCodec.awaitOutgoingMessageAck(messageId: MessageId, identity: Identity) {
+suspend fun PassiveTaskCodec.awaitOutgoingMessageAck(messageId: MessageId, identity: IdentityString) {
     read { inboundMessage ->
         // If the inbound message is not a csp message, we bypass it
         if (inboundMessage !is CspMessage) {

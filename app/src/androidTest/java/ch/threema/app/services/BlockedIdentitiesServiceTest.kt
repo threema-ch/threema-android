@@ -1,14 +1,11 @@
 package ch.threema.app.services
 
 import ch.threema.app.TestMultiDeviceManager
-import ch.threema.app.TestNonceStore
-import ch.threema.app.TestTaskManager
 import ch.threema.app.listeners.ContactListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.preference.service.PreferenceServiceImpl
-import ch.threema.base.crypto.NonceFactory
-import ch.threema.domain.helpers.ServerAckTaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
+import io.mockk.mockk
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -22,42 +19,39 @@ class BlockedIdentitiesServiceTest : KoinComponent {
         isMultiDeviceActive = false,
     )
 
-    private val taskManager = TestTaskManager(ServerAckTaskCodec())
-
-    private val preferenceService =
+    private val preferenceService by lazy {
         PreferenceServiceImpl(
-            /* context = */
+            /* appContext = */
             get(),
             /* preferenceStore = */
             get(),
             /* encryptedPreferenceStore = */
             get(),
-            /* taskManager = */
-            taskManager,
-            /* multiDeviceManager = */
-            multiDeviceManager,
-            /* nonceFactory = */
-            NonceFactory(TestNonceStore()),
         )
+    }
 
-    private val blockedIdentitiesService: BlockedIdentitiesService = BlockedIdentitiesServiceImpl(
-        preferenceService = preferenceService,
-        multiDeviceManager = multiDeviceManager,
-        taskCreator = get(),
-    )
+    private val blockedIdentitiesService: BlockedIdentitiesService by lazy {
+        BlockedIdentitiesServiceImpl(
+            preferenceService = preferenceService,
+            multiDeviceManager = multiDeviceManager,
+            taskCreator = mockk(),
+        )
+    }
 
     private val onModified = ArrayDeque<String>()
 
-    init {
+    @BeforeTest
+    fun initListener() {
+        // Remove all listeners to prevent side effects
+        ListenerManager.contactListeners.clear()
+
+        // Add listener to track which contact has been modified
         ListenerManager.contactListeners.add(object : ContactListener {
-            override fun onModified(identity: Identity) {
+            override fun onModified(identity: IdentityString) {
                 onModified.addLast(identity)
             }
         })
-    }
 
-    @BeforeTest
-    fun initListener() {
         blockedIdentitiesService.persistBlockedIdentities(emptySet())
         onModified.clear()
         // Assert that initially no identities are blocked

@@ -3,7 +3,7 @@ package ch.threema.app.utils
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.types.ConversationUID
 import ch.threema.domain.types.GroupDatabaseId
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.DistributionListModel
 
 object ConversationUtil {
@@ -13,13 +13,13 @@ object ConversationUtil {
     private const val DISTRIBUTION_LIST_UID_PREFIX = "d-"
 
     @JvmStatic
-    fun getIdentityConversationUid(identity: Identity): ConversationUID {
+    fun getContactConversationUid(identity: IdentityString): ConversationUID {
         return "$CONTACT_UID_PREFIX$identity"
     }
 
     @JvmStatic
-    fun getGroupConversationUid(groupId: Long): ConversationUID {
-        return "$GROUP_UID_PREFIX$groupId"
+    fun getGroupConversationUid(groupDatabaseId: GroupDatabaseId): ConversationUID {
+        return "$GROUP_UID_PREFIX$groupDatabaseId"
     }
 
     @JvmStatic
@@ -31,7 +31,7 @@ object ConversationUtil {
      * Get the contact's identity from the conversation uid. If the conversation uid does not belong to a contact, then this method returns null.
      */
     @JvmStatic
-    fun getContactIdentityFromUid(conversationUid: ConversationUID): Identity? {
+    fun getContactIdentityFromUid(conversationUid: ConversationUID): IdentityString? {
         val identity = conversationUid.removePrefix(CONTACT_UID_PREFIX)
         if (identity == conversationUid) {
             // In this case the conversation uid does not belong to a contact

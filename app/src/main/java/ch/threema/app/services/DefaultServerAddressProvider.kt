@@ -5,10 +5,11 @@ import ch.threema.base.ThreemaException
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.urls.AppRatingUrl
+import ch.threema.domain.protocol.urls.BlobMirrorUrl
 import ch.threema.domain.protocol.urls.BlobUrl
-import ch.threema.domain.protocol.urls.DeviceGroupUrl
 import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
+import ch.threema.domain.protocol.urls.MediatorUrl
 
 class DefaultServerAddressProvider : ServerAddressProvider {
     override fun getChatServerNamePrefix(ipv6: Boolean): String =
@@ -73,7 +74,7 @@ class DefaultServerAddressProvider : ServerAddressProvider {
             throw ThreemaException("Missing value for blob server url in current build flavor")
         }
         try {
-            return DeviceGroupUrl(BuildConfig.BLOB_MIRROR_SERVER_URL)
+            return BlobMirrorUrl(BuildConfig.BLOB_MIRROR_SERVER_URL)
                 .get(deviceGroupId = multiDevicePropertyProvider.get().keys.dgid)
         } catch (e: IllegalArgumentException) {
             throw ThreemaException(e.message, e)
@@ -131,7 +132,7 @@ class DefaultServerAddressProvider : ServerAddressProvider {
 
     override fun getThreemaPushPublicKey(): ByteArray? = BuildConfig.THREEMA_PUSH_PUBLIC_KEY
 
-    override fun getMediatorUrl() = DeviceGroupUrl(BuildConfig.MEDIATOR_SERVER_URL)
+    override fun getMediatorUrl() = MediatorUrl(BuildConfig.MEDIATOR_SERVER_URL)
 
     override fun getAppRatingUrl(): AppRatingUrl =
         AppRatingUrl(BuildConfig.APP_RATING_URL)

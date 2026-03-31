@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import ch.threema.android.Destroyable
 import ch.threema.app.R
 import ch.threema.app.glide.AvatarOptions
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
 import ch.threema.app.voip.groupcall.ParticipantSurfaceViewRenderer
@@ -27,6 +28,7 @@ private val logger = getThreemaLogger("GroupCallParticipantsAdapter")
 @UiThread
 class GroupCallParticipantsAdapter(
     private val contactService: ContactService,
+    private val preferenceService: PreferenceService,
     private val gutterPx: Int,
     private val requestManager: RequestManager,
 ) : RecyclerView.Adapter<GroupCallParticipantsAdapter.GroupCallParticipantViewHolder>(), Destroyable {
@@ -296,12 +298,14 @@ class GroupCallParticipantsAdapter(
 
         activeViewHolders.add(holder)
 
-        holder.name.text = participant.name
+        holder.name.text = participant.getDisplayName(
+            contactNameFormat = preferenceService.getContactNameFormat(),
+        )
 
         holder.avatar.post {
             if (participant is NormalParticipant) {
                 contactService.loadAvatarIntoImage(
-                    participant.identity,
+                    participant.identity.value,
                     holder.avatar,
                     AVATAR_OPTIONS,
                     requestManager,

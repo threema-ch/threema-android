@@ -3,18 +3,20 @@ package ch.threema.app.dialogs
 import android.app.Dialog
 import android.os.Bundle
 import ch.threema.app.R
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 private val logger = getThreemaLogger("ResendGroupMessageDialog")
 
 class ResendGroupMessageDialog(
-    private val rejectedIdentities: Set<Identity>,
+    private val rejectedIdentities: Set<IdentityString>,
     private val contactService: ContactService,
+    private val preferenceService: PreferenceService,
     private val callback: ResendMessageCallback,
 ) : ThreemaDialogFragment() {
     init {
@@ -25,6 +27,7 @@ class ResendGroupMessageDialog(
         val concatenatedContactNames = ContactUtil.joinDisplayNames(
             context,
             contactService.getByIdentities(rejectedIdentities.toList()),
+            preferenceService.getContactNameFormat(),
         )
         val builder = MaterialAlertDialogBuilder(requireActivity())
         builder.setTitle(getString(R.string.resend_message_dialog_title))
@@ -43,17 +46,20 @@ class ResendGroupMessageDialog(
     }
 
     companion object {
+
+        @JvmStatic
         fun getInstance(
-            rejectedIdentities: Set<Identity>,
+            rejectedIdentities: Set<IdentityString>,
             contactService: ContactService,
+            preferenceService: PreferenceService,
             resendMessageCallback: ResendMessageCallback,
-        ): ResendGroupMessageDialog {
-            return ResendGroupMessageDialog(
+        ): ResendGroupMessageDialog =
+            ResendGroupMessageDialog(
                 rejectedIdentities,
                 contactService,
+                preferenceService,
                 resendMessageCallback,
             )
-        }
     }
 
     interface ResendMessageCallback {

@@ -16,12 +16,13 @@ import androidx.compose.ui.text.withAnnotation
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import ch.threema.app.compose.common.text.conversation.ConversationTextAnalyzer.Result.SearchResult
-import ch.threema.app.emojis.EmojiUtil.REPLACEMENT_CHARACTER
 import ch.threema.app.emojis.MarkupParser
 import ch.threema.app.emojis.MarkupParser.MarkupParserException
+import ch.threema.app.preference.service.PreferenceService.Companion.EMOJI_STYLE_DEFAULT
 import ch.threema.app.preference.service.PreferenceService.EmojiStyle
-import ch.threema.app.preference.service.PreferenceService.EmojiStyle_DEFAULT
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.indexOfOrNull
+import ch.threema.common.takeUnlessBlank
 
 private val logger = getThreemaLogger("AnnotatedConversationString")
 
@@ -39,10 +40,11 @@ fun buildAnnotatedConversationString(
     context: Context,
     @EmojiStyle emojiStyle: Int,
     markupEnabled: Boolean,
+    highlightFeature: HighlightFeature,
 ): AnnotatedString {
     val markupSpans: Map<Int, MarkupParser.SpanItem> = if (markupEnabled) getAllMarkupSpans(rawInput) else emptyMap()
     var rawInputIndex = 0
-    return buildAnnotatedString {
+    val annotatedString = buildAnnotatedString {
         while (rawInputIndex < rawInput.length) {
             val currentChar: Char = rawInput[rawInputIndex]
 
@@ -74,10 +76,10 @@ fun buildAnnotatedConversationString(
                 continue
             }
 
-            val spanItem: MarkupParser.SpanItem? = markupSpans[rawInputIndex]
+            val markupSpanItem: MarkupParser.SpanItem? = markupSpans[rawInputIndex]
             when {
-                spanItem?.markerStart == rawInputIndex -> pushStyle(getStyleFromSpanItem(spanItem))
-                spanItem?.markerEnd == rawInputIndex -> {
+                markupSpanItem?.markerStart == rawInputIndex -> pushStyle(getStyleFromSpanItem(markupSpanItem))
+                markupSpanItem?.markerEnd == rawInputIndex -> {
                     // TODO(ANDR-4149): Remove try-catch around pop() and never append the currentChar in this state
                     try {
                         pop()
@@ -92,6 +94,101 @@ fun buildAnnotatedConversationString(
             rawInputIndex++
         }
     }
+    return if (highlightFeature is HighlightFeature.On) {
+        buildHighlightedAnnotatedConversationString(
+            base = annotatedString,
+            highlightFeatureOn = highlightFeature,
+        )
+    } else {
+        annotatedString
+    }
+}
+
+/**
+ *  Applies the highlight-span-style to the given [AnnotatedString] if the requested highlight text content is found.
+ *
+ *  If the given [HighlightFeature.On.highlightedContent] is just blank, no style will be applied.
+ */
+private fun buildHighlightedAnnotatedConversationString(
+    base: AnnotatedString,
+    highlightFeatureOn: HighlightFeature.On,
+): AnnotatedString {
+    val effectiveHighlightedContent: String = highlightFeatureOn.highlightedContent?.takeUnlessBlank() ?: return base
+    val highlightStartIndex: Int = base
+        .text
+        .indexOfOrNull(string = effectiveHighlightedContent, ignoreCase = highlightFeatureOn.ignoreCase)
+        ?: return base
+
+    val annotatedStringHighlighted = base.appendStyle(
+        startIndex = highlightStartIndex,
+        endIndex = highlightStartIndex + effectiveHighlightedContent.length,
+        style = SpanStyle(
+            background = highlightFeatureOn.backgroundColor,
+            color = highlightFeatureOn.foregroundColor,
+        ),
+    )
+    return if (highlightFeatureOn.spotlight is HighlightFeature.Spotlight.ShowAsSnippet) {
+        applySpotlightToShowAsSnippet(
+            baseHighlighted = annotatedStringHighlighted,
+            spotlightShowAsSnippet = highlightFeatureOn.spotlight,
+            highlightStartIndex = highlightStartIndex,
+        )
+    } else {
+        annotatedStringHighlighted
+    }
+}
+
+private fun applySpotlightToShowAsSnippet(
+    baseHighlighted: AnnotatedString,
+    spotlightShowAsSnippet: HighlightFeature.Spotlight.ShowAsSnippet,
+    highlightStartIndex: Int,
+): AnnotatedString {
+    val snippetStartIndex = (highlightStartIndex - spotlightShowAsSnippet.maxCharactersBeforeHighlight)
+        .coerceAtLeast(0)
+    if (snippetStartIndex == 0) {
+        return baseHighlighted
+    }
+    val emojiRanges: List<IntRange> = ConversationTextAnalyzer
+        .searchEmojis(baseHighlighted.text)
+        .map { searchResultEmoji ->
+            searchResultEmoji.startIndex..(searchResultEmoji.startIndex + searchResultEmoji.length)
+        }
+    // We have to make sure to not cut in between an ongoing emoji char sequence
+    val safeSplitIndex: Int = emojiRanges
+        .firstOrNull { emojiRange -> snippetStartIndex in emojiRange }
+        ?.start
+        ?: snippetStartIndex
+    if (safeSplitIndex == 0) {
+        return baseHighlighted
+    }
+    val highlightedSnippet = baseHighlighted.subSequence(safeSplitIndex, baseHighlighted.length)
+    return if (spotlightShowAsSnippet.prefixIndicator != null) {
+        AnnotatedString(spotlightShowAsSnippet.prefixIndicator) + highlightedSnippet
+    } else {
+        highlightedSnippet
+    }
+}
+
+/**
+ * Append a [SpanStyle] for the given range defined by [startIndex] and [endIndex].
+ *
+ * @param style [SpanStyle] to be applied
+ * @param startIndex the inclusive starting offset of the range
+ * @param endIndex the exclusive end offset of the range
+ *
+ * @see AnnotatedString.Builder.addStyle
+ */
+private fun AnnotatedString.appendStyle(
+    startIndex: Int,
+    endIndex: Int,
+    style: SpanStyle,
+): AnnotatedString = buildAnnotatedString {
+    append(this@appendStyle)
+    addStyle(
+        start = startIndex,
+        end = endIndex,
+        style = style,
+    )
 }
 
 /**
@@ -131,8 +228,8 @@ private fun getAllMarkupSpans(rawInput: CharSequence): Map<Int, MarkupParser.Spa
             spanItem.textStart < spanItem.textEnd
         }
         .forEach { spanItem ->
-            spanMap.put(spanItem.markerStart, spanItem)
-            spanMap.put(spanItem.markerEnd, spanItem)
+            spanMap[spanItem.markerStart] = spanItem
+            spanMap[spanItem.markerEnd] = spanItem
         }
     return spanMap
 }
@@ -161,8 +258,8 @@ private fun AnnotatedString.Builder.appendMention(
     mentionFeatureOn: MentionFeature.On,
 ) {
     val mentionBuilder = mentionBuilderLambda@{
-        val identityNameResolved: String = mentionFeatureOn.identityNameProvider(mentionItem.identity)?.get(context)
-            ?: return@mentionBuilderLambda
+        val identityNameResolved: String = mentionFeatureOn.identityDisplayNames[mentionItem.identity]?.get(context)
+            ?: mentionItem.identity.value
 
         withAnnotation(
             tag = SPAN_TAG_BACKGROUND_MENTION,
@@ -199,12 +296,12 @@ private fun AnnotatedString.Builder.appendMention(
         }
     }
 
-    if (mentionFeatureOn.onClickedMention != null) {
+    if (mentionFeatureOn.onClickMention != null) {
         withLink(
             link = LinkAnnotation.Clickable(
-                tag = mentionItem.identity,
+                tag = mentionItem.identity.value,
                 linkInteractionListener = {
-                    mentionFeatureOn.onClickedMention(mentionItem.identity)
+                    mentionFeatureOn.onClickMention(mentionItem.identity)
                 },
             ),
         ) {
@@ -220,18 +317,20 @@ private fun AnnotatedString.Builder.appendEmoji(
     emojiItem: SearchResult.Emoji,
     rawInput: CharSequence,
 ) {
-    if (emojiStyle == EmojiStyle_DEFAULT) {
-        // Append the emoji placeholder for later bitmap substitution
+    val emojiSequence = rawInput.substring(
+        startIndex = emojiItem.startIndex,
+        endIndex = emojiItem.startIndex + emojiItem.length,
+    )
+    if (emojiStyle == EMOJI_STYLE_DEFAULT) {
+        // Append the emoji character sequence marked with an inline-content id for later bitmap substitution,
+        // To support highlighting/searching with emojis, we have to set the alternateText to the actual emoji character sequence even though it is
+        // never used to display the emoji
         appendInlineContent(
             id = emojiItem.startIndex.toString(),
-            alternateText = REPLACEMENT_CHARACTER,
+            alternateText = emojiSequence,
         )
     } else {
-        // Just append the unicode contents of this emoji because android will handle it
-        append(
-            rawInput.substring(
-                emojiItem.startIndex until (emojiItem.startIndex + emojiItem.length),
-            ),
-        )
+        // Just append emoji character sequence because android will handle it
+        append(emojiSequence)
     }
 }

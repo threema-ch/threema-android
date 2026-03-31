@@ -33,8 +33,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import ch.threema.app.R
+import ch.threema.app.compose.common.colorReferenceResource
 import ch.threema.app.compose.theme.ThreemaThemePreview
-import ch.threema.app.compose.theme.color.CustomColors
 import ch.threema.app.compose.theme.dimens.GridUnit
 
 private const val DOT_COUNT = 3
@@ -90,7 +91,7 @@ fun TypingIndicator(
                     ),
                 )
                 .background(
-                    color = CustomColors.chatBubbleReceiveContainer,
+                    color = colorReferenceResource(R.attr.colorMessageBubbleReceiveContainer),
                 )
                 .padding(
                     horizontal = GridUnit.x1,

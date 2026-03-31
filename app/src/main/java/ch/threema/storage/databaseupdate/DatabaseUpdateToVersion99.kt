@@ -31,9 +31,5 @@ class DatabaseUpdateToVersion99(
 
     override fun getDescription() = "fix incoming group sync request constraint"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 99
-    }
+    override val version = 99
 }

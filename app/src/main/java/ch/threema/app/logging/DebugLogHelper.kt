@@ -2,27 +2,54 @@ package ch.threema.app.logging
 
 import android.content.Context
 import android.os.Environment
-import ch.threema.app.R
-import ch.threema.app.stores.PreferenceStore
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.common.TimeProvider
 import ch.threema.logging.backend.DebugLogFileBackend
+import ch.threema.logging.backend.DebugLogFileManager
 import java.io.File
 
 class DebugLogHelper(
     private val appContext: Context,
-    private val preferenceStore: PreferenceStore,
+    private val preferenceService: PreferenceService,
+    private val debugLogFileManager: DebugLogFileManager,
+    private val appVersionLogger: AppVersionLogger,
+    private val timeProvider: TimeProvider,
 ) {
-    fun disableDebugLogFileIfNeeded() {
-        if (!isDebugLogPreferenceEnabled() && !isDebugLogFileForceEnabled()) {
-            DebugLogFileBackend.setEnabled(false)
+    fun disableDebugLogFileLoggingIfNeeded() {
+        if (!isDebugFileLoggingEnabled()) {
+            DebugLogFileBackend.setEnabled(debugLogFileManager, false)
         }
     }
 
-    private fun isDebugLogPreferenceEnabled() =
-        preferenceStore.getBoolean(appContext.getString(R.string.preferences__message_log_switch))
+    private fun isDebugFileLoggingEnabled() =
+        preferenceService.isDebugLogEnabled() || isDebugLogFileLoggingForceEnabled()
 
-    private fun isDebugLogFileForceEnabled(): Boolean {
+    fun isDebugLogFileLoggingForceEnabled(): Boolean {
         val externalStorageDirectory = Environment.getExternalStorageDirectory()
-        val forceDebugLogFile = File(externalStorageDirectory, "ENABLE_THREEMA_DEBUG_LOG")
+        val forceDebugLogFile = File(externalStorageDirectory, FORCE_ENABLE_FILE_NAME)
         return forceDebugLogFile.exists()
+    }
+
+    fun setEnabled(enabled: Boolean) {
+        DebugLogFileBackend.setEnabled(debugLogFileManager, enabled)
+        if (enabled) {
+            preferenceService.setDebugLogEnabledTimestamp(timeProvider.get())
+            appVersionLogger.logAppVersionInfo()
+        } else {
+            preferenceService.setDebugLogEnabledTimestamp(null)
+        }
+        updateDebugLogFileDeletionSchedule()
+    }
+
+    fun updateDebugLogFileDeletionSchedule() {
+        if (isDebugFileLoggingEnabled()) {
+            DebugLogFileCleanupWorker.schedule(appContext)
+        } else {
+            DebugLogFileCleanupWorker.cancel(appContext)
+        }
+    }
+
+    companion object {
+        const val FORCE_ENABLE_FILE_NAME = "ENABLE_THREEMA_DEBUG_LOG"
     }
 }

@@ -22,8 +22,8 @@ class IncomingDeleteProfilePictureTask(
     private val fileService by lazy { serviceManager.fileService }
     private val contactService by lazy { serviceManager.contactService }
     private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
+    private val preferenceService by lazy { serviceManager.preferenceService }
 
     private val identity = message.fromIdentity
 
@@ -40,7 +40,10 @@ class IncomingDeleteProfilePictureTask(
             listener.onAvatarChanged(identity)
         }
 
-        ShortcutUtil.updateShareTargetShortcut(contactService.createReceiver(contactModel))
+        ShortcutUtil.updateShareTargetShortcut(
+            contactService.createReceiver(contactModel),
+            preferenceService.getContactNameFormat(),
+        )
 
         contactModel.setIsRestored(false)
 
@@ -61,9 +64,6 @@ class IncomingDeleteProfilePictureTask(
             ReflectContactProfilePicture(
                 contactIdentity = identity,
                 profilePictureUpdate = ReflectContactProfilePicture.RemovedProfilePicture,
-                contactModelRepository = contactModelRepository,
-                multiDeviceManager = multiDeviceManager,
-                nonceFactory = nonceFactory,
             ).reflect(handle)
         }
     }

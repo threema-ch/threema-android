@@ -1,9 +1,7 @@
 package ch.threema.app.tasks.recovery
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.tasks.GroupCreateTask
 import ch.threema.app.tasks.archive.recovery.handlers.GroupCreateTaskRecoveryHandler
-import io.mockk.mockk
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -50,11 +48,8 @@ class GroupCreateTaskRecoveryHandlerTest {
 
     @Test
     fun `old task representation can be recovered`() {
-        val serviceManagerMock = mockk<ServiceManager>(relaxed = true)
-
         val task = GroupCreateTaskRecoveryHandler.tryRecovery(
             encodedTask = oldEncodedTask,
-            serviceManager = serviceManagerMock,
         )
 
         assertTrue(task is GroupCreateTask)

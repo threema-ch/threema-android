@@ -9,7 +9,6 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.models.WorkVerificationLevel;
-import ch.threema.storage.models.ContactModel;
 
 public class VerificationLevelImageView extends androidx.appcompat.widget.AppCompatImageView {
 

@@ -6,7 +6,7 @@ import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.Common.GroupIdentity
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.CONTACT
@@ -16,8 +16,8 @@ import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.ID_NOT_SET
 import ch.threema.protobuf.d2d.MdD2D.IncomingMessageUpdate
 import ch.threema.protobuf.d2d.MdD2D.IncomingMessageUpdate.Update.UpdateCase.READ
 import ch.threema.storage.models.AbstractMessageModel
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
+import ch.threema.storage.models.group.GroupMessageModel
 import java.util.Date
 
 private val logger = getThreemaLogger("ReflectedIncomingMessageUpdateTask")
@@ -63,7 +63,7 @@ class ReflectedIncomingMessageUpdateTask(
 
     private fun applyContactMessageReadUpdate(
         messageId: MessageId,
-        senderIdentity: Identity,
+        senderIdentity: IdentityString,
         readAt: Long,
     ) {
         val abstractMessageModel = messageService.getContactMessageModel(messageId, senderIdentity)

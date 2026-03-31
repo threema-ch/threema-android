@@ -15,8 +15,8 @@ import ch.threema.data.datatypes.IdColor;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupMessageModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.LinkBallotModel;
@@ -24,7 +24,7 @@ import ch.threema.storage.models.ballot.LinkBallotModel;
 public class CacheService {
     private final @NonNull Collection<MessageModel> messageModelCache = new HashSet<>();
     private final @NonNull Collection<DistributionListMessageModel> distributionListMessageCache = new HashSet<>();
-    private final @NonNull SparseArrayCompat<GroupModel> groupModelCache = new SparseArrayCompat<>();
+    private final @NonNull SparseArrayCompat<GroupModelOld> groupModelCache = new SparseArrayCompat<>();
     private final @NonNull SparseArrayCompat<String[]> groupIdentityCache = new SparseArrayCompat<>();
     private final @NonNull Collection<GroupMessageModel> groupMessageModelCache = new HashSet<>();
     private final @NonNull List<ConversationModel> conversationModelCache = new ArrayList<>();
@@ -45,7 +45,7 @@ public class CacheService {
         return this.groupIdentityCache;
     }
 
-    public @NonNull SparseArrayCompat<GroupModel> getGroupModelCache() {
+    public @NonNull SparseArrayCompat<GroupModelOld> getGroupModelCache() {
         return this.groupModelCache;
     }
 

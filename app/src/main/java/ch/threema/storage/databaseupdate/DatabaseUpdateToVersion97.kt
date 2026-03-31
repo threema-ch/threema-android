@@ -19,9 +19,5 @@ internal class DatabaseUpdateToVersion97(
 
     override fun getDescription() = "add deletedAtUtc field for messages"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 97
-    }
+    override val version = 97
 }

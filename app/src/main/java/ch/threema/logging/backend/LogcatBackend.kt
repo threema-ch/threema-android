@@ -42,7 +42,7 @@ class LogcatBackend(@field:LogLevel @param:LogLevel private val minLogLevel: Int
         tag: String,
         throwable: Throwable?,
         messageFormat: String,
-        vararg args: Any?,
+        args: Array<Any?>,
     ) {
         if (!isEnabled(level)) {
             return

@@ -65,7 +65,7 @@ class WorkUserListFragment : RecipientListFragment() {
                 listView,
                 false,
             ) as RelativeLayout
-            header.findViewById<TextView>(R.id.name).text = preferenceService.workOrganization
+            header.findViewById<TextView>(R.id.name).text = preferenceService.getWorkOrganization()
                 ?.getName()
                 ?: getString(R.string.work_directory_title)
             header.findViewById<ImageView>(R.id.avatar).setImageResource(R.drawable.ic_business)

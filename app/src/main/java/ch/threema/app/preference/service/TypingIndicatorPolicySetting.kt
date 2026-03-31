@@ -5,7 +5,6 @@ import ch.threema.app.R
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.ReflectSettingsSyncTask
-import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
@@ -18,9 +17,7 @@ private val logger = getThreemaLogger("TypingIndicatorPolicySetting")
  * The (global) setting whether typing indicators should be sent. Stores true if they should be sent.
  */
 class TypingIndicatorPolicySetting internal constructor(
-    private val preferenceService: PreferenceService,
-    private val multiDeviceManager: MultiDeviceManager,
-    private val nonceFactory: NonceFactory,
+    multiDeviceManager: MultiDeviceManager,
     taskManager: TaskManager,
     preferenceStore: PreferenceStore,
     context: Context,
@@ -30,13 +27,8 @@ class TypingIndicatorPolicySetting internal constructor(
     multiDeviceManager = multiDeviceManager,
     taskManager = taskManager,
 ) {
-    override fun instantiateReflectionTask(): Task<*, TaskCodec> {
-        return ReflectSettingsSyncTask.ReflectTypingIndicatorPolicySyncUpdate(
-            multiDeviceManager,
-            nonceFactory,
-            preferenceService,
-        )
-    }
+    override fun instantiateReflectionTask(): Task<*, TaskCodec> =
+        ReflectSettingsSyncTask.ReflectTypingIndicatorPolicySyncUpdate()
 
     fun getTypingIndicatorPolicy(): TypingIndicatorPolicy =
         when (get()) {

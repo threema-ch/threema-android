@@ -16,33 +16,36 @@ import android.widget.ImageView
 import android.widget.PopupWindow
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.core.content.edit
 import androidx.core.content.getSystemService
 import androidx.core.view.isVisible
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
-import androidx.preference.PreferenceManager
 import ch.threema.app.R
 import ch.threema.app.emojis.EmojiTextView
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.TestUtil
 import com.google.android.material.card.MaterialCardView
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class TooltipPopup
 @JvmOverloads
 constructor(
     private val context: Context,
     @StringRes
-    preferenceKey: Int = 0,
+    private val preferenceKey: Int = 0,
     lifecycleOwner: LifecycleOwner? = null,
     @DrawableRes
     private val icon: Int = 0,
     private val showCloseButton: Boolean = true,
-) : PopupWindow(context), DefaultLifecycleObserver {
+) : PopupWindow(context), DefaultLifecycleObserver, KoinComponent {
+
+    private val preferenceService: PreferenceService by inject()
+
     private var popupLayout: View
     private var titleView: EmojiTextView
     private var textView: EmojiTextView
-    private var preferenceString: String? = null
     private var timeoutHandler: Handler? = null
     private val dismissRunnable = Runnable {
         listener.onTimedOut(this)
@@ -53,11 +56,6 @@ constructor(
 
     init {
         lifecycleOwner?.lifecycle?.addObserver(this)
-        preferenceString = if (preferenceKey != 0) {
-            context.getString(preferenceKey)
-        } else {
-            null
-        }
 
         val layoutInflater = context.getSystemService<LayoutInflater>()!!
         popupLayout = layoutInflater.inflate(R.layout.popup_tooltip, null, false)!!
@@ -85,11 +83,8 @@ constructor(
     }
 
     fun dismissForever() {
-        if (preferenceString != null) {
-            PreferenceManager.getDefaultSharedPreferences(context)
-                ?.edit {
-                    putBoolean(preferenceString, true)
-                }
+        if (preferenceKey != 0) {
+            preferenceService.setTooltipPopupDismissed(preferenceKey, true)
         }
 
         dismiss(false)
@@ -238,12 +233,10 @@ constructor(
     }
 
     private fun isForeverDismissed(): Boolean {
-        if (preferenceString == null) {
+        if (preferenceKey == 0) {
             return false
         }
-        return PreferenceManager.getDefaultSharedPreferences(context)
-            ?.getBoolean(preferenceString, false)
-            ?: false
+        return preferenceService.isTooltipPopupDismissed(preferenceKey)
     }
 
     /**

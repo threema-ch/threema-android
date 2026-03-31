@@ -2,13 +2,14 @@ package ch.threema.app.systemupdates.updates;
 
 import android.database.Cursor;
 
+import org.koin.java.KoinJavaComponent;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
-import androidx.annotation.NonNull;
-import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.DeadlineListService;
 import ch.threema.app.services.DeadlineListServiceImpl;
@@ -16,28 +17,30 @@ import ch.threema.app.services.RingtoneService;
 import ch.threema.app.stores.PreferenceStore;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Base32;
+import ch.threema.storage.DatabaseProvider;
+import kotlin.Lazy;
 
 public class SystemUpdateToVersion43 implements SystemUpdate {
-    private @NonNull final ServiceManager serviceManager;
 
-    public SystemUpdateToVersion43(
-        @NonNull ServiceManager serviceManager
-    ) {
-        this.serviceManager = serviceManager;
-    }
+    private final Lazy<PreferenceService> preferenceServiceLazy = KoinJavaComponent.inject(PreferenceService.class);
+    private final Lazy<ConversationCategoryService> conversationCategoryServiceLazy = KoinJavaComponent.inject(ConversationCategoryService.class);
+    private final Lazy<RingtoneService> ringtoneServiceLazy = KoinJavaComponent.inject(RingtoneService.class);
+    private final Lazy<PreferenceStore> preferenceStoreLazy = KoinJavaComponent.inject(PreferenceStore.class);
+    private final Lazy<DatabaseProvider> databaseProviderLazy = KoinJavaComponent.inject(DatabaseProvider.class);
 
     @Override
     public void run() {
-        DeadlineListService mutedChatsService = new DeadlineListServiceImpl("list_muted_chats", serviceManager.getPreferenceService());
-        ConversationCategoryService conversationCategoryService = serviceManager.getConversationCategoryService();
-        RingtoneService ringtoneService = serviceManager.getRingtoneService();
+        var preferenceService = preferenceServiceLazy.getValue();
+        var conversationCategoryService = conversationCategoryServiceLazy.getValue();
+        var ringtoneService = ringtoneServiceLazy.getValue();
+        var preferenceStore = preferenceStoreLazy.getValue();
+
+        DeadlineListService mutedChatsService = new DeadlineListServiceImpl("list_muted_chats", preferenceService);
 
         String mutedChatsPrefs = "list_muted_chats";
         String hiddenChatsPrefs = "list_hidden_chats";
         String ringtonePrefs = "pref_individual_ringtones";
         String messageDraftPrefs = "pref_message_drafts";
-
-        PreferenceStore preferenceStore = serviceManager.getPreferenceStore();
 
         Map<Integer, String> oldMutedChatsMap = preferenceStore.getIntMap(mutedChatsPrefs);
         Map<Integer, String> oldHiddenChatsMap = preferenceStore.getIntMap(hiddenChatsPrefs);
@@ -48,7 +51,7 @@ public class SystemUpdateToVersion43 implements SystemUpdate {
         HashMap<String, String> newHiddenChatsMap = new HashMap<>();
         HashMap<String, String> newRingtoneMap = new HashMap<>();
 
-        var database = serviceManager.getDatabaseService().getReadableDatabase();
+        var database = databaseProviderLazy.getValue().getReadableDatabase();
         Cursor contacts = database.rawQuery("SELECT identity FROM contacts", null);
         if (contacts != null) {
             while (contacts.moveToNext()) {

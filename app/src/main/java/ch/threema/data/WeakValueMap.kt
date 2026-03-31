@@ -34,6 +34,14 @@ class WeakValueMap<K, V> {
     }
 
     /**
+     * Update the value for the specified key
+     */
+    @Synchronized
+    fun put(key: K, value: V) {
+        this.map[key] = WeakReference(value)
+    }
+
+    /**
      * Remove the value associated with the specified key and return it.
      */
     @Synchronized

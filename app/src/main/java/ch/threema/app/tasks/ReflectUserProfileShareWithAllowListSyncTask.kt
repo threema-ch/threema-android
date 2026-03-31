@@ -1,16 +1,18 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy.Policy
+import ch.threema.app.services.ProfilePictureRecipientsService
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.d2d.sync.MdD2DSync
 import ch.threema.protobuf.d2d.sync.UserProfileKt.profilePictureShareWith
 import ch.threema.protobuf.d2d.sync.userProfile
 import ch.threema.protobuf.identities
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  *
@@ -20,15 +22,14 @@ import kotlinx.serialization.Serializable
  * Any empty list can be passed here as specified by the protocol.
  */
 class ReflectUserProfileShareWithAllowListSyncTask(
-    private val allowedIdentities: Set<Identity>,
-    serviceManager: ServiceManager,
+    private val allowedIdentities: Set<IdentityString>,
 ) : ReflectUserProfileShareWithPolicySyncTaskBase(
     newPolicy = Policy.ALLOW_LIST,
-    serviceManager = serviceManager,
-) {
-    override val type = "ReflectUserProfileShareWithAllowListSyncTask"
+),
+    KoinComponent {
+    private val profilePicRecipientsService: ProfilePictureRecipientsService by inject()
 
-    private val profilePicRecipientsService by lazy { serviceManager.profilePicRecipientsService }
+    override val type = "ReflectUserProfileShareWithAllowListSyncTask"
 
     override fun createUpdatedUserProfile(): MdD2DSync.UserProfile = userProfile {
         this.profilePictureShareWith = profilePictureShareWith {
@@ -48,12 +49,11 @@ class ReflectUserProfileShareWithAllowListSyncTask(
 
     @Serializable
     data class ReflectUserProfileShareWithAllowListSyncTaskData(
-        val allowedIdentities: List<Identity>,
+        val allowedIdentities: List<IdentityString>,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
+        override fun createTask(): Task<*, TaskCodec> {
             return ReflectUserProfileShareWithAllowListSyncTask(
                 allowedIdentities = allowedIdentities.toSet(),
-                serviceManager = serviceManager,
             )
         }
     }

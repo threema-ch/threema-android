@@ -10,8 +10,9 @@ import java.util.List;
 import ch.threema.app.R;
 import ch.threema.app.activities.GroupAddActivity;
 import ch.threema.app.adapters.GroupListAdapter;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.GroupService;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import kotlin.Lazy;
 
 import static org.koin.java.KoinJavaComponent.inject;
@@ -19,6 +20,7 @@ import static org.koin.java.KoinJavaComponent.inject;
 public class GroupListFragment extends RecipientListFragment {
 
     private final Lazy<GroupService> groupServiceLazy = inject(GroupService.class);
+    private final Lazy<PreferenceService> preferenceServiceLazy = inject(PreferenceService.class);
 
     @Override
     protected boolean isMultiSelectAllowed() {
@@ -53,9 +55,9 @@ public class GroupListFragment extends RecipientListFragment {
     @SuppressLint("StaticFieldLeak")
     @Override
     protected void createListAdapter(ArrayList<Integer> checkedItemPositions) {
-        new AsyncTask<Void, Void, List<GroupModel>>() {
+        new AsyncTask<Void, Void, List<GroupModelOld>>() {
             @Override
-            protected List<GroupModel> doInBackground(Void... voids) {
+            protected List<GroupModelOld> doInBackground(Void... voids) {
                 return groupServiceLazy.getValue().getAll(new GroupService.GroupFilter() {
                     @Override
                     public boolean sortByDate() {
@@ -81,12 +83,13 @@ public class GroupListFragment extends RecipientListFragment {
             }
 
             @Override
-            protected void onPostExecute(List<GroupModel> groupModels) {
+            protected void onPostExecute(List<GroupModelOld> groupModels) {
                 adapter = new GroupListAdapter(
                     activity,
                     groupModels,
                     checkedItemPositions,
                     groupServiceLazy.getValue(),
+                    preferenceServiceLazy.getValue(),
                     GroupListFragment.this
                 );
                 setListAdapter(adapter);

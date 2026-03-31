@@ -2,10 +2,11 @@ package ch.threema.app.glide
 
 import android.content.Context
 import android.graphics.Bitmap
+import androidx.annotation.ColorInt
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import ch.threema.app.R
-import ch.threema.app.services.AvatarCacheServiceImpl
 import ch.threema.app.services.DistributionListService
+import ch.threema.app.services.avatarcache.AvatarCacheServiceImpl
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.data.DataFetcher
 
@@ -27,7 +28,13 @@ class DistributionListAvatarFetcher(
     }
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        val color = distributionListService.getAvatarColor(distributionListConfig.subject)
-        callback.onDataReady(buildDefaultAvatarLowRes(distributionListDefaultAvatar, color))
+        @ColorInt
+        val avatarColor = distributionListService.getAvatarColor(distributionListConfig.subject)
+        callback.onDataReady(
+            buildDefaultAvatarLowRes(
+                drawable = distributionListDefaultAvatar,
+                color = avatarColor,
+            ),
+        )
     }
 }

@@ -1,6 +1,5 @@
 package ch.threema.app.services
 
-import android.content.Context
 import ch.threema.app.groupflows.CreateGroupFlow
 import ch.threema.app.groupflows.DisbandGroupFlow
 import ch.threema.app.groupflows.GroupChanges
@@ -14,7 +13,10 @@ import ch.threema.app.groupflows.RemoveGroupFlow
 import ch.threema.app.groupflows.UpdateGroupFlow
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.SynchronizedSettingsService
 import ch.threema.app.profilepicture.GroupProfilePictureUploader
+import ch.threema.app.protocolsteps.IdentityBlockedSteps
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.app.voip.groupcall.GroupCallManager
@@ -51,8 +53,8 @@ class GroupFlowDispatcher(
     private val identityStore: IdentityStore,
     private val forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor,
     private val nonceFactory: NonceFactory,
-    private val blockedIdentitiesService: BlockedIdentitiesService,
     private val preferenceService: PreferenceService,
+    private val synchronizedSettingsService: SynchronizedSettingsService,
     private val multiDeviceManager: MultiDeviceManager,
     private val groupProfilePictureUploader: GroupProfilePictureUploader,
     private val apiConnector: APIConnector,
@@ -60,6 +62,7 @@ class GroupFlowDispatcher(
     private val databaseService: DatabaseService,
     private val taskManager: TaskManager,
     private val connection: ServerConnection,
+    private val identityBlockedSteps: IdentityBlockedSteps,
 ) {
     private val outgoingCspMessageServices by lazy {
         OutgoingCspMessageServices(
@@ -71,8 +74,8 @@ class GroupFlowDispatcher(
             contactModelRepository,
             groupService,
             nonceFactory,
-            blockedIdentitiesService,
             preferenceService,
+            synchronizedSettingsService,
             multiDeviceManager,
         )
     }
@@ -86,15 +89,14 @@ class GroupFlowDispatcher(
      * Create a new group from local.
      */
     fun runCreateGroupFlow(
-        context: Context,
+        appRestrictions: AppRestrictions,
         groupCreateProperties: GroupCreateProperties,
     ): Deferred<GroupFlowResult> = backgroundExecutor.executeDeferred(
         CreateGroupFlow(
-            context,
+            appRestrictions,
             groupCreateProperties,
             groupModelRepository,
             outgoingCspMessageServices,
-            groupCallManager,
             groupProfilePictureUploader,
             fileService,
             taskManager,
@@ -112,11 +114,11 @@ class GroupFlowDispatcher(
         UpdateGroupFlow(
             groupChanges,
             groupModel,
-            groupModelRepository,
             groupCallManager,
             outgoingCspMessageServices,
             groupProfilePictureUploader,
             fileService,
+            preferenceService,
             taskManager,
             connection,
         ),
@@ -134,7 +136,6 @@ class GroupFlowDispatcher(
             groupModel,
             groupModelRepository,
             groupCallManager,
-            apiConnector,
             outgoingCspMessageServices,
             taskManager,
             connection,
@@ -153,7 +154,6 @@ class GroupFlowDispatcher(
             groupModel,
             groupModelRepository,
             groupCallManager,
-            apiConnector,
             outgoingCspMessageServices,
             taskManager,
             connection,
@@ -196,6 +196,7 @@ class GroupFlowDispatcher(
             groupCallManager,
             databaseService,
             outgoingCspMessageServices,
+            identityBlockedSteps,
         ),
     )
 }

@@ -96,7 +96,7 @@ public class GroupAdd2Activity extends GroupEditActivity implements ContactEditD
         );
 
         Deferred<GroupFlowResult> createGroupFlowResultDeferred = dependencies.getGroupFlowDispatcher().runCreateGroupFlow(
-            this,
+            dependencies.getAppRestrictions(),
             new GroupCreateProperties(
                 groupName,
                 CheckedProfilePicture.getOrConvertFromFile(avatarFile),

@@ -10,6 +10,8 @@ import org.slf4j.Logger;
 
 import java.io.IOException;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.utils.FileUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
@@ -23,7 +25,8 @@ public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecord
         this.context = context;
     }
 
-    public MediaRecorder prepare(Uri uri, int samplingRate) {
+    @Nullable
+    public MediaRecorder prepare(@NonNull Uri uri, int samplingRate) {
         logger.info("Preparing MediaRecorder with sampling rate {}", samplingRate);
         MediaRecorder mediaRecorder = new MediaRecorder();
 
@@ -63,15 +66,15 @@ public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecord
         switch (what) {
             case MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED:
                 logger.info("Max recording duration reached. ({})", extra);
-                onStopListener.onRecordingStop();
+                onStopListener.onRecordingReachedMaxDuration();
                 break;
             case MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED:
                 logger.info("Max recording filesize reached. ({})", extra);
-                onStopListener.onRecordingStop();
+                onStopListener.onRecordingReachedMaxFileSize();
                 break;
             case MediaRecorder.MEDIA_RECORDER_INFO_UNKNOWN:
                 logger.info("Unknown media recorder info (What: {} / Extra: {})", what, extra);
-                onStopListener.onRecordingCancel();
+                onStopListener.onRecordingError();
                 break;
             default:
                 logger.info("Undefined media recorder info type (What: {} / Extra: {})", what, extra);
@@ -83,16 +86,18 @@ public class AudioRecorder implements MediaRecorder.OnErrorListener, MediaRecord
     public void onError(MediaRecorder mr, int what, int extra) {
         if (what == MediaRecorder.MEDIA_RECORDER_ERROR_UNKNOWN) {
             logger.info("Unknown media recorder error (What: {}, Extra: {})", what, extra);
-            onStopListener.onRecordingCancel();
+            onStopListener.onRecordingError();
         } else {
             logger.info("Undefined media recorder error type (What: {}, Extra: {})", what, extra);
         }
     }
 
     public interface OnStopListener {
-        public void onRecordingStop();
+        void onRecordingReachedMaxDuration();
 
-        public void onRecordingCancel();
+        void onRecordingReachedMaxFileSize();
+
+        void onRecordingError();
     }
 
     public void setOnStopListener(OnStopListener listener) {

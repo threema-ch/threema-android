@@ -1,8 +1,7 @@
 package ch.threema.domain.protocol.csp.messages.voip.features;
 
 import androidx.annotation.NonNull;
-import java8.util.stream.Collectors;
-import java8.util.stream.StreamSupport;
+import java.util.stream.Collectors;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,7 +56,7 @@ public class FeatureList {
      * Return whether a feature with the specified name exists.
      */
     public synchronized boolean hasFeature(@NonNull String name) {
-        return StreamSupport.stream(this.features)
+        return this.features.stream()
             .anyMatch(feature -> feature.getName().equals(name));
     }
 
@@ -100,7 +99,7 @@ public class FeatureList {
 
     @Override
     public @NonNull String toString() {
-        final String features = StreamSupport.stream(this.features).map(feature -> {
+        final String features = this.features.stream().map(feature -> {
             if (feature.getParams() == null) {
                 return feature.getName();
             }

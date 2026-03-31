@@ -10,7 +10,7 @@ public interface ConversationListener {
     void onNew(@NonNull ConversationModel conversationModel);
 
     @AnyThread
-    void onModified(@NonNull ConversationModel modifiedConversationModel, @Nullable Integer oldPosition);
+    void onModified(@NonNull ConversationModel modifiedConversationModel);
 
     @AnyThread
     void onRemoved(@NonNull ConversationModel conversationModel);

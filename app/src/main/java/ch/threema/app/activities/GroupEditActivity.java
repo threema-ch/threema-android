@@ -3,12 +3,10 @@ package ch.threema.app.activities;
 import android.content.Intent;
 import android.text.InputType;
 
-import java.io.File;
-
 import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.dialogs.ContactEditDialog;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 public abstract class GroupEditActivity extends ThreemaToolbarActivity {
     protected static final String DIALOG_TAG_GROUPNAME = "groupName";
@@ -27,7 +25,7 @@ public abstract class GroupEditActivity extends ThreemaToolbarActivity {
                 inputType,
                 null,
                 false,
-                GroupModel.GROUP_NAME_MAX_LENGTH_BYTES)
+                GroupModelOld.GROUP_NAME_MAX_LENGTH_BYTES)
             .show(getSupportFragmentManager(), DIALOG_TAG_GROUPNAME);
     }
 

@@ -1,14 +1,11 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
-import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.ApiService
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationTagService
 import ch.threema.app.services.FileService
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.ConversationUtil
-import ch.threema.app.utils.runtimeAssert
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.SymmetricEncryptionService
 import ch.threema.base.utils.getThreemaLogger
@@ -29,7 +26,7 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.getEncryptedContactSyncUpdate
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.blob
 import ch.threema.protobuf.d2d.sync.ContactKt.NotificationTriggerPolicyOverrideKt.policy
@@ -47,15 +44,17 @@ import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.ConversationTag
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("ReflectContactSyncUpdateTask")
 
 abstract class ReflectContactSyncUpdateBaseTask(
-    protected val contactIdentity: Identity,
-    private val contactModelRepository: ContactModelRepository,
-    multiDeviceManager: MultiDeviceManager,
-    private val nonceFactory: NonceFactory,
-) : ReflectContactSyncTask<Unit, Unit>(multiDeviceManager) {
+    protected val contactIdentity: IdentityString,
+) : ReflectContactSyncTask<Unit, Unit>(), KoinComponent {
+    private val contactModelRepository: ContactModelRepository by inject()
+    private val nonceFactory: NonceFactory by inject()
+
     /**
      * The task type. This is just used for debugging.
      */
@@ -92,7 +91,9 @@ abstract class ReflectContactSyncUpdateBaseTask(
 
         val encryptedEnvelopeResult = getEncryptedContactSyncUpdate(
             getContactSync().also {
-                runtimeAssert(it.identity == contactIdentity, "Identity must match")
+                check(it.identity == contactIdentity) {
+                    "Identity must match"
+                }
             },
             mdProperties,
         )
@@ -112,16 +113,8 @@ abstract class ReflectContactSyncUpdateBaseTask(
  * This task must be run *before* the changes have been persisted. It cannot be run using the task
  * manager as it must be run immediately inside another task.
  */
-abstract class ReflectContactSyncUpdateImmediateTask(
-    contactIdentity: Identity,
-    contactModelRepository: ContactModelRepository,
-    multiDeviceManager: MultiDeviceManager,
-    nonceFactory: NonceFactory,
-) : ReflectContactSyncUpdateBaseTask(
-    contactIdentity,
-    contactModelRepository,
-    multiDeviceManager,
-    nonceFactory,
+abstract class ReflectContactSyncUpdateImmediateTask(contactIdentity: IdentityString) : ReflectContactSyncUpdateBaseTask(
+    contactIdentity = contactIdentity,
 ) {
     /**
      * Check whether the data has changed. Note that immediate tasks are executed before the update
@@ -149,16 +142,10 @@ abstract class ReflectContactSyncUpdateImmediateTask(
      * A task to reflect a new nickname.
      */
     class ReflectContactNickname(
-        contactIdentity: Identity,
+        contactIdentity: IdentityString,
         private val newNickname: String,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
     ) : ReflectContactSyncUpdateImmediateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
     ) {
         override val type = "ReflectContactNickname"
 
@@ -178,16 +165,10 @@ abstract class ReflectContactSyncUpdateImmediateTask(
      * on the blob mirror.
      */
     class ReflectContactProfilePicture(
-        contactIdentity: Identity,
+        contactIdentity: IdentityString,
         private val profilePictureUpdate: ProfilePictureUpdate,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
     ) : ReflectContactSyncUpdateImmediateTask(
         contactIdentity = contactIdentity,
-        contactModelRepository = contactModelRepository,
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
     ) {
         sealed interface ProfilePictureUpdate
 
@@ -236,15 +217,9 @@ abstract class ReflectContactSyncUpdateImmediateTask(
  * run using the task manager.
  */
 abstract class ReflectContactSyncUpdateTask(
-    contactIdentity: Identity,
-    contactModelRepository: ContactModelRepository,
-    multiDeviceManager: MultiDeviceManager,
-    nonceFactory: NonceFactory,
+    contactIdentity: IdentityString,
 ) : ReflectContactSyncUpdateBaseTask(
-    contactIdentity,
-    contactModelRepository,
-    multiDeviceManager,
-    nonceFactory,
+    contactIdentity = contactIdentity,
 ),
     ActiveTask<Unit>,
     PersistableTask {
@@ -285,15 +260,9 @@ abstract class ReflectContactSyncUpdateTask(
     class ReflectNameUpdate(
         private val newFirstName: String,
         private val newLastName: String,
-        contactIdentity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
+        contactIdentity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
     ) {
         override val type: String = "ReflectNameUpdate"
 
@@ -317,16 +286,13 @@ abstract class ReflectContactSyncUpdateTask(
         data class ReflectNameUpdateData(
             private val firstName: String,
             private val lastName: String,
-            private val identity: Identity,
+            private val identity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectNameUpdate(
                     newFirstName = firstName,
                     newLastName = lastName,
                     contactIdentity = identity,
-                    serviceManager.modelRepositories.contacts,
-                    serviceManager.multiDeviceManager,
-                    serviceManager.nonceFactory,
                 )
         }
     }
@@ -336,15 +302,9 @@ abstract class ReflectContactSyncUpdateTask(
      */
     class ReflectReadReceiptPolicyUpdate(
         private val readReceiptPolicy: ReadReceiptPolicy,
-        contactIdentity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
+        contactIdentity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
     ) {
         override val type: String = "ReflectReadReceiptPolicyUpdate"
 
@@ -370,15 +330,12 @@ abstract class ReflectContactSyncUpdateTask(
         @Serializable
         data class ReflectReadReceiptPolicyUpdateData(
             private val readReceiptPolicy: ReadReceiptPolicy,
-            private val identity: Identity,
+            private val identity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectReadReceiptPolicyUpdate(
-                    readReceiptPolicy,
-                    identity,
-                    serviceManager.modelRepositories.contacts,
-                    serviceManager.multiDeviceManager,
-                    serviceManager.nonceFactory,
+                    readReceiptPolicy = readReceiptPolicy,
+                    contactIdentity = identity,
                 )
         }
     }
@@ -388,15 +345,9 @@ abstract class ReflectContactSyncUpdateTask(
      */
     class ReflectTypingIndicatorPolicyUpdate(
         private val typingIndicatorPolicy: TypingIndicatorPolicy,
-        contactIdentity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
+        contactIdentity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
     ) {
         override val type: String = "ReflectTypingIndicatorPolicyUpdate"
 
@@ -424,15 +375,12 @@ abstract class ReflectContactSyncUpdateTask(
         @Serializable
         data class ReflectTypingIndicatorPolicyUpdateData(
             private val typingIndicatorPolicy: TypingIndicatorPolicy,
-            private val identity: Identity,
+            private val identity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectTypingIndicatorPolicyUpdate(
-                    typingIndicatorPolicy,
-                    identity,
-                    serviceManager.modelRepositories.contacts,
-                    serviceManager.multiDeviceManager,
-                    serviceManager.nonceFactory,
+                    typingIndicatorPolicy = typingIndicatorPolicy,
+                    contactIdentity = identity,
                 )
         }
     }
@@ -442,15 +390,9 @@ abstract class ReflectContactSyncUpdateTask(
      */
     class ReflectActivityStateUpdate(
         private val newIdentityState: IdentityState,
-        contactIdentity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
+        contactIdentity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
     ) {
         override val type = "ReflectActivityStateUpdate"
 
@@ -474,15 +416,12 @@ abstract class ReflectContactSyncUpdateTask(
         @Serializable
         data class ReflectActivityStateUpdateData(
             private val identityState: IdentityState,
-            private val identity: Identity,
+            private val identity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectActivityStateUpdate(
-                    identityState,
-                    identity,
-                    serviceManager.modelRepositories.contacts,
-                    serviceManager.multiDeviceManager,
-                    serviceManager.nonceFactory,
+                    newIdentityState = identityState,
+                    contactIdentity = identity,
                 )
         }
     }
@@ -492,15 +431,9 @@ abstract class ReflectContactSyncUpdateTask(
      */
     class ReflectFeatureMaskUpdate(
         private val newFeatureMask: Long,
-        contactIdentity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
+        contactIdentity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
     ) {
         override val type = "ReflectFeatureMaskUpdate"
 
@@ -520,15 +453,12 @@ abstract class ReflectContactSyncUpdateTask(
         @Serializable
         data class ReflectFeatureMaskUpdateData(
             private val featureMask: Long,
-            private val identity: Identity,
+            private val identity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectFeatureMaskUpdate(
-                    featureMask,
-                    identity,
-                    serviceManager.modelRepositories.contacts,
-                    serviceManager.multiDeviceManager,
-                    serviceManager.nonceFactory,
+                    newFeatureMask = featureMask,
+                    contactIdentity = identity,
                 )
         }
     }
@@ -538,15 +468,9 @@ abstract class ReflectContactSyncUpdateTask(
      */
     class ReflectVerificationLevelUpdate(
         private val newVerificationLevel: VerificationLevel,
-        contactIdentity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
+        contactIdentity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
     ) {
         override val type = "ReflectVerificationLevelUpdate"
 
@@ -570,15 +494,12 @@ abstract class ReflectContactSyncUpdateTask(
         @Serializable
         data class ReflectVerificationLevelUpdateData(
             private val verificationLevel: VerificationLevel,
-            private val identity: Identity,
+            private val identity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectVerificationLevelUpdate(
-                    verificationLevel,
-                    identity,
-                    serviceManager.modelRepositories.contacts,
-                    serviceManager.multiDeviceManager,
-                    serviceManager.nonceFactory,
+                    newVerificationLevel = verificationLevel,
+                    contactIdentity = identity,
                 )
         }
     }
@@ -588,15 +509,9 @@ abstract class ReflectContactSyncUpdateTask(
      */
     class ReflectWorkVerificationLevelUpdate(
         private val newWorkVerificationLevel: WorkVerificationLevel,
-        contactIdentity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
+        contactIdentity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
     ) {
         override val type = "ReflectWorkVerificationLevelUpdate"
 
@@ -619,15 +534,12 @@ abstract class ReflectContactSyncUpdateTask(
         @Serializable
         data class ReflectWorkVerificationLevelUpdateData(
             private val workVerificationLevel: WorkVerificationLevel,
-            private val identity: Identity,
+            private val identity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectWorkVerificationLevelUpdate(
-                    workVerificationLevel,
-                    identity,
-                    serviceManager.modelRepositories.contacts,
-                    serviceManager.multiDeviceManager,
-                    serviceManager.nonceFactory,
+                    newWorkVerificationLevel = workVerificationLevel,
+                    contactIdentity = identity,
                 )
         }
     }
@@ -637,15 +549,9 @@ abstract class ReflectContactSyncUpdateTask(
      */
     class ReflectIdentityTypeUpdate(
         private val newIdentityType: IdentityType,
-        contactIdentity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
+        contactIdentity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
     ) {
         override val type = "ReflectIdentityTypeUpdate"
 
@@ -668,15 +574,12 @@ abstract class ReflectContactSyncUpdateTask(
         @Serializable
         data class ReflectIdentityTypeUpdateData(
             private val identityType: IdentityType,
-            private val identity: Identity,
+            private val identity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectIdentityTypeUpdate(
-                    identityType,
-                    identity,
-                    serviceManager.modelRepositories.contacts,
-                    serviceManager.multiDeviceManager,
-                    serviceManager.nonceFactory,
+                    newIdentityType = identityType,
+                    contactIdentity = identity,
                 )
         }
     }
@@ -686,16 +589,8 @@ abstract class ReflectContactSyncUpdateTask(
      */
     class ReflectAcquaintanceLevelUpdate(
         private val newAcquaintanceLevel: AcquaintanceLevel,
-        contactIdentity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-    ) : ReflectContactSyncUpdateTask(
-        contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
-    ) {
+        contactIdentity: IdentityString,
+    ) : ReflectContactSyncUpdateTask(contactIdentity) {
         override val type = "ReflectAcquaintanceLevelUpdate"
 
         override fun isChangeValid(currentData: ContactModelData): Boolean =
@@ -717,15 +612,12 @@ abstract class ReflectContactSyncUpdateTask(
         @Serializable
         data class ReflectAcquaintanceLevelUpdateData(
             private val acquaintanceLevel: AcquaintanceLevel,
-            private val identity: Identity,
+            private val identity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectAcquaintanceLevelUpdate(
-                    acquaintanceLevel,
-                    identity,
-                    serviceManager.modelRepositories.contacts,
-                    serviceManager.multiDeviceManager,
-                    serviceManager.nonceFactory,
+                    newAcquaintanceLevel = acquaintanceLevel,
+                    contactIdentity = identity,
                 )
         }
     }
@@ -734,19 +626,15 @@ abstract class ReflectContactSyncUpdateTask(
      * Reflect a new user defined profile picture.
      */
     class ReflectUserDefinedProfilePictureUpdate(
-        identity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val fileService: FileService,
-        private val symmetricEncryptionService: SymmetricEncryptionService,
-        private val apiService: ApiService,
+        identity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity = identity,
-        contactModelRepository = contactModelRepository,
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ) {
+    ),
+        KoinComponent {
+        private val apiService: ApiService by inject()
+        private val fileService: FileService by inject()
+        private val symmetricEncryptionService: SymmetricEncryptionService by inject()
+
         override val type = "ReflectUserDefinedProfilePictureUpdate"
 
         /**
@@ -805,17 +693,11 @@ abstract class ReflectContactSyncUpdateTask(
 
         @Serializable
         data class ReflectUserDefinedProfilePictureUpdateData(
-            private val identity: Identity,
+            private val identity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectUserDefinedProfilePictureUpdate(
-                    identity,
-                    serviceManager.modelRepositories.contacts,
-                    serviceManager.multiDeviceManager,
-                    serviceManager.nonceFactory,
-                    serviceManager.fileService,
-                    serviceManager.symmetricEncryptionService,
-                    serviceManager.apiService,
+                    identity = identity,
                 )
         }
     }
@@ -825,15 +707,9 @@ abstract class ReflectContactSyncUpdateTask(
      */
     class ReflectNotificationTriggerPolicyOverrideUpdate(
         private val newNotificationTriggerPolicyOverride: NotificationTriggerPolicyOverride,
-        contactIdentity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
+        contactIdentity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
     ) {
         override val type = "ReflectNotificationTriggerPolicyOverrideUpdate"
 
@@ -871,17 +747,14 @@ abstract class ReflectContactSyncUpdateTask(
         @Serializable
         data class ReflectNotificationTriggerPolicyOverrideUpdateData(
             private val notificationTriggerPolicyOverride: Long?,
-            private val contactIdentity: Identity,
+            private val contactIdentity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectNotificationTriggerPolicyOverrideUpdate(
                     newNotificationTriggerPolicyOverride = NotificationTriggerPolicyOverride.fromDbValueContact(
                         notificationTriggerPolicyOverride,
                     ),
                     contactIdentity = contactIdentity,
-                    contactModelRepository = serviceManager.modelRepositories.contacts,
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
                 )
         }
     }
@@ -891,18 +764,14 @@ abstract class ReflectContactSyncUpdateTask(
      * the contact model.
      */
     class ReflectConversationCategoryUpdate(
-        contactIdentity: Identity,
+        contactIdentity: IdentityString,
         private val isPrivateChat: Boolean,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val conversationCategoryService: ConversationCategoryService,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
-    ) {
+    ),
+        KoinComponent {
+        private val conversationCategoryService: ConversationCategoryService by inject()
+
         override val type = "ReflectConversationCategoryUpdate"
 
         override fun isChangeValid(currentData: ContactModelData): Boolean {
@@ -926,17 +795,13 @@ abstract class ReflectContactSyncUpdateTask(
 
         @Serializable
         data class ReflectContactConversationCategoryUpdateData(
-            private val contactIdentity: Identity,
+            private val contactIdentity: IdentityString,
             private val isPrivateChat: Boolean,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectConversationCategoryUpdate(
                     isPrivateChat = isPrivateChat,
                     contactIdentity = contactIdentity,
-                    contactModelRepository = serviceManager.modelRepositories.contacts,
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    conversationCategoryService = serviceManager.conversationCategoryService,
                 )
         }
     }
@@ -948,15 +813,9 @@ abstract class ReflectContactSyncUpdateTask(
      */
     class ReflectConversationVisibilityArchiveUpdate(
         private val isArchived: Boolean,
-        contactIdentity: Identity,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
+        contactIdentity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
     ) {
         override val type = "ReflectConversationVisibilityArchiveUpdate"
 
@@ -980,15 +839,12 @@ abstract class ReflectContactSyncUpdateTask(
         @Serializable
         data class ReflectConversationVisibilityArchiveUpdateData(
             private val isArchived: Boolean,
-            private val contactIdentity: Identity,
+            private val contactIdentity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectConversationVisibilityArchiveUpdate(
                     isArchived = isArchived,
                     contactIdentity = contactIdentity,
-                    contactModelRepository = serviceManager.modelRepositories.contacts,
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
                 )
         }
     }
@@ -1000,21 +856,17 @@ abstract class ReflectContactSyncUpdateTask(
      */
     class ReflectConversationVisibilityPinnedUpdate(
         private val isPinned: Boolean,
-        contactIdentity: Identity,
-        private val conversationTagService: ConversationTagService,
-        contactModelRepository: ContactModelRepository,
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
+        contactIdentity: IdentityString,
     ) : ReflectContactSyncUpdateTask(
         contactIdentity,
-        contactModelRepository,
-        multiDeviceManager,
-        nonceFactory,
-    ) {
+    ),
+        KoinComponent {
+        private val conversationTagService: ConversationTagService by inject()
+
         override val type = "ReflectConversationVisibilityPinnedUpdate"
 
         override fun isChangeValid(currentData: ContactModelData) =
-            conversationTagService.isTaggedWith(ConversationUtil.getIdentityConversationUid(contactIdentity), ConversationTag.PINNED) == isPinned
+            conversationTagService.isTaggedWith(ConversationUtil.getContactConversationUid(contactIdentity), ConversationTag.PINNED) == isPinned
 
         override fun getContactSync(): Contact = contact {
             identity = contactIdentity
@@ -1034,16 +886,12 @@ abstract class ReflectContactSyncUpdateTask(
         @Serializable
         data class ReflectConversationVisibilityPinnedUpdateData(
             private val isPinned: Boolean,
-            private val contactIdentity: Identity,
+            private val contactIdentity: IdentityString,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+            override fun createTask(): Task<*, TaskCodec> =
                 ReflectConversationVisibilityPinnedUpdate(
                     isPinned = isPinned,
                     contactIdentity = contactIdentity,
-                    conversationTagService = serviceManager.conversationTagService,
-                    contactModelRepository = serviceManager.modelRepositories.contacts,
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
                 )
         }
     }

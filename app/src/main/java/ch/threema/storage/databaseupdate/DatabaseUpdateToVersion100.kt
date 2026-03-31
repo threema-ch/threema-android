@@ -33,9 +33,5 @@ internal class DatabaseUpdateToVersion100(
 
     override fun getDescription() = "create edit message history entries tables"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 100
-    }
+    override val version = 100
 }

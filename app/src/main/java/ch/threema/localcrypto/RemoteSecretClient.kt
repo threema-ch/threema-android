@@ -4,7 +4,6 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.libthreema.LibthreemaHttpClient
 import ch.threema.domain.libthreema.toLibthreemaClientInfo
 import ch.threema.domain.models.WorkClientInfo
-import ch.threema.libthreema.HttpsResult
 import ch.threema.libthreema.RemoteSecretCreateLoop
 import ch.threema.libthreema.RemoteSecretCreateTask
 import ch.threema.libthreema.RemoteSecretDeleteLoop
@@ -39,8 +38,7 @@ private val logger = getThreemaLogger("RemoteSecretClient")
 
 class RemoteSecretClient(
     clientInfo: WorkClientInfo,
-    private val httpClientWithOnPremCertPinning: LibthreemaHttpClient,
-    private val httpClientWithoutOnPremCertPinning: LibthreemaHttpClient,
+    private val httpClient: LibthreemaHttpClient,
 ) {
     private val workFlavor = when (clientInfo.workFlavor) {
         WorkClientInfo.WorkFlavor.ON_PREM -> WorkFlavor.ON_PREM
@@ -60,7 +58,7 @@ class RemoteSecretClient(
                         when (val createLoop = createTask.poll()) {
                             is RemoteSecretCreateLoop.Instruction -> {
                                 logger.info("Sending request to create remote secret")
-                                createTask.response(httpClientWithOnPremCertPinning.sendHttpsRequest(createLoop.v1))
+                                createTask.response(httpClient.sendHttpsRequest(createLoop.v1))
                             }
                             is RemoteSecretCreateLoop.Done -> {
                                 val result = createLoop.v1
@@ -108,7 +106,7 @@ class RemoteSecretClient(
                         when (val deleteLoop = deleteTask.poll()) {
                             is RemoteSecretDeleteLoop.Instruction -> {
                                 logger.info("Sending request to delete remote secret")
-                                deleteTask.response(httpClientWithOnPremCertPinning.sendHttpsRequest(deleteLoop.v1))
+                                deleteTask.response(httpClient.sendHttpsRequest(deleteLoop.v1))
                             }
                             is RemoteSecretDeleteLoop.Done -> break
                         }
@@ -134,23 +132,12 @@ class RemoteSecretClient(
             @Throws(RemoteSecretMonitorException::class, BlockedByAdminException::class)
             override suspend fun run() {
                 try {
-                    // TODO(ANDR-4184): The calls to fetch and monitor the Remote Secret need to enforce certificate pinning
-                    //  as specified by the OPPF. However, if these pins are incorrectly changed or the client fails to get an updated version
-                    //  of the pins in time, we can end up in a situation where the client can no longer fetch the Remote Secret, leaving
-                    //  the app in an unrecoverable state where the user can never access their data again.
-                    //  Thus, to avoid this state, in the first iteration we disabled certificate pinning for the initial fetch request.
-                    var usePinning = false
-
                     while (true) {
                         when (val instruction = monitorProtocol.poll()) {
                             is RemoteSecretMonitorInstruction.Request -> {
                                 logger.info("Sending request to monitor remote secret")
-                                val httpClient = if (usePinning) httpClientWithOnPremCertPinning else httpClientWithoutOnPremCertPinning
                                 val result = httpClient.sendHttpsRequest(instruction.v1)
                                 monitorProtocol.response(result)
-                                if (!usePinning && result is HttpsResult.Response && result.v1.status.toInt() in 200..299) {
-                                    usePinning = true
-                                }
                             }
                             is RemoteSecretMonitorInstruction.Schedule -> {
                                 instruction.remoteSecret?.let {
@@ -196,7 +183,7 @@ class RemoteSecretClient(
                 ),
                 flavor = workFlavor,
             ),
-            userIdentity = userIdentity,
+            userIdentity = userIdentity.value,
             clientKey = clientKey.value,
             clientInfo = libthreemaClientInfo,
         )

@@ -9,13 +9,11 @@ import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE_EXCEPT_ME
 import ch.threema.app.tasks.ReflectContactSyncUpdateImmediateTask
 import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.app.utils.ContactUtil
-import ch.threema.app.utils.runtimeAssert
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.toDate
 import ch.threema.data.datatypes.AndroidContactLookupInfo
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
-import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.repositories.RepositoryToken
 import ch.threema.data.storage.DatabaseBackend
 import ch.threema.data.storage.DbContact
@@ -28,7 +26,7 @@ import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import java.time.Instant
 import java.util.Date
@@ -40,10 +38,9 @@ private val logger = getThreemaLogger("data.ContactModel")
  * A contact.
  */
 class ContactModel(
-    val identity: Identity,
+    val identity: IdentityString,
     data: ContactModelData,
     private val databaseBackend: DatabaseBackend,
-    private val contactModelRepository: ContactModelRepository,
     coreServiceManager: CoreServiceManager,
 ) : BaseModel<ContactModelData, ReflectContactSyncUpdateTask>(
     MutableStateFlow(data),
@@ -51,10 +48,13 @@ class ContactModel(
     coreServiceManager.multiDeviceManager,
     coreServiceManager.taskManager,
 ) {
-    private val nonceFactory by lazy { coreServiceManager.nonceFactory }
-
     init {
-        runtimeAssert(identity == data.identity, "Contact model identity mismatch")
+        require(identity == data.identity) {
+            "Contact model identity mismatch"
+        }
+        require(identity != coreServiceManager.identityStore.getIdentityString()) {
+            "Cannot create contact model with the identity of the user"
+        }
     }
 
     /**
@@ -92,9 +92,6 @@ class ContactModel(
                 newFirstName = firstName,
                 newLastName = lastName,
                 contactIdentity = identity,
-                contactModelRepository,
-                multiDeviceManager,
-                nonceFactory,
             ),
         )
     }
@@ -156,9 +153,6 @@ class ContactModel(
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate(
                 acquaintanceLevel,
                 identity,
-                contactModelRepository,
-                multiDeviceManager,
-                nonceFactory,
             ),
         )
     }
@@ -178,9 +172,6 @@ class ContactModel(
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate(
                 verificationLevel,
                 identity,
-                contactModelRepository,
-                multiDeviceManager,
-                nonceFactory,
             ),
         )
     }
@@ -200,9 +191,6 @@ class ContactModel(
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate(
                 workVerificationLevel,
                 identity,
-                contactModelRepository,
-                multiDeviceManager,
-                nonceFactory,
             ),
         )
     }
@@ -222,9 +210,6 @@ class ContactModel(
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate(
                 identityType,
                 identity,
-                contactModelRepository,
-                multiDeviceManager,
-                nonceFactory,
             ),
         )
     }
@@ -251,9 +236,6 @@ class ContactModel(
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectFeatureMaskUpdate(
                 featureMask,
                 identity,
-                contactModelRepository,
-                multiDeviceManager,
-                nonceFactory,
             ),
         )
     }
@@ -316,9 +298,6 @@ class ContactModel(
             ReflectContactSyncUpdateImmediateTask.ReflectContactNickname(
                 contactIdentity = identity,
                 newNickname = nickname,
-                contactModelRepository,
-                multiDeviceManager,
-                nonceFactory,
             ).reflect(handle)
         }
 
@@ -421,9 +400,6 @@ class ContactModel(
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectActivityStateUpdate(
                 activityState,
                 identity,
-                contactModelRepository,
-                multiDeviceManager,
-                nonceFactory,
             ),
         )
     }
@@ -492,9 +468,6 @@ class ContactModel(
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate(
                 readReceiptPolicy,
                 identity,
-                contactModelRepository,
-                multiDeviceManager,
-                nonceFactory,
             ),
         )
     }
@@ -529,9 +502,6 @@ class ContactModel(
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate(
                 typingIndicatorPolicy,
                 identity,
-                contactModelRepository,
-                multiDeviceManager,
-                nonceFactory,
             ),
         )
     }
@@ -580,9 +550,6 @@ class ContactModel(
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate(
                 VerificationLevel.UNVERIFIED,
                 identity,
-                contactModelRepository,
-                multiDeviceManager,
-                nonceFactory,
             ),
         )
     }
@@ -727,9 +694,6 @@ class ContactModel(
                     notificationTriggerPolicyOverride,
                 ),
                 contactIdentity = identity,
-                contactModelRepository = contactModelRepository,
-                multiDeviceManager = multiDeviceManager,
-                nonceFactory = nonceFactory,
             ),
         )
     }
@@ -750,9 +714,6 @@ class ContactModel(
             reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectConversationVisibilityArchiveUpdate(
                 isArchived = isArchived,
                 contactIdentity = identity,
-                contactModelRepository = contactModelRepository,
-                multiDeviceManager = multiDeviceManager,
-                nonceFactory = nonceFactory,
             ),
         )
     }
@@ -791,10 +752,9 @@ class ContactModel(
             }
             val dbContact = databaseBackend.getContactByIdentity(identity) ?: return
             val newData = ContactModelDataFactory.toDataType(dbContact)
-            runtimeAssert(
-                newData.identity == identity,
-                "Cannot update contact model with data for different identity: ${newData.identity} != $identity",
-            )
+            check(newData.identity == identity) {
+                "Cannot update contact model with data for different identity: ${newData.identity} != $identity"
+            }
             mutableData.value = newData
         }
     }
@@ -813,7 +773,7 @@ class ContactModel(
     /**
      * Synchronously notify contact change listeners.
      */
-    private fun notifyDeprecatedOnRemovedListeners(identity: Identity) {
+    private fun notifyDeprecatedOnRemovedListeners(identity: IdentityString) {
         ListenerManager.contactListeners.handle { it.onRemoved(identity) }
     }
 

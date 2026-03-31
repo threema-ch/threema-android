@@ -74,7 +74,7 @@ public class SynchronizeContactsUtil {
             return null;
         }
 
-        if (serviceManager.getPreferenceService().isSyncContacts()) {
+        if (serviceManager.getSynchronizedSettingsService().isSyncContacts()) {
             SynchronizeContactsService synchronizeContactsService = getSynchronizeContactsService();
 
             if (synchronizeContactsService != null) {

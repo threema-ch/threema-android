@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">QR-Code ungültig</string>
     <string name="webclient_init_session">Neue Sitzung einleiten</string>
     <string name="webclient_sessions_really_delete">Möchten Sie diese Sitzung wirklich löschen?</string>
     <string name="webclient_last_usage">Zuletzt genutzt: %s</string>

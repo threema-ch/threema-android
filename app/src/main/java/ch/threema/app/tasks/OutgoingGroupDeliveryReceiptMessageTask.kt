@@ -1,13 +1,12 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.util.Date
 import kotlinx.serialization.Serializable
 
@@ -16,9 +15,8 @@ private val logger = getThreemaLogger("OutgoingGroupDeliveryReceiptMessageTask")
 class OutgoingGroupDeliveryReceiptMessageTask(
     private val messageModelId: Int,
     private val receiptType: Int,
-    private val recipientIdentities: Set<Identity>,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+    private val recipientIdentities: Set<IdentityString>,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingGroupDeliveryReceiptMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -36,18 +34,18 @@ class OutgoingGroupDeliveryReceiptMessageTask(
         val messageId = MessageId.random()
 
         sendGroupMessage(
-            group,
-            recipientIdentities,
-            null,
-            Date(),
-            messageId,
-            {
+            group = group,
+            recipients = recipientIdentities,
+            messageModel = null,
+            createdAt = Date(),
+            messageId = messageId,
+            createAbstractMessage = {
                 GroupDeliveryReceiptMessage().also {
                     it.receiptType = receiptType
                     it.receiptMessageIds = arrayOf(messageModel.messageId)
                 }
             },
-            handle,
+            handle = handle,
         )
     }
 
@@ -58,14 +56,13 @@ class OutgoingGroupDeliveryReceiptMessageTask(
     class OutgoingGroupDeliveryReceiptMessageData(
         private val messageModelId: Int,
         private val receiptType: Int,
-        private val recipientIdentities: Set<Identity>,
+        private val recipientIdentities: Set<IdentityString>,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingGroupDeliveryReceiptMessageTask(
                 messageModelId = messageModelId,
                 receiptType = receiptType,
                 recipientIdentities = recipientIdentities,
-                serviceManager = serviceManager,
             )
     }
 }

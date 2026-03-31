@@ -20,7 +20,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.threema.app.R
-import ch.threema.app.compose.theme.color.CustomColors
+import ch.threema.app.compose.common.colorReferenceResource
 import ch.threema.app.messagedetails.MessageDetailsUiModel
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
 
@@ -31,9 +31,9 @@ fun MessageDetailsListBox(
     isOutbox: Boolean,
 ) {
     val borderColor: Color = if (isOutbox) {
-        CustomColors.chatBubbleSendContainer
+        colorReferenceResource(R.attr.colorMessageBubbleSendContainer)
     } else {
-        CustomColors.chatBubbleReceiveContainer
+        colorReferenceResource(R.attr.colorMessageBubbleReceiveContainer)
     }
     MessageDetailsList(
         modifier = modifier

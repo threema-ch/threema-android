@@ -129,9 +129,6 @@ public class LicenseChecker implements ServiceConnection {
      * own devising.
      * <p>
      * source string: "com.android.vending.licensing.ILicensingService"
-     * <p>
-     *
-     * @param callback
      */
     public synchronized void checkAccess(LicenseCheckerCallback callback) {
         // If we have a valid recent LICENSED response, we can skip asking
@@ -360,7 +357,6 @@ public class LicenseChecker implements ServiceConnection {
     /**
      * Get version code for the application package name.
      *
-     * @param context
      * @param packageName application package name
      * @return the version code or empty string if package not found
      */

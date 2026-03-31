@@ -7,16 +7,17 @@ import androidx.annotation.StringRes
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import androidx.work.BackoffPolicy
-import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import ch.threema.android.buildOneTimeWorkRequest
+import ch.threema.android.setBackoffCriteria
+import ch.threema.android.setConstraints
 import ch.threema.app.R
 import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.multidevice.MultiDeviceManager
@@ -25,6 +26,7 @@ import ch.threema.app.preference.service.O2oCallPolicySetting
 import ch.threema.app.preference.service.O2oCallVideoPolicySetting
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.preference.service.ScreenshotPolicySetting
+import ch.threema.app.preference.service.SynchronizedSettingsService
 import ch.threema.app.preference.service.UnknownContactPolicySetting
 import ch.threema.app.restrictions.ApplyAppRestrictionsWorker.RestrictionToPreferenceValueMapper.Invert
 import ch.threema.app.restrictions.ApplyAppRestrictionsWorker.RestrictionToPreferenceValueMapper.Keep
@@ -33,7 +35,7 @@ import ch.threema.app.services.LifetimeService
 import ch.threema.app.services.UserService
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.workers.AutoDeleteWorker.Companion.scheduleAutoDelete
+import ch.threema.app.workers.AutoDeleteWorker
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.minus
 import ch.threema.domain.taskmanager.TransactionScope
@@ -43,9 +45,9 @@ import ch.threema.localcrypto.models.RemoteSecretCheckType
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.ScreenshotPolicy
 import java.time.Instant
-import java.util.concurrent.TimeUnit
 import kotlin.collections.any
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -71,7 +73,10 @@ class ApplyAppRestrictionsWorker(
     private val multiDeviceManager: MultiDeviceManager by inject()
     private val taskCreator: TaskCreator by inject()
     private val lifetimeService: LifetimeService by inject()
-    private val preferenceService: PreferenceService by inject()
+    private val synchronizedSettingsService: SynchronizedSettingsService by inject()
+    private val appRestrictions: AppRestrictions by inject()
+    private val appRestrictionProvider: AppRestrictionProvider by inject()
+    private val autoDeleteWorkerScheduler: AutoDeleteWorker.Scheduler by inject()
 
     override suspend fun doWork(): Result {
         awaitAppFullyReadyWithTimeout(timeout = 20.seconds)
@@ -94,7 +99,7 @@ class ApplyAppRestrictionsWorker(
                 multiDeviceManager = multiDeviceManager,
                 taskCreator = taskCreator,
                 lifetimeService = lifetimeService,
-                preferenceService = preferenceService,
+                synchronizedSettingsService = synchronizedSettingsService,
                 triggerSource = TriggerSource.LOCAL,
             )
         } catch (e: TransactionScope.TransactionException) {
@@ -132,7 +137,7 @@ class ApplyAppRestrictionsWorker(
         multiDeviceManager: MultiDeviceManager,
         taskCreator: TaskCreator,
         lifetimeService: LifetimeService,
-        preferenceService: PreferenceService,
+        synchronizedSettingsService: SynchronizedSettingsService,
         @Suppress("SameParameterValue") triggerSource: TriggerSource,
     ) {
         logger.info("Start mapping restrictions to settings")
@@ -181,7 +186,7 @@ class ApplyAppRestrictionsWorker(
         persistSettings()
 
         // We need to refresh them as we may have modified the preferences directly.
-        preferenceService.reloadSynchronizedBooleanSettings()
+        synchronizedSettingsService.reloadSynchronizedBooleanSettings()
 
         applyProfilePictureChangeRestriction(
             context = context,
@@ -191,19 +196,18 @@ class ApplyAppRestrictionsWorker(
         )
 
         applyNicknameRestriction(
-            context = context,
             userService = userService,
             triggerSource = triggerSource,
         )
 
         // Update the periodic auto delete worker
-        scheduleAutoDelete(context)
+        autoDeleteWorkerScheduler.scheduleAutoDelete()
 
         logger.info("Mapping restrictions to preferences finished")
     }
 
     private fun disableMultiDeviceIfRestricted(multiDeviceManager: MultiDeviceManager, taskCreator: TaskCreator) {
-        if (ConfigUtils.isMultiDeviceEnabled(context)) {
+        if (ConfigUtils.isMultiDeviceEnabled()) {
             // Nothing to do if multi device is not disabled
             return
         }
@@ -356,7 +360,7 @@ class ApplyAppRestrictionsWorker(
         restrictionToPreferenceValueMapper: RestrictionToPreferenceValueMapper,
         settingsSyncCreator: ((Settings.Builder, Boolean) -> Unit)?,
     ): RestrictionMapCheckResult {
-        val restrictionValue = AppRestrictionUtil.getBooleanRestriction(context.getString(restrictionKeyRes))
+        val restrictionValue = appRestrictionProvider.getBooleanRestriction(context.getString(restrictionKeyRes))
             ?: return RestrictionMapCheckResult(
                 sharedPreferencesApplier = null,
                 settingsSyncCreators = null,
@@ -392,10 +396,9 @@ class ApplyAppRestrictionsWorker(
         multiDeviceManager: MultiDeviceManager,
         taskCreator: TaskCreator,
     ) {
-        val profilePictureShareRestriction =
-            AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__disable_send_profile_picture))
-                ?: // We do not need to do anything if it isn't set
-                return
+        val profilePictureShareRestriction = appRestrictions.isDisabledProfilePicReleaseSettingsOrNull()
+            ?: // We do not need to do anything if it isn't set
+            return
 
         val preferenceKeyName = context.getString(R.string.preferences__profile_pic_release)
         val preferenceValue = sharedPreferences.getInt(preferenceKeyName, -1)
@@ -433,11 +436,10 @@ class ApplyAppRestrictionsWorker(
     }
 
     private fun applyNicknameRestriction(
-        context: Context,
         userService: UserService,
         triggerSource: TriggerSource,
     ) {
-        AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__nickname))?.let { nickname ->
+        appRestrictions.getNickname()?.let { nickname ->
             if (userService.publicNickname != nickname) {
                 userService.setPublicNickname(nickname, triggerSource)
             }
@@ -506,7 +508,7 @@ class ApplyAppRestrictionsWorker(
             workManager.enqueueUniqueWork(
                 uniqueWorkName = UNIQUE_WORK_NAME,
                 existingWorkPolicy = ExistingWorkPolicy.REPLACE,
-                request = buildOneTimeWorkRequest(),
+                request = buildWorkRequest(),
             )
         }
 
@@ -518,23 +520,19 @@ class ApplyAppRestrictionsWorker(
             }
         }
 
-        private fun buildOneTimeWorkRequest(): OneTimeWorkRequest = OneTimeWorkRequestBuilder<ApplyAppRestrictionsWorker>().apply {
+        private fun buildWorkRequest(): OneTimeWorkRequest = buildOneTimeWorkRequest<ApplyAppRestrictionsWorker> {
             setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
 
-            setConstraints(
-                Constraints.Builder()
-                    .setRequiredNetworkType(NetworkType.CONNECTED)
-                    .build(),
-            )
+            setConstraints {
+                setRequiredNetworkType(NetworkType.CONNECTED)
+            }
 
             // If it fails, retry again in a few minutes. The most likely case that it fails is because of a locked master key or unstable network
             // connection. Note that this worker is also enqueued once the master key is being unlocked.
             setBackoffCriteria(
                 backoffPolicy = BackoffPolicy.LINEAR,
-                backoffDelay = 5,
-                timeUnit = TimeUnit.MINUTES,
+                backoffDelay = 5.minutes,
             )
         }
-            .build()
     }
 }

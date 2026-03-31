@@ -4,14 +4,18 @@ import android.content.ContentValues;
 
 import android.database.Cursor;
 
+import org.jetbrains.annotations.NotNull;
+
+import androidx.annotation.NonNull;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.models.ballot.IdentityBallotModel;
 
 public class IdentityBallotModelFactory extends ModelFactory {
 
-    public IdentityBallotModelFactory(DatabaseService databaseService) {
-        super(databaseService, IdentityBallotModel.TABLE);
+    public IdentityBallotModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, IdentityBallotModel.TABLE);
     }
 
     public IdentityBallotModel getByIdentityAndBallotId(String identity, int ballotId) {
@@ -104,11 +108,14 @@ public class IdentityBallotModelFactory extends ModelFactory {
         return null;
     }
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `identity_ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `identity` VARCHAR NOT NULL , `ballotId` INTEGER NOT NULL )",
-            "CREATE UNIQUE INDEX `identityBallotId` ON `identity_ballot` ( `identity`, `ballotId` )"
-        };
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE `identity_ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `identity` VARCHAR NOT NULL , `ballotId` INTEGER NOT NULL )",
+                "CREATE UNIQUE INDEX `identityBallotId` ON `identity_ballot` ( `identity`, `ballotId` )"
+            };
+        }
     }
 }

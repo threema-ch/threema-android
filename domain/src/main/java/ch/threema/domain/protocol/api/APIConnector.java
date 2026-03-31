@@ -269,7 +269,7 @@ public class APIConnector {
 
         // Phase 1: send identity
         JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         request.put("appVariant", isWork ? "work" : "consumer");
 
         logger.debug("Fetch identity private phase 1: sending to server: {}", request);
@@ -324,7 +324,7 @@ public class APIConnector {
 
         // Phase 1: send identity and e-mail
         JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         request.put("email", email);
         request.put("lang", language);
 
@@ -367,7 +367,7 @@ public class APIConnector {
         String url = getServerUrl() + "identity/link_email";
 
         JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         request.put("email", email);
 
         logger.debug("Link e-mail check: sending to server: {}", request);
@@ -424,7 +424,7 @@ public class APIConnector {
 
         // Phase 1: send identity and mobile no
         JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         request.put("mobileNo", mobileNo);
         request.put("lang", language);
         request.put("httpsUrl", true);
@@ -467,7 +467,7 @@ public class APIConnector {
      *
      * @param verificationId the verification ID returned by
      *                       {@link #linkMobileNo(String, String, IdentityStore)}
-     * @param code           the SMS code (usually 6 digits)
+     * @param code           the SMS code
      * @throws LinkMobileNoException if the server reports an error, e.g. wrong code or too many
      *                               attempts (should be displayed to the user verbatim)
      * @throws Exception             if a network error occurs
@@ -692,7 +692,7 @@ public class APIConnector {
         @Nullable TokenStoreInterface matchTokenStore,
         boolean forceRefresh
     ) throws Exception {
-        if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().isEmpty()) {
+        if (identityStore == null || identityStore.getIdentityString() == null || identityStore.getIdentityString().isEmpty()) {
             return null;
         }
 
@@ -709,7 +709,7 @@ public class APIConnector {
 
         // Phase 1: Send identity
         final JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         logger.debug("Fetch match token phase 1: sending to server: {}", request);
         final JSONObject p1Result = new JSONObject(this.postJson(url, request));
         logger.debug("Fetch match token phase 1: response from server: {}", p1Result);
@@ -773,7 +773,7 @@ public class APIConnector {
 
         // Phase 1: send identity
         final JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         final JSONObject p1Result = new JSONObject(postJson(url, request));
         makeTokenResponse(p1Result, request, identityStore);
 
@@ -823,7 +823,7 @@ public class APIConnector {
 
         // Phase 1: send identity
         JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         request.put("featureMask", featureMask);
 
         logger.debug("Set feature mask phase 1: sending to server: {}", request);
@@ -883,7 +883,7 @@ public class APIConnector {
         String url = getServerUrl() + "identity/check_revocation_key";
 
         JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         logger.debug("checkRevocationKey phase 1: sending to server: {}", request);
         JSONObject p1Result = new JSONObject(this.postJson(url, request));
         logger.debug("checkRevocationKey phase 1: response from server: {}", p1Result);
@@ -908,8 +908,10 @@ public class APIConnector {
     /**
      * Set the revocation key for the stored identity
      */
-    public SetRevocationKeyResult setRevocationKey(IdentityStore identityStore,
-                                                   String revocationKey) throws Exception {
+    public SetRevocationKeyResult setRevocationKey(
+        @NonNull IdentityStore identityStore,
+        @NonNull String revocationKey
+    ) throws Exception {
 
         // Calculate key
         MessageDigest md = MessageDigest.getInstance("SHA-256");
@@ -919,7 +921,7 @@ public class APIConnector {
         String url = getServerUrl() + "identity/set_revocation_key";
 
         JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         request.put("revocationKey", base64KeyPart);
 
         // Phase 1: Send identity and revocation key
@@ -1000,7 +1002,7 @@ public class APIConnector {
      * @throws Exception If servers could not be obtained
      */
     public TurnServerInfo obtainTurnServers(IdentityStore identityStore, String type) throws Exception {
-        if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().isEmpty()) {
+        if (identityStore == null || identityStore.getIdentityString() == null || identityStore.getIdentityString().isEmpty()) {
             return null;
         }
 
@@ -1008,7 +1010,7 @@ public class APIConnector {
 
         // Phase 1: send identity and type
         JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         request.put("type", type);
 
         logger.debug("Obtain TURN servers phase 1: sending to server: {}", request);
@@ -1048,7 +1050,7 @@ public class APIConnector {
      */
     public void reportJunk(IdentityStore identityStore, @NonNull String senderIdentity,
                            @Nullable String senderNickname) throws Exception {
-        if (identityStore == null || identityStore.getIdentity() == null || identityStore.getIdentity().isEmpty()) {
+        if (identityStore == null || identityStore.getIdentityString() == null || identityStore.getIdentityString().isEmpty()) {
             return;
         }
 
@@ -1056,7 +1058,7 @@ public class APIConnector {
 
         // Phase 1: send identity and type
         JSONObject request = new JSONObject();
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         request.put("senderIdentity", senderIdentity);
         if (senderNickname != null) {
             request.put("senderNickname", senderNickname);
@@ -1344,7 +1346,7 @@ public class APIConnector {
         JSONObject request = new JSONObject();
         request.put("username", username);
         request.put("password", password);
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         request.put("query", filter.getQuery());
 
         // Filter category
@@ -1501,7 +1503,7 @@ public class APIConnector {
         JSONObject request = new JSONObject();
         request.put("licenseUsername", username);
         request.put("licensePassword", password);
-        request.put("identity", identityStore.getIdentity());
+        request.put("identity", identityStore.getIdentityString());
         request.put("publicNickname", identityStore.getPublicNickname());
         request.put("version", getUpdateWorkInfoVersion(mdmSource));
         if (firstName != null) {

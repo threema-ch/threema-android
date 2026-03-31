@@ -92,4 +92,19 @@ class TimeExtensionsTest {
             actual = results,
         )
     }
+
+    @Test
+    fun `normalize negative timestamps`() {
+        assertEquals(0, (-1L).toNonNegativeTimestamp())
+        assertEquals(0, (-79200000L).toNonNegativeTimestamp())
+        assertEquals(0, Long.MIN_VALUE.toNonNegativeTimestamp())
+    }
+
+    @Test
+    fun `normalize valid timestamps`() {
+        assertEquals(0, 0L.toNonNegativeTimestamp())
+        assertEquals(1, 1L.toNonNegativeTimestamp())
+        assertEquals(1355270400000L, 1355270400000L.toNonNegativeTimestamp())
+        assertEquals(Long.MAX_VALUE, Long.MAX_VALUE.toNonNegativeTimestamp())
+    }
 }

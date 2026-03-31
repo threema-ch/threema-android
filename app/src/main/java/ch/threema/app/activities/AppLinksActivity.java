@@ -3,27 +3,31 @@ package ch.threema.app.activities;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.widget.Toast;
 
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
+import ch.threema.android.ToastDuration;
 import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
+import ch.threema.app.applock.CheckAppLockContract;
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
 import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
 import ch.threema.app.asynctasks.ContactAvailable;
 import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.contactdetails.ContactDetailActivity;
 import ch.threema.app.di.DependencyContainer;
-import ch.threema.app.utils.HiddenChatUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
+
+import static ch.threema.android.ToastKt.showToast;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.models.ContactModel;
 import kotlin.Lazy;
+import kotlin.Unit;
 
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -37,6 +41,16 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
 
     @NonNull
     private final Lazy<BackgroundExecutor> backgroundExecutor = lazy(BackgroundExecutor::new);
+
+    private final ActivityResultLauncher<Unit> checkLockToHandleIntentLauncher = registerForActivityResult(new CheckAppLockContract(), unlocked -> {
+        if (unlocked) {
+            dependencies.getLockAppService().unlock(null);
+            handleIntent();
+        } else {
+            showToast(this, R.string.pin_locked_cannot_send, ToastDuration.LONG);
+            finish();
+        }
+    });
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,7 +77,7 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
 
     private void checkLock() {
         if (dependencies.getLockAppService().isLocked()) {
-            HiddenChatUtil.launchLockCheckDialog(this, dependencies.getPreferenceService());
+            checkLockToHandleIntentLauncher.launch(Unit.INSTANCE);
         } else {
             handleIntent();
         }
@@ -89,10 +103,10 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
             } else if (threemaId.length() == ProtocolDefines.IDENTITY_LEN) {
                 addNewContactAndOpenChat(threemaId, appLinkData);
             } else {
-                Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
+                showToast(this, R.string.invalid_input, ToastDuration.LONG);
             }
         } else {
-            Toast.makeText(this, R.string.invalid_input, Toast.LENGTH_LONG).show();
+            showToast(this, R.string.invalid_input, ToastDuration.LONG);
         }
     }
 
@@ -100,21 +114,6 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
     public void finish() {
         super.finish();
         overridePendingTransition(0, 0);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ThreemaActivity.ACTIVITY_ID_CHECK_LOCK) {
-            if (resultCode == RESULT_OK) {
-                dependencies.getLockAppService().unlock(null);
-                handleIntent();
-            } else {
-                Toast.makeText(this, R.string.pin_locked_cannot_send, Toast.LENGTH_LONG).show();
-                finish();
-            }
-        } else {
-            super.onActivityResult(requestCode, resultCode, data);
-        }
     }
 
     private void addNewContactAndOpenChat(@NonNull String identity, @NonNull Uri appLinkData) {
@@ -126,7 +125,7 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
                 dependencies.getApiConnector(),
                 dependencies.getContactModelRepository(),
                 AddContactRestrictionPolicy.CHECK,
-                AppLinksActivity.this,
+                dependencies.getAppRestrictions(),
                 null
             ) {
                 @Override

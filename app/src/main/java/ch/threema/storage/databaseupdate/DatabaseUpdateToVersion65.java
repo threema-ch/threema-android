@@ -3,8 +3,6 @@ package ch.threema.storage.databaseupdate;
 import net.zetetic.database.sqlcipher.SQLiteDatabase;
 
 public class DatabaseUpdateToVersion65 implements DatabaseUpdate {
-    public static final int VERSION = 65;
-
     private final SQLiteDatabase sqLiteDatabase;
 
     public DatabaseUpdateToVersion65(SQLiteDatabase sqLiteDatabase) {
@@ -58,6 +56,6 @@ public class DatabaseUpdateToVersion65 implements DatabaseUpdate {
 
     @Override
     public int getVersion() {
-        return VERSION;
+        return 65;
     }
 }

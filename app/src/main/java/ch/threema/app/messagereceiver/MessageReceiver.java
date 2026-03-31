@@ -13,6 +13,7 @@ import java.util.List;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.services.MessageService;
 import ch.threema.base.ThreemaException;
@@ -95,7 +96,6 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
         @Nullable byte[] fileBlobId,
         @Nullable SymmetricEncryptionResult encryptionResult,
         @NonNull M messageModel,
-        @Nullable MessageId messageId,
         @Nullable Collection<String> recipientIdentities
     ) throws ThreemaException;
 
@@ -131,6 +131,7 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
     /**
      * select and filter (if filter is set) all message models
      */
+    @NonNull
     List<M> loadMessages(MessageService.MessageFilter filter);
 
     /**
@@ -159,14 +160,14 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
     /**
      * displaying name in gui
      */
-    String getDisplayName();
+    String getDisplayName(@NonNull ContactNameFormat contactNameFormat);
 
     /**
      * short displaying name in gui
      */
-    String getShortName();
+    String getShortName(@NonNull ContactNameFormat contactNameFormat);
 
-    void prepareIntent(Intent intent);
+    void prepareIntent(@NonNull Intent intent);
 
     /**
      * @return the bitmap of the avatar in the notification
@@ -199,9 +200,9 @@ public interface MessageReceiver<M extends AbstractMessageModel> {
      * check if media should really be sent to this receiver
      * notable exceptions:
      * - distribution lists
-     * - groups without members ("notes")
+     * - groups without members ("notes"), unless MD is active
      */
-    boolean sendMediaData();
+    boolean shouldSendMediaData();
 
     /**
      * check if we should offer the user a possibility to retry sending in the UI if the message was queued but there was an IO error in the sender thread

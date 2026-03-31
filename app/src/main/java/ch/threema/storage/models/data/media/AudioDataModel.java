@@ -9,6 +9,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import androidx.annotation.NonNull;
 import ch.threema.base.utils.Utils;
 
 @Deprecated
@@ -97,6 +99,7 @@ public class AudioDataModel implements MediaMessageDataInterface {
 
     }
 
+    @NonNull
     public static AudioDataModel create(String s) {
         AudioDataModel m = new AudioDataModel();
         m.fromString(s);
@@ -106,7 +109,8 @@ public class AudioDataModel implements MediaMessageDataInterface {
     /**
      * Do not use this in new code. It only exists to handle places where a [AudioDataModel] needs to be returned and `null` is not allowed.
      */
-    @Deprecated()
+    @NonNull
+    @Deprecated
     public static AudioDataModel createEmpty() {
         return new AudioDataModel();
     }

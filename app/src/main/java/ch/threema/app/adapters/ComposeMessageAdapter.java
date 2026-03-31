@@ -1,8 +1,5 @@
 package ch.threema.app.adapters;
 
-import static ch.threema.app.utils.MessageUtilKt.findIndexByMessageId;
-import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_DEFAULT;
-
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.SparseIntArray;
@@ -15,15 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.ListView;
 
-import androidx.annotation.IntDef;
-import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.annotation.UiThread;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.fragment.app.Fragment;
-import androidx.media3.session.MediaController;
-
 import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -34,10 +22,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.media3.session.MediaController;
 import ch.threema.app.R;
+import ch.threema.app.adapters.decorators.AnimatedImageDrawableDecorator;
 import ch.threema.app.adapters.decorators.AudioChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.BallotChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
+import ch.threema.app.adapters.decorators.ChatAdapterDecoratorListener;
 import ch.threema.app.adapters.decorators.DateSeparatorChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.DeletedChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.FileChatAdapterDecorator;
@@ -47,33 +44,31 @@ import ch.threema.app.adapters.decorators.GroupCallStatusDataChatAdapterDecorato
 import ch.threema.app.adapters.decorators.GroupStatusAdapterDecorator;
 import ch.threema.app.adapters.decorators.ImageChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.LocationChatAdapterDecorator;
+import ch.threema.app.adapters.decorators.MessagePlayerFactory;
 import ch.threema.app.adapters.decorators.StatusChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.TextChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.VideoChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.VoipStatusDataChatAdapterDecorator;
-import ch.threema.app.adapters.decorators.AnimatedImageDrawableDecorator;
 import ch.threema.app.cache.ThumbnailCache;
-import ch.threema.app.collections.Functional;
 import ch.threema.app.emojireactions.EmojiReactionGroup;
 import ch.threema.app.emojis.EmojiMarkupUtil;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DownloadService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.license.LicenseService;
-import ch.threema.app.services.messageplayer.MessagePlayerService;
 import ch.threema.app.ui.SingleToast;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.QuoteUtil;
 import ch.threema.app.utils.TestUtil;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.EmojiReactionData;
 import ch.threema.data.repositories.EmojiReactionsRepository;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
@@ -83,6 +78,10 @@ import ch.threema.storage.models.DateSeparatorMessageModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
 import ch.threema.storage.models.MessageType;
 
+import static ch.threema.app.utils.MessageUtilKt.findIndexByMessageId;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static ch.threema.domain.protocol.csp.messages.file.FileData.RENDERING_DEFAULT;
+
 public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> implements EmojiReactionGroup.OnEmojiReactionGroupClickListener {
 
     private static final Logger logger = getThreemaLogger("ComposeMessageAdapter");
@@ -90,6 +89,22 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
 
     private final List<AbstractMessageModel> values;
     private final ChatAdapterDecorator.Helper decoratorHelper;
+    @NonNull
+    private final VoipStatusDataChatAdapterDecorator.VoipStatusDataChatListener voipStatusDataChatListener;
+    @NonNull
+    private final BallotChatAdapterDecorator.BallotChatListener ballotChatListener;
+    @NonNull
+    private final ChatAdapterDecoratorListener chatAdapterDecoratorListener;
+    @NonNull
+    private final LinkifyUtil.LinkifyListener linkifyListener;
+    @NonNull
+    private final MessagePlayerFactory messagePlayerFactory;
+    @NonNull
+    private final AudioChatAdapterDecorator.UserInteractionListener userInteractionListener;
+    @NonNull
+    private final ImageChatAdapterDecorator.ImageListener imageListener;
+    @NonNull
+    private final FileChatAdapterDecorator.DownloadAlertDialogListener downloadAlertDialogListener;
     private final MessageService messageService;
     private final UserService userService;
     private final FileService fileService;
@@ -108,7 +123,6 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
     // lock for list update
     final Object listUpdateLock = new Object();
     private int firstUnreadPos = -1, unreadMessagesCount;
-    private final Context context;
     private final ShapeAppearanceModel shapeAppearanceModelReceiveTop, shapeAppearanceModelReceiveMiddle, shapeAppearanceModelReceiveBottom, shapeAppearanceModelSendTop, shapeAppearanceModelSendMiddle, shapeAppearanceModelSendBottom, shapeAppearanceModelSingle;
     private final LayoutInflater layoutInflater;
     private final EmojiReactionsRepository emojiReactionsRepository;
@@ -199,7 +213,6 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
 
     public ComposeMessageAdapter(
         Context context,
-        MessagePlayerService messagePlayerService,
         List<AbstractMessageModel> values,
         UserService userService,
         ContactService contactService,
@@ -214,12 +227,18 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
         ListView listView,
         ThumbnailCache<?> thumbnailCache,
         int thumbnailWidth,
-        Fragment fragment,
+        @NonNull ChatAdapterDecoratorListener chatAdapterDecoratorListener,
+        @NonNull LinkifyUtil.LinkifyListener linkifyListener,
         int unreadMessagesCount,
-        ListenableFuture<MediaController> mediaControllerFuture) {
+        ListenableFuture<MediaController> mediaControllerFuture,
+        @NonNull VoipStatusDataChatAdapterDecorator.VoipStatusDataChatListener voipStatusDataChatListener,
+        @NonNull BallotChatAdapterDecorator.BallotChatListener ballotChatListener,
+        @NonNull MessagePlayerFactory messagePlayerFactory,
+        @NonNull ImageChatAdapterDecorator.ImageListener imageListener,
+        @NonNull FileChatAdapterDecorator.DownloadAlertDialogListener downloadAlertDialogListener,
+        @NonNull AudioChatAdapterDecorator.UserInteractionListener userInteractionListener) {
         super(context, R.layout.conversation_list_item_send, values);
 
-        this.context = context;
         this.values = values;
         this.listView = listView;
         this.layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -231,13 +250,21 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
         this.messageService = messageService;
         this.userService = userService;
         this.fileService = fileService;
+        this.voipStatusDataChatListener = voipStatusDataChatListener;
+        this.chatAdapterDecoratorListener = chatAdapterDecoratorListener;
+        this.linkifyListener = linkifyListener;
+        this.messagePlayerFactory = messagePlayerFactory;
+        this.imageListener = imageListener;
+        this.downloadAlertDialogListener = downloadAlertDialogListener;
+        this.userInteractionListener = userInteractionListener;
+        this.ballotChatListener = ballotChatListener;
+
         this.decoratorHelper = new ChatAdapterDecorator.Helper(
             userService.getIdentity(),
             messageService,
             userService,
             contactService,
             fileService,
-            messagePlayerService,
             ballotService,
             thumbnailCache,
             preferenceService,
@@ -245,7 +272,6 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
             licenseService,
             messageReceiver,
             thumbnailWidth,
-            fragment,
             regularColor,
             maxBubbleTextLength,
             maxQuoteTextLength,
@@ -253,8 +279,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
         );
         this.emojiReactionsRepository = emojiReactionsRepository;
 
-        int cornerRadius = context.getResources().getDimensionPixelSize(R.dimen.chat_bubble_border_radius),
-            cornerRadiusSharp = context.getResources().getDimensionPixelSize(R.dimen.chat_bubble_border_radius_sharp);
+        int cornerRadius = getContext().getResources().getDimensionPixelSize(R.dimen.chat_bubble_border_radius),
+            cornerRadiusSharp = getContext().getResources().getDimensionPixelSize(R.dimen.chat_bubble_border_radius_sharp);
         this.bubblePaddingLeftRight = getContext().getResources().getDimensionPixelSize(R.dimen.chat_bubble_container_padding_left_right);
         this.bubblePaddingBottom = getContext().getResources().getDimensionPixelSize(R.dimen.chat_bubble_container_padding_bottom);
         this.bubblePaddingBottomGrouped = getContext().getResources().getDimensionPixelSize(R.dimen.chat_bubble_container_padding_bottom_grouped);
@@ -301,8 +327,6 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
 
     /**
      * remove the contact saved stuff and update the list
-     *
-     * @param contactModel
      */
     @UiThread
     public void resetCachedContactModelData(ContactModel contactModel) {
@@ -540,9 +564,9 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
             if (isUserMessage(itemType)) {
                 itemView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.WRAP_CONTENT, 0));
                 if (messageModel.isOutbox()) {
-                    holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(context, R.color.bubble_send_colorstatelist));
+                    holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(getContext(), R.color.bubble_send_colorstatelist));
                 } else {
-                    holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(context, R.color.bubble_receive_colorstatelist));
+                    holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(getContext(), R.color.bubble_receive_colorstatelist));
                 }
             } else {
                 itemView.setLayoutParams(new AbsListView.LayoutParams(AbsListView.LayoutParams.MATCH_PARENT, 0));
@@ -554,7 +578,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
 
         if (itemType == TYPE_FIRST_UNREAD) {
             // add number of unread messages
-            decorator = new FirstUnreadChatAdapterDecorator(this.context, messageModel, this.decoratorHelper, unreadMessagesCount);
+            decorator = new FirstUnreadChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper, unreadMessagesCount);
         } else {
             final boolean showAvatar = adjustMarginsForMessageGrouping(holder, itemView, itemType, messageModel);
 
@@ -563,7 +587,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
             }
 
             if (itemType == TYPE_DELETED_SEND || itemType == TYPE_DELETED_RECV) {
-                decorator = new DeletedChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                decorator = new DeletedChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper);
             } else {
                 decorator = initDecorator(messageModel, messageType);
             }
@@ -587,7 +611,11 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
                         holder.avatarView.setOnClickListener(v1 -> onClickListener.avatarClick(v1, position, messageModel));
                         if (messageModel.getIdentity() != null) {
                             ContactModel contactModel = decoratorHelper.getContactService().getByIdentity(messageModel.getIdentity());
-                            String displayName = NameUtil.getDisplayNameOrNickname(contactModel, true);
+                            String displayName = NameUtil.getContactDisplayNameOrNickname(
+                                contactModel,
+                                true,
+                                decoratorHelper.getPreferenceService().getContactNameFormat()
+                            );
                             holder.avatarView.setContentDescription(getContext().getString(R.string.show_contact) + ": " + displayName);
                         }
                     }
@@ -611,10 +639,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
             /* show matches in decorator */
             decorator.setFilter(convListFilter.getFilterString());
         }
-        if (parent instanceof ListView) {
-            decorator.setInListView(((ListView) parent));
-        }
-        decorator.decorate(holder, position);
+        decorator.decorate(holder, getContext(), position);
         holder.itemType = itemType;
 
         return itemView;
@@ -623,50 +648,50 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
     private ChatAdapterDecorator initDecorator(@NonNull AbstractMessageModel messageModel, MessageType messageType) {
         switch (messageType) {
             case STATUS:
-                return new StatusChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                return new StatusChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper);
             case VIDEO:
-                return new VideoChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                return new VideoChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, messagePlayerFactory, decoratorHelper);
             case IMAGE:
-                return new ImageChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                return new ImageChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, messagePlayerFactory, imageListener, decoratorHelper);
             case LOCATION:
-                return new LocationChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                return new LocationChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper);
             case VOICEMESSAGE:
-                return new AudioChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                return new AudioChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, messagePlayerFactory, userInteractionListener, decoratorHelper);
             case BALLOT:
-                return new BallotChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                return new BallotChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper, ballotChatListener);
             case FILE:
                 if (MimeUtil.isVideoFile(messageModel.getFileData().getMimeType()) &&
                     (messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA ||
                         messageModel.getFileData().getRenderingType() == FileData.RENDERING_STICKER)) {
-                    return new VideoChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                    return new VideoChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, messagePlayerFactory, decoratorHelper);
                 } else if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType()) &&
                     messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
-                    return new AudioChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                    return new AudioChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, messagePlayerFactory, userInteractionListener, decoratorHelper);
                 } else if (MimeUtil.isAnimatedImageFormat(messageModel.getFileData().getMimeType()) &&
                     (messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA ||
                         messageModel.getFileData().getRenderingType() == FileData.RENDERING_STICKER)) {
-                    return new AnimatedImageDrawableDecorator(this.context, messageModel, this.decoratorHelper);
+                    return new AnimatedImageDrawableDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, messagePlayerFactory, decoratorHelper);
                 } else {
-                    return new FileChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                    return new FileChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, downloadAlertDialogListener, messagePlayerFactory, decoratorHelper);
                 }
             case VOIP_STATUS:
-                return new VoipStatusDataChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                return new VoipStatusDataChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper, voipStatusDataChatListener);
             case GROUP_CALL_STATUS:
-                return new GroupCallStatusDataChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                return new GroupCallStatusDataChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper);
             case FORWARD_SECURITY_STATUS:
-                return new ForwardSecurityStatusChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                return new ForwardSecurityStatusChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper);
             case GROUP_STATUS:
-                return new GroupStatusAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                return new GroupStatusAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper);
             // Fallback to text chat adapter
             default:
                 if (messageModel.isStatusMessage()) {
                     if (messageModel instanceof DateSeparatorMessageModel) {
-                        return new DateSeparatorChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                        return new DateSeparatorChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper);
                     } else {
-                        return new StatusChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                        return new StatusChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper);
                     }
                 } else {
-                    return new TextChatAdapterDecorator(this.context, messageModel, this.decoratorHelper);
+                    return new TextChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper);
                 }
         }
     }
@@ -835,7 +860,14 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
                                 messageModel.getType() == MessageType.LOCATION)) {
                                 String body = messageModel.getCaption();
                                 if (TextUtils.isEmpty(body)) {
-                                    body = QuoteUtil.getMessageBody(messageModel, false);
+                                    body = QuoteUtil.getMessageBody(
+                                        messageModel.getType(),
+                                        messageModel.getBody(),
+                                        messageModel.getCaption(),
+                                        messageModel.isOutbox(),
+                                        false,
+                                        decoratorHelper.getPreferenceService().getContactNameFormat()
+                                    );
                                 }
                                 if (body != null) {
                                     if (body.equals(filterString)) {
@@ -879,7 +911,8 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
                                         getContext(),
                                         messageService,
                                         userService,
-                                        fileService
+                                        fileService,
+                                        decoratorHelper.getPreferenceService().getContactNameFormat()
                                     );
                                     if (quoteContent != null) {
                                         body = quoteContent.quotedText + " " + quoteContent.bodyText;
@@ -941,7 +974,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
 
             logger.info("Publishing search results, {} characters, {} results", constraint != null ? constraint.length() : 0, results.count);
 
-            final int positionOfLastMatch = getMatchPosition(filterString);
+            final int positionOfLastMatch = getMatchPosition(filterString, getContext());
 
             if (convListFilter.getHighlightMatches()) {
                 notifyDataSetChanged();
@@ -955,29 +988,15 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
                     notifyDataSetChanged();
                     listView.post(() -> {
                         smoothScrollTo(positionOfLastMatch);
-                        listView.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                listView.setItemChecked(positionOfLastMatch, true);
-                                listView.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        listView.setItemChecked(positionOfLastMatch, false);
-                                        listView.postDelayed(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                listView.setItemChecked(positionOfLastMatch, true);
-                                                listView.postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        listView.setItemChecked(positionOfLastMatch, false);
-                                                    }
-                                                }, 300);
-                                            }
-                                        }, 200);
-                                    }
+                        listView.postDelayed(() -> {
+                            listView.setItemChecked(positionOfLastMatch, true);
+                            listView.postDelayed(() -> {
+                                listView.setItemChecked(positionOfLastMatch, false);
+                                listView.postDelayed(() -> {
+                                    listView.setItemChecked(positionOfLastMatch, true);
+                                    listView.postDelayed(() -> listView.setItemChecked(positionOfLastMatch, false), 300);
                                 }, 200);
-                            }
+                            }, 200);
                         }, 300);
                     });
                 }
@@ -1044,7 +1063,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
             smoothScrollTo(resultMap.get(resultMapIndex));
             searchUpdate();
         } else {
-            SingleToast.getInstance().showShortText(context.getString(R.string.search_no_more_matches));
+            SingleToast.getInstance().showShortText(getContext().getString(R.string.search_no_more_matches));
         }
     }
 
@@ -1059,7 +1078,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
             smoothScrollTo(resultMap.get(resultMapIndex));
             searchUpdate();
         } else {
-            SingleToast.getInstance().showShortText(context.getString(R.string.search_no_more_matches));
+            SingleToast.getInstance().showShortText(getContext().getString(R.string.search_no_more_matches));
         }
     }
 
@@ -1078,7 +1097,7 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
         convListFilter = new ConversationListFilter();
     }
 
-    private int getMatchPosition(String filterString) {
+    private int getMatchPosition(String filterString, Context context) {
         if ((resultMap.size() > 0) && (resultMapIndex < resultMap.size())) {
             //Destroy toast!
             SingleToast.getInstance().close();
@@ -1122,12 +1141,11 @@ public class ComposeMessageAdapter extends ArrayAdapter<AbstractMessageModel> im
         super.remove(object);
 
         if (c > 0 && c == this.getCount()) {
-            //nothing deleted, search!
-            AbstractMessageModel newObject = Functional.select(this.values, o -> o.getId() == object.getId());
-
-            if (newObject != null) {
-                super.remove(newObject);
-            }
+            // nothing deleted, search!
+            values.stream()
+                .filter(model -> model.getId() == object.getId())
+                .findFirst()
+                .ifPresent(super::remove);
         }
 
         notifyDataSetChanged();

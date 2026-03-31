@@ -10,14 +10,14 @@ import ch.threema.localcrypto.models.RemoteSecretAuthenticationToken
 import ch.threema.localcrypto.models.RemoteSecretClientParameters
 import ch.threema.localcrypto.models.RemoteSecretCreationResult
 import ch.threema.localcrypto.models.RemoteSecretParameters
-import ch.threema.localcrypto.models.RemoteSecretProtectionCheckResult
+import ch.threema.localcrypto.models.RemoteSecretProtectionInstruction
 import java.io.IOException
 
 interface RemoteSecretManager {
     /**
      * Check if remote secret protection needs to be activated, deactivated, or kept as it is.
      */
-    fun checkRemoteSecretProtection(lockData: MasterKeyState.WithRemoteSecret?): RemoteSecretProtectionCheckResult
+    fun checkRemoteSecretProtection(lockData: MasterKeyState.WithRemoteSecret?): RemoteSecretProtectionInstruction
 
     @Throws(ThreemaException::class, IOException::class)
     suspend fun createRemoteSecret(clientParameters: RemoteSecretClientParameters): RemoteSecretCreationResult

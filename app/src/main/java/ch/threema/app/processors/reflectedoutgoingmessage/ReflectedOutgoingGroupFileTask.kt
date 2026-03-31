@@ -8,10 +8,10 @@ import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
+import ch.threema.storage.models.group.GroupMessageModel
 
 private val logger = getThreemaLogger("ReflectedOutgoingGroupFileTask")
 

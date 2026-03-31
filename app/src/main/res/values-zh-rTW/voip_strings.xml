@@ -53,14 +53,18 @@
     <string name="voip_prefs_video_codec_no_h264hip">停用 H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">軟體編解碼器</string>
     <string name="voip_connection_failed">無法建立連線</string>
-    <string name="voip_connection_lost">連線中斷</string>
+    <string name="voip_call_disconnected">通話中斷</string>
     <string name="prefs_voip_reject_incoming_calls_title">拒絕電話通話</string>
     <string name="prefs_voip_reject_incoming_calls_summary">在 Threema 通話時拒絕來電。</string>
     <string name="voip_contact_not_found">找不到此號碼與 Threema 連結的聯絡人。</string>
     <string name="voip_another_pstn_call">無法建立通話，常規電話仍正在進行中。</string>
     <string name="voip_call_status_off_hours">非工作時間通話</string>
     <string name="voip_peer_video_disabled">對方已禁用視訊通話。</string>
-    <string name="voip_reject_channel_name">呼叫狀態變更</string>
+    <string name="voip_error_processing_call_anser">處理通話接聽時發生錯誤</string>
+    <string name="voip_error_peer_connection">對等連線錯誤</string>
+    <string name="voip_error_determine_common_video_quality_profile">無法確定通用視訊品質設定檔</string>
+    <string name="voip_audio_focus_lost">音訊焦點遺失</string>
+    <string name="voip_could_not_initialize">無法初始化通話</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC 診斷</string>
     <string name="voip_prefs_webrtc_debug_summary">啟動此工具以偵錯與設定語音通話連接有關的問題</string>
@@ -71,13 +75,9 @@
     <string name="voip_webrtc_debug_copied">已複製至剪貼簿。</string>
     <string name="voip_webrtc_debug_copy_clipboard">複製至剪貼簿</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">已通知所有群組成員進行群組通話</string>
-    <string name="voip_gc_notification_channel_description">群組通話</string>
-    <string name="voip_gc_notification_title">群組通話</string>
     <string name="voip_gc_notification_call_started">%1$s在%2$s發起了群組通話</string>
     <string name="voip_gc_notification_call_started_generic">%1$s發起了群組通話</string>
     <string name="voip_gc_notification_call_started_generic_outbox">您發起了群組通話</string>
-    <string name="voip_gc_dismiss_call">忽略</string>
     <string name="voip_gc_join_call">加入</string>
     <string name="voip_gc_ongoing_call">正在進行的群組通話</string>
     <string name="voip_gc_waiting_for_participants">正在等待參與者</string>

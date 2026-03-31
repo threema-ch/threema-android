@@ -1,7 +1,7 @@
 package ch.threema.app.utils;
 
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 
@@ -21,7 +21,7 @@ public class BackupUtils {
     }
 
     @Deprecated
-    public static String buildGroupUid(GroupModel groupModel) {
+    public static String buildGroupUid(GroupModelOld groupModel) {
         return buildGroupUid(groupModel.getApiGroupId().toString(), groupModel.getCreatorIdentity());
     }
 

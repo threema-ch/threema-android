@@ -4,6 +4,7 @@ import ch.threema.base.crypto.KeyPair
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.NonceCounter
 import ch.threema.base.utils.TimeMeasureUtil
+import ch.threema.common.emptyByteArray
 import ch.threema.common.generateRandomBytes
 import ch.threema.common.secureRandom
 import ch.threema.common.toHexString
@@ -328,7 +329,7 @@ internal class CspSession(
         )
         val vouch = createVouch(serverTempKeyPub)
 
-        val login = identityStore.getIdentity()!!.encodeToByteArray() +
+        val login = identityStore.getIdentityString()!!.encodeToByteArray() +
             createExtensionIndicator(extensionsBox.size) +
             serverCookie +
             ByteArray(ProtocolDefines.RESERVED1_LEN) +
@@ -358,7 +359,7 @@ internal class CspSession(
         /* Csp device id (0x01) if multi device is active, omit if md is not active */
         val cspDeviceIdBytes = cspDeviceId
             ?.let { ProtocolExtension(ProtocolExtension.CSP_DEVICE_ID_TYPE, it.leBytes()).bytes }
-            ?: ByteArray(0)
+            ?: emptyByteArray()
         logger.trace("Csp  device id bytes {}", cspDeviceIdBytes.toHexString())
 
         /* Supported features extension (0x02) */
@@ -397,12 +398,12 @@ internal class CspSession(
                 key = sharedSecrets,
                 personal = "3ma-csp".encodeToByteArray(),
                 salt = "v2".encodeToByteArray(),
-                data = byteArrayOf(),
+                data = emptyByteArray(),
             )
             blake2bMac256(
                 key = vouchKey,
-                personal = byteArrayOf(),
-                salt = byteArrayOf(),
+                personal = emptyByteArray(),
+                salt = emptyByteArray(),
                 data = input,
             )
         } catch (cryptoException: CryptoException.InvalidParameter) {

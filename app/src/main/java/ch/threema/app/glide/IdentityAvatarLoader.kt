@@ -2,12 +2,12 @@ package ch.threema.app.glide
 
 import android.content.Context
 import android.graphics.Bitmap
-import ch.threema.app.di.injectNonBinding
+import ch.threema.app.di.injectNullableNonBinding
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.services.AvatarCacheServiceImpl
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.FileService
 import ch.threema.app.services.UserService
+import ch.threema.app.services.avatarcache.AvatarCacheServiceImpl
 import ch.threema.data.repositories.ContactModelRepository
 import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader
@@ -17,11 +17,11 @@ import org.koin.core.component.KoinComponent
 class IdentityAvatarLoader(
     private val context: Context,
 ) : ModelLoader<AvatarCacheServiceImpl.IdentityAvatarConfig, Bitmap>, KoinComponent {
-    private val userService: UserService? by injectNonBinding()
-    private val contactService: ContactService? by injectNonBinding()
-    private val preferenceService: PreferenceService? by injectNonBinding()
-    private val fileService: FileService? by injectNonBinding()
-    private val contactModelRepository: ContactModelRepository? by injectNonBinding()
+    private val userService: UserService? by injectNullableNonBinding()
+    private val contactService: ContactService? by injectNullableNonBinding()
+    private val preferenceService: PreferenceService? by injectNullableNonBinding()
+    private val fileService: FileService? by injectNullableNonBinding()
+    private val contactModelRepository: ContactModelRepository? by injectNullableNonBinding()
 
     override fun buildLoadData(
         config: AvatarCacheServiceImpl.IdentityAvatarConfig,

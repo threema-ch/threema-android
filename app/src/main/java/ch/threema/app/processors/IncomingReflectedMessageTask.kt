@@ -17,8 +17,8 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.toHexString
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
+import ch.threema.domain.protocol.csp.coders.LegacyMessageTransformer
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
-import ch.threema.domain.protocol.csp.messages.AudioMessage
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.DeleteMessage
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
@@ -35,7 +35,6 @@ import ch.threema.domain.protocol.csp.messages.ReactionMessage
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.TextMessage
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage
-import ch.threema.domain.protocol.csp.messages.VideoMessage
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollVoteMessage
 import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage
@@ -249,8 +248,12 @@ class IncomingReflectedMessageTask(
             )
 
             CspE2eMessageType.DEPRECATED_IMAGE -> ImageMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.DEPRECATED_AUDIO -> AudioMessage.fromReflected(incomingMessage)
-            CspE2eMessageType.DEPRECATED_VIDEO -> VideoMessage.fromReflected(incomingMessage)
+            CspE2eMessageType.DEPRECATED_AUDIO -> fromReflected(incomingMessage) { bodyBytes ->
+                LegacyMessageTransformer.transformAudioMessage(bodyBytes)
+            }
+            CspE2eMessageType.DEPRECATED_VIDEO -> fromReflected(incomingMessage) { bodyBytes ->
+                LegacyMessageTransformer.transformVideoMessage(bodyBytes)
+            }
             CspE2eMessageType.GROUP_IMAGE -> throw IllegalStateException("Deprecated group image messages are unsupported")
             CspE2eMessageType.GROUP_AUDIO -> throw IllegalStateException("Deprecated group audio messages are unsupported")
             CspE2eMessageType.GROUP_VIDEO -> throw IllegalStateException("Deprecated group video messages are unsupported")
@@ -302,6 +305,12 @@ class IncomingReflectedMessageTask(
         }
     }
 
+    private fun <T : AbstractMessage> fromReflected(message: IncomingMessage, toMessageModel: (bodyBytes: ByteArray) -> T): T {
+        val messageModel = toMessageModel(message.body.toByteArray())
+        messageModel.initializeCommonProperties(message)
+        return messageModel
+    }
+
     private fun logIgnoredMessageAndReturnNull(messageTypeName: String): AbstractMessage? {
         logger.info("Ignoring incoming reflected message of type {}", messageTypeName)
         return null
@@ -344,9 +353,9 @@ class IncomingReflectedMessageTask(
             symmetricEncryptionService = serviceManager.symmetricEncryptionService,
             multiDeviceManager = multiDeviceManager,
             conversationService = serviceManager.conversationService,
-            conversationTagService = serviceManager.conversationTagService,
             conversationCategoryService = serviceManager.conversationCategoryService,
             userService = serviceManager.userService,
+            preferenceService = serviceManager.preferenceService,
         ).run()
     }
 
@@ -358,7 +367,7 @@ class IncomingReflectedMessageTask(
     private fun processSettingsSync(settingsSync: SettingsSync) {
         ReflectedSettingsSyncTask(
             settingsSync = settingsSync,
-            preferenceService = serviceManager.preferenceService,
+            synchronizedSettingsService = serviceManager.synchronizedSettingsService,
             blockedIdentitiesService = serviceManager.blockedIdentitiesService,
             excludedSyncIdentitiesService = serviceManager.excludedSyncIdentitiesService,
         ).run()

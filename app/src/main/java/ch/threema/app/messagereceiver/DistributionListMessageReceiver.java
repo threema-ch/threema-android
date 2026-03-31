@@ -14,12 +14,12 @@ import java.util.UUID;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.AppConstants;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotData;
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote;
@@ -44,7 +44,8 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
         DatabaseService databaseService,
         ContactService contactService,
         DistributionListModel distributionListModel,
-        DistributionListService distributionListService) {
+        DistributionListService distributionListService
+    ) {
         this.databaseService = databaseService;
         this.distributionListModel = distributionListModel;
         this.distributionListService = distributionListService;
@@ -128,7 +129,6 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
         @Nullable byte[] fileBlobId,
         @Nullable SymmetricEncryptionResult encryptionResult,
         @NonNull DistributionListMessageModel messageModel,
-        @Nullable MessageId messageId,
         @Nullable Collection<String> recipientIdentities
     ) {
         for (ContactMessageReceiver receiver : affectedMessageReceivers) {
@@ -166,6 +166,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
     }
 
     @Override
+    @NonNull
     public List<DistributionListMessageModel> loadMessages(MessageService.MessageFilter filter) {
         return this.databaseService.getDistributionListMessageModelFactory().find(
             this.distributionListModel.getId(),
@@ -196,33 +197,37 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
     }
 
     @Override
-    public String getDisplayName() {
-        return NameUtil.getDisplayName(this.getDistributionList(), this.distributionListService);
+    public String getDisplayName(@NonNull ContactNameFormat contactNameFormat) {
+        return NameUtil.getDistributionListDisplayName(
+            this.getDistributionList(),
+            this.distributionListService,
+            contactNameFormat
+        );
     }
 
     @Override
-    public String getShortName() {
-        return getDisplayName();
+    public String getShortName(@NonNull ContactNameFormat contactNameFormat) {
+        return getDisplayName(contactNameFormat);
     }
 
     @Override
-    public void prepareIntent(Intent intent) {
+    public void prepareIntent(@NonNull Intent intent) {
         intent.putExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID, this.getDistributionList().getId());
     }
 
     @Override
     public Bitmap getNotificationAvatar() {
-        return distributionListService.getAvatar(distributionListModel, false);
+        return distributionListService.getAvatar(distributionListModel.getId(), false);
     }
 
     @Override
     public Bitmap getHighResAvatar() {
-        return distributionListService.getAvatar(distributionListModel, true);
+        return distributionListService.getAvatar(distributionListModel.getId(), true);
     }
 
     @Override
     public Bitmap getAvatar() {
-        return distributionListService.getAvatar(distributionListModel, true, true);
+        return distributionListService.getAvatar(distributionListModel.getId(), true, true);
     }
 
     @Deprecated
@@ -245,7 +250,7 @@ public class DistributionListMessageReceiver implements MessageReceiver<Distribu
     }
 
     @Override
-    public boolean sendMediaData() {
+    public boolean shouldSendMediaData() {
         return true;
     }
 

@@ -8,8 +8,8 @@ import androidx.core.database.getBlobOrNull
 import androidx.core.database.getIntOrNull
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
-import androidx.sqlite.db.SupportSQLiteOpenHelper
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
+import ch.threema.app.stores.IdentityProvider
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
@@ -18,19 +18,20 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.UserState
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import ch.threema.domain.types.Identity
-import ch.threema.storage.CursorHelper
+import ch.threema.domain.types.IdentityString
+import ch.threema.storage.DatabaseProvider
 import ch.threema.storage.DatabaseUtil
 import ch.threema.storage.buildContentValues
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import ch.threema.storage.models.GroupMemberModel
-import ch.threema.storage.models.GroupMessageModel
-import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.IncomingGroupSyncRequestLogModel
+import ch.threema.storage.models.group.GroupMemberModel
+import ch.threema.storage.models.group.GroupMessageModel
+import ch.threema.storage.models.group.GroupModelOld
 import java.util.Collections
 import java.util.Date
 import net.zetetic.database.sqlcipher.SQLiteDatabase
@@ -63,28 +64,6 @@ private fun Cursor.getDateOrNull(@IntRange(from = 0) columnIndex: Int): Date? {
 }
 
 /**
- * Returns the value of the requested column as a Date, assuming that it contains the string
- * representation of the date as defined in [CursorHelper.dateAsStringFormat].
- *
- * @throws NullPointerException if the column contains a null value
- */
-private fun Cursor.getDateByString(@IntRange(from = 0) columnIndex: Int): Date {
-    val dateString = this.getString(columnIndex)
-    return CursorHelper.dateAsStringFormat.get()!!.parse(dateString)!!
-}
-
-/**
- * Returns the value of the requested column as a Date, assuming that it contains the string
- * representation of the date as defined in [CursorHelper.dateAsStringFormat].
- *
- * If the column contains a null value, then null is returned
- */
-private fun Cursor.getDateByStringOrNull(@IntRange(from = 0) columnIndex: Int): Date? {
-    val dateString = this.getStringOrNull(columnIndex) ?: return null
-    return CursorHelper.dateAsStringFormat.get()?.parse(dateString)
-}
-
-/**
  * Returns the value of the requested column as a Boolean, assuming that it contains a numeric value
  * of 0 (false) or not 0 (true).
  */
@@ -111,11 +90,6 @@ private fun Cursor.getBooleanOrNull(@IntRange(from = 0) columnIndex: Int): Boole
     }
 }
 
-/**
- * Returns the date as string. If conversion does not work, null is returned.
- */
-private fun Date.toDateStringOrNull(): String? = CursorHelper.dateAsStringFormat.get()?.format(this)
-
 private val logger = getThreemaLogger("data.SqliteDatabaseBackend")
 
 /**
@@ -132,13 +106,17 @@ fun getColumnIndexOrThrow(cursor: Cursor, columName: String): Int {
     return index
 }
 
-class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : DatabaseBackend {
+class SqliteDatabaseBackend(
+    private val databaseProvider: DatabaseProvider,
+    private val identityProvider: IdentityProvider,
+) : DatabaseBackend {
+
     /**
      * @return All existing contacts from the database or an empty list in case of an error while reading.
      */
     override fun getAllContacts(): List<DbContact> {
         return try {
-            val cursor = sqlite.readableDatabase.query("SELECT * FROM ${ContactModel.TABLE};")
+            val cursor = databaseProvider.readableDatabase.query("SELECT * FROM ${ContactModel.TABLE};")
             val dbContacts = mutableListOf<DbContact>()
             cursor.use {
                 while (cursor.moveToNext()) {
@@ -159,6 +137,9 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         require(contact.publicKey.size == NaCl.PUBLIC_KEY_BYTES) {
             "Cannot create contact (${contact.identity}) with public key of invalid length: ${contact.publicKey.size}"
         }
+        require(contact.identity != identityProvider.getIdentityString()) {
+            "Cannot create contact with the user's identity"
+        }
 
         val contentValues = buildContentValues {
             put(ContactModel.COLUMN_IDENTITY, contact.identity)
@@ -167,44 +148,17 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             update(contact)
         }
 
-        sqlite.writableDatabase.insert(
+        databaseProvider.writableDatabase.insert(
             table = ContactModel.TABLE,
             conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
             values = contentValues,
         )
     }
 
-    override fun getContactByIdentity(identity: Identity): DbContact? {
-        val cursor = sqlite.readableDatabase.query(
+    override fun getContactByIdentity(identity: IdentityString): DbContact? {
+        val cursor = databaseProvider.readableDatabase.query(
             SupportSQLiteQueryBuilder.builder(ContactModel.TABLE)
-                .columns(
-                    arrayOf(
-                        ContactModel.COLUMN_IDENTITY,
-                        ContactModel.COLUMN_PUBLIC_KEY,
-                        ContactModel.COLUMN_CREATED_AT,
-                        ContactModel.COLUMN_FIRST_NAME,
-                        ContactModel.COLUMN_LAST_NAME,
-                        ContactModel.COLUMN_PUBLIC_NICK_NAME,
-                        ContactModel.COLUMN_ID_COLOR_INDEX,
-                        ContactModel.COLUMN_VERIFICATION_LEVEL,
-                        ContactModel.COLUMN_IS_WORK,
-                        ContactModel.COLUMN_TYPE,
-                        ContactModel.COLUMN_ACQUAINTANCE_LEVEL,
-                        ContactModel.COLUMN_STATE,
-                        ContactModel.COLUMN_SYNC_STATE,
-                        ContactModel.COLUMN_FEATURE_MASK,
-                        ContactModel.COLUMN_READ_RECEIPTS,
-                        ContactModel.COLUMN_TYPING_INDICATORS,
-                        ContactModel.COLUMN_IS_ARCHIVED,
-                        ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY,
-                        ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES,
-                        ContactModel.COLUMN_IS_RESTORED,
-                        ContactModel.COLUMN_PROFILE_PIC_BLOB_ID,
-                        ContactModel.COLUMN_JOB_TITLE,
-                        ContactModel.COLUMN_DEPARTMENT,
-                        ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE,
-                    ),
-                )
+                .columns(allContactColumns)
                 .selection("${ContactModel.COLUMN_IDENTITY} = ?", arrayOf(identity))
                 .create(),
         )
@@ -215,6 +169,29 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         val dbContact = cursor.mapToDbContact()
         cursor.close()
         return dbContact
+    }
+
+    override fun getContactsByIdentities(identities: Set<IdentityString>): List<DbContact> {
+        val placeholders = DatabaseUtil.makePlaceholders(identities.size)
+        val cursor = databaseProvider.readableDatabase.query(
+            query = SupportSQLiteQueryBuilder
+                .builder(
+                    tableName = ContactModel.TABLE,
+                )
+                .columns(allContactColumns)
+                .selection(
+                    selection = "${ContactModel.COLUMN_IDENTITY} IN ($placeholders)",
+                    bindArgs = identities.toTypedArray(),
+                )
+                .create(),
+        )
+        return cursor.use { usedCursor ->
+            val results = mutableListOf<DbContact>()
+            while (usedCursor.moveToNext()) {
+                results.add(usedCursor.mapToDbContact())
+            }
+            results
+        }
     }
 
     /**
@@ -250,7 +227,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             getLongOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE))
 
         // Validation and mapping
-        if (colorIndex < 0 || colorIndex > 255) {
+        if (colorIndex !in 0..255) {
             logger.warn("colorIndex value out of range: {}. Falling back to -1.", colorIndex)
             colorIndex = -1
         }
@@ -386,7 +363,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             update(contact)
         }
 
-        sqlite.writableDatabase.update(
+        databaseProvider.writableDatabase.update(
             table = ContactModel.TABLE,
             conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
             values = contentValues,
@@ -466,16 +443,16 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         put(ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE, contact.notificationTriggerPolicyOverride)
     }
 
-    override fun deleteContactByIdentity(identity: Identity): Boolean {
-        return sqlite.writableDatabase.delete(
+    override fun deleteContactByIdentity(identity: IdentityString): Boolean {
+        return databaseProvider.writableDatabase.delete(
             table = ContactModel.TABLE,
             whereClause = "${ContactModel.COLUMN_IDENTITY} = ?",
             whereArgs = arrayOf(identity),
         ) > 0
     }
 
-    override fun isContactInGroup(identity: Identity): Boolean {
-        sqlite.readableDatabase.query(
+    override fun isContactInGroup(identity: IdentityString): Boolean {
+        databaseProvider.readableDatabase.query(
             DatabaseUtil.IS_GROUP_MEMBER_QUERY,
             arrayOf(identity),
         ).use {
@@ -495,15 +472,15 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
      */
     override fun createGroup(group: DbGroup) {
         val contentValues = buildContentValues {
-            put(GroupModel.COLUMN_CREATOR_IDENTITY, group.creatorIdentity)
-            put(GroupModel.COLUMN_API_GROUP_ID, group.groupId)
-            put(GroupModel.COLUMN_CREATED_AT, group.createdAt.toDateStringOrNull())
+            put(GroupModelOld.COLUMN_CREATOR_IDENTITY, group.creatorIdentity)
+            put(GroupModelOld.COLUMN_API_GROUP_ID, group.groupId)
+            put(GroupModelOld.COLUMN_CREATED_AT, group.createdAt.time)
             update(group)
         }
 
         val rowId = try {
-            sqlite.writableDatabase.insert(
-                table = GroupModel.TABLE,
+            databaseProvider.writableDatabase.insert(
+                table = GroupModelOld.TABLE,
                 conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
                 values = contentValues,
             )
@@ -520,14 +497,14 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
 
     override fun removeGroup(localDbId: Long) {
         // Remove messages
-        sqlite.writableDatabase.delete(
+        databaseProvider.writableDatabase.delete(
             table = GroupMessageModel.TABLE,
             whereClause = "${GroupMessageModel.COLUMN_GROUP_ID} = ?",
             whereArgs = arrayOf(localDbId),
         )
 
         // Remove members
-        sqlite.writableDatabase.delete(
+        databaseProvider.writableDatabase.delete(
             table = GroupMemberModel.TABLE,
             whereClause = "${GroupMemberModel.COLUMN_GROUP_ID} = ?",
             whereArgs = arrayOf(localDbId),
@@ -536,7 +513,7 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         // Remove incoming group sync request log model. Note that outgoing group sync request logs
         // must not be removed as they need to be persisted to prevent sending sync requests too
         // often.
-        sqlite.writableDatabase.delete(
+        databaseProvider.writableDatabase.delete(
             table = IncomingGroupSyncRequestLogModel.TABLE,
             whereClause = "${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID} = ?",
             whereArgs = arrayOf(localDbId),
@@ -546,20 +523,20 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         //  database.
 
         // Remove the group itself
-        sqlite.writableDatabase.delete(
-            table = GroupModel.TABLE,
-            whereClause = "${GroupModel.COLUMN_ID} = ?",
+        databaseProvider.writableDatabase.delete(
+            table = GroupModelOld.TABLE,
+            whereClause = "${GroupModelOld.COLUMN_ID} = ?",
             whereArgs = arrayOf(localDbId),
         )
     }
 
     override fun getAllGroups(): Collection<DbGroup> {
-        val query = SupportSQLiteQueryBuilder.builder(GroupModel.TABLE)
+        val query = SupportSQLiteQueryBuilder.builder(GroupModelOld.TABLE)
             .columns(null)
             .selection("TRUE", emptyArray())
             .create()
 
-        sqlite.readableDatabase.query(query).use { cursor ->
+        databaseProvider.readableDatabase.query(query).use { cursor ->
             val groups = mutableListOf<DbGroup>()
             while (cursor.moveToNext()) {
                 groups.add(cursor.getGroup())
@@ -570,13 +547,13 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
 
     override fun getGroupByLocalGroupDbId(localDbId: Long): DbGroup? {
         return getGroup {
-            it.selection("${GroupModel.COLUMN_ID} = ?", arrayOf(localDbId))
+            it.selection("${GroupModelOld.COLUMN_ID} = ?", arrayOf(localDbId))
         }
     }
 
     override fun getGroupByGroupIdentity(groupIdentity: GroupIdentity): DbGroup? {
-        val creatorIdentitySelection = "${GroupModel.COLUMN_CREATOR_IDENTITY} = ?"
-        val groupIdSelection = "${GroupModel.COLUMN_API_GROUP_ID} = ?"
+        val creatorIdentitySelection = "${GroupModelOld.COLUMN_CREATOR_IDENTITY} = ?"
+        val groupIdSelection = "${GroupModelOld.COLUMN_API_GROUP_ID} = ?"
         val creatorIdentitySelectionArg = groupIdentity.creatorIdentity
         val groupIdSelectionArg = groupIdentity.groupIdHexString
         val selection = "$creatorIdentitySelection AND $groupIdSelection"
@@ -588,17 +565,17 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
     }
 
     override fun getGroupDatabaseId(groupIdentity: GroupIdentity): Long? {
-        val query = SupportSQLiteQueryBuilder.builder(GroupModel.TABLE)
+        val query = SupportSQLiteQueryBuilder.builder(GroupModelOld.TABLE)
             .columns(
-                arrayOf(GroupModel.COLUMN_ID),
+                arrayOf(GroupModelOld.COLUMN_ID),
             ).selection(
-                GroupModel.COLUMN_API_GROUP_ID + "=? AND " + GroupModel.COLUMN_CREATOR_IDENTITY + "=?",
+                GroupModelOld.COLUMN_API_GROUP_ID + "=? AND " + GroupModelOld.COLUMN_CREATOR_IDENTITY + "=?",
                 arrayOf<String?>(groupIdentity.groupIdHexString, groupIdentity.creatorIdentity),
             ).create()
 
-        return sqlite.readableDatabase.query(query).use { cursor ->
+        return databaseProvider.readableDatabase.query(query).use { cursor ->
             if (cursor.moveToFirst()) {
-                cursor.getLong(cursor.getColumnIndexOrThrow(GroupModel.COLUMN_ID))
+                cursor.getLong(cursor.getColumnIndexOrThrow(GroupModelOld.COLUMN_ID))
             } else {
                 null
             }
@@ -606,23 +583,23 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
     }
 
     private fun getGroup(addSelection: (SupportSQLiteQueryBuilder) -> Unit): DbGroup? {
-        return sqlite.readableDatabase.query(
-            SupportSQLiteQueryBuilder.builder(GroupModel.TABLE)
+        return databaseProvider.readableDatabase.query(
+            SupportSQLiteQueryBuilder.builder(GroupModelOld.TABLE)
                 .columns(
                     arrayOf(
-                        GroupModel.COLUMN_ID,
-                        GroupModel.COLUMN_API_GROUP_ID,
-                        GroupModel.COLUMN_NAME,
-                        GroupModel.COLUMN_CREATOR_IDENTITY,
-                        GroupModel.COLUMN_CREATED_AT,
-                        GroupModel.COLUMN_SYNCHRONIZED_AT,
-                        GroupModel.COLUMN_LAST_UPDATE,
-                        GroupModel.COLUMN_IS_ARCHIVED,
-                        GroupModel.COLUMN_COLOR_INDEX,
-                        GroupModel.COLUMN_GROUP_DESC,
-                        GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
-                        GroupModel.COLUMN_USER_STATE,
-                        GroupModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE,
+                        GroupModelOld.COLUMN_ID,
+                        GroupModelOld.COLUMN_API_GROUP_ID,
+                        GroupModelOld.COLUMN_NAME,
+                        GroupModelOld.COLUMN_CREATOR_IDENTITY,
+                        GroupModelOld.COLUMN_CREATED_AT,
+                        GroupModelOld.COLUMN_SYNCHRONIZED_AT,
+                        GroupModelOld.COLUMN_LAST_UPDATE,
+                        GroupModelOld.COLUMN_IS_ARCHIVED,
+                        GroupModelOld.COLUMN_COLOR_INDEX,
+                        GroupModelOld.COLUMN_GROUP_DESC,
+                        GroupModelOld.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
+                        GroupModelOld.COLUMN_USER_STATE,
+                        GroupModelOld.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE,
                     ),
                 )
                 .apply(addSelection)
@@ -642,11 +619,11 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         // First update general group information
         val contentValues = buildContentValues { update(group) }
 
-        sqlite.writableDatabase.update(
-            table = GroupModel.TABLE,
+        databaseProvider.writableDatabase.update(
+            table = GroupModelOld.TABLE,
             conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
             values = contentValues,
-            whereClause = "${GroupModel.COLUMN_ID} = ?",
+            whereClause = "${GroupModelOld.COLUMN_ID} = ?",
             whereArgs = arrayOf(localGroupDbId),
         )
 
@@ -655,32 +632,32 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
     }
 
     private fun Cursor.getGroup(): DbGroup {
-        val localDbId = getLong(getColumnIndexOrThrow(this, GroupModel.COLUMN_ID))
+        val localDbId = getLong(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_ID))
         val creatorIdentity =
-            getString(getColumnIndexOrThrow(this, GroupModel.COLUMN_CREATOR_IDENTITY))
-        val groupId = getString(getColumnIndexOrThrow(this, GroupModel.COLUMN_API_GROUP_ID))
-        val name = getStringOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_NAME))
-        val createdAt = getDateByString(getColumnIndexOrThrow(this, GroupModel.COLUMN_CREATED_AT))
+            getString(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_CREATOR_IDENTITY))
+        val groupId = getString(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_API_GROUP_ID))
+        val name = getStringOrNull(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_NAME))
+        val createdAt = getDate(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_CREATED_AT))
         val synchronizedAt =
-            getDateOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_SYNCHRONIZED_AT))
-        val lastUpdate = getDateOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_LAST_UPDATE))
-        val isArchived = getBoolean(getColumnIndexOrThrow(this, GroupModel.COLUMN_IS_ARCHIVED))
-        val colorIndex = getInt(getColumnIndexOrThrow(this, GroupModel.COLUMN_COLOR_INDEX))
-        val groupDesc = getStringOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_GROUP_DESC))
-        val groupDescChangedAt = getDateByStringOrNull(
+            getDateOrNull(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_SYNCHRONIZED_AT))
+        val lastUpdate = getDateOrNull(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_LAST_UPDATE))
+        val isArchived = getBoolean(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_IS_ARCHIVED))
+        val colorIndex = getInt(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_COLOR_INDEX))
+        val groupDesc = getStringOrNull(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_GROUP_DESC))
+        val groupDescChangedAt = getDateOrNull(
             getColumnIndexOrThrow(
                 this,
-                GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
+                GroupModelOld.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
             ),
         )
         val members = getGroupMembers(localDbId)
-        val userStateValue = getInt(getColumnIndexOrThrow(this, GroupModel.COLUMN_USER_STATE))
-        val userState = GroupModel.UserState.valueOf(userStateValue) ?: run {
+        val userStateValue = getInt(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_USER_STATE))
+        val userState = UserState.getByValue(userStateValue) ?: run {
             logger.error("Invalid group user state: {}", userStateValue)
             // We use member as fallback to not accidentally remove the user from the group
-            GroupModel.UserState.MEMBER
+            UserState.MEMBER
         }
-        val notificationTriggerPolicyOverride = getLongOrNull(getColumnIndexOrThrow(this, GroupModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE))
+        val notificationTriggerPolicyOverride = getLongOrNull(getColumnIndexOrThrow(this, GroupModelOld.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE))
 
         return DbGroup(
             creatorIdentity = creatorIdentity,
@@ -701,31 +678,31 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
 
     private fun ContentValues.update(group: DbGroup) {
         // Note: creator identity, group id, and created at cannot be updated
-        put(GroupModel.COLUMN_NAME, group.name)
-        put(GroupModel.COLUMN_LAST_UPDATE, group.lastUpdate?.time)
-        put(GroupModel.COLUMN_SYNCHRONIZED_AT, group.synchronizedAt?.time)
-        put(GroupModel.COLUMN_IS_ARCHIVED, group.isArchived)
-        put(GroupModel.COLUMN_COLOR_INDEX, group.colorIndex)
-        put(GroupModel.COLUMN_GROUP_DESC, group.groupDescription)
+        put(GroupModelOld.COLUMN_NAME, group.name)
+        put(GroupModelOld.COLUMN_LAST_UPDATE, group.lastUpdate?.time)
+        put(GroupModelOld.COLUMN_SYNCHRONIZED_AT, group.synchronizedAt?.time)
+        put(GroupModelOld.COLUMN_IS_ARCHIVED, group.isArchived)
+        put(GroupModelOld.COLUMN_COLOR_INDEX, group.colorIndex)
+        put(GroupModelOld.COLUMN_GROUP_DESC, group.groupDescription)
         put(
-            GroupModel.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
-            group.groupDescriptionChangedAt?.toDateStringOrNull(),
+            GroupModelOld.COLUMN_GROUP_DESC_CHANGED_TIMESTAMP,
+            group.groupDescriptionChangedAt?.time,
         )
-        put(GroupModel.COLUMN_USER_STATE, group.userState.value)
-        put(GroupModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE, group.notificationTriggerPolicyOverride)
+        put(GroupModelOld.COLUMN_USER_STATE, group.userState.value)
+        put(GroupModelOld.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE, group.notificationTriggerPolicyOverride)
     }
 
     private fun getLocalGroupDbId(group: DbGroup): Long {
-        val creatorIdentitySelection = "${GroupModel.COLUMN_CREATOR_IDENTITY} = ?"
-        val groupIdSelection = "${GroupModel.COLUMN_API_GROUP_ID} = ?"
+        val creatorIdentitySelection = "${GroupModelOld.COLUMN_CREATOR_IDENTITY} = ?"
+        val groupIdSelection = "${GroupModelOld.COLUMN_API_GROUP_ID} = ?"
         val creatorIdentitySelectionArg = group.creatorIdentity
         val groupIdSelectionArg = group.groupId
         val selection = "$creatorIdentitySelection AND $groupIdSelection"
         val selectionArgs = arrayOf(creatorIdentitySelectionArg, groupIdSelectionArg)
 
-        sqlite.readableDatabase.query(
-            SupportSQLiteQueryBuilder.builder(GroupModel.TABLE)
-                .columns(arrayOf(GroupModel.COLUMN_ID))
+        databaseProvider.readableDatabase.query(
+            SupportSQLiteQueryBuilder.builder(GroupModelOld.TABLE)
+                .columns(arrayOf(GroupModelOld.COLUMN_ID))
                 .selection(selection, selectionArgs)
                 .create(),
         ).use { cursor ->
@@ -733,12 +710,12 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
                 throw DatabaseException("Could not find a group with creator ${group.creatorIdentity} and id ${group.groupId}")
             }
 
-            return cursor.getLong(cursor.getColumnIndexOrThrow(GroupModel.COLUMN_ID))
+            return cursor.getLong(cursor.getColumnIndexOrThrow(GroupModelOld.COLUMN_ID))
         }
     }
 
     private fun getGroupMembers(localDbId: Long): Set<String> {
-        sqlite.readableDatabase.query(
+        databaseProvider.readableDatabase.query(
             SupportSQLiteQueryBuilder.builder(GroupMemberModel.TABLE)
                 .columns(arrayOf(GroupMemberModel.COLUMN_IDENTITY))
                 .selection("${GroupMemberModel.COLUMN_GROUP_ID} = ?", arrayOf(localDbId))
@@ -768,10 +745,10 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
             members.joinToString(separator = " , ") { "?" }
         } )"
 
-        sqlite.writableDatabase.delete(
+        databaseProvider.writableDatabase.delete(
             table = GroupMemberModel.TABLE,
             whereClause = "$whereGroupId AND $whereNotMember",
-            whereArgs = (listOf(localDbId) + members).toTypedArray(),
+            whereArgs = (listOf(localDbId) + members).toTypedArray<Any>(),
         )
 
         // Add all members (if not already exists)
@@ -784,11 +761,40 @@ class SqliteDatabaseBackend(private val sqlite: SupportSQLiteOpenHelper) : Datab
         }
 
         contentValuesList.forEach { contentValues ->
-            sqlite.writableDatabase.insert(
+            databaseProvider.writableDatabase.insert(
                 table = GroupMemberModel.TABLE,
                 conflictAlgorithm = SQLiteDatabase.CONFLICT_FAIL,
                 values = contentValues,
             )
         }
+    }
+
+    private companion object {
+        val allContactColumns = arrayOf(
+            ContactModel.COLUMN_IDENTITY,
+            ContactModel.COLUMN_PUBLIC_KEY,
+            ContactModel.COLUMN_CREATED_AT,
+            ContactModel.COLUMN_FIRST_NAME,
+            ContactModel.COLUMN_LAST_NAME,
+            ContactModel.COLUMN_PUBLIC_NICK_NAME,
+            ContactModel.COLUMN_ID_COLOR_INDEX,
+            ContactModel.COLUMN_VERIFICATION_LEVEL,
+            ContactModel.COLUMN_IS_WORK,
+            ContactModel.COLUMN_TYPE,
+            ContactModel.COLUMN_ACQUAINTANCE_LEVEL,
+            ContactModel.COLUMN_STATE,
+            ContactModel.COLUMN_SYNC_STATE,
+            ContactModel.COLUMN_FEATURE_MASK,
+            ContactModel.COLUMN_READ_RECEIPTS,
+            ContactModel.COLUMN_TYPING_INDICATORS,
+            ContactModel.COLUMN_IS_ARCHIVED,
+            ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY,
+            ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES,
+            ContactModel.COLUMN_IS_RESTORED,
+            ContactModel.COLUMN_PROFILE_PIC_BLOB_ID,
+            ContactModel.COLUMN_JOB_TITLE,
+            ContactModel.COLUMN_DEPARTMENT,
+            ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE,
+        )
     }
 }

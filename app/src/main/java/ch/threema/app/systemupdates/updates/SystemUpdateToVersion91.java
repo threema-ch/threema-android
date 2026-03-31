@@ -7,48 +7,46 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.ContactsContract;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.SynchronizeContactsUtil;
+import kotlin.Lazy;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Fix Contact sync account type for Threema Libre
  */
 public class SystemUpdateToVersion91 implements SystemUpdate {
-    public static final int VERSION = 91;
     private static final Logger logger = getThreemaLogger("SystemUpdateToVersion91");
 
-    private @NonNull final Context context;
-
-    public SystemUpdateToVersion91(@NonNull Context context) {
-        this.context = context;
-    }
+    private final Lazy<Context> appContextLazy = KoinJavaComponent.inject(Context.class);
 
     @Override
     public void run() {
         if (BuildFlavor.getCurrent().isLibre()) {
-            final boolean isSyncContacts = PreferenceManager.getDefaultSharedPreferences(context).getBoolean(context.getString(R.string.preferences__sync_contacts), false);
+            var appContext = appContextLazy.getValue();
+            final boolean isSyncContacts = PreferenceManager.getDefaultSharedPreferences(appContext).getBoolean(appContext.getString(R.string.preferences__sync_contacts), false);
 
-            if (!SynchronizeContactsUtil.isRestrictedProfile(context) && isSyncContacts) {
-                if (ConfigUtils.isPermissionGranted(context, Manifest.permission.WRITE_CONTACTS)) {
-                    final AccountManager accountManager = AccountManager.get(context);
+            if (!SynchronizeContactsUtil.isRestrictedProfile(appContext) && isSyncContacts) {
+                if (ConfigUtils.isPermissionGranted(appContext, Manifest.permission.WRITE_CONTACTS)) {
+                    final AccountManager accountManager = AccountManager.get(appContext);
 
                     if (accountManager != null) {
                         try {
-                            for (Account account : accountManager.getAccountsByTypeForPackage("ch.threema.app", context.getPackageName())) {
-                                if (account.name.equals(context.getString(R.string.app_name))) {
+                            for (Account account : accountManager.getAccountsByTypeForPackage("ch.threema.app", appContext.getPackageName())) {
+                                if (account.name.equals(appContext.getString(R.string.app_name))) {
                                     accountManager.removeAccount(account, null, null);
                                 }
                             }
 
                             // we don't need to wait until removal is complete to create a new account that differs from the existing one(s)
-                            Account newAccount = new Account(context.getString(R.string.app_name), context.getString(R.string.package_name));
+                            Account newAccount = new Account(appContext.getString(R.string.app_name), appContext.getString(R.string.package_name));
                             accountManager.addAccountExplicitly(newAccount, "", null);
                             ContentResolver.setIsSyncable(newAccount, ContactsContract.AUTHORITY, 1);
                             if (!ContentResolver.getSyncAutomatically(newAccount, ContactsContract.AUTHORITY)) {
@@ -70,6 +68,6 @@ public class SystemUpdateToVersion91 implements SystemUpdate {
 
     @Override
     public int getVersion() {
-        return VERSION;
+        return 91;
     }
 }

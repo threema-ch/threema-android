@@ -17,14 +17,14 @@ dependencies {
     api(libs.kotlinx.coroutines.core)
     api(libs.libphonenumber)
     api(libs.androidx.annotation)
-    api(libs.streamsupport.flow)
     api(libs.protobuf.kotlin.lite)
 
     implementation(libs.slf4j.api)
-    implementation(libs.commonsIo)
     implementation(libs.eddsa)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.jna)
+
+    compileOnly(libs.compose.annotation)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

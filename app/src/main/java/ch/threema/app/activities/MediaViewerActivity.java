@@ -2,6 +2,7 @@ package ch.threema.app.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -10,27 +11,30 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
-import android.text.TextUtils;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.MoreExecutors;
+
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.app.ActivityCompat;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.media3.session.MediaController;
+import androidx.media3.session.SessionToken;
 import androidx.viewpager.widget.PagerAdapter;
 
 import org.koin.java.KoinJavaComponent;
@@ -41,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
@@ -55,10 +60,10 @@ import ch.threema.app.fragments.mediaviews.MediaViewFragment;
 import ch.threema.app.fragments.mediaviews.VideoViewFragment;
 import ch.threema.app.mediagallery.MediaGalleryActivity;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.services.AudioPlayerService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.LockableViewPager;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
@@ -70,10 +75,12 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
+import ch.threema.storage.models.group.GroupMessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
 
@@ -96,7 +103,8 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     public static final String EXTRA_ID_IMMEDIATE_PLAY = "play";
     public static final String EXTRA_ID_REVERSE_ORDER = "reverse";
     public static final String EXTRA_FILTER = "filter";
-    public static final String EXTRA_IS_VOICEMESSAGE = "vm";
+    public static final String EXTRA_IS_VOICE_MESSAGE = "vm";
+    public static final String EXTRA_IS_PRIVATE_CHAT = "is_private_chat";
 
     private LockableViewPager pager;
     private File currentMediaFile;
@@ -115,10 +123,15 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     private MediaViewFragment[] fragments;
     private File[] decryptedFileCache;
 
-    private View captionContainer;
+    private FrameLayout captionContainer;
     private TextView caption;
     private final Handler loadingFragmentHandler = new Handler();
     private MenuItem saveMenuItem, shareMenuItem, viewMenuItem;
+
+    private boolean isPrivateChat = false;
+
+    private @Nullable ListenableFuture<MediaController> mediaControllerFuture = null;
+    private volatile @Nullable MediaController mediaController = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -134,8 +147,8 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
         super.handleDeviceInsets();
         ViewExtensionsKt.applyDeviceInsetsAsMargin(
             findViewById(R.id.caption_container),
-            InsetSides.bottom(),
-            SpacingValues.bottom(R.dimen.mediaviewer_caption_border_bottom)
+            InsetSides.lbr(),
+            SpacingValues.horizontal(R.dimen.grid_unit_x2)
         );
     }
 
@@ -149,9 +162,9 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
 
         Intent intent = getIntent();
 
-        String t = IntentDataUtil.getAbstractMessageType(intent);
-        int i = IntentDataUtil.getAbstractMessageId(intent);
-        if (TestUtil.isEmptyOrNull(t) || i <= 0) {
+        final @Nullable String messageType = IntentDataUtil.getAbstractMessageType(intent);
+        final int messageId = IntentDataUtil.getAbstractMessageId(intent);
+        if (TestUtil.isEmptyOrNull(messageType) || messageId <= 0) {
             finish();
             return false;
         }
@@ -166,25 +179,8 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
         this.actionBar.setDisplayHomeAsUpEnabled(true);
         this.actionBar.setTitle(" ");
 
-        this.caption = findViewById(R.id.caption);
-        ViewCompat.setOnApplyWindowInsetsListener(this.caption, (v, insets) -> {
-            Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
-
-            // limit height so that caption doesn't overlap UI elements such as the play button
-            final int lineHeight = ((TextView) v).getLineHeight();
-            final int halfWindowHeight = ConfigUtils.getRealWindowHeight(getWindowManager()) / 2;
-            final int maxTextViewHeight = halfWindowHeight
-                - systemInsets.bottom
-                - getResources().getDimensionPixelSize(R.dimen.mediaviewer_play_button_radius)
-                - getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_border_bottom)
-                - (getResources().getDimensionPixelSize(R.dimen.mediaviewer_caption_container_padding_vertical) * 2);
-            ((TextView) v).setMaxLines(maxTextViewHeight / lineHeight);
-            ((TextView) v).setEllipsize(TextUtils.TruncateAt.END);
-
-            return insets;
-        });
-
         this.captionContainer = findViewById(R.id.caption_container);
+        this.caption = findViewById(R.id.caption);
 
         this.currentMessageModel = IntentDataUtil.getAbstractMessageModel(intent, dependencies.getMessageService());
         try {
@@ -195,14 +191,21 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
             return false;
         }
 
-        if (!TestUtil.required(this.currentMessageModel, this.currentReceiver)) {
+        if (currentMessageModel == null || currentReceiver == null) {
             finish();
             return false;
         }
 
+        this.isPrivateChat = dependencies.getConversationCategoryService().isPrivateChat(
+            this.currentReceiver.getUniqueIdString()
+        );
+
         final @MessageContentsType int[] filter = intent.hasExtra(EXTRA_FILTER)
             ? intent.getIntArrayExtra(EXTRA_FILTER)
             : null;
+
+        final @NonNull SessionToken sessionToken = new SessionToken(this, new ComponentName(this, AudioPlayerService.class));
+        this.mediaControllerFuture = new MediaController.Builder(this, sessionToken).buildAsync();
 
         //load all records of receiver to support list pager
         try {
@@ -315,12 +318,28 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     }
 
     private void updateActionBarTitle(AbstractMessageModel messageModel) {
-        String title = NameUtil.getDisplayNameOrNickname(this, messageModel, dependencies.getContactService());
-        String subtitle = MessageUtil.getDisplayDate(this, messageModel, true);
+        String title = NameUtil.getContactDisplayNameOrNickname(
+            this,
+            messageModel,
+            dependencies.getContactService(),
+            dependencies.getUserService(),
+            dependencies.getPreferenceService().getContactNameFormat()
+        );
+
+        @Nullable String subtitle = null;
+        if (messageModel != null) {
+            subtitle = MessageUtil.getDisplayDate(
+                this,
+                messageModel.getPostedAt(),
+                messageModel.isOutbox(),
+                messageModel.getModifiedAt(),
+                true
+            );
+        }
 
         logger.debug("show updateActionBarTitle: '{}' '{}'", title, subtitle);
 
-        if (TestUtil.required(getToolbar(), title, subtitle)) {
+        if (getToolbar() != null && title != null) {
             getToolbar().setTitle(title);
             getToolbar().setSubtitle(subtitle);
         } else {
@@ -337,7 +356,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     }
 
     private void updateMenus() {
-        boolean visibility = currentMediaFile != null && !AppRestrictionUtil.isShareMediaDisabled(this);
+        boolean visibility = currentMediaFile != null && !dependencies.getAppRestrictions().isShareMediaDisabled();
 
         if (saveMenuItem != null) {
             saveMenuItem.setVisible(visibility);
@@ -355,32 +374,36 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
         }
     }
 
-    private void currentFragmentChanged(final int imagePos) {
+    private void currentFragmentChanged(final int index) {
         this.loadingFragmentHandler.removeCallbacksAndMessages(null);
-        this.loadingFragmentHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                loadCurrentFrame(imagePos);
-            }
-        }, LOADING_DELAY);
+        this.loadingFragmentHandler.postDelayed(
+            () -> loadCurrentFrame(index),
+            LOADING_DELAY
+        );
     }
 
-    private void loadCurrentFrame(int imagePos) {
+    private void loadCurrentFrame(int index) {
         this.hideCurrentFragment();
 
-        if (imagePos >= 0 && imagePos < this.messageModels.size()) {
-            this.currentPosition = imagePos;
+        if (index >= 0 && index < this.messageModels.size()) {
+            this.currentPosition = index;
             this.currentMessageModel = this.messageModels.get(this.currentPosition);
 
             updateActionBarTitle(this.currentMessageModel);
 
-            final MediaViewFragment f = this.getCurrentFragment();
-            if (f != null) {
+            final @Nullable MediaViewFragment currentMediaViewFragment = this.getCurrentFragment();
+            for (@Nullable MediaViewFragment mediaViewFragment : fragments) {
+                if (mediaViewFragment != null) {
+                    mediaViewFragment.setIsCurrentlyInFocus(false);
+                }
+            }
+            if (currentMediaViewFragment != null) {
+                currentMediaViewFragment.setIsCurrentlyInFocus(true);
                 RuntimeUtil.runOnUiThread(() -> {
                     logger.debug("showUI - loadCurrentFrame");
                     showUi();
                 });
-                f.showDecrypted();
+                currentMediaViewFragment.showDecrypted();
             }
         }
     }
@@ -587,6 +610,16 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
 
     @Override
     protected void onDestroy() {
+        final @Nullable MediaController audioMediaController = this.mediaController;
+        if (audioMediaController != null) {
+            audioMediaController.stop();
+            audioMediaController.clearMediaItems();
+            audioMediaController.release();
+        }
+        if (mediaControllerFuture != null) {
+            MediaController.releaseFuture(mediaControllerFuture);
+        }
+
         //cleanup file cache
         loadingFragmentHandler.removeCallbacksAndMessages(null);
 
@@ -610,18 +643,60 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     }
 
     /**
+     * Provides the {@code MediaController} after it was bound to the {@code AudioPlayerService}.
+     * If the {@code MediaController} failed to create or bind, {@code null} will be passed to {@code mediaControllerConsumer}.
+     *
+     * @see MediaViewerActivity#getAudioMediaController()
+     * @see AudioPlayerService#onGetSession
+     */
+    public void awaitAudioMediaController(@NonNull Consumer<MediaController> mediaControllerConsumer) {
+        if (mediaControllerFuture == null) {
+            mediaControllerConsumer.accept(null);
+            return;
+        }
+        if (mediaController != null) {
+            mediaControllerConsumer.accept(mediaController);
+            return;
+        }
+        mediaControllerFuture.addListener(
+            () -> {
+                try {
+                    mediaController = mediaControllerFuture.get();
+                } catch (InterruptedException e) {
+                    logger.error("Media Controller interrupted exception", e);
+                    Thread.currentThread().interrupt();
+                } catch (Exception e) {
+                    logger.error("Media Controller exception", e);
+                } finally {
+                    mediaControllerConsumer.accept(mediaController);
+                }
+            },
+            MoreExecutors.directExecutor()
+        );
+    }
+
+    /**
+     * @return The {@code MediaController} that is currently bound to {@code AudioPlayerService} or null.
+     * @see MediaViewerActivity#awaitAudioMediaController
+     */
+    @Nullable
+    public MediaController getAudioMediaController() {
+        return this.mediaController;
+    }
+
+    /**
      * Page Adapter that instantiates ImageViewFragments
      */
     public static class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
-        private final MediaViewerActivity a;
+        private final MediaViewerActivity mediaViewerActivity;
         private final FragmentManager fragmentManager;
         private final SparseArray<Fragment> fragments;
         private FragmentTransaction curTransaction;
 
-        public ScreenSlidePagerAdapter(MediaViewerActivity a, FragmentManager fm) {
+        public ScreenSlidePagerAdapter(MediaViewerActivity mediaViewerActivity, FragmentManager fm) {
             super(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT);
-            this.a = a;
+            this.mediaViewerActivity = mediaViewerActivity;
             fragmentManager = fm;
             fragments = new SparseArray<>();
         }
@@ -647,69 +722,71 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
         @NonNull
         @Override
         public Fragment getItem(final int position) {
-            logger.debug("getItem " + position);
+            logger.debug("getItem {}", position);
 
-            if (a.fragments[position] == null) {
-                final AbstractMessageModel messageModel = a.messageModels.get(position);
-                MediaViewFragment f;
+            if (mediaViewerActivity.fragments[position] == null) {
+                final AbstractMessageModel messageModel = mediaViewerActivity.messageModels.get(position);
+                MediaViewFragment mediaViewFragment;
                 Bundle args = new Bundle();
 
                 // check if caller wants the item to be played immediately
-                Intent intent = a.getIntent();
-                if (intent.getExtras().getBoolean(EXTRA_ID_IMMEDIATE_PLAY, false)) {
+                final Intent intent = mediaViewerActivity.getIntent();
+                if (intent.getExtras() != null && intent.getExtras().getBoolean(EXTRA_ID_IMMEDIATE_PLAY, false)) {
                     args.putBoolean(EXTRA_ID_IMMEDIATE_PLAY, true);
                     intent.removeExtra(EXTRA_ID_IMMEDIATE_PLAY);
                 }
 
                 switch (messageModel.getType()) {
                     case VIDEO:
-                        f = new VideoViewFragment();
+                        mediaViewFragment = new VideoViewFragment();
                         break;
                     case FILE:
                         String mimeType = messageModel.getFileData().getMimeType();
                         if (MimeUtil.isSupportedImageFile(mimeType)) {
-                            f = new ImageViewFragment();
+                            mediaViewFragment = new ImageViewFragment();
                         } else if (MimeUtil.isVideoFile(mimeType)) {
-                            f = new VideoViewFragment();
+                            mediaViewFragment = new VideoViewFragment();
                         } else if (MimeUtil.isAudioFile(mimeType)) {
                             if (MimeUtil.isMidiFile(mimeType) || MimeUtil.isFlacFile(mimeType)) {
-                                f = new MediaPlayerViewFragment();
+                                mediaViewFragment = new MediaPlayerViewFragment();
                             } else {
-                                args.putBoolean(EXTRA_IS_VOICEMESSAGE, messageModel.getMessageContentsType() == MessageContentsType.VOICE_MESSAGE);
-                                f = new AudioViewFragment();
+                                args.putBoolean(EXTRA_IS_VOICE_MESSAGE, messageModel.getMessageContentsType() == MessageContentsType.VOICE_MESSAGE);
+                                args.putBoolean(EXTRA_IS_PRIVATE_CHAT, mediaViewerActivity.isPrivateChat);
+                                mediaViewFragment = new AudioViewFragment();
                             }
                         } else {
-                            f = new FileViewFragment();
+                            mediaViewFragment = new FileViewFragment();
                         }
                         break;
                     case VOICEMESSAGE:
-                        f = new AudioViewFragment();
+                        args.putBoolean(EXTRA_IS_PRIVATE_CHAT, mediaViewerActivity.isPrivateChat);
+                        mediaViewFragment = new AudioViewFragment();
                         break;
                     default:
-                        f = new ImageViewFragment();
+                        mediaViewFragment = new ImageViewFragment();
                 }
 
                 args.putInt("position", position);
-                f.setArguments(args);
+                mediaViewFragment.setArguments(args);
 
-                f.setOnImageLoaded(new MediaViewFragment.OnMediaLoadListener() {
+                mediaViewFragment.setOnImageLoaded(new MediaViewFragment.OnMediaLoadListener() {
                     @Override
                     public void decrypting() {
-                        a.currentMediaFile = null;
+                        mediaViewerActivity.currentMediaFile = null;
                     }
 
                     @Override
                     public void decrypted(boolean success) {
                         if (!success) {
-                            a.currentMediaFile = null;
-                            a.updateMenus();
+                            mediaViewerActivity.currentMediaFile = null;
+                            mediaViewerActivity.updateMenus();
                         }
                     }
 
                     @Override
                     public void loaded(File file) {
-                        a.currentMediaFile = file;
-                        a.updateMenus();
+                        mediaViewerActivity.currentMediaFile = file;
+                        mediaViewerActivity.updateMenus();
                     }
 
                     @Override
@@ -717,16 +794,16 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
                         //do nothing!
                     }
                 });
-                a.fragments[position] = f;
+                mediaViewerActivity.fragments[position] = mediaViewFragment;
             }
 
-            return a.fragments[position];
+            return mediaViewerActivity.fragments[position];
         }
 
         @SuppressLint("CommitTransaction")
         @Override
         public void destroyItem(@NonNull ViewGroup container, int position, @NonNull Object object) {
-            logger.debug("destroyItem " + position);
+            logger.debug("destroyItem {}", position);
 
             if (curTransaction == null) {
                 curTransaction = fragmentManager.beginTransaction();
@@ -734,13 +811,13 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
             curTransaction.detach(fragments.get(position));
             fragments.remove(position);
 
-            if (position >= 0 && position < a.fragments.length) {
-                if (a.fragments[position] != null) {
+            if (position >= 0 && position < mediaViewerActivity.fragments.length) {
+                if (mediaViewerActivity.fragments[position] != null) {
                     //free memory
-                    a.fragments[position].destroy();
+                    mediaViewerActivity.fragments[position].destroy();
 
                     //remove from array
-                    a.fragments[position] = null;
+                    mediaViewerActivity.fragments[position] = null;
                 }
             }
         }
@@ -756,7 +833,7 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
 
         @Override
         public int getCount() {
-            return a.messageModels.size();
+            return mediaViewerActivity.messageModels.size();
         }
 
         @Override
@@ -771,18 +848,16 @@ public class MediaViewerActivity extends ThreemaToolbarActivity implements Expan
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case PERMISSION_REQUEST_SAVE_MESSAGE:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    saveMedia();
-                } else {
-                    if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        ConfigUtils.showPermissionRationale(this, findViewById(R.id.pager), R.string.permission_storage_required);
-                    }
+        if (requestCode == PERMISSION_REQUEST_SAVE_MESSAGE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                saveMedia();
+            } else {
+                if (!ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    ConfigUtils.showPermissionRationale(this, findViewById(R.id.pager), R.string.permission_storage_required);
                 }
+            }
         }
     }
 

@@ -4,16 +4,9 @@ import java.util.Arrays;
 
 import androidx.annotation.Nullable;
 
-public class TestUtil {
-    public static boolean required(Object... o) {
-        for (Object x : o) {
-            if (x == null) {
-                return false;
-            }
-        }
-        return true;
-    }
+import static ch.threema.common.ReflectionExtensionsKt.isClassAvailable;
 
+public class TestUtil {
     public static boolean compare(Object a, Object b) {
         if (a == null) {
             return b == null;
@@ -38,25 +31,6 @@ public class TestUtil {
     }
 
     /**
-     * Returns true if the provided strings are null or empty. Returns false if at least one of them is not empty.
-     * <p>
-     * Do not use this, as it is not intuitively clear whether it performs a logical AND or an OR on the inputs' nullability and emptiness,
-     * which can easily lead to subtle bugs.
-     */
-    @Deprecated
-    public static boolean isEmptyOrNull(@Nullable String... string) {
-        if (string == null) {
-            return true;
-        }
-        for (String s : string) {
-            if (!isEmptyOrNull(s)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    /**
      * Returns true if the provided string is null, empty or blank.
      */
     public static boolean isBlankOrNull(@Nullable String string) {
@@ -74,20 +48,7 @@ public class TestUtil {
         return isBlankOrNull(string);
     }
 
-    public static boolean isInTest() {
-        return isClassAvailable("org.junit.Test");
-    }
-
     public static boolean isInDeviceTest() {
         return isClassAvailable("ch.threema.app.ThreemaTestRunner");
-    }
-
-    private static boolean isClassAvailable(String className) {
-        try {
-            Class.forName(className);
-            return true;
-        } catch (ClassNotFoundException e) {
-            return false;
-        }
     }
 }

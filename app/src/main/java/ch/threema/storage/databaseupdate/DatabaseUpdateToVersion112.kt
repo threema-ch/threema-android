@@ -75,11 +75,7 @@ class DatabaseUpdateToVersion112(
         }
     }
 
-    override fun getVersion() = VERSION
+    override val version = 112
 
     override fun getDescription() = "turn 'orphaned' groups into 'kicked' groups"
-
-    companion object {
-        const val VERSION = 112
-    }
 }

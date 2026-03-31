@@ -5,7 +5,7 @@ import ch.threema.base.ThreemaException
 import ch.threema.domain.protocol.blob.BlobLoader
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.blob.BlobUploader
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.io.IOException
 import java.net.URL
 
@@ -33,5 +33,5 @@ interface ApiService {
     fun invalidateAuthToken()
 
     @Throws(ThreemaException::class, IOException::class)
-    fun getAvatarURL(identity: Identity): URL
+    fun getAvatarURL(identity: IdentityString): URL
 }

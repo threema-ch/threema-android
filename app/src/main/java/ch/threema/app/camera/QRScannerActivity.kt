@@ -27,11 +27,12 @@ import ch.threema.app.activities.ThreemaActivity
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
-import ch.threema.app.utils.SoundUtil
+import ch.threema.app.utils.SoundEffectPlayer
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import org.koin.android.ext.android.inject
 
 private val logger = getThreemaLogger("QRScannerActivity")
 
@@ -39,6 +40,8 @@ class QRScannerActivity : ThreemaActivity() {
     init {
         logScreenVisibility(logger)
     }
+
+    private val soundEffectPlayer: SoundEffectPlayer by inject()
 
     private lateinit var cameraExecutor: ExecutorService
 
@@ -94,9 +97,8 @@ class QRScannerActivity : ThreemaActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-
-        // Shut down our background executor
         cameraExecutor.shutdown()
+        soundEffectPlayer.destroy()
     }
 
     private fun setUpCamera() {
@@ -183,7 +185,11 @@ class QRScannerActivity : ThreemaActivity() {
             cameraProvider.unbindAll()
 
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageCapture, imageAnalyzer,
+                this,
+                cameraSelector,
+                preview,
+                imageCapture,
+                imageAnalyzer,
             )
 
             // Attach the viewfinder's surface provider to preview use case
@@ -218,7 +224,7 @@ class QRScannerActivity : ThreemaActivity() {
 
     private fun returnData(qrCodeData: String?, success: Boolean) {
         if (success) {
-            SoundUtil.play(R.raw.qrscanner_beep)
+            soundEffectPlayer.play(R.raw.qrscanner_beep)
             setResult(
                 RESULT_OK,
                 buildIntent {

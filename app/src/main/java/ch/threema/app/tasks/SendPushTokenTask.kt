@@ -1,9 +1,10 @@
 package ch.threema.app.tasks
 
+import android.content.Context
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import ch.threema.app.R
-import ch.threema.app.managers.ServiceManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.utils.PushUtil
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.connection.data.CspMessage
@@ -14,22 +15,25 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import java.nio.charset.StandardCharsets
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("SendPushTokenTask")
 
 class SendPushTokenTask(
     private val token: String,
     private val tokenType: Int,
-    private val serviceManager: ServiceManager,
-) : ActiveTask<Unit>,
-    PersistableTask {
+) : ActiveTask<Unit>, PersistableTask, KoinComponent {
+    private val context: Context by inject()
+    private val preferenceService: PreferenceService by inject()
+
     override val type: String = "SendPushTokenTask"
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
         val resetPushToken = token.isEmpty()
 
         // In case the push token should be reset, we must not check whether it needs to be refreshed
-        if (!resetPushToken && !PushUtil.pushTokenNeedsRefresh(serviceManager.context)) {
+        if (!resetPushToken && !PushUtil.pushTokenNeedsRefresh(context)) {
             logger.warn("Push token does not need to be sent; aborting this task")
             return
         }
@@ -46,16 +50,16 @@ class SendPushTokenTask(
             System.currentTimeMillis()
         }
 
-        PreferenceManager.getDefaultSharedPreferences(serviceManager.context)
+        PreferenceManager.getDefaultSharedPreferences(context)
             .edit {
                 putLong(
-                    serviceManager.context.getString(R.string.preferences__token_sent_date),
+                    context.getString(R.string.preferences__token_sent_date),
                     sentTime,
                 )
             }
 
         // Used in the Webclient Sessions
-        serviceManager.getPreferenceService().setPushToken(token)
+        preferenceService.setPushToken(token)
     }
 
     private suspend fun sendPushToken(handle: ActiveTaskCodec) {
@@ -84,9 +88,8 @@ class SendPushTokenTask(
     override fun serialize(): SerializableTaskData = SendPushTokenData(token, tokenType)
 
     @Serializable
-    data class SendPushTokenData(private val token: String, private val tokenType: Int) :
-        SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-            SendPushTokenTask(token, tokenType, serviceManager)
+    data class SendPushTokenData(private val token: String, private val tokenType: Int) : SerializableTaskData {
+        override fun createTask(): Task<*, TaskCodec> =
+            SendPushTokenTask(token, tokenType)
     }
 }

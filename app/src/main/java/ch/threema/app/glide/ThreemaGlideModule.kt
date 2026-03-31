@@ -2,9 +2,9 @@ package ch.threema.app.glide
 
 import android.content.Context
 import android.graphics.Bitmap
-import ch.threema.app.services.AvatarCacheServiceImpl.DistributionListAvatarConfig
-import ch.threema.app.services.AvatarCacheServiceImpl.GroupAvatarConfig
-import ch.threema.app.services.AvatarCacheServiceImpl.IdentityAvatarConfig
+import ch.threema.app.services.avatarcache.AvatarCacheServiceImpl.DistributionListAvatarConfig
+import ch.threema.app.services.avatarcache.AvatarCacheServiceImpl.GroupAvatarConfig
+import ch.threema.app.services.avatarcache.AvatarCacheServiceImpl.IdentityAvatarConfig
 import ch.threema.storage.models.AbstractMessageModel
 import com.bumptech.glide.Glide
 import com.bumptech.glide.GlideBuilder

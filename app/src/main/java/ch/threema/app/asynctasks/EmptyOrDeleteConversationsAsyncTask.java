@@ -31,11 +31,13 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.base.utils.CoroutinesExtensionKt;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
@@ -150,7 +152,7 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
                         final ContactModel contactModel = ((ContactMessageReceiver) receiver).getContact();
                         this.deleteContactConversation(contactModel);
                     } else if (receiver instanceof GroupMessageReceiver) {
-                        final GroupModel groupModel = ((GroupMessageReceiver) receiver).getGroup();
+                        final GroupModelOld groupModel = ((GroupMessageReceiver) receiver).getGroup();
                         this.deleteGroupConversation(groupModel);
                     } else if (receiver instanceof DistributionListMessageReceiver) {
                         final DistributionListModel distributionListModel = ((DistributionListMessageReceiver) receiver).getDistributionList();
@@ -175,9 +177,9 @@ public class EmptyOrDeleteConversationsAsyncTask extends AsyncTask<Void, Void, V
     }
 
     @WorkerThread
-    private void deleteGroupConversation(@NonNull GroupModel groupModel) {
+    private void deleteGroupConversation(@NonNull GroupModelOld groupModel) {
         // Get the new group model
-        ch.threema.data.models.GroupModel group = groupModelRepository.getByCreatorIdentityAndId(
+        GroupModel group = groupModelRepository.getByCreatorIdentityAndId(
             groupModel.getCreatorIdentity(),
             groupModel.getApiGroupId()
         );

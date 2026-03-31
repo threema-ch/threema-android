@@ -6,7 +6,7 @@ import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.GroupId
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
-import ch.threema.storage.models.GroupModel
+import ch.threema.storage.models.group.GroupModelOld
 import ch.threema.testhelpers.nonSecureRandomArray
 import io.mockk.every
 import io.mockk.mockk
@@ -200,7 +200,7 @@ class IdColorTest {
             "$identifier, computeGroupIdColor",
         )
 
-        val group = GroupModel().apply {
+        val group = GroupModelOld().apply {
             this.creatorIdentity = creatorIdentity
             apiGroupId = groupId
         }

@@ -41,7 +41,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.DefaultLifecycleObserver;
 import androidx.lifecycle.LifecycleOwner;
 
-import org.apache.commons.io.IOUtils;
 import org.koin.android.compat.ViewModelCompat;
 import org.slf4j.Logger;
 
@@ -80,11 +79,14 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static ch.threema.common.JavaCompat.copyStream;
+
+import ch.threema.data.models.GroupModel;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 public class AvatarEditView extends FrameLayout implements DefaultLifecycleObserver, View.OnClickListener, View.OnLongClickListener {
     private static final Logger logger = getThreemaLogger("AvatarEditView");
@@ -172,7 +174,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
         @Override
         public void onAvatarChanged(final @NonNull String identity) {
             if (this.shouldHandleChange(identity)) {
-                RuntimeUtil.runOnUiThread(() -> loadAvatarForModel(identity, null));
+                RuntimeUtil.runOnUiThread(() -> loadAvatarForContact(identity));
             }
         }
 
@@ -201,71 +203,124 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
     private void reloadProfilePicture() {
         if (viewModel != null && userService.isMe(viewModel.getContactIdentity())) {
-            RuntimeUtil.runOnUiThread(() -> loadAvatarForModel(viewModel.getContactIdentity(), null));
+            RuntimeUtil.runOnUiThread(() -> loadAvatarForContact(viewModel.getContactIdentity()));
         }
     }
 
-    /**
-     * Load saved avatar for the specified model - do not call this if changes are to be deferred
-     */
-    @SuppressLint("StaticFieldLeak")
-    @UiThread
-    public synchronized void loadAvatarForModel(@Nullable String identity, GroupModel groupModel) {
+    private synchronized void loadAvatarForContact(@NonNull String identity) {
         if (avatarImage == null) {
             return;
         }
 
         try {
-            if (identity != null) {
-                // Respect the settings for getting the profile picture.
-                Bitmap bitmap = contactService.getAvatar(identity, new AvatarOptions.Builder()
+            // Respect the settings for getting the profile picture.
+            Bitmap bitmap = contactService.getAvatar(identity, new AvatarOptions.Builder()
+                .setHighRes(true)
+                .setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK)
+                .setDarkerBackground(isAvatarEditable())
+                .toOptions()
+            );
+
+            // If the preferences allow showing the profile pictures, then check if there is a
+            // profile picture available for the contact. Otherwise, check whether there is a
+            // locally saved avatar.
+            boolean isCustomAvatar =
+                (preferenceService.getProfilePicReceive() && fileService.hasContactDefinedProfilePicture(identity))
+                    || fileService.hasUserDefinedProfilePicture(identity);
+
+            // If it is my profile picture then make it round
+            if (isMyProfilePicture) {
+                avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getContext().getResources(), bitmap));
+            } else {
+                avatarImage.setImageBitmap(bitmap);
+            }
+
+            // If it is a custom avatar, we may need to adjust the darkness
+            if (isCustomAvatar) {
+                adjustColorFilter(bitmap);
+            }
+        } catch (RuntimeException e) {
+            logger.warn("Unable to set avatar bitmap", e);
+        }
+
+        boolean editable = isAvatarEditable();
+        avatarImage.setClickable(editable);
+        avatarImage.setFocusable(editable);
+        avatarEditOverlay.setVisibility(editable ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Load saved avatar for the specified group model - do not call this if changes are to be deferred
+     */
+    @SuppressLint("StaticFieldLeak")
+    @UiThread
+    public synchronized void loadAvatarForGroupModel(@NonNull GroupModel groupModel) {
+        if (avatarImage == null) {
+            return;
+        }
+
+        try {
+            // Display a group avatar
+            Bitmap bitmap = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
+                .setHighRes(true)
+                .setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
+                .toOptions());
+            if (bitmap != null) {
+                // A custom avatar is set and the bitmap may need to be darkened
+                avatarImage.setImageBitmap(bitmap);
+                adjustColorFilter(bitmap);
+            } else {
+                // The default avatar is loaded with already darkened background
+                bitmap = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
                     .setHighRes(true)
-                    .setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK)
+                    .setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_AVATAR)
                     .setDarkerBackground(isAvatarEditable())
                     .toOptions()
                 );
-
-                // If the preferences allow showing the profile pictures, then check if there is a
-                // profile picture available for the contact. Otherwise, check whether there is a
-                // locally saved avatar.
-                boolean isCustomAvatar =
-                    (preferenceService.getProfilePicReceive() && fileService.hasContactDefinedProfilePicture(identity))
-                        || fileService.hasUserDefinedProfilePicture(identity);
-
-                // If it is my profile picture then make it round
-                if (isMyProfilePicture) {
-                    avatarImage.setImageDrawable(AvatarConverterUtil.convertToRound(getContext().getResources(), bitmap));
-                } else {
-                    avatarImage.setImageBitmap(bitmap);
-                }
-
-                // If it is a custom avatar, we may need to adjust the darkness
-                if (isCustomAvatar) {
-                    adjustColorFilter(bitmap);
-                }
-            } else {
-                // Display a group avatar
-                Bitmap bitmap = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
-                    .setHighRes(true)
-                    .setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
-                    .toOptions());
-                if (bitmap != null) {
-                    // A custom avatar is set and the bitmap may need to be darkened
-                    avatarImage.setImageBitmap(bitmap);
-                    adjustColorFilter(bitmap);
-                } else {
-                    // The default avatar is loaded with already darkened background
-                    bitmap = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
-                        .setHighRes(true)
-                        .setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_AVATAR)
-                        .setDarkerBackground(isAvatarEditable())
-                        .toOptions()
-                    );
-                    avatarImage.setImageBitmap(bitmap);
-                }
+                avatarImage.setImageBitmap(bitmap);
             }
         } catch (RuntimeException e) {
-            logger.debug("Unable to set avatar bitmap", e);
+            logger.warn("Unable to set avatar bitmap", e);
+        }
+
+        boolean editable = isAvatarEditable();
+        avatarImage.setClickable(editable);
+        avatarImage.setFocusable(editable);
+        avatarEditOverlay.setVisibility(editable ? View.VISIBLE : View.GONE);
+    }
+
+    /**
+     * Load saved avatar for the specified group model - do not call this if changes are to be deferred
+     */
+    @SuppressLint("StaticFieldLeak")
+    @UiThread
+    public synchronized void loadAvatarForGroupModel(@NonNull GroupModelOld groupModel) {
+        if (avatarImage == null) {
+            return;
+        }
+
+        try {
+            // Display a group avatar
+            Bitmap bitmap = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
+                .setHighRes(true)
+                .setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR)
+                .toOptions());
+            if (bitmap != null) {
+                // A custom avatar is set and the bitmap may need to be darkened
+                avatarImage.setImageBitmap(bitmap);
+                adjustColorFilter(bitmap);
+            } else {
+                // The default avatar is loaded with already darkened background
+                bitmap = groupService.getAvatar(groupModel, new AvatarOptions.Builder()
+                    .setHighRes(true)
+                    .setReturnPolicy(AvatarOptions.DefaultAvatarPolicy.DEFAULT_AVATAR)
+                    .setDarkerBackground(isAvatarEditable())
+                    .toOptions()
+                );
+                avatarImage.setImageBitmap(bitmap);
+            }
+        } catch (RuntimeException e) {
+            logger.warn("Unable to set avatar bitmap", e);
         }
 
         boolean editable = isAvatarEditable();
@@ -385,13 +440,17 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
                 @Override
                 protected void onPostExecute(Void aVoid) {
-                    loadAvatarForModel(viewModel.getContactIdentity(), viewModel.getGroupModel());
+                    if (viewModel.getContactIdentity() != null) {
+                        loadAvatarForContact(viewModel.getContactIdentity());
+                    } else {
+                        loadAvatarForGroupModel(viewModel.getGroupModel());
+                    }
                 }
             }.execute();
         }
     }
 
-    private void loadDefaultAvatar(@Nullable String identity, @Nullable GroupModel groupModel) {
+    private void loadDefaultAvatar(@Nullable String identity, @Nullable GroupModelOld groupModel) {
         if (identity != null) {
             setAvatarBitmap(contactService.getDefaultAvatar(viewModel.getContactIdentity(), true, isAvatarEditable()));
         } else if (groupModel != null) {
@@ -406,7 +465,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
      */
     @WorkerThread
     public void saveGroupAvatar(@Nullable Bitmap avatar) {
-        ch.threema.data.models.GroupModel newGroupModel =
+        GroupModel newGroupModel =
             groupModelRepository.getByCreatorIdentityAndId(
                 viewModel.getGroupModel().getCreatorIdentity(),
                 viewModel.getGroupModel().getApiGroupId()
@@ -499,7 +558,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
                                 try (InputStream is = contentResolver.openInputStream(intent.getData());
                                      FileOutputStream fos = new FileOutputStream(viewModel.getCameraFile())) {
                                     if (is != null) {
-                                        IOUtils.copy(is, fos);
+                                        copyStream(is, fos);
                                     } else {
                                         throw new Exception("Unable to open input stream");
                                     }
@@ -543,7 +602,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
                                                 TriggerSource.LOCAL
                                             );
                                         }
-                                        loadAvatarForModel(this.viewModel.getContactIdentity(), null);
+                                        loadAvatarForContact(this.viewModel.getContactIdentity());
                                     } catch (Exception e) {
                                         logger.error("Exception", e);
                                     }
@@ -557,7 +616,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
                                         @Override
                                         protected void onPostExecute(Void aVoid) {
-                                            loadAvatarForModel(null, viewModel.getGroupModel());
+                                            loadAvatarForGroupModel(viewModel.getGroupModel());
                                         }
                                     }.execute(bitmap);
                                 }
@@ -694,7 +753,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
                 && !(preferenceService.getProfilePicReceive()
                 && fileService.hasContactDefinedProfilePicture(this.viewModel.getContactIdentity()));
         } else if (this.viewModel.getGroupModel() != null) {
-            GroupModel group = viewModel.getGroupModel();
+            GroupModelOld group = viewModel.getGroupModel();
             return isEditable && groupService.isGroupCreator(group) && groupService.isGroupMember(group);
         }
 
@@ -726,7 +785,7 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
 
     public void setContactIdentity(@NonNull String identity) {
         this.viewModel.setContactIdentity(identity);
-        loadAvatarForModel(identity, null);
+        loadAvatarForContact(identity);
     }
 
     /**
@@ -734,9 +793,9 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
      *
      * @param groupModel GroupModel
      */
-    public void setGroupModel(@NonNull GroupModel groupModel) {
+    public void setGroupModel(@NonNull GroupModelOld groupModel) {
         this.viewModel.setGroupModel(groupModel);
-        loadAvatarForModel(null, groupModel);
+        loadAvatarForGroupModel(groupModel);
     }
 
     public void setAvatarFile(File avatarFile) {
@@ -789,9 +848,8 @@ public class AvatarEditView extends FrameLayout implements DefaultLifecycleObser
         setHires(true);
     }
 
-    public void setDefaultAvatar(ContactModel contactModel, GroupModel groupModel) {
-        String identity = contactModel != null ? contactModel.getIdentity() : null;
-        loadDefaultAvatar(identity, groupModel);
+    public void setDefaultGroupAvatar() {
+        setAvatarBitmap(groupService.getDefaultAvatar(viewModel.getGroupModel(), true, isAvatarEditable()));
     }
 
     /**

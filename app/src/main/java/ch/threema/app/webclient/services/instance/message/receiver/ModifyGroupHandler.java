@@ -35,6 +35,7 @@ import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.GroupModelRepository;
+import ch.threema.storage.models.group.GroupModelOld;
 import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
@@ -205,7 +206,7 @@ public class ModifyGroupHandler extends MessageReceiver {
     private void success(String temporaryId, @NonNull GroupModel groupModel) {
         logger.debug("Respond modify group success");
 
-        ch.threema.storage.models.GroupModel oldGroupModel =
+        GroupModelOld oldGroupModel =
             groupService.getByGroupIdentity(groupModel.getGroupIdentity());
 
         if (oldGroupModel == null) {

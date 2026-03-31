@@ -6,9 +6,9 @@ import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.KeyPair
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.libthreema.CryptoException
 import java.util.Collections
 
@@ -38,7 +38,7 @@ constructor(
                 ?: error("No server group found")
             val publicKey = preferenceStore.getBytes(PreferenceStore.PREFS_PUBLIC_KEY)
             val privateKey = encryptedPreferenceStore.getBytes(EncryptedPreferenceStore.PREFS_PRIVATE_KEY)
-                .takeUnless { it.isEmpty() }
+                ?.takeUnless { it.isEmpty() }
             val publicNickname = preferenceStore.getString(PreferenceStore.PREFS_PUBLIC_NICKNAME)
 
             if (privateKey == null) {
@@ -82,6 +82,8 @@ constructor(
 
     override fun getIdentity() = identityData?.identity
 
+    override fun getIdentityString() = getIdentity()?.value
+
     override fun getServerGroup() = identityData?.serverGroup
 
     override fun getPublicKey() = identityData?.publicKey
@@ -97,7 +99,7 @@ constructor(
     }
 
     override fun storeIdentity(
-        identity: String,
+        identity: IdentityString,
         serverGroup: String,
         privateKey: ByteArray,
     ) {
@@ -107,13 +109,13 @@ constructor(
             throw ThreemaException("Could not derive public key", e)
         }
         identityData = IdentityData(
-            identity = identity,
+            identity = Identity(identity),
             serverGroup = serverGroup,
             publicKey = publicKey,
             privateKey = privateKey.takeUnless { it.isEmpty() },
         )
 
-        identityProvider.setIdentity(identity)
+        identityProvider.setIdentity(Identity(identity))
         preferenceStore.save(PreferenceStore.PREFS_SERVER_GROUP, serverGroup)
         preferenceStore.save(PreferenceStore.PREFS_PUBLIC_KEY, publicKey)
         encryptedPreferenceStore.save(EncryptedPreferenceStore.PREFS_PRIVATE_KEY, privateKey)
@@ -151,7 +153,6 @@ constructor(
         val privateKey: ByteArray?,
     ) {
         init {
-            require(identity.length == ProtocolDefines.IDENTITY_LEN)
             require(publicKey.size == NaCl.PUBLIC_KEY_BYTES)
             require(privateKey == null || privateKey.size == NaCl.SECRET_KEY_BYTES)
         }

@@ -110,9 +110,5 @@ internal class DatabaseUpdateToVersion89(
 
     override fun getDescription() = "add lastUpdate field"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 89
-    }
+    override val version = 89
 }

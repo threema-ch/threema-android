@@ -10,11 +10,11 @@ import ch.threema.domain.protocol.connection.data.OutboundMessage
 import ch.threema.domain.protocol.csp.coders.MessageBox
 import ch.threema.domain.protocol.urls.AppRatingUrl
 import ch.threema.domain.protocol.urls.BlobUrl
-import ch.threema.domain.protocol.urls.DeviceGroupUrl
 import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
+import ch.threema.domain.protocol.urls.MediatorUrl
 import ch.threema.domain.stores.IdentityStore
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
 import java.io.InputStream
 import java.io.OutputStream
@@ -62,9 +62,7 @@ internal class TestIdentityStore : IdentityStore {
         return getFromCache(publicKey).sharedSecret
     }
 
-    override fun getIdentity(): Identity {
-        return CLIENT_IDENTITY
-    }
+    override fun getIdentityString() = CLIENT_IDENTITY
 
     override fun getServerGroup(): String {
         MUST_NOT_BE_CALLED()
@@ -77,7 +75,7 @@ internal class TestIdentityStore : IdentityStore {
     override fun getPublicNickname(): String = "Test"
 
     override fun storeIdentity(
-        identity: Identity,
+        identity: IdentityString,
         serverGroup: String,
         privateKey: ByteArray,
     ) {
@@ -119,8 +117,8 @@ internal class TestServerAddressProvider(
         return skPublicAlt
     }
 
-    override fun getMediatorUrl(): DeviceGroupUrl {
-        return DeviceGroupUrl(mediatorUrl ?: MUST_NOT_BE_CALLED())
+    override fun getMediatorUrl(): MediatorUrl {
+        return MediatorUrl(mediatorUrl ?: MUST_NOT_BE_CALLED())
     }
 
     override fun getAppRatingUrl(): AppRatingUrl {

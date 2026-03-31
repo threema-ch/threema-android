@@ -28,6 +28,7 @@ fun InteropEmojiConversationTextView(
     text: String,
     @StyleRes textAppearanceRes: Int,
     contentColor: Color,
+    linkifyListener: LinkifyUtil.LinkifyListener,
     shouldMarkupText: Boolean = true,
     isTextSelectable: Boolean = false,
     maxLines: Int = Integer.MAX_VALUE,
@@ -77,14 +78,11 @@ fun InteropEmojiConversationTextView(
                     ellipsize = TextUtils.TruncateAt.END
                     if (shouldMarkupText) {
                         LinkifyUtil.getInstance().linkify(
-                            context,
-                            null,
-                            null,
                             textView,
                             null,
                             true,
-                            false,
                             null,
+                            linkifyListener,
                         )
                     }
                 }

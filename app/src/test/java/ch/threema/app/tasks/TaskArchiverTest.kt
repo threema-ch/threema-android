@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.tasks.archive.TaskArchiverImpl
 import ch.threema.app.tasks.archive.recovery.TaskRecoveryManager
 import ch.threema.domain.taskmanager.Task
@@ -16,8 +15,6 @@ import kotlin.test.assertContentEquals
 import kotlin.test.assertTrue
 
 class TaskArchiverTest {
-    private val serviceManagerMock = mockk<ServiceManager>()
-
     // For this test we do not need to log debug info of tasks
     private val getDebugString: Task<*, *>.() -> String = { "" }
 
@@ -34,7 +31,7 @@ class TaskArchiverTest {
         }
 
         val taskRecoveryManagerMock = mockk<TaskRecoveryManager> {
-            every { recoverTask(oldTaskEncoding, serviceManagerMock) } returns recoveredTask
+            every { recoverTask(oldTaskEncoding) } returns recoveredTask
         }
 
         val taskArchiver = TaskArchiverImpl(
@@ -43,12 +40,10 @@ class TaskArchiverTest {
             getDebugString = getDebugString,
         )
 
-        taskArchiver.setServiceManager(serviceManagerMock)
-
         assertContentEquals(listOf(recoveredTask), taskArchiver.loadAllTasks())
         verify(exactly = 1) { taskArchiveFactoryMock.getAll() }
         verify(exactly = 1) { taskArchiveFactoryMock.replace(oldTaskEncoding, newTaskEncoding) }
-        verify(exactly = 1) { taskRecoveryManagerMock.recoverTask(oldTaskEncoding, serviceManagerMock) }
+        verify(exactly = 1) { taskRecoveryManagerMock.recoverTask(oldTaskEncoding) }
     }
 
     @Test
@@ -61,7 +56,7 @@ class TaskArchiverTest {
         }
 
         val taskRecoveryManagerMock = mockk<TaskRecoveryManager> {
-            every { recoverTask(unknownTaskEncoding, serviceManagerMock) } returns null
+            every { recoverTask(unknownTaskEncoding) } returns null
         }
 
         val taskArchiver = TaskArchiverImpl(
@@ -70,11 +65,9 @@ class TaskArchiverTest {
             getDebugString = getDebugString,
         )
 
-        taskArchiver.setServiceManager(serviceManagerMock)
-
         assertTrue { taskArchiver.loadAllTasks().isEmpty() }
         verify(exactly = 1) { taskArchiveFactoryMock.getAll() }
-        verify(exactly = 1) { taskRecoveryManagerMock.recoverTask(unknownTaskEncoding, serviceManagerMock) }
+        verify(exactly = 1) { taskRecoveryManagerMock.recoverTask(unknownTaskEncoding) }
     }
 
     @Test
@@ -99,9 +92,9 @@ class TaskArchiverTest {
         }
 
         val taskRecoveryManagerMock = mockk<TaskRecoveryManager> {
-            every { recoverTask(oldTaskEncodingA, serviceManagerMock) } returns recoveredTaskA
-            every { recoverTask(oldTaskEncodingB, serviceManagerMock) } returns recoveredTaskB
-            every { recoverTask(unknownTaskEncoding, serviceManagerMock) } returns null
+            every { recoverTask(oldTaskEncodingA) } returns recoveredTaskA
+            every { recoverTask(oldTaskEncodingB) } returns recoveredTaskB
+            every { recoverTask(unknownTaskEncoding) } returns null
         }
 
         val taskArchiver = TaskArchiverImpl(
@@ -110,13 +103,11 @@ class TaskArchiverTest {
             getDebugString = getDebugString,
         )
 
-        taskArchiver.setServiceManager(serviceManagerMock)
-
         assertContentEquals(listOf(recoveredTaskA, recoveredTaskB), taskArchiver.loadAllTasks())
         verify(exactly = 1) { taskArchiveFactoryMock.getAll() }
         verify(exactly = 1) { taskArchiveFactoryMock.replace(oldTaskEncodingA, newTaskEncodingA) }
         verify(exactly = 1) { taskArchiveFactoryMock.replace(oldTaskEncodingB, newTaskEncodingB) }
-        verify(exactly = 3) { taskRecoveryManagerMock.recoverTask(any(), serviceManagerMock) }
+        verify(exactly = 3) { taskRecoveryManagerMock.recoverTask(any()) }
     }
 
     private fun createPersistableTaskMock(name: String): Task<*, TaskCodec> {

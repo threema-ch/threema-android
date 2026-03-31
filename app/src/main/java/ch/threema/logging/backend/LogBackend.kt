@@ -31,5 +31,5 @@ interface LogBackend {
      * @param messageFormat A message format string
      * @param args          The message arguments
      */
-    fun print(@LogLevel level: Int, tag: String, throwable: Throwable?, messageFormat: String, vararg args: Any?)
+    fun print(@LogLevel level: Int, tag: String, throwable: Throwable?, messageFormat: String, args: Array<Any?>)
 }

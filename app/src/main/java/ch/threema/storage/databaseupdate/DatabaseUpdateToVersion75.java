@@ -10,7 +10,6 @@ import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.field
 
 
 public class DatabaseUpdateToVersion75 implements DatabaseUpdate {
-    public static final int VERSION = 75;
 
     @NonNull
     private final SQLiteDatabase sqLiteDatabase;
@@ -36,6 +35,6 @@ public class DatabaseUpdateToVersion75 implements DatabaseUpdate {
 
     @Override
     public int getVersion() {
-        return VERSION;
+        return 75;
     }
 }

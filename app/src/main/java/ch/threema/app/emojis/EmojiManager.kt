@@ -1,114 +1,91 @@
 package ch.threema.app.emojis
 
 import android.content.Context
-import android.graphics.Bitmap
+import androidx.annotation.AnyThread
 import androidx.annotation.StringRes
-import androidx.annotation.UiThread
-import androidx.annotation.WorkerThread
 import ch.threema.app.R
-import ch.threema.app.utils.RuntimeUtil
-import ch.threema.base.utils.getThreemaLogger
-import java.util.concurrent.ExecutionException
-import java8.util.concurrent.CompletableFuture
+import ch.threema.app.utils.DispatcherProvider
 import kotlin.concurrent.Volatile
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-private val logger = getThreemaLogger("EmojiManager")
-
-class EmojiManager private constructor(context: Context) {
+class EmojiManager private constructor(
+    private val appContext: Context,
+    private val dispatcherProvider: DispatcherProvider = DispatcherProvider.default,
+) {
+    private val coroutineScope = CoroutineScope(dispatcherProvider.io)
 
     @JvmField
     val spritemapInSampleSize: Int =
-        if (context.resources.displayMetrics.density <= 1f) 2 else 1
-
-    private val appContext: Context = context.applicationContext
+        if (appContext.resources.displayMetrics.density <= 1f) 2 else 1
 
     /**
      * @param emojiSequence - sequence of UTF-8 characters representing the emoji
      *
      * @return [EmojiDrawable] or `null` if no asset exists for the passed [emojiSequence]
      */
+    @AnyThread
     fun getEmojiDrawableAsync(emojiSequence: String?): EmojiDrawable? =
         emojiSequence
             ?.let { EmojiParser.parseAt(emojiSequence, 0) }
             ?.let { getEmojiDrawableAsync(it.coords) }
 
     /**
-     * Loads the [EmojiDrawable] asynchronously for the passed sprite coordinates.
-     *
-     * @return [EmojiDrawable] or `null` if no asset exists at the given [coordinates]
+     * Returns the [EmojiDrawable] for the passed sprite coordinates and asynchronously starts loading the
+     * required spritemap bitmap.
      */
-    @UiThread
-    fun getEmojiDrawableAsync(coordinates: SpriteCoordinates): EmojiDrawable? {
-        val emojiGroup: EmojiGroup = emojiGroups[coordinates.groupId]
-        if (!emojiGroup.hasSpritemapBitmap(coordinates.spritemapId)) {
-            emojiGroup.setSpritemapBitmap(
-                coordinates.spritemapId,
-                EmojiSpritemapBitmap(appContext, emojiGroup, coordinates.spritemapId, spritemapInSampleSize),
-            )
-        }
-
+    @AnyThread
+    fun getEmojiDrawableAsync(coordinates: SpriteCoordinates): EmojiDrawable {
         val emojiDrawable = EmojiDrawable(coordinates, spritemapInSampleSize)
-
-        val spriteBitmap: EmojiSpritemapBitmap? = emojiGroup.getSpritemapBitmap(coordinates.spritemapId)
-        if (spriteBitmap == null) {
-            logger.error("Failed to read emoji drawable for coordinates: {}", coordinates)
-            return null
-        }
-
-        if (spriteBitmap.isSpritemapLoaded) {
-            emojiDrawable.setBitmap(spriteBitmap.spritemapBitmap)
-        } else {
-            try {
-                CompletableFuture
-                    .supplyAsync { spriteBitmap.loadSpritemapAsset() }
-                    .thenAccept { bitmap: Bitmap? -> RuntimeUtil.runOnUiThread { emojiDrawable.setBitmap(bitmap) } }
-                    .get()
-            } catch (e: InterruptedException) {
-                logger.error("Exception while reading emoji drawable", e)
-                return null
-            } catch (e: ExecutionException) {
-                logger.error("Exception while reading emoji drawable", e)
-                return null
+        val spritemapBitmap = getSpritemapBitmap(coordinates)
+            ?: return emojiDrawable
+        val isLoaded = applyBitmapIfLoaded(spritemapBitmap, emojiDrawable)
+        if (!isLoaded) {
+            coroutineScope.launch {
+                val bitmap = spritemapBitmap.getOrLoadSpritemapAsset()
+                if (bitmap != null) {
+                    emojiDrawable.setBitmap(bitmap)
+                } else {
+                    emojiDrawable.setFailed()
+                }
             }
         }
         return emojiDrawable
     }
 
-    @WorkerThread
-    suspend fun getEmojiDrawableSynchronously(coordinates: SpriteCoordinates): EmojiDrawable? = withContext(Dispatchers.IO) {
-        val emojiGroup: EmojiGroup = emojiGroups[coordinates.groupId]
-        if (!emojiGroup.hasSpritemapBitmap(coordinates.spritemapId)) {
-            emojiGroup.setSpritemapBitmap(
-                coordinates.spritemapId,
-                EmojiSpritemapBitmap(appContext, emojiGroup, coordinates.spritemapId, spritemapInSampleSize),
-            )
-        }
-
-        val emojiDrawable = EmojiDrawable(coordinates, spritemapInSampleSize)
-
-        val spriteBitmap: EmojiSpritemapBitmap? = emojiGroup.getSpritemapBitmap(coordinates.spritemapId)
-        if (spriteBitmap == null) {
-            logger.error("Failed to read emoji drawable for coordinates: {}", coordinates)
-            return@withContext null
-        }
-
-        if (spriteBitmap.isSpritemapLoaded) {
-            emojiDrawable.setBitmap(spriteBitmap.spritemapBitmap)
-        } else {
-            try {
-                spriteBitmap.loadSpritemapAsset().also(emojiDrawable::setBitmap)
-            } catch (e: InterruptedException) {
-                logger.error("Exception while reading emoji drawable", e)
-                return@withContext null
-            } catch (e: ExecutionException) {
-                logger.error("Exception while reading emoji drawable", e)
-                return@withContext null
+    private fun getSpritemapBitmap(coordinates: SpriteCoordinates): EmojiSpritemapBitmap? {
+        val emojiGroup = emojiGroups[coordinates.groupId]
+        emojiGroup.getSpritemapBitmap(coordinates.spritemapId)
+            ?.let { spriteBitmap ->
+                return spriteBitmap
             }
+        synchronized(emojiGroup) {
+            // We check whether a spritemap bitmap exists again inside the synchronized block.
+            // This ensures that we set the bitmap at most once even if multiple callers try to acquire the lock.
+            emojiGroup.getSpritemapBitmap(coordinates.spritemapId)
+                ?.let { spriteBitmap ->
+                    return spriteBitmap
+                }
+            val assetPath = emojiGroup.getAssetPath(coordinates.spritemapId)
+                ?: return null
+            val spriteBitmap = EmojiSpritemapBitmap(
+                appContext,
+                dispatcherProvider,
+                assetPath,
+                spritemapInSampleSize,
+            )
+            emojiGroup.setSpritemapBitmap(coordinates.spritemapId, spriteBitmap)
+            return spriteBitmap
         }
-        return@withContext emojiDrawable
     }
+
+    private fun applyBitmapIfLoaded(spritemapBitmap: EmojiSpritemapBitmap, emojiDrawable: EmojiDrawable): Boolean =
+        spritemapBitmap.spritemapBitmap
+            ?.let { bitmap ->
+                emojiDrawable.setBitmap(bitmap)
+                true
+            }
+            ?: false
 
     companion object {
 
@@ -118,11 +95,8 @@ class EmojiManager private constructor(context: Context) {
         @JvmStatic
         fun getInstance(context: Context): EmojiManager =
             instance ?: synchronized(this) {
-                instance ?: EmojiManager(context).also { instance = it }
+                instance ?: EmojiManager(context.applicationContext).also { instance = it }
             }
-
-        const val EMOJI_HEIGHT: Int = 64
-        const val EMOJI_WIDTH: Int = 64
 
         @JvmField
         val emojiGroups: Array<EmojiGroup> = arrayOf(

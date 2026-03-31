@@ -21,28 +21,28 @@ import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import androidx.appcompat.app.ActionBar;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.home.HomeActivity;
 import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.fragments.wizard.WizardFragment1;
-import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.threemasafe.usecases.CheckBadPasswordUseCase;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.utils.TextUtil;
 import ch.threema.base.ThreemaException;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.threemasafe.ThreemaSafeServiceImpl.MIN_PW_LENGTH;
+import static ch.threema.app.threemasafe.usecases.CheckBadPasswordUseCase.Result.BAD_PASSWORD;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
 public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity implements ThreemaSafeAdvancedDialog.WizardDialogCallback, GenericAlertDialog.DialogClickListener {
@@ -59,6 +59,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+    private final CheckBadPasswordUseCase badPasswordUseCase = KoinJavaComponent.get(CheckBadPasswordUseCase.class);
 
     private EditText password1, password2;
     private String safePassword = null;
@@ -184,14 +185,13 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
                 @Override
                 protected Boolean doInBackground(Void... voids) {
                     masterkey = dependencies.getThreemaSafeService().deriveMasterKey(safePassword, dependencies.getUserService().getIdentity());
-
-                    if (!TextUtil.checkBadPassword(ThreemaSafeConfigureActivity.this, safePassword)) {
-                        if (updatePasswordOnly) {
-                            deleteExistingBackup();
-                        }
-                        return true;
+                    if (badPasswordUseCase.call(safePassword) == BAD_PASSWORD) {
+                        return false;
                     }
-                    return false;
+                    if (updatePasswordOnly) {
+                        deleteExistingBackup();
+                    }
+                    return true;
                 }
 
                 @Override
@@ -200,10 +200,8 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 
                     if (masterkey != null) {
                         if (!passwordOK) {
-                            Context context = ThreemaSafeConfigureActivity.this;
-
-                            if (AppRestrictionUtil.isSafePasswordPatternSet(context)) {
-                                GenericAlertDialog.newInstance(R.string.password_bad, AppRestrictionUtil.getSafePasswordMessage(context), R.string.try_again, 0, false).show(getSupportFragmentManager(), DIALOG_TAG_UNSAFE_PASSWORD_WORK);
+                            if (dependencies.getAppRestrictions().getSafePasswordPattern() != null) {
+                                GenericAlertDialog.newInstance(R.string.password_bad, dependencies.getAppRestrictions().getSafePasswordMessage(), R.string.try_again, 0, false).show(getSupportFragmentManager(), DIALOG_TAG_UNSAFE_PASSWORD_WORK);
                             } else {
                                 GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.password_bad, R.string.password_bad_explain, R.string.continue_anyway, R.string.try_again, false);
                                 dialog.setData(masterkey);
@@ -249,7 +247,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
         }
 
         if (openHomeActivity) {
-            startActivity(new Intent(ThreemaSafeConfigureActivity.this, HomeActivity.class));
+            startActivity(HomeActivity.createIntent(ThreemaSafeConfigureActivity.this));
         }
 
         finish();
@@ -274,7 +272,8 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
     }
 
     private boolean getPasswordOK(String password1Text, String password2Text) {
-        boolean lengthOk = WizardFragment1.getPasswordLengthOK(password1Text, AppRestrictionUtil.isSafePasswordPatternSet(this) ? 1 : MIN_PW_LENGTH);
+        var hasSafePasswordPattern = dependencies.getAppRestrictions().getSafePasswordPattern() != null;
+        boolean lengthOk = WizardFragment1.getPasswordLengthOK(password1Text, hasSafePasswordPattern ? 1 : MIN_PW_LENGTH);
         boolean passwordsMatch = password1Text.equals(password2Text);
 
         if (!lengthOk && !password1Text.isEmpty()) {
@@ -303,7 +302,7 @@ public class ThreemaSafeConfigureActivity extends ThreemaToolbarActivity impleme
 
     @SuppressLint("StaticFieldLeak")
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
         if (!DIALOG_TAG_UNSAFE_PASSWORD_WORK.equals(tag)) {
             if (updatePasswordOnly) {
                 new AsyncTask<Void, Void, Boolean>() {

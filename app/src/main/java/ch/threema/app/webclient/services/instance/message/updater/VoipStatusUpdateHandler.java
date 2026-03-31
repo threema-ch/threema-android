@@ -67,7 +67,7 @@ public class VoipStatusUpdateHandler extends MessageUpdater {
 
     @Override
     public void register() {
-        logger.debug("register(" + this.sessionId + ")");
+        logger.debug("register({})", this.sessionId);
         VoipListenerManager.callEventListener.add(this.listener);
     }
 
@@ -76,13 +76,13 @@ public class VoipStatusUpdateHandler extends MessageUpdater {
      */
     @Override
     public void unregister() {
-        logger.debug("unregister(" + this.sessionId + ")");
+        logger.debug("unregister({})", this.sessionId);
         VoipListenerManager.callEventListener.remove(this.listener);
     }
 
     private void update(final MsgpackObjectBuilder data, @StatusType String type) {
         try {
-            logger.info("Sending voip status update (" + type + ")");
+            logger.info("Sending voip status update ({})", type);
             final MsgpackObjectBuilder args = new MsgpackObjectBuilder().put("type", type);
             send(dispatcher, data, args);
         } catch (MessagePackException e) {

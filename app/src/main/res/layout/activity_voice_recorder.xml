@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -28,7 +29,8 @@
             android:paddingTop="8dp"
             android:paddingBottom="4dp"
             android:thumbTint="?attr/colorPrimary"
-            android:visibility="gone" />
+            android:visibility="gone"
+            tools:visibility="visible" />
 
         <RelativeLayout
             android:id="@+id/bottom_panel"
@@ -73,13 +75,13 @@
                     android:clickable="true"
                     android:contentDescription="@string/play"
                     android:focusable="true"
-                    android:nextFocusRight="@+id/pause_button"
+                    android:nextFocusRight="@+id/recording_pause_resume_button"
                     android:scaleType="centerInside"
                     app:srcCompat="@drawable/ic_stop"
                     app:tint="?attr/colorOnSurface" />
 
                 <ImageView
-                    android:id="@+id/pause_button"
+                    android:id="@+id/recording_pause_resume_button"
                     style="?android:attr/borderlessButtonStyle"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
@@ -120,20 +122,21 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="@dimen/grid_unit_x1">
 
                         <TextView
                             android:id="@+id/timer_text"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:layout_marginLeft="8dp"
-                            android:text="00:00"
+                            android:layout_marginHorizontal="@dimen/grid_unit_x0_5"
                             android:textColor="?attr/colorOnBackground"
-                            android:textSize="22sp" />
+                            android:textSize="22sp"
+                            tools:text="00:00" />
 
                         <ImageView
-                            android:id="@+id/record_image"
+                            android:id="@+id/recording_or_playing_indicator"
                             style="@android:style/Widget.Holo.Light.Button.Borderless.Small"
                             android:layout_width="20dp"
                             android:layout_height="20dp"
@@ -143,7 +146,9 @@
                             android:drawablePadding="0dip"
                             android:focusable="false"
                             android:scaleType="centerInside"
-                            app:srcCompat="@drawable/ic_record" />
+                            android:visibility="gone"
+                            app:srcCompat="@drawable/ic_record"
+                            tools:visibility="visible" />
 
                     </LinearLayout>
 
@@ -165,7 +170,8 @@
                 android:scaleType="centerInside"
                 android:visibility="invisible"
                 app:srcCompat="@drawable/ic_bluetooth_searching_24dp"
-                app:tint="?attr/colorOnSurface" />
+                app:tint="?attr/colorOnSurface"
+                tools:visibility="visible" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/send_button"

@@ -3,32 +3,31 @@ package ch.threema.app.systemupdates.updates;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import androidx.annotation.NonNull;
+import org.koin.java.KoinJavaComponent;
+
 import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.preference.service.PreferenceService;
+import kotlin.Lazy;
 
 /**
  * migrate locking prefs
  */
 public class SystemUpdateToVersion54 implements SystemUpdate {
 
-    private @NonNull final Context context;
-
-    public SystemUpdateToVersion54(@NonNull Context context) {
-        this.context = context;
-    }
+    private final Lazy<Context> appContextLazy = KoinJavaComponent.inject(Context.class);
 
     @Override
     public void run() {
-        // Note: PreferenceService is not available at this time if a passphrase has been set!
-        String lockMechanism = PreferenceService.LockingMech_NONE;
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        if (sharedPreferences.contains(context.getString(R.string.preferences__lock_mechanism))) {
-            lockMechanism = sharedPreferences.getString(context.getString(R.string.preferences__lock_mechanism), PreferenceService.LockingMech_NONE);
+        var appContext = appContextLazy.getValue();
+
+        String lockMechanism = PreferenceService.LOCKING_MECH_NONE;
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(appContext);
+        if (sharedPreferences.contains(appContext.getString(R.string.preferences__lock_mechanism))) {
+            lockMechanism = sharedPreferences.getString(appContext.getString(R.string.preferences__lock_mechanism), PreferenceService.LOCKING_MECH_NONE);
         }
 
-        if (!PreferenceService.LockingMech_NONE.equals(lockMechanism)) {
+        if (!PreferenceService.LOCKING_MECH_NONE.equals(lockMechanism)) {
             if (sharedPreferences.getBoolean("pref_key_system_lock_enabled", false) ||
                 sharedPreferences.getBoolean("pref_key_pin_lock_enabled", false)) {
 

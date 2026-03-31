@@ -1,19 +1,16 @@
 package ch.threema.storage.factories
 
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.storage.DatabaseService
+import ch.threema.storage.DatabaseCreationProvider
+import ch.threema.storage.DatabaseProvider
 import ch.threema.storage.buildContentValues
 import ch.threema.storage.runDelete
 import ch.threema.storage.runQuery
 
 private val logger = getThreemaLogger("TaskArchiveFactory")
 
-class TaskArchiveFactory(databaseService: DatabaseService) :
-    ModelFactory(databaseService, "tasks") {
-    companion object {
-        private const val COLUMN_ID = "id"
-        private const val COLUMN_TASK = "task"
-    }
+class TaskArchiveFactory(databaseProvider: DatabaseProvider) :
+    ModelFactory(databaseProvider, TABLE_NAME) {
 
     /**
      * Insert a new task. Note that leading and trailing whitespaces are ignored.
@@ -88,12 +85,6 @@ class TaskArchiveFactory(databaseService: DatabaseService) :
                 }
             }
 
-    override fun getStatements() = arrayOf(
-        "CREATE TABLE `$tableName` (" +
-            "`$COLUMN_ID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            "`$COLUMN_TASK` STRING NOT NULL)",
-    )
-
     private fun getOldestIdForTask(task: String): Long? {
         readableDatabase.runQuery(
             table = tableName,
@@ -107,5 +98,19 @@ class TaskArchiveFactory(databaseService: DatabaseService) :
             }
         }
         return null
+    }
+
+    object Creator : DatabaseCreationProvider {
+        override fun getCreationStatements() = arrayOf(
+            "CREATE TABLE `$TABLE_NAME` (" +
+                "`$COLUMN_ID` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "`$COLUMN_TASK` STRING NOT NULL)",
+        )
+    }
+
+    companion object {
+        private const val TABLE_NAME = "tasks"
+        private const val COLUMN_ID = "id"
+        private const val COLUMN_TASK = "task"
     }
 }

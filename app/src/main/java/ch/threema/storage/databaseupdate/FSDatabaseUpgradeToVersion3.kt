@@ -14,7 +14,7 @@ internal class FSDatabaseUpgradeToVersion3(
 
     override fun getDescription() = "add yet another version column"
 
-    override fun getVersion() = VERSION
+    override val version = VERSION
 
     companion object {
         const val VERSION = 3

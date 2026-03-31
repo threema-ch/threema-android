@@ -3,7 +3,7 @@ package ch.threema.app.services
 import android.content.Context
 import ch.threema.app.tasks.ReflectSettingsSyncTask
 import ch.threema.base.SessionScoped
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 /**
  * Manage blocked identities.
@@ -20,7 +20,7 @@ interface BlockedIdentitiesService {
      * @param identity the identity to block
      * @param context if provided, a toast is shown
      */
-    fun blockIdentity(identity: Identity, context: Context? = null)
+    fun blockIdentity(identity: IdentityString, context: Context? = null)
 
     /**
      * Unblock an identity. If a [context] is provided, a toast is shown.
@@ -31,12 +31,12 @@ interface BlockedIdentitiesService {
      * @param identity the identity to unblock
      * @param context if provided, a toast is shown
      */
-    fun unblockIdentity(identity: Identity, context: Context? = null)
+    fun unblockIdentity(identity: IdentityString, context: Context? = null)
 
     /**
      * Checks whether the [identity] is blocked or not.
      */
-    fun isBlocked(identity: Identity): Boolean
+    fun isBlocked(identity: IdentityString): Boolean
 
     /**
      * Blocks the identity if currently not blocked or vice versa. If a [context] is provided, this
@@ -45,16 +45,16 @@ interface BlockedIdentitiesService {
      * @param identity the identity that will change from blocked to unblocked or vice versa
      * @param context if provided, a toast is shown
      */
-    fun toggleBlocked(identity: Identity, context: Context? = null)
+    fun toggleBlocked(identity: IdentityString, context: Context? = null)
 
     /**
      * Get all blocked identities.
      */
-    fun getAllBlockedIdentities(): Set<Identity>
+    fun getAllBlockedIdentities(): Set<IdentityString>
 
     /**
      * Persist the blocked identities. This replaces all currently blocked identities with
      * [blockedIdentities]. Note that there is no reflection done.
      */
-    fun persistBlockedIdentities(blockedIdentities: Set<Identity>)
+    fun persistBlockedIdentities(blockedIdentities: Set<IdentityString>)
 }

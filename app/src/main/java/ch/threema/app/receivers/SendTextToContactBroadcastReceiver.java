@@ -5,25 +5,31 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import ch.threema.app.AppConstants;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
 import ch.threema.app.asynctasks.AddOrUpdateContactBackgroundTask;
 import ch.threema.app.asynctasks.ContactResult;
 import ch.threema.app.asynctasks.Failed;
-import ch.threema.app.asynctasks.PolicyViolation;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.BackgroundErrorNotification;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.app.restrictions.AppRestrictions;
+import ch.threema.app.stores.IdentityProvider;
 import ch.threema.storage.models.ContactModel;
 
 public class SendTextToContactBroadcastReceiver extends ActionBroadcastReceiver {
     private static final Logger logger = getThreemaLogger("SendTextToContactBroadcastReceiver");
+
+    @NonNull
+    private final IdentityProvider identityProvider = KoinJavaComponent.get(IdentityProvider.class);
 
     @Override
     @SuppressLint("StaticFieldLeak")
@@ -45,18 +51,24 @@ public class SendTextToContactBroadcastReceiver extends ActionBroadcastReceiver 
 
             String identity = intent.getStringExtra(AppConstants.INTENT_DATA_CONTACT);
             if (identity == null) {
-                logger.error("Identity is null");
+                logger.error("Provided identity is null");
+                return;
+            }
+
+            String myIdentity = identityProvider.getIdentityString();
+            if (myIdentity == null) {
+                logger.error("User identity is null");
                 return;
             }
 
             AddOrUpdateContactBackgroundTask<Boolean> sendMessageTask = new AddOrUpdateContactBackgroundTask<>(
                 identity,
                 ContactModel.AcquaintanceLevel.DIRECT,
-                contactService.getMe().getIdentity(),
+                myIdentity,
                 apiConnector,
                 contactModelRepository,
                 AddContactRestrictionPolicy.CHECK,
-                context,
+                KoinJavaComponent.get(AppRestrictions.class),
                 null
             ) {
                 @Override
@@ -67,12 +79,9 @@ public class SendTextToContactBroadcastReceiver extends ActionBroadcastReceiver 
 
                 @Override
                 @NonNull
-                public Boolean onContactAdded(@NonNull ContactResult result) {
+                public Boolean onContactResult(@NonNull ContactResult result) {
                     if (result instanceof Failed) {
-                        logger.error("Could not add contact: {}", ((Failed) result).getMessage());
-                        return false;
-                    } else if (result instanceof PolicyViolation) {
-                        logger.error("Could not add contact because of a policy violation");
+                        logger.error("Could not add contact: {}", context.getString(((Failed) result).message));
                         return false;
                     }
 
@@ -84,7 +93,7 @@ public class SendTextToContactBroadcastReceiver extends ActionBroadcastReceiver 
                         MessageReceiver<?> messageReceiver = contactService.createReceiver(contactModel);
                         messageService.sendText(text, messageReceiver);
                         messageService.markConversationAsRead(messageReceiver, notificationService);
-                        logger.debug("Message sent to: " + messageReceiver.getShortName());
+                        logger.debug("Message sent to: {}", messageReceiver);
                         return true;
                     } catch (Exception e) {
                         logger.error("Exception", e);

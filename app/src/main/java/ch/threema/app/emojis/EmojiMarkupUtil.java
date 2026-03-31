@@ -10,6 +10,8 @@ import android.text.style.StrikethroughSpan;
 import android.util.Pair;
 import android.widget.TextView;
 
+import org.koin.java.KoinJavaComponent;
+
 import androidx.annotation.ColorInt;
 
 import java.util.ArrayList;
@@ -18,8 +20,11 @@ import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.ui.MentionClickableSpan;
@@ -55,34 +60,43 @@ public class EmojiMarkupUtil {
     }
 
     // the ContactService may not yet exist when the instance is created (e.g. when masterkey is locked)
+    @Nullable
     private ContactService getContactService() {
+        final @Nullable ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         try {
-            return ThreemaApplication.getServiceManager().getContactService();
+            return (serviceManager != null) ? serviceManager.getContactService() : null;
         } catch (Exception e) {
-            //
+            return null;
         }
-        return null;
     }
 
     // the UserService may not yet exist when the instance is created (e.g. when masterkey is locked)
+    @Nullable
     private UserService getUserService() {
+        final @Nullable ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         try {
-            return ThreemaApplication.getServiceManager().getUserService();
+            return (serviceManager != null) ? serviceManager.getUserService() : null;
         } catch (Exception e) {
-            //
+            return null;
         }
-        return null;
     }
 
+    @NonNull
+    private PreferenceService getPreferenceService() {
+        return KoinJavaComponent.get(PreferenceService.class);
+    }
 
+    @NonNull
     public CharSequence addTextSpans(CharSequence text) {
         return addTextSpans(null, text, null, false, false);
     }
 
+    @NonNull
     public CharSequence addTextSpans(Context context, CharSequence text, TextView textView, boolean ignoreMarkup) {
         return addTextSpans(context, text, textView, ignoreMarkup, false);
     }
 
+    @NonNull
     public CharSequence addTextSpans(Context context, CharSequence text, TextView textView, boolean ignoreMarkup, boolean singleScale) {
         return addTextSpans(context, text, textView, ignoreMarkup, ignoreMarkup, singleScale, false);
     }
@@ -201,10 +215,10 @@ public class EmojiMarkupUtil {
             return inputText;
         }
 
-        @ColorInt int mentionColor = context.getResources().getColor(R.color.mention_background);
-        @ColorInt int invertedMentionColor = context.getResources().getColor(R.color.mention_background_inverted);
-        @ColorInt int mentionTextColor = context.getResources().getColor(R.color.mention_text_color);
-        @ColorInt int invertedMentionTextColor = context.getResources().getColor(R.color.mention_text_color_inverted);
+        @ColorInt int mentionColor = ContextCompat.getColor(context, R.color.mention_background);
+        @ColorInt int invertedMentionColor = ContextCompat.getColor(context, R.color.mention_background_inverted);
+        @ColorInt int mentionTextColor = ContextCompat.getColor(context, R.color.mention_text_color);
+        @ColorInt int invertedMentionTextColor = ContextCompat.getColor(context, R.color.mention_text_color_inverted);
 
         SpannableStringBuilder s = new SpannableStringBuilder(inputText);
 
@@ -261,7 +275,16 @@ public class EmojiMarkupUtil {
         while (matcher.find()) {
             match = matcher.group();
             identity = match.substring(2, match.length() - 1);
-            String quoteName = NameUtil.getQuoteName(identity, getContactService(), getUserService());
+
+            final @Nullable String quoteName;
+            final @Nullable ContactService contactService = getContactService();
+            final @Nullable UserService userService = getUserService();
+            final @NonNull PreferenceService preferenceService = getPreferenceService();
+            if (contactService != null && userService != null) {
+                quoteName = NameUtil.getQuoteName(identity, contactService, userService, preferenceService.getContactNameFormat());
+            } else {
+                quoteName = null;
+            }
 
             if (TestUtil.isEmptyOrNull(quoteName)) {
                 // Note that the quote name is only empty if there went something wrong while
@@ -269,8 +292,7 @@ public class EmojiMarkupUtil {
                 // threema id.
                 outputText = TextUtils.replace(outputText, new String[]{match}, new CharSequence[]{""});
             } else {
-                outputText = TextUtils.replace(outputText, new String[]{match}, new CharSequence[]{MENTION_INDICATOR +
-                    quoteName});
+                outputText = TextUtils.replace(outputText, new String[]{match}, new CharSequence[]{MENTION_INDICATOR + quoteName});
             }
             matcher = this.mention.matcher(outputText);
         }
@@ -299,15 +321,8 @@ public class EmojiMarkupUtil {
         return builder;
     }
 
-    public String stripMentions(String inputText) {
+    public String stripMentions(@NonNull String inputText) {
         return inputText.replaceAll(MENTION_REGEX, "");
-    }
-
-    public CharSequence formatBodyTextString(Context context, String string, int maxLen) {
-        if (string != null && !string.isEmpty())
-            return addMarkup(context, string.substring(0, Math.min(maxLen, string.length())));
-        else
-            return "";
     }
 }
 

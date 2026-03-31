@@ -2,16 +2,16 @@ package ch.threema.app.stores
 
 import ch.threema.base.crypto.NaCl
 import ch.threema.domain.stores.IdentityStore
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 // TODO(ANDR-4067): This class should be removed
 @Deprecated("Do not use this class, it only exists as a workaround")
 class ReadonlyInMemoryIdentityStore(
-    private val identity: Identity,
+    private val identity: IdentityString,
     private val serverGroup: String,
     private val privateKey: ByteArray,
 ) : IdentityStore {
-    override fun getIdentity() = identity
+    override fun getIdentityString() = identity
 
     override fun getServerGroup() = serverGroup
 

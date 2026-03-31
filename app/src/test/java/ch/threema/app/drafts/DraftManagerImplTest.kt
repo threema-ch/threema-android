@@ -22,11 +22,11 @@ class DraftManagerImplTest {
     fun `drafts are restored from storage`() = runTest {
         val draftManager = DraftManagerImpl(
             preferenceService = mockk {
-                every { messageDrafts } returns mapOf(
+                every { getMessageDrafts() } returns mapOf(
                     CONVERSATION_ID1 to "Hello",
                     CONVERSATION_ID2 to "World",
                 )
-                every { quoteDrafts } returns mapOf(
+                every { getQuoteDrafts() } returns mapOf(
                     CONVERSATION_ID1 to MESSAGE_ID_STRING,
                 )
             },
@@ -56,8 +56,8 @@ class DraftManagerImplTest {
     fun `drafts can be retrieved after being set`() = runTest {
         val draftManager = DraftManagerImpl(
             preferenceService = mockk {
-                every { messageDrafts } returns emptyMap()
-                every { quoteDrafts } returns emptyMap()
+                every { getMessageDrafts() } returns emptyMap()
+                every { getQuoteDrafts() } returns emptyMap()
             },
             dispatcherProvider = testDispatcherProvider(),
         )
@@ -86,10 +86,10 @@ class DraftManagerImplTest {
     @Test
     fun `drafts are persisted when set`() = runTest {
         val preferenceServiceMock = mockk<PreferenceService> {
-            every { messageDrafts } returns emptyMap()
-            every { quoteDrafts } returns emptyMap()
-            every { messageDrafts = any() } just runs
-            every { quoteDrafts = any() } just runs
+            every { getMessageDrafts() } returns emptyMap()
+            every { getQuoteDrafts() } returns emptyMap()
+            every { setMessageDrafts(any()) } just runs
+            every { setQuoteDrafts(any()) } just runs
         }
         val draftManager = DraftManagerImpl(
             preferenceService = preferenceServiceMock,
@@ -103,14 +103,18 @@ class DraftManagerImplTest {
         advanceUntilIdle()
 
         verify(exactly = 1) {
-            preferenceServiceMock.messageDrafts = mapOf(
-                CONVERSATION_ID1 to "Hello",
-                CONVERSATION_ID2 to "World",
+            preferenceServiceMock.setMessageDrafts(
+                mapOf(
+                    CONVERSATION_ID1 to "Hello",
+                    CONVERSATION_ID2 to "World",
+                ),
             )
         }
         verify(exactly = 1) {
-            preferenceServiceMock.quoteDrafts = mapOf(
-                CONVERSATION_ID1 to MESSAGE_ID_STRING,
+            preferenceServiceMock.setQuoteDrafts(
+                mapOf(
+                    CONVERSATION_ID1 to MESSAGE_ID_STRING,
+                ),
             )
         }
     }
@@ -118,15 +122,15 @@ class DraftManagerImplTest {
     @Test
     fun `drafts can be replaced and removed`() = runTest {
         val preferenceServiceMock = mockk<PreferenceService> {
-            every { messageDrafts } returns mapOf(
+            every { getMessageDrafts() } returns mapOf(
                 CONVERSATION_ID1 to "Hello",
                 CONVERSATION_ID2 to "World",
             )
-            every { quoteDrafts } returns mapOf(
+            every { getQuoteDrafts() } returns mapOf(
                 CONVERSATION_ID1 to MESSAGE_ID_STRING,
             )
-            every { messageDrafts = any() } just runs
-            every { quoteDrafts = any() } just runs
+            every { setMessageDrafts(any()) } just runs
+            every { setQuoteDrafts(any()) } just runs
         }
         val draftManager = DraftManagerImpl(
             preferenceService = preferenceServiceMock,
@@ -140,12 +144,14 @@ class DraftManagerImplTest {
         advanceUntilIdle()
 
         verify(exactly = 1) {
-            preferenceServiceMock.messageDrafts = mapOf(
-                CONVERSATION_ID1 to "HELLO!!!",
+            preferenceServiceMock.setMessageDrafts(
+                mapOf(
+                    CONVERSATION_ID1 to "HELLO!!!",
+                ),
             )
         }
         verify(exactly = 1) {
-            preferenceServiceMock.quoteDrafts = emptyMap()
+            preferenceServiceMock.setQuoteDrafts(emptyMap())
         }
     }
 

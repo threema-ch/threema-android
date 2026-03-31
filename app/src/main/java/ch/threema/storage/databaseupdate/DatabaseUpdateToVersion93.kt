@@ -18,9 +18,5 @@ internal class DatabaseUpdateToVersion93(
 
     override fun getDescription() = "add editedAt field for messages"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 93
-    }
+    override val version = 93
 }

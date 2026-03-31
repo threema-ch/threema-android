@@ -39,9 +39,9 @@ public class VideoConfig {
 
     public static int getPreferredVideoBitrate(int videoSizeId) {
         switch (videoSizeId) {
-            case PreferenceService.VideoSize_MEDIUM:
+            case PreferenceService.VIDEO_SIZE_MEDIUM:
                 return BITRATE_MEDIUM;
-            case PreferenceService.VideoSize_SMALL:
+            case PreferenceService.VIDEO_SIZE_SMALL:
                 return BITRATE_LOW;
         }
         return BITRATE_DEFAULT;
@@ -60,8 +60,6 @@ public class VideoConfig {
     /**
      * Returns the ID of the first track we find for the given mime type
      *
-     * @param extractor
-     * @param mimeType
      * @return ID of first matching track or -1 if none was found
      */
     private static int findTrack(MediaExtractor extractor, String mimeType) {
@@ -70,9 +68,9 @@ public class VideoConfig {
         for (int i = 0; i < numTracks; i++) {
             MediaFormat format = extractor.getTrackFormat(i);
             String mime = format.getString(MediaFormat.KEY_MIME);
-            logger.info("Found track " + i + " of format " + mime);
+            logger.info("Found track {} of format {}", i, mime);
             if (mime != null && mime.startsWith(mimeType)) {
-                logger.debug("Extractor selected track " + i + " (" + mime + "): " + format);
+                logger.debug("Extractor selected track {} ({}): {}", i, mime, format);
                 return i;
             }
         }
@@ -171,7 +169,7 @@ public class VideoConfig {
             }
 
             calculatedAudioSize = (int) (durationS * bitrate / 8);
-            logger.info("Estimated audio size (bytes): " + calculatedAudioSize);
+            logger.info("Estimated audio size (bytes): {}", calculatedAudioSize);
         }
 
         int srcVideoTrack = findTrack(extractor, MIME_VIDEO);

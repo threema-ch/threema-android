@@ -32,6 +32,7 @@ class IncomingSetProfilePictureTask(
     private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
     private val nonceFactory by lazy { serviceManager.nonceFactory }
+    private val preferenceService by lazy { serviceManager.preferenceService }
 
     private val identity by lazy { message.fromIdentity }
 
@@ -85,7 +86,10 @@ class IncomingSetProfilePictureTask(
             listener.onAvatarChanged(identity)
         }
 
-        ShortcutUtil.updateShareTargetShortcut(contactService.createReceiver(contactModel))
+        ShortcutUtil.updateShareTargetShortcut(
+            contactService.createReceiver(contactModel),
+            preferenceService.getContactNameFormat(),
+        )
 
         return ReceiveStepsResult.SUCCESS
     }
@@ -108,9 +112,6 @@ class IncomingSetProfilePictureTask(
                     nonce = ProtocolDefines.CONTACT_PHOTO_NONCE,
                     encryptionKey = message.encryptionKey,
                 ),
-                contactModelRepository = contactModelRepository,
-                multiDeviceManager = multiDeviceManager,
-                nonceFactory = nonceFactory,
             ).reflect(handle)
         }
     }

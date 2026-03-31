@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
@@ -17,8 +16,7 @@ class ReflectContactSyncCreateTask(
     private val contactModelRepository: ContactModelRepository,
     private val nonceFactory: NonceFactory,
     private val createLocally: () -> ContactModel,
-    multiDeviceManager: MultiDeviceManager,
-) : ReflectContactSyncTask<Unit, ContactModel>(multiDeviceManager), ActiveTask<ContactModel> {
+) : ReflectContactSyncTask<Unit, ContactModel>(), ActiveTask<ContactModel> {
     override val type = "ReflectContactSyncCreate"
 
     override suspend fun invoke(handle: ActiveTaskCodec): ContactModel = reflectContactSync(handle)

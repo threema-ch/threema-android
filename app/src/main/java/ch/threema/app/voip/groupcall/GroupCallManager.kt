@@ -6,20 +6,13 @@ import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.groupcall.sfu.CallId
 import ch.threema.app.voip.groupcall.sfu.GroupCallController
 import ch.threema.base.SessionScoped
+import ch.threema.data.datatypes.LocalGroupId
+import ch.threema.data.models.GroupModel
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallControlMessage
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
-import ch.threema.domain.types.Identity
-import ch.threema.storage.models.GroupModel
+import ch.threema.domain.types.IdentityString
+import ch.threema.storage.models.group.GroupModelOld
 import kotlinx.coroutines.flow.Flow
-
-@JvmInline
-value class LocalGroupId(val id: Int)
-
-val GroupModel.localGroupId: LocalGroupId
-    get() = LocalGroupId(id)
-
-val ch.threema.data.models.GroupModel.localGroupId: LocalGroupId
-    get() = LocalGroupId(getDatabaseId().toInt())
 
 @SessionScoped
 interface GroupCallManager {
@@ -54,19 +47,19 @@ interface GroupCallManager {
     fun addGroupCallObserver(groupId: LocalGroupId, observer: GroupCallObserver)
 
     @AnyThread
-    fun addGroupCallObserver(group: GroupModel, observer: GroupCallObserver)
+    fun addGroupCallObserver(group: GroupModelOld, observer: GroupCallObserver)
 
     @AnyThread
-    fun addGroupCallObserver(group: ch.threema.data.models.GroupModel, observer: GroupCallObserver)
+    fun addGroupCallObserver(group: GroupModel, observer: GroupCallObserver)
 
     @AnyThread
     fun removeGroupCallObserver(groupId: LocalGroupId, observer: GroupCallObserver)
 
     @AnyThread
-    fun removeGroupCallObserver(group: GroupModel, observer: GroupCallObserver)
+    fun removeGroupCallObserver(group: GroupModelOld, observer: GroupCallObserver)
 
     @AnyThread
-    fun removeGroupCallObserver(group: ch.threema.data.models.GroupModel, observer: GroupCallObserver)
+    fun removeGroupCallObserver(group: GroupModel, observer: GroupCallObserver)
 
     /**
      * The same as [addGroupCallObserver] with the difference that the observer is notified of updates
@@ -121,7 +114,7 @@ interface GroupCallManager {
      * @return The [GroupCallController] of the joined or created call
      */
     @WorkerThread
-    suspend fun createCall(group: GroupModel): GroupCallController
+    suspend fun createCall(group: GroupModelOld): GroupCallController
 
     /**
      * This aborts the current call. Since the call might not be ended gracefully (normally the call service
@@ -163,13 +156,13 @@ interface GroupCallManager {
      * @return The current chosen call for the supplied group represented by its GroupModel or null if no call was found.
      */
     @AnyThread
-    fun getCurrentChosenCall(groupModel: GroupModel): GroupCallDescription?
+    fun getCurrentChosenCall(groupModel: GroupModelOld): GroupCallDescription?
 
     /**
      * @return The current chosen call for the supplied group represented by its GroupModel or null if no call was found.
      */
     @AnyThread
-    fun getCurrentChosenCall(groupModel: ch.threema.data.models.GroupModel): GroupCallDescription?
+    fun getCurrentChosenCall(groupModel: GroupModel): GroupCallDescription?
 
     /**
      * @return The current chosen call for the supplied group represented by its GroupModel or null if no call was found.
@@ -186,7 +179,7 @@ interface GroupCallManager {
      * Get the group call start data for the given group in case there is a group call running.
      */
     @AnyThread
-    suspend fun getGroupCallStartData(groupModel: ch.threema.data.models.GroupModel): GroupCallStartData?
+    suspend fun getGroupCallStartData(groupModel: GroupModel): GroupCallStartData?
 
     /**
      * Removes the given [identities] from the group call in [groupModel] if there is currently a
@@ -195,12 +188,22 @@ interface GroupCallManager {
      */
     @AnyThread
     fun removeGroupCallParticipants(
-        identities: Set<Identity>,
-        groupModel: ch.threema.data.models.GroupModel,
+        identities: Set<IdentityString>,
+        groupModel: GroupModel,
     )
 
     /**
-     *  Creates a *cold* [Flow] that provides every change to the currently running calls
+     *  Creates a *cold* [Flow] that emits the latest running group calls state.
+     *
+     *  ##### Direct emit promise
+     *  This flow fulfills the promise to directly emit the current group calls. If the current group calls could not be determined due to an internal
+     *  error, a fallback value is emitted.
+     *
+     *  ##### Overflow strategy
+     *  If a consumer consumes the values slower than they get produced, the old unconsumed value gets **dropped** in favor of the most recent value.
+     *
+     *  ##### Error strategy
+     *  In the unlikely case that we fail to determine the current group calls, an empty map is emitted as a fallback value.
      */
     fun watchRunningCalls(): Flow<Map<CallId, GroupCallDescription>>
 }

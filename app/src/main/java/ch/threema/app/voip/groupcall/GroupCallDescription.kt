@@ -12,7 +12,8 @@ import ch.threema.common.generateRandomBytes
 import ch.threema.common.now
 import ch.threema.common.secureRandom
 import ch.threema.common.toHexString
-import ch.threema.storage.models.GroupCallModel
+import ch.threema.data.datatypes.LocalGroupId
+import ch.threema.storage.models.group.GroupCallModel
 import java.util.Date
 
 private val logger = getThreemaLogger("GroupCallDescription")

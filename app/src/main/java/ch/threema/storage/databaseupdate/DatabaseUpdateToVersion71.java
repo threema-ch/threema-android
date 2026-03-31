@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 public class DatabaseUpdateToVersion71 implements DatabaseUpdate {
-    public static final int VERSION = 71;
 
     @NonNull
     private final SQLiteDatabase sqLiteDatabase;
@@ -31,6 +30,6 @@ public class DatabaseUpdateToVersion71 implements DatabaseUpdate {
 
     @Override
     public int getVersion() {
-        return VERSION;
+        return 71;
     }
 }

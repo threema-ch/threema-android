@@ -19,7 +19,6 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
-import ch.threema.app.utils.TestUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public abstract class WizardFragment extends Fragment {
@@ -72,11 +71,9 @@ public abstract class WizardFragment extends Fragment {
     }
 
     private boolean checkInstances() {
-        return TestUtil.required(
-            this.preferenceService,
-            this.userService,
-            this.localeService
-        );
+        return preferenceService != null
+            && userService != null
+            && localeService != null;
     }
 
     private void instantiate() {

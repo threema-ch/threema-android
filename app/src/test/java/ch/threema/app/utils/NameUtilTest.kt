@@ -2,6 +2,7 @@ package ch.threema.app.utils
 
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.UserService
+import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.storage.models.ContactModel
 import io.mockk.every
 import io.mockk.mockk
@@ -35,7 +36,7 @@ class NameUtilTest {
 
     @Test
     fun testGetQuoteNameNull() {
-        val name = NameUtil.getQuoteName(null, userServiceMock)
+        val name = NameUtil.getQuoteName(null, userServiceMock, ContactNameFormat.FIRSTNAME_LASTNAME)
         assertEquals("", name)
     }
 
@@ -45,7 +46,7 @@ class NameUtilTest {
 
         val contactModel = ContactModel.create(ME_IDENTITY, ByteArray(32))
         contactModel.firstName = "Moi"
-        val name = NameUtil.getQuoteName(contactModel, userServiceMock)
+        val name = NameUtil.getQuoteName(contactModel, userServiceMock, ContactNameFormat.FIRSTNAME_LASTNAME)
         assertEquals("Mr. Dushi", name)
     }
 
@@ -55,7 +56,7 @@ class NameUtilTest {
 
         val contactModel = ContactModel.create(ME_IDENTITY, ByteArray(32))
         contactModel.firstName = "Moi"
-        val name = NameUtil.getQuoteName(contactModel, userServiceMock)
+        val name = NameUtil.getQuoteName(contactModel, userServiceMock, ContactNameFormat.FIRSTNAME_LASTNAME)
         assertEquals("Moi", name)
     }
 
@@ -65,7 +66,7 @@ class NameUtilTest {
 
         val contactModel = ContactModel.create(ME_IDENTITY, ByteArray(32))
         contactModel.firstName = "Moi"
-        val name = NameUtil.getQuoteName(contactModel, userServiceMock)
+        val name = NameUtil.getQuoteName(contactModel, userServiceMock, ContactNameFormat.FIRSTNAME_LASTNAME)
         assertEquals("Moi", name)
     }
 
@@ -75,7 +76,7 @@ class NameUtilTest {
 
         val contactModel = ContactModel.create(ME_IDENTITY, ByteArray(32))
         contactModel.firstName = "Moi"
-        val name = NameUtil.getQuoteName(contactModel, userServiceMock)
+        val name = NameUtil.getQuoteName(contactModel, userServiceMock, ContactNameFormat.FIRSTNAME_LASTNAME)
         assertEquals("Moi", name)
     }
 
@@ -85,7 +86,7 @@ class NameUtilTest {
         contactModel.setPublicNickName("nickname")
         contactModel.firstName = "Joggeli"
         contactModel.lastName = "Rüdisüli"
-        val name = NameUtil.getQuoteName(contactModel, userServiceMock)
+        val name = NameUtil.getQuoteName(contactModel, userServiceMock, ContactNameFormat.FIRSTNAME_LASTNAME)
         assertEquals("Joggeli Rüdisüli", name)
     }
 
@@ -95,7 +96,7 @@ class NameUtilTest {
         contactModel.setPublicNickName("nickname")
         contactModel.firstName = null
         contactModel.lastName = null
-        val name = NameUtil.getQuoteName(contactModel, userServiceMock)
+        val name = NameUtil.getQuoteName(contactModel, userServiceMock, ContactNameFormat.FIRSTNAME_LASTNAME)
         assertEquals("~nickname", name)
     }
 

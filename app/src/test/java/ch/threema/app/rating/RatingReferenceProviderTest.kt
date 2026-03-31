@@ -14,7 +14,7 @@ class RatingReferenceProviderTest {
         val randomMock = mockk<SecureRandom>()
         val ratingReferenceProvider = RatingReferenceProvider(
             preferenceService = mockk {
-                every { ratingReference } returns "0404040404040404040404040404040404040404040404040404040404040404"
+                every { getRatingReference() } returns "0404040404040404040404040404040404040404040404040404040404040404"
             },
             secureRandom = randomMock,
         )
@@ -31,7 +31,7 @@ class RatingReferenceProviderTest {
             every { nextBytes(any()) } answers { firstArg<ByteArray>().fill(0xA0.toByte()) }
         }
         val preferenceServiceMock = mockk<PreferenceService>(relaxed = true) {
-            every { ratingReference } returns null
+            every { getRatingReference() } returns null
         }
         val ratingReferenceProvider = RatingReferenceProvider(
             preferenceService = preferenceServiceMock,
@@ -41,6 +41,6 @@ class RatingReferenceProviderTest {
         val reference = ratingReferenceProvider.getOrCreateRatingReference()
 
         assertEquals("a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0", reference)
-        verify { preferenceServiceMock.ratingReference = "a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0" }
+        verify { preferenceServiceMock.setRatingReference("a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0a0") }
     }
 }

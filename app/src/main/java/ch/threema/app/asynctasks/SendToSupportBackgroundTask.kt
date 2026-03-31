@@ -1,12 +1,12 @@
 package ch.threema.app.asynctasks
 
-import android.content.Context
-import ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_SUPPORT_IDENTITY
+import ch.threema.app.AppConstants.THREEMA_SUPPORT_IDENTITY
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.services.ContactServiceImpl
 import ch.threema.data.models.ContactModel
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.protocol.api.APIConnector
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 
 /**
@@ -22,26 +22,25 @@ enum class SendToSupportResult {
  * already available.
  */
 abstract class SendToSupportBackgroundTask(
-    myIdentity: Identity,
+    myIdentity: IdentityString,
     apiConnector: APIConnector,
     contactModelRepository: ContactModelRepository,
-    context: Context,
+    appRestrictions: AppRestrictions,
 ) : AddOrUpdateContactBackgroundTask<SendToSupportResult>(
-    THREEMA_SUPPORT_IDENTITY,
-    AcquaintanceLevel.DIRECT,
-    myIdentity,
-    apiConnector,
-    contactModelRepository,
-    AddContactRestrictionPolicy.IGNORE,
-    context,
-    ContactServiceImpl.SUPPORT_PUBLIC_KEY,
+    identity = THREEMA_SUPPORT_IDENTITY,
+    acquaintanceLevel = AcquaintanceLevel.DIRECT,
+    myIdentity = myIdentity,
+    apiConnector = apiConnector,
+    contactModelRepository = contactModelRepository,
+    addContactRestrictionPolicy = AddContactRestrictionPolicy.IGNORE,
+    appRestrictions = appRestrictions,
+    expectedPublicKey = ContactServiceImpl.SUPPORT_PUBLIC_KEY,
 ) {
-    final override fun onContactAdded(result: ContactResult): SendToSupportResult {
-        return when (result) {
+    final override fun onContactResult(result: ContactResult): SendToSupportResult =
+        when (result) {
             is ContactAvailable -> onSupportAvailable(result.contactModel)
             else -> SendToSupportResult.FAILED
         }
-    }
 
     /**
      * This method is called when the support contact is available. It is run on a background

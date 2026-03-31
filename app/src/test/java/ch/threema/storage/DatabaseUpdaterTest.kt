@@ -7,30 +7,31 @@ import kotlin.test.assertTrue
 
 class DatabaseUpdaterTest {
     private val updater = DatabaseUpdater(
-        context = mockk(),
+        appContext = mockk(),
         database = mockk(),
     )
 
     @Test
-    fun `no database updates`() {
-        // we don't have the actual current version number available here, so we pick an arbitrarily large one instead
-        val updates = updater.getUpdates(oldVersion = 9000)
+    fun `no database updates if already on latest version`() {
+        val updates = updater.getUpdates(oldVersion = DatabaseUpdater.VERSION)
         assertEquals(emptyList(), updates)
     }
 
     @Test
-    fun `some database updates`() {
+    fun `some database updates when old version is older than latest version`() {
         val updates = updater.getUpdates(oldVersion = 103)
 
         assertTrue(updates.isNotEmpty())
-        assertTrue(updates.all { it.getVersion() >= 103 })
+        assertTrue(updates.all { it.version >= 103 })
     }
 
     @Test
-    fun `no database updates newer than database version`() {
-        val updates = updater.getUpdates(oldVersion = 0)
-
-        assertTrue(updates.none { it.getVersion() > DatabaseUpdater.VERSION })
+    fun `updates are never older than old version and never newer than latest version`() {
+        for (oldVersion in 0 until DatabaseUpdater.VERSION) {
+            val updates = updater.getUpdates(oldVersion = oldVersion)
+            assertTrue(updates.none { it.version < oldVersion })
+            assertTrue(updates.none { it.version > DatabaseUpdater.VERSION })
+        }
     }
 
     @Test
@@ -39,8 +40,20 @@ class DatabaseUpdaterTest {
 
         var previous = 0
         updates.forEach { update ->
-            assertTrue(update.getVersion() > previous)
-            previous = update.getVersion()
+            assertTrue(update.version > previous)
+            previous = update.version
+        }
+    }
+
+    @Test
+    fun `database updates have correct name and version number`() {
+        val updates = updater.getUpdates(oldVersion = 0)
+
+        updates.forEach { update ->
+            assertEquals(
+                "DatabaseUpdateToVersion${update.version}",
+                update::class.simpleName,
+            )
         }
     }
 }

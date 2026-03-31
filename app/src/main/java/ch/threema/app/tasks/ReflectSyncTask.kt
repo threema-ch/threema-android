@@ -6,11 +6,13 @@ import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.TransactionScope.TransactionException
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.protobuf.d2d.MdD2D.TransactionScope.Scope
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 abstract class ReflectSyncTask<TransactionResult, TaskResult>(
-    protected val multiDeviceManager: MultiDeviceManager,
     private val transactionScope: Scope,
-) {
+) : KoinComponent {
+    protected val multiDeviceManager: MultiDeviceManager by inject()
     protected val mdProperties by lazy { multiDeviceManager.propertiesProvider.get() }
 
     /**

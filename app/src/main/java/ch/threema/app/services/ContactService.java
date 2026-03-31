@@ -1,7 +1,5 @@
 package ch.threema.app.services;
 
-import com.google.common.collect.ImmutableSet;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
@@ -19,14 +17,12 @@ import ch.threema.data.models.ContactModelData;
 import ch.threema.domain.fs.DHSession;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.VerificationLevel;
-import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.access.AccessModel;
-import java8.util.function.Consumer;
+import java.util.function.Consumer;
 
 @SessionScoped
 public interface ContactService extends AvatarService<String> {
@@ -197,9 +193,6 @@ public interface ContactService extends AvatarService<String> {
         }
     }
 
-    @NonNull
-    ContactModel getMe();
-
     /**
      * The contact selection to include or exclude invalid contacts.
      */
@@ -258,12 +251,40 @@ public interface ContactService extends AvatarService<String> {
     @Nullable
     ContactModel getByLookupKey(String lookupKey);
 
+    /**
+     * Returns the contact model of the provided identity if a contact with this identity exists or
+     * the identity is the user's identity.
+     * <br>
+     * <br>
+     * @deprecated Note that {@code ContactModelRepository#getByIdentity} or {@code ContactModelRepository#existsByIdentity}
+     * should be used instead of this method. Be aware that these won't consider the user's identity
+     * as a contact's identity.
+     * <br>
+     * TODO(ANDR-4555): Do not return the user's contact model if queried
+     */
     @Nullable
+    @Deprecated
     ContactModel getByIdentity(@Nullable String identity);
 
-    List<ContactModel> getByIdentities(String[] identities);
-
-    List<ContactModel> getByIdentities(List<String> identities);
+    /**
+     * Tries to read the requested contact models from cache first, and adds missing models from database (if existing). If one or all identit(y/ies)
+     * could not be found, there will be no error. In this case the result list will just miss these models.
+     * <br>
+     * <br>
+     * <b>Order:</b> The result list does not guarantee to be in the same order as the given {@code identities} list
+     * <br>
+     * <br>
+     * <b>Own user:</b> The own users model (see {@code getMe()}) will be part of the result list if requested.
+     * <br>
+     * <br>
+     * @deprecated Note that {@code ContactModelRepository#getByIdentities} should be used instead
+     * of this method. Be aware that this won't include the user as a contact model.
+     * <br>
+     * TODO(ANDR-4555): Do not include the user's contact model
+     */
+    @NonNull
+    @Deprecated
+    List<ContactModel> getByIdentities(@NonNull List<String> identities);
 
     /**
      * Get all work contacts depending on the preference to display inactive contacts. If inactive
@@ -362,7 +383,7 @@ public interface ContactService extends AvatarService<String> {
 
     AccessModel getAccess(@Nullable String identity);
 
-    void setIsTyping(String identity, boolean isTyping);
+    void setIsTyping(@NonNull String identity, boolean isTyping);
 
     boolean isTyping(String identity);
 
@@ -393,15 +414,6 @@ public interface ContactService extends AvatarService<String> {
      */
     @Nullable
     ContactMessageReceiver createReceiver(@NonNull String identity);
-
-    /**
-     * Update all contact names from android contacts. This changes the existing contact models if
-     * the contact has a new name in the android address book.
-     *
-     * @return true if the contacts have been tried to update, false if there was an issue with the
-     * permission
-     */
-    boolean updateAllContactNamesFromAndroidContacts();
 
     void removeAllSystemContactLinks();
 
@@ -479,32 +491,6 @@ public interface ContactService extends AvatarService<String> {
      */
     void invalidateCache(@NonNull String identity);
 
-    /**
-     * Fetch contact if not available locally. There are different steps executed to get the public
-     * key of the identity. As soon as the public key has been fetched, the steps are aborted and
-     * the contact is either saved or cached.
-     * <ul>
-     *     <li>Check if the contact is a special contact.</li>
-     *     <li>Check if the contact is cached locally.</li>
-     *     <li>Check if the contact is stored locally.</li>
-     *     <li>On work builds, check if the identity is available in the work package. If it is, a
-     *         work contact is created.</li>
-     *     <li>Contact synchronization is executed (if enabled) for the given contact. Afterwards
-     *         local contacts are checked again.</li>
-     *     <li>The identity is fetched from the server and then cached. Note that this does not
-     *         store the contact permanently.</li>
-     * </ul>
-     * The contact will not be saved locally if it does not exist yet (except for work contacts). It
-     * will only be cached in the contact store, so that for example the message coder can access
-     * the public key to decrypt messages.
-     *
-     * @throws ch.threema.domain.protocol.api.APIConnector.HttpConnectionException when there is a problem with the http connection
-     * @throws ch.threema.domain.protocol.api.APIConnector.NetworkException        when there is a problem with the network
-     * @throws MissingPublicKeyException                                           when there is no public key for this identity
-     */
-    @WorkerThread
-    void fetchAndCacheContact(@NonNull String identity) throws APIConnector.HttpConnectionException, APIConnector.NetworkException, MissingPublicKeyException;
-
     @WorkerThread
     void resetReceiptsSettings();
 
@@ -536,8 +522,8 @@ public interface ContactService extends AvatarService<String> {
     Set<String> getRemovedContacts();
 
     /**
-     * @return An immutable snapshot of the currently typing contacts
+     * @return A snapshot of the currently typing contacts
      */
     @NonNull
-    ImmutableSet<String> getTypingIdentities();
+    Set<String> getTypingIdentities();
 }

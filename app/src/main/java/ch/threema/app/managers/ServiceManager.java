@@ -11,38 +11,36 @@ import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
-import ch.threema.app.BuildConfig;
 import ch.threema.app.BuildFlavor;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.androidcontactsync.usecases.UpdateContactNameUseCase;
+import ch.threema.app.apptaskexecutor.AppTaskExecutor;
 import ch.threema.app.backuprestore.BackupChatService;
 import ch.threema.app.backuprestore.BackupChatServiceImpl;
 import ch.threema.app.connection.CspD2mDualConnectionSupplier;
+import ch.threema.app.notifications.CallNotificationManager;
+import ch.threema.app.preference.service.SynchronizedSettingsService;
+import ch.threema.app.preference.service.SynchronizedSettingsServiceImpl;
+import ch.threema.app.protocolsteps.IdentityBlockedSteps;
+import ch.threema.app.restrictions.AppRestrictions;
+import ch.threema.app.startup.AppStartupMonitor;
+import ch.threema.app.stores.IdentityProvider;
 import ch.threema.base.SessionScoped;
 import ch.threema.app.emojis.EmojiRecent;
 import ch.threema.app.emojis.EmojiService;
 import ch.threema.app.emojis.search.EmojiSearchIndex;
 import ch.threema.app.exceptions.NoIdentityException;
-import ch.threema.app.files.AppLogoFileHandleProvider;
-import ch.threema.app.files.GroupProfilePictureFileHandleProvider;
-import ch.threema.app.files.MessageFileHandleProvider;
-import ch.threema.app.files.ProfilePictureFileHandleProvider;
 import ch.threema.app.files.WallpaperFileHandleProvider;
 import ch.threema.app.multidevice.MultiDeviceManager;
-import ch.threema.app.onprem.OnPremCertPinning;
+import ch.threema.app.onprem.OnPremConfigFetcherProvider;
 import ch.threema.app.onprem.OnPremServerAddressProvider;
 import ch.threema.app.processors.IncomingMessageProcessorImpl;
 import ch.threema.app.profilepicture.GroupProfilePictureUploader;
 import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.ApiService;
 import ch.threema.app.services.ApiServiceImpl;
-import ch.threema.app.files.AppDirectoryProvider;
-import ch.threema.app.services.AvatarCacheService;
-import ch.threema.app.services.AvatarCacheServiceImpl;
+import ch.threema.app.services.avatarcache.AvatarCacheService;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.BlockedIdentitiesServiceImpl;
-import ch.threema.app.services.BrowserDetectionService;
-import ch.threema.app.services.BrowserDetectionServiceImpl;
 import ch.threema.app.services.CacheService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ContactServiceImpl;
@@ -62,7 +60,6 @@ import ch.threema.app.services.DownloadServiceImpl;
 import ch.threema.app.services.ExcludedSyncIdentitiesService;
 import ch.threema.app.services.ExcludedSyncIdentitiesServiceImpl;
 import ch.threema.app.services.FileService;
-import ch.threema.app.services.FileServiceImpl;
 import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.GroupServiceImpl;
@@ -76,12 +73,10 @@ import ch.threema.app.services.LockAppService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.MessageServiceImpl;
 import ch.threema.app.services.NotificationPreferenceService;
-import ch.threema.app.services.OnPremConfigFetcherProvider;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.services.notification.NotificationServiceImpl;
 import ch.threema.app.services.PinLockService;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.preference.service.PreferenceServiceImpl;
 import ch.threema.app.services.RingtoneService;
 import ch.threema.app.services.SensorService;
 import ch.threema.app.services.SensorServiceImpl;
@@ -120,12 +115,12 @@ import ch.threema.app.webclient.services.ServicesContainer;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.SymmetricEncryptionService;
+
+import static ch.threema.app.dev.UtilsKt.hasDevFeatures;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.repositories.ModelRepositories;
 import ch.threema.domain.models.LicenseCredentials;
 import ch.threema.domain.models.UserCredentials;
-import ch.threema.domain.onprem.OnPremConfigStore;
-import ch.threema.domain.onprem.OnPremConfigParser;
 import ch.threema.domain.protocol.api.APIAuthenticator;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.protocol.connection.ConvertibleServerConnection;
@@ -138,8 +133,13 @@ import ch.threema.domain.taskmanager.IncomingMessageProcessor;
 import ch.threema.domain.taskmanager.TaskManager;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.localcrypto.MasterKeyProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.DatabaseService;
-import java8.util.function.Supplier;
+import ch.threema.storage.factories.ContactModelFactory;
+import ch.threema.storage.factories.ConversationTagFactory;
+import ch.threema.storage.factories.ServerMessageModelFactory;
+import ch.threema.storage.factories.WebClientSessionModelFactory;
+import java.util.function.Supplier;
 import kotlin.Lazy;
 import okhttp3.OkHttpClient;
 
@@ -150,6 +150,8 @@ import static ch.threema.common.LazyKt.lazy;
 public class ServiceManager {
     private static final Logger logger = getThreemaLogger("ServiceManager");
 
+    @NonNull
+    private final Context appContext;
     @NonNull
     private final CoreServiceManager coreServiceManager;
     @NonNull
@@ -168,10 +170,7 @@ public class ServiceManager {
     private UserService userService;
     @Nullable
     private MessageService messageService;
-    @Nullable
-    private FileService fileService;
-    @Nullable
-    private PreferenceService preferencesService;
+    private final Lazy<SynchronizedSettingsService> synchronizedSettingsServiceLazy = lazy(this::createSynchronizedSettingsService);
     @Nullable
     private LocaleService localeService;
     @Nullable
@@ -179,9 +178,7 @@ public class ServiceManager {
     @Nullable
     private LifetimeService lifetimeService;
     @Nullable
-    private AvatarCacheService avatarCacheService;
-    @Nullable
-    private LicenseService licenseService;
+    private LicenseService<?> licenseService;
     @Nullable
     private GroupService groupService;
     @Nullable
@@ -224,8 +221,6 @@ public class ServiceManager {
     @Nullable
     private BackupChatService backupChatService;
     @NonNull
-    private final DatabaseService databaseService;
-    @NonNull
     private final ModelRepositories modelRepositories;
     @Nullable
     private SensorService sensorService;
@@ -235,8 +230,6 @@ public class ServiceManager {
     private GroupCallManager groupCallManager;
     @Nullable
     private SfuConnection sfuConnection;
-    @Nullable
-    private BrowserDetectionService browserDetectionService;
     @Nullable
     private ConversationTagServiceImpl conversationTagService;
     @Nullable
@@ -264,38 +257,24 @@ public class ServiceManager {
 
     @NonNull
     private final ConvertibleServerConnection connection;
-    @Nullable
-    private OnPremConfigFetcherProvider onPremConfigFetcherProvider = null;
 
-    @NonNull
-    private final OkHttpClient baseOkHttpClient;
-
-    @Nullable
-    private final OnPremConfigStore onPremConfigStore;
-
-    @NonNull
-    private final Lazy<OkHttpClient> okHttpClient = lazy(this::createOkHttpClient);
+    private boolean closed = false;
 
     public ServiceManager(
+        @NonNull Context appContext,
         @NonNull ModelRepositories modelRepositories,
         @NonNull DHSessionStoreInterface dhSessionStore,
         @NonNull MasterKeyProvider masterKeyProvider,
-        @NonNull CoreServiceManagerImpl coreServiceManager,
-        @NonNull OkHttpClient baseOkHttpClient,
-        @Nullable OnPremConfigStore onPremConfigStore
+        @NonNull CoreServiceManagerImpl coreServiceManager
     ) throws ThreemaException {
+        this.appContext = appContext;
         this.cacheService = new CacheService();
         this.coreServiceManager = coreServiceManager;
         this.isIpv6Preferred = lazy(() -> getPreferenceService().isIpv6Preferred());
         this.masterKeyProvider = masterKeyProvider;
-        this.databaseService = coreServiceManager.getDatabaseService();
         this.modelRepositories = modelRepositories;
         this.dhSessionStore = dhSessionStore;
-        this.baseOkHttpClient = baseOkHttpClient;
-        this.onPremConfigStore = onPremConfigStore;
-        // Finalize initialization of task archiver and device cookie manager before the connection
-        // is created.
-        coreServiceManager.getTaskArchiver().setServiceManager(this);
+        // Finalize initialization of device cookie manager before the connection is created.
         coreServiceManager.getDeviceCookieManager().setNotificationService(getNotificationService());
         this.connection = createServerConnection();
         coreServiceManager.getMultiDeviceManager().setReconnectHandle(connection);
@@ -303,9 +282,10 @@ public class ServiceManager {
 
     @NonNull
     public DatabaseContactStore getContactStore() {
+        ensureNotClosed();
         if (this.contactStore == null) {
             this.contactStore = new DatabaseContactStore(
-                this.databaseService,
+                KoinJavaComponent.get(DatabaseService.class),
                 this.getServerAddressProviderService().getServerAddressProvider()
             );
         }
@@ -315,6 +295,7 @@ public class ServiceManager {
 
     @NonNull
     public APIConnector getAPIConnector() {
+        ensureNotClosed();
         if (this.apiConnector == null) {
             try {
                 APIAuthenticator authenticator = null;
@@ -353,9 +334,10 @@ public class ServiceManager {
      * Start the server connection. Do not call this directly; use the LifetimeService!
      */
     public void startConnection() throws ThreemaException {
+        ensureNotClosed();
         logger.trace("startConnection");
 
-        String currentIdentity = this.coreServiceManager.getIdentityStore().getIdentity();
+        String currentIdentity = this.coreServiceManager.getIdentityStore().getIdentityString();
         if (currentIdentity == null || currentIdentity.isEmpty()) {
             throw new NoIdentityException();
         }
@@ -370,11 +352,13 @@ public class ServiceManager {
 
     @NonNull
     public PreferenceStore getPreferenceStore() {
+        ensureNotClosed();
         return coreServiceManager.getPreferenceStore();
     }
 
     @NonNull
     public EncryptedPreferenceStore getEncryptedPreferenceStore() {
+        ensureNotClosed();
         return coreServiceManager.getEncryptedPreferenceStore();
     }
 
@@ -398,17 +382,13 @@ public class ServiceManager {
         }
     }
 
-    @WorkerThread
-    private void reconnectConnection() throws InterruptedException {
-        connection.reconnect();
-    }
-
     @NonNull
     public UserService getUserService() {
+        ensureNotClosed();
         if (this.userService == null) {
             try {
                 this.userService = new UserServiceImpl(
-                    this.getContext(),
+                    appContext,
                     this.coreServiceManager.getPreferenceStore(),
                     this.getLocaleService(),
                     this.getAPIConnector(),
@@ -416,6 +396,7 @@ public class ServiceManager {
                     this.getFileService(),
                     this.getIdentityStore(),
                     this.getPreferenceService(),
+                    this.getSynchronizedSettingsService(),
                     this.getTaskManager(),
                     this.getTaskCreator(),
                     this.getMultiDeviceManager(),
@@ -432,26 +413,27 @@ public class ServiceManager {
     }
 
     public @NonNull ContactService getContactService() throws MasterKeyLockedException {
+        ensureNotClosed();
         if (this.contactService == null) {
             if (masterKeyProvider.isLocked()) {
                 throw new MasterKeyLockedException();
             }
             this.contactService = new ContactServiceImpl(
-                this.getContext(),
+                appContext,
                 this.getContactStore(),
                 this.getAvatarCacheService(),
-                this.databaseService,
+                KoinJavaComponent.get(DatabaseService.class),
+                KoinJavaComponent.get(DatabaseProvider.class),
                 this.getUserService(),
                 this.getIdentityStore(),
                 this.getPreferenceService(),
+                this.getSynchronizedSettingsService(),
                 this.getBlockedIdentitiesService(),
                 this.getProfilePicRecipientsService(),
                 this.getFileService(),
                 this.cacheService,
-                this.getApiService(),
                 this.getLicenseService(),
                 this.getAPIConnector(),
-                this.getOkHttpClient(),
                 this.getModelRepositories().getContacts(),
                 this.getTaskCreator(),
                 this.getMultiDeviceManager()
@@ -463,16 +445,18 @@ public class ServiceManager {
 
     @NonNull
     public MessageService getMessageService() throws ThreemaException {
+        ensureNotClosed();
         if (this.messageService == null) {
             this.messageService = new MessageServiceImpl(
-                this.getContext(),
+                appContext,
                 this.cacheService,
-                this.databaseService,
+                KoinJavaComponent.get(DatabaseService.class),
                 this.getContactService(),
                 this.getFileService(),
                 this.getIdentityStore(),
                 this.getSymmetricEncryptionService(),
                 this.getPreferenceService(),
+                this.getSynchronizedSettingsService(),
                 this.getLockAppService(),
                 this.getBallotService(),
                 this.getGroupService(),
@@ -482,7 +466,8 @@ public class ServiceManager {
                 this.getBlockedIdentitiesService(),
                 this.getMultiDeviceManager(),
                 this.getModelRepositories().getEditHistory(),
-                this.getModelRepositories().getEmojiReaction()
+                this.getModelRepositories().getEmojiReaction(),
+                KoinJavaComponent.get(ServerMessageModelFactory.class)
             );
         }
 
@@ -491,47 +476,33 @@ public class ServiceManager {
 
     @NonNull
     public PreferenceService getPreferenceService() {
-        if (this.preferencesService == null) {
-            this.preferencesService = new PreferenceServiceImpl(
-                getContext(),
-                coreServiceManager.getPreferenceStore(),
-                coreServiceManager.getEncryptedPreferenceStore(),
-                getTaskManager(),
-                getMultiDeviceManager(),
-                getNonceFactory()
-            );
-        }
-        return this.preferencesService;
+        ensureNotClosed();
+        return KoinJavaComponent.get(PreferenceService.class);
+    }
+
+    @NonNull
+    public SynchronizedSettingsService getSynchronizedSettingsService() {
+        ensureNotClosed();
+        return synchronizedSettingsServiceLazy.getValue();
     }
 
     @NonNull
     private NotificationPreferenceService getNotificationPreferenceService() {
+        ensureNotClosed();
         return KoinJavaComponent.get(NotificationPreferenceService.class);
     }
 
     @NonNull
     public FileService getFileService() {
-        if (this.fileService == null) {
-            this.fileService = new FileServiceImpl(
-                this.getContext(),
-                KoinJavaComponent.get(AppDirectoryProvider.class),
-                this.getPreferenceService(),
-                this.getNotificationPreferenceService(),
-                this.getAvatarCacheService(),
-                KoinJavaComponent.get(AppLogoFileHandleProvider.class),
-                KoinJavaComponent.get(MessageFileHandleProvider.class),
-                KoinJavaComponent.get(ProfilePictureFileHandleProvider.class),
-                KoinJavaComponent.get(GroupProfilePictureFileHandleProvider.class)
-            );
-        }
-
-        return this.fileService;
+        ensureNotClosed();
+        return KoinJavaComponent.get(FileService.class);
     }
 
     @NonNull
     public LocaleService getLocaleService() {
+        ensureNotClosed();
         if (this.localeService == null) {
-            this.localeService = new LocaleServiceImpl(this.getContext());
+            this.localeService = new LocaleServiceImpl(appContext);
         }
 
         return this.localeService;
@@ -539,13 +510,15 @@ public class ServiceManager {
 
     @NonNull
     public ServerConnection getConnection() {
+        ensureNotClosed();
         return this.connection;
     }
 
     @NonNull
     public DeviceService getDeviceService() {
+        ensureNotClosed();
         if (this.deviceService == null) {
-            this.deviceService = new DeviceServiceImpl(this.getContext());
+            this.deviceService = new DeviceServiceImpl(appContext);
         }
 
         return this.deviceService;
@@ -553,8 +526,9 @@ public class ServiceManager {
 
     @NonNull
     public LifetimeService getLifetimeService() {
+        ensureNotClosed();
         if (this.lifetimeService == null) {
-            this.lifetimeService = new LifetimeServiceImpl(this.getContext());
+            this.lifetimeService = new LifetimeServiceImpl(appContext);
         }
 
         return this.lifetimeService;
@@ -562,15 +536,13 @@ public class ServiceManager {
 
     @NonNull
     public AvatarCacheService getAvatarCacheService() {
-        if (this.avatarCacheService == null) {
-            this.avatarCacheService = new AvatarCacheServiceImpl(this.getContext());
-        }
-
-        return this.avatarCacheService;
+        ensureNotClosed();
+        return KoinJavaComponent.get(AvatarCacheService.class);
     }
 
     @NonNull
     public LicenseService getLicenseService() {
+        ensureNotClosed();
         if (this.licenseService == null) {
             switch (BuildFlavor.getCurrent().getLicenseType()) {
                 case SERIAL:
@@ -590,7 +562,7 @@ public class ServiceManager {
                     );
                     break;
                 default:
-                    this.licenseService = new LicenseService() {
+                    this.licenseService = new LicenseService<>() {
                         @Override
                         public String validate(LicenseCredentials credentials) {
                             return null;
@@ -624,14 +596,16 @@ public class ServiceManager {
 
     @NonNull
     private DeviceIdProvider getDeviceIdProvider() {
+        ensureNotClosed();
         return KoinJavaComponent.get(DeviceIdProvider.class);
     }
 
     @NonNull
     public LockAppService getLockAppService() {
+        ensureNotClosed();
         if (null == this.lockAppService) {
             this.lockAppService = new PinLockService(
-                this.getContext(),
+                appContext,
                 this.getPreferenceService(),
                 this.getUserService()
             );
@@ -642,9 +616,10 @@ public class ServiceManager {
 
     @NonNull
     public ActivityService getActivityService() {
+        ensureNotClosed();
         if (null == this.activityService) {
             this.activityService = new ActivityService(
-                this.getContext(),
+                appContext,
                 this.getLockAppService(),
                 this.getPreferenceService(),
                 masterKeyProvider
@@ -655,19 +630,21 @@ public class ServiceManager {
 
     @NonNull
     public GroupService getGroupService() throws MasterKeyLockedException {
+        ensureNotClosed();
         if (null == this.groupService) {
             this.groupService = new GroupServiceImpl(
-                this.getContext(),
+                appContext,
                 this.cacheService,
                 this.getUserService(),
                 this.getContactService(),
-                this.databaseService,
+                KoinJavaComponent.get(DatabaseService.class),
                 this.getAvatarCacheService(),
                 this.getFileService(),
                 this.getWallpaperService(),
                 this.getConversationCategoryService(),
                 this.getRingtoneService(),
                 this.getConversationTagService(),
+                this.getPreferenceService(),
                 this.getModelRepositories().getContacts(),
                 this.getModelRepositories().getGroups(),
                 this
@@ -678,6 +655,7 @@ public class ServiceManager {
 
     @NonNull
     public GroupProfilePictureUploader getGroupProfilePictureUploader() {
+        ensureNotClosed();
         if (groupProfilePictureUploader == null) {
             groupProfilePictureUploader = new GroupProfilePictureUploader(
                 getApiService(),
@@ -689,6 +667,7 @@ public class ServiceManager {
 
     @NonNull
     public ApiService getApiService() {
+        ensureNotClosed();
         if (null == this.apiService) {
             this.apiService = new ApiServiceImpl(
                 AppVersionProvider.getAppVersion(),
@@ -705,13 +684,15 @@ public class ServiceManager {
 
     @NonNull
     public DistributionListService getDistributionListService() throws MasterKeyLockedException, NoIdentityException {
+        ensureNotClosed();
         if (null == this.distributionListService) {
             this.distributionListService = new DistributionListServiceImpl(
-                this.getContext(),
+                appContext,
                 this.getAvatarCacheService(),
-                this.databaseService,
+                KoinJavaComponent.get(DatabaseService.class),
                 this.getContactService(),
-                this.getConversationTagService()
+                this.getConversationTagService(),
+                this.getPreferenceService()
             );
         }
 
@@ -720,9 +701,10 @@ public class ServiceManager {
 
     @NonNull
     public ConversationTagService getConversationTagService() {
+        ensureNotClosed();
         if (this.conversationTagService == null) {
             this.conversationTagService = new ConversationTagServiceImpl(
-                this.databaseService,
+                KoinJavaComponent.get(ConversationTagFactory.class),
                 this.getTaskCreator(),
                 this.getMultiDeviceManager()
             );
@@ -733,18 +715,20 @@ public class ServiceManager {
 
     @NonNull
     public ConversationService getConversationService() throws ThreemaException {
+        ensureNotClosed();
         if (null == this.conversationService) {
             this.conversationService = new ConversationServiceImpl(
-                this.getContext(),
                 this.cacheService,
-                this.databaseService,
+                KoinJavaComponent.get(DatabaseService.class),
+                KoinJavaComponent.get(DatabaseProvider.class),
                 this.getContactService(),
                 this.getGroupService(),
                 this.getDistributionListService(),
                 this.getMessageService(),
                 this.getConversationCategoryService(),
                 this.getBlockedIdentitiesService(),
-                this.getConversationTagService()
+                this.getConversationTagService(),
+                this.getPreferenceService()
             );
         }
 
@@ -753,23 +737,13 @@ public class ServiceManager {
 
     @NonNull
     public OnPremConfigFetcherProvider getOnPremConfigFetcherProvider() {
-        if (!ConfigUtils.isOnPremBuild()) {
-            throw new IllegalStateException("Cannot create OnPremConfigFetcherProvider outside of an OnPrem build");
-        }
-        if (onPremConfigFetcherProvider == null) {
-            onPremConfigFetcherProvider = new OnPremConfigFetcherProvider(
-                getPreferenceService(),
-                new OnPremConfigParser(),
-                onPremConfigStore,
-                baseOkHttpClient,
-                BuildConfig.ONPREM_CONFIG_TRUSTED_PUBLIC_KEYS
-            );
-        }
-        return onPremConfigFetcherProvider;
+        ensureNotClosed();
+        return KoinJavaComponent.get(OnPremConfigFetcherProvider.class);
     }
 
     @NonNull
     public ServerAddressProviderService getServerAddressProviderService() {
+        ensureNotClosed();
         if (serverAddressProviderService == null) {
             this.serverAddressProviderService = () -> {
                 if (ConfigUtils.isOnPremBuild()) {
@@ -785,13 +759,16 @@ public class ServiceManager {
 
     @NonNull
     public NotificationService getNotificationService() {
+        ensureNotClosed();
         if (this.notificationService == null) {
             this.notificationService = new NotificationServiceImpl(
-                this.getContext(),
+                appContext,
                 this.getLockAppService(),
                 this.getConversationCategoryService(),
                 this.getNotificationPreferenceService(),
-                this.getRingtoneService()
+                this.getRingtoneService(),
+                this.getPreferenceService(),
+                KoinJavaComponent.get(IdentityProvider.class)
             );
         }
         return this.notificationService;
@@ -799,9 +776,10 @@ public class ServiceManager {
 
     @NonNull
     public SynchronizeContactsService getSynchronizeContactsService() throws MasterKeyLockedException {
+        ensureNotClosed();
         if (this.synchronizeContactsService == null) {
             this.synchronizeContactsService = new SynchronizeContactsServiceImpl(
-                this.getContext(),
+                appContext,
                 this.getAPIConnector(),
                 this.getContactService(),
                 this.getModelRepositories().getContacts(),
@@ -809,9 +787,12 @@ public class ServiceManager {
                 this.getLocaleService(),
                 this.getExcludedSyncIdentitiesService(),
                 this.getPreferenceService(),
+                this.getSynchronizedSettingsService(),
                 this.getDeviceService(),
                 this.getIdentityStore(),
-                this.getBlockedIdentitiesService()
+                this.getBlockedIdentitiesService(),
+                KoinJavaComponent.get(AppTaskExecutor.class),
+                KoinJavaComponent.get(UpdateContactNameUseCase.class)
             );
         }
 
@@ -820,6 +801,7 @@ public class ServiceManager {
 
     @NonNull
     public BlockedIdentitiesService getBlockedIdentitiesService() {
+        ensureNotClosed();
         if (this.blockedIdentitiesService == null) {
             this.blockedIdentitiesService = new BlockedIdentitiesServiceImpl(
                 getPreferenceService(),
@@ -831,7 +813,13 @@ public class ServiceManager {
     }
 
     @NonNull
+    public IdentityBlockedSteps getIdentityBlockedSteps() {
+        return KoinJavaComponent.get(IdentityBlockedSteps.class);
+    }
+
+    @NonNull
     public ConversationCategoryService getConversationCategoryService() {
+        ensureNotClosed();
         if (this.conversationCategoryService == null) {
             this.conversationCategoryService = new ConversationCategoryServiceImpl(
                 this.getPreferenceService(),
@@ -845,6 +833,7 @@ public class ServiceManager {
 
     @NonNull
     public ExcludedSyncIdentitiesService getExcludedSyncIdentitiesService() {
+        ensureNotClosed();
         if (this.excludedSyncIdentitiesService == null) {
             this.excludedSyncIdentitiesService = new ExcludedSyncIdentitiesServiceImpl(
                 getPreferenceService(),
@@ -857,9 +846,10 @@ public class ServiceManager {
 
     @NonNull
     public MessagePlayerService getMessagePlayerService() throws ThreemaException {
+        ensureNotClosed();
         if (this.messagePlayerService == null) {
             this.messagePlayerService = new MessagePlayerServiceImpl(
-                getContext(),
+                appContext,
                 this.getMessageService(),
                 this.getFileService(),
                 this.getPreferenceService(),
@@ -872,9 +862,10 @@ public class ServiceManager {
 
     @NonNull
     public DownloadService getDownloadService() {
+        ensureNotClosed();
         if (this.downloadService == null) {
             this.downloadService = new DownloadServiceImpl(
-                this.getContext(),
+                appContext,
                 this.getApiService()
             );
         }
@@ -883,11 +874,12 @@ public class ServiceManager {
 
     @NonNull
     public BallotService getBallotService() throws NoIdentityException, MasterKeyLockedException {
+        ensureNotClosed();
         if (this.ballotService == null) {
             this.ballotService = new BallotServiceImpl(
                 this.cacheService.getBallotModelCache(),
                 this.cacheService.getLinkBallotModelCache(),
-                this.databaseService,
+                KoinJavaComponent.get(DatabaseService.class),
                 this.getUserService(),
                 this.getGroupService(),
                 this.getContactService(),
@@ -898,9 +890,10 @@ public class ServiceManager {
 
     @NonNull
     public WallpaperService getWallpaperService() {
+        ensureNotClosed();
         if (this.wallpaperService == null) {
             this.wallpaperService = new WallpaperServiceImpl(
-                getContext(),
+                appContext,
                 KoinJavaComponent.get(WallpaperFileHandleProvider.class),
                 getPreferenceService()
             );
@@ -910,10 +903,12 @@ public class ServiceManager {
     }
 
     public @NonNull ThreemaSafeService getThreemaSafeService() throws MasterKeyLockedException, NoIdentityException {
+        ensureNotClosed();
         if (this.threemaSafeService == null) {
             this.threemaSafeService = new ThreemaSafeServiceImpl(
-                this.getContext(),
+                appContext,
                 this.getPreferenceService(),
+                this.getSynchronizedSettingsService(),
                 this.getUserService(),
                 this.getContactService(),
                 this.getGroupService(),
@@ -923,7 +918,7 @@ public class ServiceManager {
                 this.getBlockedIdentitiesService(),
                 this.getExcludedSyncIdentitiesService(),
                 this.getProfilePicRecipientsService(),
-                this.getDatabaseService(),
+                KoinJavaComponent.get(DatabaseService.class),
                 this.getIdentityStore(),
                 this.getApiService(),
                 this.getAPIConnector(),
@@ -931,36 +926,35 @@ public class ServiceManager {
                 this.getServerAddressProviderService().getServerAddressProvider(),
                 this.getEncryptedPreferenceStore(),
                 this.getModelRepositories().getContacts(),
-                this.getOkHttpClient()
+                this.getOkHttpClient(),
+                KoinJavaComponent.get(AppRestrictions.class)
             );
         }
         return this.threemaSafeService;
     }
 
-    @Deprecated()
-    @NonNull
-    public Context getContext() {
-        return ThreemaApplication.getAppContext();
-    }
-
     @NonNull
     public IdentityStore getIdentityStore() {
+        ensureNotClosed();
         return this.coreServiceManager.getIdentityStore();
     }
 
     @NonNull
     public RingtoneService getRingtoneService() {
+        ensureNotClosed();
         return KoinJavaComponent.get(RingtoneService.class);
     }
 
     @NonNull
     public BackupChatService getBackupChatService() throws ThreemaException {
+        ensureNotClosed();
         if (this.backupChatService == null) {
             this.backupChatService = new BackupChatServiceImpl(
-                this.getContext(),
+                appContext,
                 this.getFileService(),
                 this.getMessageService(),
-                this.getContactService()
+                this.getContactService(),
+                this.getPreferenceService()
             );
         }
 
@@ -969,17 +963,19 @@ public class ServiceManager {
 
     @NonNull
     public SensorService getSensorService() {
+        ensureNotClosed();
         if (this.sensorService == null) {
-            this.sensorService = new SensorServiceImpl(this.getContext());
+            this.sensorService = new SensorServiceImpl(appContext);
         }
         return this.sensorService;
     }
 
     @NonNull
     public WebClientServiceManager getWebClientServiceManager() throws ThreemaException {
+        ensureNotClosed();
         if (this.webClientServiceManager == null) {
             this.webClientServiceManager = new WebClientServiceManager(new ServicesContainer(
-                this.getContext().getApplicationContext(),
+                appContext,
                 this.getLifetimeService(),
                 this.getContactService(),
                 this.getGroupService(),
@@ -988,7 +984,8 @@ public class ServiceManager {
                 this.getConversationTagService(),
                 this.getMessageService(),
                 this.getNotificationService(),
-                this.databaseService,
+                KoinJavaComponent.get(ContactModelFactory.class),
+                KoinJavaComponent.get(WebClientSessionModelFactory.class),
                 this.getBlockedIdentitiesService(),
                 this.getPreferenceService(),
                 this.getUserService(),
@@ -999,22 +996,16 @@ public class ServiceManager {
                 this.getAPIConnector(),
                 this.getModelRepositories().getContacts(),
                 this.getModelRepositories().getGroups(),
-                this.getGroupFlowDispatcher()
+                this.getGroupFlowDispatcher(),
+                KoinJavaComponent.get(AppRestrictions.class)
             ));
         }
         return this.webClientServiceManager;
     }
 
     @NonNull
-    public BrowserDetectionService getBrowserDetectionService() {
-        if (this.browserDetectionService == null) {
-            this.browserDetectionService = new BrowserDetectionServiceImpl();
-        }
-        return this.browserDetectionService;
-    }
-
-    @NonNull
     public ProfilePictureRecipientsService getProfilePicRecipientsService() {
+        ensureNotClosed();
         if (this.profilePictureRecipientsService == null) {
             this.profilePictureRecipientsService = new ProfilePictureRecipientsServiceImpl(getPreferenceService());
         }
@@ -1023,34 +1014,45 @@ public class ServiceManager {
 
     @NonNull
     public VoipStateService getVoipStateService() throws ThreemaException {
+        ensureNotClosed();
         if (this.voipStateService == null) {
             this.voipStateService = new VoipStateService(
                 getContactService(),
-                getNotificationPreferenceService(),
+                getModelRepositories().getContacts(),
+                getCallNotificationManager(),
                 getLifetimeService(),
-                getContext()
+                appContext
             );
         }
         return this.voipStateService;
     }
 
     @NonNull
+    public CallNotificationManager getCallNotificationManager() {
+        ensureNotClosed();
+        return KoinJavaComponent.get(CallNotificationManager.class);
+    }
+
+    @NonNull
     public DatabaseService getDatabaseService() {
-        return this.databaseService;
+        return KoinJavaComponent.get(DatabaseService.class);
     }
 
     @NonNull
     public ModelRepositories getModelRepositories() {
+        ensureNotClosed();
         return this.modelRepositories;
     }
 
     @NonNull
     public DHSessionStoreInterface getDHSessionStore() {
+        ensureNotClosed();
         return this.dhSessionStore;
     }
 
     @NonNull
     public ForwardSecurityMessageProcessor getForwardSecurityMessageProcessor() throws ThreemaException {
+        ensureNotClosed();
         if (this.forwardSecurityMessageProcessor == null) {
             this.forwardSecurityMessageProcessor = new ForwardSecurityMessageProcessor(
                 this.getDHSessionStore(),
@@ -1073,6 +1075,7 @@ public class ServiceManager {
 
     @NonNull
     public SymmetricEncryptionService getSymmetricEncryptionService() {
+        ensureNotClosed();
         if (symmetricEncryptionService == null) {
             symmetricEncryptionService = new SymmetricEncryptionService();
         }
@@ -1081,9 +1084,10 @@ public class ServiceManager {
 
     @NonNull
     public EmojiService getEmojiService() {
+        ensureNotClosed();
         if (emojiService == null) {
             EmojiSearchIndex searchIndex = new EmojiSearchIndex(
-                getContext().getApplicationContext(),
+                appContext,
                 getPreferenceService()
             );
             emojiService = new EmojiService(
@@ -1097,15 +1101,16 @@ public class ServiceManager {
 
     @NonNull
     public GroupCallManager getGroupCallManager() throws ThreemaException {
+        ensureNotClosed();
         if (groupCallManager == null) {
             groupCallManager = new GroupCallManagerImpl(
-                getContext().getApplicationContext(),
+                appContext,
                 this,
                 getDatabaseService(),
                 getGroupService(),
                 getContactService(),
                 getModelRepositories().getContacts(),
-                getUserService(),
+                KoinJavaComponent.get(IdentityProvider.class),
                 getPreferenceService(),
                 getMessageService(),
                 getNotificationService(),
@@ -1117,6 +1122,7 @@ public class ServiceManager {
 
     @NonNull
     public SfuConnection getSfuConnection() {
+        ensureNotClosed();
         if (sfuConnection == null) {
             sfuConnection = new SfuConnectionImpl(
                 getAPIConnector(),
@@ -1129,6 +1135,7 @@ public class ServiceManager {
     }
 
     public @NonNull NonceFactory getNonceFactory() {
+        ensureNotClosed();
         return coreServiceManager.getNonceFactory();
     }
 
@@ -1140,10 +1147,12 @@ public class ServiceManager {
     }
 
     public @NonNull TaskManager getTaskManager() {
+        ensureNotClosed();
         return this.coreServiceManager.getTaskManager();
     }
 
     public @NonNull TaskCreator getTaskCreator() {
+        ensureNotClosed();
         if (this.taskCreator == null) {
             this.taskCreator = new TaskCreator(this);
         }
@@ -1152,11 +1161,13 @@ public class ServiceManager {
 
     @NonNull
     public MultiDeviceManager getMultiDeviceManager() {
+        ensureNotClosed();
         return this.coreServiceManager.getMultiDeviceManager();
     }
 
     @NonNull
     public GroupFlowDispatcher getGroupFlowDispatcher() throws ThreemaException {
+        ensureNotClosed();
         if (this.groupFlowDispatcher == null) {
             this.groupFlowDispatcher = new GroupFlowDispatcher(
                 getModelRepositories().getContacts(),
@@ -1169,15 +1180,16 @@ public class ServiceManager {
                 getIdentityStore(),
                 getForwardSecurityMessageProcessor(),
                 getNonceFactory(),
-                getBlockedIdentitiesService(),
                 getPreferenceService(),
+                getSynchronizedSettingsService(),
                 getMultiDeviceManager(),
                 getGroupProfilePictureUploader(),
                 getAPIConnector(),
                 getFileService(),
                 getDatabaseService(),
                 getTaskManager(),
-                getConnection()
+                getConnection(),
+                getIdentityBlockedSteps()
             );
         }
         return this.groupFlowDispatcher;
@@ -1185,13 +1197,14 @@ public class ServiceManager {
 
     @NonNull
     public OkHttpClient getOkHttpClient() {
-        return okHttpClient.getValue();
+        ensureNotClosed();
+        return KoinJavaComponent.get(OkHttpClient.class);
     }
 
     @NonNull
-    private ConvertibleServerConnection createServerConnection() throws ThreemaException {
+    private ConvertibleServerConnection createServerConnection() {
         Supplier<ServerConnection> connectionSupplier = new CspD2mDualConnectionSupplier(
-            (PowerManager) getContext().getSystemService(Context.POWER_SERVICE),
+            (PowerManager) appContext.getSystemService(Context.POWER_SERVICE),
             getMultiDeviceManager(),
             getIncomingMessageProcessor(),
             getTaskManager(),
@@ -1200,30 +1213,36 @@ public class ServiceManager {
             getIdentityStore(),
             coreServiceManager.getVersion(),
             isIpv6Preferred.getValue(),
-            okHttpClient::getValue,
-            ConfigUtils.isDevBuild()
+            getOkHttpClient(),
+            KoinJavaComponent.get(AppStartupMonitor.class),
+            hasDevFeatures()
         );
         return new ConvertibleServerConnection(connectionSupplier);
     }
 
     @NonNull
     public DeviceCookieManager getDeviceCookieManager() {
+        ensureNotClosed();
         return coreServiceManager.getDeviceCookieManager();
     }
 
     @NonNull
-    private OkHttpClient createOkHttpClient() {
-        if (ConfigUtils.isOnPremBuild()) {
-            return OnPremCertPinning.INSTANCE.createClientWithCertPinning(
-                baseOkHttpClient,
-                getOnPremConfigFetcherProvider()
-            );
-        } else {
-            return baseOkHttpClient;
+    private SynchronizedSettingsService createSynchronizedSettingsService() {
+        return new SynchronizedSettingsServiceImpl(
+            appContext,
+            coreServiceManager.getPreferenceStore(),
+            getTaskManager(),
+            getMultiDeviceManager()
+        );
+    }
+
+    private void ensureNotClosed() {
+        if (closed) {
+            throw new IllegalStateException("ServiceManager is closed");
         }
     }
 
-    public boolean isIpv6Preferred() {
-        return isIpv6Preferred.getValue();
+    public void close() {
+        closed = true;
     }
 }

@@ -15,6 +15,7 @@ import ch.threema.app.activities.ComposeMessageActivity
 import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.base.utils.getThreemaLogger
 import kotlin.random.Random
@@ -24,6 +25,7 @@ private val logger = getThreemaLogger("ForwardSecurityNotificationManager")
 class ForwardSecurityNotificationManager(
     private val context: Context,
     private val conversationCategoryService: ConversationCategoryService,
+    private val preferenceService: PreferenceService,
 ) {
     private val notificationIdMap = HashMap<String, Int>()
 
@@ -96,12 +98,12 @@ class ForwardSecurityNotificationManager(
             when (messageReceiver) {
                 is ContactMessageReceiver -> context.getString(
                     R.string.forward_security_notification_rejected_text_contact,
-                    messageReceiver.displayName,
+                    messageReceiver.getDisplayName(preferenceService.getContactNameFormat()),
                 )
 
                 is GroupMessageReceiver -> context.getString(
                     R.string.forward_security_notification_rejected_text_group,
-                    messageReceiver.displayName,
+                    messageReceiver.getDisplayName(preferenceService.getContactNameFormat()),
                 )
 
                 // Note that messages in distribution lists are rejected in the corresponding 1:1

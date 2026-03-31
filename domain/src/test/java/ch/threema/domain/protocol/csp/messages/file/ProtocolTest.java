@@ -187,7 +187,7 @@ public class ProtocolTest {
             }
 
             @Override
-            public String getIdentity() {
+            public String getIdentityString() {
                 return myIdentity;
             }
 

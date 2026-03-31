@@ -2,40 +2,43 @@ package ch.threema.logging.backend
 
 import android.content.Context
 import android.util.Log
-import android.widget.Toast
-import ch.threema.app.utils.RuntimeUtil
+import ch.threema.android.showToast
 import ch.threema.logging.LogLevel
 import org.slf4j.helpers.MessageFormatter
 
 class DebugToasterBackend(
-    private val getContext: () -> Context?,
-    @LogLevel
-    private val minLogLevel: Int = Log.ERROR,
+    private val appContext: Context,
 ) : LogBackend {
     override fun isEnabled(@LogLevel level: Int): Boolean =
-        level >= minLogLevel && !isRunningInUITest
+        level >= Log.ERROR
 
     override fun print(@LogLevel level: Int, tag: String, throwable: Throwable?, message: String?) {
-        if (isEnabled(level)) {
-            showToast(
-                message = createMessage(
-                    tag = tag,
-                    throwable = throwable,
-                    message = message,
-                ),
-            )
+        printIfNeeded(level, tag, throwable) {
+            message
         }
     }
 
-    override fun print(@LogLevel level: Int, tag: String, throwable: Throwable?, messageFormat: String, vararg args: Any?) {
-        if (isEnabled(level)) {
-            showToast(
+    override fun print(@LogLevel level: Int, tag: String, throwable: Throwable?, messageFormat: String, args: Array<Any?>) {
+        printIfNeeded(level, tag, throwable) {
+            MessageFormatter.arrayFormat(messageFormat, args).message
+        }
+    }
+
+    private fun printIfNeeded(@LogLevel level: Int, tag: String, throwable: Throwable?, message: () -> String?) {
+        if (!isEnabled(level) || tag in IGNORED_TAGS) {
+            return
+        }
+        try {
+            appContext.showToast(
                 message = createMessage(
                     tag = tag,
                     throwable = throwable,
-                    message = MessageFormatter.arrayFormat(messageFormat, args).message,
+                    message = message(),
                 ),
             )
+        } catch (_: IllegalAccessException) {
+            // appContext might not be a visual context, i.e., it might not have access to a WindowManager and thus can't show toasts.
+            // In this case we just catch and ignore the exception, as there's nothing we can do.
         }
     }
 
@@ -48,24 +51,9 @@ class DebugToasterBackend(
         return "❗ $detail"
     }
 
-    private fun showToast(message: String) {
-        getContext()?.let { context ->
-            RuntimeUtil.runOnUiThread {
-                try {
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-                } catch (_: Exception) {
-                    // do nothing here, we tried our best
-                }
-            }
-        }
-    }
-
-    private val isRunningInUITest: Boolean by lazy {
-        try {
-            Class.forName("androidx.test.espresso.Espresso")
-            true
-        } catch (_: ClassNotFoundException) {
-            false
-        }
+    companion object {
+        private val IGNORED_TAGS = arrayOf(
+            "ch.threema.libwebrtc",
+        )
     }
 }

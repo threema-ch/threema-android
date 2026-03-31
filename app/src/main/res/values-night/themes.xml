@@ -144,6 +144,18 @@
         <item name="emoji_picker_hint">@color/emoji_picker_hint_dark</item>
         <item name="emoji_search_background">@color/emoji_search_background_dark</item>
         <item name="emoji_search_stroke">@color/emoji_search_stroke_dark</item>
+
+        <!-- message bubbles -->
+        <item name="colorMessageBubbleSendContainer">?attr/colorSurfaceContainer</item>
+        <item name="colorOnMessageBubbleSendContainer">?attr/colorOnSurface</item>
+        <item name="colorMessageBubbleSendContainerSelected">?attr/colorPrimaryContainer</item>
+        <item name="colorOnMessageBubbleSendContainerSelected">?attr/colorOnPrimaryContainer</item>
+        <item name="colorMessageBubbleReceiveContainer">?attr/colorSurfaceContainerHigh</item>
+        <item name="colorOnMessageBubbleReceiveContainer">?attr/colorOnSurface</item>
+        <item name="colorMessageBubbleReceiveContainerSelected">?attr/colorPrimaryContainer</item>
+        <item name="colorOnMessageBubbleReceiveContainerSelected">?attr/colorOnPrimaryContainer
+        </item>
+
     </style>
 
     <style name="Theme.Threema.Settings" parent="Theme.Threema.WithToolbar">

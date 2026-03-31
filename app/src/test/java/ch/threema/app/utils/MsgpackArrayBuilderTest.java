@@ -39,9 +39,6 @@ public class MsgpackArrayBuilderTest {
     /**
      * Test with a hex string
      * to generate use https://msgpack.org/ (click Try!)
-     *
-     * @param arrayBuilder
-     * @param hexString
      */
     private void doTest(MsgpackArrayBuilder arrayBuilder, String hexString) {
         doTest(arrayBuilder,

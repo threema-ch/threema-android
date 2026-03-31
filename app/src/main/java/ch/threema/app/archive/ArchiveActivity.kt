@@ -1,5 +1,6 @@
 package ch.threema.app.archive
 
+import android.content.Context
 import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
@@ -41,51 +42,57 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import ch.threema.android.ResolvableString
+import ch.threema.android.buildActivityIntent
 import ch.threema.android.context
 import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.activities.ComposeMessageActivity
+import ch.threema.app.activities.DistributionListAddActivity
 import ch.threema.app.activities.ThreemaToolbarActivity
+import ch.threema.app.compose.common.LocalDayOfYear
 import ch.threema.app.compose.common.SpacerVertical
+import ch.threema.app.compose.common.immutables.ImmutableBitmap
+import ch.threema.app.compose.common.rememberRefreshingLocalDayOfYear
 import ch.threema.app.compose.conversation.ConversationListItem
 import ch.threema.app.compose.conversation.models.ConversationListItemUiModel
 import ch.threema.app.compose.conversation.models.ConversationNameStyle
 import ch.threema.app.compose.conversation.models.ConversationUiModel
 import ch.threema.app.compose.conversation.models.IconInfo
+import ch.threema.app.compose.preview.PreviewData
 import ch.threema.app.compose.theme.ThreemaTheme
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.GridUnit
+import ch.threema.app.contactdetails.ContactDetailActivity
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.dialogs.GenericAlertDialog.DialogClickListener
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.preference.service.PreferenceService.EmojiStyle
-import ch.threema.app.services.ContactService
+import ch.threema.app.services.GroupService
+import ch.threema.app.stores.IdentityProvider
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.ThreemaSearchView
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
+import ch.threema.app.usecases.conversations.AvatarIteration
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.voip.activities.GroupCallActivity
-import ch.threema.app.voip.groupcall.LocalGroupId
 import ch.threema.common.consume
+import ch.threema.data.datatypes.ContactNameFormat
+import ch.threema.domain.models.ContactReceiverIdentifier
+import ch.threema.domain.models.DistributionListReceiverIdentifier
+import ch.threema.domain.models.GroupReceiverIdentifier
+import ch.threema.domain.models.ReceiverIdentifier
 import ch.threema.domain.types.Identity
-import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.DistributionListModel
-import ch.threema.storage.models.GroupModel
-import ch.threema.storage.models.MessageModel
-import ch.threema.storage.models.MessageType
 import com.google.android.material.appbar.MaterialToolbar
-import java.util.Date
 import java.util.UUID
-import kotlin.random.Random
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ArchiveActivity : ThreemaToolbarActivity(), DialogClickListener, SearchView.OnQueryTextListener {
-    private val contactService: ContactService by inject()
     private val preferenceService: PreferenceService by inject()
     private val viewModel: ArchiveViewModel by viewModel()
+    private val groupService: GroupService by inject()
+    private val identityProvider: IdentityProvider by inject()
 
     private var actionMode: ActionMode? = null
 
@@ -109,7 +116,7 @@ class ArchiveActivity : ThreemaToolbarActivity(), DialogClickListener, SearchVie
                             }
 
                             is ArchiveScreenEvent.OpenGroupConversation -> openComposeMessageActivity {
-                                putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, archiveScreenEvent.groupDbId.toLong())
+                                putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, archiveScreenEvent.groupDatabaseId.toLong())
                             }
 
                             is ArchiveScreenEvent.OpenOneToOneConversation -> openComposeMessageActivity {
@@ -182,6 +189,8 @@ class ArchiveActivity : ThreemaToolbarActivity(), DialogClickListener, SearchVie
             val conversationListItemUiModels: List<ConversationListItemUiModel>
                 by viewModel.conversationListItemUiModels.collectAsStateWithLifecycle()
 
+            val contactNameFormat: ContactNameFormat by viewModel.contactNameFormat.collectAsStateWithLifecycle()
+
             LaunchedEffect(Unit) {
                 if (!searchQuery.isNullOrBlank()) {
                     viewModel.setFilterQuery(searchQuery)
@@ -201,10 +210,10 @@ class ArchiveActivity : ThreemaToolbarActivity(), DialogClickListener, SearchVie
                         ),
                     containerColor = MaterialTheme.colorScheme.background,
                     contentColor = MaterialTheme.colorScheme.onBackground,
-                ) { contentPadding ->
+                ) { insetsPadding ->
 
                     ArchiveActivityContent(
-                        contentPadding = contentPadding,
+                        insetsPadding = insetsPadding,
                         conversationListItemUiModels = conversationListItemUiModels,
                         onClickConversation = { conversationUiModel ->
                             actionMode?.let { currentActionMode ->
@@ -220,6 +229,7 @@ class ArchiveActivity : ThreemaToolbarActivity(), DialogClickListener, SearchVie
                                 viewModel.onClickedConversation(conversationUiModel.conversationUID)
                             }
                         },
+                        onClickAvatar = ::onAvatarClicked,
                         onLongClickConversation = { conversationUiModel ->
                             val hasAnyCheckedConversations: Boolean = viewModel.toggleSelected(
                                 conversationUID = conversationUiModel.conversationUID,
@@ -228,16 +238,20 @@ class ArchiveActivity : ThreemaToolbarActivity(), DialogClickListener, SearchVie
                                 actionMode = startSupportActionMode(ArchiveActionCallback())
                             }
                         },
-                        onClickJoinOrOpenGroupCall = { localGroupId ->
-                            startActivity(GroupCallActivity.createJoinCallIntent(this, localGroupId.id))
+                        onClickJoinOrOpenGroupCall = { groupReceiverIdentifier ->
+                            startActivity(
+                                GroupCallActivity.createJoinCallIntent(
+                                    this,
+                                    groupReceiverIdentifier.groupDatabaseId.toInt(),
+                                ),
+                            )
                         },
-                        identityNameProvider = { identity ->
-                            viewModel.getNameByIdentityOrNull(identity)
-                        },
+                        avatarBitmapProvider = viewModel::provideAvatarBitmap,
                         ownIdentity = remember {
-                            contactService.me.identity
+                            identityProvider.getIdentity()!!
                         },
-                        emojiStyle = preferenceService.emojiStyle,
+                        emojiStyle = preferenceService.getEmojiStyle(),
+                        contactNameFormat = contactNameFormat,
                     )
                 }
             }
@@ -302,7 +316,7 @@ class ArchiveActivity : ThreemaToolbarActivity(), DialogClickListener, SearchVie
         actionMode?.let(ActionMode::finish) ?: run { finish() }
     }
 
-    override fun onYes(tag: String, data: Any?) {
+    override fun onYes(tag: String?, data: Any?) {
         if (tag == DIALOG_TAG_REALLY_DELETE_CHATS) {
             viewModel.confirmDeleteCurrentlySelected(
                 supportFragmentManager = supportFragmentManager,
@@ -311,33 +325,58 @@ class ArchiveActivity : ThreemaToolbarActivity(), DialogClickListener, SearchVie
         }
     }
 
-    private companion object {
-        const val DIALOG_TAG_REALLY_DELETE_CHATS = "delc"
+    private fun onAvatarClicked(conversationUiModel: ConversationUiModel) {
+        val intent = when (val receiverIdentifier = conversationUiModel.receiverIdentifier) {
+            is ContactReceiverIdentifier -> {
+                ContactDetailActivity.createIntent(this, receiverIdentifier.identity)
+            }
+
+            is GroupReceiverIdentifier -> {
+                groupService.getGroupDetailIntent(receiverIdentifier.groupDatabaseId, this)
+            }
+
+            is DistributionListReceiverIdentifier -> {
+                DistributionListAddActivity.createIntent(this, receiverIdentifier.id)
+            }
+        }
+        startActivity(intent)
+    }
+
+    companion object {
+        private const val DIALOG_TAG_REALLY_DELETE_CHATS = "delc"
+
+        fun createIntent(context: Context, filterQuery: String? = null) = buildActivityIntent<ArchiveActivity>(context) {
+            putExtra(AppConstants.INTENT_DATA_ARCHIVE_FILTER, filterQuery)
+        }
     }
 }
 
 @Composable
 private fun ArchiveActivityContent(
-    contentPadding: PaddingValues,
+    insetsPadding: PaddingValues,
     conversationListItemUiModels: List<ConversationListItemUiModel>,
     onClickConversation: (ConversationUiModel) -> Unit,
     onLongClickConversation: (ConversationUiModel) -> Unit,
-    onClickJoinOrOpenGroupCall: (LocalGroupId) -> Unit,
-    identityNameProvider: (Identity) -> ResolvableString?,
+    onClickAvatar: (ConversationUiModel) -> Unit,
+    onClickJoinOrOpenGroupCall: (GroupReceiverIdentifier) -> Unit,
+    avatarBitmapProvider: suspend (ReceiverIdentifier) -> ImmutableBitmap?,
     ownIdentity: Identity,
     @EmojiStyle emojiStyle: Int,
+    contactNameFormat: ContactNameFormat,
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
     ) {
         if (conversationListItemUiModels.isNotEmpty()) {
+            val localDayOfYear: LocalDayOfYear by rememberRefreshingLocalDayOfYear()
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(
                         horizontal = dimensionResource(R.dimen.tablet_additional_padding_horizontal),
                     ),
-                contentPadding = contentPadding,
+                contentPadding = insetsPadding,
             ) {
                 item(
                     key = "top-spacer",
@@ -355,11 +394,15 @@ private fun ArchiveActivityContent(
                     ConversationListItem(
                         modifier = Modifier.animateItem(),
                         conversationListItemUiModel = conversationListItemUiModel,
-                        identityNameProvider = identityNameProvider,
+                        avatarIteration = conversationListItemUiModel.model.avatarIteration,
+                        localDayOfYear = localDayOfYear,
+                        avatarBitmapProvider = avatarBitmapProvider,
                         ownIdentity = ownIdentity,
                         emojiStyle = emojiStyle,
+                        contactNameFormat = contactNameFormat,
                         onClick = onClickConversation,
                         onLongClick = onLongClickConversation,
+                        onClickAvatar = onClickAvatar,
                         onClickJoinOrOpenGroupCall = onClickJoinOrOpenGroupCall,
                     )
                 }
@@ -374,7 +417,7 @@ private fun ArchiveActivityContent(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(contentPadding),
+                    .padding(insetsPadding),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -405,98 +448,101 @@ private fun ArchiveActivityContent_Preview() {
     ThreemaThemePreview {
         Scaffold { contentPadding ->
             ArchiveActivityContent(
-                contentPadding = contentPadding,
+                insetsPadding = contentPadding,
                 conversationListItemUiModels = listOf(
                     ConversationListItemUiModel(
-                        model =
-                        ConversationUiModel.ContactConversation(
+                        model = ConversationUiModel.ContactConversation(
                             conversationUID = UUID.randomUUID().toString(),
-                            latestMessage = MessageModel().apply {
-                                type = MessageType.TEXT
-                                body = "How are you?"
-                                createdAt = Date()
-                            },
-                            receiverModel = ContactModel.create("11111111", Random.nextBytes(32)),
+                            latestMessageData = PreviewData.LatestMessageData.incomingTextMessage(
+                                body = "How are you?",
+                            ),
+                            receiverIdentifier = ContactReceiverIdentifier(
+                                identity = PreviewData.IDENTITY_OTHER_1.value,
+                            ),
                             receiverDisplayName = "Contact Name",
                             conversationName = "Conversation Name",
                             conversationNameStyle = ConversationNameStyle(strikethrough = false, dimAlpha = false),
-                            draft = null,
-                            latestMessageStateIcon = IconInfo(
-                                icon = R.drawable.ic_visibility_filled,
-                                contentDescription = null,
-                            ),
+                            draftData = null,
                             unreadState = null,
                             isPinned = false,
                             isPrivate = false,
+                            icon = IconInfo(
+                                res = R.drawable.ic_reply_filled,
+                                contentDescription = null,
+                            ),
                             muteStatusIcon = null,
                             showWorkBadge = true,
                             isTyping = false,
+                            avatarIteration = AvatarIteration.initial,
                         ),
                         isChecked = false,
+                        isHighlighted = false,
                     ),
                     ConversationListItemUiModel(
-                        model =
-                        ConversationUiModel.GroupConversation(
+                        model = ConversationUiModel.GroupConversation(
                             conversationUID = UUID.randomUUID().toString(),
-                            latestMessage = MessageModel().apply {
-                                type = MessageType.TEXT
-                                body = "How are you?"
-                                createdAt = Date()
-                            },
-                            receiverModel = GroupModel().apply {
-                                setName("Group Name")
-                            },
+                            latestMessageData = PreviewData.LatestMessageData.incomingTextMessage(
+                                body = "How are you?",
+                            ),
+                            receiverIdentifier = GroupReceiverIdentifier(
+                                groupDatabaseId = 1L,
+                                groupCreatorIdentity = PreviewData.IDENTITY_OTHER_1.value,
+                                groupApiId = 1L,
+                            ),
                             receiverDisplayName = "Contact Name",
                             conversationName = "Group Conversation Name",
                             conversationNameStyle = ConversationNameStyle(strikethrough = false, dimAlpha = false),
-                            draft = null,
-                            latestMessageStateIcon = IconInfo(
-                                icon = R.drawable.ic_visibility_filled,
-                                contentDescription = null,
-                            ),
+                            draftData = null,
                             unreadState = null,
                             isPinned = false,
                             isPrivate = false,
+                            icon = IconInfo(
+                                res = R.drawable.ic_group_filled,
+                                contentDescription = null,
+                            ),
                             muteStatusIcon = null,
                             latestMessageSenderName = null,
                             groupCall = null,
+                            avatarIteration = AvatarIteration.initial,
                         ),
                         isChecked = false,
+                        isHighlighted = false,
                     ),
                     ConversationListItemUiModel(
-                        model =
-                        ConversationUiModel.DistributionListConversation(
+                        model = ConversationUiModel.DistributionListConversation(
                             conversationUID = UUID.randomUUID().toString(),
-                            latestMessage = MessageModel().apply {
-                                type = MessageType.TEXT
-                                body = "How are you?"
-                                createdAt = Date()
-                            },
-                            receiverModel = DistributionListModel().apply {
-                                setName("Distribution List Name")
-                            },
+                            latestMessageData = PreviewData.LatestMessageData.incomingTextMessage(
+                                body = "How are you?",
+                            ),
+                            receiverIdentifier = DistributionListReceiverIdentifier(
+                                id = 1L,
+                            ),
                             receiverDisplayName = "Contact Name",
                             conversationName = "Distribution List Conversation Name",
                             conversationNameStyle = ConversationNameStyle(strikethrough = false, dimAlpha = false),
-                            draft = null,
-                            latestMessageStateIcon = IconInfo(
-                                icon = R.drawable.ic_visibility_filled,
-                                contentDescription = null,
-                            ),
+                            draftData = null,
                             unreadState = null,
                             isPinned = false,
                             isPrivate = false,
+                            icon = IconInfo(
+                                res = R.drawable.ic_distribution_list_filled,
+                                contentDescription = null,
+                            ),
                             muteStatusIcon = null,
+                            avatarIteration = AvatarIteration.initial,
                         ),
                         isChecked = false,
+                        isHighlighted = false,
                     ),
                 ),
                 onClickConversation = {},
+                onClickAvatar = {},
                 onLongClickConversation = {},
                 onClickJoinOrOpenGroupCall = {},
-                identityNameProvider = { null },
-                ownIdentity = "00000000",
-                emojiStyle = PreferenceService.EmojiStyle_ANDROID,
+                avatarBitmapProvider = { null },
+                ownIdentity = PreviewData.IDENTITY_ME,
+                emojiStyle = PreferenceService.EMOJI_STYLE_ANDROID,
+                contactNameFormat = ContactNameFormat.DEFAULT,
             )
         }
     }
@@ -508,14 +554,16 @@ private fun ArchiveActivityContent_Preview_Empty() {
     ThreemaThemePreview {
         Scaffold { contentPadding ->
             ArchiveActivityContent(
-                contentPadding = contentPadding,
+                insetsPadding = contentPadding,
                 conversationListItemUiModels = emptyList(),
                 onClickConversation = {},
                 onLongClickConversation = {},
+                onClickAvatar = {},
                 onClickJoinOrOpenGroupCall = {},
-                identityNameProvider = { null },
-                ownIdentity = "00000000",
-                emojiStyle = PreferenceService.EmojiStyle_ANDROID,
+                avatarBitmapProvider = { null },
+                ownIdentity = PreviewData.IDENTITY_ME,
+                emojiStyle = PreferenceService.EMOJI_STYLE_ANDROID,
+                contactNameFormat = ContactNameFormat.DEFAULT,
             )
         }
     }

@@ -15,9 +15,5 @@ internal class DatabaseUpdateToVersion81(
 
     override fun getDescription() = "store system messages"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 81
-    }
+    override val version = 81
 }

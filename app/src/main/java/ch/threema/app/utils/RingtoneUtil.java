@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Build;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;

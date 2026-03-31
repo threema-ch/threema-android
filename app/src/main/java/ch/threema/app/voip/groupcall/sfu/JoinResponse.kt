@@ -16,30 +16,8 @@ data class JoinResponseBody(
     val icePassword: String,
     val dtlsFingerprint: ByteArray,
     val addresses: List<Address>,
+    val rtpHeaderExtensionIds: RtpHeaderExtensionIds,
 ) {
-    companion object {
-        fun fromSfuResponseBytes(bytes: ByteArray): JoinResponseBody {
-            return SfuHttpResponse.Join.parseFrom(bytes).let {
-                val addresses = it.addressesList.map { address ->
-                    val protocol = when (address.protocol) {
-                        SfuHttpResponse.Join.Address.Protocol.UDP -> Address.Protocol.UDP
-                        else -> Address.Protocol.UNRECOGNIZED
-                    }
-                    Address(address.port, address.ip, protocol)
-                }
-                JoinResponseBody(
-                    it.startedAt.toULong(),
-                    it.maxParticipants.toUInt(),
-                    ParticipantId(it.participantId.toUInt()),
-                    it.iceUsernameFragment,
-                    it.icePassword,
-                    it.dtlsFingerprint.toByteArray(),
-                    addresses,
-                )
-            }
-        }
-    }
-
     data class Address(
         val port: Int,
         val ip: String,
@@ -57,9 +35,10 @@ data class JoinResponseBody(
 
     val sessionParameters: SessionParameters
         get() = SessionParameters(
-            participantId,
-            IceParameters(iceUsernameFragment, icePassword),
-            DtlsParameters(dtlsFingerprint),
+            participantId = participantId,
+            iceParameters = IceParameters(iceUsernameFragment, icePassword),
+            dtlsParameters = DtlsParameters(dtlsFingerprint),
+            rtpHeaderExtensionIds = rtpHeaderExtensionIds,
         )
 
     override fun equals(other: Any?): Boolean {
@@ -90,4 +69,29 @@ data class JoinResponseBody(
         "JoinResponseBody(startedAt=$startedAt, maxParticipants=$maxParticipants, participantId=$participantId, " +
             "iceUsernameFragment='$iceUsernameFragment', icePassword='$icePassword', " +
             "dtlsFingerprint=${dtlsFingerprint.toHexString()}, addresses=$addresses)"
+
+    companion object {
+        fun fromSfuResponseBytes(bytes: ByteArray): JoinResponseBody {
+            val joinResponse = SfuHttpResponse.Join.parseFrom(bytes)
+            return JoinResponseBody(
+                startedAt = joinResponse.startedAt.toULong(),
+                maxParticipants = joinResponse.maxParticipants.toUInt(),
+                participantId = ParticipantId(joinResponse.participantId.toUInt()),
+                iceUsernameFragment = joinResponse.iceUsernameFragment,
+                icePassword = joinResponse.icePassword,
+                dtlsFingerprint = joinResponse.dtlsFingerprint.toByteArray(),
+                addresses = joinResponse.addressesList.toAddresses(),
+                rtpHeaderExtensionIds = RtpHeaderExtensionIds.createFromJoinResponse(joinResponse),
+            )
+        }
+
+        private fun List<SfuHttpResponse.Join.Address>.toAddresses(): List<Address> =
+            map { address ->
+                val protocol = when (address.protocol) {
+                    SfuHttpResponse.Join.Address.Protocol.UDP -> Address.Protocol.UDP
+                    else -> Address.Protocol.UNRECOGNIZED
+                }
+                Address(address.port, address.ip, protocol)
+            }
+    }
 }

@@ -1,7 +1,6 @@
 package ch.threema.app.dialogs;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -13,17 +12,18 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.checkbox.MaterialCheckBox;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
+import ch.threema.app.preference.service.PreferenceService;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -37,8 +37,7 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
     private static final Logger logger = getThreemaLogger("ShowOnceDialog");
 
     private Activity activity;
-
-    private static final String PREF_PREFIX = "dialog_";
+    private final PreferenceService preferenceService = KoinJavaComponent.get(PreferenceService.class);
 
     public static final String ARG_TITLE = "title";
     public static final String ARG_MESSAGE_STRING = "messageString";
@@ -108,24 +107,11 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
     @Override
     // generally allow state loss for simple string alerts
     public void show(FragmentManager manager, String tag) {
-        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
-
-        if (!sharedPreferences.getBoolean(PREF_PREFIX + tag, false)) {
+        if (!preferenceService.isOneTimeDialogShown(tag)) {
             FragmentTransaction ft = manager.beginTransaction();
             ft.add(this, tag);
             ft.commitAllowingStateLoss();
         }
-    }
-
-    // generally allow state loss for simple string alerts
-    public static boolean shouldNotShowAnymore(String tag) {
-        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
-        return sharedPreferences.getBoolean(PREF_PREFIX + tag, false);
-    }
-
-    private void saveDontShowAgain(boolean dontShow) {
-        final SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(ThreemaApplication.getAppContext());
-        sharedPreferences.edit().putBoolean(PREF_PREFIX + getTag(), dontShow).apply();
     }
 
     public interface ShowOnceDialogClickListener {
@@ -157,7 +143,7 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
         if (callback != null) {
             checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> dontShowAgain.set(isChecked));
         } else {
-            checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> saveDontShowAgain(isChecked));
+            checkbox.setOnCheckedChangeListener((buttonView, isChecked) -> preferenceService.setOneTimeDialogShown(tag, isChecked));
         }
 
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
@@ -174,7 +160,7 @@ public class ShowOnceDialog extends ThreemaDialogFragment {
 
         if (callback != null) {
             builder.setPositiveButton(getString(R.string.ok), (dialog, whichButton) -> {
-                saveDontShowAgain(dontShowAgain.get());
+                preferenceService.setOneTimeDialogShown(tag, true);
                 callback.onYes(tag);
             });
             builder.setNegativeButton(getString(R.string.cancel), (dialog, whichButton) -> callback.onCancel(tag));

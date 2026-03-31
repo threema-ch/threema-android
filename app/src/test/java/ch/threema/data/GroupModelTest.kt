@@ -10,6 +10,7 @@ import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.data.storage.DatabaseBackend
+import ch.threema.domain.models.UserState
 import ch.threema.domain.taskmanager.QueueSendCompleteListener
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
@@ -71,7 +72,7 @@ class GroupModelTest {
                 groupDescription = "Description",
                 groupDescriptionChangedAt = now,
                 otherMembers = members,
-                userState = ch.threema.storage.models.GroupModel.UserState.MEMBER,
+                userState = UserState.MEMBER,
                 notificationTriggerPolicyOverride = null,
             ),
             databaseBackendMock,
@@ -165,7 +166,7 @@ class GroupModelTest {
                 groupDescription = groupDesc,
                 groupDescriptionChangedAt = groupDescChangedAt,
                 otherMembers = members,
-                userState = ch.threema.storage.models.GroupModel.UserState.MEMBER,
+                userState = UserState.MEMBER,
                 notificationTriggerPolicyOverride = null,
             ),
             databaseBackendMock,
@@ -187,8 +188,11 @@ class GroupModelTest {
 
     @Test
     fun testConstructorValidGroupIdentity() {
-        val data = createTestGroup().data!!.copy(
-            groupIdentity = GroupIdentity("AAAAAAAA", 42),
+        val testData = createTestGroup().data!!
+        val groupIdentity = GroupIdentity("AAAAAAAA", 42)
+        val data = testData.copy(
+            groupIdentity = groupIdentity,
+            otherMembers = testData.otherMembers - groupIdentity.creatorIdentity,
         )
         val model = GroupModel(
             // The same identity but different object is provided
@@ -206,8 +210,11 @@ class GroupModelTest {
     fun testConstructorValidateCreatorIdentity() {
         val testData = createTestGroup().data!!
         val groupIdentity = GroupIdentity("AAAAAAAA", 42)
-        val data = testData.copy(groupIdentity = groupIdentity)
-        assertFailsWith<AssertionError> {
+        val data = testData.copy(
+            groupIdentity = groupIdentity,
+            otherMembers = testData.otherMembers - groupIdentity.creatorIdentity,
+        )
+        assertFailsWith<IllegalArgumentException> {
             GroupModel(
                 data.groupIdentity.copy(creatorIdentity = "BBBBBBBB"),
                 data,
@@ -221,8 +228,11 @@ class GroupModelTest {
     fun testConstructorValidateGroupId() {
         val testData = createTestGroup().data!!
         val groupIdentity = GroupIdentity("AAAAAAAA", 42)
-        val data = testData.copy(groupIdentity = groupIdentity)
-        assertFailsWith<AssertionError> {
+        val data = testData.copy(
+            groupIdentity = groupIdentity,
+            otherMembers = testData.otherMembers - groupIdentity.creatorIdentity,
+        )
+        assertFailsWith<IllegalArgumentException> {
             GroupModel(
                 data.groupIdentity.copy(groupId = 0),
                 data,

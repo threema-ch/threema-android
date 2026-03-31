@@ -11,8 +11,4 @@ public class LinkMobileNoException extends ThreemaException {
     public LinkMobileNoException(String msg) {
         super(msg);
     }
-
-    public LinkMobileNoException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
 }

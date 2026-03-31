@@ -28,8 +28,8 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
             serviceManager.modelRepositories.contacts,
             serviceManager.groupService,
             serviceManager.nonceFactory,
-            serviceManager.blockedIdentitiesService,
             serviceManager.preferenceService,
+            serviceManager.synchronizedSettingsService,
             serviceManager.multiDeviceManager,
         )
     }
@@ -55,6 +55,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
             handle.runBundledMessagesSendSteps(
                 outgoingCspMessageHandle,
                 outgoingCspMessageServices,
+                serviceManager.identityBlockedSteps,
             )
             assertMessageHandleSent(outgoingCspMessageHandle) { message ->
                 message as TextMessage
@@ -65,7 +66,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
 
             assertTrue(hasBeenMarkedAsSent)
             assertEquals(1, forwardSecurityModes!!.keys.size)
-            forwardSecurityModes!!.values.forEach {
+            forwardSecurityModes.values.forEach {
                 assertEquals(ForwardSecurityMode.FOURDH, it)
             }
         }
@@ -93,6 +94,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
             handle.runBundledMessagesSendSteps(
                 outgoingCspMessageHandle,
                 outgoingCspMessageServices,
+                serviceManager.identityBlockedSteps,
             )
 
             assertMessageHandleSent(outgoingCspMessageHandle) { message ->
@@ -104,7 +106,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
 
             assertTrue(hasBeenMarkedAsSent)
             assertEquals(group.members.size - 1, forwardSecurityModes!!.keys.size)
-            forwardSecurityModes!!.values.forEach {
+            forwardSecurityModes.values.forEach {
                 assertEquals(ForwardSecurityMode.FOURDH, it)
             }
         }
@@ -152,6 +154,7 @@ class BundledMessagesSendStepsTest : MessageProcessorProvider() {
         handle.runBundledMessagesSendSteps(
             handles,
             outgoingCspMessageServices,
+            serviceManager.identityBlockedSteps,
         )
 
         assertMessageHandleSent(handles[0]) { message ->

@@ -4,51 +4,29 @@ import ch.threema.app.AppConstants
 import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.ContactMessageReceiver
-import ch.threema.app.messagereceiver.DistributionListMessageReceiver
 import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.BlockedIdentitiesService
-import ch.threema.app.services.ContactService
-import ch.threema.app.services.DistributionListService
-import ch.threema.app.services.GroupService
 import ch.threema.common.minus
 import ch.threema.common.now
 import ch.threema.common.plus
-import ch.threema.data.datatypes.AndroidContactLookupInfo
-import ch.threema.data.datatypes.IdColor
-import ch.threema.data.models.ContactModelData
-import ch.threema.data.models.GroupIdentity
-import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.ContactModelRepository
-import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.data.storage.DatabaseBackend
-import ch.threema.domain.models.ContactSyncState
-import ch.threema.domain.models.GroupId
-import ch.threema.domain.models.IdentityState
-import ch.threema.domain.models.IdentityType
-import ch.threema.domain.models.ReadReceiptPolicy
-import ch.threema.domain.models.TypingIndicatorPolicy
-import ch.threema.domain.models.VerificationLevel
-import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.DeleteMessage
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.FileData.RenderingType
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.domain.types.Identity
-import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.AbstractMessageModel
-import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListMessageModel
-import ch.threema.storage.models.GroupMessageModel
-import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
+import ch.threema.storage.models.group.GroupMessageModel
 import ch.threema.testhelpers.nonSecureRandomArray
-import ch.threema.testhelpers.randomIdentity
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
@@ -63,6 +41,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
+import testdata.TestData
 
 class MessageUtilTest {
     private lateinit var contactMessageModelInbox: MessageModel
@@ -89,6 +68,9 @@ class MessageUtilTest {
     private val coreServiceManagerMock: CoreServiceManager = mockk<CoreServiceManager> {
         every { multiDeviceManager } returns multiDeviceManagerMock
         every { taskManager } returns taskManagerMock
+        every { identityStore } returns mockk<IdentityStore> {
+            every { getIdentityString() } returns TestData.Identities.ME.value
+        }
     }
 
     private val blockedIdentitiesServiceMock = mockk<BlockedIdentitiesService>()
@@ -99,7 +81,6 @@ class MessageUtilTest {
 
     private val databaseBackendMock: DatabaseBackend = mockk<DatabaseBackend>()
     private val contactModelRepositoryMock: ContactModelRepository = mockk<ContactModelRepository>()
-    private val groupModelRepositoryMock: GroupModelRepository = mockk<GroupModelRepository>()
 
     @Suppress("DEPRECATION")
     @BeforeTest
@@ -519,7 +500,14 @@ class MessageUtilTest {
 
     @Test
     fun allReceivers_message_without_affected_receivers() {
-        val contactMessageReceiver = createContactMessageReceiver()
+        val contactMessageReceiver = TestData.createAndMockContactMessageReceiver(
+            identity = TestData.Identities.OTHER_1,
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
 
         // Message receiver without affected receivers
         val allReceivers: List<MessageReceiver<*>> = MessageUtil.getAllReceivers(contactMessageReceiver)
@@ -529,15 +517,23 @@ class MessageUtilTest {
 
     @Test
     fun allReceivers_message_with_affected_receivers() {
-        val identities = listOf("ABCDEFG1", "ABCDEFG2", "ABCDEFG3")
-        val distributionListReceiver = createDistributionListMessageReceiver(
-            identities.map { it to nonSecureRandomArray(32) },
+        val identities = listOf(TestData.Identities.OTHER_1, TestData.Identities.OTHER_2, TestData.Identities.OTHER_3)
+        val distributionListReceiver = TestData.createAndMockDistributionListMessageReceiver(
+            distributionListId = 1L,
+            identitiesWithPublicKey = identities.map { identity ->
+                identity to nonSecureRandomArray(32)
+            },
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
         )
         val allReceivers: List<MessageReceiver<*>> = MessageUtil.getAllReceivers(distributionListReceiver)
         assertEquals(4, allReceivers.size)
         assertEquals(distributionListReceiver, allReceivers[0])
         identities.forEachIndexed { index: Int, identity ->
-            assertEquals(identity, allReceivers[index + 1].identities[0])
+            assertEquals(identity.value, allReceivers[index + 1].identities[0])
         }
     }
 
@@ -548,9 +544,23 @@ class MessageUtilTest {
 
     @Test
     fun addDistributionListReceivers_must_contain_passed_receivers() {
-        val contactMessageReceiver: MessageReceiver<*> = createContactMessageReceiver()
-        val distributionListReceiver = createDistributionListMessageReceiver(emptyList())
-
+        val contactMessageReceiver: MessageReceiver<*> = TestData.createAndMockContactMessageReceiver(
+            identity = TestData.Identities.OTHER_1,
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
+        val distributionListReceiver = TestData.createAndMockDistributionListMessageReceiver(
+            distributionListId = 1L,
+            identitiesWithPublicKey = emptyList(),
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+        )
         val resolvedReceivers = MessageUtil.addDistributionListReceivers(
             arrayOf(
                 contactMessageReceiver,
@@ -564,17 +574,53 @@ class MessageUtilTest {
 
     @Test
     fun addDistributionListReceivers_must_preserve_order_of_receivers() {
-        val contactMessageReceiver1: MessageReceiver<*> = createContactMessageReceiver("ABCDEFG1", nonSecureRandomArray(32))
-        val contactMessageReceiver2: MessageReceiver<*> = createContactMessageReceiver("ABCDEFG2", nonSecureRandomArray(32))
-        val contactMessageReceiver3: MessageReceiver<*> = createContactMessageReceiver("ABCDEFG3", nonSecureRandomArray(32))
-        val identity4 = "ABCDEFG4"
-        val identity5 = "ABCDEFG5"
-        val emptyDistributionListMessageReceiver = createDistributionListMessageReceiver(emptyList())
-        val distributionListMessageReceiver = createDistributionListMessageReceiver(
-            listOf(
-                identity4 to nonSecureRandomArray(32),
-                identity5 to nonSecureRandomArray(32),
+        val contactMessageReceiver1: MessageReceiver<*> = TestData.createAndMockContactMessageReceiver(
+            identity = TestData.Identities.OTHER_1,
+            publicKey = nonSecureRandomArray(32),
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
+        val contactMessageReceiver2: MessageReceiver<*> = TestData.createAndMockContactMessageReceiver(
+            identity = TestData.Identities.OTHER_2,
+            publicKey = nonSecureRandomArray(32),
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
+        val contactMessageReceiver3: MessageReceiver<*> = TestData.createAndMockContactMessageReceiver(
+            identity = TestData.Identities.OTHER_3,
+            publicKey = nonSecureRandomArray(32),
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
+        val emptyDistributionListMessageReceiver = TestData.createAndMockDistributionListMessageReceiver(
+            distributionListId = 1L,
+            identitiesWithPublicKey = emptyList(),
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+        )
+        val distributionListMessageReceiver = TestData.createAndMockDistributionListMessageReceiver(
+            distributionListId = 2L,
+            identitiesWithPublicKey = listOf(
+                TestData.Identities.OTHER_4 to TestData.publicKeyAllZeros,
+                TestData.Identities.OTHER_5 to TestData.publicKeyAllZeros,
             ),
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
         )
 
         val receivers = arrayOf(
@@ -592,38 +638,69 @@ class MessageUtilTest {
         assertEquals(emptyDistributionListMessageReceiver, resolvedReceivers[1])
         assertEquals(contactMessageReceiver2, resolvedReceivers[2])
         assertEquals(distributionListMessageReceiver, resolvedReceivers[3])
-        assertEquals(identity4, resolvedReceivers[4].identities[0])
-        assertEquals(identity5, resolvedReceivers[5].identities[0])
+        assertEquals(TestData.Identities.OTHER_4.value, resolvedReceivers[4].identities[0])
+        assertEquals(TestData.Identities.OTHER_5.value, resolvedReceivers[5].identities[0])
         assertEquals(contactMessageReceiver3, resolvedReceivers[6])
     }
 
     @Test
     fun addDistributionListReceivers_must_preserve_order_of_receivers_and_remove_duplicates() {
-        val publicKey1 = nonSecureRandomArray(32)
-        val publicKey2 = nonSecureRandomArray(32)
-        val publicKey3 = nonSecureRandomArray(32)
-        val publicKey4 = nonSecureRandomArray(32)
-        val publicKey5 = nonSecureRandomArray(32)
+        val contactMessageReceiver1 = TestData.createAndMockContactMessageReceiver(
+            identity = TestData.Identities.OTHER_1,
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
+        val contactMessageReceiver2 = TestData.createAndMockContactMessageReceiver(
+            identity = TestData.Identities.OTHER_2,
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
+        val contactMessageReceiver3 = TestData.createAndMockContactMessageReceiver(
+            identity = TestData.Identities.OTHER_3,
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
 
-        val contactMessageReceiver1 = createContactMessageReceiver("ABCDEFG1", publicKey1)
-        val contactMessageReceiver2 = createContactMessageReceiver("ABCDEFG2", publicKey2)
-        val contactMessageReceiver3 = createContactMessageReceiver("ABCDEFG3", publicKey3)
+        val duplicate1 = TestData.createAndMockContactMessageReceiver(
+            identity = TestData.Identities.OTHER_1,
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
 
-        val duplicate1 = createContactMessageReceiver("ABCDEFG1", publicKey1)
-
-        val identity2 = "ABCDEFG2"
-        val identity3 = "ABCDEFG3"
-        val identity4 = "ABCDEFG4"
-        val identity5 = "ABCDEFG5"
-
-        val emptyDistributionListMessageReceiver = createDistributionListMessageReceiver(emptyList())
-        val distributionListMessageReceiver = createDistributionListMessageReceiver(
-            listOf(
-                identity4 to publicKey4,
-                identity5 to publicKey5,
-                identity2 to publicKey2,
-                identity3 to publicKey3,
+        val emptyDistributionListMessageReceiver = TestData.createAndMockDistributionListMessageReceiver(
+            distributionListId = 1L,
+            identitiesWithPublicKey = emptyList(),
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+        )
+        val distributionListMessageReceiver = TestData.createAndMockDistributionListMessageReceiver(
+            distributionListId = 1L,
+            identitiesWithPublicKey = listOf(
+                TestData.Identities.OTHER_4 to TestData.publicKeyAllZeros,
+                TestData.Identities.OTHER_5 to TestData.publicKeyAllZeros,
+                TestData.Identities.OTHER_2 to TestData.publicKeyAllZeros,
+                TestData.Identities.OTHER_3 to TestData.publicKeyAllZeros,
             ),
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
         )
 
         val receivers = arrayOf(
@@ -643,9 +720,9 @@ class MessageUtilTest {
         assertEquals(emptyDistributionListMessageReceiver, resolvedReceivers[1])
         assertEquals(contactMessageReceiver2, resolvedReceivers[2])
         assertEquals(distributionListMessageReceiver, resolvedReceivers[3])
-        assertEquals(identity4, resolvedReceivers[4].identities[0])
-        assertEquals(identity5, resolvedReceivers[5].identities[0])
-        assertEquals(identity3, resolvedReceivers[6].identities[0])
+        assertEquals(TestData.Identities.OTHER_4.value, resolvedReceivers[4].identities[0])
+        assertEquals(TestData.Identities.OTHER_5.value, resolvedReceivers[5].identities[0])
+        assertEquals(TestData.Identities.OTHER_3.value, resolvedReceivers[6].identities[0])
     }
 
     @Test
@@ -843,8 +920,13 @@ class MessageUtilTest {
     @Test
     fun `canDeleteRemotely respects message age for contact receiver`() {
         // arrange
-        val contactReceiver: ContactMessageReceiver = createContactMessageReceiver(
-            identity = randomIdentity(),
+        val contactReceiver: ContactMessageReceiver = TestData.createAndMockContactMessageReceiver(
+            identity = TestData.Identities.OTHER_1,
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            databaseBackendMock = databaseBackendMock,
+            blockedIdentitiesServiceMock = blockedIdentitiesServiceMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
         )
         val messageCreatedAtTooOld: Date = Date()
             .minus(duration = DeleteMessage.DELETE_MESSAGES_MAX_AGE.milliseconds)
@@ -869,12 +951,17 @@ class MessageUtilTest {
     @Test
     fun `canDeleteRemotely respects old message age for group receiver`() {
         // arrange
-        val ownIdentity: String = randomIdentity()
-        val creatorIdentity: String = randomIdentity()
-        val groupMessageReceiver: GroupMessageReceiver = createGroupMessageReceiver(
+        val ownIdentity = TestData.Identities.ME
+        val creatorIdentity = TestData.Identities.OTHER_1
+        val groupMessageReceiver: GroupMessageReceiver = TestData.createAndMockGroupMessageReceiver(
+            groupDatabaseId = 1L,
             ownIdentity = ownIdentity,
             creatorIdentity = creatorIdentity,
-            otherMembers = setOf(creatorIdentity),
+            otherMembers = emptySet(),
+            databaseBackendMock = databaseBackendMock,
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
         )
         val messageCreatedAtTooOld: Date = Date()
             .minus(duration = DeleteMessage.DELETE_MESSAGES_MAX_AGE.milliseconds)
@@ -899,12 +986,17 @@ class MessageUtilTest {
     @Test
     fun `canDeleteRemotely returns true for young message age for group receiver`() {
         // arrange
-        val ownIdentity: String = randomIdentity()
-        val creatorIdentity: String = randomIdentity()
-        val groupMessageReceiver: GroupMessageReceiver = createGroupMessageReceiver(
+        val ownIdentity = TestData.Identities.ME
+        val creatorIdentity = TestData.Identities.OTHER_1
+        val groupMessageReceiver: GroupMessageReceiver = TestData.createAndMockGroupMessageReceiver(
+            groupDatabaseId = 1L,
             ownIdentity = ownIdentity,
             creatorIdentity = creatorIdentity,
-            otherMembers = setOf(creatorIdentity),
+            otherMembers = emptySet(),
+            databaseBackendMock = databaseBackendMock,
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
         )
         val messageCreatedAtYoungEnough: Date = Date()
             .minus(duration = (DeleteMessage.DELETE_MESSAGES_MAX_AGE / 2).milliseconds)
@@ -928,11 +1020,16 @@ class MessageUtilTest {
     @Test
     fun `canDeleteRemotely ignores message age for notes group`() {
         // arrange
-        val ownIdentity: String = randomIdentity()
-        val groupMessageReceiver: GroupMessageReceiver = createGroupMessageReceiver(
+        val ownIdentity = TestData.Identities.ME
+        val groupMessageReceiver: GroupMessageReceiver = TestData.createAndMockGroupMessageReceiver(
+            groupDatabaseId = 1L,
             ownIdentity = ownIdentity,
             creatorIdentity = ownIdentity,
             otherMembers = emptySet(),
+            databaseBackendMock = databaseBackendMock,
+            contactModelRepositoryMock = contactModelRepositoryMock,
+            serviceManagerMock = serviceManagerMock,
+            coreServiceManagerMock = coreServiceManagerMock,
         )
         val messageCreatedAtTooOld: Date = Date()
             .minus(duration = DeleteMessage.DELETE_MESSAGES_MAX_AGE.milliseconds)
@@ -952,241 +1049,6 @@ class MessageUtilTest {
 
         // assert
         assertTrue(result)
-    }
-
-    private fun createContactMessageReceiver(
-        identity: Identity = randomIdentity(),
-        publicKey: ByteArray = nonSecureRandomArray(32),
-    ): ContactMessageReceiver {
-        val contactModel = ContactModel.create(identity, publicKey)
-        every {
-            contactModelRepositoryMock.getByIdentity(any())
-        } returns ch.threema.data.models.ContactModel(
-            identity = identity,
-            data = ContactModelData(
-                identity = identity,
-                publicKey = publicKey,
-                createdAt = Date(),
-                firstName = "firstname",
-                lastName = "lastname",
-                nickname = "nickname",
-                idColor = IdColor(0),
-                verificationLevel = VerificationLevel.FULLY_VERIFIED,
-                workVerificationLevel = WorkVerificationLevel.NONE,
-                identityType = IdentityType.NORMAL,
-                acquaintanceLevel = ContactModel.AcquaintanceLevel.DIRECT,
-                activityState = IdentityState.ACTIVE,
-                featureMask = 1u,
-                syncState = ContactSyncState.INITIAL,
-                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
-                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
-                isArchived = false,
-                androidContactLookupInfo = AndroidContactLookupInfo("androidcontactlookupkey", 42),
-                localAvatarExpires = Date(),
-                isRestored = false,
-                profilePictureBlobId = byteArrayOf(0),
-                jobTitle = null,
-                department = null,
-                notificationTriggerPolicyOverride = null,
-            ),
-            databaseBackendMock,
-            contactModelRepositoryMock,
-            coreServiceManagerMock,
-        )
-
-        return ContactMessageReceiver(
-            /* contact = */
-            contactModel,
-            /* contactService = */
-            null,
-            /* serviceManager = */
-            serviceManagerMock,
-            /* databaseService = */
-            null,
-            /* identityStore = */
-            null,
-            /* blockedIdentitiesService = */
-            blockedIdentitiesServiceMock,
-            /* contactModelRepository = */
-            contactModelRepositoryMock,
-        )
-    }
-
-    /**
-     *  Create a GroupMessageReceiver and mock the [contactModelRepository] to return it.
-     *
-     *  @param otherMembers has to follow the rules defined in [GroupModelData.otherMembers].
-     */
-    private fun createGroupMessageReceiver(
-        ownIdentity: Identity,
-        creatorIdentity: Identity,
-        otherMembers: Set<Identity>,
-        groupService: GroupService = mockk(),
-        databaseService: DatabaseService = mockk(),
-        databaseBackend: DatabaseBackend = databaseBackendMock,
-        contactService: ContactService = mockk(),
-        contactModelRepository: ContactModelRepository = contactModelRepositoryMock,
-        serviceManager: ServiceManager = serviceManagerMock,
-        coreServiceManager: CoreServiceManager = coreServiceManagerMock,
-        groupModelRepository: GroupModelRepository = groupModelRepositoryMock,
-    ): GroupMessageReceiver {
-        val localGroupDbId = 0
-        val groupId = GroupId(nonSecureRandomArray(ProtocolDefines.GROUP_ID_LEN))
-        val groupIdentity = GroupIdentity(
-            creatorIdentity = creatorIdentity,
-            groupId = groupId.toLong(),
-        )
-
-        val groupModel: GroupModel = GroupModel().apply {
-            this.id = localGroupDbId
-            this.apiGroupId = groupId
-            this.creatorIdentity = creatorIdentity
-        }
-
-        val newGroupModel = ch.threema.data.models.GroupModel(
-            groupIdentity = groupIdentity,
-            data = GroupModelData(
-                groupIdentity = groupIdentity,
-                name = null,
-                createdAt = Date(),
-                synchronizedAt = null,
-                lastUpdate = null,
-                isArchived = false,
-                precomputedIdColor = IdColor.invalid(),
-                groupDescription = null,
-                groupDescriptionChangedAt = null,
-                otherMembers = otherMembers,
-                userState = GroupModel.UserState.MEMBER,
-                notificationTriggerPolicyOverride = null,
-            ),
-            databaseBackend = databaseBackend,
-            coreServiceManager = coreServiceManager,
-        )
-
-        every {
-            groupModelRepository.getByCreatorIdentityAndId(
-                creatorIdentity = creatorIdentity,
-                groupId = groupId,
-            )
-        } returns newGroupModel
-
-        every {
-            groupModelRepository.getByGroupIdentity(
-                groupIdentity = GroupIdentity(
-                    creatorIdentity = creatorIdentity,
-                    groupId = groupId.toLong(),
-                ),
-            )
-        } returns newGroupModel
-
-        every {
-            groupModelRepository.getByLocalGroupDbId(
-                localGroupDbId = localGroupDbId.toLong(),
-            )
-        } returns newGroupModel
-
-        every {
-            coreServiceManager.identityStore.getIdentity()
-        } returns ownIdentity
-
-        return GroupMessageReceiver(
-            /* group = */
-            groupModel,
-            /* groupService = */
-            groupService,
-            /* databaseService = */
-            databaseService,
-            /* contactService = */
-            contactService,
-            /* contactModelRepository = */
-            contactModelRepository,
-            /* groupModelRepository = */
-            groupModelRepository,
-            /* serviceManager = */
-            serviceManager,
-        )
-    }
-
-    private fun createDistributionListMessageReceiver(
-        identitiesWithPublicKey: List<Pair<String, ByteArray>>,
-    ): MessageReceiver<*> {
-        val distributionListServiceMock = mockk<DistributionListService>()
-        val contacts: List<ContactModel> = identitiesWithPublicKey.map { ContactModel.create(it.first, it.second) }
-
-        every { distributionListServiceMock.getMembers(any()) } returns contacts
-
-        val contactServiceMock = mockk<ContactService>()
-
-        every { contactModelRepositoryMock.getByIdentity(any()) } answers { call ->
-
-            val identity = call.invocation.args.first() as String
-
-            ch.threema.data.models.ContactModel(
-                identity = identity,
-                data = ContactModelData(
-                    identity = identity,
-                    publicKey = contacts.first { it.identity == identity }.publicKey,
-                    createdAt = Date(),
-                    firstName = "firstname",
-                    lastName = "lastname",
-                    nickname = "nickname",
-                    idColor = IdColor(0),
-                    verificationLevel = VerificationLevel.FULLY_VERIFIED,
-                    workVerificationLevel = WorkVerificationLevel.NONE,
-                    identityType = IdentityType.NORMAL,
-                    acquaintanceLevel = ContactModel.AcquaintanceLevel.DIRECT,
-                    activityState = IdentityState.ACTIVE,
-                    featureMask = 1u,
-                    syncState = ContactSyncState.INITIAL,
-                    readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
-                    typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
-                    isArchived = false,
-                    androidContactLookupInfo = AndroidContactLookupInfo("androidcontactlookupkey", 42),
-                    localAvatarExpires = Date(),
-                    isRestored = false,
-                    profilePictureBlobId = byteArrayOf(0),
-                    department = null,
-                    jobTitle = null,
-                    notificationTriggerPolicyOverride = null,
-                ),
-                databaseBackendMock,
-                contactModelRepositoryMock,
-                coreServiceManagerMock,
-            )
-        }
-
-        every {
-            contactServiceMock.createReceiver(any() as ContactModel)
-        } answers { call ->
-            val contactModel = call.invocation.args.first() as ContactModel
-            ContactMessageReceiver(
-                /* contact = */
-                contactModel,
-                /* contactService = */
-                null,
-                /* serviceManager = */
-                serviceManagerMock,
-                /* databaseService = */
-                null,
-                /* identityStore = */
-                null,
-                /* blockedIdentitiesService = */
-                blockedIdentitiesServiceMock,
-                /* contactModelRepository = */
-                contactModelRepositoryMock,
-            )
-        }
-
-        return DistributionListMessageReceiver(
-            /* databaseService = */
-            null,
-            /* contactService = */
-            contactServiceMock,
-            /* distributionListModel = */
-            null,
-            /* distributionListService = */
-            distributionListServiceMock,
-        )
     }
 
     private fun messageModelWithType(messageType: MessageType) = MessageModel().apply {

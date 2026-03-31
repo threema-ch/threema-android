@@ -6,10 +6,10 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.LocationDataModel
 import ch.threema.storage.models.data.MessageContentsType
+import ch.threema.storage.models.group.GroupMessageModel
 import java.util.Date
 
 private val logger = getThreemaLogger("ReflectedOutgoingGroupLocationTask")

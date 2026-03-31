@@ -1,85 +1,104 @@
 package ch.threema.app.stores
 
-interface EncryptedPreferenceStore : PreferenceStore {
-    /**
-     * Currently not supported.
-     * Implement it if you need it.
-     */
-    override fun remove(keys: Set<String>) {
-        throw UnsupportedOperationException()
-    }
+import ch.threema.localcrypto.exceptions.MasterKeyLockedException
+import java.io.IOException
+import org.json.JSONArray
+import org.json.JSONObject
+
+interface EncryptedPreferenceStore {
+
+    fun remove(key: String)
 
     /**
-     * Currently not supported.
-     * Implement it if you need it.
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if encrypting or writing the value fails
      */
-    override fun save(key: String, value: Int) {
-        throw UnsupportedOperationException()
-    }
+    fun save(key: String, value: String?)
 
     /**
-     * Currently not supported.
-     * Implement it if you need it.
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if encrypting or writing the value fails
      */
-    override fun save(key: String, value: Boolean) {
-        throw UnsupportedOperationException()
-    }
+    fun save(key: String, value: Map<String, String?>?)
 
     /**
-     * Currently not supported.
-     * Implement it if you need it.
+     * Warning: strings in array must NOT contain ";" characters and must NOT be empty.
+     *
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if encrypting or writing the value fails
      */
-    override fun save(key: String, value: Long) {
-        throw UnsupportedOperationException()
-    }
+    fun save(key: String, value: Array<String>?)
 
     /**
-     * Currently not supported.
-     * Implement it if you need it.
+     * Save list preference quietly without firing a UI listener event (for use in workers or other background processing)
+     * Warning: strings in array must NOT contain ";" characters and must NOT be empty.
+     *
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if encrypting or writing the value fails
      */
-    override fun save(key: String, value: Float) {
-        throw UnsupportedOperationException()
-    }
+    fun saveQuietly(key: String, value: Array<String>?)
 
     /**
-     * Currently not supported.
-     * Implement it if you need it.
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if encrypting or writing the value fails
      */
-    override fun getLong(key: String, defaultValue: Long): Long {
-        throw UnsupportedOperationException()
-    }
+    fun save(key: String, value: ByteArray?)
 
     /**
-     * Currently not supported.
-     * Implement it if you need it.
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if encrypting or writing the value fails
      */
-    override fun getInt(key: String, defaultValue: Int): Int {
-        throw UnsupportedOperationException()
-    }
+    fun save(key: String, value: JSONArray?)
 
     /**
-     * Currently not supported.
-     * Implement it if you need it.
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if encrypting or writing the value fails
      */
-    override fun getFloat(key: String, defaultValue: Float): Float {
-        throw UnsupportedOperationException()
-    }
+    fun save(key: String, value: JSONObject?)
 
     /**
-     * Currently not supported.
-     * Implement it if you need it.
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if reading or decrypting the stored value fails
+     * @return The stored string, or null if no such value is stored
      */
-    override fun getBoolean(key: String, defaultValue: Boolean): Boolean {
-        throw UnsupportedOperationException()
-    }
+    fun getString(key: String): String?
 
     /**
-     * Currently not supported.
-     * Implement it if you need it.
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if reading or decrypting the stored value fails
+     * @return The stored bytes, or null if no such value is stored
      */
-    override fun getStringSet(key: String): Set<String>? {
-        throw UnsupportedOperationException()
-    }
+    fun getBytes(key: String): ByteArray?
+
+    /**
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if reading or decrypting the stored value fails
+     */
+    fun getStringArray(key: String): Array<String>?
+
+    /**
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if reading or decrypting the stored value fails
+     * @return The stored map, or null if no such value is stored or if the value is not a valid map
+     */
+    fun getMap(key: String): Map<String, String?>?
+
+    /**
+     * @throws MasterKeyLockedException if the master key is locked
+     * @return The stored JSON array, or null if no such value is stored or if the value is not a valid JSON array
+     */
+    fun getJSONArray(key: String): JSONArray?
+
+    /**
+     * @throws MasterKeyLockedException if the master key is locked
+     * @throws IOException if reading or decrypting the stored value fails
+     * @return The stored JSON object, or null if no such value is stored or if the value is not a valid JSON object
+     */
+    fun getJSONObject(key: String): JSONObject?
+
+    fun containsKey(key: String): Boolean
+
+    fun clear()
 
     companion object {
         const val PREFS_PRIVATE_KEY = "private_key"

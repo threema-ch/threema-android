@@ -6,17 +6,17 @@ import android.os.Bundle
 import androidx.annotation.MainThread
 import androidx.annotation.StringRes
 import ch.threema.android.buildActivityIntent
+import ch.threema.android.showToast
 import ch.threema.app.AppConstants
 import ch.threema.app.R
 import ch.threema.app.dialogs.TextEntryDialog
 import ch.threema.app.dialogs.TextEntryDialog.TextEntryDialogClickListener
 import ch.threema.app.services.DistributionListService
 import ch.threema.app.ui.SingleToast
-import ch.threema.app.utils.LogUtil
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
 import org.koin.android.ext.android.inject
@@ -97,23 +97,24 @@ class DistributionListAddActivity : MemberChooseActivity(), TextEntryDialogClick
             distributionListName,
             0,
             TextEntryDialog.INPUT_FILTER_TYPE_NONE,
-            DistributionListModel.DISTRIBUTIONLIST_NAME_MAX_LENGTH_BYTES,
+            DistributionListModel.DISTRIBUTION_LIST_NAME_MAX_LENGTH_BYTES,
         ).show(supportFragmentManager, DIALOG_TAG_ENTER_NAME)
     }
 
     private fun launchComposeActivity() {
-        val intent = Intent(this@DistributionListAddActivity, ComposeMessageActivity::class.java)
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-        distributionListService.createReceiver(distributionListModel).prepareIntent(intent)
-
-        startActivity(intent)
-        finish()
+        distributionListModel?.let { distributionListModelNotNull ->
+            val intent = Intent(this@DistributionListAddActivity, ComposeMessageActivity::class.java)
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            distributionListService.createReceiver(distributionListModelNotNull).prepareIntent(intent)
+            startActivity(intent)
+            finish()
+        }
     }
 
     // Callback from dialog "Edit distribution list - Choose a name for this list"
     override fun onYes(tag: String, text: String) {
         try {
-            val selectedContactIdentities: Array<Identity> = selectedContacts.map(ContactModel::identity).toTypedArray()
+            val selectedContactIdentities: Array<IdentityString> = selectedContacts.map(ContactModel::identity).toTypedArray()
 
             if (isEdit) {
                 if (selectedContactIdentities.isNotEmpty()) {
@@ -133,7 +134,8 @@ class DistributionListAddActivity : MemberChooseActivity(), TextEntryDialogClick
                 this.launchComposeActivity()
             }
         } catch (e: Exception) {
-            LogUtil.exception(e, this@DistributionListAddActivity)
+            logger.error("Failed to edit distribution list", e)
+            showToast(R.string.an_error_occurred)
         }
     }
 

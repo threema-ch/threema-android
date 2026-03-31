@@ -22,9 +22,7 @@ import android.text.style.URLSpan;
 import android.text.util.Linkify;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
-import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.slf4j.Logger;
 
@@ -36,35 +34,56 @@ import java.util.regex.Pattern;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 import androidx.core.text.util.LinkifyCompat;
 import androidx.core.view.GestureDetectorCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
+import ch.threema.android.ToastDuration;
 import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.contactdetails.ContactDetailActivity;
-import ch.threema.app.adapters.decorators.ChatAdapterDecorator;
-import ch.threema.app.dialogs.BottomSheetGridDialog;
-import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.BottomSheetItem;
 import ch.threema.app.ui.MentionClickableSpan;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.storage.models.AbstractMessageModel;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import static ch.threema.android.ToastKt.showToast;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class LinkifyUtil {
     private static final Logger logger = getThreemaLogger("LinkifyUtil");
-    public static final String DIALOG_TAG_CONFIRM_LINK = "cnfl";
     private final Pattern compose, add, license, geo;
     private final GestureDetectorCompat gestureDetector;
     private boolean isLongClick;
     private Uri uri;
+
+    public interface UnhandledClickHandler {
+        void onUnhandledClick(@NonNull AbstractMessageModel messageModel);
+    }
+
+    public interface BottomSheetGridDialogListener {
+        void showBottomSheetGridDialog(ArrayList<BottomSheetItem> items);
+    }
+
+    public interface LinkifyListener extends LinkConfirmationListener, BottomSheetGridDialogListener {
+        /**
+         * Indicate whether clicks on links should be handled. If false is returned, clicks are dispatched
+         * to the {@link UnhandledClickHandler} if present.
+         *
+         * @return `true` if linkified link clicks should be handled, false otherwise
+         */
+        boolean shouldHandleLinkClick();
+    }
+
+    public static void launchAddContactActivity(Context context, String packageName, String uriString) {
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setPackage(packageName);
+        intent.setData(Uri.parse(uriString));
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
 
     // Singleton stuff
     private static LinkifyUtil sInstance = null;
@@ -109,6 +128,7 @@ public class LinkifyUtil {
                 return false;
             }
 
+            @Override
             public void onLongPress(MotionEvent e) {
                 isLongClick = true;
                 logger.debug("Longpress detected");
@@ -126,7 +146,8 @@ public class LinkifyUtil {
                     }
                     ClipData clip = ClipData.newPlainText(ThreemaApplication.getAppContext().getString(label), contents);
                     clipboard.setPrimaryClip(clip);
-                    Toast.makeText(ThreemaApplication.getAppContext(), ThreemaApplication.getAppContext().getString(R.string.link_copied, contents), Toast.LENGTH_SHORT).show();
+                    var context = ThreemaApplication.getAppContext();
+                    showToast(context, context.getString(R.string.link_copied, contents));
                 }
             }
 
@@ -178,189 +199,121 @@ public class LinkifyUtil {
     /**
      * Linkify (Add links to) TextView hosted in a chat bubble
      *
-     * @param fragment            The hosting Fragment
-     * @param bodyTextView        TextView where linkify will be applied to
-     * @param messageModel        MessageModel of the message
-     * @param includePhoneNumbers Whether to linkify number sequences that may represent phone number
-     * @param actionModeEnabled   Whether action mode (item selection) is currently enabled
-     * @param onClickElement      Callback to which unhandled clicks are forwarded
-     */
-    public void linkify(@NonNull Fragment fragment,
-                        @NonNull TextView bodyTextView,
-                        @NonNull AbstractMessageModel messageModel,
-                        boolean includePhoneNumbers,
-                        boolean actionModeEnabled,
-                        @Nullable ChatAdapterDecorator.OnClickElement onClickElement) {
-        linkify(fragment, null, bodyTextView, messageModel, includePhoneNumbers, actionModeEnabled, onClickElement);
-    }
-
-    /**
-     * Linkify (Add links to) TextView hosted in a chat bubble
-     *
-     * @param fragment            The hosting Fragment
-     * @param activity            The hosting activity (fragment must be null)
-     * @param bodyTextView        TextView where linkify will be applied to
-     * @param messageModel        MessageModel of the message
-     * @param includePhoneNumbers Whether to linkify number sequences that may represent phone number
-     * @param actionModeEnabled   Whether action mode (item selection) is currently enabled
-     * @param onClickElement      Callback to which unhandled clicks are forwarded
+     * @param bodyTextView                 TextView where linkify will be applied to
+     * @param messageModel                 MessageModel of the message
+     * @param includePhoneNumbers          Whether to linkify number sequences that may represent phone number
+     * @param unhandledClickHandler        Callback to which unhandled clicks are forwarded
+     * @param linkifyListener              Serves as a composite interface which provides
+     *                                     LinkConfirmationListener, BottomSheetGridDialogListener
+     *                                     and ActionModeStatus which determines whether action mode
+     *                                     (item selection) is currently enabled
      */
     @SuppressLint("ClickableViewAccessibility")
-    public void linkify(@Nullable Fragment fragment,
-                        @Nullable AppCompatActivity activity,
-                        @NonNull TextView bodyTextView,
-                        @NonNull AbstractMessageModel messageModel,
-                        boolean includePhoneNumbers,
-                        boolean actionModeEnabled,
-                        @Nullable ChatAdapterDecorator.OnClickElement onClickElement) {
-        if (fragment != null) {
-            // handle click on linkify here - otherwise it confuses the listview
-            bodyTextView.setMovementMethod(null);
-        }
-        linkify(
-            fragment != null ? fragment.getContext() : null,
-            fragment,
-            activity,
-            bodyTextView,
-            messageModel,
-            includePhoneNumbers,
-            actionModeEnabled,
-            onClickElement
-        );
-    }
-
-    /**
-     * Linkify (Add links to) TextView hosted in a chat bubble
-     *
-     * @param context             The context
-     * @param bodyTextView        TextView where linkify will be applied to
-     * @param messageModel        MessageModel of the message
-     * @param includePhoneNumbers Whether to linkify number sequences that may represent phone number
-     * @param actionModeEnabled   Whether action mode (item selection) is currently enabled
-     * @param onClickElement      Callback to which unhandled clicks are forwarded
-     */
-    @SuppressLint("ClickableViewAccessibility")
-    public void linkify(@Nullable Context context,
-                        @Nullable Fragment fragment,
-                        @Nullable AppCompatActivity activity,
-                        @NonNull TextView bodyTextView,
+    public void linkify(@NonNull TextView bodyTextView,
                         @Nullable AbstractMessageModel messageModel,
                         boolean includePhoneNumbers,
-                        boolean actionModeEnabled,
-                        @Nullable ChatAdapterDecorator.OnClickElement onClickElement) {
+                        @Nullable UnhandledClickHandler unhandledClickHandler,
+                        @NonNull LinkifyListener linkifyListener
+    ) {
         linkifyText(bodyTextView, includePhoneNumbers);
-
-        if (context == null) {
-            return;
-        }
+        Context context = bodyTextView.getContext();
 
         isLongClick = false;
 
         // handle taps on links
-        bodyTextView.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                TextView widget = (TextView) v;
-                Object text = widget.getText();
+        bodyTextView.setOnTouchListener((v, event) -> {
+            TextView widget = (TextView) v;
+            Object text = widget.getText();
 
-                // we're only interested in spanned texts
-                if (!(text instanceof Spanned)) {
-                    return false;
-                }
-
-                Spanned buffer = (Spanned) text;
-                int action = event.getAction();
-
-                int x = (int) event.getX() - widget.getTotalPaddingLeft() + widget.getScrollX();
-                int y = (int) event.getY() - widget.getTotalPaddingTop() + widget.getScrollY();
-
-                Layout layout = widget.getLayout();
-                if (layout == null) {
-                    return false;
-                }
-
-                int line = layout.getLineForVertical(y);
-                int off = layout.getOffsetForHorizontal(line, x);
-
-                ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
-                if (link.length == 0) {
-                    return false;
-                }
-
-                uri = getUriFromSpan(link[0]);
-
-                gestureDetector.onTouchEvent(event);
-
-                switch (action) {
-                    case MotionEvent.ACTION_UP:
-                        logger.debug("ACTION_UP");
-                        if (!actionModeEnabled) {
-                            if (uri != null) {
-                                if (fragment == null && buffer instanceof Spannable) {
-                                    Selection.removeSelection((Spannable) buffer);
-                                }
-
-                                if (isLongClick) {
-                                    isLongClick = false;
-                                    return true;
-                                }
-
-                                if (UrlUtil.isSafeUri(uri)) {
-                                    LinkifyUtil.this.openLink(uri, context, fragment, activity);
-                                } else {
-                                    String host = uri.getHost();
-                                    if (!TestUtil.isEmptyOrNull(host)) {
-                                        String idnUrl = null;
-                                        try {
-                                            idnUrl = IDN.toASCII(host);
-                                        } catch (IllegalArgumentException e) {
-                                            logger.error("Exception", e);
-                                        }
-
-                                        String warningMessage;
-                                        if (idnUrl != null) {
-                                            warningMessage = String.format(context.getString(R.string.url_warning_body), host, idnUrl);
-                                        } else {
-                                            warningMessage = context.getString(R.string.url_warning_body_alt);
-                                        }
-                                        GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.url_warning_title, warningMessage, R.string.ok, R.string.cancel);
-                                        dialog.setData(uri);
-
-                                        if (fragment != null) {
-                                            dialog.setTargetFragment(fragment, 0);
-                                            dialog.show(fragment.getFragmentManager(), DIALOG_TAG_CONFIRM_LINK);
-                                        } else {
-                                            dialog.show(activity.getSupportFragmentManager(), DIALOG_TAG_CONFIRM_LINK);
-                                        }
-                                    } else {
-                                        LinkifyUtil.this.openLink(uri, context, fragment, activity);
-                                    }
-                                }
-                            } else if (link[0] instanceof MentionClickableSpan) {
-                                MentionClickableSpan clickableSpan = (MentionClickableSpan) link[0];
-
-                                if (!clickableSpan.getText().equals(ContactService.ALL_USERS_PLACEHOLDER_ID)) {
-                                    Intent intent = new Intent(context, ContactDetailActivity.class);
-                                    intent.putExtra(AppConstants.INTENT_DATA_CONTACT, clickableSpan.getText());
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                                    context.startActivity(intent);
-                                }
-                            }
-                        } else {
-                            if (onClickElement != null && messageModel != null) {
-                                onClickElement.onClick(messageModel);
-                            }
-                        }
-                        return true;
-                    case MotionEvent.ACTION_DOWN:
-                        logger.debug("ACTION_DOWN");
-                        if (fragment == null && buffer instanceof Spannable) {
-                            Selection.setSelection((Spannable) buffer, buffer.getSpanStart(link[0]), buffer.getSpanEnd(link[0]));
-                        }
-                        return true;
-                }
+            // we're only interested in spanned texts
+            if (!(text instanceof Spanned)) {
                 return false;
             }
+
+            Spanned buffer = (Spanned) text;
+            int action = event.getAction();
+
+            int x = (int) event.getX() - widget.getTotalPaddingLeft() + widget.getScrollX();
+            int y = (int) event.getY() - widget.getTotalPaddingTop() + widget.getScrollY();
+
+            Layout layout = widget.getLayout();
+            if (layout == null) {
+                return false;
+            }
+
+            int line = layout.getLineForVertical(y);
+            int off = layout.getOffsetForHorizontal(line, x);
+
+            ClickableSpan[] link = buffer.getSpans(off, off, ClickableSpan.class);
+            if (link.length == 0) {
+                return false;
+            }
+
+            uri = getUriFromSpan(link[0]);
+
+            gestureDetector.onTouchEvent(event);
+
+            switch (action) {
+                case MotionEvent.ACTION_UP:
+                    logger.debug("ACTION_UP");
+                    if (linkifyListener.shouldHandleLinkClick()) {
+                        if (uri != null) {
+                            if (buffer instanceof Spannable) {
+                                Selection.removeSelection((Spannable) buffer);
+                            }
+
+                            if (isLongClick) {
+                                isLongClick = false;
+                                return true;
+                            }
+
+                            if (UrlUtil.isSafeUri(uri)) {
+                                openLink(uri, context, linkifyListener);
+                            } else {
+                                String host = uri.getHost();
+                                if (!TestUtil.isEmptyOrNull(host)) {
+                                    String idnUrl = null;
+                                    try {
+                                        idnUrl = IDN.toASCII(host);
+                                    } catch (IllegalArgumentException e) {
+                                        logger.error("Exception", e);
+                                    }
+
+                                    String warningMessage;
+                                    if (idnUrl != null) {
+                                        warningMessage = String.format(context.getString(R.string.url_warning_body), host, idnUrl);
+                                    } else {
+                                        warningMessage = context.getString(R.string.url_warning_body_alt);
+                                    }
+                                    linkifyListener.onLinkNeedsConfirmation(warningMessage, uri);
+                                } else {
+                                    openLink(uri, context, linkifyListener);
+                                }
+                            }
+                        } else if (link[0] instanceof MentionClickableSpan) {
+                            MentionClickableSpan clickableSpan = (MentionClickableSpan) link[0];
+
+                            if (!clickableSpan.getText().equals(ContactService.ALL_USERS_PLACEHOLDER_ID)) {
+                                Intent intent = new Intent(context, ContactDetailActivity.class);
+                                intent.putExtra(AppConstants.INTENT_DATA_CONTACT, clickableSpan.getText());
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                                context.startActivity(intent);
+                            }
+                        }
+                    } else {
+                        if (unhandledClickHandler != null && messageModel != null) {
+                            unhandledClickHandler.onUnhandledClick(messageModel);
+                        }
+                    }
+                    return true;
+                case MotionEvent.ACTION_DOWN:
+                    logger.debug("ACTION_DOWN");
+                    if (buffer instanceof Spannable) {
+                        Selection.setSelection((Spannable) buffer, buffer.getSpanStart(link[0]), buffer.getSpanEnd(link[0]));
+                    }
+                    return true;
+            }
+            return false;
         });
     }
 
@@ -372,32 +325,38 @@ public class LinkifyUtil {
         return null;
     }
 
-    public void openLink(Uri uri, @Nullable Fragment fragment, @Nullable AppCompatActivity activity) {
-        openLink(uri, null, fragment, activity);
-    }
-
-    private void openLink(Uri uri, @Nullable Context context, @Nullable Fragment fragment, @Nullable AppCompatActivity activity) {
-        final Context derivedContext = fragment != null ? fragment.getContext() : activity != null ? activity : context;
-        if (derivedContext == null) {
-            return;
-        }
-
+    /**
+     * Open the provided uri with the suitable action:
+     * - Geo URIs are opened in Threema's map view
+     * - For add contact actions the add contact activity is opened
+     * - An intent with {@link Intent#ACTION_VIEW} is started in all other cases
+     *
+     * @param uri      The uri to open
+     * @param listener Callback which will be called to select an instance if multiple Threema
+     *                 packages (e.g. Private, Work, OnPrem) are available for performing an
+     *                 add-contact action. If set to null, an intent with {@link Intent#ACTION_VIEW}
+     *                 is started for contact action urls which will usually open the url in a browser (which is fine).
+     */
+    public void openLink(
+        Uri uri,
+        @NonNull Context context,
+        @Nullable BottomSheetGridDialogListener listener
+    ) {
         // Open geo uris with internal map activity
         if (uri.toString().startsWith("geo:")) {
-            if (!GeoLocationUtil.viewLocation(derivedContext, uri)) {
-                Toast.makeText(derivedContext, R.string.error, Toast.LENGTH_LONG).show();
+            if (!GeoLocationUtil.viewLocation(context, uri)) {
+                showToast(context, R.string.an_error_occurred, ToastDuration.LONG);
             }
             return;
         }
 
-        // handle contact Urls internally but ignore contact Urls with a query such as "text=hello"
-        if (BuildConfig.contactActionUrl.equals(uri.getAuthority())) {
-            List<String> pathSegments = uri.getPathSegments();
-            if (pathSegments.size() == 1 && pathSegments.get(0).length() == 8 && TestUtil.isEmptyOrNull(uri.getEncodedQuery())) {
-                if (openContactLinkTargetAppSelector(context, fragment, activity)) {
-                    // intent has been handled
-                    return;
-                }
+        if (shouldProvideBottomSheetItems(uri)) {
+            ArrayList<BottomSheetItem> items = generateBottomSheetItems(context);
+            if (openContactLinkTargetAppSelector(items, context, listener)) {
+                // intent has been handled
+                return;
+            } else {
+                logger.warn("Could not open contact link target app selector. Selector listener not set.");
             }
         }
 
@@ -407,9 +366,9 @@ public class LinkifyUtil {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtras(bundle);
         try {
-            derivedContext.startActivity(intent);
+            context.startActivity(intent);
         } catch (ActivityNotFoundException e) {
-            Toast.makeText(derivedContext, R.string.no_activity_for_intent, Toast.LENGTH_SHORT).show();
+            showToast(context, R.string.no_activity_for_intent);
         }
     }
 
@@ -419,7 +378,7 @@ public class LinkifyUtil {
     private final String[] addContactSchemes = {
         "threema",
         "threemawork",
-        "threemared",
+        "threemablue",
         "threemaonprem"
     };
 
@@ -429,25 +388,43 @@ public class LinkifyUtil {
      * <p>
      * Return true if the link target app selector could be shown, false otherwise.
      */
-    public boolean openContactLinkTargetAppSelector(@Nullable Context context, @Nullable Fragment fragment, @Nullable AppCompatActivity activity) {
-        final Context derivedContext;
-        if (context == null) {
-            derivedContext = fragment != null ? fragment.getContext() : activity;
-        } else {
-            derivedContext = context;
-        }
-        if (derivedContext == null) {
+    private boolean openContactLinkTargetAppSelector(
+        ArrayList<BottomSheetItem> items,
+        Context context,
+        @Nullable BottomSheetGridDialogListener listener
+    ) {
+        if (items.isEmpty()) {
             return false;
         }
+        if (items.size() == 1) {
+            launchAddContactActivity(context, items.get(0).getTag(), items.get(0).getData());
+            return true;
+        }
+        if (listener != null) {
+            listener.showBottomSheetGridDialog(items);
+            return true;
+        }
+        return false;
+    }
 
-        final FragmentManager fragmentManager = fragment != null ? fragment.getParentFragmentManager() : activity != null ? activity.getSupportFragmentManager() : null;
-        final PackageManager packageManager = derivedContext.getPackageManager();
-        if (packageManager == null) return false;
+    private boolean shouldProvideBottomSheetItems(Uri uri) {
+        // handle contact Urls internally but ignore contact Urls with a query such as "text=hello"
+        if (BuildConfig.contactActionUrl.equals(uri.getAuthority())) {
+            List<String> pathSegments = uri.getPathSegments();
+            return pathSegments.size() == 1 && pathSegments.get(0).length() == ProtocolDefines.IDENTITY_LEN && TestUtil.isEmptyOrNull(uri.getEncodedQuery());
+        }
+        return false;
+    }
+
+    private ArrayList<BottomSheetItem> generateBottomSheetItems(Context context) {
+        ArrayList<BottomSheetItem> items = new ArrayList<>();
+        final PackageManager packageManager = context.getPackageManager();
+        if (packageManager == null) {
+            return items;
+        }
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         List<ResolveInfo> resolveInfoList;
-
-        ArrayList<BottomSheetItem> items = new ArrayList<>();
 
         for (String addContactScheme : addContactSchemes) {
             Uri targetUri = new Uri.Builder()
@@ -462,7 +439,7 @@ public class LinkifyUtil {
                     CharSequence label = resolveInfo.loadLabel(packageManager);
                     Drawable icon = resolveInfo.loadIcon(packageManager);
 
-                    if (label != null && icon != null) {
+                    if (icon != null) {
                         Bitmap bitmap = BitmapUtil.getBitmapFromVectorDrawable(icon, null);
                         if (bitmap != null) {
                             items.add(new BottomSheetItem(bitmap, label.toString(), resolveInfo.activityInfo.packageName, targetUri.toString()));
@@ -472,24 +449,6 @@ public class LinkifyUtil {
             }
         }
 
-        if (!items.isEmpty()) {
-            if (items.size() == 1) {
-                launchAddContactActivity(derivedContext, items.get(0).getTag(), items.get(0).getData());
-            } else if (fragmentManager != null) {
-                BottomSheetGridDialog dialog = BottomSheetGridDialog.newInstance(R.string.add_contact_in, items);
-                dialog.setCallback((tag, data) -> launchAddContactActivity(derivedContext, tag, data));
-                dialog.show(fragmentManager, "bsh");
-            }
-            return true;
-        }
-        return false;
-    }
-
-    private void launchAddContactActivity(Context context, String packageName, String uriString) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.setPackage(packageName);
-        intent.setData(Uri.parse(uriString));
-        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        ContextCompat.startActivity(context, intent, null);
+        return items;
     }
 }

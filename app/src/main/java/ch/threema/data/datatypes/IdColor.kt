@@ -7,7 +7,7 @@ import androidx.core.graphics.toColorInt
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.nio.charset.StandardCharsets
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
@@ -90,7 +90,7 @@ class IdColor(index: Int) {
          * Compute the contact id color index based on the identity.
          */
         @JvmStatic
-        fun ofIdentity(identity: Identity): IdColor {
+        fun ofIdentity(identity: IdentityString): IdColor {
             return identity.toByteArray(StandardCharsets.UTF_8).computeIdColor()
         }
 

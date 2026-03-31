@@ -21,9 +21,5 @@ class DatabaseUpdateToVersion98(
 
     override fun getDescription() = "add incoming group sync request log table"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 98
-    }
+    override val version = 98
 }

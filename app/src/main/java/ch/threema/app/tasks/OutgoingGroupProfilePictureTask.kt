@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.profilepicture.ProfilePicture
 import ch.threema.app.profilepicture.RawProfilePicture
 import ch.threema.base.utils.getThreemaLogger
@@ -9,7 +8,7 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import kotlinx.serialization.Serializable
 
 private val logger = getThreemaLogger("OutgoingGroupProfilePictureTask")
@@ -21,14 +20,12 @@ private val logger = getThreemaLogger("OutgoingGroupProfilePictureTask")
  */
 class OutgoingGroupProfilePictureTask(
     private val groupId: GroupId,
-    private val creatorIdentity: Identity,
-    receiverIdentities: Set<Identity>,
+    private val creatorIdentity: IdentityString,
+    receiverIdentities: Set<IdentityString>,
     messageId: MessageId?,
-    private val serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+) : OutgoingCspMessageTask() {
     private val messageId by lazy { messageId ?: MessageId.random() }
     private val receiverIdentities by lazy { receiverIdentities - userService.identity!! }
-    private val fileService by lazy { serviceManager.fileService }
 
     override val type: String = "OutgoingGroupProfilePictureTask"
 
@@ -63,7 +60,6 @@ class OutgoingGroupProfilePictureTask(
             recipientIdentities = receiverIdentities,
             profilePicture = profilePicture,
             messageId = null,
-            serviceManager = serviceManager,
         ).invoke(handle)
     }
 
@@ -73,7 +69,6 @@ class OutgoingGroupProfilePictureTask(
             creatorIdentity,
             receiverIdentities,
             null,
-            serviceManager,
         ).invoke(handle)
     }
 
@@ -87,17 +82,16 @@ class OutgoingGroupProfilePictureTask(
     @Serializable
     class OutgoingGroupProfilePictureData(
         private val groupId: ByteArray,
-        private val creatorIdentity: Identity,
-        private val receiverIdentities: Set<Identity>,
+        private val creatorIdentity: IdentityString,
+        private val receiverIdentities: Set<IdentityString>,
         private val messageId: ByteArray,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingGroupProfilePictureTask(
-                GroupId(groupId),
-                creatorIdentity,
-                receiverIdentities,
-                MessageId(messageId),
-                serviceManager,
+                groupId = GroupId(groupId),
+                creatorIdentity = creatorIdentity,
+                receiverIdentities = receiverIdentities,
+                messageId = MessageId(messageId),
             )
     }
 }

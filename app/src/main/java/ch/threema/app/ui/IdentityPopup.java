@@ -215,6 +215,9 @@ public class IdentityPopup extends DimmingPopupWindow {
 
     @Override
     public void dismiss() {
+        if (getContext() instanceof Activity && ((Activity) getContext()).isDestroyed()) {
+            super.dismiss();
+        }
         if (isShowing()) {
             AnimationUtil.circularObscure(
                 getContentView(),

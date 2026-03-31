@@ -166,7 +166,11 @@ class LinkNewDeviceScanQrFragment : LinkNewDeviceFragment() {
             cameraProvider.unbindAll()
 
             camera = cameraProvider.bindToLifecycle(
-                this, cameraSelector, preview, imageCapture, imageAnalyzer,
+                this,
+                cameraSelector,
+                preview,
+                imageCapture,
+                imageAnalyzer,
             )
 
             // Attach the viewfinder's surface provider to preview use case

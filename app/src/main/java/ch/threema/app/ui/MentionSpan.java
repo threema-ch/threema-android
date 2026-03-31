@@ -15,6 +15,7 @@ import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.data.datatypes.ContactNameFormat;
 
 import static ch.threema.app.emojis.EmojiMarkupUtil.MENTION_INDICATOR;
 
@@ -27,25 +28,31 @@ public class MentionSpan extends ReplacementSpan {
     private static final int PADDING = ThreemaApplication.getAppContext().getResources().getDimensionPixelSize(R.dimen.mention_padding);
     private static final int RADIUS = ThreemaApplication.getAppContext().getResources().getDimensionPixelSize(R.dimen.mention_radius);
 
-    private ContactService contactService;
-    private UserService userService;
+    private @Nullable ContactService contactService;
+    private @Nullable UserService userService;
 
     private int width = 0;
     private final Paint backgroundPaint;
     private final Paint invertedPaint;
-    @ColorInt
-    private final int textColor;
-    @ColorInt
-    private final int invertedTextColor;
+    private final @ColorInt int textColor;
+    private final @ColorInt int invertedTextColor;
     private boolean strikeThroughText;
+    private @NonNull ContactNameFormat contactNameFormat = ContactNameFormat.DEFAULT;
 
-    public MentionSpan(@ColorInt int backgroundColor, @ColorInt int invertedColor, @ColorInt int textColor, @ColorInt int invertedTextColor, boolean strikeThroughText) {
+    public MentionSpan(
+        @ColorInt int backgroundColor,
+        @ColorInt int invertedColor,
+        @ColorInt int textColor,
+        @ColorInt int invertedTextColor,
+        boolean strikeThroughText
+    ) {
         super();
 
-        ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         try {
+            final @NonNull ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
             contactService = serviceManager.getContactService();
             userService = serviceManager.getUserService();
+            contactNameFormat = serviceManager.getPreferenceService().getContactNameFormat();
         } catch (Exception e) {
             //
         }
@@ -69,10 +76,10 @@ public class MentionSpan extends ReplacementSpan {
     }
 
     @NonNull
-    private String getMentionLabelText(CharSequence text, int start, int end) {
+    private String getMentionLabelText(@NonNull CharSequence text, int start, int end) {
         final String identity = text.toString().substring(start + 2, end - 1);
 
-        String label = NameUtil.getQuoteName(identity, this.contactService, this.userService);
+        String label = NameUtil.getQuoteName(identity, this.contactService, this.userService, contactNameFormat);
         if (label.length() > LABEL_MAX_LENGTH) {
             label = label.substring(0, LABEL_MAX_LENGTH).trim() + "…";
         }

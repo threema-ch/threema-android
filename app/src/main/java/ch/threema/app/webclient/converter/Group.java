@@ -10,7 +10,7 @@ import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 @AnyThread
 public class Group extends Converter {
@@ -27,9 +27,9 @@ public class Group extends Converter {
     /**
      * Converts multiple group models to MsgpackObjectBuilder instances.
      */
-    static List<MsgpackBuilder> convert(List<GroupModel> groups) throws ConversionException {
+    static List<MsgpackBuilder> convert(List<GroupModelOld> groups) throws ConversionException {
         List<MsgpackBuilder> list = new ArrayList<>();
-        for (GroupModel group : groups) {
+        for (GroupModelOld group : groups) {
             list.add(convert(group));
         }
         return list;
@@ -38,12 +38,12 @@ public class Group extends Converter {
     /**
      * Converts a group model to a MsgpackObjectBuilder instance.
      */
-    public static MsgpackObjectBuilder convert(GroupModel group) throws ConversionException {
+    public static MsgpackObjectBuilder convert(GroupModelOld group) throws ConversionException {
         MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
         try {
             final boolean isDisabled = !getGroupService().isGroupMember(group);
             final boolean isPrivateChat = getConversationCategoryService().isPrivateChat(GroupUtil.getUniqueIdString(group));
-            final boolean isVisible = !isPrivateChat || !getPreferenceService().isPrivateChatsHidden();
+            final boolean isVisible = !isPrivateChat || !getPreferenceService().arePrivateChatsHidden();
 
             builder.put(Receiver.ID, String.valueOf(group.getId()));
             builder.put(Receiver.DISPLAY_NAME, getDisplayName(group));
@@ -87,11 +87,11 @@ public class Group extends Converter {
         return builder;
     }
 
-    private static String getDisplayName(GroupModel group) throws ConversionException {
-        return NameUtil.getDisplayName(group, getGroupService());
+    private static String getDisplayName(GroupModelOld group) throws ConversionException {
+        return NameUtil.getGroupDisplayName(group, getGroupService(), getPreferenceService().getContactNameFormat());
     }
 
-    private static String getColor(@NonNull GroupModel group) {
+    private static String getColor(@NonNull GroupModelOld group) {
         int idColor = group.getIdColor().getColorLight();
         return String.format("#%06X", (0xFFFFFF & idColor));
     }

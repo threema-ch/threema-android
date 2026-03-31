@@ -100,7 +100,7 @@ class WorkIntroActivity : ThreemaActivity() {
                 else -> R.string.threema_work_url
             },
         )
-        LinkifyUtil.getInstance().openLink(workInfoLink.toUri(), null, this)
+        LinkifyUtil.getInstance().openLink(workInfoLink.toUri(), this, null)
     }
 
     private fun onClickedDownload() {
@@ -126,9 +126,9 @@ class WorkIntroActivity : ThreemaActivity() {
     }
 
     private fun openConsumerAppInHuaweiAppGallery() {
-        logger.info("Opening Huawai App Gallery")
+        logger.info("Opening Huawei App Gallery")
         val intent = Intent(Intent.ACTION_VIEW)
-        val uri = ("market://details?id=" + this.packageName).toUri()
+        val uri = "market://details?id=$packageName".toUri()
         intent.setData(uri)
         intent.setPackage("com.huawei.appmarket")
         startActivity(intent)

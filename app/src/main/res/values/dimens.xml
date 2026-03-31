@@ -132,8 +132,8 @@
     <dimen name="ballot_matrix_label_maxwidth">150dp</dimen>
 
     <!-- for keyboard aware layout -->
-    <dimen name="min_keyboard_height">60dp
-    </dimen> <!-- minimum height to be considered a soft keyboard -->
+    <!-- minimum height to be considered a soft keyboard -->
+    <dimen name="min_keyboard_height">60dp</dimen>
 
     <!-- emoji picker -->
     <dimen name="default_emoji_picker_height">230dp</dimen>
@@ -213,9 +213,6 @@
     <dimen name="imagepaint_default_font_size">36dp</dimen>
     <dimen name="imagepaint_overlay_select_stroke_width">1dp</dimen>
     <dimen name="web_sessions_switch_frame_height">56dp</dimen>
-    <!-- Pin unlock screen -->
-    <dimen name="pin_lock_side_margin">32dp</dimen>
-    <dimen name="pin_lock_top_margin">32dp</dimen>
 
     <!-- voip -->
     <!-- Circle size for incoming call widget's each item. -->
@@ -227,7 +224,6 @@
     <dimen name="mediaviewer_caption_border_bottom">72dp</dimen>
     <dimen name="mediaviewer_caption_border_horizontal">16dp</dimen>
     <dimen name="mediaviewer_caption_background_radius">12dp</dimen>
-    <dimen name="mediaviewer_caption_text_size">18sp</dimen>
     <dimen name="mediaviewer_caption_container_padding_vertical">8dp</dimen>
     <dimen name="mediaviewer_play_button_radius">20dp</dimen>
 

@@ -26,7 +26,7 @@ import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.Common.Blob
 import ch.threema.protobuf.d2d.MdD2D.ContactSync
@@ -54,6 +54,7 @@ class ReflectedContactSyncTask(
     private val ringtoneService by lazy { serviceManager.ringtoneService }
     private val fileService by lazy { serviceManager.fileService }
     private val contactService by lazy { serviceManager.contactService }
+    private val preferenceService by lazy { serviceManager.preferenceService }
 
     // Used when chats are pinned
     private val conversationTagService by lazy { serviceManager.conversationTagService }
@@ -349,9 +350,12 @@ class ReflectedContactSyncTask(
         }
     }
 
-    private fun onAvatarChanged(identity: Identity) {
+    private fun onAvatarChanged(identity: IdentityString) {
         ListenerManager.contactListeners.handle { it.onAvatarChanged(identity) }
-        ShortcutUtil.updateShareTargetShortcut(contactService.createReceiver(identity))
+        ShortcutUtil.updateShareTargetShortcut(
+            contactService.createReceiver(identity),
+            preferenceService.getContactNameFormat(),
+        )
     }
 
     private fun Blob.loadAndMarkAsDone(persistBlob: (blob: ByteArray) -> Unit) {
@@ -431,27 +435,25 @@ class ReflectedContactSyncTask(
         }
     }
 
-    private fun pinConversation(identity: Identity) {
+    private fun pinConversation(identity: IdentityString) {
         // TODO(ANDR-3010): Use new conversation model
         val conversationModel = getConversationModel(identity) ?: run {
             logger.error("Could not pin conversation with {} as it couldn't be found", identity)
             return
         }
-        conversationTagService.addTagAndNotify(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
-        conversationModel.isPinTagged = true
+        conversationService.tag(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
     }
 
-    private fun unPinConversation(identity: Identity) {
+    private fun unPinConversation(identity: IdentityString) {
         // TODO(ANDR-3010): Use new conversation model
         val conversationModel = getConversationModel(identity) ?: run {
             logger.error("Could not unpin conversation with {} as it couldn't be found", identity)
             return
         }
-        conversationTagService.removeTagAndNotify(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
-        conversationModel.isPinTagged = false
+        conversationService.untag(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
     }
 
-    private fun getConversationModel(identity: Identity): ConversationModel? {
+    private fun getConversationModel(identity: IdentityString): ConversationModel? {
         // We need load the conversations from the database. This is due to a race condition in the conversation service when the user pins an
         // archived contact.
         return conversationService.getAll(true)
@@ -462,7 +464,7 @@ class ReflectedContactSyncTask(
             }
     }
 
-    private fun getArchivedConversationModel(identity: Identity): ConversationModel? {
+    private fun getArchivedConversationModel(identity: IdentityString): ConversationModel? {
         return conversationService.getArchived()
             .find { it.contact?.identity == identity }.also {
                 if (it == null) {

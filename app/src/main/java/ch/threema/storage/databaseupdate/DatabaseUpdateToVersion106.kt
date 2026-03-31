@@ -117,9 +117,5 @@ internal class DatabaseUpdateToVersion106(
 
     override fun getDescription() = "create/migrate reaction tables/indices"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 106
-    }
+    override val version = 106
 }

@@ -10,7 +10,7 @@ import androidx.lifecycle.ViewModel;
 import ch.threema.app.AppConstants;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.GroupService;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 public class AvatarEditViewModel extends ViewModel {
 
@@ -47,7 +47,7 @@ public class AvatarEditViewModel extends ViewModel {
         this.savedState.set(KEY_CROPPED_FILE, croppedFile);
     }
 
-    public @Nullable GroupModel getGroupModel() {
+    public @Nullable GroupModelOld getGroupModel() {
         if (!this.savedState.contains(AppConstants.INTENT_DATA_GROUP_DATABASE_ID)) {
             return null;
         }
@@ -58,7 +58,7 @@ public class AvatarEditViewModel extends ViewModel {
         return null;
     }
 
-    public void setGroupModel(@NonNull GroupModel groupModel) {
+    public void setGroupModel(@NonNull GroupModelOld groupModel) {
         this.savedState.set(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) groupModel.getId());
     }
 

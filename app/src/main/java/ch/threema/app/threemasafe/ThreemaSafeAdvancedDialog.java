@@ -5,12 +5,10 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -232,6 +230,9 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
         new AsyncTask<Void, Void, String>() {
             @Override
             protected void onPreExecute() {
+                if (serverUrlEditText != null) {
+                    serverUrlEditText.setError(null);
+                }
                 GenericProgressDialog.newInstance(R.string.safe_test_server, R.string.please_wait).show(getFragmentManager(), DIALOG_TAG_PROGRESS);
             }
 
@@ -241,16 +242,19 @@ public class ThreemaSafeAdvancedDialog extends ThreemaDialogFragment implements 
                     threemaSafeService.testServer(serverInfo);
                     return null;
                 } catch (ThreemaException e) {
+                    logger.error("Failed to test server", e);
                     return e.getMessage();
                 }
             }
 
             @Override
-            protected void onPostExecute(String failureMessage) {
+            protected void onPostExecute(@Nullable String failureMessage) {
                 DialogUtil.dismissDialog(getFragmentManager(), DIALOG_TAG_PROGRESS, true);
 
                 if (failureMessage != null) {
-                    Toast.makeText(getActivity(), R.string.test_unsuccessful, Toast.LENGTH_LONG).show();
+                    if (serverUrlEditText != null) {
+                        serverUrlEditText.setError(getString(R.string.threema_safe_test_unsuccessful, failureMessage));
+                    }
                 } else {
                     onYes();
                 }

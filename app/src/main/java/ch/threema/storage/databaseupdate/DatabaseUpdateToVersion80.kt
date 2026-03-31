@@ -14,9 +14,5 @@ internal class DatabaseUpdateToVersion80(
 
     override fun getDescription() = "Forward Security State Flag"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 80
-    }
+    override val version = 80
 }

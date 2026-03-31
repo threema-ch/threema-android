@@ -22,7 +22,8 @@
     <string name="preferences__masterkey_notification_newmsg" translatable="false">pref_key_masterkey_notification_newmsg</string>
     <string name="preferences__serial_number" translatable="false">pref_serial_number</string>
     <string name="preferences__threema_push_switch" translatable="false">pref_key_polling_switch</string>
-    <string name="preferences__message_log_switch" translatable="false">pref_key_message_log_switch</string>
+    <string name="preferences__debug_log_switch" translatable="false">pref_key_debug_log_switch</string>
+    <string name="preferences__debug_log_enable_time" translatable="false">pref_key_debug_log_enable_time</string>
     <string name="preferences__reset_push" translatable="false">pref_key_resetpush</string>
     <string name="preferences__recent_emojis" translatable="false">pref_key_recent_emojis</string>
     <string name="preferences__recent_emojis2" translatable="false">pref_key_recent_emojis2</string>
@@ -52,9 +53,12 @@
     <string name="preferences__storage_management" translatable="false">pref_key_storage_mgmt</string>
     <string name="preferences__emoji_style" translatable="false">pref_key_emoji_style</string>
     <string name="preferences__fontstyle" translatable="false">pref_key_font_style</string>
+    <string name="preferences__voip" translatable="false">pref_key_voip</string>
     <string name="preferences__sendlog" translatable="false">pref_key_sendlog</string>
     <string name="preferences__exportlog" translatable="false">pref_key_exportlog</string>
-    <string name="preferences__crash_reporting" translatable="false">pref_key_crash_reporting</string>
+    <string name="preferences__error_reporting_category" translatable="false">pref_key_error_reporting_category</string>
+    <string name="preferences__error_reporting" translatable="false">pref_key_error_reporting</string>
+    <string name="preferences__sentry_id" translatable="false">pref_key_sentry_id</string>
     <string name="preferences__cause_crash" translatable="false">pref_key_cause_crash</string>
     <string name="preferences__lockout_deadline" translatable="false">pref_key_lock_deadline</string>
     <string name="preferences__lockout_attempts" translatable="false">pref_key_lock_attempts</string>
@@ -62,13 +66,11 @@
     <string name="preferences__push_token" translatable="false">pref_push_token</string>
     <string name="preferences__gif_autoplay" translatable="false">pref_gif_autoplay</string>
     <string name="preferences__proximity_sensor" translatable="false">pref_proximity_sensor</string>
-    <string name="preferences__app_logo_light_url" translatable="false">pref_app_logo_light_url</string>
-    <string name="preferences__app_logo_dark_url" translatable="false">pref_app_logo_dark_url</string>
     <string name="preferences__app_logo_light_expires_at" translatable="false">pref_app_logo_light_expires_at</string>
     <string name="preferences__app_logo_dark_expires_at" translatable="false">pref_app_logo_dark_expires_at</string>
     <string name="preferences__license_username" translatable="false">pref_license_username</string>
     <string name="preferences__license_password" translatable="false">pref_license_password</string>
-    <string name="preferences__onprem_server" translatable="false">pref_onprem_server</string>
+    <string name="preferences__oppf_url" translatable="false">pref_oppf_url</string>
     <string name="preferences__remote_secret_activated" translatable="false">pref_remote_secret_activated</string>
     <string name="preferences__chats_hidden" translatable="false">pref_chats_hidden</string>
     <string name="preferences__lock_mechanism" translatable="false">pref_lock_options</string>
@@ -113,6 +115,7 @@
     <string name="preferences__voip_vibration" translatable="false">pref_voip_vibration</string>
     <string name="preferences__voip_enable" translatable="false">pref_voip_enable</string>
     <string name="preferences__voip_reject_mobile_calls" translatable="false">pref_voip_reject_mobile_calls</string>
+    <string name="preferences__voip_abort_on_bluetooth_disconnect" translatable="false">pref_voip_abort_on_bluetooth_disconnect</string>
     <string name="preferences__device_info" translatable="false">pref_device_info</string>
     <string name="preferences__webrtc_debug" translatable="false">pref_webrtc_debug</string>
     <string name="preferences__webclient_debug" translatable="false">pref_webclient_debug</string>
@@ -169,6 +172,7 @@
     <string name="preferences__developer_menu" translatable="false">pref_developer_menu</string>
     <string name="preferences__generate_voip_messages" translatable="false">pref_key_generate_voip_messages</string>
     <string name="preferences__open_pattern_library" translatable="false">pref_key_open_pattern_library</string>
+    <string name="preferences__open_android_contact_sync_debug_activity" translatable="false">pref_open_android_contact_sync_debug_activity</string>
     <string name="preferences__remove_menu" translatable="false">pref_key_remove_menu</string>
     <string name="preferences__rate" translatable="false">pref_key_rate</string>
     <string name="preferences__data_backup_uri" translatable="false">pref_data_backup_uri</string>
@@ -208,6 +212,7 @@
     <string name="preferences__enable_read_phone_state_permission_request" translatable="false">pref_read_phone_state_permission_request</string>
     <string name="preferences__ignore_read_phone_state_permission_request" translatable="false">pref_ignore_read_phone_state_permission_request</string>
     <string name="preferences__grant_read_phone_state_permission" translatable="false">pref_read_phone_state</string>
+    <string name="preferences__fix_device" translatable="false">pref_key_fix_device</string>
     <string name="preferences__hibernation_mode" translatable="false">pref_hibernation_mode</string>
     <string name="preferences__group_calls_enable" translatable="false">pref_group_calls_enable</string>
     <string name="preferences__tooltip_gc_camera" translatable="false">pref_tooltip_gc_camera</string>
@@ -231,7 +236,6 @@
     <string name="preferences__phone_number_sync_hash" translatable="false">pref_phone_number_sync_hash</string>
     <string name="preferences__contact_sync_time" translatable="false">pref_contact_sync_time</string>
     <string name="preferences__message_debug_info" translatable="false">pref_debug_message_debug_info</string>
-    <string name="preferences__show_last_update_prefix" translatable="false">pref_show_last_update_prefix</string>
     <string name="preferences__chat_notification_settings" translatable="false">pref_chat_notification_settings</string>
     <string name="preferences__group_notification_settings" translatable="false">pref_group_notification_settings</string>
     <string name="preferences__voip_notification_settings" translatable="false">pref_voip_notification_settings</string>
@@ -240,7 +244,7 @@
     <string name="preferences__last_shortcut_update_date" translatable="false">pref_last_shortcut_update_date</string>
     <string name="preferences__last_notification_request_timestamp" translatable="false">pref_last_notification_request_timestamp</string>
     <string name="preferences__dev_reset_dismissed_problems" translatable="false">pref_dev_reset_dismissed_problems</string>
-    <string name="preferences__dev_reset_reaction_tooltip_shown" translatable="false">pref_dev_reset_reaction_tooltip_shown</string>
+    <string name="preferences__dev_reset_one_time_hints" translatable="false">pref_dev_reset_one_time_hints</string>
     <string name="preferences__dev_create_messages_with_reactions" translatable="false">pref_dev_create_create_messages_with_reactions</string>
     <string name="preferences__dev_create_text_messages" translatable="false">pref_dev_create_create_text_messages</string>
     <string name="preferences__dev_create_nonces" translatable="false">pref_dev_create_nonces</string>

@@ -9,8 +9,9 @@ import androidx.lifecycle.viewModelScope
 import ch.threema.app.R
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
-import ch.threema.app.multidevice.linking.DeviceLinkingInvalidContact
+import ch.threema.app.multidevice.linking.DeviceLinkingInvalidContactException
 import ch.threema.app.multidevice.linking.DeviceLinkingInvalidQrCodeException
+import ch.threema.app.multidevice.linking.DeviceLinkingInvalidTimestampException
 import ch.threema.app.multidevice.linking.DeviceLinkingScannedWebQrCodeException
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
 import ch.threema.app.multidevice.linking.DeviceLinkingUnsupportedProtocolException
@@ -115,13 +116,17 @@ class LinkNewDeviceWizardViewModel(
                             is DeviceLinkingScannedWebQrCodeException -> LinkingResult.Failure.ThreemaWebQrCode
                             is DeviceLinkingUnsupportedProtocolException -> LinkingResult.Failure.OldRendezvousProtocolVersion
                             is UnknownHostException -> LinkingResult.Failure.GenericNetwork
-                            is DeviceLinkingInvalidContact -> LinkingResult.Failure.InvalidContact(deviceLinkingStatus.throwable.identity)
+                            is DeviceLinkingInvalidContactException -> LinkingResult.Failure.InvalidContact(deviceLinkingStatus.throwable.identity)
+                            is DeviceLinkingInvalidTimestampException -> LinkingResult.Failure.InvalidTimestamp(
+                                description = deviceLinkingStatus.throwable.timestampDescription,
+                                timestamp = deviceLinkingStatus.throwable.timestamp,
+                            )
                             else -> LinkingResult.Failure.Generic
                         }
                         showResultFailure(linkingResult)
                     }
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 showResultFailure(LinkingResult.Failure.Unexpected)
             }
         }

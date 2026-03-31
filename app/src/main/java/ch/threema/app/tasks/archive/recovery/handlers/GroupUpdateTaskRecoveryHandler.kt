@@ -1,11 +1,9 @@
 package ch.threema.app.tasks.archive.recovery.handlers
 
-import ch.threema.app.managers.ServiceManager
-import ch.threema.app.protocol.ExpectedProfilePictureChange
-import ch.threema.app.protocol.PredefinedMessageIds
+import ch.threema.app.protocolsteps.ExpectedProfilePictureChange
+import ch.threema.app.protocolsteps.PredefinedMessageIds
 import ch.threema.app.tasks.GroupUpdateTask
 import ch.threema.app.tasks.archive.recovery.TaskRecoveryHandler
-import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
 import ch.threema.common.decodeArray
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.MessageId
@@ -15,7 +13,7 @@ import org.json.JSONException
 import org.json.JSONObject
 
 object GroupUpdateTaskRecoveryHandler : TaskRecoveryHandler {
-    override fun tryRecovery(encodedTask: String, serviceManager: ServiceManager): Task<*, TaskCodec>? {
+    override fun tryRecovery(encodedTask: String): Task<*, TaskCodec>? {
         try {
             val jsonObject = JSONObject(encodedTask)
             val type = jsonObject.getString("type")
@@ -51,11 +49,6 @@ object GroupUpdateTaskRecoveryHandler : TaskRecoveryHandler {
                     groupId = groupId,
                 ),
                 predefinedMessageIds = predefinedMessageIds,
-                outgoingCspMessageServices = serviceManager.getOutgoingCspMessageServices(),
-                groupCallManager = serviceManager.groupCallManager,
-                fileService = serviceManager.fileService,
-                groupProfilePictureUploader = serviceManager.groupProfilePictureUploader,
-                groupModelRepository = serviceManager.modelRepositories.groups,
             )
         } catch (_: JSONException) {
             return null

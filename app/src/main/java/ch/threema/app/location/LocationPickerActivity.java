@@ -659,12 +659,7 @@ public class LocationPickerActivity extends ThreemaActivity implements
             return;
         }
         GenericAlertDialog dialog = GenericAlertDialog.newInstance(R.string.send_location, R.string.location_services_disabled, R.string.yes, R.string.no);
-        dialog.setCallback(new GenericAlertDialog.DialogClickListener() {
-            @Override
-            public void onYes(String tag, Object data) {
-                locationEnableLauncher.launch(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            }
-        });
+        dialog.setCallback((tag, data) -> locationEnableLauncher.launch(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS)));
         dialog.show(getSupportFragmentManager(), DIALOG_TAG_ENABLE_LOCATION_SERVICES);
     }
 

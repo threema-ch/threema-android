@@ -4,9 +4,12 @@ import android.content.ContentValues;
 
 import android.database.Cursor;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
@@ -14,7 +17,8 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.ballot.BallotModel;
@@ -23,8 +27,8 @@ import ch.threema.storage.models.ballot.GroupBallotModel;
 import ch.threema.storage.models.ballot.IdentityBallotModel;
 
 public class BallotModelFactory extends ModelFactory {
-    public BallotModelFactory(DatabaseService databaseService) {
-        super(databaseService, BallotModel.TABLE);
+    public BallotModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, BallotModel.TABLE);
     }
 
     public List<BallotModel> getAll() {
@@ -261,16 +265,6 @@ public class BallotModelFactory extends ModelFactory {
             });
     }
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiBallotId` VARCHAR NOT NULL , `creatorIdentity` VARCHAR NOT NULL , `name` VARCHAR , `state` VARCHAR NOT NULL , `assessment` VARCHAR NOT NULL , `type` VARCHAR NOT NULL , `choiceType` VARCHAR NOT NULL , `displayType` VARCHAR , `createdAt` BIGINT NOT NULL , `modifiedAt` BIGINT NOT NULL , `lastViewedAt` BIGINT )",
-
-            //indices
-            "CREATE UNIQUE INDEX `apiBallotIdAndCreator` ON `ballot` ( `apiBallotId`, `creatorIdentity` )"
-        };
-    }
-
     protected Cursor runBallotFilterQuery(BallotService.BallotFilter filter, String select) {
         String query = select + " FROM " + this.getTableName() + " b";
         List<String> args = new ArrayList<>();
@@ -348,5 +342,18 @@ public class BallotModelFactory extends ModelFactory {
 
         return getReadableDatabase().rawQuery(query,
             DatabaseUtil.convertArguments(args));
+    }
+
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE `ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `apiBallotId` VARCHAR NOT NULL , `creatorIdentity` VARCHAR NOT NULL , `name` VARCHAR , `state` VARCHAR NOT NULL , `assessment` VARCHAR NOT NULL , `type` VARCHAR NOT NULL , `choiceType` VARCHAR NOT NULL , `displayType` VARCHAR , `createdAt` BIGINT NOT NULL , `modifiedAt` BIGINT NOT NULL , `lastViewedAt` BIGINT )",
+
+                // indices
+                "CREATE UNIQUE INDEX `apiBallotIdAndCreator` ON `ballot` ( `apiBallotId`, `creatorIdentity` )"
+            };
+        }
     }
 }

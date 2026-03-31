@@ -18,8 +18,6 @@
     <string name="safe_enter_server_address_explain" translatable="false">server.example.com</string>
     <string name="lp_map_copyright" translatable="false">© Threema © MapTiler © OpenStreetMap contributors</string>
     <string name="lp_poi_copyright" translatable="false">Data © Threema © OpenStreetMap contributors</string>
-    <string name="prefs_work_time_start_sum_time" translatable="false">%s</string>
-    <string name="prefs_work_time_end_sum_time" translatable="false">%s</string>
     <string name="audio_focus_loss" translatable="false">Audio focus loss</string>
     <string name="threema_work" translatable="false">Threema Work</string>
     <string name="work_explain_url" translatable="false">https://threema.com/work_info/?lang=%1$s</string>
@@ -29,7 +27,6 @@
     <string name="threema_work_url" translatable="false">https://threema.com/products/work?mtm_campaign=introduction-work-promo&amp;mtm_kwd=android</string>
     <string name="threema_onprem_url" translatable="false">https://threema.com/products/onprem?mtm_campaign=introduction-onprem-promo&amp;mtm_kwd=android</string>
     <string name="private_download_url" translatable="false">https://play.google.com/store/apps/details?id=ch.threema.app</string>
-    <string name="private_download_url_hms" translatable="false">https://appgallery.huawei.com/#/app/C103713829</string>
     <!-- should not be translated because manifest does not allow varying resources-->
     <string name="special_use_fgs_passphrase_service_explanation" translatable="false">Lock or unlock the app using a passphrase</string>
     <string name="device_linking_pfs_warning_faq_link_value" translatable="false">https://threema.com/faq/md_limit</string>

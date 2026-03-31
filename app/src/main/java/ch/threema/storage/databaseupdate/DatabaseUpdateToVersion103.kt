@@ -31,9 +31,5 @@ internal class DatabaseUpdateToVersion103(
 
     override fun getDescription() = "correct starred status message to not-starred"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 103
-    }
+    override val version = 103
 }

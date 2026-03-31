@@ -8,11 +8,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.view.isVisible
 import ch.threema.android.buildActivityIntent
+import ch.threema.android.postDelayed
 import ch.threema.app.BuildConfig
 import ch.threema.app.R
 import ch.threema.app.ui.InsetSides.Companion.all
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
-import ch.threema.app.ui.postDelayed
 import ch.threema.app.utils.AnimationUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger

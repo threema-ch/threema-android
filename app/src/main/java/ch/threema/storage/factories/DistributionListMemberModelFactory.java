@@ -4,18 +4,22 @@ import android.content.ContentValues;
 
 import android.database.Cursor;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.models.DistributionListMemberModel;
 
 public class DistributionListMemberModelFactory extends ModelFactory {
 
-    public DistributionListMemberModelFactory(DatabaseService databaseService) {
-        super(databaseService, DistributionListMemberModel.TABLE);
+    public DistributionListMemberModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, DistributionListMemberModel.TABLE);
     }
 
     public DistributionListMemberModel getByDistributionListIdAndIdentity(long distributionListId, String identity) {
@@ -181,18 +185,21 @@ public class DistributionListMemberModelFactory extends ModelFactory {
             args);
     }
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `" + DistributionListMemberModel.TABLE + "`(" +
-                "`" + DistributionListMemberModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT , " +
-                "`" + DistributionListMemberModel.COLUMN_IDENTITY + "` VARCHAR , " +
-                "`" + DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "` INTEGER , " +
-                "`" + DistributionListMemberModel.COLUMN_IS_ACTIVE + "` SMALLINT NOT NULL" +
-                ")",
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE `" + DistributionListMemberModel.TABLE + "`(" +
+                    "`" + DistributionListMemberModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT , " +
+                    "`" + DistributionListMemberModel.COLUMN_IDENTITY + "` VARCHAR , " +
+                    "`" + DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "` INTEGER , " +
+                    "`" + DistributionListMemberModel.COLUMN_IS_ACTIVE + "` SMALLINT NOT NULL" +
+                    ")",
 
-            "CREATE INDEX `distribution_list_member_dis_idx`" +
-                " ON `" + DistributionListMemberModel.TABLE + "`(`" + DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "`)"
-        };
+                "CREATE INDEX `distribution_list_member_dis_idx`" +
+                    " ON `" + DistributionListMemberModel.TABLE + "`(`" + DistributionListMemberModel.COLUMN_DISTRIBUTION_LIST_ID + "`)"
+            };
+        }
     }
 }

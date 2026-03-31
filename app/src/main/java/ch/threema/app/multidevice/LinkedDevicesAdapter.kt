@@ -16,7 +16,7 @@ import ch.threema.app.utils.ConfigUtils
 import com.google.android.material.card.MaterialCardView
 
 class LinkedDevicesAdapter(
-    private val onClickedDevice: (LinkedDeviceInfoUiModel) -> Unit,
+    private val onClickDevice: (LinkedDeviceInfoUiModel) -> Unit,
 ) : ListAdapter<ListItem, ViewHolder>(ListItemDiffCallback()) {
     override fun getItemViewType(position: Int): Int = when (getItem(position)) {
         is ListItem.DeviceAmountWarning -> ListItem.DeviceAmountWarning.VIEW_TYPE
@@ -46,7 +46,7 @@ class LinkedDevicesAdapter(
             is MaxDevicesReachedWarningViewHolder -> viewHolder.bind(listItem as ListItem.DeviceAmountWarning)
             is DeviceViewHolder -> viewHolder.bind(
                 listItem = listItem as ListItem.Device,
-                onClickedDevice = onClickedDevice,
+                onClickDevice = onClickDevice,
             )
         }
     }
@@ -84,7 +84,7 @@ class LinkedDevicesAdapter(
         private val thirdLineTv: TextView
             get() = itemView.findViewById(R.id.thirdLineTv)
 
-        fun bind(listItem: ListItem.Device, onClickedDevice: (LinkedDeviceInfoUiModel) -> Unit) {
+        fun bind(listItem: ListItem.Device, onClickDevice: (LinkedDeviceInfoUiModel) -> Unit) {
             cardView.apply {
                 strokeWidth =
                     resources.getDimensionPixelSize(listItem.deviceInfo.getListItemStrokeWidth())
@@ -93,7 +93,7 @@ class LinkedDevicesAdapter(
                     listItem.deviceInfo.getListItemStrokeColor(),
                 )
                 setOnClickListener {
-                    onClickedDevice(listItem.deviceInfo)
+                    onClickDevice(listItem.deviceInfo)
                 }
             }
 

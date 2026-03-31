@@ -18,7 +18,7 @@ import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.util.Date
 
 private val logger = getThreemaLogger("IncomingGroupMessageUtils")
@@ -29,15 +29,15 @@ private val logger = getThreemaLogger("IncomingGroupMessageUtils")
  */
 suspend fun runCommonGroupReceiveSteps(
     groupIdentity: GroupIdentity,
-    fromIdentity: Identity,
+    fromIdentity: IdentityString,
     handle: ActiveTaskCodec,
     serviceManager: ServiceManager,
 ): GroupModel? = runCommonGroupReceiveSteps(
-    groupIdentity.creatorIdentity,
-    GroupId(groupIdentity.groupId),
-    fromIdentity,
-    handle,
-    serviceManager,
+    creatorIdentity = groupIdentity.creatorIdentity,
+    groupId = GroupId(groupIdentity.groupId),
+    fromIdentity = fromIdentity,
+    handle = handle,
+    serviceManager = serviceManager,
 )
 
 /**
@@ -49,11 +49,11 @@ suspend fun runCommonGroupReceiveSteps(
     handle: ActiveTaskCodec,
     serviceManager: ServiceManager,
 ): GroupModel? = runCommonGroupReceiveSteps(
-    message.groupCreator,
-    message.apiGroupId,
-    message.fromIdentity,
-    handle,
-    serviceManager,
+    creatorIdentity = message.groupCreator,
+    groupId = message.apiGroupId,
+    fromIdentity = message.fromIdentity,
+    handle = handle,
+    serviceManager = serviceManager,
 )
 
 /**
@@ -61,12 +61,13 @@ suspend fun runCommonGroupReceiveSteps(
  * returned, this indicates that the message should be discarded.
  */
 suspend fun runCommonGroupReceiveSteps(
-    creatorIdentity: Identity,
+    creatorIdentity: IdentityString,
     groupId: GroupId,
-    fromIdentity: Identity,
+    fromIdentity: IdentityString,
     handle: ActiveTaskCodec,
     serviceManager: ServiceManager,
 ): GroupModel? {
+    logger.info("Running common group receive steps for group with creator {} and id {} for message from {}", creatorIdentity, groupId, fromIdentity)
     val myIdentity = serviceManager.userService.identity
     val isCreator = myIdentity == creatorIdentity
 
@@ -76,11 +77,13 @@ suspend fun runCommonGroupReceiveSteps(
 
     // If the group could not be found
     if (groupModelData == null) {
+        logger.warn("Group not found.")
         if (!isCreator) {
+            logger.info("Running group sync request steps because group couldn't be found.")
             runGroupSyncRequestSteps(
-                GroupIdentity(creatorIdentity, groupId.toLong()),
-                serviceManager,
-                handle,
+                groupIdentity = GroupIdentity(creatorIdentity, groupId.toLong()),
+                serviceManager = serviceManager,
+                handle = handle,
             )
         }
         return null
@@ -88,10 +91,12 @@ suspend fun runCommonGroupReceiveSteps(
 
     // If the group is marked as left
     if (!groupModelData.isMember) {
+        logger.warn("The user is not a member of the group. User state: {}", groupModelData.userState)
         val sender = getContactForIdentity(fromIdentity, serviceManager)
         if (isCreator) {
+            logger.info("Sending group setup message without members.")
             handle.runBundledMessagesSendSteps(
-                OutgoingCspMessageHandle(
+                outgoingCspMessageHandle = OutgoingCspMessageHandle(
                     sender,
                     OutgoingCspGroupMessageCreator(
                         MessageId.random(),
@@ -103,11 +108,13 @@ suspend fun runCommonGroupReceiveSteps(
                         }
                     },
                 ),
-                serviceManager.getOutgoingCspMessageServices(),
+                services = serviceManager.getOutgoingCspMessageServices(),
+                identityBlockedSteps = serviceManager.identityBlockedSteps,
             )
         } else {
+            logger.info("Sending group leave message.")
             handle.runBundledMessagesSendSteps(
-                OutgoingCspMessageHandle(
+                outgoingCspMessageHandle = OutgoingCspMessageHandle(
                     sender,
                     OutgoingCspGroupMessageCreator(
                         MessageId.random(),
@@ -117,18 +124,21 @@ suspend fun runCommonGroupReceiveSteps(
                         GroupLeaveMessage()
                     },
                 ),
-                serviceManager.getOutgoingCspMessageServices(),
+                services = serviceManager.getOutgoingCspMessageServices(),
+                identityBlockedSteps = serviceManager.identityBlockedSteps,
             )
         }
 
         return null
     }
 
-    if (!groupModelData.otherMembers.contains(fromIdentity)) {
+    if (!groupModelData.otherMembersAndCreator.contains(fromIdentity)) {
+        logger.warn("The sender is not a member of the group.")
         val sender = getContactForIdentity(fromIdentity, serviceManager)
         if (isCreator) {
+            logger.info("Sending a group setup message without members.")
             handle.runBundledMessagesSendSteps(
-                OutgoingCspMessageHandle(
+                outgoingCspMessageHandle = OutgoingCspMessageHandle(
                     sender,
                     OutgoingCspGroupMessageCreator(
                         MessageId.random(),
@@ -140,13 +150,15 @@ suspend fun runCommonGroupReceiveSteps(
                         }
                     },
                 ),
-                serviceManager.getOutgoingCspMessageServices(),
+                services = serviceManager.getOutgoingCspMessageServices(),
+                identityBlockedSteps = serviceManager.identityBlockedSteps,
             )
         } else {
+            logger.info("Running group sync request steps because the sender is no member.")
             runGroupSyncRequestSteps(
-                groupModelData.groupIdentity,
-                serviceManager,
-                handle,
+                groupIdentity = groupModelData.groupIdentity,
+                serviceManager = serviceManager,
+                handle = handle,
             )
         }
 
@@ -156,7 +168,7 @@ suspend fun runCommonGroupReceiveSteps(
     return group
 }
 
-private fun getContactForIdentity(identity: Identity, serviceManager: ServiceManager): BasicContact =
+private fun getContactForIdentity(identity: IdentityString, serviceManager: ServiceManager): BasicContact =
     serviceManager.contactStore.getCachedContact(identity)
         ?: serviceManager.modelRepositories.contacts.getByIdentity(identity)?.data?.toBasicContact()
         ?: throw IllegalStateException("Could not get cached contact for identity $identity")
@@ -192,7 +204,7 @@ suspend fun runGroupSyncRequestSteps(
 
     // Send a group sync request
     handle.runBundledMessagesSendSteps(
-        OutgoingCspMessageHandle(
+        outgoingCspMessageHandle = OutgoingCspMessageHandle(
             groupCreator,
             OutgoingCspGroupMessageCreator(
                 MessageId.random(),
@@ -202,7 +214,8 @@ suspend fun runGroupSyncRequestSteps(
                 GroupSyncRequestMessage()
             },
         ),
-        serviceManager.getOutgoingCspMessageServices(),
+        services = serviceManager.getOutgoingCspMessageServices(),
+        identityBlockedSteps = serviceManager.identityBlockedSteps,
     )
 
     // Mark the group as recently resynced
@@ -218,13 +231,13 @@ private suspend fun runGroupSyncRequestSteps(
     handle: ActiveTaskCodec,
 ) {
     runGroupSyncRequestSteps(
-        groupIdentity.creatorIdentity.toBasicContact(
+        groupCreator = groupIdentity.creatorIdentity.toBasicContact(
             serviceManager.modelRepositories.contacts,
             serviceManager.contactStore,
             serviceManager.apiConnector,
         ),
-        groupIdentity,
-        serviceManager,
-        handle,
+        groupIdentity = groupIdentity,
+        serviceManager = serviceManager,
+        handle = handle,
     )
 }

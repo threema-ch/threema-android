@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.utils.executor.HandlerExecutor;
@@ -27,10 +28,10 @@ import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupIdentity;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 /**
  * Notify Threema Web about changes to receivers (contacts, groups, distribution lists).
@@ -60,24 +61,27 @@ public class ReceiverUpdateHandler extends MessageUpdater {
     private final @NonNull MessageDispatcher dispatcher;
 
     // Services
-    private final @NonNull DatabaseService databaseService;
+    private final @NonNull ContactModelFactory contactModelFactory;
     private final @NonNull SynchronizeContactsService synchronizeContactsService;
     private final @NonNull GroupService groupService;
+    private final @NonNull PreferenceService preferenceService;
 
     @AnyThread
     public ReceiverUpdateHandler(
         @NonNull HandlerExecutor handler,
         @NonNull MessageDispatcher dispatcher,
-        @NonNull DatabaseService databaseService,
+        @NonNull ContactModelFactory contactModelFactory,
         @NonNull SynchronizeContactsService synchronizeContactsService,
-        @NonNull GroupService groupService
+        @NonNull GroupService groupService,
+        @NonNull PreferenceService preferenceService
     ) {
         super(Protocol.SUB_TYPE_RECEIVER);
         this.handler = handler;
         this.dispatcher = dispatcher;
-        this.databaseService = databaseService;
+        this.contactModelFactory = contactModelFactory;
         this.synchronizeContactsService = synchronizeContactsService;
         this.groupService = groupService;
+        this.preferenceService = preferenceService;
         this.contactListener = new ContactListener();
         this.groupListener = new GroupListener();
         this.distributionListListener = new DistributionListListener();
@@ -110,7 +114,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
             public void run() {
                 try {
                     // Convert contact and dispatch
-                    MsgpackObjectBuilder data = Contact.convert(contact);
+                    MsgpackObjectBuilder data = Contact.convert(contact, preferenceService.getContactNameFormat());
                     ReceiverUpdateHandler.this.update(new Utils.ModelWrapper(contact), data, mode);
                 } catch (ConversionException e) {
                     logger.error("Exception", e);
@@ -120,7 +124,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
     }
 
     @AnyThread
-    private void updateGroup(GroupModel group, @UpdateMode String mode) {
+    private void updateGroup(GroupModelOld group, @UpdateMode String mode) {
         handler.post(new Runnable() {
             @Override
             @WorkerThread
@@ -242,7 +246,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
 
         @Nullable
         private ContactModel getContactModelByIdentity(@NonNull String identity) {
-            return databaseService.getContactModelFactory().getByIdentity(identity);
+            return contactModelFactory.getByIdentity(identity);
         }
     }
 
@@ -251,7 +255,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
         @Override
         public void onCreate(@NonNull GroupIdentity groupIdentity) {
             logger.debug("Group Listener: onCreate");
-            GroupModel groupModel = getGroupModel(groupIdentity);
+            GroupModelOld groupModel = getGroupModel(groupIdentity);
             if (groupModel != null) {
                 updateGroup(groupModel, Protocol.ARGUMENT_MODE_NEW);
             }
@@ -260,7 +264,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
         @Override
         public void onRename(@NonNull GroupIdentity groupIdentity) {
             logger.debug("Group Listener: onRename");
-            GroupModel groupModel = getGroupModel(groupIdentity);
+            GroupModelOld groupModel = getGroupModel(groupIdentity);
             if (groupModel != null) {
                 updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
             }
@@ -275,7 +279,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
         @Override
         public void onNewMember(@NonNull GroupIdentity groupIdentity, String identityNew) {
             logger.debug("Group Listener: onNewMember");
-            GroupModel groupModel = getGroupModel(groupIdentity);
+            GroupModelOld groupModel = getGroupModel(groupIdentity);
             if (groupModel != null) {
                 updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
             }
@@ -284,7 +288,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
         @Override
         public void onMemberLeave(@NonNull GroupIdentity groupIdentity, @NonNull String identityLeft) {
             logger.debug("Group Listener: onMemberLeave");
-            GroupModel groupModel = getGroupModel(groupIdentity);
+            GroupModelOld groupModel = getGroupModel(groupIdentity);
             if (groupModel != null) {
                 updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
             }
@@ -293,7 +297,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
         @Override
         public void onMemberKicked(@NonNull GroupIdentity groupIdentity, String identityKicked) {
             logger.debug("Group Listener: onMemberKicked");
-            GroupModel groupModel = getGroupModel(groupIdentity);
+            GroupModelOld groupModel = getGroupModel(groupIdentity);
             if (groupModel != null) {
                 updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
             }
@@ -302,7 +306,7 @@ public class ReceiverUpdateHandler extends MessageUpdater {
         @Override
         public void onUpdate(@NonNull GroupIdentity groupIdentity) {
             logger.debug("Group Listener: onUpdate");
-            GroupModel groupModel = getGroupModel(groupIdentity);
+            GroupModelOld groupModel = getGroupModel(groupIdentity);
             if (groupModel != null) {
                 updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
             }
@@ -311,15 +315,15 @@ public class ReceiverUpdateHandler extends MessageUpdater {
         @Override
         public void onLeave(@NonNull GroupIdentity groupIdentity) {
             logger.debug("Group Listener: onLeave");
-            GroupModel groupModel = getGroupModel(groupIdentity);
+            GroupModelOld groupModel = getGroupModel(groupIdentity);
             if (groupModel != null) {
                 updateGroup(groupModel, Protocol.ARGUMENT_MODE_MODIFIED);
             }
         }
 
         @Nullable
-        private GroupModel getGroupModel(@NonNull GroupIdentity groupIdentity) {
-            GroupModel groupModel = groupService.getByGroupIdentity(groupIdentity);
+        private GroupModelOld getGroupModel(@NonNull GroupIdentity groupIdentity) {
+            GroupModelOld groupModel = groupService.getByGroupIdentity(groupIdentity);
             if (groupModel == null) {
                 logger.error("Group model is null");
             }

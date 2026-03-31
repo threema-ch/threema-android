@@ -98,7 +98,7 @@ class DatabaseNonceStore(
         if (logger.isTraceEnabled) {
             logger.trace("Store nonce {} for scope {}", nonce.bytes.toHexString(), scope)
         }
-        val identity = identityStore.getIdentity()
+        val identity = identityStore.getIdentityString()
         check(identity != null) {
             logger.error("Cannot store hashed nonce if identity is null")
         }
@@ -174,7 +174,7 @@ class DatabaseNonceStore(
             return emptySet()
         }
 
-        val identity = identityStore.getIdentity()
+        val identity = identityStore.getIdentityString()
         if (identity == null) {
             logger.error("Cannot hash and replace raw nonces if identity is null")
             return emptySet()
@@ -198,7 +198,7 @@ class DatabaseNonceStore(
     }
 
     private fun Nonce.hashIfIdentityAvailable(): ByteArray {
-        val identity = identityStore.getIdentity()
+        val identity = identityStore.getIdentityString()
         return if (identity == null) {
             logger.warn("Cannot hash nonce as identity is not available")
             // Just return the nonce bytes as it is not possible to hash them without identity

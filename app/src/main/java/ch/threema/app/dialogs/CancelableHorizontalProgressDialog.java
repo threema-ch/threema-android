@@ -195,8 +195,6 @@ public class CancelableHorizontalProgressDialog extends ThreemaDialogFragment {
 
     /**
      * Updates progress bar. Do not call this directly, use {@link ch.threema.app.utils.DialogUtil#updateProgress(FragmentManager, String, int)} instead!
-     *
-     * @param progress
      */
     @UiThread
     public void setProgress(int progress) {

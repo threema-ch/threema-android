@@ -53,14 +53,18 @@
     <string name="voip_prefs_video_codec_no_h264hip">Wyłącz H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Kodeki programowe</string>
     <string name="voip_connection_failed">Nie udało się ustanowić połączenia.</string>
-    <string name="voip_connection_lost">Utracono połączenie</string>
+    <string name="voip_call_disconnected">Połączenie przerwane</string>
     <string name="prefs_voip_reject_incoming_calls_title">Odrzucaj połączenia komórkowe</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Odrzucaj połączenia komórkowe, gdy aktywne jest połączenie Threema.</string>
     <string name="voip_contact_not_found">Nie znaleziono kontaktu Threema o tym numerze.</string>
     <string name="voip_another_pstn_call">Nie można zainicjować połączenia. Zwyczajne połączenie telefoniczne jest nadal aktywne.</string>
     <string name="voip_call_status_off_hours">Połączenie po godz.</string>
     <string name="voip_peer_video_disabled">Druga strona wyłączyła połączenia wideo</string>
-    <string name="voip_reject_channel_name">Zmiana stanu połączenia</string>
+    <string name="voip_error_processing_call_anser">Podczas przetwarzania odpowiedzi na połączenie wystąpił błąd</string>
+    <string name="voip_error_peer_connection">Błąd połączenia równorzędnego</string>
+    <string name="voip_error_determine_common_video_quality_profile">Nie udało się określić wspólnego profilu jakości wideo</string>
+    <string name="voip_audio_focus_lost">Utracono skupienie dźwięku</string>
+    <string name="voip_could_not_initialize">Nie udało się zainicjować połączenia</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Diagnostyka WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Uruchom to narzędzie, aby rozpoznać problemy z konfiguracją połączenia głosowego</string>
@@ -71,13 +75,9 @@
     <string name="voip_webrtc_debug_copied">Skopiowano do schowka.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Skopiuj do schowka</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">Powiadomiono wszystkich członków grupy</string>
-    <string name="voip_gc_notification_channel_description">Poł. grupowe</string>
-    <string name="voip_gc_notification_title">Poł. grupowe</string>
     <string name="voip_gc_notification_call_started">%1$s rozpoczął/ęła połączenie grupowe w %2$s</string>
     <string name="voip_gc_notification_call_started_generic">%1$s rozpoczął/ęła połączenie grupowe</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Rozpoczęto połączenie grupowe</string>
-    <string name="voip_gc_dismiss_call">Ignoruj</string>
     <string name="voip_gc_join_call">Dołącz</string>
     <string name="voip_gc_ongoing_call">Trwa połączenie grupowe</string>
     <string name="voip_gc_waiting_for_participants">Oczekiwanie na uczestników</string>

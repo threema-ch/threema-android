@@ -16,7 +16,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     kotlin {
-        jvmToolchain(17)
+        jvmToolchain(21)
     }
 
     buildTypes {
@@ -30,7 +30,8 @@ dependencies {
 
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
-    implementation(libs.compose.annotation)
+    implementation(libs.androidx.work.runtime)
+    compileOnly(libs.compose.annotation)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

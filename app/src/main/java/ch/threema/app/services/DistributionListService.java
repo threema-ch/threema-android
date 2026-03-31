@@ -12,7 +12,7 @@ import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
 
 @SessionScoped
-public interface DistributionListService extends AvatarService<DistributionListModel> {
+public interface DistributionListService extends AvatarService<Long> {
     interface DistributionListFilter {
         boolean sortingByDate();
 
@@ -21,7 +21,11 @@ public interface DistributionListService extends AvatarService<DistributionListM
         boolean showHidden();
     }
 
+    @Nullable
     DistributionListModel getById(long id);
+
+    @NonNull
+    List<DistributionListModel> getByIds(@NonNull List<Long> ids);
 
     DistributionListModel createDistributionList(@Nullable String name, String[] memberIdentities) throws ThreemaException;
 
@@ -47,7 +51,11 @@ public interface DistributionListService extends AvatarService<DistributionListM
 
     String getMembersString(DistributionListModel distributionListModel);
 
-    DistributionListMessageReceiver createReceiver(DistributionListModel distributionListModel);
+    @Nullable
+    DistributionListMessageReceiver createReceiver(long distributionListId);
+
+    @NonNull
+    DistributionListMessageReceiver createReceiver(@NonNull DistributionListModel distributionListModel);
 
     String getUniqueIdString(DistributionListModel distributionListModel);
 

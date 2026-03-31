@@ -10,15 +10,18 @@ import androidx.core.content.ContextCompat
 import androidx.preference.Preference
 import androidx.preference.PreferenceScreen
 import androidx.recyclerview.widget.RecyclerView
+import ch.threema.android.getSerializable
 import ch.threema.app.R
 import ch.threema.app.activities.referral.ReferralActivity
+import ch.threema.app.dev.hasDevFeatures
+import ch.threema.app.preference.SettingsActivity.Companion.EXTRA_INITIAL_SCREEN
+import ch.threema.app.preference.SettingsActivity.InitialScreen
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.restrictions.AppRestrictionUtil
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ConfigUtils.isOnPremBuild
 import ch.threema.app.utils.ConfigUtils.isTabletLayout
 import ch.threema.app.utils.ConfigUtils.isWorkBuild
-import ch.threema.app.utils.ConfigUtils.isWorkRestricted
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.app.webviews.WorkExplainActivity
 import ch.threema.base.utils.getThreemaLogger
@@ -32,21 +35,15 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
         logScreenVisibility(logger)
     }
 
+    private val preferenceService: PreferenceService by inject()
+    private val appRestrictions: AppRestrictions by inject()
+
     private var preferencePairs: List<Pair<Preference, String>> = emptyList()
     private var selectedPrefView: View? = null
-    private val preferenceService: PreferenceService by inject()
 
     override fun initializePreferences() {
         val preferenceScreen = getPrefOrNull<PreferenceScreen>("pref_screen_header") ?: return
-
-        var voipDisabled = false
-        if (isWorkRestricted()) {
-            val disableCalls =
-                AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_calls))
-            voipDisabled = disableCalls != null && disableCalls
-        }
-
-        if (voipDisabled) {
+        if (appRestrictions.isCallsDisabled()) {
             preferenceScreen.removePreference(getPref("pref_key_calls"))
         }
 
@@ -72,15 +69,15 @@ class SettingsSummaryFragment : ThreemaPreferenceFragment() {
             preferenceScreen.removePreference(workPref)
         }
 
-        if (!preferenceService.showDeveloperMenu()) {
+        if (!hasDevFeatures() || !preferenceService.showDeveloperMenu()) {
             preferenceScreen.removePreference(getPref("pref_key_developers"))
         }
 
         // Set background of first preference (as it is selected on tablets). Retry it every 100ms (until layout is ready)
-        val prefKey = when {
-            requireActivity().intent.extras?.get(SettingsActivity.EXTRA_SHOW_NOTIFICATION_FRAGMENT) == true -> "pref_key_notifications"
-            requireActivity().intent.extras?.get(SettingsActivity.EXTRA_SHOW_MEDIA_FRAGMENT) == true -> "pref_key_particular_settings"
-            requireActivity().intent.extras?.get(SettingsActivity.EXTRA_SHOW_SECURITY_FRAGMENT) == true -> "pref_key_security"
+        val prefKey = when (requireActivity().intent.getSerializable<InitialScreen>(EXTRA_INITIAL_SCREEN)) {
+            InitialScreen.NOTIFICATIONS -> "pref_key_notifications"
+            InitialScreen.MEDIA -> "pref_key_particular_settings"
+            InitialScreen.SECURITY -> "pref_key_security"
             else -> "pref_key_privacy"
         }
 

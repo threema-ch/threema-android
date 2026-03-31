@@ -2,23 +2,22 @@ package ch.threema.app.systemupdates.updates;
 
 import android.content.Context;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import androidx.work.WorkManager;
+import kotlin.Lazy;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /* clean up image labeler */
 public class SystemUpdateToVersion64 implements SystemUpdate {
     private static final Logger logger = getThreemaLogger("SystemUpdateToVersion64");
-    private @NonNull final Context context;
 
-    public SystemUpdateToVersion64(Context context) {
-        this.context = context;
-    }
+    private final Lazy<Context> appContextLazy = KoinJavaComponent.inject(Context.class);
 
     @Override
     public void run() {
@@ -26,10 +25,10 @@ public class SystemUpdateToVersion64 implements SystemUpdate {
     }
 
     private void deleteMediaLabelsDatabase() {
-        logger.debug("deleteMediaLabelsDatabase");
+        var appContext = appContextLazy.getValue();
 
-        WorkManager.getInstance(context).cancelAllWorkByTag("ImageLabelsPeriodic");
-        WorkManager.getInstance(context).cancelAllWorkByTag("ImageLabelsOneTime");
+        WorkManager.getInstance(appContext).cancelAllWorkByTag("ImageLabelsPeriodic");
+        WorkManager.getInstance(appContext).cancelAllWorkByTag("ImageLabelsOneTime");
 
         try {
             final String[] files = new String[]{
@@ -38,7 +37,7 @@ public class SystemUpdateToVersion64 implements SystemUpdate {
                 "media_items.db-wal",
             };
             for (String filename : files) {
-                final File databasePath = context.getDatabasePath(filename);
+                final File databasePath = appContext.getDatabasePath(filename);
                 if (databasePath.exists() && databasePath.isFile()) {
                     logger.info("Removing file {}", filename);
                     if (!databasePath.delete()) {
@@ -54,10 +53,8 @@ public class SystemUpdateToVersion64 implements SystemUpdate {
 
         // remove notification channel
         String NOTIFICATION_CHANNEL_IMAGE_LABELING = "il";
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
-        if (notificationManagerCompat != null) {
-            notificationManagerCompat.deleteNotificationChannel(NOTIFICATION_CHANNEL_IMAGE_LABELING);
-        }
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(appContext);
+        notificationManagerCompat.deleteNotificationChannel(NOTIFICATION_CHANNEL_IMAGE_LABELING);
     }
 
     @Override

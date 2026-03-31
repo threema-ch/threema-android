@@ -5,7 +5,6 @@ import android.os.PowerManager;
 
 import ch.threema.base.crypto.NaCl;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import java.io.BufferedOutputStream;
@@ -23,6 +22,8 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.base.ProgressListener;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static kotlin.io.ByteStreamsKt.readBytes;
+
 import ch.threema.base.utils.Utils;
 import ch.threema.common.ByteArrayExtensionsKt;
 import ch.threema.domain.protocol.blob.BlobLoader;
@@ -141,7 +142,7 @@ public class DownloadServiceImpl implements DownloadService {
                     if (downloadFile.length() >= NaCl.BOX_OVERHEAD_BYTES) {
                         logger.warn("Blob {} download file already exists", blobIdHex);
                         try (FileInputStream fileInputStream = new FileInputStream(downloadFile)) {
-                            return IOUtils.toByteArray(fileInputStream);
+                            return readBytes(fileInputStream);
                         }
                     } else {
                         // invalid download file - try again

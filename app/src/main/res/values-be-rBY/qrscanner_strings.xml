@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="msg_default_status">Змесціце QR-код у рамку на экране, каб адсканіраваць яго.</string>
-    <string name="msg_camera_framework_bug">Немагчыма атрымаць доступ да камеры Android. Пераканайцеся, што дазвол на доступ да камеры дадзены, ці перазапусціце прыладу.</string>
+    <string name="msg_default_status">Змясціце QR-код у рамку, каб прасканаваць яго.</string>
+    <string name="msg_camera_framework_bug">Немагчыма атрымаць доступ да камеры. Пераканайцеся, што праграме дадзены дазвол на выкарыстанне камеры, або перазапусціце прыладу.</string>
 </resources>

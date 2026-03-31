@@ -27,12 +27,6 @@ class AppVersionLogger(
         )
     }
 
-    fun logAppVersionHistory() {
-        val history = appVersionHistoryManager.getHistory()
-            .joinToString(separator = "\n") { record -> "→ ${record.toLogString()}" }
-        logger.info("App Version History:\n{}", history)
-    }
-
     fun updateAppVersionHistory() {
         when (val result = appVersionHistoryManager.check()) {
             AppVersionCheckResult.SameVersion -> return

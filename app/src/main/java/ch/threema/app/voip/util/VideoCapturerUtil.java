@@ -93,7 +93,6 @@ public class VideoCapturerUtil {
      * Returns the primary camera names as Pair of {frontcamera, backcamera}.
      * Currently, the first available front/backcamera is used as primary.
      *
-     * @param context
      * @return Pair of nullable camera name strings.
      */
     public static Pair<String, String> getPrimaryCameraNames(Context context) {

@@ -1,12 +1,12 @@
 package ch.threema.app.backuprestore
 
 import java.io.File
+import java.io.FilterInputStream
 import java.io.IOException
 import java.io.InputStream
 import net.lingala.zip4j.ZipFile
 import net.lingala.zip4j.exception.ZipException
 import net.lingala.zip4j.model.FileHeader
-import org.apache.commons.io.input.ProxyInputStream
 
 /**
  * The [ZipFile] class has the problem that whenever [ZipFile.getInputStream] is called, it keeps a reference to the created input stream internally.
@@ -43,7 +43,7 @@ class ZipFileWrapper(
     private class CloseCallbackInputStream(
         inputStream: InputStream,
         private val onClosed: () -> Unit,
-    ) : ProxyInputStream(inputStream) {
+    ) : FilterInputStream(inputStream) {
         override fun close() {
             super.close()
             onClosed()

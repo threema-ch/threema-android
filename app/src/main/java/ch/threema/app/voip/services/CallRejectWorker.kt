@@ -5,14 +5,14 @@ import androidx.work.CoroutineWorker
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import ch.threema.app.di.awaitAppFullyReadyWithTimeout
-import ch.threema.app.services.ContactService
 import ch.threema.app.voip.activities.CallActivity
 import ch.threema.app.voip.util.VoipUtil
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.data.models.ContactModel
+import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData
-import ch.threema.domain.types.Identity
-import ch.threema.storage.models.ContactModel
+import ch.threema.domain.types.IdentityString
 import kotlin.time.Duration.Companion.seconds
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -32,7 +32,7 @@ class RejectIntentServiceWorker(
 ) : CoroutineWorker(appContext, workerParams), KoinComponent {
 
     private val voipStateService: VoipStateService by inject()
-    private val contactService: ContactService by inject()
+    private val contactModelRepository: ContactModelRepository by inject()
 
     /**
      * Performs the call reject.
@@ -63,9 +63,9 @@ class RejectIntentServiceWorker(
 
         // Reject call
         return if (rejectReason == VoipCallAnswerData.RejectReason.TIMEOUT) {
-            rejectCallTimeout(voipStateService, contactService, callId, identity, rejectReason)
+            rejectCallTimeout(voipStateService, callId, identity, rejectReason)
         } else {
-            rejectCall(voipStateService, contactService, callId, identity, rejectReason)
+            rejectCall(voipStateService, contactModelRepository, callId, identity, rejectReason)
         }
     }
 
@@ -75,9 +75,8 @@ class RejectIntentServiceWorker(
      */
     private fun rejectCallTimeout(
         voipStateService: VoipStateService,
-        contactService: ContactService,
         callId: Long,
-        contactIdentity: Identity,
+        contactIdentity: IdentityString,
         rejectReason: Byte,
     ): Result {
         val currentCallState = voipStateService.callState
@@ -106,7 +105,7 @@ class RejectIntentServiceWorker(
 
         logger.info("Ringer timeout for call {} reached", callId)
 
-        return rejectCall(voipStateService, contactService, callId, contactIdentity, rejectReason)
+        return rejectCall(voipStateService, contactModelRepository, callId, contactIdentity, rejectReason)
     }
 }
 
@@ -115,20 +114,19 @@ class RejectIntentServiceWorker(
  */
 fun rejectCall(
     voipStateService: VoipStateService,
-    contactService: ContactService,
+    contactModelRepository: ContactModelRepository,
     callId: Long,
-    contactIdentity: Identity,
+    contactIdentity: IdentityString,
     rejectReason: Byte,
 ): ListenableWorker.Result {
     // Cancel current notification
     voipStateService.cancelCallNotification(contactIdentity, CallActivity.ACTION_CANCELLED)
 
-    // Get contact
-    val contact: ContactModel =
-        contactService.getByIdentity(contactIdentity) ?: run {
-            logger.error("Could not get contact model for \"{}\"", contactIdentity)
-            return ListenableWorker.Result.failure()
-        }
+    // Get contact model
+    val contactModel: ContactModel = contactModelRepository.getByIdentity(contactIdentity) ?: run {
+        logger.error("Could not get contact model for \"{}\"", contactIdentity)
+        return ListenableWorker.Result.failure()
+    }
     try {
         // Reject call
         logger.debug(
@@ -136,7 +134,7 @@ fun rejectCall(
             contactIdentity,
             rejectReason,
         )
-        voipStateService.sendRejectCallAnswerMessage(contact, callId, rejectReason)
+        voipStateService.sendRejectCallAnswerMessage(contactModel, callId, rejectReason)
     } catch (e: ThreemaException) {
         logger.error("Could not send reject answer message", e)
     }

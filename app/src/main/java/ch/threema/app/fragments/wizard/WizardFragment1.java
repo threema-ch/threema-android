@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.Objects;
@@ -23,9 +24,9 @@ import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardBaseActivity;
 import ch.threema.app.activities.wizard.components.WizardButtonXml;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.threemasafe.ThreemaSafeAdvancedDialog;
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.EditTextUtil;
@@ -40,6 +41,9 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
 
     private EditText password1, password2;
     private TextInputLayout password1layout, password2layout;
+
+    @NonNull
+    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -157,7 +161,8 @@ public class WizardFragment1 extends WizardFragment implements ThreemaSafeAdvanc
     }
 
     private boolean getPasswordOK(String password1Text, String password2Text) {
-        boolean lengthOk = getPasswordLengthOK(password1Text, AppRestrictionUtil.isSafePasswordPatternSet(getContext()) ? 1 : MIN_PW_LENGTH);
+        var hasSafePasswordPattern = dependencies.getAppRestrictions().getSafePasswordPattern() != null;
+        boolean lengthOk = getPasswordLengthOK(password1Text, hasSafePasswordPattern ? 1 : MIN_PW_LENGTH);
         boolean passwordsMatch = password1Text != null && password1Text.equals(password2Text);
 
         if (!lengthOk && password1Text != null && !password1Text.isEmpty()) {

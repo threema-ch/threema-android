@@ -25,6 +25,7 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.annotation.UiThread
@@ -41,7 +42,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.android.Destroyer.Companion.createDestroyer
+import ch.threema.android.ToastDuration
 import ch.threema.android.buildActivityIntent
+import ch.threema.android.getIntOrNull
 import ch.threema.android.ownedBy
 import ch.threema.app.AppConstants
 import ch.threema.app.R
@@ -49,12 +52,14 @@ import ch.threema.app.activities.ComposeMessageActivity
 import ch.threema.app.activities.ThreemaActivity
 import ch.threema.app.adapters.GroupCallParticipantsAdapter
 import ch.threema.app.adapters.decorators.VerticalGridLayoutGutterDecoration
+import ch.threema.app.applock.CheckAppLockContract
 import ch.threema.app.dialogs.BottomSheetListDialog
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.dialogs.SimpleStringAlertDialog
 import ch.threema.app.dialogs.ThreemaDialogFragment
 import ch.threema.app.emojis.EmojiTextView
 import ch.threema.app.listeners.SensorListener
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ActivityService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
@@ -74,11 +79,11 @@ import ch.threema.app.utils.requestGroupCallPermissions
 import ch.threema.app.voip.CallAudioSelectorButton
 import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.app.voip.groupcall.GroupCallIntention
-import ch.threema.app.voip.groupcall.LocalGroupId
 import ch.threema.app.voip.util.VoipUtil
 import ch.threema.app.voip.viewmodel.GroupCallViewModel
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.storage.models.GroupModel
+import ch.threema.data.datatypes.LocalGroupId
+import ch.threema.storage.models.group.GroupModelOld
 import com.bumptech.glide.Glide
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -88,13 +93,10 @@ import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-private val logger = getThreemaLogger("GroupCallActivity")!!
+private val logger = getThreemaLogger("GroupCallActivity")
 
 @UiThread
-class GroupCallActivity :
-    ThreemaActivity(),
-    GenericAlertDialog.DialogClickListener,
-    SensorListener {
+class GroupCallActivity : ThreemaActivity(), GenericAlertDialog.DialogClickListener, SensorListener {
     init {
         logScreenVisibility(logger)
     }
@@ -103,23 +105,29 @@ class GroupCallActivity :
     private val lockAppService: LockAppService by inject()
     private val sensorService: SensorService by inject()
     private val groupService: GroupService by inject()
+    private val preferenceService: PreferenceService by inject()
 
     private val destroyer = createDestroyer()
 
-    private val permissionLauncher =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            when (it.resultCode) {
-                RESULT_OK -> checkPhoneStateAndJoinCall()
-                else -> {
-                    setResult(RESULT_CANCELED)
-                    finish()
-                }
-            }
+    private val checkAppLockLauncher: ActivityResultLauncher<Unit> = registerForActivityResult(CheckAppLockContract()) { isUnlocked ->
+        if (isUnlocked) {
+            handleIntent(intent)
+        } else {
+            setResult(RESULT_CANCELED)
+            finish()
         }
+    }
 
-    private val cameraSettingsLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-    ) {
+    private val permissionLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { activityResult ->
+        if (activityResult.resultCode == RESULT_OK) {
+            joinCallRespectingPhoneState()
+        } else {
+            setResult(RESULT_CANCELED)
+            finish()
+        }
+    }
+
+    private val cameraSettingsLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (ConfigUtils.isPermissionGranted(this, CAMERA)) {
             checkCameraPermissionAndStartCapturing()
         }
@@ -146,8 +154,16 @@ class GroupCallActivity :
     private lateinit var participantsAdapter: GroupCallParticipantsAdapter
     private lateinit var gestureDetector: GestureDetectorCompat
 
-    private val participantsLayoutManager =
-        GridLayoutManager(this, 1, GridLayoutManager.VERTICAL, false)
+    private val participantsLayoutManager = GridLayoutManager(
+        /* context = */
+        this,
+        /* spanCount = */
+        1,
+        /* orientation = */
+        GridLayoutManager.VERTICAL,
+        /* reverseLayout = */
+        false,
+    )
     private val keepAliveHandler = Handler(Looper.getMainLooper())
     private val keepAliveTask: Runnable = object : Runnable {
         override fun run() {
@@ -155,6 +171,11 @@ class GroupCallActivity :
             keepAliveHandler.postDelayed(this, KEEP_ALIVE_DELAY)
         }
     }
+
+    /**
+     *  Before joining any group call, we handle the potentially required unlock ourselves
+     */
+    override fun isPinLockable() = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         logger.debug("Create group call activity")
@@ -173,8 +194,6 @@ class GroupCallActivity :
             // remove lockscreen keepalive
             keepAliveHandler.removeCallbacksAndMessages(null)
         }
-
-        handleIntent(intent)
 
         setFullscreen()
         setContentView(R.layout.activity_group_call)
@@ -266,11 +285,10 @@ class GroupCallActivity :
             },
         )
 
-        if (intent?.hasExtra(EXTRA_MICROPHONE_ACTIVE) == true) {
-            intent?.getBooleanExtra(EXTRA_MICROPHONE_ACTIVE, true)?.let {
-                viewModel.microphoneActiveDefault = it
-            }
-            intent?.removeExtra(EXTRA_MICROPHONE_ACTIVE)
+        if (lockAppService.isLocked) {
+            checkAppLockLauncher.launch(Unit)
+        } else {
+            handleIntent(intent)
         }
     }
 
@@ -292,9 +310,13 @@ class GroupCallActivity :
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
 
-        val currentCallGroupId = viewModel.getGroupId()
-        val groupId = LocalGroupId(intent.getIntExtra(EXTRA_GROUP_ID, -1))
-        if (currentCallGroupId != groupId) {
+        // Ignoring the intent if it does not hold a group-id
+        val newIntentGroupId: LocalGroupId = intent.getIntOrNull(EXTRA_GROUP_ID)?.let(::LocalGroupId) ?: return
+
+        // Might not have been set yet, if the user is unlocking its app-lock for the first call, and we receive a new intent
+        val currentCallGroupId: LocalGroupId? = viewModel.getGroupId()
+
+        if (currentCallGroupId != newIntentGroupId) {
             // If we have a running group call and receive an intent for another group call, we
             // temporarily store the intent and leave the current call.
             this.newIntent = intent
@@ -305,7 +327,7 @@ class GroupCallActivity :
     override fun onDestroy() {
         logger.trace("destroy group call activity")
 
-        // If an intent has been set in this field, we start a new instance
+        // If an intent has been set in this field, we start a new instance (switching group calls)
         if (newIntent != null) {
             startActivity(newIntent)
         }
@@ -330,17 +352,20 @@ class GroupCallActivity :
         viewModel.setGroupId(groupId)
         viewModel.cancelNotification()
 
-        if (!lockAppService.isLocked) {
-            val groupModel = groupService.getById(groupId.id)
-
-            if (groupModel != null && groupService.isGroupMember(groupModel)) {
-                joinCall()
-            } else {
-                Toast.makeText(this, R.string.you_are_not_a_member_of_this_group, Toast.LENGTH_LONG)
-                    .show()
-                finish()
-            }
+        // Check if the user is still a member of the group
+        val groupModel = groupService.getById(groupId.id)
+        if (groupModel == null || !groupService.isGroupMember(groupModel)) {
+            showToast(R.string.you_are_not_a_member_of_this_group, ToastDuration.LONG)
+            finish()
+            return
         }
+
+        if (intent.hasExtra(EXTRA_MICROPHONE_ACTIVE)) {
+            viewModel.microphoneActiveDefault = intent.getBooleanExtra(EXTRA_MICROPHONE_ACTIVE, true)
+            intent.removeExtra(EXTRA_MICROPHONE_ACTIVE)
+        }
+
+        joinCall()
     }
 
     private fun getIntention(intent: Intent): GroupCallIntention {
@@ -352,29 +377,31 @@ class GroupCallActivity :
         } ?: GroupCallIntention.JOIN
     }
 
-    private fun checkPhoneStateAndJoinCall() {
-        try {
-            if (VoipUtil.isPSTNCallOngoing(this)) {
-                // A PSTN call is ongoing
-                SimpleStringAlertDialog.newInstance(
-                    R.string.group_call,
-                    R.string.voip_another_pstn_call,
-                )
-                    .setOnDismissRunnable { finish() }
-                    .show(supportFragmentManager, "err")
-            } else {
-                viewModel.joinCall(intention)
-            }
-        } catch (exception: SecurityException) {
-            logger.error("Phone permission not granted. Starting group call anyway.", exception)
-            viewModel.joinCall(intention)
-        }
-    }
-
     private fun joinCall() {
         logger.debug("Joining call")
         requestGroupCallPermissions(this, permissionLauncher) {
-            checkPhoneStateAndJoinCall()
+            joinCallRespectingPhoneState()
+        }
+    }
+
+    private fun joinCallRespectingPhoneState() {
+        val isPSTNCallOngoing: Boolean = try {
+            VoipUtil.isPSTNCallOngoing(this)
+        } catch (exception: SecurityException) {
+            logger.error("Phone permission not granted. Starting group call anyway.", exception)
+            false
+        }
+        if (isPSTNCallOngoing) {
+            SimpleStringAlertDialog.newInstance(
+                /* title = */
+                R.string.group_call,
+                /* message = */
+                R.string.voip_another_pstn_call,
+            ).setOnDismissRunnable {
+                finish()
+            }.show(supportFragmentManager)
+        } else {
+            viewModel.joinCall(intention)
         }
     }
 
@@ -633,7 +660,7 @@ class GroupCallActivity :
     private fun initParticipantsList() {
         val gutterPx = resources.getDimensionPixelSize(R.dimen.group_call_participants_item_gutter)
 
-        participantsAdapter = GroupCallParticipantsAdapter(contactService, gutterPx, Glide.with(this))
+        participantsAdapter = GroupCallParticipantsAdapter(contactService, preferenceService, gutterPx, Glide.with(this))
             .ownedBy(destroyer)
         views.participants.layoutManager = participantsLayoutManager
         views.participants.adapter = participantsAdapter
@@ -714,7 +741,7 @@ class GroupCallActivity :
         }
     }
 
-    private fun setGroupChatAction(groupModel: GroupModel?) {
+    private fun setGroupChatAction(groupModel: GroupModelOld?) {
         if (groupModel != null) {
             views.title.setOnClickListener {
                 val intent = Intent(this, ComposeMessageActivity::class.java)
@@ -731,7 +758,7 @@ class GroupCallActivity :
         lifecycleScope.launch {
             try {
                 handleFinishEvent(viewModel.finishEvent.await())
-            } catch (e: CancellationException) {
+            } catch (_: CancellationException) {
                 logger.info("Waiting for finish event cancelled")
             }
         }

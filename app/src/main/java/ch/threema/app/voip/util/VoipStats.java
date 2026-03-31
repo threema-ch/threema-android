@@ -24,8 +24,7 @@ import java.util.TreeMap;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import java8.util.stream.Collectors;
-import java8.util.stream.StreamSupport;
+import java.util.stream.Collectors;
 
 /**
  * Parse the StatsReport returned by the WebRTC peer connection.
@@ -40,6 +39,20 @@ public class VoipStats {
         BigInteger videoBytesSent;
         @Nullable
         BigInteger videoBytesReceived;
+        // Jitter buffer cumulative values (for delta calculation)
+        @Nullable
+        Double audioJitterBufferDelay;
+        @Nullable
+        Double audioJitterBufferTargetDelay;
+        @Nullable
+        Double audioJitterBufferMinimumDelay;
+        @Nullable
+        BigInteger audioJitterBufferEmittedCount;
+        // Jitter buffer max values seen (tracked across all intervals)
+        @Nullable
+        Double audioJitterBufferEmitDelayMaxMs;
+        @Nullable
+        Double audioJitterBufferTargetDelayMaxMs;
 
         /**
          * Create a new state.
@@ -50,11 +63,23 @@ public class VoipStats {
         public State(
             double timestampUs,
             @Nullable BigInteger videoBytesSent,
-            @Nullable BigInteger videoBytesReceived
+            @Nullable BigInteger videoBytesReceived,
+            @Nullable Double audioJitterBufferDelay,
+            @Nullable Double audioJitterBufferTargetDelay,
+            @Nullable Double audioJitterBufferMinimumDelay,
+            @Nullable BigInteger audioJitterBufferEmittedCount,
+            @Nullable Double audioJitterBufferEmitDelayMaxMs,
+            @Nullable Double audioJitterBufferTargetDelayMaxMs
         ) {
             this.timestampUs = timestampUs;
             this.videoBytesSent = videoBytesSent;
             this.videoBytesReceived = videoBytesReceived;
+            this.audioJitterBufferDelay = audioJitterBufferDelay;
+            this.audioJitterBufferTargetDelay = audioJitterBufferTargetDelay;
+            this.audioJitterBufferMinimumDelay = audioJitterBufferMinimumDelay;
+            this.audioJitterBufferEmittedCount = audioJitterBufferEmittedCount;
+            this.audioJitterBufferEmitDelayMaxMs = audioJitterBufferEmitDelayMaxMs;
+            this.audioJitterBufferTargetDelayMaxMs = audioJitterBufferTargetDelayMaxMs;
         }
     }
 
@@ -666,18 +691,80 @@ public class VoipStats {
     }
 
     public static class InboundRtp extends Rtp {
+        // Jitter buffer stats (only populated for audio streams)
+
+        /**
+         * Total time in seconds spent in jitter buffer (cumulative).
+         */
+        @Nullable
+        public final Double jitterBufferDelay;
+
+        /**
+         * Total number of samples emitted from jitter buffer.
+         */
+        @Nullable
+        public final BigInteger jitterBufferEmittedCount;
+
+        /**
+         * This value is increased by the target jitter buffer delay every time a sample is emitted
+         * by the jitter buffer. The added target is the target delay, in seconds, at the time that
+         * the sample was emitted from the jitter buffer.
+         */
+        @Nullable
+        public final Double jitterBufferTargetDelay;
+
+        /**
+         * This metric works the same way as jitterBufferTargetDelay, except that it is not affected
+         * by external mechanisms that increase the jitter buffer target delay, such as
+         * jitterBufferTarget, AV sync, or any other mechanisms. This metric is purely based on the
+         * network characteristics such as jitter and packet loss, and can be seen as the minimum
+         * obtainable jitter buffer delay if no external factors would affect it. The metric is
+         * updated every time jitterBufferEmittedCount is updated.
+         */
+        @Nullable
+        public final Double jitterBufferMinimumDelay;
+
+        // Calculated cumulative average values
+        @Nullable
+        public final Double jitterBufferEmitDelayAverageMs;
+        @Nullable
+        public final Double jitterBufferTargetDelayAverageMs;
+        @Nullable
+        public final Double jitterBufferMinimumDelayAverageMs;
+
+        // Calculated delta values (current interval only, more responsive than cumulative averages)
+        @Nullable
+        public final Double jitterBufferEmitDelayCurrentMs;
+        @Nullable
+        public final Double jitterBufferTargetDelayCurrentMs;
+        @Nullable
+        public final Double jitterBufferMinimumDelayCurrentMs;
+
+        // Max values seen across all intervals
+        @Nullable
+        public final Double jitterBufferEmitDelayMaxMs;
+        @Nullable
+        public final Double jitterBufferTargetDelayMaxMs;
+
         private InboundRtp(
             @NonNull Map<String, Object> members,
             @NonNull SortedMap<String, Codec> codecs,
             @Nullable StateContext context
         ) {
             super(members, codecs);
-            this.jitter = VoipStats.tryGetDouble(members, "jitter", null);
             this.packetsTotal = VoipStats.tryGetLong(members, "packetsReceived", null);
             this.bytesTotal = VoipStats.tryGetBigInt(members, "bytesReceived", null);
             this.packetsLost = VoipStats.tryGetInt(members, "packetsLost", null);
             this.packetLossPercent = this.calculatePacketLoss();
             this.implementation = VoipStats.tryGetString(members, "decoderImplementation", null);
+            this.jitter = VoipStats.tryGetDouble(members, "jitter", null);
+            this.jitterBufferDelay = VoipStats.tryGetDouble(members, "jitterBufferDelay", null);
+            this.jitterBufferEmittedCount = VoipStats.tryGetBigInt(members, "jitterBufferEmittedCount", null);
+            this.jitterBufferEmitDelayAverageMs = this.calculateJitterBufferEmitDelayAverageMs();
+            this.jitterBufferTargetDelay = VoipStats.tryGetDouble(members, "jitterBufferTargetDelay", null);
+            this.jitterBufferTargetDelayAverageMs = this.calculateJitterBufferTargetDelayAverageMs();
+            this.jitterBufferMinimumDelay = VoipStats.tryGetDouble(members, "jitterBufferMinimumDelay", null);
+            this.jitterBufferMinimumDelayAverageMs = this.calculateJitterBufferMinimumDelayAverageMs();
             final Double totalInterFrameDelay = VoipStats.tryGetDouble(members, "totalInterFrameDelay", null);
             final Long framesDecoded = VoipStats.tryGetLong(members, "framesDecoded", null);
             if (totalInterFrameDelay != null && framesDecoded != null) {
@@ -695,6 +782,31 @@ public class VoipStats {
                     // Not enough time elapsed, ignore
                 }
             }
+
+            // Calculate delta jitter buffer delays (current interval only)
+            this.jitterBufferEmitDelayCurrentMs = calculateJitterBufferDeltaMs(
+                context, this.jitterBufferDelay, s -> s.audioJitterBufferDelay);
+            this.jitterBufferTargetDelayCurrentMs = calculateJitterBufferDeltaMs(
+                context, this.jitterBufferTargetDelay, s -> s.audioJitterBufferTargetDelay);
+            this.jitterBufferMinimumDelayCurrentMs = calculateJitterBufferDeltaMs(
+                context, this.jitterBufferMinimumDelay, s -> s.audioJitterBufferMinimumDelay);
+
+            // Track max values seen across all intervals
+            this.jitterBufferEmitDelayMaxMs = maxOfNullable(
+                this.jitterBufferEmitDelayCurrentMs,
+                context != null && context.previousState != null ? context.previousState.audioJitterBufferEmitDelayMaxMs : null);
+            this.jitterBufferTargetDelayMaxMs = maxOfNullable(
+                this.jitterBufferTargetDelayCurrentMs,
+                context != null && context.previousState != null ? context.previousState.audioJitterBufferTargetDelayMaxMs : null);
+        }
+
+        /**
+         * Return the maximum of two nullable Double values.
+         */
+        private static @Nullable Double maxOfNullable(@Nullable Double a, @Nullable Double b) {
+            if (a == null) return b;
+            if (b == null) return a;
+            return Math.max(a, b);
         }
 
         /**
@@ -712,6 +824,107 @@ public class VoipStats {
         }
 
         /**
+         * Calculate average jitter buffer emit delay in milliseconds.
+         * <br>
+         * The purpose of the jitter buffer is to recombine RTP packets into frames (in the case of
+         * video) and have smooth playout. The model described here assumes that the samples or
+         * frames are still compressed and have not yet been decoded. It is the sum of the time, in
+         * seconds, each audio sample or a video frame takes from the time the first packet is
+         * received by the jitter buffer (ingest timestamp) to the time it exits the jitter buffer
+         * (emit timestamp). In the case of audio, several samples belong to the same RTP packet,
+         * hence they will have the same ingest timestamp but different jitter buffer emit
+         * timestamps. In the case of video, the frame maybe is received over several RTP packets,
+         * hence the ingest timestamp is the earliest packet of the frame that entered the jitter
+         * buffer and the emit timestamp is when the whole frame exits the jitter buffer. This
+         * metric increases upon samples or frames exiting, having completed their time in the
+         * buffer (and incrementing jitterBufferEmittedCount). The average jitter buffer delay can
+         * be calculated by dividing the jitterBufferDelay with the jitterBufferEmittedCount.
+         * <br>
+         * Spec: https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-jitterbufferdelay
+         */
+        private @Nullable Double calculateJitterBufferEmitDelayAverageMs() {
+            if (this.jitterBufferDelay == null || this.jitterBufferEmittedCount == null) {
+                return null;
+            }
+            if (this.jitterBufferEmittedCount.equals(BigInteger.ZERO)) {
+                return null;
+            }
+            // Average delay (seconds) = jitterBufferDelay / jitterBufferEmittedCount
+            // Convert to milliseconds by multiplying by 1000
+            return (this.jitterBufferDelay / this.jitterBufferEmittedCount.doubleValue()) * 1000.0;
+        }
+
+        /**
+         * Calculate average jitter buffer target delay in milliseconds.
+         * <br>
+         * Spec: https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-jitterbuffertargetdelay
+         */
+        private @Nullable Double calculateJitterBufferTargetDelayAverageMs() {
+            if (this.jitterBufferTargetDelay == null || this.jitterBufferEmittedCount == null) {
+                return null;
+            }
+            if (this.jitterBufferEmittedCount.equals(BigInteger.ZERO)) {
+                return null;
+            }
+            // To get the average target delay, divide by jitterBufferEmittedCount.
+            return (this.jitterBufferTargetDelay / this.jitterBufferEmittedCount.doubleValue()) * 1000.0;
+        }
+
+        /**
+         * Calculate average jitter buffer minimum delay in milliseconds.
+         * <br>
+         * There are various reasons why the jitter buffer delay might be increased to a higher
+         * value, such as to achieve AV synchronization or because a jitterBufferTarget was set on a
+         * RTCRtpReceiver. When using one of these mechanisms, it can be useful to keep track of the
+         * minimal jitter buffer delay that could have been achieved, so WebRTC clients can track
+         * the amount of additional delay that is being added.
+         * <br>
+         * Spec: https://www.w3.org/TR/webrtc-stats/#dom-rtcinboundrtpstreamstats-jitterbufferminimumdelay
+         */
+        private @Nullable Double calculateJitterBufferMinimumDelayAverageMs() {
+            if (this.jitterBufferMinimumDelay == null || this.jitterBufferEmittedCount == null) {
+                return null;
+            }
+            if (this.jitterBufferEmittedCount.equals(BigInteger.ZERO)) {
+                return null;
+            }
+            return (this.jitterBufferMinimumDelay / this.jitterBufferEmittedCount.doubleValue()) * 1000.0;
+        }
+
+        /**
+         * Calculate delta jitter buffer delay in milliseconds for the current stats interval.
+         * <br>
+         * Formula: deltaDelay = (currentDelay - previousDelay) / (currentCount - previousCount) * 1000
+         *
+         * @param context The state context containing previous state
+         * @param currentDelay The current cumulative delay value
+         * @param previousDelayExtractor Function to extract the previous delay from the state
+         * @return The delta delay in milliseconds, or null if calculation is not possible
+         */
+        private @Nullable Double calculateJitterBufferDeltaMs(
+            @Nullable StateContext context,
+            @Nullable Double currentDelay,
+            @NonNull java.util.function.Function<State, Double> previousDelayExtractor
+        ) {
+            if (context == null || context.previousState == null) {
+                return null;
+            }
+            if (this.jitterBufferEmittedCount == null || context.previousState.audioJitterBufferEmittedCount == null) {
+                return null;
+            }
+            final BigInteger deltaCount = this.jitterBufferEmittedCount.subtract(context.previousState.audioJitterBufferEmittedCount);
+            if (deltaCount.compareTo(BigInteger.ZERO) <= 0) {
+                return null;
+            }
+            final Double previousDelay = previousDelayExtractor.apply(context.previousState);
+            if (currentDelay == null || previousDelay == null) {
+                return null;
+            }
+            final double deltaDelay = currentDelay - previousDelay;
+            return (deltaDelay / deltaCount.doubleValue()) * 1000.0;
+        }
+
+        /**
          * Calculate average FPS.
          * <p>
          * Note: I'm not 100% sure if this is correct :)
@@ -721,6 +934,61 @@ public class VoipStats {
                 return 0f;
             }
             return (float) (1.0 / (totalInterFrameDelay / framesDecoded));
+        }
+
+        @Override
+        public void addShortRepresentation(@NonNull StringBuilder builder) {
+            super.addShortRepresentation(builder);
+
+            // Add current jitter buffer stats for audio streams
+            if ("audio".equals(this.kind)) {
+                builder.append("\n ");
+                if (this.jitterBufferEmitDelayCurrentMs != null) {
+                    builder.append(String.format(Locale.US, " jbEmitDelay=%.1fms", this.jitterBufferEmitDelayCurrentMs));
+                }
+                if (this.jitterBufferTargetDelayCurrentMs != null) {
+                    builder.append(String.format(Locale.US, " jbTargetDelay=%.1fms", this.jitterBufferTargetDelayCurrentMs));
+                }
+                if (this.jitterBufferMinimumDelayCurrentMs != null) {
+                    builder.append(String.format(Locale.US, " jbMinDelay=%.1fms", this.jitterBufferMinimumDelayCurrentMs));
+                }
+            }
+        }
+
+        @Override
+        public void addRepresentation(@NonNull StringBuilder builder) {
+            super.addShortRepresentation(builder);
+
+            // Add average and current jitter buffer stats for audio streams
+            if ("audio".equals(this.kind)) {
+                builder.append("\n  Jitter Buffer Current:");
+                if (this.jitterBufferEmitDelayCurrentMs != null) {
+                    builder.append(String.format(Locale.US, " emitDelay=%.1fms", this.jitterBufferEmitDelayCurrentMs));
+                }
+                if (this.jitterBufferTargetDelayCurrentMs != null) {
+                    builder.append(String.format(Locale.US, " targetDelay=%.1fms", this.jitterBufferTargetDelayCurrentMs));
+                }
+                if (this.jitterBufferMinimumDelayCurrentMs != null) {
+                    builder.append(String.format(Locale.US, " minDelay=%.1fms", this.jitterBufferMinimumDelayCurrentMs));
+                }
+                builder.append("\n  Jitter Buffer Average:");
+                if (this.jitterBufferEmitDelayAverageMs != null) {
+                    builder.append(String.format(Locale.US, " emitDelay=%.1fms", this.jitterBufferEmitDelayAverageMs));
+                }
+                if (this.jitterBufferTargetDelayAverageMs != null) {
+                    builder.append(String.format(Locale.US, " targetDelay=%.1fms", this.jitterBufferTargetDelayAverageMs));
+                }
+                if (this.jitterBufferMinimumDelayAverageMs != null) {
+                    builder.append(String.format(Locale.US, " minDelay=%.1fms", this.jitterBufferMinimumDelayAverageMs));
+                }
+                builder.append("\n  Jitter Buffer Max:");
+                if (this.jitterBufferEmitDelayMaxMs != null) {
+                    builder.append(String.format(Locale.US, " emitDelay=%.1fms", this.jitterBufferEmitDelayMaxMs));
+                }
+                if (this.jitterBufferTargetDelayMaxMs != null) {
+                    builder.append(String.format(Locale.US, " targetDelay=%.1fms", this.jitterBufferTargetDelayMaxMs));
+                }
+            }
         }
     }
 
@@ -985,10 +1253,7 @@ public class VoipStats {
                     // Note: We only care about Opus CBR attributes
                     if (codec.name.equals("opus")) {
                         builder.append("[");
-                        Map<String, String> attributes = StreamSupport
-                            .stream(codec.parameters.entrySet())
-                            .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey, Map.Entry::getValue));
-                        final String cbr = attributes.get("cbr");
+                        final String cbr = codec.parameters.get("cbr");
                         builder
                             .append("cbr=")
                             .append(cbr != null ? cbr : "?");
@@ -1051,8 +1316,8 @@ public class VoipStats {
 
                     // Add codec attributes
                     builder.append(", attributes=");
-                    builder.append(StreamSupport
-                        .stream(codec.parameters.entrySet())
+                    builder.append(
+                        codec.parameters.entrySet().stream()
                         .map(attribute -> String.format("%s=%s", attribute.getKey(), attribute.getValue()))
                         .collect(Collectors.joining(" "))
                     );
@@ -1202,7 +1467,7 @@ public class VoipStats {
                     if (this.builder.rtp) {
                         final String kind = VoipStats.tryGetString(members, "kind", null);
                         if ("audio".equals(kind)) {
-                            this.inboundRtpAudio = new VoipStats.InboundRtp(members, inboundCodecs, null);
+                            this.inboundRtpAudio = new VoipStats.InboundRtp(members, inboundCodecs, this.context);
                         } else if ("video".equals(kind)) {
                             this.inboundRtpVideo = new VoipStats.InboundRtp(members, inboundCodecs, this.context);
                         }
@@ -1261,9 +1526,9 @@ public class VoipStats {
 
         // Add transceivers (if any)
         if (this.extractor.rtpTransceivers != null) {
-            this.rtpTransceivers = StreamSupport.stream(this.extractor.rtpTransceivers)
+            this.rtpTransceivers = this.extractor.rtpTransceivers.stream()
                 .map(RtpTransceiver::new)
-                .collect(Collectors.toUnmodifiableList());
+                .collect(Collectors.toList());
         }
     }
 
@@ -1559,7 +1824,13 @@ public class VoipStats {
         return new State(
             this.context.timestampUs,
             this.outboundRtpVideo != null ? this.outboundRtpVideo.bytesTotal : null,
-            this.inboundRtpVideo != null ? this.inboundRtpVideo.bytesTotal : null
+            this.inboundRtpVideo != null ? this.inboundRtpVideo.bytesTotal : null,
+            this.inboundRtpAudio != null ? this.inboundRtpAudio.jitterBufferDelay : null,
+            this.inboundRtpAudio != null ? this.inboundRtpAudio.jitterBufferTargetDelay : null,
+            this.inboundRtpAudio != null ? this.inboundRtpAudio.jitterBufferMinimumDelay : null,
+            this.inboundRtpAudio != null ? this.inboundRtpAudio.jitterBufferEmittedCount : null,
+            this.inboundRtpAudio != null ? this.inboundRtpAudio.jitterBufferEmitDelayMaxMs : null,
+            this.inboundRtpAudio != null ? this.inboundRtpAudio.jitterBufferTargetDelayMaxMs : null
         );
     }
 }

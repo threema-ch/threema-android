@@ -6,16 +6,16 @@
 
     <PreferenceCategory android:title="Hints">
         <Preference
-            android:key="@string/preferences__dev_reset_reaction_tooltip_shown"
-            android:title="Reset reaction tooltip"
-            android:summary="Reset the reaction tooltip shown state." />
+            android:key="@string/preferences__dev_reset_one_time_hints"
+            android:summary="Reset one-time hints &amp; tooltips, so they will show again."
+            android:title="Reset hints" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="Problems">
         <Preference
             android:key="@string/preferences__dev_reset_dismissed_problems"
-            android:title="Reset dismissed problems"
-            android:summary="Reset the problems dismissed on the Problem Solver screen" />
+            android:summary="Reset the problems dismissed on the Problem Solver screen"
+            android:title="Reset dismissed problems" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -26,11 +26,6 @@
             android:summary="Show debug info in message details"
             android:title="Message debug info"
             android:widgetLayout="@layout/preference_switch_layout" />
-        <CheckBoxPreference
-            android:key="@string/preferences__show_last_update_prefix"
-            android:summary="Show the lastUpdate timestamp as prefix in the conversation name. Requires app restart."
-            android:title="Show Last Update"
-            android:widgetLayout="@layout/preference_switch_layout" />
     </PreferenceCategory>
 
     <PreferenceCategory
@@ -38,16 +33,16 @@
         android:title="Generate Data">
         <Preference
             android:key="@string/preferences__dev_create_text_messages"
-            android:title="Create text messages"
-            android:summary="Create messages galore in contact and group chats (local only, nothing will be sent)" />
+            android:summary="Create messages galore in contact and group chats (local only, nothing will be sent)"
+            android:title="Create text messages" />
         <Preference
             android:key="@string/preferences__dev_create_messages_with_reactions"
-            android:title="Create messages with reactions"
-            android:summary="Create messages galore with reactions/ack/dec in contact and group chats (local only, nothing will be sent)" />
+            android:summary="Create messages galore with reactions/ack/dec in contact and group chats (local only, nothing will be sent)"
+            android:title="Create messages with reactions" />
         <Preference
             android:key="@string/preferences__dev_create_nonces"
-            android:title="Create nonces"
-            android:summary="A fair amount of random nonces will be created and stored" />
+            android:summary="A fair amount of random nonces will be created and stored"
+            android:title="Create nonces" />
         <Preference
             android:key="@string/preferences__generate_voip_messages"
             android:title="Generate VoIP Messages" />
@@ -75,16 +70,33 @@
         android:key="pref_key_theming"
         android:title="Theming">
         <Preference
+            android:icon="@drawable/ic_color_lens_24px"
             android:key="@string/preferences__open_pattern_library"
-            android:title="Open Pattern Library"
-            android:summary="View apps dynamic color and typography theme values" />
+            android:summary="View apps dynamic color and typography theme values"
+            android:title="Open Pattern Library" />
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:key="pref_key_android_contact_sync"
+        android:title="Android Contact Sync">
+        <Preference
+            android:key="@string/preferences__open_android_contact_sync_debug_activity"
+            android:summary="Reads all android contacts and displays them with all required information for debugging."
+            android:title="Show Android Contact Sync Debug Info" />
     </PreferenceCategory>
 
     <PreferenceCategory
         android:key="pref_key_various"
         android:title="Various">
+
+        <Preference
+            android:key="@string/preferences__cause_crash"
+            android:summary="Intentionally cause a crash to test error reporting"
+            android:title="Trigger A Test Crash" />
+
         <Preference
             android:key="@string/preferences__remove_menu"
+            android:summary="Hide the developer menu from the settings."
             android:title="Remove Developer Menu" />
     </PreferenceCategory>
 

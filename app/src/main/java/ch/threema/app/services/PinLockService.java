@@ -11,11 +11,13 @@ import org.slf4j.Logger;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
 import ch.threema.app.services.notification.NotificationService;
-import ch.threema.app.widget.WidgetUtil;
+import ch.threema.app.widget.WidgetUpdater;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
@@ -31,9 +33,9 @@ public class PinLockService implements LockAppService {
     private final AlarmManager alarmManager;
     private PendingIntent lockTimerIntent;
     private long lockTimeStamp = 0;
-    private final CopyOnWriteArrayList<OnLockAppStateChanged> lockAppStateChangedItems = new CopyOnWriteArrayList<>();
+    private final CopyOnWriteArrayList<OnLockAppStateListener> onLockAppStateListeners = new CopyOnWriteArrayList<>();
 
-    public PinLockService(Context context, PreferenceService preferencesService, UserService userService) {
+    public PinLockService(@NonNull Context context, @NonNull PreferenceService preferencesService, @NonNull UserService userService) {
         this.context = context;
         this.preferencesService = preferencesService;
         this.userService = userService;
@@ -53,11 +55,11 @@ public class PinLockService implements LockAppService {
     public boolean unlock(String pin) {
         logger.debug("unlock");
 
-        boolean isLockMechanismPin = PreferenceService.LockingMech_PIN.equals(preferencesService.getLockMechanism());
+        boolean isLockMechanismPin = PreferenceService.LOCKING_MECH_PIN.equals(preferencesService.getLockMechanism());
 
-        if ((isLockMechanismPin && this.preferencesService.isPinCodeCorrect(pin)) ||
-            PreferenceService.LockingMech_SYSTEM.equals(preferencesService.getLockMechanism()) ||
-            PreferenceService.LockingMech_BIOMETRIC.equals(preferencesService.getLockMechanism())) {
+        if ((isLockMechanismPin && pin != null && preferencesService.isPinCodeCorrect(pin)) ||
+            PreferenceService.LOCKING_MECH_SYSTEM.equals(preferencesService.getLockMechanism()) ||
+            PreferenceService.LOCKING_MECH_BIOMETRIC.equals(preferencesService.getLockMechanism())) {
             this.resetLockTimer(false);
             this.updateState(false);
             this.lockTimeStamp = 0;
@@ -103,19 +105,17 @@ public class PinLockService implements LockAppService {
         logger.info("updating locked stated from {} to {} ", this.locked, isLocked);
         this.locked = isLocked;
 
-        synchronized (this.lockAppStateChangedItems) {
-            ArrayList<OnLockAppStateChanged> toRemove = new ArrayList<>();
-
-            for (OnLockAppStateChanged c : this.lockAppStateChangedItems) {
-                if (c.changed(isLocked)) {
-                    toRemove.add(c);
+        synchronized (this.onLockAppStateListeners) {
+            ArrayList<OnLockAppStateListener> toRemove = new ArrayList<>();
+            for (OnLockAppStateListener onLockAppStateListener : this.onLockAppStateListeners) {
+                if (onLockAppStateListener.changed(isLocked)) {
+                    toRemove.add(onLockAppStateListener);
                 }
             }
-            this.lockAppStateChangedItems.removeAll(toRemove);
+            this.onLockAppStateListeners.removeAll(toRemove);
         }
 
-        // update widget
-        WidgetUtil.updateWidgets(context);
+        WidgetUpdater.update();
     }
 
     @Override
@@ -145,9 +145,9 @@ public class PinLockService implements LockAppService {
     }
 
     @Override
-    public void addOnLockAppStateChanged(OnLockAppStateChanged c) {
-        synchronized (this.lockAppStateChangedItems) {
-            this.lockAppStateChangedItems.add(c);
+    public void addOnLockAppStateListener(OnLockAppStateListener onLockAppStateListener) {
+        synchronized (this.onLockAppStateListeners) {
+            this.onLockAppStateListeners.add(onLockAppStateListener);
         }
     }
 }

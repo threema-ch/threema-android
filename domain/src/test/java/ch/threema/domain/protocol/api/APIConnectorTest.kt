@@ -248,7 +248,7 @@ class APIConnectorTest {
     @Test
     fun testObtainTurnServers() {
         val identityStoreMock = mockk<IdentityStore> {
-            every { getIdentity() } returns "FOOBAR12"
+            every { getIdentityString() } returns "FOOBAR12"
             every { calcSharedSecret(any()) } returns ByteArray(32)
         }
         every {
@@ -352,7 +352,7 @@ class APIConnectorTest {
     @Test
     fun testFetchWorkData_Directory2() {
         val identityStoreMock = mockk<IdentityStore> {
-            every { getIdentity() } returns "IDENTITY"
+            every { getIdentityString() } returns "IDENTITY"
         }
         mockPostRequest(
             url = "https://api-work.threema.ch/directory",

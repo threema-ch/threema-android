@@ -17,9 +17,5 @@ internal class DatabaseUpdateToVersion108(
 
     override fun getDescription() = "remove user's identity from contacts"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 108
-    }
+    override val version = 108
 }

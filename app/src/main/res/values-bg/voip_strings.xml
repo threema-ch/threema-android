@@ -53,14 +53,12 @@
     <string name="voip_prefs_video_codec_no_h264hip">Деактивирайте H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Софтуерни кодеци</string>
     <string name="voip_connection_failed">Връзката не може да бъде осъществена</string>
-    <string name="voip_connection_lost">Връзката е прекратена</string>
     <string name="prefs_voip_reject_incoming_calls_title">Отклонете мобилните обаждания</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Отклонете мобилните обаждания докато има активно обаждане по Threema.</string>
     <string name="voip_contact_not_found">Няма Threema контакт за този номер.</string>
     <string name="voip_another_pstn_call">Не може да се осъществи обаждане. Има активно мобилно обаждане.</string>
     <string name="voip_call_status_off_hours">Обаждане в неработно време</string>
     <string name="voip_peer_video_disabled">Събеседникът деактивира видео разговора.</string>
-    <string name="voip_reject_channel_name">Промяна на състоянието на обаждането</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC Диагностика</string>
     <string name="voip_prefs_webrtc_debug_summary">Стартирайте този инструмент, за да дебъгнете проблеми със започването на обаждане</string>
@@ -71,13 +69,9 @@
     <string name="voip_webrtc_debug_copied">Копирането в буферната памет приключи.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Копирайте в буферната памет</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">Всички членове на групата бяха уведомени</string>
-    <string name="voip_gc_notification_channel_description">Групови обаждания</string>
-    <string name="voip_gc_notification_title">Групово обаждане</string>
     <string name="voip_gc_notification_call_started">%1$s започна групов разговор в %2$s</string>
     <string name="voip_gc_notification_call_started_generic">%1$s започна групово обаждане</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Вие започнахте групово обаждане</string>
-    <string name="voip_gc_dismiss_call">Отхвърлете</string>
     <string name="voip_gc_join_call">Присъединете се</string>
     <string name="voip_gc_ongoing_call">Текущо групово обаждане</string>
     <string name="voip_gc_waiting_for_participants">Изчакване на участниците</string>

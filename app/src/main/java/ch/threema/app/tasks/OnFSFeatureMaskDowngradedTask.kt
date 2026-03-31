@@ -1,14 +1,13 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.MessageService
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
+import ch.threema.data.models.ContactModelData
+import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.fs.DHSession
-import ch.threema.domain.models.Contact
 import ch.threema.domain.protocol.ThreemaFeature
-import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.stores.DHSessionStoreException
 import ch.threema.domain.stores.DHSessionStoreInterface
 import ch.threema.domain.stores.IdentityStore
@@ -16,10 +15,12 @@ import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.csp.e2e.fs.Terminate
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("OnFSFeatureMaskDowngradedTask")
 
@@ -35,31 +36,31 @@ private val logger = getThreemaLogger("OnFSFeatureMaskDowngradedTask")
  * feature mask that indicates forward security support to a feature mask without forward
  * security support.
  *
- * @param contactModel the affected contact
+ * @param identity the identity of the affected contact
  */
 class OnFSFeatureMaskDowngradedTask(
-    private val contactModel: ContactModel,
-    private val contactService: ContactService,
-    private val messageService: MessageService,
-    private val dhSessionStore: DHSessionStoreInterface,
-    private val identityStore: IdentityStore,
-    private val forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor,
-) : ActiveTask<Unit>, PersistableTask {
+    private val identity: IdentityString,
+) : ActiveTask<Unit>, PersistableTask, KoinComponent {
+    private val contactService: ContactService by inject()
+    private val contactModelRepository: ContactModelRepository by inject()
+    private val messageService: MessageService by inject()
+    private val dhSessionStore: DHSessionStoreInterface by inject()
+    private val identityStore: IdentityStore by inject()
+
     override val type = "FSFeatureMaskDowngraded"
 
-    private val contactModelData by lazy { contactModel.data }
-
     override suspend fun invoke(handle: ActiveTaskCodec) {
-        val data = contactModelData ?: return
+        val contactModel = contactModelRepository.getByIdentity(identity) ?: return
+        val contactModelData = contactModel.data ?: return
 
-        if (ThreemaFeature.canForwardSecurity(data.featureMaskLong())) {
+        if (ThreemaFeature.canForwardSecurity(contactModelData.featureMaskLong())) {
             logger.warn("Forward security is supported by this contact")
             return
         }
 
         if (hasForwardSecuritySession(handle)) {
-            terminateAllSessions(handle)
-            createForwardSecurityDowngradedStatus()
+            terminateAllSessions(contactModelData, handle)
+            createForwardSecurityDowngradedStatus(contactModel)
         }
     }
 
@@ -68,8 +69,11 @@ class OnFSFeatureMaskDowngradedTask(
         var fsSession: DHSession? = null
         try {
             fsSession = dhSessionStore.getBestDHSession(
-                identityStore.getIdentity(),
-                contactModel.identity,
+                /* myIdentity = */
+                identityStore.getIdentityString(),
+                /* peerIdentity = */
+                identity,
+                /* handle = */
                 handle,
             )
         } catch (exception: DHSessionStoreException) {
@@ -81,23 +85,20 @@ class OnFSFeatureMaskDowngradedTask(
         return fsSession != null
     }
 
-    private suspend fun terminateAllSessions(handle: ActiveTaskCodec) {
-        val data = contactModelData ?: return
-
+    private suspend fun terminateAllSessions(contactModelData: ContactModelData, handle: ActiveTaskCodec) {
         logger.info(
             "Forward security feature has been downgraded for contact {}",
-            contactModel.identity,
+            contactModelData.identity,
         )
 
         // Clear and terminate all sessions with that contact
         DeleteAndTerminateFSSessionsTask(
-            forwardSecurityMessageProcessor,
-            Contact(data.identity, data.publicKey, data.verificationLevel),
-            Terminate.Cause.DISABLED_BY_REMOTE,
+            identity = identity,
+            cause = Terminate.Cause.DISABLED_BY_REMOTE,
         ).invoke(handle)
     }
 
-    private fun createForwardSecurityDowngradedStatus() {
+    private fun createForwardSecurityDowngradedStatus(contactModel: ContactModel) {
         val receiver = contactService.createReceiver(contactModel) ?: run {
             logger.error("Contact message receiver is null")
             return
@@ -111,26 +112,15 @@ class OnFSFeatureMaskDowngradedTask(
     }
 
     override fun serialize(): SerializableTaskData =
-        OnFSFeatureMaskDowngradedData(contactModel.identity)
+        OnFSFeatureMaskDowngradedData(identity = identity)
 
     @Serializable
     class OnFSFeatureMaskDowngradedData(
-        private val identity: Identity,
+        private val identity: IdentityString,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
-            val contactModel = serviceManager.modelRepositories.contacts.getByIdentity(identity)
-            if (contactModel == null) {
-                logger.warn("Contact with identity {} does not exist anymore", identity)
-                throw IllegalStateException("Can not create task for deleted contact")
-            }
-            return OnFSFeatureMaskDowngradedTask(
-                contactModel,
-                serviceManager.contactService,
-                serviceManager.messageService,
-                serviceManager.dhSessionStore,
-                serviceManager.identityStore,
-                serviceManager.forwardSecurityMessageProcessor,
+        override fun createTask(): Task<*, TaskCodec> =
+            OnFSFeatureMaskDowngradedTask(
+                identity = identity,
             )
-        }
     }
 }

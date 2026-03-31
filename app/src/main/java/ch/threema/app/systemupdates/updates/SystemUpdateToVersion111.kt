@@ -1,20 +1,18 @@
 package ch.threema.app.systemupdates.updates
 
-import ch.threema.app.managers.ServiceManager
+import ch.threema.app.stores.PreferenceStore
+import org.koin.core.component.inject
 
-class SystemUpdateToVersion111(
-    private val serviceManager: ServiceManager,
-) : SystemUpdate {
+class SystemUpdateToVersion111 : SystemUpdate {
+
+    private val preferenceStore: PreferenceStore by inject()
+
     override fun run() {
-        serviceManager.preferenceStore.remove("pref_group_request_overview_hidden")
+        preferenceStore.remove("pref_group_request_overview_hidden")
     }
 
-    override fun getVersion() = VERSION
+    override val version = 111
 
     override fun getDescription() =
         "remove group link settings"
-
-    companion object {
-        const val VERSION = 111
-    }
 }

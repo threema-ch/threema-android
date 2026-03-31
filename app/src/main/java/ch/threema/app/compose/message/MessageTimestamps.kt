@@ -19,7 +19,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.threema.app.R
-import ch.threema.app.compose.theme.color.CustomColors
+import ch.threema.app.compose.common.colorReferenceResource
 import ch.threema.app.messagedetails.MessageTimestampsUiModel
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.common.capitalize
@@ -35,9 +35,9 @@ fun MessageTimestampsListBox(
     isOutbox: Boolean,
 ) {
     val borderColor: Color = if (isOutbox) {
-        CustomColors.chatBubbleSendContainer
+        colorReferenceResource(R.attr.colorMessageBubbleSendContainer)
     } else {
-        CustomColors.chatBubbleReceiveContainer
+        colorReferenceResource(R.attr.colorMessageBubbleReceiveContainer)
     }
     MessageTimestampsList(
         modifier = modifier

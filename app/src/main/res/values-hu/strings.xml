@@ -5,7 +5,6 @@
     <string name="title_section1">Csevegések</string>
     <string name="title_compose_message">Csevegés indítása</string>
     <string name="title_choose_recipient">Címzett kiválasztása</string>
-    <string name="title_keyfingerprint">Kulcs ujjlenyomat</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="title_mythreemaid">Az én ${app_name_short} ID-m</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -59,9 +58,6 @@
     <string name="prefs_sum_vibrate">Rezgés bejövő üzenetre</string>
     <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
-    <string name="prefs_sum_light">Fehér</string>
-    <string name="prefs_title_wallpaper">Háttérkép kiválasztása</string>
-    <string name="prefs_sum_wallpaper">Kép kiválasztása a háttérhez</string>
     <string name="prefs_title_wallpaper_switch">Háttérkép</string>
     <string name="prefs_title_enter">Közvetlen elküldés</string>
     <string name="prefs_sum_enter_on">Az Enter billentyű azonnal elküldi az üzenetet</string>
@@ -115,11 +111,12 @@
     <string name="scan_successful">Az ID sikeresen beolvasva. A kapcsolat ellenőrzött.</string>
     <string name="scan_duplicate">Ez az ID már be lett olvasva és ellenőrizve.</string>
     <string name="linked_email">E-mail</string>
+    <!-- Pattern for displaying the user's email address on the My Profile screen. %1$s is a placeholder for the email address, %2$s is a placeholder for the verification state (e.g. "pending") -->
     <string name="linked_mobile">Mobiltelefonszám</string>
+    <!-- Pattern for displaying the user's mobile phone number on the My Profile screen. %1$s is a placeholder for the phone number, %2$s is a placeholder for the verification state (e.g. "pending") -->
     <string name="public_nickname">Becenév</string>
     <string name="share_via">Megosztás…</string>
     <string name="share_subject">%s-csevegés</string>
-    <string name="message_delete_undo">Visszavonás</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="mobile_already_linked">Az Ön ${app_name_short} ID-je már társítva van ehhez a mobilszámhoz.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -131,7 +128,6 @@
     <string name="image_placeholder">Kép</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="invalid_threema_id">Érvénytelen ${app_name_short}-ID</string>
-    <string name="contact_already_exists">A névjegy már létezik</string>
     <string name="close">Bezárás</string>
     <string name="creating_contact">Új névjegy hozzáadása</string>
     <string name="creating_contact_successful">Névjegy sikeresen hozzáadva</string>
@@ -147,7 +143,6 @@
     <string name="verify_failed_summary">A mobilszám ellenőrzése sikertelen volt. Kérjük, ellenőrizze a szám
 		helyességét és a mobilhálózat kapcsolatot, mielőtt újra megpróbálná.</string>
     <string name="verify_failed_not_linked">A mobilszám ellenőrzése nem lehetséges, mert a folyamatot megszakította.</string>
-    <string name="check_incoming_sms">Bejövő SMS-re várás</string>
     <string name="backup_title">ID exportálása</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_sum">Exportálja a ${app_name_short} ID-t</string>
@@ -227,7 +222,6 @@
     <string name="acknowledge">Megerősítés</string>
     <string name="decline">Visszautasítás</string>
     <string name="forward_message">Előre</string>
-    <string name="file_is_not_a_image">A kiválasztott fájl nem képfájl.</string>
     <string name="connection_error">Kapcsolati hiba, kérjük, próbálja meg később újra.</string>
     <string name="me_myself_and_i">Én</string>
     <string name="really_forward">Továbbítás a «%1$s» címre?</string>
@@ -235,10 +229,8 @@
     <string name="ringtone_none">Néma</string>
     <string name="no_camera_installed">Nincs megfelelő kamera</string>
     <string name="save_message_action">Mentés</string>
-    <string name="file_is_not_a_video">A kiválasztott fájl nem videó</string>
     <string name="masterkey_is_unlocked">A főkulcs nyitva van</string>
     <string name="file_too_large">A fájl nagyobb, mint a megengedett %1$d MB</string>
-    <string name="deleting_thread">A csevegés törlődik</string>
     <string name="enter_serial_body"><![CDATA[Kérjük, adja meg a boltban kapott licenckulcsát. Ha elfelejtette, kattintson ide:
 		https://shop.threema.ch/retrieve_keys]]></string>
     <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
@@ -246,7 +238,6 @@
     <string name="enter_serial_title">${app_name} feloldása</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="serial_required_want_exit">A licenckulcs érvénytelen. Újra akarod próbálni, vagy kilépsz a ${app_name}?</string>
-    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Az licenc ellenőrzése</string>
     <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
@@ -257,7 +248,6 @@
     <string name="not_now">Emlékeztess később</string>
     <string name="preparing_messages">Üzenetek összeállítása</string>
     <string name="select_emoji">emojik</string>
-    <string name="search_contact">Névjegy keresés</string>
     <string name="push_reset_title">Új push token készítése</string>
     <string name="push_reset_text">Új push tokent készítettünk</string>
     <string name="emoji_recent">Legutóbbi</string>
@@ -300,7 +290,6 @@
     <string name="set_pin_again_summary">Ismételje meg a PIN-kódot</string>
     <string name="set_pin_hint">PIN-kód</string>
     <string name="title_addgroup">Új csoport</string>
-    <string name="search_group">Csoport keresése</string>
     <string name="updating_system">Rendszerfrissítés</string>
     <string name="title_select_contacts">Válassza ki a tagokat</string>
     <string name="pin_invalid_not_set">PIN-kód érvénytelen</string>
@@ -323,8 +312,6 @@
     <string name="backup_delete_confirm">Biztonsági mentés fájl törölve</string>
     <string name="message_log_title">Üzenet részletei</string>
     <string name="state_read">elolvasva</string>
-    <string name="state_ack">megerősítve</string>
-    <string name="state_dec">visszautasítva</string>
     <string name="state_delivered">megkapva</string>
     <string name="state_sending">küldés</string>
     <string name="state_pending">várakozás</string>
@@ -333,9 +320,7 @@
     <string name="state_dialog_created">Létrehozva</string>
     <string name="state_dialog_posted">Elküldve</string>
     <string name="state_dialog_modified">Frissítve</string>
-    <string name="state_dialog_status">Állapot</string>
     <string name="no_recent_conversations">Nem találtunk csevegést</string>
-    <string name="save_changes">Mentés</string>
     <string name="creating_group">Csoport létrehozása folyamatban</string>
     <string name="updating_group">Csoport frissítése</string>
     <string name="status_create_group">Csoport létrehozva.</string>
@@ -346,9 +331,6 @@
     <string name="status_group_member_kicked">«%1$s» eltávolításra került a csoportból.</string>
     <string name="can_not_send_no_group_members">Üres csoportnak nem küldhető üzenet.</string>
     <string name="you_are_not_a_member_of_this_group">Ön nem tagja ennek a csoportnak.</string>
-    <string name="can_not_delete_not_valid">Egy érvénytelen objektum nem távolítható el</string>
-    <string name="can_not_delete_contact_until_in_group">A névjegy nem törölhető, amíg még egy csoportban van.</string>
-    <string name="can_not_delete_contact">A névjegy nem törölhető</string>
     <string name="title_public_nickname">Becenév</string>
     <string name="prefs_sum_excluded_sync_identities">Az itt felsorolt ID-kat a kapcsolatok szinkronizálásakor figyelmen kívül hagyjuk.</string>
     <string name="prefs_title_excluded_sync_identities">Kizárási lista</string>
@@ -366,9 +348,7 @@
     <string name="yes">Igen</string>
     <string name="deleting_contact">A névjegy törlésre kerül</string>
     <string name="prefs_contact_soring">Rendezés</string>
-    <string name="prefs_sum_contact_soring">A névjegyzék rendezésének beállítása</string>
     <string name="prefs_contact_format">Névjegy nevének megjelenítése</string>
-    <string name="prefs_sum_contact_format">A névjegylista nevének megjelenítésére vonatkozó beállítás</string>
     <string name="prefs_contact_list_title">Névjegylista</string>
     <string name="prefs_default_contact_picture_colored">Színes kontaktképek</string>
     <string name="prefs_show_inactive_contacts">Inaktív azonosítók megjelenítése</string>
@@ -384,19 +364,7 @@
     <string name="contact_format_last_name_first_name">Vezetéknév Keresztnév</string>
     <string name="block_contact">Névjegy blokkolása</string>
     <string name="unblock_contact">Névjegy feloldása</string>
-    <string name="one_unread_message">1 olvasatlan üzenet</string>
-    <string name="really_unlink_contact_title">Kapcsolat összecsatolás feloldása</string>
-    <string name="really_unlink_contact">Biztos, hogy el akarja távolítani a címjegyzéki kapcsolat összecsatolását?</string>
-    <string name="do_unlink_contact">Összecsatolás eltávolítása</string>
-    <string name="do_choose_other_contact">Válasszon ki egy másik névjegyet</string>
-    <string name="touch_to_link">(nincs)</string>
-    <string name="prefs_validate_contacts">Névjegy kapcsolat felülvizsgálása</string>
-    <string name="prefs_validate_contacts_loading">Névjegy kapcsolat felülvizsgálat alatt</string>
-    <string name="prefs_title_fullscreen_ime">Teljes képernyős billentyűzet</string>
-    <string name="prefs_sum_fullscreen_ime_on">A billentyűzet a teljes képernyőt kitölti fekvő módban</string>
-    <string name="prefs_sum_fullscreen_ime_off">A billentyűzet felett megjelenik a csevegés egy szakasza</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="save_image">Kép mentése</string>
     <string name="share_image">Kép megosztása</string>
     <string name="view_in_gallery">Megtekintés a galériában</string>
     <string name="token_register_failed">A push tokent nem sikerült frissíteni. Kérjük, próbálja meg később újra.</string>
@@ -435,8 +403,6 @@
     <string name="prefs_summary_hide_screenshots">A miniatűrök elrejtése az alkalmazásváltóban és a képernyőképek készítésének megakadályozása</string>
     <string name="media_gallery">Média galéria</string>
     <string name="media_file_not_found">A médiafájl nem nyitható meg. Törölték vagy nem töltötte le a szerverről.</string>
-    <string name="no_media_found">Ebben a csevegésben nem találtunk %s-t.</string>
-    <string name="media_gallery_all">Minden</string>
     <string name="media_gallery_pictures">Képek</string>
     <string name="media_gallery_videos">Videók</string>
     <string name="group_membership_title">Ezeknek a csoportoknak a tagja</string>
@@ -451,7 +417,6 @@
     <string name="contact_not_found">Névjegy nem található</string>
     <string name="contact_now_blocked">Névjegy blokkolva</string>
     <string name="contact_now_unblocked">Névjegy feloldva</string>
-    <string name="sending_images">Képek küldése</string>
     <string name="share_conversation_body">A fájl megnyitásához egy modern, AES-támogatással rendelkező ZIP-programra
 		van szükség. pl. http://www.7-zip.org vagy https://itunes.apple.com/de/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">A csevegés titkosított zip-fájlként kerül elküldésre. Kérjük, válasszon egy jelszót:</string>
@@ -487,8 +452,6 @@
     <string name="ballot_result_final">Végeredmény</string>
     <string name="invalid_cannot_send">Nem küldhet üzenetet érvénytelen kapcsolatnak</string>
     <string name="ballot_answer_count_error">Kérjük, legalább két választ adjon meg.</string>
-    <string name="ballot_one_contact_not_supported">Figyelem: %1$s még nem tud részt venni a szavazásokban.</string>
-    <string name="ballot_x_contact_not_supported">Figyelem: %1$d kapcsolat még nem tud részt venni a szavazásokban.</string>
     <string name="contact_state_inactive">Inaktív</string>
     <string name="contact_state_invalid">Érvénytelen</string>
     <string name="back">Vissza</string>
@@ -532,8 +495,6 @@
     <string name="internal_storage">Tárhely</string>
     <string name="no_activity_for_mime_type">Nem találtunk megfelelő alkalmazást ehhez a fájlhoz.</string>
     <string name="open_from">Megnyitás</string>
-    <string name="file_one_contact_not_supported">%1$s még nem tud fájlokat fogadni.</string>
-    <string name="file_x_contact_not_supported">Figyelmeztetés: %1$d kapcsolat nem tud fájlokat fogadni.</string>
     <string name="mime_android_apk">Android csomag</string>
     <string name="mime_audio">Hangfájl</string>
     <string name="mime_certificate">Digitális tanúsítvány</string>
@@ -619,7 +580,6 @@
     <string name="notifications_until">%s-ig</string>
     <string name="notifications_mute">Néma</string>
     <string name="notifications_choose_sound">Hang kiválasztása</string>
-    <string name="error_video_conversion">Videókonverziós hiba.</string>
     <string name="confirm_your_pin">PIN-kód megerősítése</string>
     <string name="too_many_incorrect_attempts">Túl sok hibás próbálkozás. Kérjük, próbálja meg újra %s másodperc múlva.</string>
     <string name="no_lockscreen_set">Nincs beállítva a rendszer kijelzőjének zárolása.</string>
@@ -662,7 +622,6 @@
 		kulcspár generálódik. Ez a kulcspár az új ${app_name_short} ID-hez lesz társítva.	Ez egy <b>nyilvános kulcsból</b> áll, amelyet barátaid
 		kapnak meg, és egy <b>titkos kulcsból</b>, amely a készülékeden marad! A barátaid a nyilvános kulcsot használják a neked szóló
 		üzenetek titkosítására. Csak a privát kulcs tulajdonosa és senki más nem tudja újra visszafejteni az üzeneteket.</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">Ha megadja saját mobilszámát és/vagy e-mail címét, a ${app_name_short} segítségével barátai automatikusan megtalálják Önt, ha szerepel a címjegyzékükben. Az információkat egyirányú titkosítással (hash-elve) tároljuk a szerverünkön. Ha névtelenül szeretné használni a ${app_name}, akkor ezt a lépést egyszerűen kihagyhatja.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -690,9 +649,7 @@
     <string name="backup_data">Adatmentés</string>
     <string name="action_delete_group">Csoport törlése</string>
     <string name="delete_my_group_message">Teljesen törölni szeretné ezt a csoportot? Minden üzenet törlésre kerül, és a megmaradt tagok többé nem használhatják a csoportot.</string>
-    <string name="error_out_of_memory">Túl kevés a szabad memória a művelet végrehajtásához</string>
     <string name="configure">Beállítás</string>
-    <string name="file_is_not_audio">Nincs hangfájl</string>
     <string name="disabled_by_policy">Egyes beállításokat a rendszergazda letiltott</string>
     <string name="select_all">Minden kiválasztása</string>
     <string name="deleting_messages">Az üzenetek törlődnek</string>
@@ -758,7 +715,6 @@
     <string name="text">Szöveg</string>
     <string name="undo">Vissza</string>
     <string name="android_backup_date">Utolsó biztonsági mentés</string>
-    <string name="check_now">Ellenőrzés</string>
     <string name="discard">Eldob</string>
     <string name="android_backup_restart_threema">Kérem, várjon. Az alkalmazás hamarosan újraindul.</string>
     <string name="battery_optimizations_title">Az akkumulátoroptimalizálás letiltása</string>
@@ -803,7 +759,6 @@
     <string name="menu_send_profilpic">Profilkép címzett hozzáadás</string>
     <string name="menu_send_profilpic_off">Profilkép címzett eltávolítás</string>
     <string name="menu_send_profilpic_now">Profilkép küldése most</string>
-    <string name="profile_picture_sent">A profilkép elküldve</string>
     <string name="sending_messages">Küldés…</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">A nagyméretű médiafájlok ZIP biztonsági mentése hosszú időt vehet igénybe, és meghaladhatja a készülék processzor- és memóriakapacitását. A biztonsági mentés során nem fogadhatók ${app_name} üzenetek. Biztos, hogy folytatni akarod?</string>
@@ -836,11 +791,7 @@
     <string name="italic">Kurzív</string>
     <string name="bold">Vastag</string>
     <string name="shortcut_choice_title">Parancsikon készítése…</string>
-    <string name="prefs_title_device_info">Eszköz információ</string>
     <string name="notifications_disabled_title">Értesítések letiltva</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="notifications_disabled_text">A ${app_name} értesítéseit teljesen letiltották a rendszerben. Nem kap értesítést, ha új üzenetek érkeznek.</string>
-    <string name="notifications_disabled_settings">Rendszerbeállítások módosítása</string>
     <string name="error_attaching_files">Hiba fájlok hozzáadásakor.</string>
     <string name="prefs_fix_powermanager_problems">A háttérben való futás engedélyezése</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -889,21 +840,17 @@
     <string name="passphrase_service_name">Jelszó szolgáltatás</string>
     <string name="passphrase_service_description">Értesítés ha a jelszó feloldva</string>
     <string name="webclient_service_description">Értesítés, ha egy webes/asztalos munkamenet aktív</string>
-    <string name="prefs_title_accept_privacy_policy">Adatvédelmi irányelvek elfogadása</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="privacy_policy_explain">${app_name} következetesebben védi az Ön privátszféráját, mint bármely más messenger. Nézze meg az %1$s-ot, hogy többet tudjon meg.</string>
-    <string name="privacy_policy_check_confirm">Kérjük, fogadja el az adatvédelmi nyilatkozatot, hogy használni tudja a %s-t.\n\n(Az EU 2016/679 rendelet szerinti követelmény)</string>
     <string name="prefs_title_incognito_keyboard">Inkognitó billentyűzet kérése</string>
     <string name="prefs_sum_incognito_keyboard">Az adatok gyűjtésének letiltása a személyre szabott javaslatokhoz (ha a billentyűzet támogatja)</string>
-    <string name="tooltip_mentions">Érintse meg a @ jelet a billentyűzeten, hogy közvetlenül megszólítson vagy megemlítsen egy kapcsolatot ebben a csoportban.</string>
-    <string name="tooltip_imagepaint">Légy kreatív! Érintse meg a varázspálcát, hogy firkáljon, vagy adjon matricákat és szöveget a képekhez elküldés előtt.</string>
     <string name="call_ongoing">Hívás folyamatban</string>
     <string name="ballot_received_votes">Beérkezett szavazatok: %1$d/%2$d</string>
     <string name="quote_not_found">Idézett üzenet nem található</string>
     <string name="ballot_secret">titkos</string>
     <string name="password_too_short_generic">A jelszó túl rövid</string>
     <string name="passwords_dont_match">Nem azonos</string>
-    <string name="test_unsuccessful">A teszt sikertelen</string>
+    <!-- Error message shown when setting up a custom server for the Threema Safe feature. %s is a placeholder for the details of the error. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="preparing_threema_safe">${app_name_short} Safe előkészítése</string>
     <string name="disable_powermanager_title">Akku-korlátozások</string>
@@ -949,9 +896,6 @@
     <string name="add_group_members">Új tag</string>
     <string name="contact_add_confirm">Szeretné felvenni az új névjegyet «%1$s» a névjegyzékébe?</string>
     <string name="password_bad">Nem biztonságos jelszó</string>
-    <string name="prefs_fix_background_data">Háttéradatok engedélyezése</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="prefs_fix_background_data_desc">Ha engedélyezni szeretné, hogy a ${app_name} a háttérben fogadjon üzeneteket, engedélyezze a Háttéradatok és a Korlátlan adatforgalom funkciót</string>
     <string name="prefs_fix_device">Az eszköz konfigurációs problémáinak javítása</string>
     <string name="safe_successful">Sikeres</string>
     <string name="safe_unsuccessful">Sikertelen</string>
@@ -963,7 +907,6 @@
     <string name="safe_retention">Tárolási idő</string>
     <string name="safe_result">Eredmény</string>
     <string name="number_of_days">%d nap</string>
-    <string name="backup_other_restore_options">Egyéb helyreállítási lehetőségek</string>
     <string name="safe_size">A mentés mérete</string>
     <string name="backup_version_mismatch">A biztonsági mentés verziója magasabb az alkalmazás által támogatottnál. Kérjük, frissítse az alkalmazást.</string>
     <string name="safe_restore_failed">A visszaállítás sikertelen</string>
@@ -990,7 +933,6 @@
     <string name="delete_group_message">Ki akarsz lépni ebből a csoportból, és teljesen törölni akarod? Minden üzenet törlődik.</string>
     <string name="delete_left_group_message">Teljesen törölni szeretné ezt a csoportot? Minden üzenet törlődik.</string>
     <string name="chats">Csevegések</string>
-    <string name="notification_setting_ignored">A VÁLTOZTATÁSOK FIGYELMEN KÍVÜL LESZNEK HAGYVA!</string>
     <string name="notification_channel_alerts">Figyelmeztetések és hibaüzenetek</string>
     <string name="notification_channel_notices">Megjegyzések</string>
     <string name="chat_updates">Csevegés frissítések</string>
@@ -998,7 +940,6 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="tooltip_export_id">Kattintson ide a titkosított ${app_name_short} ID megosztásához vagy kinyomtatásához.</string>
     <string name="downloading">Letöltés</string>
-    <string name="today">Ma</string>
     <string name="restore_data_cancelled">Visszaállítás megszakítva</string>
     <string name="safe_change_password">Jelszó módosítása</string>
     <string name="safe_configure_choose_password_title">Jelszó választása</string>
@@ -1008,7 +949,6 @@
     <string name="safe_password_updated">A ${app_name_short} Safe jelszó frissítve lett.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_activated">A ${app_name_short} Safe aktiválódott.</string>
-    <string name="restore_zip_invalid_file">A biztonsági mentési fájl érvénytelen.</string>
     <string name="push_token_cleared">A push token eltávolításra került</string>
     <string name="insert_date">Dátum beillesztése</string>
     <string name="add_answer">Válasz hozzáadása</string>
@@ -1017,9 +957,7 @@
     <string name="voip_disabled">${app_name_short}-hívások letiltva</string>
     <string name="hide_chat_enter_message_explain">Ez a csevegés privátnak van jelölve. A megtekintéshez először állítson be egy hozzáférés védelmet.</string>
     <string name="unknown">Ismeretlen</string>
-    <string name="miui_notification_title">Fontos megjegyzés a MIUI felhasználók számára</string>
     <string name="dont_show_again">Ne mutassa újra</string>
-    <string name="miui_notification_prefs">MIUI beállítások</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_upload_successful">${app_name_short}-Safe biztonsági mentés sikeresen feltöltve</string>
     <string name="time_remaining">még %s</string>
@@ -1028,7 +966,6 @@
     <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
     <string name="lock_option_biometric">Biometrikus</string>
     <string name="biometric_enter_authentication">Kérjük, hitelesítse magát a feloldáshoz</string>
-    <string name="biometric_authentication_failed">A hitelesítés sikertelen</string>
     <string name="biometric_authentication_successful">Önt sikeresen hitelesítették</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_safe_forced_explain">A rendszergazda engedélyezte a ${app_name_short} Safe szolgáltatást az Ön készülékén.</string>
@@ -1037,8 +974,6 @@
     <string name="work_select_categories">Kategóriák kiválasztása</string>
     <string name="my_profile">Profilom</string>
     <string name="message_too_long">Az üzenet túl hosszú és nem küldhető el.</string>
-    <string name="database_migration_no_space">Az adatbázis migrációja nem lehetséges: Túl kevés a szabad hely.</string>
-    <string name="advanced_options">További lehetőségek</string>
     <string name="url_warning_body">A megnyitni kívánt weboldal gyanús:\n\nMegjelenített hostnév: <b>%s</b>\nValódi hostnév: <b>%s</b>\n\nLehet, hogy egy hamis weboldalra próbálják átirányítani Önt.\n\nMégis folytatni akarja?</string>
     <string name="url_warning_title">Adathalászat figyelmeztetés</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1053,8 +988,6 @@
     <string name="lp_or_select_nearby">Vagy válasszon egy közeli helyszínt</string>
     <string name="lp_use_this_location">Helyszín elküldése?</string>
     <string name="lp_search_place">Helyszín megadása</string>
-    <string name="lp_no_nearby_places_found">Nem találtunk a közelben ilyen helyet</string>
-    <string name="select_directory_for_backup">Mentés ide</string>
     <string name="data_backup_headline">Hozzon létre biztonsági mentést az összes adat, csevegés és médiáról.</string>
     <string name="data_backup_save_path">Biztonsági mentés útvonala</string>
     <string name="change">Módosítás</string>
@@ -1080,13 +1013,11 @@
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". %1$s is a placeholder for the version number. They must not be translated. -->
     <string name="tap_to_start">Kattintson ide a %s indításához.</string>
     <string name="two_years">2 év</string>
-    <string name="invalid_backup_path">Érvénytelen mentési útvonal</string>
     <string name="backup_data_no_permission">Nincs író hozzáférés ehhez a könyvtárhoz. Kérjük, válasszon egy másikat.</string>
     <string name="prefs_sum_show_unread_badge">Jelvények megjelenítése a navigációs fülön</string>
     <string name="prefs_title_show_unread_badge">Jelvények</string>
     <string name="open_myid_popup">Felugró ablak megnyitása a gyorsválasztóhoz</string>
     <string name="logo">Logó / Görgessen a tetejére</string>
-    <string name="quote_subj_end">Idézet vége</string>
     <string name="quote_subj">Idézet</string>
     <string name="duration">Időtartam</string>
     <string name="seconds">Másodperc</string>
@@ -1110,8 +1041,6 @@
     <string name="restore_data_backup_explain">Az adatmentés visszaállításához először törölje ${app_name_short} ID-ját a «saját profil» oldalon.\n\nAmikor az alkalmazás újraindul, válassza a «Biztonsági mentés visszaállítása», «További visszaállítási lehetőségek», «Adatmentés» lehetőséget, és a fájlkeresőben kattintson a visszaállítani kívánt adatmentésre.</string>
     <string name="audio_focus_loss_complete">A hívás a hangfókusz teljes elvesztése miatt véget ért.</string>
     <string name="tap_for_picture_hold_for_video">Fényképhez megérintés, videóhoz nyomva tartás</string>
-    <string name="sending_media">Médiá(k) elküldése</string>
-    <string name="permission_record_video_audio_required">Kérjük, engedélyezze a mikrofon használatát a hanggal ellátott videó rögzítéséhez</string>
     <string name="media_files">Fájlok</string>
     <string name="auto_download_limit_explain">A %s-nál nagyobb videók és fájlok mindig igény szerint kerülnek letöltésre</string>
     <string name="quoted_message_deleted">Az idézett üzenet már nem elérhető</string>
@@ -1127,7 +1056,6 @@
     <string name="work_life_dnd_active">Pihenőidő aktív</string>
     <string name="warning">Figyelmeztetés</string>
     <string name="password_remember_warning">Ne feledje, mit ír be ide! Mivel a %s nem tárolja a jelszavakat a kiszolgálón, nem tudunk segíteni, ha elfelejtette a PIN-kódot vagy a jelszót.</string>
-    <string name="safe_backup_tap_to_restart">Kattintson a megjelenő rendszerértesítésre az alkalmazás újraindításához. Ha nem látja az értesítést, kérjük húzza le a telefonján az értesítési sávot.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="send_to_support">Küldés a ${company_name} ügyfélszolgálatnak</string>
     <string name="menu_legal">Jogi</string>
@@ -1171,7 +1099,6 @@
     <string name="forward_text">Szöveg továbbítása</string>
     <string name="an_error_occurred_during_send">Hiba történt egy vagy több üzenet küldése közben.</string>
     <string name="state_processing">feldolgozás alatt</string>
-    <string name="passphrase_locked">A jelszó blokkolva van</string>
     <string name="selected_media">Az Ön választása</string>
     <string name="attach_gif">Gif</string>
     <string name="attach_gallery">Galéria</string>
@@ -1185,19 +1112,14 @@
     <string name="media_date_unknown">Ismeretlen dátum</string>
     <string name="max_selectable_media_exceeded">Egyszerre legfeljebb %d objektum küldhető.</string>
     <string name="error_unable_loading_media_thumb">Az előnézet nem tölthető be</string>
-    <string name="select">Kiválaszt</string>
     <string name="filter_list">Lista szűrése</string>
     <string name="hint_filter_list">Szűrő kifejezés megadása</string>
     <string name="add">Hozzáadás</string>
-    <string name="threema_message_from">Üzenet %s-től</string>
-    <string name="show_text">Szöveg megjelenítése</string>
     <string name="only_images_or_videos">Csak képek és videók választhatók ki</string>
     <string name="media_gallery_gifs">GIF-ek</string>
     <string name="no_media_found_global">Nem találtunk médiát ezen az eszközön</string>
     <string name="original_file_no_longer_avilable">Nincs többé hozzáférés az eredeti fájlhoz. Kérjük, küldje el újra ezt az üzenetet.</string>
-    <string name="state_transcoding">átkódolás alatt</string>
     <string name="importing_files">Fájlok importálása folyamatban</string>
-    <string name="tooltip_image_resolution_hint">A képfelbontás testreszabásához kattintson ide.</string>
     <string name="ballot_created_successfully">A szavazás sikeresen elkészült.</string>
     <string name="file_size">Fájlméret</string>
     <string name="thirty_days_abbrev">30n</string>
@@ -1207,7 +1129,6 @@
     <string name="blur_faces">Arcok elmosása</string>
     <string name="brush">Ecset</string>
     <string name="pencil">Ceruza</string>
-    <string name="error_detecting_faces">Hiba történt az arcfelismerés során</string>
     <string name="no_faces_detected">Nem találtunk arcokat</string>
     <string name="smiley">Smiley</string>
     <string name="blur">Elmosás</string>
@@ -1222,7 +1143,6 @@
     <string name="note_group_howto">Tipp: Ha nem ad hozzá tagokat, a csoportba küldött üzenetek helyben maradnak. Ez ideális jegyzetek, médiatartalmak vagy dokumentumok biztonságos tárolására vagy az asztalra történő átvitelére.</string>
     <string name="mark_unread">Olvasatlannak jelölni</string>
     <string name="mark_read_short">Olvasva</string>
-    <string name="unread">Olvasatlan</string>
     <string name="missing_app_licence">Az App Store nem tudta ellenőrizni az alkalmazás licencét. Ha a Google Play alkalmazást használja, törölje a Google Play Store alkalmazás adatait, és indítsa újra a telefonját.</string>
     <string name="set_backup_path">Biztonsági mentés helyének beállítása</string>
     <string name="set_backup_path_intro">A következő képernyőn válassza ki azt a mappát, ahová az adatmentéseket tenni kívánja.</string>
@@ -1238,20 +1158,15 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <string name="app_store_error_code">App Store hibakód: %d</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_restore_type"><![CDATA[Milyen típusú másolatot szeretne visszaállítani? <br/><br/> <a href=%s>Tudjon meg többet a ${app_name_short} biztonsági mentésekről</a>]]></string>
-    <string name="data_backup_info">Mindent visszaállít, csevegésekkel</string>
     <string name="new_to_threema">Új a %s-nál?</string>
     <string name="back_to_threema">Visszatért a %s-hoz?</string>
-    <string name="id_backup_info">Csak az ID helyreállítása</string>
-    <string name="restore_your_id_contacts_and_groups">ID, kapcsolatok és csoportok visszaállítása</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_backup">${app_name_short} Safe biztonsági mentés</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Elfelejtette a jelszót?</a>]]></string>
     <string name="download_failed">Letöltés sikertelen. Hibakód: %d</string>
     <string name="share_media">Megosztás más alkalmazással…</string>
-    <string name="group_image">Csoportkép</string>
     <string name="miui_battery_optimization">Kérjük, kapcsolja ki az \"Akkumulátor optimalizálás\" opciót a %s-hoz, hogy lehetővé tegye ezt a funkciót. Mivel a Xiaomi nem tartja szükségesnek az Android szabványok betartását, ezt kézileg kell megtennie a telefon beállításaiban. Az akkumulátor-optimalizálás letiltásával kapcsolatos segítségért forduljon a Xiaomi ügyfélszolgálatához.</string>
     <string name="forward_captions">Küldje el a címkéket is</string>
-    <string name="importing_files_failed">A biztonsági mentési fájl importálása sikertelen. Győződjön meg róla, hogy elegendő szabad tárhely van.</string>
     <string name="label_continue">Tovább</string>
     <string name="select_date">Dátum kiválasztása</string>
     <string name="select_time">Idő kiválasztása</string>
@@ -1265,12 +1180,9 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <string name="prefs_sum_reset_receipts">Az olvasási bizonylatok és a «jelentés, amikor írok» kapcsolatspecifikus beállításainak alapértelmezettre állítása</string>
     <string name="reset_successful">Alapértelmezett beállításokat sikeresen visszaállítva</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="no_threema_qr_info">Ez nem egy ${app_name_short} QR-kód, a dekódolt tartalma:</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Egy másik névjegy QR-kódjának beolvasásával ellenőrizheti őt. A QR-kód a ${app_name_short} főképernyő bal felső sarkában lévő profilképre kattintva tekinthető meg.</string>
     <string name="enable_storage_access_for_media">Aktiválja a tárhelyelérést a képek és videók megtekintéséhez</string>
     <string name="take_me_there">Aktiváld most…</string>
-    <string name="custom">továbbiak</string>
     <string name="show_public_key">Nyilvános kulcs megjelenítése</string>
     <string name="public_key_for">%s nyilvános kulcsa</string>
     <string name="copied">Másolva</string>
@@ -1340,6 +1252,12 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- Label on button to dismiss/hide a warning -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <!-- Shown in the advanced settings, shows the user their own Device's uniquely generated ID, which is used for sending error reports -->
+    <!-- The %s is a placeholder for an ID. It must be left as-is. -->
     <!-- Message shown in dialog when the user starts configuring a backup, but we detected that there might be a problem and thus offer a workaround option to choose from -->
     <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them use the regular file picker. -->
     <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
@@ -1363,8 +1281,10 @@ Ha új eszközre vált, kérjük, távolítsa el vagy deaktiválja a %s-t a rég
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
+    <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
+    <!-- Description of the notification channel which is used when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <!-- Text of the notification which is shown when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->

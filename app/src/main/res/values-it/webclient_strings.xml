@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">Dati del codice QR non validi</string>
     <string name="webclient_init_session">Inizia una nuova sessione</string>
     <string name="webclient_sessions_really_delete">Vuoi davvero eliminare questa sessione di Threema Web?</string>
     <string name="webclient_last_usage">Ultimo utilizzo: %s</string>

@@ -40,7 +40,6 @@ class UpdateAppLogoRoutineTest {
         }
         val preferenceServiceMock = mockk<PreferenceService> {
             every { getAppLogoExpiresAt(any()) } returns null
-            every { setAppLogo(any(), any()) } just runs
             every { setAppLogoExpiresAt(any(), any()) } just runs
         }
         val updateAppLogoRoutine = UpdateAppLogoRoutine(
@@ -68,8 +67,6 @@ class UpdateAppLogoRoutineTest {
 
         updateAppLogoRoutine.run()
 
-        verify { preferenceServiceMock.setAppLogo(LIGHT_URL, "0") }
-        verify { preferenceServiceMock.setAppLogo(DARK_URL, "1") }
         verify { preferenceServiceMock.setAppLogoExpiresAt(Instant.parse("2025-08-05T07:28:00Z"), "0") }
         verify { preferenceServiceMock.setAppLogoExpiresAt(Instant.parse("2025-08-05T07:28:00Z"), "1") }
         verify { fileServiceMock.saveAppLogo(lightFile, "0") }
@@ -87,7 +84,6 @@ class UpdateAppLogoRoutineTest {
         }
         val preferenceServiceMock = mockk<PreferenceService> {
             every { getAppLogoExpiresAt(any()) } returns null
-            every { setAppLogo(any(), any()) } just runs
             every { setAppLogoExpiresAt(any(), any()) } just runs
         }
         val updateAppLogoRoutine = UpdateAppLogoRoutine(
@@ -136,7 +132,7 @@ class UpdateAppLogoRoutineTest {
 
         updateAppLogoRoutine.run()
 
-        verify(exactly = 0) { preferenceServiceMock.setAppLogo(any(), any()) }
+        verify(exactly = 0) { preferenceServiceMock.setAppLogoExpiresAt(any(), any()) }
     }
 
     @Test
@@ -155,7 +151,6 @@ class UpdateAppLogoRoutineTest {
         }
         val preferenceServiceMock = mockk<PreferenceService> {
             every { getAppLogoExpiresAt(any()) } returns timeProvider.get() + 20.seconds
-            every { setAppLogo(any(), any()) } just runs
             every { setAppLogoExpiresAt(any(), any()) } just runs
         }
         val updateAppLogoRoutine = UpdateAppLogoRoutine(
@@ -183,8 +178,6 @@ class UpdateAppLogoRoutineTest {
 
         updateAppLogoRoutine.run()
 
-        verify { preferenceServiceMock.setAppLogo(LIGHT_URL, "0") }
-        verify { preferenceServiceMock.setAppLogo(DARK_URL, "1") }
         verify { preferenceServiceMock.setAppLogoExpiresAt(Instant.parse("2025-08-05T07:28:00Z"), "0") }
         verify { preferenceServiceMock.setAppLogoExpiresAt(Instant.parse("2025-08-05T07:28:00Z"), "1") }
         verify { fileServiceMock.saveAppLogo(lightFile, "0") }
@@ -200,7 +193,6 @@ class UpdateAppLogoRoutineTest {
         }
         val preferenceServiceMock = mockk<PreferenceService> {
             every { getAppLogoExpiresAt(any()) } returns null
-            every { clearAppLogo(any()) } just runs
         }
         val updateAppLogoRoutine = UpdateAppLogoRoutine(
             fileService = fileServiceMock,
@@ -214,8 +206,6 @@ class UpdateAppLogoRoutineTest {
 
         updateAppLogoRoutine.run()
 
-        verify(exactly = 1) { preferenceServiceMock.clearAppLogo("0") }
-        verify(exactly = 1) { preferenceServiceMock.clearAppLogo("1") }
         verify(exactly = 1) { fileServiceMock.saveAppLogo(null, "0") }
         verify(exactly = 1) { fileServiceMock.saveAppLogo(null, "1") }
     }
@@ -242,7 +232,6 @@ class UpdateAppLogoRoutineTest {
 
         verify(exactly = 0) { preferenceServiceMock.setAppLogoExpiresAt(any(), any()) }
         verify(exactly = 0) { fileServiceMock.saveAppLogo(any(), any()) }
-        verify(exactly = 0) { preferenceServiceMock.clearAppLogo(any()) }
     }
 
     @Test
@@ -267,7 +256,6 @@ class UpdateAppLogoRoutineTest {
 
         verify(exactly = 0) { preferenceServiceMock.setAppLogoExpiresAt(any(), any()) }
         verify(exactly = 0) { fileServiceMock.saveAppLogo(any(), any()) }
-        verify(exactly = 0) { preferenceServiceMock.clearAppLogo(any()) }
     }
 
     companion object {

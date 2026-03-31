@@ -4,6 +4,7 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.unlinking.DropDeviceResult
 import ch.threema.app.multidevice.unlinking.DropDevicesIntent
 import ch.threema.app.multidevice.unlinking.runDropDevicesSteps
+import ch.threema.common.emptyByteArray
 import ch.threema.domain.helpers.DevicesInfoTaskCodec
 import ch.threema.domain.helpers.UnusedTaskCodec
 import ch.threema.domain.protocol.D2mProtocolDefines
@@ -71,7 +72,7 @@ class DropDevicesStepsTest {
         every { serviceManagerMock.multiDeviceManager } returns multiDeviceManagerMock
         every { multiDeviceManagerMock.propertiesProvider } returns multiDevicePropertyProviderMock
         every { multiDevicePropertyProviderMock.get() } returns multiDeviceProperties
-        every { multiDeviceKeysMock.encryptTransactionScope(any()) } returns byteArrayOf()
+        every { multiDeviceKeysMock.encryptTransactionScope(any()) } returns emptyByteArray()
     }
 
     @Test
@@ -269,7 +270,7 @@ class DropDevicesStepsTest {
 
     private fun createAugmentedDeviceInfo(): InboundD2mMessage.DevicesInfo.AugmentedDeviceInfo {
         return InboundD2mMessage.DevicesInfo.AugmentedDeviceInfo(
-            encryptedDeviceInfo = byteArrayOf(),
+            encryptedDeviceInfo = emptyByteArray(),
             connectedSince = 0u,
             lastDisconnectAt = null,
             deviceSlotExpirationPolicy = DeviceSlotExpirationPolicy.PERSISTENT,

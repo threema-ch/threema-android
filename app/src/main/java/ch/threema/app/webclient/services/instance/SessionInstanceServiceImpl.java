@@ -168,14 +168,16 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
         final ReceiverUpdateHandler receiverUpdateHandler = new ReceiverUpdateHandler(
             handler,
             updateDispatcher,
-            services.database,
+            services.contactModelFactory,
             services.synchronizeContacts,
-            services.group
+            services.group,
+            services.preference
         );
         final ReceiversUpdateHandler receiversUpdateHandler = new ReceiversUpdateHandler(
             handler,
             updateDispatcher,
-            services.contact
+            services.contact,
+            services.preference
         );
         final AvatarUpdateHandler avatarUpdateHandler = new AvatarUpdateHandler(
             handler,
@@ -294,6 +296,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
             services.contact,
             services.group,
             services.distributionList,
+            services.preference,
             new ReceiversRequestHandler.Listener() {
                 private boolean registered = false;
 
@@ -435,6 +438,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
             createDispatcher,
             services.contact,
             services.user,
+            services.preference,
             services.apiConnector,
             services.contactModelRepository
         ));
@@ -453,7 +457,8 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
         updateDispatcher.addReceiver(new ModifyContactHandler(
             updateDispatcher,
             services.contact,
-            services.contactModelRepository
+            services.contactModelRepository,
+            services.preference
         ));
         updateDispatcher.addReceiver(new ModifyGroupHandler(
             updateDispatcher,
@@ -472,8 +477,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
         ));
         updateDispatcher.addReceiver(new ModifyConversationHandler(
             responseDispatcher,
-            services.conversation,
-            services.conversationTag
+            services.conversation
         ));
         updateDispatcher.addReceiver(new IsTypingHandler(
             services.contact
@@ -490,11 +494,15 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
             responseDispatcher,
             services.message
         ));
+        String myIdentity = services.user.getIdentity();
+        if (myIdentity == null) {
+            throw new IllegalStateException("User identity is null");
+        }
         deleteDispatcher.addReceiver(new DeleteGroupHandler(
             responseDispatcher,
             services.groupFlowDispatcher,
             services.groupModelRepository,
-            services.contact.getMe().getIdentity()
+            myIdentity
         ));
         deleteDispatcher.addReceiver(new DeleteDistributionListHandler(
             responseDispatcher,
@@ -548,7 +556,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
     @Override
     @AnyThread // Should be safe, we're just checking a variable
     public boolean isRunning() {
-        final WebClientSessionState state = this.stateManager.getState();
+        final @NonNull WebClientSessionState state = this.stateManager.getState();
         switch (state) {
             case DISCONNECTED:
             case ERROR:
@@ -838,7 +846,7 @@ public class SessionInstanceServiceImpl implements SessionInstanceService {
                 reason = new DisconnectContext.ByPeer(DisconnectContext.REASON_ERROR);
                 break;
             default:
-                logger.warn("Ignored connectionDisconnect message with invalid reason field: " + reasonText);
+                logger.warn("Ignored connectionDisconnect message with invalid reason field: {}", reasonText);
                 return;
         }
 

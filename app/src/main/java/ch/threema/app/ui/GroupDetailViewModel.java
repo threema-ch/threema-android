@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -16,10 +17,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.SavedStateHandle;
 import androidx.lifecycle.ViewModel;
 import ch.threema.app.adapters.GroupDetailAdapter;
-import ch.threema.app.services.ContactService;
+import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.services.UserService;
+import ch.threema.app.utils.DisplayableContactOrUser;
+import ch.threema.app.utils.DisplayableGroupParticipant;
 import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
-import ch.threema.storage.models.ContactModel;
+import ch.threema.data.repositories.ContactModelRepository;
 
 public class GroupDetailViewModel extends ViewModel {
     private static final String KEY_AVATAR_FILE = "avatar";
@@ -32,23 +36,31 @@ public class GroupDetailViewModel extends ViewModel {
 
     private final SavedStateHandle savedState;
     @NonNull
-    private final ContactService contactService;
-    private final MutableLiveData<List<ContactModel>> groupMembers;
+    private final ContactModelRepository contactModelRepository;
+    @NonNull
+    private final PreferenceService preferenceService;
+    @NonNull
+    private final UserService userService;
+    private final MutableLiveData<List<DisplayableGroupParticipant>> groupMembers;
 
     private boolean hasMemberChanges = false;
     private boolean hasAvatarChanges = false;
 
     public GroupDetailViewModel(
         SavedStateHandle savedStateHandle,
-        @NonNull ContactService contactService
+        @NonNull ContactModelRepository contactModelRepository,
+        @NonNull PreferenceService preferenceService,
+        @NonNull UserService userService
     ) {
         savedState = savedStateHandle;
-        this.contactService = contactService;
+        this.contactModelRepository = contactModelRepository;
+        this.preferenceService = preferenceService;
+        this.userService = userService;
         this.groupMembers = new MutableLiveData<>() {
             @Nullable
             @Override
-            public List<ContactModel> getValue() {
-                return getGroupContacts();
+            public List<DisplayableGroupParticipant> getValue() {
+                return getDisplayableGroupParticipants();
             }
         };
     }
@@ -99,7 +111,7 @@ public class GroupDetailViewModel extends ViewModel {
         this.savedState.set(KEY_GROUP_NAME, groupName);
     }
 
-    public List<ContactModel> getGroupContacts() {
+    public List<DisplayableGroupParticipant> getDisplayableGroupParticipants() {
         return addGroupMembersToList(new ArrayList<>(), getGroupIdentities());
     }
 
@@ -107,20 +119,20 @@ public class GroupDetailViewModel extends ViewModel {
         return this.savedState.get(KEY_GROUP_IDENTITIES);
     }
 
-    public void setGroupContacts(List<ContactModel> groupContacts) {
-        setGroupIdentities(getIdentitiesFromContactModels(groupContacts));
+    public void setGroupMembers(List<DisplayableGroupParticipant> groupContacts) {
+        setGroupIdentities(getIdentitiesFromDisplayableGroupParticipants(groupContacts));
     }
 
-    public void removeGroupContact(ContactModel contactModel) {
-        List<ContactModel> contactModels = getGroupContacts();
-        contactModels.remove(contactModel);
-        setGroupContacts(contactModels);
+    public void removeGroupContact(@Nullable String identity) {
+        List<DisplayableGroupParticipant> groupParticipants = getDisplayableGroupParticipants();
+        groupParticipants.removeIf(displayableGroupMember -> displayableGroupMember.getDisplayableContactOrUser().getIdentity().equals(identity));
+        setGroupMembers(groupParticipants);
         hasMemberChanges = true;
     }
 
     public void addGroupContacts(@Nullable String[] contactIdentities) {
         if (contactIdentities != null && contactIdentities.length > 0) {
-            setGroupContacts(addGroupMembersToList(getGroupContacts(), contactIdentities));
+            setGroupMembers(addGroupMembersToList(getDisplayableGroupParticipants(), contactIdentities));
             hasMemberChanges = true;
         }
     }
@@ -130,31 +142,57 @@ public class GroupDetailViewModel extends ViewModel {
         onDataChanged();
     }
 
-    private String[] getIdentitiesFromContactModels(@NonNull List<ContactModel> groupContacts) {
+    private String[] getIdentitiesFromDisplayableGroupParticipants(@NonNull List<DisplayableGroupParticipant> displayableGroupParticipants) {
         final ArrayList<String> identities = new ArrayList<>();
 
-        for (ContactModel groupContact : groupContacts) {
-            identities.add(groupContact.getIdentity());
+        for (DisplayableGroupParticipant displayableGroupParticipant : displayableGroupParticipants) {
+            identities.add(displayableGroupParticipant.getDisplayableContactOrUser().getIdentity());
         }
-        return identities.toArray(new String[identities.size()]);
+        return identities.toArray(new String[0]);
     }
 
-    private List<ContactModel> addGroupMembersToList(@NonNull List<ContactModel> contacts, @Nullable String[] contactIds) {
-        if (contactIds != null && contactIds.length > 0) {
-            for (String contactId : contactIds) {
-                if (!containsModel(contacts, contactId)) {
-                    contacts.add(contactService.getByIdentity(contactId));
+    private List<DisplayableGroupParticipant> addGroupMembersToList(@NonNull List<DisplayableGroupParticipant> groupMembers, @Nullable String[] contactIdentities) {
+        if (contactIdentities != null) {
+            for (String identity : contactIdentities) {
+                if (!containsModel(groupMembers, identity)) {
+                    DisplayableContactOrUser displayableContactOrUser;
+                    if (identity.equals(userService.getIdentity())) {
+                        displayableContactOrUser = DisplayableContactOrUser.User.createByIdentity(userService);
+                    } else {
+                        displayableContactOrUser = DisplayableContactOrUser.Contact.createByIdentity(
+                            identity,
+                            contactModelRepository,
+                            preferenceService
+                        );
+                    }
+
+                    DisplayableGroupParticipant displayableGroupParticipant;
+                    GroupModelData groupModelData = group != null ? group.getValue() : null;
+                    if (groupModelData == null) {
+                        return Collections.emptyList();
+                    }
+                    if (groupModelData.groupIdentity.getCreatorIdentity().equals(identity)) {
+                        displayableGroupParticipant = new DisplayableGroupParticipant.Creator(
+                            displayableContactOrUser
+                        );
+                    } else {
+                        displayableGroupParticipant = new DisplayableGroupParticipant.Member(
+                            displayableContactOrUser
+                        );
+                    }
+
+                    groupMembers.add(displayableGroupParticipant);
                 }
             }
         }
-        return contacts;
+        return groupMembers;
     }
 
-    public boolean containsModel(List<ContactModel> contacts, String contactId) {
+    public boolean containsModel(List<DisplayableGroupParticipant> groupMembers, String identity) {
         // prevent duplicates - we can't compare models
-        if (contacts != null && !contacts.isEmpty()) {
-            for (ContactModel contact : contacts) {
-                if (contact.getIdentity().equals(contactId)) {
+        if (groupMembers != null && !groupMembers.isEmpty()) {
+            for (DisplayableGroupParticipant groupMember : groupMembers) {
+                if (groupMember.getDisplayableContactOrUser().getIdentity().equals(identity)) {
                     return true;
                 }
             }
@@ -171,7 +209,7 @@ public class GroupDetailViewModel extends ViewModel {
         return false;
     }
 
-    public LiveData<List<ContactModel>> getGroupMembers() {
+    public LiveData<List<DisplayableGroupParticipant>> getGroupMembers() {
         return this.groupMembers;
     }
 
@@ -180,7 +218,7 @@ public class GroupDetailViewModel extends ViewModel {
         new AsyncTask<String, Void, Void>() {
             @Override
             protected Void doInBackground(String... strings) {
-                groupMembers.postValue(getGroupContacts());
+                groupMembers.postValue(getDisplayableGroupParticipants());
                 return null;
             }
         }.execute();

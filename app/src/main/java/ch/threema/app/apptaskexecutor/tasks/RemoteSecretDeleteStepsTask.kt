@@ -19,7 +19,6 @@ import kotlin.time.times
 import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
 import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("RemoteSecretDeleteStepsTask")
@@ -70,7 +69,7 @@ class RemoteSecretDeleteStepsTask(
     private fun getRemoteSecretClientParameters(): RemoteSecretClientParameters? {
         return RemoteSecretClientParameters(
             workServerBaseUrl = serverAddressProvider
-                .getWorkServerUrl(preferenceService.isIpv6Preferred)
+                .getWorkServerUrl(preferenceService.isIpv6Preferred())
                 ?: return null,
             userIdentity = identityProvider.getIdentity()
                 ?: return null,

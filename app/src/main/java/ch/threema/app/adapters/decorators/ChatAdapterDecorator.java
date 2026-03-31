@@ -9,12 +9,6 @@ import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.content.res.AppCompatResources;
-import androidx.fragment.app.Fragment;
-import androidx.media3.session.MediaController;
-
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.shape.ShapeAppearanceModel;
 import com.google.common.util.concurrent.ListenableFuture;
@@ -25,18 +19,21 @@ import org.slf4j.Logger;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.media3.session.MediaController;
 import ch.threema.app.R;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DownloadService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
-import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.license.LicenseService;
-import ch.threema.app.services.messageplayer.MessagePlayerService;
 import ch.threema.app.ui.listitemholder.AbstractListItemHolder;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ImageViewUtil;
@@ -46,7 +43,6 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.StateBitmapUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextExtensionsKt;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
@@ -55,8 +51,9 @@ import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.DisplayTag;
 
 import static ch.threema.app.utils.MessageUtilKt.getUiContentColor;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
-abstract public class ChatAdapterDecorator extends AdapterDecorator {
+abstract public class ChatAdapterDecorator extends AdapterDecorator implements LinkifyUtil.UnhandledClickHandler {
     private static final Logger logger = getThreemaLogger("ChatAdapterDecorator");
 
     public interface OnClickElement {
@@ -71,10 +68,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
         boolean onTouch(MotionEvent motionEvent, AbstractMessageModel messageModel);
     }
 
-    public interface ActionModeStatus {
-        boolean getActionModeEnabled();
-    }
-
     private final AbstractMessageModel messageModel;
     protected final Helper helper;
     private final StateBitmapUtil stateBitmapUtil;
@@ -82,7 +75,10 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
     protected OnClickElement onClickElement = null;
     private OnLongClickElement onLongClickElement = null;
     private OnTouchElement onTouchElement = null;
-    protected ActionModeStatus actionModeStatus = null;
+    @NonNull
+    protected final ChatAdapterDecoratorListener chatAdapterDecoratorListener;
+    @NonNull
+    protected final LinkifyUtil.LinkifyListener linkifyListener;
     private long durationS = 0;
     private CharSequence datePrefix = "";
     protected String dateContentDescriptionPrefix = "";
@@ -108,7 +104,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
         private final UserService userService;
         private final ContactService contactService;
         private final FileService fileService;
-        private final MessagePlayerService messagePlayerService;
         private final BallotService ballotService;
         private final ThumbnailCache thumbnailCache;
         private final PreferenceService preferenceService;
@@ -116,7 +111,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
         private final LicenseService licenseService;
         private MessageReceiver messageReceiver;
         private int thumbnailWidth;
-        private final Fragment fragment;
         protected int regularColor;
         private final Map<String, ContactCache> contacts = new HashMap<>();
         private final int maxBubbleTextLength;
@@ -129,7 +123,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
             UserService userService,
             ContactService contactService,
             FileService fileService,
-            MessagePlayerService messagePlayerService,
             BallotService ballotService,
             ThumbnailCache thumbnailCache,
             PreferenceService preferenceService,
@@ -137,7 +130,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
             LicenseService licenseService,
             MessageReceiver messageReceiver,
             int thumbnailWidth,
-            Fragment fragment,
             int regularColor,
             int maxBubbleTextLength,
             int maxQuoteTextLength,
@@ -147,7 +139,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
             this.userService = userService;
             this.contactService = contactService;
             this.fileService = fileService;
-            this.messagePlayerService = messagePlayerService;
             this.ballotService = ballotService;
             this.thumbnailCache = thumbnailCache;
             this.preferenceService = preferenceService;
@@ -155,15 +146,10 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
             this.licenseService = licenseService;
             this.messageReceiver = messageReceiver;
             this.thumbnailWidth = thumbnailWidth;
-            this.fragment = fragment;
             this.regularColor = regularColor;
             this.maxBubbleTextLength = maxBubbleTextLength;
             this.maxQuoteTextLength = maxQuoteTextLength;
             this.mediaControllerFuture = mediaControllerFuture;
-        }
-
-        public Fragment getFragment() {
-            return fragment;
         }
 
         public int getThumbnailWidth() {
@@ -172,10 +158,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
         public ThumbnailCache getThumbnailCache() {
             return thumbnailCache;
-        }
-
-        public MessagePlayerService getMessagePlayerService() {
-            return messagePlayerService;
         }
 
         public FileService getFileService() {
@@ -244,19 +226,16 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
     }
 
     public ChatAdapterDecorator(
-        @NonNull Context context,
         AbstractMessageModel messageModel,
+        @NonNull ChatAdapterDecoratorListener chatAdapterDecoratorListener,
+        @NonNull LinkifyUtil.LinkifyListener linkifyListener,
         Helper helper
     ) {
-        super(context);
         this.messageModel = messageModel;
+        this.chatAdapterDecoratorListener = chatAdapterDecoratorListener;
+        this.linkifyListener = linkifyListener;
         this.helper = helper;
         stateBitmapUtil = StateBitmapUtil.getInstance();
-        try {
-            actionModeStatus = (ActionModeStatus) helper.getFragment();
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context + " must implement ActionModeStatus");
-        }
     }
 
     public void setGroupMessage(long groupId, Map<String, Integer> identityColors) {
@@ -274,6 +253,13 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
     public void setOnTouchElement(OnTouchElement onTouchElement) {
         this.onTouchElement = onTouchElement;
+    }
+
+    @Override
+    public void onUnhandledClick(@NonNull AbstractMessageModel messageModel) {
+        if (onClickElement != null) {
+            onClickElement.onClick(messageModel);
+        }
     }
 
     final public void setFilter(@Nullable String filterString) {
@@ -314,7 +300,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
     }
 
     @Override
-    final protected void configure(final AbstractListItemHolder abstractViewHolder, int position) {
+    final protected void configure(final AbstractListItemHolder abstractViewHolder, Context context, int position) {
         if (!(abstractViewHolder instanceof ComposeMessageHolder) || abstractViewHolder.position != position) {
             return;
         }
@@ -329,29 +315,33 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
         final @NonNull ComposeMessageHolder viewHolder = (ComposeMessageHolder) abstractViewHolder;
 
-        applyContentColor(viewHolder, getUiContentColor(getMessageModel(), getContext()));
+        applyContentColor(viewHolder, getUiContentColor(getMessageModel(), context));
 
         //configure the chat message
-        configureChatMessage(viewHolder, position);
+        configureChatMessage(viewHolder, context, position);
 
         if (isUserMessage) {
             if (!messageModel.isOutbox() && groupId > 0) {
 
-                ContactCache c = helper.getContactCache().get(identity);
-                if (c == null) {
+                ContactCache contactCache = helper.getContactCache().get(identity);
+                if (contactCache == null) {
                     ContactModel contactModel = helper.getContactService().getByIdentity(messageModel.getIdentity());
-                    c = new ContactCache();
-                    c.displayName = NameUtil.getDisplayNameOrNickname(contactModel, true);
-                    c.avatar = helper.getContactService().getAvatar(messageModel.getIdentity(), false);
+                    contactCache = new ContactCache();
+                    contactCache.displayName = NameUtil.getContactDisplayNameOrNickname(
+                        contactModel,
+                        true,
+                        helper.preferenceService.getContactNameFormat()
+                    );
+                    contactCache.avatar = helper.getContactService().getAvatar(messageModel.getIdentity(), false);
 
-                    c.contactModel = contactModel;
-                    helper.getContactCache().put(identity, c);
+                    contactCache.contactModel = contactModel;
+                    helper.getContactCache().put(identity, contactCache);
                 }
 
                 if (viewHolder.senderView != null) {
                     if (isGroupedMessage) {
                         viewHolder.senderView.setVisibility(View.VISIBLE);
-                        viewHolder.senderName.setText(c.displayName);
+                        viewHolder.senderName.setText(contactCache.displayName);
 
                         if (identityColors != null && identityColors.containsKey(identity)) {
                             viewHolder.senderName.setTextColor(identityColors.get(identity));
@@ -366,10 +356,10 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
                 if (viewHolder.avatarView != null) {
                     if (isGroupedMessage) {
-                        viewHolder.avatarView.setImageBitmap(c.avatar);
+                        viewHolder.avatarView.setImageBitmap(contactCache.avatar);
                         viewHolder.avatarView.setVisibility(View.VISIBLE);
-                        if (c.contactModel != null) {
-                            viewHolder.avatarView.setBadgeVisible(helper.getContactService().showBadge(c.contactModel));
+                        if (contactCache.contactModel != null) {
+                            viewHolder.avatarView.setBadgeVisible(helper.getContactService().showBadge(contactCache.contactModel));
                         }
                     } else {
                         // hide avatar in grouped messages
@@ -385,25 +375,31 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
                 }
             }
 
-            CharSequence s = MessageUtil.getDisplayDate(getContext(), messageModel, true);
-            if (s == null) {
-                s = "";
+            @Nullable CharSequence displayDate = MessageUtil.getDisplayDate(
+                context,
+                messageModel.getPostedAt(),
+                messageModel.isOutbox(),
+                messageModel.getModifiedAt(),
+                true
+            );
+            if (displayDate == null) {
+                displayDate = "";
             }
 
             CharSequence contentDescription;
 
             if (!TestUtil.isBlankOrNull(datePrefix)) {
-                contentDescription = getContext().getString(R.string.state_dialog_modified) + ": " + s;
+                contentDescription = context.getString(R.string.state_dialog_modified) + ": " + displayDate;
                 if (messageModel.isOutbox()) {
-                    s = TextUtils.concat(datePrefix, " | " + s);
+                    displayDate = TextUtils.concat(datePrefix, " | " + displayDate);
                 } else {
-                    s = TextUtils.concat(s + " | ", datePrefix);
+                    displayDate = TextUtils.concat(displayDate + " | ", datePrefix);
                 }
             } else {
-                contentDescription = s;
+                contentDescription = displayDate;
             }
             if (viewHolder.dateView != null) {
-                viewHolder.dateView.setText(s);
+                viewHolder.dateView.setText(displayDate);
                 viewHolder.dateView.setContentDescription(contentDescription);
             }
 
@@ -416,7 +412,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
             }
 
             if (viewHolder.deliveredIndicator != null) {
-                stateBitmapUtil.setStateDrawable(getContext(), messageModel, viewHolder.deliveredIndicator, null);
+                stateBitmapUtil.setStateDrawable(context, messageModel, viewHolder.deliveredIndicator, null);
             }
 
             if (viewHolder.editedText != null) {
@@ -429,35 +425,35 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
         }
     }
 
-    public Spannable highlightMatches(@Nullable CharSequence fullText, @Nullable String filterText) {
+    public Spannable highlightMatches(@NonNull Context context, @Nullable CharSequence fullText, @Nullable String filterText) {
         return TextExtensionsKt.highlightMatches(
             fullText,
-            getContext(),
+            context,
             filterText,
             true,
             false
         );
     }
 
-    CharSequence formatTextString(@Nullable String string, String filterString) {
-        return formatTextString(string, filterString, -1);
+    private CharSequence formatTextString(@NonNull Context context, @Nullable String string, String filterString) {
+        return formatTextString(context, string, filterString, -1);
     }
 
-    CharSequence formatTextString(@Nullable String string, String filterString, int maxLength) {
+    protected CharSequence formatTextString(@NonNull Context context, @Nullable String string, String filterString, int maxLength) {
         if (TextUtils.isEmpty(string)) {
             return "";
         }
 
         if (maxLength > 0 && string.length() > maxLength) {
-            return highlightMatches(string.substring(0, maxLength - 1), filterString);
+            return highlightMatches(context, string.substring(0, maxLength - 1), filterString);
         }
-        return highlightMatches(string, filterString);
+        return highlightMatches(context, string, filterString);
     }
 
-    protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
+    protected void configureChatMessage(final ComposeMessageHolder holder, Context context, int position) {
         if (holder.attachmentImage instanceof ShapeableImageView) {
             ShapeAppearanceModel shapeAppearanceModel = new ShapeAppearanceModel.Builder()
-                .setAllCornerSizes(ImageViewUtil.getCornerRadius(getContext()))
+                .setAllCornerSizes(ImageViewUtil.getCornerRadius(context))
                 .build();
             ((ShapeableImageView) holder.attachmentImage).setShapeAppearanceModel(shapeAppearanceModel);
         }
@@ -473,10 +469,6 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
     protected MessageService getMessageService() {
         return helper.getMessageService();
-    }
-
-    protected MessagePlayerService getMessagePlayerService() {
-        return helper.getMessagePlayerService();
     }
 
     protected FileService getFileService() {
@@ -510,7 +502,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
     protected void setOnClickListener(final View.OnClickListener onViewClickListener, View view) {
         if (view != null) {
             view.setOnClickListener(v -> {
-                if (onViewClickListener != null && !actionModeStatus.getActionModeEnabled()) {
+                if (onViewClickListener != null && !chatAdapterDecoratorListener.isActionModeEnabled()) {
                     // do not propagate click if actionMode (selection mode) is enabled in parent
                     onViewClickListener.onClick(v);
                 }
@@ -529,20 +521,17 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
             });
 
             // propagate touch listener
-            view.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View arg0, MotionEvent event) {
-                    if (onTouchElement != null) {
-                        return onTouchElement.onTouch(event, getMessageModel());
-                    }
-                    return false;
+            view.setOnTouchListener((arg0, event) -> {
+                if (onTouchElement != null) {
+                    return onTouchElement.onTouch(event, getMessageModel());
                 }
+                return false;
             });
         }
     }
 
     void setStickerBackground(ComposeMessageHolder holder) {
-        holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(getContext(), R.color.bubble_sticker_colorstatelist));
+        holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(holder.messageBlockView.getContext(), R.color.bubble_sticker_colorstatelist));
     }
 
     void setDefaultBackground(ComposeMessageHolder holder) {
@@ -556,7 +545,7 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
                 // incoming
                 colorStateListRes = R.color.bubble_receive_colorstatelist;
             }
-            holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(getContext(), colorStateListRes));
+            holder.messageBlockView.setCardBackgroundColor(AppCompatResources.getColorStateList(holder.messageBlockView.getContext(), colorStateListRes));
 
             logger.debug("*** setDefaultBackground");
         }
@@ -593,15 +582,16 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
 
     protected void configureBodyText(@NonNull ComposeMessageHolder holder, @Nullable String caption) {
         if (!TestUtil.isEmptyOrNull(caption)) {
-            holder.bodyTextView.setText(formatTextString(caption, filterString));
-
+            holder.bodyTextView.setText(formatTextString(holder.bodyTextView.getContext(), caption, filterString));
+            // remove movement method. Otherwise clicks on the text are not handled correctly
+            holder.bodyTextView.setMovementMethod(null);
             LinkifyUtil.getInstance().linkify(
-                helper.getFragment(),
                 holder.bodyTextView,
                 getMessageModel(),
-                true,
-                actionModeStatus.getActionModeEnabled(),
-                onClickElement);
+                /* includePhoneNumbers = */ true,
+                /* unhandledClickHandler = */ this,
+                /* linkifyListener = */ linkifyListener
+            );
 
             showHide(holder.bodyTextView, true);
         } else {
@@ -622,5 +612,10 @@ abstract public class ChatAdapterDecorator extends AdapterDecorator {
         if (onClickElement != null) {
             onClickElement.onClick(getMessageModel());
         }
+    }
+
+    @Override
+    protected boolean isInChoiceMode() {
+        return chatAdapterDecoratorListener.isInChoiceMode();
     }
 }

@@ -34,12 +34,12 @@ import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.base.ThreemaException;
+
+import static ch.threema.android.ToastKt.showToast;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ballot.BallotModel;
@@ -138,7 +138,8 @@ public class BallotMatrixActivity extends BallotDetailActivity {
 
                 this.setBallotModel(ballotModel);
             } catch (ThreemaException e) {
-                LogUtil.exception(e, this);
+                logger.error("Failed to init activity", e);
+                showToast(this, R.string.an_error_occurred);
                 finish();
                 return false;
             }
@@ -156,7 +157,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
         }
 
         TextView textView = findViewById(R.id.text_view);
-        if (TestUtil.required(textView, this.getBallotModel().getName())) {
+        if (textView != null && getBallotModel().getName() != null) {
             textView.setText(this.getBallotModel().getName());
         }
 
@@ -283,7 +284,11 @@ public class BallotMatrixActivity extends BallotDetailActivity {
                 if (!userList.isEmpty()) {
                     userList += ", ";
                 }
-                userList += NameUtil.getDisplayNameOrNickname(p.getIdentity(), dependencies.getContactService());
+                userList += NameUtil.getContactDisplayNameOrNickname(
+                    p.getIdentity(),
+                    dependencies.getContactService(),
+                    dependencies.getPreferenceService().getContactNameFormat()
+                );
             }
             notVotedTextView.setText(getString(R.string.not_voted_user_list, userList));
         } else {
@@ -319,7 +324,7 @@ public class BallotMatrixActivity extends BallotDetailActivity {
             final ContactModel contactModel = dependencies.getContactService().getByIdentity(p.getIdentity());
 
             View nameCell = getLayoutInflater().inflate(R.layout.row_cell_ballot_matrix_name, null);
-            String name = NameUtil.getDisplayNameOrNickname(contactModel, true);
+            String name = NameUtil.getContactDisplayNameOrNickname(contactModel, true, dependencies.getPreferenceService().getContactNameFormat());
 
             HintedImageView hintedImageView = nameCell.findViewById(R.id.avatar_view);
             if (hintedImageView != null) {

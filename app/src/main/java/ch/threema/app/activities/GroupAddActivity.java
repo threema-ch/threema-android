@@ -1,10 +1,10 @@
 package ch.threema.app.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
@@ -18,15 +18,14 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.ShowOnceDialog;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LogUtil;
+
+import static ch.threema.android.ToastKt.showToast;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -38,10 +37,7 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
     private static final String DIALOG_TAG_NO_MEMBERS = "NoMem";
     private static final String DIALOG_TAG_NOTE_GROUP_HOWTO = "note_group_hint";
 
-    @NonNull
-    private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
-
-    private GroupModel groupModel;
+    private GroupModelOld groupModel;
     private boolean appendMembers;
 
     @Override
@@ -59,7 +55,7 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
             return false;
         }
 
-        if (AppRestrictionUtil.isCreateGroupDisabled(this)) {
+        if (dependencies.getAppRestrictions().isCreateGroupDisabled()) {
             Toast.makeText(this, R.string.disabled_by_policy_short, Toast.LENGTH_LONG).show();
             return false;
         }
@@ -95,7 +91,8 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
                 }
             }
         } catch (Exception e) {
-            LogUtil.exception(e, this);
+            logger.error("Failed to init data", e);
+            showToast(this, R.string.an_error_occurred);
             return;
         }
 
@@ -160,7 +157,12 @@ public class GroupAddActivity extends MemberChooseActivity implements GenericAle
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
         createOrUpdateGroup(new ArrayList<>());
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context) {
+        return new Intent(context, GroupAddActivity.class);
     }
 }

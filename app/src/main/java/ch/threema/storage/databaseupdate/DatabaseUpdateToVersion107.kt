@@ -7,7 +7,7 @@ import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import ch.threema.base.utils.Base32
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.databaseupdate.DatabaseUpdateToVersion107.Companion.DEADLINE_INDEFINITE
 import ch.threema.storage.databaseupdate.DatabaseUpdateToVersion107.Companion.DEADLINE_INDEFINITE_EXCEPT_MENTIONS
 import ch.threema.storage.runTransaction
@@ -228,9 +228,9 @@ internal class DatabaseUpdateToVersion107(
 
     override fun getDescription() = "add column notificationTriggerPolicyOverride for contacts and groups and copy over old preferences data"
 
-    override fun getVersion() = VERSION
+    override val version = 107
 
-    private fun getContactUniqueIdString(identity: Identity?): String =
+    private fun getContactUniqueIdString(identity: IdentityString?): String =
         if (identity != null) {
             getUniqueIdString("c-$identity")
         } else {
@@ -250,8 +250,6 @@ internal class DatabaseUpdateToVersion107(
         }
 
     companion object {
-        const val VERSION = 107
-
         private const val LEGACY_PREFS_KEY_LIST_MUTED_CHATS = "list_muted_chats"
         private const val LEGACY_PREFS_KEY_LIST_MENTION_ONLY = "list_mention_only"
 

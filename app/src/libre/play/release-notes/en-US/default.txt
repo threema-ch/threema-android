@@ -1,2 +1,3 @@
-- Play a sound when establishing Threema calls in individual chats
-- Use the default path for data backups if the system’s picker does not work
+- Technical and visual overhaul of the chat overview
+- The master key is now additionally protected by the Android Keystore system
+- Various under-the-hood improvements and bug fixes

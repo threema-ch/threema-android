@@ -10,6 +10,9 @@ class TestTimeProvider(
     initialTimestamp: Long = 0L,
     var timeZoneOffset: ZoneOffset = ZoneOffset.UTC,
 ) : TimeProvider {
+
+    constructor(initialTimestamp: Instant) : this(initialTimestamp.toEpochMilli())
+
     private var timestamp = initialTimestamp
 
     override fun get(): Instant = Instant.ofEpochMilli(timestamp)

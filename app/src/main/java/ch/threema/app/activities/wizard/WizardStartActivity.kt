@@ -1,8 +1,9 @@
 package ch.threema.app.activities.wizard
 
-import android.content.Intent
+import android.content.Context
 import android.os.Bundle
 import androidx.core.app.NotificationManagerCompat
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
 import ch.threema.app.activities.ThreemaAppCompatActivity
 import ch.threema.app.backuprestore.csv.RestoreService
@@ -21,13 +22,17 @@ class WizardStartActivity : ThreemaAppCompatActivity() {
 
     private fun launchNextActivity() {
         val intent = if (userService.hasIdentity()) {
-            Intent(this, WizardBaseActivity::class.java)
+            WizardBaseActivity.createIntent(this)
         } else {
-            Intent(this, WizardIntroActivity::class.java)
+            WizardIntroActivity.createIntent(this)
         }
 
         startActivity(intent)
         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out)
         finish()
+    }
+
+    companion object {
+        fun createIntent(context: Context) = buildActivityIntent<WizardStartActivity>(context)
     }
 }

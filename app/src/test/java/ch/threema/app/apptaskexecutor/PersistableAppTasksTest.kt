@@ -7,9 +7,8 @@ import junit.framework.TestCase.assertNotNull
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlinx.serialization.json.Json
-import org.koin.test.KoinTest
 
-class PersistableAppTasksTest : KoinTest {
+class PersistableAppTasksTest {
 
     @Test
     fun testRemoteSecretDeleteStepsTask() {

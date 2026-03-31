@@ -4,6 +4,7 @@ import ch.threema.app.DangerousTest
 import ch.threema.app.groupflows.GroupChanges
 import ch.threema.app.groupflows.GroupChanges.ProfilePictureChange.NoChange
 import ch.threema.app.groupflows.GroupFlowResult
+import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.tasks.GroupUpdateTask
 import ch.threema.app.tasks.ReflectLocalGroupUpdate
 import ch.threema.app.testutils.TestHelpers
@@ -18,12 +19,13 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.UserState
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,6 +37,8 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.test.runTest
+import org.koin.core.module.Module
+import org.koin.dsl.module
 
 @DangerousTest
 class UpdateGroupFlowTest : GroupFlowTest() {
@@ -127,6 +131,14 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         userState = UserState.MEMBER,
         notificationTriggerPolicyOverride = null,
     )
+
+    private lateinit var taskManager: ControlledTaskManager
+    private lateinit var multiDeviceManager: MultiDeviceManager
+
+    override fun getInstrumentationTestModule(): Module = module {
+        factory<TaskManager> { taskManager }
+        factory<MultiDeviceManager> { multiDeviceManager }
+    }
 
     @BeforeTest
     fun setup() {
@@ -367,7 +379,9 @@ class UpdateGroupFlowTest : GroupFlowTest() {
     fun shouldNotUpdateGroupWhenMdActiveButConnectionIsLost() = runTest {
         // arrange
         val groupModel = groupModelRepository.getByGroupIdentity(myInitialGroupModelData.groupIdentity)
-        val taskManager = ControlledTaskManager(emptyList())
+        taskManager = ControlledTaskManager(emptyList())
+        multiDeviceManager = testMultiDeviceManagerEnabled
+
         val groupFlowDispatcher = getGroupFlowDispatcher(
             setupConfig = SetupConfig.MULTI_DEVICE_ENABLED,
             taskManager = taskManager,
@@ -430,9 +444,14 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         val groupModelData = groupModel.data
 
         // Prepare task manager and group flow dispatcher
-        val taskManager = ControlledTaskManager(
+        taskManager = ControlledTaskManager(
             getExpectedTaskAssertions(groupModelData, reflectionExpectation, successExpected),
         )
+        multiDeviceManager = if (reflectionExpectation.setupConfig == SetupConfig.MULTI_DEVICE_ENABLED) {
+            testMultiDeviceManagerEnabled
+        } else {
+            testMultiDeviceManagerDisabled
+        }
         val groupFlowDispatcher = getGroupFlowDispatcher(
             reflectionExpectation.setupConfig,
             taskManager,

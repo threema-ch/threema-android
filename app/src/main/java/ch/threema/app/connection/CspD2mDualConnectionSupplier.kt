@@ -4,6 +4,7 @@ import android.os.PowerManager
 import ch.threema.app.BuildConfig
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.ServerAddressProviderService
+import ch.threema.app.startup.AppStartupMonitor
 import ch.threema.base.utils.AsyncResolver
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.Version
@@ -22,7 +23,7 @@ import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
 import java.util.Locale
-import java8.util.function.Supplier
+import java.util.function.Supplier
 import okhttp3.OkHttpClient
 
 class WakeLockConnectionLockProvider(private val powerManager: PowerManager) : ConnectionLockProvider {
@@ -77,7 +78,8 @@ class CspD2mDualConnectionSupplier(
     private val identityStore: IdentityStore,
     private val version: Version,
     private val isIpv6Preferred: Boolean,
-    private val okHttpClientSupplier: Supplier<OkHttpClient>,
+    private val okHttpClient: OkHttpClient,
+    private val appStartupMonitor: AppStartupMonitor,
     private val isTestBuild: Boolean,
 ) : Supplier<ServerConnection> {
     private val cspConnectionConfiguration by lazy { createCspConnectionConfiguration() }
@@ -95,7 +97,13 @@ class CspD2mDualConnectionSupplier(
             }
             if (!this::latestConfiguration.isInitialized || configuration != latestConfiguration) {
                 logger.info("Create new connection")
-                val connection = BaseServerConnectionProvider.createConnection(configuration, WakeLockConnectionLockProvider(powerManager))
+                val connection = BaseServerConnectionProvider.createConnection(
+                    configuration = configuration,
+                    connectionLockProvider = WakeLockConnectionLockProvider(powerManager),
+                    awaitAppReady = {
+                        appStartupMonitor.awaitAll()
+                    },
+                )
                 if (isTestBuild &&
                     this::latestConnection.isInitialized &&
                     connection::class == latestConnection::class
@@ -140,7 +148,7 @@ class CspD2mDualConnectionSupplier(
             taskManager,
             multiDeviceManager.propertiesProvider,
             multiDeviceManager.socketCloseListener,
-            okHttpClientSupplier.get(),
+            okHttpClient,
         )
     }
 }

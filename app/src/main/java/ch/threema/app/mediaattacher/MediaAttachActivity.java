@@ -54,7 +54,7 @@ import ch.threema.app.camera.CameraUtil;
 import ch.threema.app.camera.QRScannerActivity;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
-import ch.threema.app.fragments.ComposeMessageFragment;
+import ch.threema.app.fragments.composemessage.ComposeMessageFragment;
 import ch.threema.app.location.LocationPickerActivity;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
@@ -260,10 +260,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
         if (messageReceiver instanceof DistributionListMessageReceiver ||
             (messageReceiver instanceof GroupMessageReceiver && dependencies.getGroupService().isNotesGroup(((GroupMessageReceiver) messageReceiver).getGroup()))) {
             this.attachBallotButton.setVisibility(View.GONE);
-        }
-
-        if (attachFromExternalCameraButton != null && !CameraUtil.isInternalCameraSupported()) {
-            this.attachFromExternalCameraButton.setVisibility(View.GONE);
         }
     }
 
@@ -544,7 +540,7 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
     //Generic Alert Dialog Listeners
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
         if (CONFIRM_TAG_REALLY_SEND_FILE.equals(tag)) {
             dependencies.getPreferenceService().setFileSendInfoShown(true);
             selectFile();
@@ -569,9 +565,14 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
                 mediaItems.get(0).setCaption(draft.getText());
             }
 
-            Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
+            Intent intent = IntentDataUtil.addMessageReceiversToIntent(
+                new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver}
+            );
             intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, mediaItems);
-            intent.putExtra(AppConstants.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+            intent.putExtra(
+                AppConstants.INTENT_DATA_TEXT,
+                messageReceiver.getDisplayName(dependencies.getPreferenceService().getContactNameFormat())
+            );
             // pass on last filter to potentially re-use it when adding more media items
             if (mediaAttachViewModel.getLastQuery() != null) {
                 IntentDataUtil.addLastMediaFilterToIntent(intent,
@@ -613,10 +614,14 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
         FileUtil.selectFile(this, fileSelectedResultLauncher, new String[]{MimeUtil.MIME_TYPE_ANY}, true, MAX_BLOB_SIZE, null);
     }
 
-
     private void attachFromExternalCamera() {
-        Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
-        intent.putExtra(AppConstants.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+        Intent intent = IntentDataUtil.addMessageReceiversToIntent(
+            new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver}
+        );
+        intent.putExtra(
+            AppConstants.INTENT_DATA_TEXT,
+            messageReceiver.getDisplayName(dependencies.getPreferenceService().getContactNameFormat())
+        );
         intent.putExtra(AppConstants.INTENT_DATA_PICK_FROM_CAMERA, true);
         intent.putExtra(SendMediaActivity.EXTRA_USE_EXTERNAL_CAMERA, true);
         startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
@@ -662,9 +667,14 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
     }
 
     private void prepareSendFileMessage(final ArrayList<Uri> uriList) {
-        Intent intent = IntentDataUtil.addMessageReceiversToIntent(new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver});
+        Intent intent = IntentDataUtil.addMessageReceiversToIntent(
+            new Intent(this, SendMediaActivity.class), new MessageReceiver[]{this.messageReceiver}
+        );
         intent.putExtra(SendMediaActivity.EXTRA_MEDIA_ITEMS, MediaItem.getFromUris(uriList, this, true));
-        intent.putExtra(AppConstants.INTENT_DATA_TEXT, messageReceiver.getDisplayName());
+        intent.putExtra(
+            AppConstants.INTENT_DATA_TEXT,
+            messageReceiver.getDisplayName(dependencies.getPreferenceService().getContactNameFormat())
+        );
         startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_SEND_MEDIA);
     }
 
@@ -713,9 +723,6 @@ public class MediaAttachActivity extends MediaSelectionBaseActivity implements V
 
     /**
      * Send file messages of any type
-     *
-     * @param uriList
-     * @param captions
      */
     private void sendFileMessage(final ArrayList<Uri> uriList, final ArrayList<String> captions) {
         if (!validateSendingPermission()) {

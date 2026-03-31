@@ -4,8 +4,8 @@ import android.text.format.DateUtils
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
-import ch.threema.app.protocol.PreGeneratedMessageIds
-import ch.threema.app.protocol.runActiveGroupStateResyncSteps
+import ch.threema.app.protocolsteps.PreGeneratedMessageIds
+import ch.threema.app.protocolsteps.runActiveGroupStateResyncSteps
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
@@ -34,6 +34,8 @@ class IncomingGroupSyncRequestTask(
     private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
+        logger.info("Processing incoming group-sync-request message for group with id {}", message.apiGroupId)
+
         // Look up the group. If the group could not be found, abort these steps.
         val group = groupModelRepository.getByCreatorIdentityAndId(
             message.groupCreator,
@@ -132,7 +134,7 @@ private suspend fun answerGroupSyncRequest(
     }
     if (!data.isMember || !data.otherMembers.contains(sender.identity)) {
         handle.runBundledMessagesSendSteps(
-            OutgoingCspMessageHandle(
+            outgoingCspMessageHandle = OutgoingCspMessageHandle(
                 sender,
                 OutgoingCspGroupMessageCreator(
                     MessageId.random(),
@@ -144,7 +146,8 @@ private suspend fun answerGroupSyncRequest(
                     }
                 },
             ),
-            serviceManager.getOutgoingCspMessageServices(),
+            services = serviceManager.getOutgoingCspMessageServices(),
+            identityBlockedSteps = serviceManager.identityBlockedSteps,
         )
     } else {
         runActiveGroupStateResyncSteps(
@@ -162,6 +165,7 @@ private suspend fun answerGroupSyncRequest(
             serviceManager.groupCallManager,
             serviceManager.databaseService,
             serviceManager.getOutgoingCspMessageServices(),
+            serviceManager.identityBlockedSteps,
             handle,
         )
     }

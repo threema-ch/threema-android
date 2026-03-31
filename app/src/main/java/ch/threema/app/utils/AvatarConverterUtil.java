@@ -206,7 +206,7 @@ public class AvatarConverterUtil {
      * @param backgroundColor the color of the background
      * @return the high resolution bitmap
      */
-    public static Bitmap buildDefaultAvatarHighRes(Drawable drawable, int avatarSize, int color, int backgroundColor) {
+    public static Bitmap buildDefaultAvatarHighRes(Drawable drawable, int avatarSize, @ColorInt int color, @ColorInt int backgroundColor) {
         int borderWidth = avatarSize * 3 / 2;
         Bitmap defaultBitmap = AvatarConverterUtil.getAvatarBitmap(drawable, backgroundColor, avatarSize);
         defaultBitmap.setDensity(Bitmap.DENSITY_NONE);

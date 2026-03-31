@@ -5,7 +5,6 @@ import ch.threema.app.R
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.ReflectSettingsSyncTask
-import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
@@ -18,9 +17,7 @@ private val logger = getThreemaLogger("O2oCallPolicySetting")
  * The setting whether 1:1 calls should be enabled. Stores true if they should be enabled.
  */
 class O2oCallPolicySetting internal constructor(
-    private val preferenceService: PreferenceService,
-    private val multiDeviceManager: MultiDeviceManager,
-    private val nonceFactory: NonceFactory,
+    multiDeviceManager: MultiDeviceManager,
     taskManager: TaskManager,
     preferenceStore: PreferenceStore,
     context: Context,
@@ -31,11 +28,7 @@ class O2oCallPolicySetting internal constructor(
     taskManager = taskManager,
 ) {
     override fun instantiateReflectionTask(): Task<*, TaskCodec> {
-        return ReflectSettingsSyncTask.ReflectO2oCallPolicySyncUpdate(
-            multiDeviceManager,
-            nonceFactory,
-            preferenceService,
-        )
+        return ReflectSettingsSyncTask.ReflectO2oCallPolicySyncUpdate()
     }
 
     fun getO2oCallPolicy(): O2oCallPolicy =

@@ -1,5 +1,6 @@
 package ch.threema.app.webclient.services.instance.message.receiver;
 
+import org.koin.java.KoinJavaComponent;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
@@ -13,9 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.AppConstants;
 import ch.threema.app.BuildConfig;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.services.BlockedIdentitiesService;
@@ -26,7 +25,7 @@ import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.factories.ServerMessageModelFactory;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ServerMessageModel;
 
@@ -121,11 +120,9 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
                             for (int n = 2; n < pieces.length; n++) {
                                 alertMessageTmp.append(pieces[n]).append(n == pieces.length - 1 ? "" : " ");
                             }
-                            ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-                            DatabaseService databaseService = null;
-                            if (serviceManager != null) {
-                                databaseService = serviceManager.getDatabaseService();
-                            }
+
+                            ServerMessageModelFactory serverMessageModelFactory = KoinJavaComponent.get(ServerMessageModelFactory.class);
+
                             final String alertMessage;
                             ServerMessageModel serverMessageModel;
                             switch (pieces[1]) {
@@ -137,8 +134,10 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
                                     }
                                     // Store server message into database
                                     serverMessageModel = new ServerMessageModel(alertMessage, ServerMessageModel.TYPE_ERROR);
-                                    if (databaseService != null) {
-                                        databaseService.getServerMessageModelFactory().storeServerMessageModel(serverMessageModel);
+                                    try {
+                                        serverMessageModelFactory.storeServerMessageModel(serverMessageModel);
+                                    } catch (IllegalStateException e) {
+                                        logger.warn("Ignoring 'error' server message, database is unavailable", e);
                                     }
                                     ListenerManager.serverMessageListeners.handle(listener -> listener.onError(serverMessageModel));
                                     break;
@@ -149,8 +148,10 @@ public class TextMessageCreateHandler extends MessageCreateHandler {
                                         alertMessage = alertMessageTmp.toString();
                                     }
                                     serverMessageModel = new ServerMessageModel(alertMessage, ServerMessageModel.TYPE_ALERT);
-                                    if (databaseService != null) {
-                                        databaseService.getServerMessageModelFactory().storeServerMessageModel(serverMessageModel);
+                                    try {
+                                        serverMessageModelFactory.storeServerMessageModel(serverMessageModel);
+                                    } catch (IllegalStateException e) {
+                                        logger.warn("Ignoring 'alert' server message, database is unavailable", e);
                                     }
                                     ListenerManager.serverMessageListeners.handle(listener -> listener.onError(serverMessageModel));
                                     break;

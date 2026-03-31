@@ -1,10 +1,11 @@
 package ch.threema.app.systemupdates.updates;
 
+import org.koin.java.KoinJavaComponent;
+
 import java.util.LinkedList;
 
-import androidx.annotation.NonNull;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.preference.service.PreferenceService;
+import kotlin.Lazy;
 
 
 public class SystemUpdateToVersion46 implements SystemUpdate {
@@ -1843,15 +1844,11 @@ public class SystemUpdateToVersion46 implements SystemUpdate {
         "\u2763"
     };
 
-    private @NonNull final ServiceManager serviceManager;
-
-    public SystemUpdateToVersion46(ServiceManager serviceManager) {
-        this.serviceManager = serviceManager;
-    }
+    private final Lazy<PreferenceService> preferenceServiceLazy = KoinJavaComponent.inject(PreferenceService.class);
 
     @Override
     public void run() {
-        PreferenceService preferenceService = serviceManager.getPreferenceService();
+        PreferenceService preferenceService = preferenceServiceLazy.getValue();
         LinkedList<Integer> oldRecents = preferenceService.getRecentEmojis();
         if (oldRecents != null && !oldRecents.isEmpty()) {
             LinkedList<String> newRecents = new LinkedList<>();

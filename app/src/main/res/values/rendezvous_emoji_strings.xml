@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<!--
+These strings are used dynamically, through `resources.getIdentifier(...)`, and as such appear unused even though they aren't.
+Therefore, we suppress the "UnusedResources" error here.
+TODO(ANDR-3349): We also suppress "MissingTranslation", as translations are not currently guaranteed to be up-to-date.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation,UnusedResources">
     <string name="rendezvous_emoji_1F435">monkey face</string>
     <string name="rendezvous_emoji_1F436">dog face</string>
     <string name="rendezvous_emoji_1F429">poodle</string>

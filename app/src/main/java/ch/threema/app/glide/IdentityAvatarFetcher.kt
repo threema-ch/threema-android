@@ -5,17 +5,17 @@ import android.graphics.Bitmap
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import ch.threema.app.R
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.services.AvatarCacheServiceImpl
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.FileService
 import ch.threema.app.services.UserService
+import ch.threema.app.services.avatarcache.AvatarCacheServiceImpl
 import ch.threema.app.utils.AndroidContactUtil
 import ch.threema.app.utils.AvatarConverterUtil
 import ch.threema.app.utils.ContactUtil
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
 import ch.threema.data.repositories.ContactModelRepository
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.data.DataFetcher
 
@@ -59,7 +59,7 @@ class IdentityAvatarFetcher(
         val returnDefaultIfNone: Boolean
         when (identityAvatarConfig.options.defaultAvatarPolicy) {
             AvatarOptions.DefaultAvatarPolicy.DEFAULT_FALLBACK -> {
-                profilePicReceive = preferenceService.profilePicReceive
+                profilePicReceive = preferenceService.getProfilePicReceive()
                 defaultAvatar = false
                 returnDefaultIfNone = true
             }
@@ -156,7 +156,7 @@ class IdentityAvatarFetcher(
     }
 
     private fun getUserDefinedProfilePicture(
-        identity: Identity,
+        identity: IdentityString,
         highRes: Boolean,
     ): Bitmap? {
         return try {
@@ -175,8 +175,9 @@ class IdentityAvatarFetcher(
         contactModel: ContactModel,
         highRes: Boolean,
     ): Bitmap? {
-        if (ContactUtil.isGatewayContact(contactModel.identity) || AndroidContactUtil.getInstance()
-                .getAndroidContactUri(contactModel, context) == null
+        if (
+            ContactUtil.isGatewayContact(contactModel.identity) ||
+            AndroidContactUtil.getInstance().getAndroidContactUri(contactModel, context) == null
         ) {
             return null
         }

@@ -4,18 +4,22 @@ import android.content.ContentValues;
 
 import android.database.Cursor;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 
 public class BallotChoiceModelFactory extends ModelFactory {
-    public BallotChoiceModelFactory(DatabaseService databaseService) {
-        super(databaseService, BallotChoiceModel.TABLE);
+    public BallotChoiceModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, BallotChoiceModel.TABLE);
     }
 
     public List<BallotChoiceModel> getAll() {
@@ -232,14 +236,17 @@ public class BallotChoiceModelFactory extends ModelFactory {
 
         return null;
     }
+    
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE `ballot_choice` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `ballotId` INTEGER , `apiBallotChoiceId` INTEGER , `type` VARCHAR , `name` VARCHAR , `voteCount` INTEGER , `order` INTEGER NOT NULL , `createdAt` BIGINT , `modifiedAt` BIGINT )",
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `ballot_choice` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `ballotId` INTEGER , `apiBallotChoiceId` INTEGER , `type` VARCHAR , `name` VARCHAR , `voteCount` INTEGER , `order` INTEGER NOT NULL , `createdAt` BIGINT , `modifiedAt` BIGINT )",
-
-            //indices
-            "CREATE UNIQUE INDEX `apiBallotChoiceId` ON `ballot_choice` ( `ballotId`, `apiBallotChoiceId` )"
-        };
+                // indices
+                "CREATE UNIQUE INDEX `apiBallotChoiceId` ON `ballot_choice` ( `ballotId`, `apiBallotChoiceId` )"
+            };
+        }
     }
 }

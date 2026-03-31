@@ -2,6 +2,8 @@ package ch.threema.app.workers
 
 import android.content.Context
 import androidx.work.*
+import ch.threema.android.buildOneTimeWorkRequest
+import ch.threema.android.setInputData
 import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.DeviceService
@@ -32,8 +34,8 @@ class ConnectivityChangeWorker(
 
         val preferenceService = preferenceService
         val isOnline = deviceService.isOnline
-        val wasOnline = preferenceService.lastOnlineStatus
-        preferenceService.lastOnlineStatus = isOnline
+        val wasOnline = preferenceService.getLastOnlineStatus()
+        preferenceService.setLastOnlineStatus(isOnline)
 
         logger.info("Network state = {}", networkState)
         if (isOnline == wasOnline) {
@@ -60,14 +62,11 @@ class ConnectivityChangeWorker(
         private const val EXTRA_NETWORK_STATE = "NETWORK_STATE"
         private const val SOURCE_TAG = "connectivityChange"
 
-        fun buildOneTimeWorkRequest(networkState: String): OneTimeWorkRequest {
-            val data = Data.Builder()
-                .putString(EXTRA_NETWORK_STATE, networkState)
-                .build()
-
-            return OneTimeWorkRequestBuilder<ConnectivityChangeWorker>()
-                .setInputData(data)
-                .build()
-        }
+        fun buildWorkRequest(networkState: String): OneTimeWorkRequest =
+            buildOneTimeWorkRequest<ConnectivityChangeWorker> {
+                setInputData {
+                    putString(EXTRA_NETWORK_STATE, networkState)
+                }
+            }
     }
 }

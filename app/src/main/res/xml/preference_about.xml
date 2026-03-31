@@ -66,7 +66,7 @@
             android:title="@string/username_hint" />
 
         <Preference
-            android:key="@string/preferences__onprem_server"
+            android:key="@string/preferences__oppf_url"
             android:title="@string/server_hint" />
 
         <Preference

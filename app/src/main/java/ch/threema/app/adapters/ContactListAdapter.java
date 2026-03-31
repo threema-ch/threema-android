@@ -20,7 +20,6 @@ import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.shape.ShapeAppearanceModel;
 
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.text.Collator;
@@ -349,7 +348,7 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         }
 
         // Text slot top left
-        final @NonNull String contactTextTopLeft = contactModel.getContactListItemTextTopLeft(preferenceService.isContactFormatFirstNameLastName());
+        final @NonNull String contactTextTopLeft = contactModel.getContactListItemTextTopLeft(preferenceService.getContactNameFormat());
         final @NonNull Spannable contactTextTopLeftSpannable = (viewType != VIEW_TYPE_RECENTLY_ADDED)
             ? highlightMatches(contactTextTopLeft, filterString, true)
             : new SpannableString(contactTextTopLeft);
@@ -535,8 +534,8 @@ public class ContactListAdapter extends FilterableListAdapter implements Section
         }
     }
 
-    @NotNull
     @Override
+    @NonNull
     public Filter getFilter() {
         if (contactListFilter == null)
             contactListFilter = new ContactListFilter();

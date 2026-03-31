@@ -15,9 +15,5 @@ internal class DatabaseUpdateToVersion86(
 
     override fun getDescription() = "create task archive table"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 86
-    }
+    override val version = 86
 }

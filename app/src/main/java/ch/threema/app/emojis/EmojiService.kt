@@ -18,7 +18,7 @@ class EmojiService(
     private val searchIndex: EmojiSearchIndex,
     private val recentEmojis: EmojiRecent,
 ) {
-    private val preferredDiversities = preferenceService.diverseEmojiPrefs.toMutableMap()
+    private val preferredDiversities = preferenceService.getDiverseEmojiPrefs().toMutableMap()
 
     fun addToRecentEmojis(emojiSequence: String) {
         recentEmojis.add(emojiSequence)
@@ -57,7 +57,7 @@ class EmojiService(
 
     fun setDiverseEmojiPreference(emojiParent: String, emojiSequence: String) {
         preferredDiversities[emojiParent] = emojiSequence
-        preferenceService.diverseEmojiPrefs = preferredDiversities
+        preferenceService.setDiverseEmojiPrefs(preferredDiversities)
     }
 
     fun isEmojiSearchAvailable(): Boolean {

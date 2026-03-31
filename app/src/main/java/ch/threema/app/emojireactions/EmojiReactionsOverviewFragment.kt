@@ -13,8 +13,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.MessageService
+import ch.threema.app.stores.IdentityProvider
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SpacingValues
 import ch.threema.app.ui.applyDeviceInsetsAsPadding
@@ -42,6 +44,8 @@ class EmojiReactionsOverviewFragment(
 
     private val messageService: MessageService by inject()
     private val contactService: ContactService by inject()
+    private val identityProvider: IdentityProvider by inject()
+    private val preferenceService: PreferenceService by inject()
 
     private val emojiReactionsViewModel: EmojiReactionsViewModel by activityViewModels()
     private lateinit var emojiReactionsOverviewListAdapter: EmojiReactionsOverviewListAdapter
@@ -68,9 +72,11 @@ class EmojiReactionsOverviewFragment(
         super.onViewCreated(view, savedInstanceState)
 
         emojiReactionsOverviewListAdapter = EmojiReactionsOverviewListAdapter(
-            messageService,
-            contactService,
+            messageService = messageService,
+            contactService = contactService,
+            identityProvider = identityProvider,
             messageModel = messageModel,
+            preferenceService = preferenceService,
             onItemClickListener = this,
         )
         recyclerView.layoutManager = LinearLayoutManager(context)

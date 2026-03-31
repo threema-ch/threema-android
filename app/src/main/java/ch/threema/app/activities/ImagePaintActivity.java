@@ -121,7 +121,9 @@ import ch.threema.app.utils.EditTextUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.data.models.GroupModel;
 
 public class ImagePaintActivity extends ThreemaToolbarActivity implements GenericAlertDialog.DialogClickListener {
@@ -367,8 +369,8 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
                     }
                     break;
                 case REQUEST_CODE_ENTER_TEXT:
-                    final String text = data.getStringExtra(ImagePaintKeyboardActivity.INTENT_EXTRA_TEXT);
-                    if (!TestUtil.isEmptyOrNull(text)) {
+                    final @Nullable String text = data.getStringExtra(ImagePaintKeyboardActivity.INTENT_EXTRA_TEXT);
+                    if (text != null && !text.isBlank()) {
                         addText(text);
                     }
             }
@@ -700,7 +702,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
         ListeningExecutorService executorService = MoreExecutors.listeningDecorator(threadPoolExecutor);
         return executorService.submit(() -> {
             try {
-                int dimension = ConfigUtils.getPreferredImageDimensions(PreferenceService.ImageScale_MEDIUM);
+                int dimension = ConfigUtils.getPreferredImageDimensions(PreferenceService.IMAGE_SCALE_MEDIUM);
                 Bitmap bitmap = Bitmap.createBitmap(dimension, dimension, Bitmap.Config.RGB_565);
                 Canvas canvas = new Canvas(bitmap);
                 canvas.drawColor(color);
@@ -1392,7 +1394,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
     }
 
     private void initializeMentions() {
-        ch.threema.data.models.GroupModel groupModel = dependencies.getGroupModelRepository().getByLocalGroupDbId(groupId);
+        GroupModel groupModel = dependencies.getGroupModelRepository().getByLocalGroupDbId(groupId);
 
         if (groupModel == null) {
             logger.error("Cannot enable mention popup: no group model with id {} found", groupId);
@@ -1690,7 +1692,7 @@ public class ImagePaintActivity extends ThreemaToolbarActivity implements Generi
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
         finishWithoutChanges();
     }
 

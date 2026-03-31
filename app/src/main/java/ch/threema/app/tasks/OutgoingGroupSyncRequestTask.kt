@@ -1,7 +1,6 @@
 package ch.threema.app.tasks
 
 import android.text.format.DateUtils
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices
@@ -16,7 +15,7 @@ import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.util.Date
 import kotlinx.serialization.Serializable
 
@@ -32,21 +31,16 @@ private val logger = getThreemaLogger("OutgoingGroupSyncRequestTask")
  */
 class OutgoingGroupSyncRequestTask(
     private val groupId: GroupId,
-    private val creatorIdentity: Identity,
+    private val creatorIdentity: IdentityString,
     messageId: MessageId?,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+) : OutgoingCspMessageTask() {
     private val messageId = messageId ?: MessageId.random()
-    private val apiConnector by lazy { serviceManager.apiConnector }
-    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
-    private val outgoingGroupSyncRequestLogModelFactory by lazy { serviceManager.databaseService.outgoingGroupSyncRequestLogModelFactory }
-    private val blockedIdentitiesService by lazy { serviceManager.blockedIdentitiesService }
 
     override val type: String = "OutgoingGroupSyncRequestTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
         // Don't send group sync request to myself
-        if (creatorIdentity.equals(identityStore.getIdentity(), ignoreCase = true)) {
+        if (creatorIdentity.equals(identityStore.getIdentityString(), ignoreCase = true)) {
             return
         }
 
@@ -56,7 +50,7 @@ class OutgoingGroupSyncRequestTask(
         )
 
         // Only send a group sync request once in an hour for a specific group
-        val groupSyncRequestLogModel = outgoingGroupSyncRequestLogModelFactory[groupIdentity]
+        val groupSyncRequestLogModel = databaseService.outgoingGroupSyncRequestLogModelFactory[groupIdentity]
         val oneHourAgo = Date(System.currentTimeMillis() - DateUtils.HOUR_IN_MILLIS)
         val lastSyncRequest = groupSyncRequestLogModel?.lastRequest ?: Date(0)
         if (lastSyncRequest.after(oneHourAgo)) {
@@ -90,8 +84,8 @@ class OutgoingGroupSyncRequestTask(
 
         // Send message
         handle.runBundledMessagesSendSteps(
-            outgoingCspMessageHandle,
-            OutgoingCspMessageServices(
+            outgoingCspMessageHandle = outgoingCspMessageHandle,
+            services = OutgoingCspMessageServices(
                 forwardSecurityMessageProcessor,
                 identityStore,
                 userService,
@@ -100,14 +94,15 @@ class OutgoingGroupSyncRequestTask(
                 contactModelRepository,
                 groupService,
                 nonceFactory,
-                blockedIdentitiesService,
                 preferenceService,
+                synchronizedSettingsService,
                 multiDeviceManager,
             ),
+            identityBlockedSteps = identityBlockedSteps,
         )
 
         // Update sync request sent date
-        outgoingGroupSyncRequestLogModelFactory.createOrUpdate(groupIdentity, createdAt)
+        databaseService.outgoingGroupSyncRequestLogModelFactory.createOrUpdate(groupIdentity, createdAt)
     }
 
     override fun serialize(): SerializableTaskData = OutgoingGroupSyncRequestData(
@@ -119,15 +114,14 @@ class OutgoingGroupSyncRequestTask(
     @Serializable
     class OutgoingGroupSyncRequestData(
         private val groupId: ByteArray,
-        private val creatorIdentity: Identity,
+        private val creatorIdentity: IdentityString,
         private val messageId: ByteArray,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingGroupSyncRequestTask(
-                GroupId(groupId),
-                creatorIdentity,
-                MessageId(messageId),
-                serviceManager,
+                groupId = GroupId(groupId),
+                creatorIdentity = creatorIdentity,
+                messageId = MessageId(messageId),
             )
     }
 }

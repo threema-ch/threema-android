@@ -7,7 +7,7 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.domain.types.MessageIdString
 import ch.threema.domain.types.MessageUid
 import ch.threema.storage.models.data.DisplayTag
@@ -24,6 +24,7 @@ import ch.threema.storage.models.data.status.GroupCallStatusDataModel
 import ch.threema.storage.models.data.status.GroupStatusDataModel
 import ch.threema.storage.models.data.status.StatusDataModel
 import ch.threema.storage.models.data.status.VoipStatusDataModel
+import ch.threema.storage.models.group.GroupMessageModel
 import java.util.Date
 
 private val logger = getThreemaLogger("AbstractMessageModel")
@@ -62,7 +63,7 @@ internal constructor(
      * The associated identity: Either the recipient
      * (for outgoing messages) or the sender (for incoming messages).
      */
-    open var identity: Identity? = null
+    open var identity: IdentityString? = null
 
     /**
      * Whether the message is an outgoing one, i.e., sent by the user
@@ -145,6 +146,9 @@ internal constructor(
                 quotedMessageId = null
             }
         }
+
+    val isEdited: Boolean
+        get() = editedAt != null
 
     val isDeleted: Boolean
         get() = deletedAt != null

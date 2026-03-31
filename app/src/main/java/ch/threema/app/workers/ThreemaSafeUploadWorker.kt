@@ -2,6 +2,11 @@ package ch.threema.app.workers
 
 import android.content.Context
 import androidx.work.*
+import ch.threema.android.buildOneTimeWorkRequest
+import ch.threema.android.buildPeriodicWorkRequest
+import ch.threema.android.setConstraints
+import ch.threema.android.setInitialDelay
+import ch.threema.android.setInputData
 import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.preference.service.PreferenceService
@@ -11,8 +16,8 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.minus
 import java.time.Instant
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -46,10 +51,10 @@ class ThreemaSafeUploadWorker(
             threemaSafeService.createBackup(forceUpdate)
             // When the backup has been successfully uploaded or does not need to be uploaded, then
             // we ignore previous errors.
-            preferenceService.threemaSafeErrorTimestamp = null
+            preferenceService.setThreemaSafeErrorTimestamp(null)
         } catch (e: ThreemaSafeService.ThreemaSafeUploadException) {
-            if (preferenceService.threemaSafeErrorTimestamp == null && e.isUploadNeeded) {
-                preferenceService.threemaSafeErrorTimestamp = Instant.now()
+            if (preferenceService.getThreemaSafeErrorTimestamp() == null && e.isUploadNeeded) {
+                preferenceService.setThreemaSafeErrorTimestamp(Instant.now())
             }
             showWarningNotification(preferenceService, notificationService)
             logger.error("Threema Safe upload failed", e)
@@ -68,9 +73,9 @@ class ThreemaSafeUploadWorker(
     }
 
     private fun showWarningNotification(preferenceService: PreferenceService, notificationService: NotificationService) {
-        val errorTimestamp = preferenceService.threemaSafeErrorTimestamp ?: return
+        val errorTimestamp = preferenceService.getThreemaSafeErrorTimestamp() ?: return
         if (errorTimestamp < Instant.now() - 7.days) {
-            val lastBackupDate = preferenceService.threemaSafeBackupTimestamp
+            val lastBackupDate = preferenceService.getThreemaSafeBackupTimestamp()
             val fullDaysSinceLastBackup = lastBackupDate?.let { (Instant.now() - lastBackupDate).inWholeDays.toInt() }
             if (fullDaysSinceLastBackup != null && fullDaysSinceLastBackup > 0 && preferenceService.getThreemaSafeEnabled()) {
                 notificationService.showSafeBackupFailed(fullDaysSinceLastBackup)
@@ -86,38 +91,32 @@ class ThreemaSafeUploadWorker(
         /**
          * Build a one time work request without any initial delay.
          */
-        fun buildOneTimeWorkRequest(forceUpdate: Boolean): OneTimeWorkRequest {
-            val data = Data.Builder()
-                .putBoolean(EXTRA_FORCE_UPDATE, forceUpdate)
-                .build()
-
-            return OneTimeWorkRequestBuilder<ThreemaSafeUploadWorker>()
-                .apply { setInputData(data) }
-                .build()
-        }
+        @JvmStatic
+        fun buildWorkRequest(forceUpdate: Boolean): OneTimeWorkRequest =
+            buildOneTimeWorkRequest<ThreemaSafeUploadWorker> {
+                setInputData {
+                    putBoolean(EXTRA_FORCE_UPDATE, forceUpdate)
+                }
+            }
 
         /**
          * Build a periodic work request that runs every [schedulePeriodMs] milliseconds. The
          * request is scheduled to first run in [schedulePeriodMs] milliseconds. Note that the
          * schedule period is not added as tag, as these period does not change dynamically.
          */
-        fun buildPeriodicWorkRequest(schedulePeriodMs: Long): PeriodicWorkRequest {
-            val data = Data.Builder()
-                .putBoolean(EXTRA_FORCE_UPDATE, false)
-                .build()
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
-
-            return PeriodicWorkRequestBuilder<ThreemaSafeUploadWorker>(
-                schedulePeriodMs,
-                TimeUnit.MILLISECONDS,
-            )
-                .setInitialDelay(schedulePeriodMs, TimeUnit.MILLISECONDS)
-                .setConstraints(constraints)
-                .addTag(schedulePeriodMs.toString())
-                .apply { setInputData(data) }
-                .build()
-        }
+        @JvmStatic
+        fun buildWorkRequest(schedulePeriodMs: Long): PeriodicWorkRequest =
+            buildPeriodicWorkRequest<ThreemaSafeUploadWorker>(
+                repeatInterval = schedulePeriodMs.milliseconds,
+            ) {
+                setInitialDelay(schedulePeriodMs.milliseconds)
+                setConstraints {
+                    setRequiredNetworkType(NetworkType.CONNECTED)
+                }
+                addTag(schedulePeriodMs.toString())
+                setInputData {
+                    putBoolean(EXTRA_FORCE_UPDATE, false)
+                }
+            }
     }
 }

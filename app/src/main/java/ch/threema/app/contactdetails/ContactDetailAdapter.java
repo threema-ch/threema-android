@@ -35,11 +35,11 @@ import ch.threema.app.ThreemaApplication;
 import ch.threema.app.dialogs.PublicKeyDialog;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.preference.service.SynchronizedSettingsService;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ExcludedSyncIdentitiesService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.ui.SectionHeaderView;
 import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.utils.AndroidContactUtil;
@@ -53,7 +53,7 @@ import ch.threema.domain.models.WorkVerificationLevel;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.protobuf.csp.e2e.fs.Terminate;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 /**
  * The adapter for contact details.
@@ -76,14 +76,14 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     private ContactService contactService;
     private GroupService groupService;
     @NonNull
-    private final PreferenceService preferenceService;
+    private final SynchronizedSettingsService synchronizedSettingsService;
     @NonNull
     private final ExcludedSyncIdentitiesService excludedSyncIdentitiesService;
     @NonNull
     private final BlockedIdentitiesService blockedIdentitiesService;
     private final @NonNull ch.threema.data.models.ContactModel contactModel;
     private final @NonNull ContactModelData contactModelData;
-    private final List<GroupModel> values;
+    private final List<GroupModelOld> values;
     private OnClickListener onClickListener;
     private final @NonNull RequestManager requestManager;
 
@@ -211,7 +211,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     @UiThread
     public ContactDetailAdapter(
         Context context,
-        List<GroupModel> values,
+        List<GroupModelOld> values,
         @NonNull ch.threema.data.models.ContactModel contactModel,
         @NonNull ContactModelData contactModelData,
         @NonNull RequestManager requestManager
@@ -225,7 +225,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
         ServiceManager serviceManager = ThreemaApplication.requireServiceManager();
         this.excludedSyncIdentitiesService = serviceManager.getExcludedSyncIdentitiesService();
         this.blockedIdentitiesService = serviceManager.getBlockedIdentitiesService();
-        this.preferenceService = serviceManager.getPreferenceService();
+        this.synchronizedSettingsService = serviceManager.getSynchronizedSettingsService();
 
         try {
             this.contactService = serviceManager.getContactService();
@@ -256,7 +256,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof ItemHolder) {
             ItemHolder itemHolder = (ItemHolder) holder;
-            final GroupModel groupModel = getItem(position);
+            final GroupModelOld groupModel = getItem(position);
 
             this.groupService.loadAvatarIntoImage(
                 groupModel,
@@ -322,7 +322,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
 
             boolean isSyncExcluded = excludedSyncIdentitiesService.isExcluded(contactModelData.identity);
 
-            if (preferenceService.isSyncContacts()
+            if (synchronizedSettingsService.isSyncContacts()
                 && (contactModelData.isLinkedToAndroidContact() || isSyncExcluded)
                 && ConfigUtils.isPermissionGranted(ThreemaApplication.getAppContext(), Manifest.permission.READ_CONTACTS)
             ) {
@@ -388,7 +388,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
         return position == 0;
     }
 
-    private GroupModel getItem(int position) {
+    private GroupModelOld getItem(int position) {
         return values.get(position - 1);
     }
 
@@ -397,7 +397,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     }
 
     public interface OnClickListener {
-        void onItemClick(View v, GroupModel groupModel);
+        void onItemClick(View v, GroupModelOld groupModel);
 
         void onVerificationInfoClick(View v);
     }
@@ -405,7 +405,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     private void initializeReadReceiptsSpinner(@NonNull HeaderHolder headerHolder) {
         final String[] choices = context.getResources().getStringArray(R.array.receipts_override_choices);
         choices[0] = context.getString(R.string.receipts_override_choice_default,
-            choices[preferenceService.areReadReceiptsEnabled() ? 1 : 2]);
+            choices[synchronizedSettingsService.areReadReceiptsEnabled() ? 1 : 2]);
 
         int initialReadReceiptPosition;
         switch (contactModelData.readReceiptPolicy) {
@@ -444,7 +444,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     private void initializeTypingIndicatorSpinner(@NonNull HeaderHolder headerHolder) {
         final String[] typingChoices = context.getResources().getStringArray(R.array.receipts_override_choices);
         typingChoices[0] = context.getString(R.string.receipts_override_choice_default,
-            typingChoices[preferenceService.isTypingIndicatorEnabled() ? 1 : 2]);
+            typingChoices[synchronizedSettingsService.isTypingIndicatorEnabled() ? 1 : 2]);
 
         int initialTypingIndicatorPosition;
         switch (contactModelData.typingIndicatorPolicy) {

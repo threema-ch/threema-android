@@ -20,7 +20,6 @@ import android.widget.Toast;
 
 import net.lingala.zip4j.model.FileHeader;
 
-import org.apache.commons.io.IOUtils;
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -52,11 +50,12 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.DummyActivity;
+import ch.threema.app.reset.ResetAppTaskJavaCompat;
+import ch.threema.app.stores.IdentityProvider;
+import ch.threema.app.usecases.OverrideOneTimeHintsUseCase;
 import ch.threema.app.home.HomeActivity;
-import ch.threema.app.asynctasks.DeleteIdentityAsyncTask;
 import ch.threema.app.backuprestore.MessageIdCache;
 import ch.threema.app.backuprestore.ZipFileWrapper;
-import ch.threema.app.collections.Functional;
 import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.exceptions.RestoreCanceledException;
 import ch.threema.app.managers.ServiceManager;
@@ -82,13 +81,16 @@ import ch.threema.app.utils.ThrowingConsumer;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.NonceScope;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.models.GroupModel;
 import ch.threema.data.repositories.EmojiReactionsRepository;
 import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.data.repositories.ModelRepositories;
 import ch.threema.data.storage.DbEmojiReaction;
 import ch.threema.domain.models.GroupId;
+import ch.threema.domain.models.UserState;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.connection.ServerConnection;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
@@ -103,10 +105,9 @@ import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupMemberModel;
-import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.GroupModel.UserState;
+import ch.threema.storage.models.group.GroupMemberModel;
+import ch.threema.storage.models.group.GroupMessageModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
@@ -121,9 +122,7 @@ import ch.threema.storage.models.data.media.BallotDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
 
 import static android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC;
-import static ch.threema.storage.models.GroupModel.UserState.KICKED;
-import static ch.threema.storage.models.GroupModel.UserState.LEFT;
-import static ch.threema.storage.models.GroupModel.UserState.MEMBER;
+import static ch.threema.common.JavaCompat.inputStreamToString;
 
 public class RestoreService extends Service implements ComponentCallbacks2 {
     private static final Logger logger = getThreemaLogger("RestoreService");
@@ -154,6 +153,8 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     private ActivityManager activityManager;
     private NonceFactory nonceFactory;
     private @NonNull GroupModelRepository groupModelRepository;
+
+    private final IdentityProvider identityProvider = KoinJavaComponent.get(IdentityProvider.class);
 
     private NotificationCompat.Builder notificationBuilder;
 
@@ -380,7 +381,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     private final HashMap<String, Integer> ballotChoiceIdMap = new HashMap<>();
     private final HashMap<String, Long> distributionListIdMap = new HashMap<>();
 
-    private boolean writeToDb = false;
+    private boolean applyRestore = false;
 
     public boolean restore() {
         logger.info("Restoring data backup");
@@ -409,13 +410,13 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             }
 
             // We use two passes for a restore. The first pass only scans the files in the backup,
-            // but does not write to the database. In the second pass, the files are actually written.
-            for (int nTry = 0; nTry < 2; nTry++) {
-                logger.info("Attempt {}", nTry + 1);
+            // but does not write to the database or the file system. In the second pass, the files are actually written.
+            for (int pass = 1; pass <= 2; pass++) {
+                logger.info("Pass {}", pass);
                 logMemoryStatus();
-                if (nTry > 0) {
-                    this.writeToDb = true;
-                    this.initProgress(stepSizeTotal);
+                if (pass == 2) {
+                    applyRestore = true;
+                    initProgress(stepSizeTotal);
                 }
 
                 this.identityIdMap.clear();
@@ -426,7 +427,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                 this.ballotChoiceIdMap.clear();
                 this.distributionListIdMap.clear();
 
-                if (this.writeToDb) {
+                if (applyRestore) {
                     updateProgress(STEP_SIZE_PREPARE);
 
                     // clear tables!!
@@ -468,14 +469,14 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
                 // Restore the identity
                 logger.info("Restoring identity");
-                FileHeader identityHeader = Functional.select(
-                    fileHeaders,
-                    type -> TestUtil.compare(type.getFileName(), Tags.IDENTITY_FILE_NAME)
-                );
-                if (identityHeader != null && this.writeToDb) {
+                FileHeader identityHeader = fileHeaders.stream()
+                    .filter(fileHeader -> Tags.IDENTITY_FILE_NAME.equals(fileHeader.getFileName()))
+                    .findFirst()
+                    .orElse(null);
+                if (identityHeader != null && applyRestore) {
                     String identityContent;
                     try (InputStream inputStream = getZipFileInputStream(identityHeader)) {
-                        identityContent = IOUtils.toString(inputStream, Charset.defaultCharset());
+                        identityContent = inputStreamToString(inputStream);
                     }
 
                     try {
@@ -535,19 +536,23 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                 } else {
                     logger.info("{} media files found", mediaCount);
                 }
-                if (writeToDb) {
+                if (applyRestore) {
                     logMemoryStatus();
                 }
 
                 // restore all avatars
-                logger.info("Restoring avatars");
-                if (!this.restoreContactAvatars(fileHeaders)) {
-                    logger.error("restore contact avatar files failed");
-                    // continue anyway!
+                if (applyRestore) {
+                    logger.info("Restoring avatars");
+                    if (!restoreContactAvatars(fileHeaders)) {
+                        logger.error("restore contact avatar files failed");
+                        // continue anyway!
+                    }
                 }
 
                 // Reset the profile pic upload so that the own profile picture is redistributed
-                preferenceService.setProfilePicUploadData(null);
+                if (applyRestore) {
+                    preferenceService.setProfilePicUploadData(null);
+                }
 
                 // If we're restoring a backup that does not yet contain lastUpdate (version <22),
                 // calculate lastUpdate ourselves based on restored data.
@@ -557,7 +562,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
                 long stepsRestoreReactions = this.restoreReactions(fileHeaders);
 
-                if (!writeToDb) {
+                if (!applyRestore) {
                     stepSizeTotal += (messageCount * STEP_SIZE_MESSAGES);
                     stepSizeTotal += (mediaCount * STEP_SIZE_MEDIA);
                     stepSizeTotal += (long) Math.ceil((double) nonceCount / NONCES_PER_STEP);
@@ -593,7 +598,10 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
     @NonNull
     private RestoreSettings getRestoreSettings(List<FileHeader> fileHeaders) throws ThreemaException, IOException {
-        FileHeader settingsHeader = Functional.select(fileHeaders, type -> TestUtil.compare(type.getFileName(), Tags.SETTINGS_FILE_NAME));
+        FileHeader settingsHeader = fileHeaders.stream()
+            .filter(fileHeader -> Tags.SETTINGS_FILE_NAME.equals(fileHeader.getFileName()))
+            .findFirst()
+            .orElse(null);
         if (settingsHeader == null) {
             logger.error("Settings file header is missing");
             throw new ThreemaException(getString(R.string.invalid_backup));
@@ -610,49 +618,31 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     }
 
     /**
-     * restore the main files (contacts, groups, distribution lists)
+     * restore the main files (contacts, groups, distribution lists, ballots)
      */
     private boolean restoreMainFiles(List<FileHeader> fileHeaders) throws IOException, RestoreCanceledException {
-        FileHeader ballotMain = null;
-        FileHeader ballotChoice = null;
-        FileHeader ballotVote = null;
-        for (FileHeader fileHeader : fileHeaders) {
-            String fileName = fileHeader.getFileName();
-
-            if (fileName.endsWith(Tags.CSV_FILE_POSTFIX)) {
-                final String fileNameWithoutExtension = fileName.substring(0, fileName.length() - Tags.CSV_FILE_POSTFIX.length());
-                switch (fileNameWithoutExtension) {
-                    case Tags.CONTACTS_FILE_NAME:
-                        if (!this.restoreContactFile(fileHeader)) {
-                            logger.error("restore contact file failed");
-                            return false;
-                        }
-                        break;
-                    case Tags.GROUPS_FILE_NAME:
-                        if (!this.restoreGroupFile(fileHeader)) {
-                            logger.error("restore group file failed");
-                        }
-                        break;
-                    case Tags.DISTRIBUTION_LISTS_FILE_NAME:
-                        if (!this.restoreDistributionListFile(fileHeader)) {
-                            logger.error("restore distribution list file failed");
-                        }
-                        break;
-                    case Tags.BALLOT_FILE_NAME:
-                        ballotMain = fileHeader;
-                        break;
-                    case Tags.BALLOT_CHOICE_FILE_NAME:
-                        ballotChoice = fileHeader;
-                        break;
-                    case Tags.BALLOT_VOTE_FILE_NAME:
-                        ballotVote = fileHeader;
-                        break;
-                }
-            }
+        FileHeader contactsFileHeader = getFileHeader(Tags.CONTACTS_FILE_NAME + Tags.CSV_FILE_POSTFIX, fileHeaders);
+        if (contactsFileHeader != null && !restoreContactFile(contactsFileHeader)) {
+            logger.error("restore contact file failed");
+            return false;
         }
 
-        if (TestUtil.required(ballotMain, ballotChoice, ballotVote)) {
-            this.restoreBallotFile(ballotMain, ballotChoice, ballotVote);
+        // It is important that groups are restored *after* the contacts, as this information is also needed to restore group memberships
+        FileHeader groupsFileHeader = getFileHeader(Tags.GROUPS_FILE_NAME + Tags.CSV_FILE_POSTFIX, fileHeaders);
+        if (groupsFileHeader != null &&!restoreGroupFile(groupsFileHeader)) {
+            logger.error("restore group file failed");
+        }
+
+        FileHeader distributionListFileHeader = getFileHeader(Tags.DISTRIBUTION_LISTS_FILE_NAME + Tags.CSV_FILE_POSTFIX, fileHeaders);
+        if (distributionListFileHeader != null && !restoreDistributionListFile(distributionListFileHeader)) {
+            logger.error("restore distribution list file failed");
+        }
+
+        FileHeader ballotMainFileHeader = getFileHeader(Tags.BALLOT_FILE_NAME + Tags.CSV_FILE_POSTFIX, fileHeaders);
+        FileHeader ballotChoiceFileHeader = getFileHeader(Tags.BALLOT_CHOICE_FILE_NAME + Tags.CSV_FILE_POSTFIX, fileHeaders);
+        FileHeader ballotVoteFileHeader = getFileHeader(Tags.BALLOT_VOTE_FILE_NAME + Tags.CSV_FILE_POSTFIX, fileHeaders);
+        if (ballotMainFileHeader != null && ballotChoiceFileHeader != null && ballotVoteFileHeader != null) {
+            restoreBallotFile(ballotMainFileHeader, ballotChoiceFileHeader, ballotVoteFileHeader);
         }
 
         return true;
@@ -664,7 +654,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
      * a failure.
      */
     private int restoreNonces(List<FileHeader> fileHeaders) throws IOException, RestoreCanceledException {
-        if (!writeToDb) {
+        if (!applyRestore) {
             // If not writing to the database only the count of nonces is required.
             // Try to read optional nonces count file if present in backup.
             logger.info("Get nonce counts");
@@ -771,7 +761,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                     // backup several nonces in one row (as we have done in 5.1-alpha3)
                     String[] nonces = row.getStrings(Tags.TAG_NONCES);
                     nonceCount += nonces.length;
-                    if (writeToDb) {
+                    if (applyRestore) {
                         for (String nonce : nonces) {
                             nonceBytes.add(Utils.hexStringToByteArray(nonce));
                             if (nonceBytes.size() >= NONCES_CHUNK_SIZE) {
@@ -820,7 +810,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             ? getRestoreReactionsSteps(reactionCountFileHeader)
             : 0;
 
-        if (writeToDb) {
+        if (applyRestore) {
             FileHeader contactReactionsFileHeader = getFileHeader(Tags.CONTACT_REACTIONS_FILE_NAME + Tags.CSV_FILE_POSTFIX, fileHeaders);
             if (contactReactionsFileHeader != null) {
                 restoreContactReactions(contactReactionsFileHeader);
@@ -878,7 +868,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
         GroupMessageModelFactory groupMessageModelFactory = databaseService.getGroupMessageModelFactory();
 
         return new MessageIdCache<>(key -> {
-            @Nullable GroupModel groupModel = groupModelFactory
+            @Nullable GroupModelOld groupModel = groupModelFactory
                 .getByApiGroupIdAndCreator(key.getApiGroupId(), key.getGroupCreatorIdentity());
             if (groupModel == null) {
                 throw new NoSuchElementException();
@@ -1064,7 +1054,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             if (!TestUtil.isEmptyOrNull(groupUid)) {
                 Integer groupId = groupUidMap.get(groupUid);
                 if (groupId != null) {
-                    ch.threema.data.models.GroupModel m = groupModelRepository.getByLocalGroupDbId(groupId);
+                    GroupModel m = groupModelRepository.getByLocalGroupDbId(groupId);
                     if (m != null) {
                         try (InputStream inputStream = getZipFileInputStream(fileHeader)) {
                             this.fileService.writeGroupProfilePicture(m, inputStream);
@@ -1124,7 +1114,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
         // process all thumbnails
         Map<String, FileHeader> thumbnailFileHeaders = new HashMap<>();
-        if (writeToDb) {
+        if (applyRestore) {
             for (FileHeader fileHeader : fileHeaders) {
                 String fileName = fileHeader.getFileName();
                 if (!TestUtil.isEmptyOrNull(fileName) && fileName.startsWith(thumbnailPrefix)) {
@@ -1149,7 +1139,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
             if (model != null) {
                 try {
-                    if (this.writeToDb) {
+                    if (applyRestore) {
                         if (fileName.startsWith(thumbnailPrefix)) {
                             // restore thumbnail
                             FileHeader thumbnailFileHeader = thumbnailFileHeaders.get(thumbnailPrefix + messageUid);
@@ -1217,11 +1207,15 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     }
 
     private boolean restoreContactFile(@NonNull FileHeader fileHeader) throws IOException, RestoreCanceledException {
+        final @Nullable String myIdentity = userService.getIdentity();
+        if (applyRestore && myIdentity == null) {
+            throw new IllegalStateException("Cannot restore contacts before user identity");
+        }
+
         return this.processCsvFile(fileHeader, row -> {
             try {
                 ContactModel contactModel = createContactModel(row, restoreSettings);
-                if (writeToDb) {
-                    //set the default color
+                if (applyRestore && !contactModel.getIdentity().equals(myIdentity)) {
                     ContactModelFactory contactModelFactory = databaseService.getContactModelFactory();
                     contactModelFactory.createOrUpdate(contactModel);
                 }
@@ -1238,26 +1232,25 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             return false;
         }
 
-        // Look up contact model for this avatar
         String identityId = filename.substring(Tags.CONTACT_AVATAR_FILE_PREFIX.length());
         if (TestUtil.isEmptyOrNull(identityId)) {
             return false;
         }
 
-        ContactModel contactModel;
+        String identity;
         if (Tags.CONTACT_AVATAR_FILE_SUFFIX_ME.equals(identityId)) {
-            contactModel = contactService.getMe();
+            identity = identityProvider.getIdentityString();
         } else {
-            contactModel = contactService.getByIdentity(identityIdMap.get(identityId));
+            identity = identityIdMap.get(identityId);
         }
-
-        if (contactModel == null) {
+        if (identity == null) {
+            logger.error("Could not restore contact avatar file for invalid identity id {}", identityId);
             return false;
         }
 
         // Set contact avatar
         try (InputStream inputStream = getZipFileInputStream(fileHeader)) {
-            fileService.writeUserDefinedProfilePicture(contactModel.getIdentity(), inputStream);
+            fileService.writeUserDefinedProfilePicture(identity, inputStream);
             return true;
         } catch (Exception e) {
             logger.error("Exception while writing contact avatar", e);
@@ -1295,9 +1288,9 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     private boolean restoreGroupFile(@NonNull FileHeader fileHeader) throws IOException, RestoreCanceledException {
         return this.processCsvFile(fileHeader, row -> {
             try {
-                GroupModel groupModel = createGroupModel(row, restoreSettings);
+                GroupModelOld groupModel = createGroupModel(row, restoreSettings);
 
-                if (groupModel != null && writeToDb) {
+                if (groupModel != null && applyRestore) {
                     databaseService.getGroupModelFactory().create(
                         groupModel
                     );
@@ -1320,12 +1313,12 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                             // Don't save the user in member list. Just set the flag for setting
                             // the user state later.
                             userIsInMemberList = true;
+                        } else if (groupModel.getCreatorIdentity().equals(memberIdentity)) {
+                            // Don't save the creator in member list.
+                            creatorIsInMemberList = true;
                         } else if (contactService.getByIdentity(memberIdentity) != null) {
                             // In case the contact exists, add the contact as a member
                             databaseService.getGroupMemberModelFactory().create(groupMemberModel);
-                            if (memberIdentity != null && memberIdentity.equals(groupModel.getCreatorIdentity())) {
-                                creatorIsInMemberList = true;
-                            }
                         } else {
                             // The contact does not exist. This can happen when the data backup is
                             // corrupt or the contact hasn't been added due to an invalid public
@@ -1336,14 +1329,14 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                     if (restoreSettings.getVersion() < 25) {
                         // In this case the group user state is not included in the backup and we
                         // need to determine the state based on the group member list.
-                        groupModel.setUserState(userIsInMemberList ? MEMBER : LEFT);
+                        groupModel.setUserState(userIsInMemberList ? UserState.MEMBER : UserState.LEFT);
                         databaseService.getGroupModelFactory().update(groupModel);
                     }
 
-                    if (groupModel.getUserState() == MEMBER && !myIdentity.equals(groupModel.getCreatorIdentity()) && !creatorIsInMemberList) {
+                    if (groupModel.getUserState() == UserState.MEMBER && !myIdentity.equals(groupModel.getCreatorIdentity()) && !creatorIsInMemberList) {
                         // If the creator is not a member, the group is considered to be 'orphaned'. This is not allowed, so instead we treat
                         // the group as if we had been kicked from it.
-                        groupModel.setUserState(KICKED);
+                        groupModel.setUserState(UserState.KICKED);
                         databaseService.getGroupModelFactory().update(groupModel);
                     }
                 }
@@ -1358,13 +1351,13 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             try {
                 DistributionListModel distributionListModel = createDistributionListModel(row);
 
-                if (writeToDb) {
+                if (applyRestore) {
                     databaseService.getDistributionListModelFactory().create(distributionListModel);
                     distributionListIdMap.put(BackupUtils.buildDistributionListUid(distributionListModel), distributionListModel.getId());
                 }
 
                 List<DistributionListMemberModel> distributionListMemberModels = createDistributionListMembers(row, distributionListModel.getId());
-                if (writeToDb) {
+                if (applyRestore) {
                     for (DistributionListMemberModel distributionListMemberModel : distributionListMemberModels) {
                         String memberIdentity = distributionListMemberModel.getIdentity();
                         if (contactService.getByIdentity(memberIdentity) != null) {
@@ -1391,17 +1384,15 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
         this.processCsvFile(ballotMain, row -> {
             try {
                 BallotModel ballotModel = createBallotModel(row);
-
-                if (writeToDb) {
+                if (applyRestore) {
                     databaseService.getBallotModelFactory().create(ballotModel);
-
-                    ballotIdMap.put(BackupUtils.buildBallotUid(ballotModel), ballotModel.getId());
-                    ballotOldIdMap.put(row.getInteger(Tags.TAG_BALLOT_ID), ballotModel.getId());
                 }
+                ballotIdMap.put(BackupUtils.buildBallotUid(ballotModel), ballotModel.getId());
+                ballotOldIdMap.put(row.getInteger(Tags.TAG_BALLOT_ID), ballotModel.getId());
 
                 LinkBallotModel ballotLinkModel = createLinkBallotModel(row, ballotModel.getId());
 
-                if (writeToDb) {
+                if (applyRestore) {
                     if (ballotLinkModel == null) {
                         //link failed
                         logger.error("link failed");
@@ -1427,7 +1418,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
         this.processCsvFile(ballotChoice, row -> {
             try {
                 BallotChoiceModel ballotChoiceModel = createBallotChoiceModel(row);
-                if (ballotChoiceModel != null && writeToDb) {
+                if (ballotChoiceModel != null && applyRestore) {
                     databaseService.getBallotChoiceModelFactory().create(ballotChoiceModel);
                     ballotChoiceIdMap.put(BackupUtils.buildBallotChoiceUid(ballotChoiceModel), ballotChoiceModel.getId());
                 }
@@ -1440,7 +1431,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
         this.processCsvFile(ballotVote, row -> {
             try {
                 BallotVoteModel ballotVoteModel = createBallotVoteModel(row);
-                if (ballotVoteModel != null && writeToDb) {
+                if (ballotVoteModel != null && applyRestore) {
                     databaseService.getBallotVoteModelFactory().create(ballotVoteModel);
                 }
             } catch (Exception x) {
@@ -1451,8 +1442,8 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
     }
 
     @Nullable
-    private GroupModel createGroupModel(CSVRow row, RestoreSettings restoreSettings) throws ThreemaException {
-        GroupModel groupModel = new GroupModel();
+    private GroupModelOld createGroupModel(CSVRow row, RestoreSettings restoreSettings) throws ThreemaException {
+        GroupModelOld groupModel = new GroupModelOld();
         groupModel.setApiGroupId(new GroupId(row.getString(Tags.TAG_GROUP_ID)));
         groupModel.setCreatorIdentity(row.getString(Tags.TAG_GROUP_CREATOR));
         groupModel.setName(row.getString(Tags.TAG_GROUP_NAME));
@@ -1475,7 +1466,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
         }
 
         if (restoreSettings.getVersion() >= 25) {
-            groupModel.setUserState(UserState.valueOf(row.getInteger(Tags.TAG_GROUP_USER_STATE)));
+            groupModel.setUserState(UserState.getByValue(row.getInteger(Tags.TAG_GROUP_USER_STATE)));
         }
 
         return groupModel;
@@ -1560,7 +1551,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             return linkBallotModel;
         }
 
-        if (writeToDb) {
+        if (applyRestore) {
             logger.error("invalid ballot reference {} with id {}", reference, referenceId);
             return null;
         }
@@ -1631,7 +1622,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             try {
                 counter.count();
 
-                if (writeToDb) {
+                if (applyRestore) {
                     MessageModel messageModel = createMessageModel(row, restoreSettings);
                     messageModel.setIdentity(identity);
 
@@ -1715,7 +1706,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             try {
                 counter.count();
 
-                if (writeToDb) {
+                if (applyRestore) {
                     GroupMessageModel groupMessageModel = createGroupMessageModel(row, restoreSettings);
                     Integer groupId = groupUidMap.get(groupUid);
                     if (groupId != null) {
@@ -1846,7 +1837,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                 DistributionListMessageModel distributionListMessageModel = createDistributionListMessageModel(row, restoreSettings);
                 counter.count();
 
-                if (writeToDb) {
+                if (applyRestore) {
                     updateProgress(STEP_SIZE_MESSAGES);
 
                     final Long distributionListId = distributionListIdMap.get(distributionListBackupUid);
@@ -2183,7 +2174,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
             throw new RestoreCanceledException();
         }
 
-        if (writeToDb) {
+        if (applyRestore) {
             this.currentProgressStep += increment;
             handleProgress();
         }
@@ -2213,6 +2204,9 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
         cancelPersistentNotification();
 
         if (restoreSuccess && userService.hasIdentity()) {
+            OverrideOneTimeHintsUseCase overrideOneTimeHintsUseCase = KoinJavaComponent.get(OverrideOneTimeHintsUseCase.class);
+            overrideOneTimeHintsUseCase.call();
+
             notificationPreferenceService.setWizardRunning(true);
 
             showRestoreSuccessNotification();
@@ -2255,11 +2249,8 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
                 new Intent(RESTORE_PROGRESS_INTENT).putExtra(RESTORE_PROGRESS_ERROR_MESSAGE, message)
             );
 
-            new DeleteIdentityAsyncTask(null, () -> {
-                isRunning = false;
-
-                System.exit(0);
-            }).execute();
+            ResetAppTaskJavaCompat task = KoinJavaComponent.get(ResetAppTaskJavaCompat.class);
+            task.executeAsync();
         }
     }
 
@@ -2350,7 +2341,7 @@ public class RestoreService extends Service implements ComponentCallbacks2 {
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
             // Android Q does not allow restart in the background
-            Intent backupIntent = new Intent(this, HomeActivity.class);
+            Intent backupIntent = HomeActivity.createIntent(this);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
             builder.setContentIntent(pendingIntent);

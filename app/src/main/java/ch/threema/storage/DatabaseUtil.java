@@ -1,75 +1,72 @@
 package ch.threema.storage;
 
-
 import android.database.Cursor;
 
 import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.NonNull;
-import ch.threema.storage.models.GroupMemberModel;
-import ch.threema.storage.models.GroupModel;
+import androidx.annotation.Nullable;
+import ch.threema.storage.models.group.GroupMemberModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 public class DatabaseUtil {
+
+    private static final String PLACEHOLDER = "?";
 
     private DatabaseUtil() {
     }
 
-    public static Long getDateTimeContentValue(Date date) {
+    @Nullable
+    public static Long getDateTimeContentValue(@Nullable Date date) {
         return date != null ? date.getTime() : null;
     }
 
-    public static Date getDateFromValue(Long timestamp) {
-        if (timestamp != null) {
-            return new Date(timestamp);
-        }
-        return null;
-    }
-
-    public static String makePlaceholders(int len) {
+    /**
+     * @return A concatenated string of placeholder in this form: {@code "?,?,?,?..."}
+     *
+     * @throws RuntimeException for values of parameter {@code len} below 1
+     */
+    @NonNull
+    public static String makePlaceholders(int len) throws RuntimeException {
         if (len < 1) {
             // It will lead to an invalid query anyway ..
             throw new RuntimeException("No placeholders");
         } else {
-            StringBuilder sb = new StringBuilder(len * 2 - 1);
-            sb.append("?");
+            StringBuilder stringBuilder = new StringBuilder(len * 2 - 1);
+            stringBuilder.append(PLACEHOLDER);
             for (int i = 1; i < len; i++) {
-                sb.append(",?");
+                stringBuilder.append(",");
+                stringBuilder.append(PLACEHOLDER);
             }
-            return sb.toString();
+            return stringBuilder.toString();
         }
     }
 
     /**
-     * only for a select count(*) result, the first column must be the count value
-     *
-     * @param c
-     * @return
+     * Only for a select count(*) result, the first column must be the count value
      */
-    public static long count(Cursor c) {
-        long count = 0;
-        if (c != null) {
-            try {
-                if (c.moveToFirst()) {
-                    count = c.getLong(0);
-                }
-            } finally {
-                c.close();
+    public static long count(@Nullable Cursor cursor) {
+        if (cursor == null) {
+            return 0L;
+        }
+        try (cursor) {
+            if (cursor.moveToFirst()) {
+                return cursor.getLong(0);
+            } else {
+                return 0L;
             }
         }
-        return count;
     }
 
     /**
-     * Convert a array of Objects to a valid argument String array
-     *
-     * @param objectList
-     * @return
+     * Converts an array of {@code T} to a valid argument {@code String} array
      */
-    public static <T> String[] convertArguments(List<T> objectList) {
-        String[] arguments = new String[objectList.size()];
-        for (int n = 0; n < objectList.size(); n++) {
-            arguments[n] = String.valueOf(objectList.get(n));
+    @NonNull
+    public static <T> String[] convertArguments(@NonNull List<T> objects) {
+        final @NonNull String[] arguments = new String[objects.size()];
+        for (int i = 0; i < objects.size(); i++) {
+            arguments[i] = String.valueOf(objects.get(i));
         }
         return arguments;
     }
@@ -80,8 +77,8 @@ public class DatabaseUtil {
      */
     @NonNull
     public final static String IS_GROUP_MEMBER_QUERY = "SELECT EXISTS(" +
-        "SELECT 1 FROM " + GroupModel.TABLE + " g INNER JOIN " + GroupMemberModel.TABLE + " m" +
-        "  ON m." + GroupMemberModel.COLUMN_GROUP_ID + " = g." + GroupModel.COLUMN_ID + " " +
+        "SELECT 1 FROM " + GroupModelOld.TABLE + " g INNER JOIN " + GroupMemberModel.TABLE + " m" +
+        "  ON m." + GroupMemberModel.COLUMN_GROUP_ID + " = g." + GroupModelOld.COLUMN_ID + " " +
         "WHERE m." + GroupMemberModel.COLUMN_IDENTITY + " = ?" +
         ")";
 }

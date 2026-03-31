@@ -16,9 +16,9 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.protobuf.Common.CspE2eMessageType
 import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
 import ch.threema.storage.models.AbstractMessageModel
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
+import ch.threema.storage.models.group.GroupMessageModel
 import java.util.Date
 
 private val logger = getThreemaLogger("ReflectedOutgoingMessageTask")

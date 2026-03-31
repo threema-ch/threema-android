@@ -1,12 +1,11 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import kotlinx.serialization.Serializable
 
 private val logger = getThreemaLogger("OutgoingGroupSyncTask")
@@ -19,10 +18,9 @@ private val logger = getThreemaLogger("OutgoingGroupSyncTask")
  */
 class OutgoingGroupSyncTask(
     private val groupId: GroupId,
-    private val creatorIdentity: Identity,
-    private val receiverIdentities: Set<Identity>,
-    private val serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+    private val creatorIdentity: IdentityString,
+    private val receiverIdentities: Set<IdentityString>,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingGroupSyncTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -49,7 +47,6 @@ class OutgoingGroupSyncTask(
             groupService.getGroupMemberIdentities(group).toSet(),
             receiverIdentities,
             null,
-            serviceManager,
         ).invoke(handle)
 
         // Send a group name message (run task immediately)
@@ -59,7 +56,6 @@ class OutgoingGroupSyncTask(
             group.name ?: "",
             receiverIdentities,
             null,
-            serviceManager,
         ).invoke(handle)
 
         // Send a profile picture (delete) message (run task immediately)
@@ -68,7 +64,6 @@ class OutgoingGroupSyncTask(
             creatorIdentity,
             receiverIdentities,
             null,
-            serviceManager,
         ).invoke(handle)
     }
 
@@ -81,15 +76,14 @@ class OutgoingGroupSyncTask(
     @Serializable
     private class OutgoingGroupSyncData(
         private val groupId: ByteArray,
-        private val creatorIdentity: Identity,
-        private val receiverIdentities: Set<Identity>,
+        private val creatorIdentity: IdentityString,
+        private val receiverIdentities: Set<IdentityString>,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingGroupSyncTask(
-                GroupId(groupId),
-                creatorIdentity,
-                receiverIdentities,
-                serviceManager,
+                groupId = GroupId(groupId),
+                creatorIdentity = creatorIdentity,
+                receiverIdentities = receiverIdentities,
             )
     }
 }

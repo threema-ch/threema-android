@@ -32,7 +32,7 @@ class MasterKeyStorageManagerTest {
 
     @Test
     fun `reading from existing version 2 key file`() {
-        val keyStorageDataMock = mockk<MasterKeyStorageData>()
+        val keyStorageDataMock = mockk<MasterKeyStorageData.Version2>()
         val keyStateMock = mockk<MasterKeyState>()
         val keyStorageManager = MasterKeyStorageManager(
             version2KeyFileManager = mockk {

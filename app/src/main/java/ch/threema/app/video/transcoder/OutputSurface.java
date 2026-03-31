@@ -88,7 +88,7 @@ public class OutputSurface implements SurfaceTexture.OnFrameAvailableListener {
         // still need to keep a reference to it.  The Surface doesn't retain a reference
         // at the Java level, so if we don't either then the object can get GCed, which
         // causes the native finalizer to run.
-        logger.debug("textureID=" + mTextureRender.getTextureId());
+        logger.debug("textureID={}", mTextureRender.getTextureId());
         mSurfaceTexture = new SurfaceTexture(mTextureRender.getTextureId());
         mSurfaceTexture.setOnFrameAvailableListener(this, mHandler);
         mSurface = new Surface(mSurfaceTexture);

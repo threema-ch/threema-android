@@ -6,14 +6,14 @@ import ch.threema.localcrypto.models.RemoteSecretAuthenticationToken
 import ch.threema.localcrypto.models.RemoteSecretClientParameters
 import ch.threema.localcrypto.models.RemoteSecretCreationResult
 import ch.threema.localcrypto.models.RemoteSecretParameters
-import ch.threema.localcrypto.models.RemoteSecretProtectionCheckResult
+import ch.threema.localcrypto.models.RemoteSecretProtectionInstruction
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.coroutineScope
 
 class NoOpRemoteSecretManagerImpl : RemoteSecretManager {
     override fun checkRemoteSecretProtection(lockData: MasterKeyState.WithRemoteSecret?) =
-        RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED
+        RemoteSecretProtectionInstruction.NO_CHANGE_NEEDED
 
     override suspend fun createRemoteSecret(clientParameters: RemoteSecretClientParameters): RemoteSecretCreationResult {
         error("must not be called")

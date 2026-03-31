@@ -4,16 +4,16 @@ import android.content.Context
 import android.os.Bundle
 import android.view.WindowManager
 import androidx.lifecycle.lifecycleScope
-import ch.threema.android.Toaster
+import ch.threema.android.ToastDuration
 import ch.threema.android.buildActivityIntent
 import ch.threema.android.disableExitTransition
+import ch.threema.android.navigateToLauncher
 import ch.threema.android.showToast
 import ch.threema.app.R
 import ch.threema.app.activities.ThreemaAppCompatActivity
 import ch.threema.app.di.DIJavaCompat.isSessionScopeReady
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.LockAppService
-import ch.threema.app.utils.NavigationUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
 import kotlinx.coroutines.launch
@@ -54,8 +54,8 @@ class AppLockActivity : ThreemaAppCompatActivity() {
 
         lifecycleScope.launch {
             when (authenticationType) {
-                PreferenceService.LockingMech_BIOMETRIC -> tryAuthenticateWithBiometrics()
-                PreferenceService.LockingMech_SYSTEM -> tryAuthenticateWithSystemLock()
+                PreferenceService.LOCKING_MECH_BIOMETRIC -> tryAuthenticateWithBiometrics()
+                PreferenceService.LOCKING_MECH_SYSTEM -> tryAuthenticateWithSystemLock()
                 else -> finish()
             }
         }
@@ -65,11 +65,16 @@ class AppLockActivity : ThreemaAppCompatActivity() {
         when (val result = tryAuthenticate(authType = AppLockUtil.AuthType.BIOMETRIC)) {
             AppLockUtil.AuthenticationResult.Success -> finishWithSuccess()
             AppLockUtil.AuthenticationResult.CancelledByUser -> finishWithoutSuccess()
-            is AppLockUtil.AuthenticationResult.SystemError -> {
+            is AppLockUtil.AuthenticationResult.Error.MissingDeviceLock -> {
+                // TODO(ANDR-4317): Consider this case for the fallback behaviour
+                onError(result)
+            }
+            is AppLockUtil.AuthenticationResult.Error.Other -> {
+                // TODO(ANDR-4317): Consider this case for the fallback behaviour
                 logger.warn(
                     "Failed to authenticate with biometrics (code={}, message={}), falling back to system lock",
                     result.code,
-                    result.errorMessage,
+                    result.message,
                 )
                 tryAuthenticateWithSystemLock()
             }
@@ -80,18 +85,30 @@ class AppLockActivity : ThreemaAppCompatActivity() {
         when (val result = tryAuthenticate(authType = AppLockUtil.AuthType.ANY)) {
             AppLockUtil.AuthenticationResult.Success -> finishWithSuccess()
             AppLockUtil.AuthenticationResult.CancelledByUser -> finishWithoutSuccess()
-            is AppLockUtil.AuthenticationResult.SystemError -> {
-                if (!isCheckOnly && !appLockUtil.hasDeviceLock()) {
-                    logger.warn("no lock screen available, disabling lock")
-                    showToast(R.string.no_lockscreen_set, duration = Toaster.Duration.LONG)
-                    lockAppService.unlock(null)
-                    preferenceService.setLockMechanism(PreferenceService.LockingMech_NONE)
-                    preferenceService.setPrivateChatsHidden(false)
-                    finishWithSuccess()
-                } else {
-                    showToast("${result.errorMessage} (${result.code})")
+            is AppLockUtil.AuthenticationResult.Error -> onError(result)
+        }
+    }
+
+    private fun onError(error: AppLockUtil.AuthenticationResult.Error) {
+        when (error) {
+            AppLockUtil.AuthenticationResult.Error.MissingDeviceLock -> {
+                showToast(
+                    message = R.string.no_lockscreen_set,
+                    duration = ToastDuration.LONG,
+                )
+                if (isCheckOnly) {
                     finishWithoutSuccess()
+                } else {
+                    logger.warn("Disabling lock because the device is missing a system lock")
+                    lockAppService.unlock(null)
+                    preferenceService.setLockMechanism(PreferenceService.LOCKING_MECH_NONE)
+                    preferenceService.setArePrivateChatsHidden(false)
+                    finishWithSuccess()
                 }
+            }
+            is AppLockUtil.AuthenticationResult.Error.Other -> {
+                showToast("${error.message} (${error.message})")
+                finishWithoutSuccess()
             }
         }
     }
@@ -114,7 +131,7 @@ class AppLockActivity : ThreemaAppCompatActivity() {
 
     private fun finishWithoutSuccess() {
         if (!isCheckOnly) {
-            NavigationUtil.navigateToLauncher(this)
+            navigateToLauncher()
         }
         setResult(RESULT_CANCELED)
         finish()
@@ -128,6 +145,7 @@ class AppLockActivity : ThreemaAppCompatActivity() {
     companion object {
 
         @JvmStatic
+        @JvmOverloads
         fun createIntent(
             context: Context,
             checkOnly: Boolean = false,

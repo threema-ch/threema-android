@@ -1,10 +1,11 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.multidevice.MultiDeviceManager
-import ch.threema.app.protocol.ExpectedProfilePictureChange
+import ch.threema.app.protocolsteps.ExpectedProfilePictureChange
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
+import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
+import ch.threema.domain.models.UserState
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.NetworkException
@@ -18,21 +19,17 @@ import ch.threema.protobuf.d2d.sync.MdD2DSync.ConversationVisibility
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Group
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Group.NotificationSoundPolicyOverride
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Group.NotificationTriggerPolicyOverride
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Group.UserState
 import ch.threema.protobuf.d2d.sync.group
 import ch.threema.protobuf.deltaImage
 import ch.threema.protobuf.groupIdentity
 import ch.threema.protobuf.identities
 import ch.threema.protobuf.image
 import ch.threema.protobuf.unit
-import ch.threema.storage.models.GroupModel
 import com.google.protobuf.kotlin.toByteString
 
 private val logger = getThreemaLogger("ReflectGroupSyncTask")
 
-abstract class ReflectGroupSyncTask<TransactionResult, TaskResult>(
-    multiDeviceManager: MultiDeviceManager,
-) : ReflectSyncTask<TransactionResult, TaskResult>(multiDeviceManager, GROUP_SYNC) {
+abstract class ReflectGroupSyncTask<TransactionResult, TaskResult>() : ReflectSyncTask<TransactionResult, TaskResult>(transactionScope = GROUP_SYNC) {
     /**
      * Runs the transaction. The group sync is performed inside of the transaction.
      */
@@ -153,7 +150,7 @@ fun GroupModelData.toGroupSync(
         }
 }
 
-fun ch.threema.data.models.GroupModel.getProtoGroupIdentity() =
+fun GroupModel.getProtoGroupIdentity() =
     groupIdentity.getProtoGroupIdentity()
 
 fun GroupModelData.getProtoGroupIdentity() = groupIdentity.getProtoGroupIdentity()
@@ -164,11 +161,11 @@ fun GroupIdentity.getProtoGroupIdentity() = groupIdentity {
 }
 
 private fun GroupModelData.getProtoUserState() = when (userState) {
-    GroupModel.UserState.MEMBER -> UserState.MEMBER
-    GroupModel.UserState.LEFT -> UserState.LEFT
-    GroupModel.UserState.KICKED -> UserState.KICKED
+    UserState.MEMBER -> Group.UserState.MEMBER
+    UserState.LEFT -> Group.UserState.LEFT
+    UserState.KICKED -> Group.UserState.KICKED
 }
 
 private fun GroupModelData.getProtoMembers() = identities {
-    identities.addAll(this@getProtoMembers.otherMembers - groupIdentity.creatorIdentity)
+    identities.addAll(this@getProtoMembers.otherMembers)
 }

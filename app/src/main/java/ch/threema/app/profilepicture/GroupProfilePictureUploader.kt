@@ -5,9 +5,10 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.generateRandomBytes
+import ch.threema.common.isHttpAuthError
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import java.io.FileNotFoundException
 import java.io.IOException
 import java.security.SecureRandom
 
@@ -36,9 +37,7 @@ class GroupProfilePictureUploader(
 
     private fun uploadGroupProfilePicture(profilePicture: ProfilePicture): GroupProfilePictureUploadResult =
         try {
-            val encryptionKey = ByteArray(NaCl.SYMM_KEY_BYTES)
-            secureRandom.nextBytes(encryptionKey)
-
+            val encryptionKey = secureRandom.generateRandomBytes(NaCl.SYMM_KEY_BYTES)
             val encryptedData = NaCl.symmetricEncryptData(
                 data = profilePicture.bytes,
                 key = encryptionKey,
@@ -67,16 +66,12 @@ class GroupProfilePictureUploader(
                 encryptionKey = encryptionKey,
                 size = encryptedData.size,
             )
-        } catch (e: FileNotFoundException) {
-            if (ConfigUtils.isOnPremBuild()) {
+        } catch (e: IOException) {
+            if (e.isHttpAuthError() && ConfigUtils.isOnPremBuild()) {
                 logger.info("Auth token invalid")
-                GroupProfilePictureUploadResult.Failure.OnPremAuthTokenInvalid
             } else {
                 logger.error("Could not upload blob", e)
-                GroupProfilePictureUploadResult.Failure.UploadFailed
             }
-        } catch (e: IOException) {
-            logger.error("Could not upload blob", e)
             GroupProfilePictureUploadResult.Failure.UploadFailed
         } catch (e: ThreemaException) {
             logger.error("Failure while uploading blob", e)

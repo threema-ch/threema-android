@@ -5,9 +5,6 @@ import android.view.View
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ch.threema.android.ResolvableString
-import ch.threema.android.ResolvedString
-import ch.threema.android.ResourceIdString
 import ch.threema.app.R
 import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask
 import ch.threema.app.compose.conversation.models.ConversationListItemUiModel
@@ -16,6 +13,7 @@ import ch.threema.app.drafts.DraftManager
 import ch.threema.app.listeners.ConversationListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.messagereceiver.MessageReceiver
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationService
@@ -24,34 +22,41 @@ import ch.threema.app.services.GroupFlowDispatcher
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.RingtoneService
 import ch.threema.app.services.UserService
-import ch.threema.app.usecases.WatchGroupCallsUseCase
 import ch.threema.app.usecases.WatchTypingIdentitiesUseCase
+import ch.threema.app.usecases.avatar.GetAndPrepareAvatarUseCase
+import ch.threema.app.usecases.contacts.WatchAllMentionNamesUseCase
+import ch.threema.app.usecases.contacts.WatchContactNameFormatSettingUseCase
 import ch.threema.app.usecases.conversations.WatchArchivedConversationListItemsUseCase
 import ch.threema.app.usecases.conversations.WatchArchivedConversationsUseCase
+import ch.threema.app.usecases.conversations.WatchAvatarIterationsUseCase
+import ch.threema.app.usecases.groups.WatchGroupCallsUseCase
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.NameUtil
 import ch.threema.common.takeUnlessEmpty
 import ch.threema.common.toggle
+import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.repositories.GroupModelRepository
+import ch.threema.domain.models.ContactReceiverIdentifier
+import ch.threema.domain.models.DistributionListReceiverIdentifier
+import ch.threema.domain.models.GroupReceiverIdentifier
+import ch.threema.domain.models.ReceiverIdentifier
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.types.ConversationUID
-import ch.threema.domain.types.Identity
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.DistributionListModel
-import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.ReceiverModel
-import kotlin.time.Duration.Companion.seconds
+import ch.threema.storage.models.group.GroupModelOld
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ArchiveViewModel(
     private val appContext: Context,
@@ -68,6 +73,11 @@ class ArchiveViewModel(
     private val watchGroupCallsUseCase: WatchGroupCallsUseCase,
     private val watchTypingIdentitiesUseCase: WatchTypingIdentitiesUseCase,
     private val groupFlowDispatcher: GroupFlowDispatcher,
+    private val getAndPrepareAvatarUseCase: GetAndPrepareAvatarUseCase,
+    preferenceService: PreferenceService,
+    private val watchAvatarIterationsUseCase: WatchAvatarIterationsUseCase,
+    private val watchContactNameFormatSettingUseCase: WatchContactNameFormatSettingUseCase,
+    private val watchAllMentionNamesUseCase: WatchAllMentionNamesUseCase,
 ) : ViewModel() {
 
     private val watchArchivedConversationListItemsUseCase = WatchArchivedConversationListItemsUseCase(
@@ -79,10 +89,14 @@ class ArchiveViewModel(
         groupService = groupService,
         distributionListService = distributionListService,
         ringtoneService = ringtoneService,
+        watchAvatarIterationsUseCase = watchAvatarIterationsUseCase,
+        watchContactNameFormatSettingUseCase = watchContactNameFormatSettingUseCase,
+        watchAllMentionNamesUseCase = watchAllMentionNamesUseCase,
         draftManager = draftManager,
     )
 
     private val conversationUiModels: Flow<List<ConversationUiModel>> = watchArchivedConversationListItemsUseCase.call()
+    private val arePrivateChatsHidden: Flow<Boolean> = preferenceService.watchArePrivateChatsHidden()
     private val selectedConversationUIDs = MutableStateFlow<Set<ConversationUID>>(emptySet())
     private val filterQuery = MutableStateFlow<String?>(null)
 
@@ -90,23 +104,35 @@ class ArchiveViewModel(
         flow = conversationUiModels,
         flow2 = selectedConversationUIDs,
         flow3 = filterQuery,
-    ) { conversationUiModels, selectedConversationUIDs, filterQuery ->
+        flow4 = arePrivateChatsHidden,
+    ) { conversationUiModels, selectedConversationUIDs, filterQuery, arePrivateChatsHidden ->
         conversationUiModels
+            .filter { conversationUiModel ->
+                !conversationUiModel.isPrivate || !arePrivateChatsHidden
+            }
             .filter { conversationModel ->
-                filterQuery
-                    ?.let(conversationModel::matchesFilterQuery)
-                    ?: true
-            }.map { conversationUiModel ->
+                conversationModel.matchesFilterQuery(filterQuery)
+            }
+            .map { conversationUiModel ->
                 ConversationListItemUiModel(
                     model = conversationUiModel,
                     isChecked = selectedConversationUIDs.contains(conversationUiModel.conversationUID),
+                    isHighlighted = false,
                 )
             }
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(stopTimeout = 5.seconds),
+        started = SharingStarted.Lazily,
         initialValue = emptyList(),
     )
+
+    val contactNameFormat: StateFlow<ContactNameFormat> = watchContactNameFormatSettingUseCase
+        .call()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = ContactNameFormat.DEFAULT,
+        )
 
     val selectedCount: Int
         get() = selectedConversationUIDs.value.size
@@ -155,17 +181,17 @@ class ArchiveViewModel(
                 .firstOrNull { conversationListItemUiModel ->
                     conversationListItemUiModel.model.conversationUID == conversationUUID
                 } ?: return@launch
-            when (val receiver: ReceiverModel = conversationListItemUiModel.model.receiverModel) {
-                is ContactModel -> {
-                    _events.emit(ArchiveScreenEvent.OpenOneToOneConversation(receiver.identity))
+            when (val receiverIdentifier = conversationListItemUiModel.model.receiverIdentifier) {
+                is ContactReceiverIdentifier -> {
+                    _events.emit(ArchiveScreenEvent.OpenOneToOneConversation(receiverIdentifier.identity))
                 }
 
-                is GroupModel -> {
-                    _events.emit(ArchiveScreenEvent.OpenGroupConversation(receiver.id))
+                is GroupReceiverIdentifier -> {
+                    _events.emit(ArchiveScreenEvent.OpenGroupConversation(receiverIdentifier.groupDatabaseId))
                 }
 
-                is DistributionListModel -> {
-                    _events.emit(ArchiveScreenEvent.OpenDistributionListConversation(receiver.id))
+                is DistributionListReceiverIdentifier -> {
+                    _events.emit(ArchiveScreenEvent.OpenDistributionListConversation(receiverIdentifier.id))
                 }
             }
         }
@@ -175,8 +201,10 @@ class ArchiveViewModel(
         val selectedConversationUiModels: List<ConversationUiModel> = currentlySelectedConversations
         viewModelScope.launch {
             if (selectedConversationUiModels.isNotEmpty()) {
-                val receiverModels: List<ReceiverModel> = selectedConversationUiModels.map(ConversationUiModel::receiverModel)
-                conversationService.unarchiveByReceivers(receiverModels, TriggerSource.LOCAL)
+                withContext(Dispatchers.IO) {
+                    val receiverIdentifiers: List<ReceiverIdentifier> = selectedConversationUiModels.map(ConversationUiModel::receiverIdentifier)
+                    conversationService.unarchiveByReceiverIdentifiers(receiverIdentifiers, TriggerSource.LOCAL)
+                }
             }
             _events.emit(ArchiveScreenEvent.ConversationsUnarchived)
         }
@@ -202,11 +230,11 @@ class ArchiveViewModel(
                 selectedConversationUiModels.size,
             ) + " " + appContext.getString(R.string.messages_cannot_be_recovered)
 
-            val singleGroupConversation: ConversationUiModel.GroupConversation? = selectedConversationUiModels.singleOrNull()
-                as? ConversationUiModel.GroupConversation
-            if (singleGroupConversation != null) {
+            val singleGroupReceiverIdentifier: GroupReceiverIdentifier? =
+                (selectedConversationUiModels.singleOrNull() as? ConversationUiModel.GroupConversation)?.receiverIdentifier
+            if (singleGroupReceiverIdentifier != null) {
                 // If only one conversation is deleted, and it's a group, show a more specific message.
-                val groupModel: GroupModel? = singleGroupConversation.receiverModel
+                val groupModel: GroupModelOld? = groupService.getById(singleGroupReceiverIdentifier.groupDatabaseId)
                 if (groupModel != null && groupService.isGroupMember(groupModel)) {
                     title = appContext.getString((R.string.action_delete_group))
                     message = if (groupService.isGroupCreator(groupModel)) {
@@ -237,11 +265,37 @@ class ArchiveViewModel(
         supportFragmentManager: FragmentManager,
         snackbarFeedbackView: View?,
     ) {
-        val selectedReceiverModels: List<ReceiverModel> = currentlySelectedConversations.map(ConversationUiModel::receiverModel)
-        val messageReceivers: List<MessageReceiver<*>> = selectedReceiverModels.mapNotNull { receiverModel ->
+        val selectedReceiverIdentifiers = currentlySelectedConversations.map(ConversationUiModel::receiverIdentifier)
+
+        val contactModels: List<ContactModel> = selectedReceiverIdentifiers
+            .filterIsInstance<ContactReceiverIdentifier>()
+            .map(ContactReceiverIdentifier::identity)
+            .let { identities ->
+                contactService.getByIdentities(identities)
+            }
+
+        val groupModels: List<GroupModelOld> = selectedReceiverIdentifiers
+            .filterIsInstance<GroupReceiverIdentifier>()
+            .map { groupReceiverIdentifier ->
+                // TODO(ANDR-4354): Remove this cast to Int
+                groupReceiverIdentifier.groupDatabaseId.toInt()
+            }
+            .let { groupDatabaseIds ->
+                groupService.getByIds(groupDatabaseIds)
+            }
+
+        val distributionListModels: List<DistributionListModel> = selectedReceiverIdentifiers
+            .filterIsInstance<DistributionListReceiverIdentifier>()
+            .map(DistributionListReceiverIdentifier::id)
+            .let { distributionListIds: List<Long> ->
+                distributionListService.getByIds(distributionListIds)
+            }
+
+        val receiverModels: List<ReceiverModel> = contactModels + groupModels + distributionListModels
+        val messageReceivers: List<MessageReceiver<*>> = receiverModels.mapNotNull { receiverModel ->
             when (receiverModel) {
                 is ContactModel -> contactService.createReceiver(receiverModel)
-                is GroupModel -> groupService.createReceiver(receiverModel)
+                is GroupModelOld -> groupService.createReceiver(receiverModel)
                 is DistributionListModel -> distributionListService.createReceiver(receiverModel)
                 else -> null
             }
@@ -267,10 +321,6 @@ class ArchiveViewModel(
         }.execute()
     }
 
-    fun getNameByIdentityOrNull(identity: Identity): ResolvableString? {
-        if (identity == ContactService.ALL_USERS_PLACEHOLDER_ID) {
-            return ResourceIdString(R.string.all)
-        }
-        return NameUtil.getDisplayNameOrNickname(identity, contactService).takeUnlessEmpty()?.let(::ResolvedString)
-    }
+    suspend fun provideAvatarBitmap(receiverIdentifier: ReceiverIdentifier) =
+        getAndPrepareAvatarUseCase.call(receiverIdentifier)
 }

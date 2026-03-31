@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -32,15 +30,10 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <ch.threema.app.ui.EmptyRecyclerView
-        android:id="@+id/recycler_chats"
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/starred_messages_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginLeft="@dimen/tablet_additional_padding_horizontal"
-        android:layout_marginRight="@dimen/tablet_additional_padding_horizontal"
-        android:background="?android:attr/colorBackground"
-        android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        tools:listitem="@layout/item_starred_messages" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

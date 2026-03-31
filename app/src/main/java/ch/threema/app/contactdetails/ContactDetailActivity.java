@@ -3,6 +3,7 @@ package ch.threema.app.contactdetails;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -51,6 +52,7 @@ import ch.threema.app.AppConstants;
 import ch.threema.app.R;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.activities.GroupDetailActivity;
+import ch.threema.app.apptaskexecutor.AppTaskExecutor;
 import ch.threema.app.camera.QRScannerActivity;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.mediagallery.MediaGalleryActivity;
@@ -82,8 +84,8 @@ import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.TooltipPopup;
 import ch.threema.app.ui.ViewExtensionsKt;
+import ch.threema.app.androidcontactsync.usecases.UpdateContactNameUseCase;
 import ch.threema.app.utils.AndroidContactUtil;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.NameUtil;
@@ -95,14 +97,17 @@ import ch.threema.app.qrcodes.ContactUrlUtil;
 import ch.threema.app.qrcodes.ContactUrlResult;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.webviews.WorkExplainActivity;
-import ch.threema.base.ThreemaException;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
 import kotlin.Lazy;
+import ch.threema.storage.models.group.GroupModelOld;
+import kotlin.Unit;
 
 import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.common.LazyKt.lazy;
@@ -133,7 +138,13 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
 
     @NonNull
+    private final Lazy<AppTaskExecutor> appTaskExecutor = KoinJavaComponent.inject(AppTaskExecutor.class);
+
+    @NonNull
     private final Lazy<AndroidContactUtil> androidContactUtil = KoinJavaComponent.inject(AndroidContactUtil.class);
+
+    @NonNull
+    private final Lazy<UpdateContactNameUseCase> updateContactNameUseCase = KoinJavaComponent.inject(UpdateContactNameUseCase.class);
 
     @NonNull
     private final Lazy<BackgroundExecutor> backgroundExecutor = lazy(BackgroundExecutor::new);
@@ -144,7 +155,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     private ContactModel contact;
     private ch.threema.data.models.ContactModel contactModel;
     private @Nullable ContactDetailViewModel viewModel; // Initially null, until initialized
-    private List<GroupModel> groupList;
+    private List<GroupModelOld> groupList;
     private boolean isReadonly;
     private boolean isDisabledProfilePicReleaseSettings = false;
 
@@ -156,6 +167,13 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     private FloatingActionButton floatingActionButton;
     private TextView contactTitle;
     private View workIcon;
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context, @NonNull String identity) {
+        final @NonNull Intent intent = new Intent(context, ContactDetailActivity.class);
+        intent.putExtra(AppConstants.INTENT_DATA_CONTACT, identity);
+        return intent;
+    }
 
     private void refreshAdapter() {
         if (viewModel == null) {
@@ -186,24 +204,8 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
     private final ContactSettingsListener contactSettingsListener = new ContactSettingsListener() {
         @Override
-        public void onSortingChanged() {
-        }
-
-        @Override
-        public void onNameFormatChanged() {
+        public void onNameFormatChanged(@NonNull ContactNameFormat nameFormat) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
-        }
-
-        @Override
-        public void onAvatarSettingChanged() {
-        }
-
-        @Override
-        public void onInactiveContactsSettingChanged() {
-        }
-
-        @Override
-        public void onNotificationSettingChanged(String uid) {
         }
     };
 
@@ -412,7 +414,10 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             if (viewModel != null && expandedPercent == 0.0f) {
                 final @Nullable ContactModelData currentContactModelData = viewModel.contactModelData.getValue();
                 if (currentContactModelData != null) {
-                    toolbarTitle = currentContactModelData.getDisplayName();
+                    toolbarTitle = currentContactModelData.getDisplayName(
+                        dependencies.getPreferenceService().getContactNameFormat(),
+                        true
+                    );
                 }
             }
             collapsingToolbar.setTitle(toolbarTitle);
@@ -437,7 +442,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
         // Hide profile picture release settings if restricted by MDM
         if (ConfigUtils.isWorkRestricted()) {
-            Boolean value = AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_send_profile_picture));
+            Boolean value = dependencies.getAppRestrictions().isDisabledProfilePicReleaseSettingsOrNull();
             if (value != null) {
                 isDisabledProfilePicReleaseSettings = value;
             }
@@ -459,7 +464,9 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         if (contactModelDataSnapshot.acquaintanceLevel == ContactModel.AcquaintanceLevel.GROUP) {
             GenericAlertDialog.newInstance(
                 R.string.menu_add_contact,
-                String.format(getString(R.string.contact_add_confirm), NameUtil.getDisplayNameOrNickname(contact, true)),
+                String.format(
+                    getString(R.string.contact_add_confirm),
+                    NameUtil.getContactDisplayNameOrNickname(contact, true, dependencies.getPreferenceService().getContactNameFormat())),
                 R.string.yes,
                 R.string.no
             ).show(getSupportFragmentManager(), DIALOG_TAG_ADD_CONTACT);
@@ -513,7 +520,12 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         }
 
         // Update name
-        this.contactTitle.setText(contactModelData.getDisplayName());
+        this.contactTitle.setText(
+            contactModelData.getDisplayName(
+                dependencies.getPreferenceService().getContactNameFormat(),
+                true
+            )
+        );
 
         // Show or hide badge for work/private contacts
         ViewUtil.show(workIcon, dependencies.getContactService().showBadge(contactModelData));
@@ -576,7 +588,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
 
         contactDetailAdapter.setOnClickListener(new ContactDetailAdapter.OnClickListener() {
             @Override
-            public void onItemClick(View v, GroupModel groupModel) {
+            public void onItemClick(View v, GroupModelOld groupModel) {
 
                 Intent intent = new Intent(ContactDetailActivity.this, GroupDetailActivity.class);
                 intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) groupModel.getId());
@@ -663,7 +675,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                     dependencies.getExcludedSyncIdentitiesService(),
                     dependencies.getDhSessionStore(),
                     dependencies.getNotificationService(),
-                    dependencies.getDatabaseService()
+                    dependencies.getContactModelFactory()
                 ),
                 addToExcludeList ? ContactSyncPolicy.EXCLUDE : ContactSyncPolicy.INCLUDE,
                 AndroidContactLinkPolicy.REMOVE_LINK
@@ -911,10 +923,14 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                 break;
             case REQUEST_CODE_CONTACT_EDITOR:
                 try {
-                    androidContactUtil.getValue().updateNameByAndroidContact(contactModel, null, this);
-                    androidContactUtil.getValue().updateAvatarByAndroidContact(contactModel, this);
-                    this.avatarEditView.setContactIdentity(contactModel.getIdentity());
-                } catch (ThreemaException | SecurityException e) {
+                    appTaskExecutor.getValue().runInAppTask(continuation -> {
+                        // Note that continuation can only be used once to call a suspend function!
+                        updateContactNameUseCase.getValue().call(Set.of(contactModel), continuation);
+                        androidContactUtil.getValue().updateAvatarByAndroidContact(contactModel, this);
+                        avatarEditView.setContactIdentity(contactModel.getIdentity());
+                        return Unit.INSTANCE;
+                    });
+                } catch (SecurityException e) {
                     logger.info("Unable to update contact name or avatar after returning from ContactEditor");
                 }
                 break;
@@ -961,18 +977,25 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             return;
         }
 
+        String myIdentity = dependencies.getUserService().getIdentity();
+        if (myIdentity == null) {
+            logger.error("Cannot apply QR code result if no identity is available");
+            return;
+        }
+
         AddOrUpdateContactBackgroundTask<String> task = new AddOrUpdateContactBackgroundTask<>(
             identity,
             ContactModel.AcquaintanceLevel.DIRECT,
-            dependencies.getContactService().getMe().getIdentity(),
+            myIdentity,
             dependencies.getApiConnector(),
             dependencies.getContactModelRepository(),
             AddContactRestrictionPolicy.CHECK,
-            this,
+            dependencies.getAppRestrictions(),
             contactUrlResult.getPublicKey()
         ) {
+            @Nullable
             @Override
-            public String onContactAdded(@NonNull ContactResult result) {
+            public String onContactResult(@NonNull ContactResult result) {
                 if (result instanceof AlreadyVerified) {
                     return getString(R.string.scan_duplicate);
                 } else if (result instanceof ContactModified) {
@@ -984,7 +1007,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
                 } else if (result instanceof LocalPublicKeyMismatch) {
                     return getString(R.string.id_mismatch);
                 } else if (result instanceof Failed) {
-                    return ((Failed) result).getMessage();
+                    return getString(((Failed) result).message);
                 }
                 return null;
             }
@@ -1001,7 +1024,10 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, Object data) {
+        if (tag == null) {
+            return;
+        }
         switch (tag) {
             case DIALOG_TAG_DELETE_CONTACT:
                 ContactModel contactModel = (ContactModel) data;
@@ -1022,7 +1048,10 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
     }
 
     @Override
-    public void onNo(String tag, Object data) {
+    public void onNo(@Nullable String tag, @Nullable Object data) {
+        if (tag == null) {
+            return;
+        }
         switch (tag) {
             case DIALOG_TAG_EXCLUDE_CONTACT:
                 removeContactConfirmed(false);
@@ -1072,6 +1101,6 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
         if (isFinishing() || isDestroyed()) {
             return;
         }
-        navigateUpTo(new Intent(this, HomeActivity.class));
+        navigateUpTo(HomeActivity.createIntent(this));
     }
 }

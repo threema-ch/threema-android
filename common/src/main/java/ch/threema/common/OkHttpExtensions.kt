@@ -70,3 +70,11 @@ fun ResponseBody.copyIntoFile(file: File) {
         }
     }
 }
+
+fun Exception.isHttpAuthError() =
+    when ((this as? HttpResponseException)?.code) {
+        Http.StatusCode.UNAUTHORIZED,
+        Http.StatusCode.FORBIDDEN,
+        -> true
+        else -> false
+    }

@@ -7,26 +7,8 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsCompat.Type.displayCutout
 import androidx.core.view.WindowInsetsCompat.Type.systemBars
 import ch.threema.base.utils.getThreemaLogger
-import kotlin.time.Duration
 
 private val logger = getThreemaLogger("ViewExtensions")
-
-/**
- * Gets the coordinates of this view in the coordinate space of the window that contains the view.
- */
-fun View.getLocation(xOffset: Int = 0, yOffset: Int = 0): IntArray {
-    val location = IntArray(2)
-    getLocationInWindow(location)
-    location[0] += xOffset
-    location[1] += yOffset
-    return location
-}
-
-fun View.getTopCenterLocation(): IntArray =
-    getLocation(xOffset = width / 2)
-
-fun View.getBottomCenterLocation(): IntArray =
-    getLocation(xOffset = width / 2, yOffset = height)
 
 data class InsetSides(
     val top: Boolean = false,
@@ -164,8 +146,4 @@ fun View?.setMargin(left: Int, top: Int, right: Int, bottom: Int) {
     } catch (castException: ClassCastException) {
         logger.error("Could not set margins", castException)
     }
-}
-
-fun View.postDelayed(delay: Duration, action: () -> Unit) {
-    postDelayed(action, delay.inWholeMilliseconds)
 }

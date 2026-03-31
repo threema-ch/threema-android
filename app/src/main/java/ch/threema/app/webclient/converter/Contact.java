@@ -1,6 +1,7 @@
 package ch.threema.app.webclient.converter;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -11,11 +12,13 @@ import java.util.List;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import ch.threema.app.ThreemaApplication;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.webclient.exceptions.ConversionException;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.protocol.ThreemaFeature;
@@ -49,10 +52,14 @@ public class Contact extends Converter {
     /**
      * Converts multiple contact models to MsgpackBuilder instances.
      */
-    public static List<MsgpackBuilder> convert(List<ContactModel> contacts) throws ConversionException {
+    @NonNull
+    public static List<MsgpackBuilder> convert(
+        @NonNull List<ContactModel> contacts,
+        @NonNull ContactNameFormat contactNameFormat
+    ) throws ConversionException {
         List<MsgpackBuilder> list = new ArrayList<>();
         for (ContactModel contact : contacts) {
-            list.add(convert(contact));
+            list.add(convert(contact, contactNameFormat));
         }
         return list;
     }
@@ -60,11 +67,15 @@ public class Contact extends Converter {
     /**
      * Converts a contact model to a MsgpackObjectBuilder.
      */
-    public static MsgpackObjectBuilder convert(ContactModel contact) throws ConversionException {
+    @NonNull
+    public static MsgpackObjectBuilder convert(
+        @NonNull ContactModel contact,
+        @NonNull ContactNameFormat contactNameFormat
+    ) throws ConversionException {
         MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
         try {
             builder.put(Receiver.ID, getId(contact));
-            builder.put(Receiver.DISPLAY_NAME, getName(contact));
+            builder.put(Receiver.DISPLAY_NAME, getName(contact, contactNameFormat));
             builder.put(Receiver.COLOR, getColor(contact));
             builder.maybePut(FIRST_NAME, Utils.nullIfEmpty(contact.getFirstName()));
             builder.maybePut(LAST_NAME, Utils.nullIfEmpty(contact.getLastName()));
@@ -84,7 +95,7 @@ public class Contact extends Converter {
 
             boolean isPrivateChat = getConversationCategoryService().isPrivateChat(ContactUtil.getUniqueIdString(contact.getIdentity()));
             builder.put(Receiver.LOCKED, isPrivateChat);
-            builder.put(Receiver.VISIBLE, !isPrivateChat || !getPreferenceService().isPrivateChatsHidden());
+            builder.put(Receiver.VISIBLE, !isPrivateChat || !getPreferenceService().arePrivateChatsHidden());
 
             //define access
             builder.put(Receiver.ACCESS, (new MsgpackObjectBuilder())
@@ -104,7 +115,7 @@ public class Contact extends Converter {
         final MsgpackArrayBuilder emailBuilder = new MsgpackArrayBuilder();
 
         if (contact.isLinkedToAndroidContact()) {
-            if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_CONTACTS)
+            if (ContextCompat.checkSelfPermission(getAppContext(), Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED) {
                 final String lookupKey = contact.getAndroidContactLookupKey();
 
@@ -117,7 +128,7 @@ public class Contact extends Converter {
                     final String selection = ContactsContract.Data.LOOKUP_KEY + "=?" + " AND "
                         + ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE + "'";
                     final String[] selectionArgs = new String[]{String.valueOf(lookupKey)};
-                    final Cursor cursor = getContext().getContentResolver()
+                    final Cursor cursor = getAppContext().getContentResolver()
                         .query(ContactsContract.Data.CONTENT_URI, projection, selection, selectionArgs, null);
                     if (cursor != null) {
                         while (cursor.moveToNext()) {
@@ -130,7 +141,7 @@ public class Contact extends Converter {
                             if (type == ContactsContract.CommonDataKinds.BaseTypes.TYPE_CUSTOM) {
                                 label = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.LABEL));
                             } else {
-                                label = (String) ContactsContract.CommonDataKinds.Phone.getTypeLabel(getContext().getResources(), type, "");
+                                label = (String) ContactsContract.CommonDataKinds.Phone.getTypeLabel(getAppContext().getResources(), type, "");
                             }
 
                             phoneNumberBuilder.put((new MsgpackObjectBuilder())
@@ -150,7 +161,7 @@ public class Contact extends Converter {
                     final String selection = ContactsContract.Data.LOOKUP_KEY + "=?" + " AND "
                         + ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE + "'";
                     final String[] selectionArgs = new String[]{String.valueOf(lookupKey)};
-                    final Cursor cursor = getContext().getContentResolver()
+                    final Cursor cursor = getAppContext().getContentResolver()
                         .query(ContactsContract.Data.CONTENT_URI, projection, selection, selectionArgs, null);
 
                     if (cursor != null) {
@@ -163,7 +174,7 @@ public class Contact extends Converter {
                             if (type == ContactsContract.CommonDataKinds.BaseTypes.TYPE_CUSTOM) {
                                 label = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.LABEL));
                             } else {
-                                label = (String) ContactsContract.CommonDataKinds.Email.getTypeLabel(getContext().getResources(), type, "");
+                                label = (String) ContactsContract.CommonDataKinds.Email.getTypeLabel(getAppContext().getResources(), type, "");
                             }
 
                             emailBuilder.put((new MsgpackObjectBuilder())
@@ -199,9 +210,9 @@ public class Contact extends Converter {
     }
 
     @NonNull
-    public static String getName(ContactModel contact) throws ConversionException {
+    public static String getName(ContactModel contact, @NonNull ContactNameFormat contactNameFormat) throws ConversionException {
         try {
-            return NameUtil.getDisplayNameOrNickname(contact, true);
+            return NameUtil.getContactDisplayNameOrNickname(contact, true, contactNameFormat);
         } catch (NullPointerException e) {
             throw new ConversionException(e);
         }
@@ -247,6 +258,11 @@ public class Contact extends Converter {
                 return true;
             }
         };
+    }
+
+    @NonNull
+    private static Context getAppContext() {
+        return ThreemaApplication.getAppContext();
     }
 
 }

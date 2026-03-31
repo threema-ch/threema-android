@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.UserService
 import ch.threema.base.crypto.NonceFactory
@@ -19,6 +18,8 @@ import ch.threema.protobuf.d2d.sync.UserProfileKt.IdentityLinksKt.identityLink
 import ch.threema.protobuf.d2d.sync.UserProfileKt.identityLinks
 import ch.threema.protobuf.d2d.sync.userProfile
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("ReflectUserProfileIdentityLinksTask")
 
@@ -26,11 +27,11 @@ private val logger = getThreemaLogger("ReflectUserProfileIdentityLinksTask")
  * Note that this task always reflects the current state when it is running. Therefore, this task should be scheduled whenever the identity links
  * are changed by the user on this device.
  */
-class ReflectUserProfileIdentityLinksTask(
-    private val userService: UserService,
-    private val nonceFactory: NonceFactory,
-    private val multiDeviceManager: MultiDeviceManager,
-) : ActiveTask<Unit>, PersistableTask {
+class ReflectUserProfileIdentityLinksTask() : ActiveTask<Unit>, PersistableTask, KoinComponent {
+    private val userService: UserService by inject()
+    private val nonceFactory: NonceFactory by inject()
+    private val multiDeviceManager: MultiDeviceManager by inject()
+
     private val mdProperties by lazy { multiDeviceManager.propertiesProvider.get() }
 
     override val type: String = "ReflectUserProfileIdentityLinksTask"
@@ -73,12 +74,8 @@ class ReflectUserProfileIdentityLinksTask(
 
     @Serializable
     data object ReflectUserProfileIdentityLinksTaskData : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-            ReflectUserProfileIdentityLinksTask(
-                userService = serviceManager.userService,
-                nonceFactory = serviceManager.nonceFactory,
-                multiDeviceManager = serviceManager.multiDeviceManager,
-            )
+        override fun createTask(): Task<*, TaskCodec> =
+            ReflectUserProfileIdentityLinksTask()
     }
 
     companion object {

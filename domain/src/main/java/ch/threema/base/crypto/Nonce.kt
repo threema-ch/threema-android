@@ -1,6 +1,6 @@
 package ch.threema.base.crypto
 
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.security.InvalidKeyException
 import java.security.NoSuchAlgorithmException
 import javax.crypto.Mac
@@ -26,7 +26,7 @@ value class Nonce(val bytes: ByteArray) {
      * @throws NoSuchAlgorithmException if the algorithm is not available on the device
      * @throws InvalidKeyException if the [identity] is not suitable as key
      */
-    fun hashNonce(identity: Identity) = HashedNonce.getFromNonce(this, identity)
+    fun hashNonce(identity: IdentityString) = HashedNonce.getFromNonce(this, identity)
 }
 
 /**
@@ -47,7 +47,7 @@ value class HashedNonce(val bytes: ByteArray) {
          * @throws NoSuchAlgorithmException if the algorithm is not available on the device
          * @throws InvalidKeyException if the [identity] is not suitable as key
          */
-        fun getFromNonce(nonce: Nonce, identity: Identity): HashedNonce {
+        fun getFromNonce(nonce: Nonce, identity: IdentityString): HashedNonce {
             val mac = Mac.getInstance("HmacSHA256")
             mac.init(SecretKeySpec(identity.encodeToByteArray(), "HmacSHA256"))
             return HashedNonce(mac.doFinal(nonce.bytes))

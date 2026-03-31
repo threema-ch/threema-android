@@ -44,7 +44,7 @@ public class SMSVerificationDialog extends ThreemaDialogFragment {
     public interface SMSVerificationDialogCallback {
         void onYes(String tag, String code);
 
-        void onNo(String tag);
+        default void onNo(String tag) {}
 
         void onCallRequested(String tag);
     }

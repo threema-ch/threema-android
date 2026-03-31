@@ -1,14 +1,12 @@
 package ch.threema.app.threemasafe;
 
-import android.content.Context;
+import org.koin.java.KoinJavaComponent;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.restrictions.AppRestrictionUtil;
+import ch.threema.app.restrictions.AppRestrictions;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Base32;
@@ -61,35 +59,35 @@ public class ThreemaSafeMDMConfig {
 
     private ThreemaSafeMDMConfig() {
         if (ConfigUtils.isWorkRestricted()) {
-            Context context = ThreemaApplication.getAppContext();
+            AppRestrictions appRestrictions = KoinJavaComponent.get(AppRestrictions.class);
 
-            String stringPreset = AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__safe_password));
+            String stringPreset = appRestrictions.getSafePassword();
             if (stringPreset != null &&
                 stringPreset.length() >= ThreemaSafeServiceImpl.MIN_PW_LENGTH &&
                 stringPreset.length() <= ThreemaSafeServiceImpl.MAX_PW_LENGTH) {
                 this.password = stringPreset;
             }
 
-            stringPreset = AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__safe_server_url));
+            stringPreset = appRestrictions.getSafeServerUrl();
             if (stringPreset != null) {
                 this.serverName = stringPreset;
             }
 
-            stringPreset = AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__safe_server_username));
+            stringPreset = appRestrictions.getSafeServerUsername();
             if (stringPreset != null) {
                 this.serverUsername = stringPreset;
             }
 
-            stringPreset = AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__safe_server_password));
+            stringPreset = appRestrictions.getSafeServerPassword();
             if (stringPreset != null) {
                 this.serverPassword = stringPreset;
             }
 
             Boolean booleanPreset;
-            if (AppRestrictionUtil.getBoolRestriction(context, R.string.restriction__disable_backups)) {
+            if (appRestrictions.isBackupsDisabled()) {
                 this.backupStatus = BACKUP_DISABLE;
             } else {
-                booleanPreset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__safe_enable));
+                booleanPreset = appRestrictions.isSafeEnabledOrNull();
                 if (booleanPreset == null) {
                     this.backupStatus = BACKUP_ENABLE;
                     if (!TestUtil.isEmptyOrNull(serverName)) {
@@ -108,9 +106,8 @@ public class ThreemaSafeMDMConfig {
                 }
             }
 
-            booleanPreset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__safe_restore_enable));
-            if (booleanPreset == null || booleanPreset) {
-                this.identity = AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__safe_restore_id));
+            if (appRestrictions.isSafeRestoreEnabled()) {
+                this.identity = appRestrictions.getSafeRestoreId();
                 if (TestUtil.isEmptyOrNull(this.identity)) {
                     this.restoreStatus = RESTORE_ENABLE;
                     if (!TestUtil.isEmptyOrNull(serverName)) {
@@ -149,12 +146,6 @@ public class ThreemaSafeMDMConfig {
 
     public String getPassword() {
         return this.password;
-    }
-
-    /*****/
-
-    protected Boolean getBooleanRestriction(String restriction) {
-        return AppRestrictionUtil.getBooleanRestriction(restriction);
     }
 
     /*****/
@@ -232,9 +223,8 @@ public class ThreemaSafeMDMConfig {
 
     public boolean hasChanged(PreferenceService preferenceService) {
         if (ConfigUtils.isWorkRestricted()) {
-            String oldhash = preferenceService.getThreemaSafeMDMConfig();
-
-            return !hash().equals(oldhash);
+            String oldHash = preferenceService.getThreemaSafeMDMConfig();
+            return !hash().equals(oldHash);
         }
         return false;
     }

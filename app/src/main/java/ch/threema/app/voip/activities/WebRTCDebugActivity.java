@@ -3,6 +3,8 @@ package ch.threema.app.voip.activities;
 import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.MenuItem;
@@ -49,7 +51,9 @@ import ch.threema.app.utils.WebRTCUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.voip.PeerConnectionClient;
 import ch.threema.app.voip.util.SdpPatcher;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.data.models.ContactModel;
 import ch.threema.protobuf.callsignaling.O2OCall;
 
@@ -192,11 +196,12 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
 
         // Show settings
         var preferenceService = dependencies.getPreferenceService();
-        this.addToLog("Enabled: calls=" + preferenceService.isVoipEnabled() + " video=" + preferenceService.areVideoCallsEnabled());
+        var synchronizedSettingsService = dependencies.getSynchronizedSettingsService();
+        this.addToLog("Enabled: calls=" + synchronizedSettingsService.isVoipEnabled() + " video=" + synchronizedSettingsService.areVideoCallsEnabled());
         this.addToLog("Settings: aec=" + preferenceService.getAECMode() +
             " video_codec=" + preferenceService.getVideoCodec() +
             " video_profile=" + preferenceService.getVideoCallsProfile() +
-            " force_turn=" + preferenceService.getForceTURN());
+            " force_turn=" + synchronizedSettingsService.isForceTURN());
         this.addToLog("----------------");
 
         // Update UI visibility
@@ -219,10 +224,16 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
         final boolean allowIpv6 = true;
         final PeerConnectionClient.PeerConnectionParameters peerConnectionParameters = new PeerConnectionClient.PeerConnectionParameters(
             false,
-            useHardwareEC, useHardwareNC,
-            videoCallEnabled, useVideoHwAcceleration, videoCodecEnableVP8, videoCodecEnableH264HiP,
+            useHardwareEC,
+            useHardwareNC,
+            videoCallEnabled,
+            useVideoHwAcceleration,
+            videoCodecEnableVP8,
+            videoCodecEnableH264HiP,
             rtpHeaderExtensionConfig,
-            forceTurn, gatherContinually, allowIpv6
+            forceTurn,
+            gatherContinually,
+            allowIpv6
         );
         this.peerConnectionClient = new PeerConnectionClient(
             getApplicationContext(),
@@ -350,7 +361,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
     @AnyThread
     public void onError(long callId, final @NonNull String description, boolean abortCall) {
         final String msg = String.format("%s (abortCall: %s)", description, abortCall);
-        logger.info("onError: " + msg);
+        logger.info("onError: {}", msg);
         this.addToLog("Error: " + msg);
     }
 
@@ -412,7 +423,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
             dependencies.getUserService().getIdentity(),
             dependencies.getApiConnector(),
             dependencies.getContactModelRepository(),
-            this
+            dependencies.getAppRestrictions()
         ) {
             @NonNull
             @Override
@@ -468,5 +479,10 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context) {
+        return new Intent(context, WebRTCDebugActivity.class);
     }
 }

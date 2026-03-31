@@ -5,15 +5,17 @@ import androidx.annotation.NonNull;
 import java.util.List;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.WorkerThread;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.base.SessionScoped;
+import ch.threema.domain.models.ReceiverIdentifier;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
+import ch.threema.storage.models.ConversationTag;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
-import ch.threema.storage.models.ReceiverModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 @SessionScoped
 public interface ConversationService {
@@ -61,6 +63,9 @@ public interface ConversationService {
     @NonNull
     List<ConversationModel> getAll(boolean forceReloadFromDatabase, @Nullable Filter filter);
 
+    @Nullable
+    ConversationModel get(@NonNull ReceiverIdentifier receiverIdentifier);
+
     /**
      * Return a list of all archived conversation models.
      */
@@ -75,9 +80,9 @@ public interface ConversationService {
     List<ConversationModel> getArchived(@Nullable String searchQuery);
 
     /**
-     * return the number of conversations that have been archived
+     * Return the count of archived conversations that match the search query (case-insensitive match).
      */
-    int getArchivedCount();
+    long countArchived(@Nullable String searchQuery, boolean excludePrivateConversations);
 
     /**
      * Marks the conversation that the message belongs to as fully read,
@@ -111,7 +116,7 @@ public interface ConversationService {
     /**
      * refresh conversation
      */
-    ConversationModel refresh(GroupModel groupModel);
+    ConversationModel refresh(GroupModelOld groupModel);
 
     /**
      * refresh conversation
@@ -150,15 +155,34 @@ public interface ConversationService {
 
     /**
      * clear archived flag in archived conversations
-     *
-     * @param conversations
      */
     void unarchive(List<ConversationModel> conversations, @NonNull TriggerSource triggerSource);
 
     /**
+     * Toggle the {@code ConversationTag.PINNED} tag for the given {@code ConversationModel} and notify the conversation listeners with the updated
+     * model.
+     */
+    void togglePinned(@NonNull ConversationModel conversationModel, @NonNull TriggerSource triggerSource);
+
+    /**
+     * Tag the given {@code ConversationModel} with a given {@code ConversationTag} and notify the conversation listeners with the updated model.
+     * <br><br>
+     * The listeners will only be notified if the tag did not exist before and was effectively added by this call.
+     */
+    void tag(@NonNull ConversationModel conversationModel, @NonNull ConversationTag conversationTag, @NonNull TriggerSource triggerSource);
+
+    /**
+     * Untag the given {@code ConversationModel} from a given {@code ConversationTag} and notify the conversation listeners with the updated model.
+     * <br><br>
+     * The listeners will only be notified if the tag existed and was effectively removed.
+     */
+    void untag(@NonNull ConversationModel conversationModel, @NonNull ConversationTag conversationTag, @NonNull TriggerSource triggerSource);
+
+    /**
      * clear archived flag in archived conversations
      */
-    void unarchiveByReceivers(@NonNull List<ReceiverModel> receivers, @NonNull TriggerSource triggerSource);
+    @WorkerThread
+    void unarchiveByReceiverIdentifiers(@NonNull List<ReceiverIdentifier> receiverIdentifiers, @NonNull TriggerSource triggerSource);
 
     /**
      * Empty associated conversation (remove all messages).
@@ -210,7 +234,7 @@ public interface ConversationService {
      * Note: The group model itself will not be removed, nor will lastUpdate be modified!
      * To delete a group and its messages, use the GroupService.
      */
-    void removeFromCache(@NonNull GroupModel groupModel);
+    void removeFromCache(@NonNull GroupModelOld groupModel);
 
     /**
      * Remove the distribution list conversation from the cache, and thus hide it from the

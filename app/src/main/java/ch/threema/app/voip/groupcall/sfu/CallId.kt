@@ -3,16 +3,16 @@ package ch.threema.app.voip.groupcall.sfu
 import ch.threema.app.voip.groupcall.CryptoCallUtils
 import ch.threema.common.toHexString
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
-import ch.threema.storage.models.GroupModel
+import ch.threema.storage.models.group.GroupModelOld
 import java.nio.charset.StandardCharsets
 
 data class CallId(val bytes: ByteArray) {
     companion object {
-        fun create(group: GroupModel, callStartData: GroupCallStartData): CallId {
+        fun create(group: GroupModelOld, callStartData: GroupCallStartData): CallId {
             return CallId(computeCallId(group, callStartData))
         }
 
-        private fun computeCallId(group: GroupModel, callStartData: GroupCallStartData): ByteArray =
+        private fun computeCallId(group: GroupModelOld, callStartData: GroupCallStartData): ByteArray =
             CryptoCallUtils.gcBlake2b256(
                 salt = CryptoCallUtils.SALT_CALL_ID,
                 data = (

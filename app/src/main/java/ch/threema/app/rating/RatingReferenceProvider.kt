@@ -13,10 +13,10 @@ constructor(
     private val secureRandom: SecureRandom = secureRandom(),
 ) {
     fun getOrCreateRatingReference(): String {
-        var reference = preferenceService.ratingReference
+        var reference = preferenceService.getRatingReference()
         if (reference.isNullOrEmpty()) {
             reference = generateRatingReference()
-            preferenceService.ratingReference = reference
+            preferenceService.setRatingReference(reference)
         }
         return reference
     }

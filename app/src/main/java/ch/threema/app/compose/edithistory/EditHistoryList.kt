@@ -30,6 +30,7 @@ import ch.threema.app.R
 import ch.threema.app.compose.common.ThemedText
 import ch.threema.app.compose.common.anim.ExpandingBox
 import ch.threema.app.ui.CustomTextSelectionCallback
+import ch.threema.app.utils.LinkifyUtil
 
 private val ITEM_MAX_HEIGHT = 196.dp
 
@@ -41,6 +42,7 @@ fun EditHistoryList(
     editHistoryUiState: EditHistoryUiState,
     isOutbox: Boolean,
     shouldMarkupText: Boolean,
+    linkifyListener: LinkifyUtil.LinkifyListener,
     textSelectionCallback: CustomTextSelectionCallback? = null,
     headerContent: (@Composable () -> Unit)? = null,
     footerContent: (@Composable () -> Unit)? = null,
@@ -113,8 +115,7 @@ fun EditHistoryList(
                         // measure bubble height to initialize whether it is expandable
                         if (!isItemExpandableMap.containsKey(entry.uid)) {
                             val heightInDp = (coordinates.size.height / density.density).dp
-                            isItemExpandableMap[entry.uid] =
-                                !isExploreByTouchEnabled.value && heightInDp > ITEM_MAX_HEIGHT
+                            isItemExpandableMap[entry.uid] = !isExploreByTouchEnabled.value && heightInDp > ITEM_MAX_HEIGHT
                         }
                     }
                     if (editHistoryUiState.editHistoryEntries.size > 1) {
@@ -124,6 +125,7 @@ fun EditHistoryList(
                             editHistoryEntry = entry,
                             isOutbox = isOutbox,
                             shouldMarkupText = shouldMarkupText,
+                            linkifyListener = linkifyListener,
                             isExpanded = if (isExpandable) isExpanded else true,
                             onClick = if (isExpandable) toggleExpanded else null,
                             shouldFadeOutTimeLineTop = index == 0,
@@ -137,6 +139,7 @@ fun EditHistoryList(
                             editHistoryEntry = entry,
                             isOutbox = isOutbox,
                             shouldMarkupText = shouldMarkupText,
+                            linkifyListener = linkifyListener,
                             isExpanded = if (isExpandable) isExpanded else true,
                             onClick = if (isExpandable) toggleExpanded else null,
                             textSelectionCallback = textSelectionCallback,

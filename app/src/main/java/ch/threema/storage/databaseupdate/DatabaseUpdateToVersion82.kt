@@ -12,9 +12,5 @@ internal class DatabaseUpdateToVersion82(
 
     override fun getDescription() = "Profile Picture Blob ID"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 82
-    }
+    override val version = 82
 }

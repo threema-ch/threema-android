@@ -4,15 +4,17 @@ import android.content.Context
 import ch.threema.app.R
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.LinkifyUtil
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.status.ForwardSecurityStatusDataModel.ForwardSecurityStatusType
 
 class ForwardSecurityStatusChatAdapterDecorator(
-    context: Context,
     messageModel: AbstractMessageModel?,
+    chatAdapterDecoratorListener: ChatAdapterDecoratorListener,
+    linkifyListener: LinkifyUtil.LinkifyListener,
     helper: Helper?,
-) : ChatAdapterDecorator(context, messageModel, helper) {
-    override fun configureChatMessage(holder: ComposeMessageHolder, position: Int) {
+) : ChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, helper) {
+    override fun configureChatMessage(holder: ComposeMessageHolder, context: Context, position: Int) {
         val statusDataModel = messageModel.forwardSecurityStatusData ?: return
         val body: String? = when (statusDataModel.status) {
             ForwardSecurityStatusType.STATIC_TEXT -> statusDataModel.staticText

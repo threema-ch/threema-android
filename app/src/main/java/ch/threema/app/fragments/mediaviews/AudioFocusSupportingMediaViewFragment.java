@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -14,6 +13,8 @@ import org.slf4j.Logger;
 
 import ch.threema.app.R;
 import ch.threema.app.mediaattacher.PreviewFragmentInterface;
+
+import static ch.threema.android.ToastKt.showToast;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public abstract class AudioFocusSupportingMediaViewFragment extends MediaViewFragment implements AudioManager.OnAudioFocusChangeListener, PreviewFragmentInterface.AudioFocusActions {
@@ -64,7 +65,7 @@ public abstract class AudioFocusSupportingMediaViewFragment extends MediaViewFra
 
     protected boolean requestFocus() {
         if (audioManager.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN_TRANSIENT) != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            Toast.makeText(getActivity(), R.string.error, Toast.LENGTH_SHORT).show();
+            showToast(getActivity(), R.string.an_error_occurred);
             return false;
         }
         return true;

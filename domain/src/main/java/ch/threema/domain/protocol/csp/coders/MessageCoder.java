@@ -27,7 +27,6 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.protocol.csp.messages.AbstractMessage;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
-import ch.threema.domain.protocol.csp.messages.AudioMessage;
 import ch.threema.domain.protocol.csp.messages.DeleteMessage;
 import ch.threema.domain.protocol.csp.messages.EmptyMessage;
 import ch.threema.domain.protocol.csp.messages.EditMessage;
@@ -38,12 +37,10 @@ import ch.threema.domain.protocol.csp.messages.ImageMessage;
 import ch.threema.domain.protocol.csp.messages.location.LocationMessage;
 import ch.threema.domain.protocol.csp.messages.ReactionMessage;
 import ch.threema.domain.protocol.csp.messages.TextMessage;
-import ch.threema.domain.protocol.csp.messages.VideoMessage;
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage;
-import ch.threema.domain.protocol.csp.messages.GroupAudioMessage;
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage;
 import ch.threema.domain.protocol.csp.messages.GroupDeleteProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage;
@@ -54,7 +51,6 @@ import ch.threema.domain.protocol.csp.messages.GroupNameMessage;
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage;
 import ch.threema.domain.protocol.csp.messages.GroupSetProfilePictureMessage;
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage;
-import ch.threema.domain.protocol.csp.messages.GroupVideoMessage;
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage;
 import ch.threema.domain.protocol.csp.messages.WebSessionResumeMessage;
@@ -78,7 +74,6 @@ import ch.threema.protobuf.csp.e2e.MessageMetadata;
 import ch.threema.protobuf.csp.e2e.fs.Version;
 
 import static ch.threema.common.ByteArrayExtensionsKt.readLittleEndianInt;
-import static ch.threema.common.ByteArrayExtensionsKt.readLittleEndianShort;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public class MessageCoder {
@@ -109,11 +104,11 @@ public class MessageCoder {
      */
     public @NonNull AbstractMessage decode(@NonNull MessageBox boxmsg) throws BadMessageException, MissingPublicKeyException {
 
-        if (!boxmsg.getToIdentity().equals(identityStore.getIdentity())) {
+        if (!boxmsg.getToIdentity().equals(identityStore.getIdentityString())) {
             throw new BadMessageException("Message is not for own identity, cannot decode");
         }
 
-        if (boxmsg.getFromIdentity().equals(identityStore.getIdentity())) {
+        if (boxmsg.getFromIdentity().equals(identityStore.getIdentityString())) {
             throw new BadMessageException("Message is from own identity, cannot decode");
         }
 
@@ -352,12 +347,12 @@ public class MessageCoder {
             }
 
             case ProtocolDefines.MSGTYPE_VIDEO: {
-                message = VideoMessage.fromByteArray(data, 1, realDataLength - 1);
+                message = LegacyMessageTransformer.transformVideoMessage(data, 1, realDataLength - 1);
                 break;
             }
 
             case ProtocolDefines.MSGTYPE_AUDIO: {
-                message = AudioMessage.fromByteArray(data, 1, realDataLength - 1);
+                message = LegacyMessageTransformer.transformAudioMessage(data, 1, realDataLength - 1);
                 break;
             }
 
@@ -487,36 +482,7 @@ public class MessageCoder {
             }
 
             case ProtocolDefines.MSGTYPE_GROUP_VIDEO: {
-                if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 2 + 2 * ProtocolDefines.BLOB_ID_LEN + 2 * 4 + ProtocolDefines.BLOB_KEY_LEN)) {
-                    throw new BadMessageException("Bad length (" + realDataLength + ") for group video message");
-                }
-
-                int i = 1;
-
-                GroupVideoMessage groupvideomsg = new GroupVideoMessage();
-                groupvideomsg.setGroupCreator(new String(data, i, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-                i += ProtocolDefines.IDENTITY_LEN;
-                groupvideomsg.setApiGroupId(new GroupId(data, i));
-                i += ProtocolDefines.GROUP_ID_LEN;
-                groupvideomsg.setDuration(readLittleEndianShort(data, i));
-                i += 2;
-                byte[] videoBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-                System.arraycopy(data, i, videoBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
-                i += ProtocolDefines.BLOB_ID_LEN;
-                groupvideomsg.setVideoBlobId(videoBlobId);
-                groupvideomsg.setVideoSize(readLittleEndianInt(data, i));
-                i += 4;
-                byte[] thumbnailBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-                System.arraycopy(data, i, thumbnailBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
-                i += ProtocolDefines.BLOB_ID_LEN;
-                groupvideomsg.setThumbnailBlobId(thumbnailBlobId);
-                groupvideomsg.setThumbnailSize(readLittleEndianInt(data, i));
-                i += 4;
-                byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
-                System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
-                groupvideomsg.setEncryptionKey(blobKey);
-                message = groupvideomsg;
-
+                message = LegacyMessageTransformer.transformGroupVideoMessage(data, 1, realDataLength - 1);
                 break;
             }
 
@@ -526,30 +492,7 @@ public class MessageCoder {
             }
 
             case ProtocolDefines.MSGTYPE_GROUP_AUDIO: {
-                if (realDataLength != (1 + ProtocolDefines.IDENTITY_LEN + ProtocolDefines.GROUP_ID_LEN + 2 + ProtocolDefines.BLOB_ID_LEN + 4 + ProtocolDefines.BLOB_KEY_LEN)) {
-                    throw new BadMessageException("Bad length (" + realDataLength + ") for group audio message");
-                }
-
-                int i = 1;
-
-                GroupAudioMessage groupaudiomsg = new GroupAudioMessage();
-                groupaudiomsg.setGroupCreator(new String(data, i, ProtocolDefines.IDENTITY_LEN, StandardCharsets.US_ASCII));
-                i += ProtocolDefines.IDENTITY_LEN;
-                groupaudiomsg.setApiGroupId(new GroupId(data, i));
-                i += ProtocolDefines.GROUP_ID_LEN;
-                groupaudiomsg.setDuration(readLittleEndianShort(data, i));
-                i += 2;
-                byte[] audioBlobId = new byte[ProtocolDefines.BLOB_ID_LEN];
-                System.arraycopy(data, i, audioBlobId, 0, ProtocolDefines.BLOB_ID_LEN);
-                i += ProtocolDefines.BLOB_ID_LEN;
-                groupaudiomsg.setAudioBlobId(audioBlobId);
-                groupaudiomsg.setAudioSize(readLittleEndianInt(data, i));
-                i += 4;
-                byte[] blobKey = new byte[ProtocolDefines.BLOB_KEY_LEN];
-                System.arraycopy(data, i, blobKey, 0, ProtocolDefines.BLOB_KEY_LEN);
-                groupaudiomsg.setEncryptionKey(blobKey);
-                message = groupaudiomsg;
-
+                message = LegacyMessageTransformer.transformGroupAudioMessage(data, 1, realDataLength - 1);
                 break;
             }
 

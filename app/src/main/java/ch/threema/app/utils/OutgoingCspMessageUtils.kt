@@ -4,8 +4,8 @@ import androidx.annotation.WorkerThread
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.protocol.runIdentityBlockedSteps
-import ch.threema.app.services.BlockedIdentitiesService
+import ch.threema.app.preference.service.SynchronizedSettingsService
+import ch.threema.app.protocolsteps.IdentityBlockedSteps
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.UserService
@@ -17,12 +17,15 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.lazy
 import ch.threema.common.now
 import ch.threema.data.models.GroupIdentity
+import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.BasicContact
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.models.VerificationLevel
+import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityEncryptionResult
@@ -41,9 +44,9 @@ import ch.threema.domain.taskmanager.awaitReflectAck
 import ch.threema.domain.taskmanager.getEncryptedOutgoingMessageEnvelope
 import ch.threema.domain.taskmanager.getEncryptedOutgoingMessageUpdateSentEnvelope
 import ch.threema.domain.taskmanager.toCspMessage
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupModel
+import ch.threema.storage.models.group.GroupModelOld
 import java.util.Date
 
 private val logger = getThreemaLogger("OutgoingCspMessageUtils")
@@ -96,6 +99,8 @@ fun String.fetchContactModel(apiConnector: APIConnector): BasicContact =
                     1 -> IdentityType.WORK
                     else -> IdentityType.NORMAL // Out of range!
                 },
+                verificationLevel = VerificationLevel.UNVERIFIED,
+                workVerificationLevel = WorkVerificationLevel.NONE,
             )
         }
 
@@ -116,7 +121,7 @@ sealed interface OutgoingCspMessageCreator {
     /**
      * Create a generic message that can be used to be reflected.
      */
-    fun createGenericMessage(myIdentity: Identity): AbstractMessage
+    fun createGenericMessage(myIdentity: IdentityString): AbstractMessage
 
     /**
      * Create an abstract message containing all the message type specific information. Any
@@ -132,7 +137,7 @@ sealed interface OutgoingCspMessageCreator {
      *
      *  Note that each call of this method must return a new instance of the message.
      */
-    fun createAbstractMessage(fromIdentity: Identity, toIdentity: Identity): AbstractMessage
+    fun createAbstractMessage(fromIdentity: IdentityString, toIdentity: IdentityString): AbstractMessage
 }
 
 /**
@@ -150,7 +155,7 @@ class OutgoingCspContactMessageCreator(
     /**
      * The identity of the recipient contact.
      */
-    private val identity: Identity,
+    private val identity: IdentityString,
     /**
      * This should create the contact message with all message type specific attributes set. Note
      * that the following fields should not be set, as they will get overridden by these utils:
@@ -162,12 +167,12 @@ class OutgoingCspContactMessageCreator(
      */
     private val createContactMessage: () -> AbstractMessage,
 ) : OutgoingCspMessageCreator {
-    override fun createGenericMessage(myIdentity: Identity) =
+    override fun createGenericMessage(myIdentity: IdentityString) =
         // We need to set the 'toIdentity' here because the conversation is determined based on this
         // message when reflecting it.
         createAbstractMessage(myIdentity, identity)
 
-    override fun createAbstractMessage(fromIdentity: Identity, toIdentity: Identity): AbstractMessage {
+    override fun createAbstractMessage(fromIdentity: IdentityString, toIdentity: IdentityString): AbstractMessage {
         return createContactMessage().also {
             // Check that this message creator is only used for contact messages
             if (it is AbstractGroupMessage) {
@@ -222,7 +227,7 @@ class OutgoingCspGroupMessageCreator(
     constructor(
         messageId: MessageId,
         createdAt: Date,
-        group: GroupModel,
+        group: GroupModelOld,
         createAbstractGroupMessage: () -> AbstractGroupMessage,
     ) : this(
         messageId,
@@ -235,7 +240,7 @@ class OutgoingCspGroupMessageCreator(
     constructor(
         messageId: MessageId,
         createdAt: Date,
-        group: ch.threema.data.models.GroupModel,
+        group: GroupModel,
         createAbstractGroupMessage: () -> AbstractGroupMessage,
     ) : this(
         messageId,
@@ -257,15 +262,15 @@ class OutgoingCspGroupMessageCreator(
         createAbstractGroupMessage,
     )
 
-    override fun createGenericMessage(myIdentity: Identity): AbstractMessage =
+    override fun createGenericMessage(myIdentity: IdentityString): AbstractMessage =
         // We do not need to set a 'toIdentity' in case of a generic message as this message will
         // never be sent. In case of a group message it is sufficient if it contains the correct
         // group identity.
         createAbstractMessage(myIdentity, "")
 
     override fun createAbstractMessage(
-        fromIdentity: Identity,
-        toIdentity: Identity,
+        fromIdentity: IdentityString,
+        toIdentity: IdentityString,
     ): AbstractGroupMessage {
         return createGroupMessage().also {
             it.messageId = messageId
@@ -309,19 +314,16 @@ class OutgoingCspMessageHandle(
 
 private fun OutgoingCspMessageHandle.toOutgoingCspMessageSender(
     services: OutgoingCspMessageServices,
+    identityBlockedSteps: IdentityBlockedSteps,
 ): OutgoingCspMessageSender {
-    val myIdentity = services.identityStore.getIdentity()!!
+    val myIdentity = services.identityStore.getIdentityString()!!
     val genericMessage = messageCreator.createGenericMessage(myIdentity)
     val filteredReceivers = receivers
         .filter { it.identity != myIdentity }
         .filter { it.identityState != IdentityState.INVALID }
         .filterBlockedRecipients(
-            genericMessage,
-            services.contactModelRepository,
-            services.contactStore,
-            services.groupService,
-            services.blockedIdentitiesService,
-            services.preferenceService,
+            abstractMessage = genericMessage,
+            identityBlockedSteps = identityBlockedSteps,
         )
         .toSet()
 
@@ -465,7 +467,7 @@ private class OutgoingCspMessageSender(
                 val result = forwardSecurityMessageProcessor.runFsEncapsulationSteps(
                     receiver,
                     messageCreator.createAbstractMessage(
-                        identityStore.getIdentity()!!,
+                        identityStore.getIdentityString()!!,
                         receiver.identity,
                     ),
                     nonce,
@@ -579,8 +581,8 @@ data class OutgoingCspMessageServices(
     val contactModelRepository: ContactModelRepository,
     val groupService: GroupService,
     val nonceFactory: NonceFactory,
-    val blockedIdentitiesService: BlockedIdentitiesService,
     val preferenceService: PreferenceService,
+    val synchronizedSettingsService: SynchronizedSettingsService,
     val multiDeviceManager: MultiDeviceManager,
 ) {
     companion object {
@@ -593,8 +595,8 @@ data class OutgoingCspMessageServices(
             modelRepositories.contacts,
             groupService,
             nonceFactory,
-            blockedIdentitiesService,
             preferenceService,
+            synchronizedSettingsService,
             multiDeviceManager,
         )
     }
@@ -603,26 +605,33 @@ data class OutgoingCspMessageServices(
 suspend fun ActiveTaskCodec.runBundledMessagesSendSteps(
     outgoingCspMessageHandle: OutgoingCspMessageHandle,
     services: OutgoingCspMessageServices,
-) = runBundledMessagesSendSteps(listOf(outgoingCspMessageHandle), services)
+    identityBlockedSteps: IdentityBlockedSteps,
+) = runBundledMessagesSendSteps(listOf(outgoingCspMessageHandle), services, identityBlockedSteps)
 
 suspend fun ActiveTaskCodec.runBundledMessagesSendSteps(
     outgoingCspMessageHandles: List<OutgoingCspMessageHandle>,
     services: OutgoingCspMessageServices,
+    identityBlockedSteps: IdentityBlockedSteps,
 ) {
     val outgoingCspMessageSenders = outgoingCspMessageHandles
-        .map { it.toOutgoingCspMessageSender(services) }
+        .map {
+            it.toOutgoingCspMessageSender(
+                services = services,
+                identityBlockedSteps = identityBlockedSteps,
+            )
+        }
 
-    val profilePictureSenders = outgoingCspMessageSenders
-        .map { messageSender ->
-            messageSender.receivers
-                .mapNotNull { receiver ->
-                    runProfilePictureDistributionSteps(
-                        messageSender.genericMessage,
-                        receiver,
-                        services,
-                    )
-                }
-        }.flatten()
+    val profilePictureSenders = outgoingCspMessageSenders.flatMap { messageSender ->
+        messageSender.receivers
+            .mapNotNull { receiver ->
+                runProfilePictureDistributionSteps(
+                    messageSender.genericMessage,
+                    receiver,
+                    services,
+                    identityBlockedSteps,
+                )
+            }
+    }
 
     val messageSenders = outgoingCspMessageSenders + profilePictureSenders
 
@@ -649,27 +658,16 @@ suspend fun ActiveTaskCodec.runBundledMessagesSendSteps(
 
 private fun Iterable<BasicContact>.filterBlockedRecipients(
     abstractMessage: AbstractMessage,
-    contactModelRepository: ContactModelRepository,
-    contactStore: ContactStore,
-    groupService: GroupService,
-    blockedIdentitiesService: BlockedIdentitiesService,
-    preferenceService: PreferenceService,
-) = filter {
+    identityBlockedSteps: IdentityBlockedSteps,
+) = filter { basicContact ->
     if (abstractMessage.exemptFromBlocking()) {
         return@filter true
     }
 
-    val isBlocked = runIdentityBlockedSteps(
-        it.identity,
-        contactModelRepository,
-        contactStore,
-        groupService,
-        blockedIdentitiesService,
-        preferenceService,
-    ).isBlocked()
+    val isBlocked = identityBlockedSteps.run(identity = basicContact.identity).isBlocked()
 
     if (isBlocked) {
-        abstractMessage.logMessage("Skipping recipient ${it.identity} for")
+        abstractMessage.logMessage("Skipping recipient ${basicContact.identity} for")
     }
 
     !isBlocked
@@ -684,6 +682,7 @@ private fun runProfilePictureDistributionSteps(
     genericMessage: AbstractMessage,
     receiver: BasicContact,
     services: OutgoingCspMessageServices,
+    identityBlockedSteps: IdentityBlockedSteps,
 ): OutgoingCspMessageSender? {
     val prefix = "Profile picture distribution"
     val receiverIdentity = receiver.identity
@@ -757,7 +756,7 @@ private fun runProfilePictureDistributionSteps(
     return OutgoingCspMessageHandle(
         setOf(receiver),
         profilePictureMessageCreator,
-    ).toOutgoingCspMessageSender(services)
+    ).toOutgoingCspMessageSender(services, identityBlockedSteps)
 }
 
 private fun AbstractMessage.logMessage(logMessage: String) {

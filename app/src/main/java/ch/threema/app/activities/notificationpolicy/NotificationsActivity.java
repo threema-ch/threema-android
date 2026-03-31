@@ -321,7 +321,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements S
             notificationSettingsSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 if (isChecked) {
                     individualSettingsText.setEnabled(true);
-                    if (ShowOnceDialog.shouldNotShowAnymore(DIALOG_TAG_INDIVIDUAL_CONFIRM)) {
+                    if (dependencies.getPreferenceService().isOneTimeDialogShown(DIALOG_TAG_INDIVIDUAL_CONFIRM)) {
                         onYes(DIALOG_TAG_INDIVIDUAL_CONFIRM);
                     } else {
                         ShowOnceDialog showOnceDialog = ShowOnceDialog.newInstance(R.string.individual_notification_settings, R.string.individual_notification_settings_warn);
@@ -396,8 +396,7 @@ public abstract class NotificationsActivity extends ThreemaActivity implements S
         });
 
         parentLayout.findViewById(R.id.prefs_button).setOnClickListener(v -> {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            intent.putExtra(SettingsActivity.EXTRA_SHOW_NOTIFICATION_FRAGMENT, true);
+            Intent intent = SettingsActivity.createIntent(this, SettingsActivity.InitialScreen.NOTIFICATIONS);
             ringtoneSettingsLauncher.launch(intent);
             refreshSettings();
         });

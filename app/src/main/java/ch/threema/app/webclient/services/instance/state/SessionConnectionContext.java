@@ -188,7 +188,7 @@ class SessionConnectionContext {
                                 try {
                                     SessionConnectionContext.this.createPeerConnection(temporaryTaskEventHandler);
                                 } catch (Exception error) {
-                                    logger.error(error.toString());
+                                    logger.error("Failed to created peer connection", error);
                                     SessionConnectionContext.this.ctx.manager.setError(error.toString());
                                 }
                                 break;

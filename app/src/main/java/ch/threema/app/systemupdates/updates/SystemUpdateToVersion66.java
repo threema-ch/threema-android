@@ -3,31 +3,29 @@ package ch.threema.app.systemupdates.updates;
 import android.Manifest;
 import android.content.Context;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresPermission;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.preference.service.SynchronizedSettingsService;
+import ch.threema.app.services.SynchronizeContactsService;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
+import kotlin.Lazy;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
-import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
 public class SystemUpdateToVersion66 implements SystemUpdate {
-    public static final int VERSION = 66;
     private static final Logger logger = getThreemaLogger("SystemUpdateToVersion66");
-    private @NonNull final Context context;
-    private @NonNull final ServiceManager serviceManager;
 
-    public SystemUpdateToVersion66(@NonNull Context context, @NonNull ServiceManager serviceManager) {
-        this.context = context;
-        this.serviceManager = serviceManager;
-    }
+    private final Lazy<Context> appContextLazy = KoinJavaComponent.inject(Context.class);
+    private final Lazy<SynchronizedSettingsService> synchronizedSettingsServiceLazy = KoinJavaComponent.inject(SynchronizedSettingsService.class);
+    private final Lazy<SynchronizeContactsService> synchronizeContactsServiceLazy = KoinJavaComponent.inject(SynchronizeContactsService.class);
 
     @Override
     public void run() {
-        if (!ConfigUtils.isPermissionGranted(context, Manifest.permission.WRITE_CONTACTS)) {
+        var appContext = appContextLazy.getValue();
+        if (!ConfigUtils.isPermissionGranted(appContext, Manifest.permission.WRITE_CONTACTS)) {
             return; // best effort
         }
 
@@ -41,12 +39,12 @@ public class SystemUpdateToVersion66 implements SystemUpdate {
         AndroidContactUtil androidContactUtil = AndroidContactUtil.getInstance();
         androidContactUtil.deleteAllThreemaRawContacts();
 
-        PreferenceService preferenceService = serviceManager.getPreferenceService();
-        if (preferenceService.isSyncContacts()) {
+        SynchronizedSettingsService synchronizedSettingsService = synchronizedSettingsServiceLazy.getValue();
+        if (synchronizedSettingsService.isSyncContacts()) {
             try {
-                serviceManager.getSynchronizeContactsService()
+                synchronizeContactsServiceLazy.getValue()
                     .instantiateSynchronizationAndRun();
-            } catch (MasterKeyLockedException e) {
+            } catch (Exception e) {
                 logger.error("Failed to run contact sync", e);
             }
         }
@@ -59,6 +57,6 @@ public class SystemUpdateToVersion66 implements SystemUpdate {
 
     @Override
     public int getVersion() {
-        return VERSION;
+        return 66;
     }
 }

@@ -1,21 +1,19 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupDeleteProfilePictureMessage
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import kotlinx.serialization.Serializable
 
 class OutgoingGroupDeleteProfilePictureTask(
     override val groupId: GroupId,
-    override val creatorIdentity: Identity,
-    override val recipientIdentities: Set<Identity>,
+    override val creatorIdentity: IdentityString,
+    override val recipientIdentities: Set<IdentityString>,
     messageId: MessageId?,
-    serviceManager: ServiceManager,
-) : OutgoingCspGroupControlMessageTask(serviceManager) {
+) : OutgoingCspGroupControlMessageTask() {
     override val type: String = "OutgoingGroupDeleteProfilePictureTask"
 
     override val messageId = messageId ?: MessageId.random()
@@ -32,17 +30,16 @@ class OutgoingGroupDeleteProfilePictureTask(
     @Serializable
     class OutgoingGroupDeleteProfilePictureData(
         private val groupId: ByteArray,
-        private val creatorIdentity: Identity,
-        private val receiverIdentities: Set<Identity>,
+        private val creatorIdentity: IdentityString,
+        private val receiverIdentities: Set<IdentityString>,
         private val messageId: ByteArray,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingGroupDeleteProfilePictureTask(
-                GroupId(groupId),
-                creatorIdentity,
-                receiverIdentities,
-                MessageId(messageId),
-                serviceManager,
+                groupId = GroupId(groupId),
+                creatorIdentity = creatorIdentity,
+                recipientIdentities = receiverIdentities,
+                messageId = MessageId(messageId),
             )
     }
 }

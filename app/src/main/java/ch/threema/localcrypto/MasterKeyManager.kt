@@ -12,7 +12,8 @@ import ch.threema.localcrypto.models.PassphraseLockState
 import ch.threema.localcrypto.models.RemoteSecretAuthenticationToken
 import ch.threema.localcrypto.models.RemoteSecretCheckType
 import ch.threema.localcrypto.models.RemoteSecretClientParameters
-import ch.threema.localcrypto.models.RemoteSecretProtectionCheckResult
+import ch.threema.localcrypto.models.RemoteSecretProtectionInstruction
+import ch.threema.localcrypto.models.RemoteSecretProtectionState
 import java.io.IOException
 import kotlin.Throws
 import kotlinx.coroutines.flow.Flow
@@ -34,6 +35,8 @@ interface MasterKeyManager {
 
     val passphraseLockState: StateFlow<PassphraseLockState>
 
+    val remoteSecretProtectionState: Flow<RemoteSecretProtectionState>
+
     /**
      * Returns whether the master key is protected by any means, meaning that it will
      * first need to be unlocked before it can be accessed. Will suspend until the master key is loaded from storage,
@@ -51,6 +54,12 @@ interface MasterKeyManager {
      * or `null` if the master key is protected with a passphrase and has never been unlocked, as it is not possible to tell in that case.
      */
     fun isProtectedWithRemoteSecret(): Boolean?
+
+    /**
+     * Returns whether the master key is protected (but not necessarily locked) with a remote secret.
+     * If the master key is also locked with a passphrase, this will suspend until the passphrase is entered correctly.
+     */
+    suspend fun awaitIsProtectedWithRemoteSecret(): Boolean
 
     /**
      * Return whether the master key is currently locked with a passphrase.
@@ -131,7 +140,7 @@ interface MasterKeyManager {
      *
      * @return the type of change needed, or `null` if this information is not available, e.g. because the master key is locked with a passphrase.
      */
-    fun getRemoteSecretProtectionState(): RemoteSecretProtectionCheckResult?
+    fun getRemoteSecretProtectionInstruction(): RemoteSecretProtectionInstruction?
 
     /**
      * Enables or disables remote secrets based on the mdm parameter.

@@ -29,7 +29,7 @@ public class ThumbnailCache<T> {
         } else {
             cacheSize = Math.min(cacheSizeDefault, maxCacheSizeLimitKb);
         }
-        logger.debug("init size = " + cacheSize);
+        logger.debug("init size = {}", cacheSize);
 
 
         this.thumbnails = new LruCache<T, Bitmap>(cacheSize) {

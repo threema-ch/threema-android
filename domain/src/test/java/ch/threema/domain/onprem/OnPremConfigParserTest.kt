@@ -4,9 +4,9 @@ import ch.threema.base.utils.Base64
 import ch.threema.common.plus
 import ch.threema.common.withoutLastLine
 import ch.threema.domain.protocol.urls.BlobUrl
-import ch.threema.domain.protocol.urls.DeviceGroupUrl
 import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
+import ch.threema.domain.protocol.urls.MediatorUrl
 import ch.threema.testhelpers.TestTimeProvider
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -96,7 +96,7 @@ class OnPremConfigParserTest {
     @Test
     fun testMediatorConfig() {
         val mediatorConfig = config.mediator!!
-        assertEquals(DeviceGroupUrl("wss://mediator.onprem.example.threema.ch/"), mediatorConfig.url)
+        assertEquals(MediatorUrl("wss://mediator.onprem.example.threema.ch/"), mediatorConfig.url)
         assertEquals("https://blob-mirror.onprem.example.threema.ch/blob/upload", mediatorConfig.blob.uploadUrl)
         assertEquals(BlobUrl("https://blob-mirror.onprem.example.threema.ch/blob/{blobId}"), mediatorConfig.blob.downloadUrl)
         assertEquals(BlobUrl("https://blob-mirror.onprem.example.threema.ch/blob/{blobId}/done"), mediatorConfig.blob.doneUrl)

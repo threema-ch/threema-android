@@ -1,6 +1,7 @@
 package ch.threema.app.voip.activities;
 
 import static android.view.WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+import static ch.threema.android.AudioManagerExtensionsKt.isConnectedToHeadsetOrSpeaker;
 import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -25,11 +26,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.media.AudioManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -110,13 +109,11 @@ import ch.threema.app.ui.LongToast;
 import ch.threema.app.ui.TooltipPopup;
 import ch.threema.app.utils.AnimationUtil;
 import ch.threema.app.utils.AudioDevice;
-import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.PermissionUtilsKt;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.SoundUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.AudioSelectorButton;
 import ch.threema.app.voip.CallStateSnapshot;
@@ -133,7 +130,9 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferData;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
 import ch.threema.storage.models.ContactModel;
-import java8.util.concurrent.CompletableFuture;
+import kotlin.Unit;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Activity for peer connection call setup, call waiting
@@ -200,16 +199,6 @@ public class CallActivity extends ThreemaActivity implements
      * It resolves to a boolean that indicates whether the permission was granted or not.
      */
     private @Nullable CompletableFuture<Boolean> camPermissionResponse;
-
-    private final ActivityResultLauncher<Intent> permissionLauncher = registerForActivityResult(
-        new ActivityResultContracts.StartActivityForResult(),
-        result -> {
-            if (result.getResultCode() == Activity.RESULT_OK) {
-                initializeCall(getIntent());
-            } else {
-                abortWithError();
-            }
-        });
 
     private static final String DIALOG_TAG_SELECT_AUDIO_DEVICE = "saud";
 
@@ -288,6 +277,16 @@ public class CallActivity extends ThreemaActivity implements
             keepAliveHandler.postDelayed(keepAliveTask, KEEP_ALIVE_DELAY);
         }
     };
+
+    private final ActivityResultLauncher<Intent> permissionLauncher = registerForActivityResult(
+        new ActivityResultContracts.StartActivityForResult(),
+        result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                initializeCall(getIntent());
+            } else {
+                rejectCall(dependencies.getVoipStateService().getCallState().getCallId(), VoipCallAnswerData.RejectReason.DISABLED);
+            }
+        });
 
     /**
      * Helper: Find a view and ensure it's not null.
@@ -621,7 +620,7 @@ public class CallActivity extends ThreemaActivity implements
         public void onAudioDeviceChanged(@Nullable AudioDevice selectedAudioDevice, @NonNull HashSet<AudioDevice> availableAudioDevices) {
             if (selectedAudioDevice != null) {
                 currentAudioDevice = selectedAudioDevice;
-                logger.debug("Audio device changed. New device = " + selectedAudioDevice.name());
+                logger.debug("Audio device changed. New device = {}", selectedAudioDevice.name());
                 var sensorService = dependencies.getSensorService();
                 if (selectedAudioDevice == AudioDevice.EARPIECE) {
                     if (!sensorService.isSensorRegistered(SENSOR_TAG_CALL)) {
@@ -667,7 +666,7 @@ public class CallActivity extends ThreemaActivity implements
 
         @Override
         public void onMicEnabledChanged(boolean micEnabled) {
-            logger.debug("onMicEnabledChanged: " + micEnabled);
+            logger.debug("onMicEnabledChanged: {}", micEnabled);
             updateMicButton(micEnabled);
         }
     };
@@ -718,8 +717,10 @@ public class CallActivity extends ThreemaActivity implements
             | LayoutParams.FLAG_TURN_SCREEN_ON
             | LayoutParams.FLAG_IGNORE_CHEEK_PRESSES);
 
-        // disable screenshots if necessary
-        ConfigUtils.setScreenshotsAllowed(this, dependencies.getPreferenceService(), dependencies.getLockAppService());
+        ConfigUtils.applyScreenshotPolicy(this,
+            dependencies.getSynchronizedSettingsService(),
+            dependencies.getLockAppService()
+        );
 
         getWindow().getDecorView().setSystemUiVisibility(getSystemUiVisibility(getWindow()));
 
@@ -782,7 +783,7 @@ public class CallActivity extends ThreemaActivity implements
         logger.info("Checking for required permissions");
         PermissionUtilsKt.requestCallPermissions(this, permissionLauncher, () -> {
             initializeCall(getIntent());
-            return null;
+            return Unit.INSTANCE;
         });
 
         // Check reject preferences and fix them if necessary
@@ -841,7 +842,7 @@ public class CallActivity extends ThreemaActivity implements
         }
 
         logger.info("Restored activity mode: {}", activityMode);
-        logger.info("Restored call state: " + dependencies.getVoipStateService().getCallState());
+        logger.info("Restored call state: {}", dependencies.getVoipStateService().getCallState());
         logger.info("Restored Video flags: {}", Utils.byteToHex((byte) dependencies.getVoipStateService().getVideoRenderMode(), true, true));
 
         // Fetch contact
@@ -960,7 +961,7 @@ public class CallActivity extends ThreemaActivity implements
         if (restoreState(intent, null)) {
             PermissionUtilsKt.requestCallPermissions(this, permissionLauncher, () -> {
                 initializeCall(intent);
-                return null;
+                return Unit.INSTANCE;
             });
         } else {
             logger.info("Unable to restore state");
@@ -1117,25 +1118,11 @@ public class CallActivity extends ThreemaActivity implements
         }
 
         if (contact != null) {
-            // Set background to blurred avatar.
-            new AsyncTask<Void, Void, Bitmap>() {
-                @Override
-                protected Bitmap doInBackground(Void... voids) {
-                    return BitmapUtil.blurBitmap(
-                        dependencies.getContactService().getAvatar(contact.getIdentity(), true),
-                        CallActivity.this
-                    );
-                }
-
-                @Override
-                protected void onPostExecute(Bitmap blurredAvatar) {
-                    if (!isDestroyed() && !isFinishing()) {
-                        commonViews.backgroundView.setImageBitmap(blurredAvatar);
-                    }
-                }
-            }.execute();
-
-            this.commonViews.contactName.setText(NameUtil.getDisplayNameOrNickname(contact, true));
+            CallActivityHelper callActivityHelper = KoinJavaComponent.get(CallActivityHelper.class);
+            callActivityHelper.setBlurredBackground(this, commonViews.backgroundView, contact.getIdentity());
+            this.commonViews.contactName.setText(
+                NameUtil.getContactDisplayNameOrNickname(contact, true, dependencies.getPreferenceService().getContactNameFormat())
+            );
             this.commonViews.contactDots.setImageDrawable(ContactUtil.getVerificationDrawable(
                 this,
                 contact.verificationLevel,
@@ -1456,40 +1443,38 @@ public class CallActivity extends ThreemaActivity implements
                 serviceIntent.setClass(this, VoipCallService.class);
                 ContextCompat.startForegroundService(this, serviceIntent);
 
-                if (ConfigUtils.isVideoCallsEnabled()) {
-                    if (dependencies.getPreferenceService().getVideoCallToggleTooltipCount() < 1) {
-                        final @ColorInt int textColor = ConfigUtils.getColorFromAttribute(this, R.attr.colorOnPrimary);
+                if (ConfigUtils.isVideoCallsEnabled() && !dependencies.getPreferenceService().isVideoCallToggleTooltipShown()) {
+                    final @ColorInt int textColor = ConfigUtils.getColorFromAttribute(this, R.attr.colorOnPrimary);
 
-                        try {
-                            TapTargetView.showFor(CallActivity.this,
-                                TapTarget.forView(commonViews.toggleOutgoingVideoButton, getString(R.string.video_calls), getString(R.string.tooltip_voip_turn_on_camera))
-                                    .outerCircleColorInt(ConfigUtils.getColorFromAttribute(this, R.attr.colorPrimary))      // Specify a color for the outer circle
-                                    .outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
-                                    .targetCircleColor(android.R.color.white)   // Specify a color for the target circle
-                                    .titleTextSize(24)                  // Specify the size (in sp) of the title text
-                                    .titleTextColorInt(textColor)      // Specify the color of the title text
-                                    .descriptionTextSize(18)            // Specify the size (in sp) of the description text
-                                    .descriptionTextColorInt(textColor)  // Specify the color of the description text
-                                    .textColorInt(textColor)            // Specify a color for both the title and description text
-                                    .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
-                                    .dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
-                                    .drawShadow(true)                   // Whether to draw a drop shadow or not
-                                    .cancelable(true)                  // Whether tapping outside the outer circle dismisses the view
-                                    .tintTarget(true)                   // Whether to tint the target view's color
-                                    .transparentTarget(false)           // Specify whether the target is transparent (displays the content underneath)
-                                    .targetRadius(50),                  // Specify the target radius (in dp)
-                                new TapTargetView.Listener() {          // The listener can listen for regular clicks, long clicks or cancels
-                                    @Override
-                                    public void onTargetClick(TapTargetView view) {
-                                        super.onTargetClick(view);
-                                        commonViews.toggleOutgoingVideoButton.performClick();
-                                    }
-                                });
-                        } catch (Exception ignore) {
-                            // catch null typeface exception on CROSSCALL Action-X3
-                        }
-                        dependencies.getPreferenceService().incrementVideoCallToggleTooltipCount();
+                    try {
+                        TapTargetView.showFor(CallActivity.this,
+                            TapTarget.forView(commonViews.toggleOutgoingVideoButton, getString(R.string.video_calls), getString(R.string.tooltip_voip_turn_on_camera))
+                                .outerCircleColorInt(ConfigUtils.getColorFromAttribute(this, R.attr.colorPrimary))      // Specify a color for the outer circle
+                                .outerCircleAlpha(0.96f)            // Specify the alpha amount for the outer circle
+                                .targetCircleColor(android.R.color.white)   // Specify a color for the target circle
+                                .titleTextSize(24)                  // Specify the size (in sp) of the title text
+                                .titleTextColorInt(textColor)      // Specify the color of the title text
+                                .descriptionTextSize(18)            // Specify the size (in sp) of the description text
+                                .descriptionTextColorInt(textColor)  // Specify the color of the description text
+                                .textColorInt(textColor)            // Specify a color for both the title and description text
+                                .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
+                                .dimColor(android.R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
+                                .drawShadow(true)                   // Whether to draw a drop shadow or not
+                                .cancelable(true)                  // Whether tapping outside the outer circle dismisses the view
+                                .tintTarget(true)                   // Whether to tint the target view's color
+                                .transparentTarget(false)           // Specify whether the target is transparent (displays the content underneath)
+                                .targetRadius(50),                  // Specify the target radius (in dp)
+                            new TapTargetView.Listener() {          // The listener can listen for regular clicks, long clicks or cancels
+                                @Override
+                                public void onTargetClick(TapTargetView view) {
+                                    super.onTargetClick(view);
+                                    commonViews.toggleOutgoingVideoButton.performClick();
+                                }
+                            });
+                    } catch (Exception ignore) {
+                        // catch null typeface exception on CROSSCALL Action-X3
                     }
+                    dependencies.getPreferenceService().setVideoCallToggleTooltipShown(true);
                 }
                 break;
             case MODE_ANSWERED_CALL:
@@ -1749,11 +1734,7 @@ public class CallActivity extends ThreemaActivity implements
         final long callId = dependencies.getVoipStateService().getCallState().getCallId();
         logger.info("{}: rejectOrCancelCall", callId);
         if (this.activityMode == MODE_INCOMING_CALL && contact != null) {
-            final Intent rejectIntent = new Intent(this, CallRejectService.class);
-            rejectIntent.putExtra(VoipCallService.EXTRA_CONTACT_IDENTITY, contact.getIdentity());
-            rejectIntent.putExtra(VoipCallService.EXTRA_CALL_ID, callId);
-            rejectIntent.putExtra(CallRejectService.EXTRA_REJECT_REASON, reason);
-            startService(rejectIntent);
+            rejectCall(callId, reason);
         } else if (this.activityMode == MODE_ACTIVE_CALL) {
             VoipUtil.sendVoipCommand(CallActivity.this, VoipCallService.class, VoipCallService.ACTION_HANGUP);
             setResult(RESULT_CANCELED);
@@ -1762,6 +1743,14 @@ public class CallActivity extends ThreemaActivity implements
             stopService(new Intent(this, VoipCallService.class));
             disconnect(RESULT_CANCELED);
         }
+    }
+
+    private void rejectCall(long callId, byte reason) {
+        final Intent rejectIntent = new Intent(this, CallRejectService.class);
+        rejectIntent.putExtra(VoipCallService.EXTRA_CONTACT_IDENTITY, contact.getIdentity());
+        rejectIntent.putExtra(VoipCallService.EXTRA_CALL_ID, callId);
+        rejectIntent.putExtra(CallRejectService.EXTRA_REJECT_REASON, reason);
+        startService(rejectIntent);
     }
 
     //endregion
@@ -1797,7 +1786,7 @@ public class CallActivity extends ThreemaActivity implements
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
-        logger.debug("onWindowFocusChanged: " + hasFocus);
+        logger.debug("onWindowFocusChanged: {}", hasFocus);
 
         super.onWindowFocusChanged(hasFocus);
 
@@ -1845,7 +1834,7 @@ public class CallActivity extends ThreemaActivity implements
 
     @AnyThread
     private void startCallDurationCounter(final long startTime) {
-        logger.debug("*** startDuration: " + startTime);
+        logger.debug("*** startDuration: {}", startTime);
         RuntimeUtil.runOnUiThread(() -> {
             if (this.commonViews != null) {
                 this.commonViews.callDuration.setBase(startTime);
@@ -1885,8 +1874,6 @@ public class CallActivity extends ThreemaActivity implements
 
     /**
      * Audio bottom sheet selection
-     *
-     * @param tag
      */
     @Override
     public void onSelected(String tag, String data) {
@@ -1906,12 +1893,13 @@ public class CallActivity extends ThreemaActivity implements
     }
 
     /**
-     * Override audio device selection, but only if no headphone (wired or bluetooth) is connected.
+     * Override audio device selection, but only if no headphone or speaker (wired or bluetooth) is connected.
      */
     public void setPreferredAudioDevice(@NonNull AudioDevice device) {
         logger.info("setPreferredAudioDevice {}", device);
 
-        if (SoundUtil.isHeadsetOn(audioManager)) {
+        if (isConnectedToHeadsetOrSpeaker(audioManager)) {
+            logger.info("Headphones or speaker connected");
             return;
         }
 
@@ -1953,7 +1941,7 @@ public class CallActivity extends ThreemaActivity implements
      * Only call this method in video mode!
      */
     private void setVideoSinkTargets(@NonNull VideoContext videoContext) {
-        logger.debug("Setting video sink targets with video mode " + dependencies.getVoipStateService().getVideoRenderMode());
+        logger.debug("Setting video sink targets with video mode {}", dependencies.getVoipStateService().getVideoRenderMode());
         if (this.videoViews != null) {
             videoContext.setLocalVideoSinkTarget(this.isSwappedFeeds ? this.videoViews.fullscreenVideoRenderer : this.videoViews.pipVideoRenderer);
             videoContext.setRemoteVideoSinkTarget(this.isSwappedFeeds ? this.videoViews.pipVideoRenderer : this.videoViews.fullscreenVideoRenderer);
@@ -1970,7 +1958,7 @@ public class CallActivity extends ThreemaActivity implements
      * Only call this in video mode!
      */
     private void setSwappedFeeds(boolean isSwappedFeeds) {
-        logger.debug("setSwappedFeeds: " + isSwappedFeeds);
+        logger.debug("setSwappedFeeds: {}", isSwappedFeeds);
         this.isSwappedFeeds = isSwappedFeeds;
         final VideoContext videoContext = dependencies.getVoipStateService().getVideoContext();
         if (videoContext != null && this.videoViews != null) {
@@ -1990,6 +1978,9 @@ public class CallActivity extends ThreemaActivity implements
         logger.trace("onUserLeaveHint");
 
         super.onUserLeaveHint();
+        if (!isSessionScopeReady()) {
+            return;
+        }
         enterPictureInPictureMode(false);
     }
 
@@ -2282,8 +2273,8 @@ public class CallActivity extends ThreemaActivity implements
 
 
     @Override
-    public void onYes(String tag, Object data) {
-        if (tag.equals(DIALOG_TAG_CONNECTION_FAILED)) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
+        if (tag != null && tag.equals(DIALOG_TAG_CONNECTION_FAILED)) {
             abortWithError();
         }
     }

@@ -2,52 +2,78 @@ package ch.threema.app.tasks
 
 import ch.threema.app.listeners.MessageListener
 import ch.threema.app.managers.ListenerManager
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.SynchronizedSettingsService
+import ch.threema.app.profilepicture.GroupProfilePictureUploader
+import ch.threema.app.protocolsteps.IdentityBlockedSteps
+import ch.threema.app.services.ContactService
+import ch.threema.app.services.FileService
+import ch.threema.app.services.GroupService
+import ch.threema.app.services.MessageService
+import ch.threema.app.services.UserService
 import ch.threema.app.utils.GroupUtil
 import ch.threema.app.utils.OutgoingCspContactMessageCreator
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.OutgoingCspMessageHandle
-import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
+import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
+import ch.threema.app.voip.services.VoipStateService
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.Utils
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.data.repositories.ContactModelRepository
+import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.csp.fs.BadDHStateException
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
+import ch.threema.domain.stores.ContactStore
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.NetworkException
 import ch.threema.domain.taskmanager.catchAllExceptNetworkException
 import ch.threema.domain.taskmanager.catchExceptNetworkException
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
+import ch.threema.storage.DatabaseService
 import ch.threema.storage.models.AbstractMessageModel
-import ch.threema.storage.models.GroupMessageModel
-import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
+import ch.threema.storage.models.group.GroupMessageModel
+import ch.threema.storage.models.group.GroupModelOld
 import java.util.Date
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("OutgoingCspMessageTask")
 
-sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) :
-    ActiveTask<Unit>, PersistableTask {
-    protected val userService by lazy { serviceManager.userService }
-    protected val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
-    protected val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
-    protected val contactService by lazy { serviceManager.contactService }
-    protected val groupService by lazy { serviceManager.groupService }
-    protected val contactStore by lazy { serviceManager.contactStore }
-    protected val identityStore by lazy { serviceManager.identityStore }
-    protected val nonceFactory by lazy { serviceManager.nonceFactory }
-    protected val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }
-    protected val messageService by lazy { serviceManager.messageService }
-    private val databaseService by lazy { serviceManager.databaseService }
-    private val rejectedGroupMessageFactory by lazy { databaseService.rejectedGroupMessageFactory }
-    protected val preferenceService by lazy { serviceManager.preferenceService }
+sealed class OutgoingCspMessageTask :
+    ActiveTask<Unit>, PersistableTask, KoinComponent {
+    protected val userService: UserService by inject()
+    protected val contactModelRepository: ContactModelRepository by inject()
+    protected val groupModelRepository: GroupModelRepository by inject()
+    protected val contactService: ContactService by inject()
+    protected val groupService: GroupService by inject()
+    protected val contactStore: ContactStore by inject()
+    protected val identityStore: IdentityStore by inject()
+    protected val nonceFactory: NonceFactory by inject()
+    protected val forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor by inject()
+    protected val messageService: MessageService by inject()
+    protected val databaseService: DatabaseService by inject()
+    protected val preferenceService: PreferenceService by inject()
+    protected val synchronizedSettingsService: SynchronizedSettingsService by inject()
+    protected val outgoingCspMessageServices: OutgoingCspMessageServices by inject()
+    protected val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
+    protected val apiConnector: APIConnector by inject()
+    protected val fileService: FileService by inject()
+    protected val groupProfilePictureUploader: GroupProfilePictureUploader by inject()
+    protected val voipStateService: VoipStateService by inject()
+    protected val identityBlockedSteps: IdentityBlockedSteps by inject()
 
     final override suspend fun invoke(handle: ActiveTaskCodec) {
         suspend {
@@ -97,7 +123,7 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
     suspend fun sendContactMessage(
         message: AbstractMessage,
         messageModel: MessageModel?,
-        toIdentity: Identity,
+        toIdentity: IdentityString,
         messageId: MessageId,
         createdAt: Date,
         handle: ActiveTaskCodec,
@@ -149,13 +175,14 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
 
         suspend {
             handle.runBundledMessagesSendSteps(
-                OutgoingCspMessageHandle(
+                outgoingCspMessageHandle = OutgoingCspMessageHandle(
                     contactModelData.toBasicContact(),
                     createMessage,
                     markAsSent,
                     updateFsState,
                 ),
-                serviceManager.getOutgoingCspMessageServices(),
+                services = outgoingCspMessageServices,
+                identityBlockedSteps = identityBlockedSteps,
             )
         }.catchExceptNetworkException { e: BadDHStateException ->
             if (messageModel != null) {
@@ -191,7 +218,7 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
      * message will not be sent to this member.
      */
     suspend fun sendGroupMessage(
-        group: GroupModel,
+        group: GroupModelOld,
         recipients: Collection<String>,
         messageModel: GroupMessageModel?,
         createdAt: Date,
@@ -241,7 +268,7 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
 
         val updateFsState = { fsStateMap: Map<String, ForwardSecurityMode> ->
             fsStateMap.keys.forEach {
-                rejectedGroupMessageFactory.removeMessageReject(messageId, it, groupModel)
+                databaseService.rejectedGroupMessageFactory.removeMessageReject(messageId, it, groupModel)
             }
 
             // Update the message state as all messages have been sent now
@@ -253,7 +280,7 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
                 val state = when {
                     recipients.isEmpty() -> MessageState.READ
 
-                    rejectedGroupMessageFactory.getMessageRejects(messageId, groupModel)
+                    databaseService.rejectedGroupMessageFactory.getMessageRejects(messageId, groupModel)
                         .isNotEmpty() -> MessageState.FS_KEY_MISMATCH
 
                     else -> MessageState.SENT
@@ -296,13 +323,14 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
 
         suspend {
             handle.runBundledMessagesSendSteps(
-                OutgoingCspMessageHandle(
+                outgoingCspMessageHandle = OutgoingCspMessageHandle(
                     finalRecipients,
                     messageCreator,
                     markAsSent,
                     updateFsState,
                 ),
-                serviceManager.getOutgoingCspMessageServices(),
+                services = outgoingCspMessageServices,
+                identityBlockedSteps = identityBlockedSteps,
             )
         }.catchExceptNetworkException { e: BadDHStateException ->
             if (messageModel != null) {
@@ -382,7 +410,7 @@ sealed class OutgoingCspMessageTask(private val serviceManager: ServiceManager) 
     /**
      * Remove the group creator if no messages should be sent to it according to [GroupUtil.shouldSendMessagesToCreator].
      */
-    private fun Collection<ch.threema.data.models.ContactModel>.removeGroupCreatorIfRequired(group: GroupModel) =
+    private fun Collection<ch.threema.data.models.ContactModel>.removeGroupCreatorIfRequired(group: GroupModelOld) =
         filterIf(!GroupUtil.shouldSendMessagesToCreator(group)) { it.identity != group.creatorIdentity }
 
     /**

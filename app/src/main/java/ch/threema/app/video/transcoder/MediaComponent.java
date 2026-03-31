@@ -30,12 +30,6 @@ public class MediaComponent {
     private MediaFormat mTrackFormat;
     private int mSelectedTrackIndex;
 
-    /**
-     * @param context
-     * @param srcUri
-     * @param type
-     * @throws IOException
-     */
     public MediaComponent(Context context, Uri srcUri, int type) throws IOException {
         mContext = context;
         mSrcUri = srcUri;
@@ -51,8 +45,6 @@ public class MediaComponent {
 
     /**
      * The MediaExtractor instance to use to for this component.
-     *
-     * @return
      */
     public MediaExtractor getMediaExtractor() {
         return mMediaExtractor;
@@ -60,8 +52,6 @@ public class MediaComponent {
 
     /**
      * The MediaFormat for the selected track of this component.
-     *
-     * @return
      */
     public @Nullable MediaFormat getTrackFormat() {
         return mTrackFormat;
@@ -69,8 +59,6 @@ public class MediaComponent {
 
     /**
      * The index of the selected track for this component.
-     *
-     * @return
      */
     public int getSelectedTrackIndex() {
         return mSelectedTrackIndex;
@@ -87,8 +75,6 @@ public class MediaComponent {
 
     /**
      * Get mime type of selected track for this component.
-     *
-     * @return
      */
     public @Nullable String getMimeType() {
         return mimeType;
@@ -106,8 +92,6 @@ public class MediaComponent {
 
     /**
      * create me!
-     *
-     * @throws IOException
      */
     private void init() throws IOException {
         createExtractor();
@@ -116,8 +100,6 @@ public class MediaComponent {
 
     /**
      * Creates an extractor that reads its frames from {@link #mSrcUri}
-     *
-     * @throws IOException
      */
     private void createExtractor() throws IOException {
         mMediaExtractor = new MediaExtractor();

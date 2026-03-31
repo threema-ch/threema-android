@@ -7,7 +7,8 @@ import ch.threema.app.services.FileService
 import ch.threema.app.services.MessageService
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.QuoteUtil.QuoteContent
-import ch.threema.domain.types.Identity
+import ch.threema.data.datatypes.ContactNameFormat
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageType
@@ -36,7 +37,7 @@ class QuoteUtilTest {
 
     private fun testQuoteV1(
         content: QuoteContent?,
-        expectedIdentity: Identity,
+        expectedIdentity: IdentityString,
         expectedQuotedText: String,
         expectedBodyText: String,
     ) {
@@ -170,6 +171,7 @@ class QuoteUtilTest {
         val quotedModel: AbstractMessageModel = MessageModel(false)
         quotedModel.apiMessageId = quotedMessageId
         quotedModel.identity = quotedIdentity
+        @Suppress("DEPRECATION")
         quotedModel.type = MessageType.VIDEO
         quotedModel.body = ""
 
@@ -304,6 +306,7 @@ class QuoteUtilTest {
                 mockMessageService,
                 mockUserService,
                 mockFileService,
+                ContactNameFormat.DEFAULT,
             )
         }
     }

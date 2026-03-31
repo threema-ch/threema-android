@@ -33,7 +33,7 @@ import ch.threema.app.video.transcoder.audio.AudioFormatTranscoder;
 import ch.threema.app.video.transcoder.audio.AudioNullTranscoder;
 import ch.threema.app.video.transcoder.audio.UnsupportedAudioFormatException;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
-import java8.util.Optional;
+import java.util.Optional;
 
 import static ch.threema.app.video.transcoder.VideoTranscoderUtil.getRoundedSize;
 
@@ -635,9 +635,6 @@ public class VideoTranscoder {
 
     /**
      * Extract frame for decoder and feed to encoder.
-     *
-     * @param videoDecoderOutputBufferInfo
-     * @return
      */
     private int pollVideoFromDecoderAndFeedToEncoder(MediaCodec.BufferInfo videoDecoderOutputBufferInfo) {
         int decoderOutputBufferIndex = mVideoDecoder.dequeueOutputBuffer(videoDecoderOutputBufferInfo, TIMEOUT_USEC);
@@ -703,10 +700,6 @@ public class VideoTranscoder {
         return POLLING_ERROR;
     }
 
-    /**
-     * @param videoEncoderOutputBufferInfo
-     * @return
-     */
     private boolean pollVideoFromEncoderAndFeedToMuxer(MediaCodec.BufferInfo videoEncoderOutputBufferInfo) {
         int encoderOutputBufferIndex = mVideoEncoder.dequeueOutputBuffer(videoEncoderOutputBufferInfo, TIMEOUT_USEC);
 
@@ -780,7 +773,6 @@ public class VideoTranscoder {
      * or null if no match was found.
      *
      * @param mimeType specified MIME type
-     * @return
      */
     public static MediaCodecInfo selectCodec(String mimeType) {
         int numCodecs = MediaCodecList.getCodecCount();

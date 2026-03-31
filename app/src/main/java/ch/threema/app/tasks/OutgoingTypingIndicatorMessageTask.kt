@@ -1,17 +1,15 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.common.now
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 class OutgoingTypingIndicatorMessageTask(
     private val isTyping: Boolean,
-    private val toIdentity: Identity,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+    private val toIdentity: IdentityString,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingTypingIndicatorMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {

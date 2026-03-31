@@ -72,6 +72,7 @@ public class VideoUtil {
         return duration;
     }
 
+    @NonNull
     @OptIn(markerClass = UnstableApi.class)
     public static ExoPlayer getExoPlayer(@NonNull Context context) {
         DefaultRenderersFactory renderersFactory = new DefaultRenderersFactory(context);

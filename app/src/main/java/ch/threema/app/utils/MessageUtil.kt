@@ -9,9 +9,9 @@ import ch.threema.common.now
 import ch.threema.domain.protocol.csp.messages.EditMessage
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.FirstUnreadMessageModel
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
+import ch.threema.storage.models.group.GroupMessageModel
 import java.util.Date
 
 /**

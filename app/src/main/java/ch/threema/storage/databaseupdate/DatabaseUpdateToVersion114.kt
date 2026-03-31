@@ -16,11 +16,7 @@ class DatabaseUpdateToVersion114(
         }
     }
 
-    override fun getVersion() = VERSION
+    override val version = 114
 
     override fun getDescription() = "remove data related to group join/invite"
-
-    companion object {
-        const val VERSION = 114
-    }
 }

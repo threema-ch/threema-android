@@ -45,8 +45,8 @@ abstract class AvatarFetcher(private val context: Context) : DataFetcher<Bitmap>
      */
     protected fun buildDefaultAvatarHighRes(
         drawable: VectorDrawableCompat?,
-        color: Int,
-        backgroundColor: Int,
+        @ColorInt color: Int,
+        @ColorInt backgroundColor: Int,
     ): Bitmap =
         AvatarConverterUtil.buildDefaultAvatarHighRes(drawable, avatarSizeHiRes, color, backgroundColor)
 
@@ -54,6 +54,6 @@ abstract class AvatarFetcher(private val context: Context) : DataFetcher<Bitmap>
      * Create a bitmap of the given drawable with the given color in low resolution. Used for smaller views
      * like in ContactListAdapter.
      */
-    protected fun buildDefaultAvatarLowRes(drawable: VectorDrawableCompat?, color: Int): Bitmap =
+    protected fun buildDefaultAvatarLowRes(drawable: VectorDrawableCompat?, @ColorInt color: Int): Bitmap =
         AvatarConverterUtil.getAvatarBitmap(drawable, color, avatarSizeSmall)
 }

@@ -47,6 +47,9 @@ object NotificationChannels {
     /** channel will be created on-the-fly by ThreemaPushService */
     const val NOTIFICATION_CHANNEL_THREEMA_PUSH = "threema_push"
 
+    /** channel will be created on-the-fly by RemoteSecretMonitorService */
+    const val NOTIFICATION_CHANNEL_REMOTE_SECRET = "remote_secret_monitor"
+
     /** channel will be created on-the-fly by VoiceMessagePlayerService */
     const val NOTIFICATION_CHANNEL_VOICE_MSG_PLAYER = "voicemessage_player"
 
@@ -77,6 +80,7 @@ object NotificationChannels {
         NotificationChannelSetup(context).createOrUpdateNotificationChannels()
     }
 
+    @JvmStatic
     fun doesPerConversationChannelExist(context: Context, uid: String): Boolean =
         NotificationManagerCompat.from(context).exists(uid)
 

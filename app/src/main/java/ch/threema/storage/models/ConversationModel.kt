@@ -1,20 +1,18 @@
 package ch.threema.storage.models
 
-import android.content.Context
-import androidx.annotation.DrawableRes
-import ch.threema.app.R
 import ch.threema.app.messagereceiver.ContactMessageReceiver
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver
 import ch.threema.app.messagereceiver.GroupMessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver
+import ch.threema.app.utils.ConversationUtil.getContactConversationUid
 import ch.threema.app.utils.ConversationUtil.getDistributionListConversationUid
 import ch.threema.app.utils.ConversationUtil.getGroupConversationUid
-import ch.threema.app.utils.ConversationUtil.getIdentityConversationUid
+import ch.threema.data.models.GroupModel
 import ch.threema.domain.types.ConversationUID
+import ch.threema.storage.models.group.GroupModelOld
 import java.util.Date
 
 class ConversationModel(
-    val context: Context,
     @JvmField var messageReceiver: MessageReceiver<*>,
 ) {
     val isContactConversation: Boolean
@@ -32,13 +30,13 @@ class ConversationModel(
             else -> null
         }
 
-    val group: GroupModel?
+    val group: GroupModelOld?
         get() = when {
             isGroupConversation -> (messageReceiver as GroupMessageReceiver).group
             else -> null
         }
 
-    val groupModel: ch.threema.data.models.GroupModel?
+    val groupModel: GroupModel?
         get() = when {
             isGroupConversation -> (messageReceiver as GroupMessageReceiver).groupModel
             else -> null
@@ -72,12 +70,13 @@ class ConversationModel(
 
     val uid: ConversationUID
         get() = when {
-            isContactConversation -> getIdentityConversationUid(contact!!.identity)
+            isContactConversation -> getContactConversationUid(contact!!.identity)
             isGroupConversation -> getGroupConversationUid(group!!.id.toLong())
             isDistributionListConversation -> getDistributionListConversationUid(distributionList!!.id)
             else -> error("Can not determine uid of conversation model for receiver od type ${messageReceiver.type}")
         }
 
+    // Only used by the web-client
     var position: Int = -1
 
     @JvmField
@@ -100,28 +99,8 @@ class ConversationModel(
 
     fun hasUnreadMessage(): Boolean = unreadCount > 0
 
-    @DrawableRes
-    fun getConversationIconRes(): Int? = when {
-        isContactConversation -> latestMessage?.let { messageModel ->
-            when {
-                messageModel.type == MessageType.VOIP_STATUS -> R.drawable.ic_phone_locked
-                !messageModel.isOutbox -> R.drawable.ic_reply_filled
-                else -> null
-            }
-        }
-
-        isGroupConversation -> when {
-            groupModel?.isNotesGroup() == true -> R.drawable.ic_spiral_bound_booklet_outline
-            else -> R.drawable.ic_group_filled
-        }
-
-        isDistributionListConversation -> R.drawable.ic_distribution_list_filled
-
-        else -> null
-    }
-
     val receiverModel: ReceiverModel
         get() = contact ?: group ?: distributionList ?: throw IllegalStateException("ConversationModel is missing a ReceiverModel")
 
-    override fun toString(): String = messageReceiver.displayName
+    override fun toString(): String = receiverModel.identifier.toString()
 }

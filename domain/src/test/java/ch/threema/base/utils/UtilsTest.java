@@ -3,8 +3,6 @@ package ch.threema.base.utils;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
-import java.util.Date;
-
 public class UtilsTest {
     @Test
     public void truncateUTF8String() {
@@ -31,18 +29,5 @@ public class UtilsTest {
             Assert.assertEquals(String.format("%02x", i), Utils.byteToHex((byte) i, false, false));
             Assert.assertEquals(String.format("0x%02X", i), Utils.byteToHex((byte) i, true, true));
         }
-    }
-
-    @Test
-    public void getUnsignedTimestamp() {
-        Assert.assertEquals(0, Utils.getUnsignedTimestamp(null));
-        Assert.assertEquals(0, Utils.getUnsignedTimestamp(new Date(0)));
-        Assert.assertEquals(0, Utils.getUnsignedTimestamp(new Date(-1)));
-        Assert.assertEquals(0, Utils.getUnsignedTimestamp(new Date(-79200000)));
-        Assert.assertEquals(0, Utils.getUnsignedTimestamp(new Date(Long.MIN_VALUE)));
-
-        Assert.assertEquals(1, Utils.getUnsignedTimestamp(new Date(1)));
-        Assert.assertEquals(1355270400000L, Utils.getUnsignedTimestamp(new Date(1355270400000L)));
-        Assert.assertEquals(Long.MAX_VALUE, Utils.getUnsignedTimestamp(new Date(Long.MAX_VALUE)));
     }
 }

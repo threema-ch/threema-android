@@ -1,6 +1,5 @@
 package ch.threema.app.adapters.decorators;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
@@ -13,20 +12,23 @@ import org.slf4j.Logger;
 
 import java.io.File;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
 import ch.threema.app.services.MessageServiceImpl;
-import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.services.messageplayer.AnimatedImageDrawableMessagePlayer;
+import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.FileUtil;
+import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.data.media.FileDataModel;
+
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * A decorator for animated image formats natively supported by AnimatedImageDrawable and/or by Glide
@@ -35,21 +37,31 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
     private static final Logger logger = getThreemaLogger("AnimatedImageDrawableDecorator");
 
     private static final String LISTENER_TAG = "decorator";
-    private AnimatedImageDrawableMessagePlayer animatedImageDrawableMessagePlayer;
 
-    public AnimatedImageDrawableDecorator(Context context, AbstractMessageModel messageModel, Helper decoratorHelper) {
-        super(context, messageModel, decoratorHelper);
+    @NonNull
+    private final MessagePlayerFactory messagePlayerFactory;
+
+    public AnimatedImageDrawableDecorator(
+        AbstractMessageModel messageModel,
+        @NonNull ChatAdapterDecoratorListener chatAdapterDecoratorListener,
+        @NonNull LinkifyUtil.LinkifyListener linkifyListener,
+        @NonNull MessagePlayerFactory messagePlayerFactory,
+        Helper decoratorHelper
+    ) {
+        super(messageModel, chatAdapterDecoratorListener, linkifyListener, decoratorHelper);
+        this.messagePlayerFactory = messagePlayerFactory;
     }
 
     @Override
-    protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
+    protected void configureChatMessage(final ComposeMessageHolder holder, Context context, final int position) {
         final long fileSize;
 
-        super.configureChatMessage(holder, position);
+        super.configureChatMessage(holder, context, position);
 
-        logger.debug("configureChatMessage - position " + position);
+        logger.debug("configureChatMessage - position {}", position);
 
-        animatedImageDrawableMessagePlayer = (AnimatedImageDrawableMessagePlayer) getMessagePlayerService().createPlayer(getMessageModel(), (Activity) getContext(), helper.getMessageReceiver(), null);
+        AnimatedImageDrawableMessagePlayer animatedImageDrawableMessagePlayer =
+            (AnimatedImageDrawableMessagePlayer) messagePlayerFactory.create(getMessageModel(), null);
         holder.messagePlayer = animatedImageDrawableMessagePlayer;
 
         /*
@@ -130,7 +142,7 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
         holder.attachmentImage.setLayoutParams(params);
         holder.attachmentImage.setVisibility(View.VISIBLE);
 
-        Glide.with(getContext())
+        Glide.with(context)
             .load(thumbnail)
             .optionalFitCenter()
             .override(width, height)
@@ -150,10 +162,11 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
 
         configureBodyText(holder, fileData.getCaption());
 
-        RuntimeUtil.runOnUiThread(() -> setControllerState(holder, fileData, fileSize));
+        RuntimeUtil.runOnUiThread(() -> setControllerState(holder, animatedImageDrawableMessagePlayer, fileData, fileSize));
 
-        setDatePrefix(FileUtil.getFileMessageDatePrefix(getContext(), getMessageModel(), "WebP"));
+        setDatePrefix(FileUtil.getFileMessageDatePrefix(context, getMessageModel(), "WebP"));
 
+        Context applicationContext = context.getApplicationContext();
         animatedImageDrawableMessagePlayer
             .attachContainer(holder.attachmentImage)
             // decryption
@@ -175,12 +188,12 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
                             if (helper.getPreferenceService().isAnimationAutoplay()) {
                                 holder.controller.setVisibility(View.INVISIBLE);
                             } else {
-                                setControllerState(holder, messageModel.getFileData(), messageModel.getFileData().getFileSize());
+                                setControllerState(holder, animatedImageDrawableMessagePlayer, messageModel.getFileData(), messageModel.getFileData().getFileSize());
                             }
                         } else {
                             holder.controller.setVisibility(View.GONE);
                             if (!TestUtil.isEmptyOrNull(message)) {
-                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                                Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -213,16 +226,20 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
                         } else {
                             holder.controller.setReadyToDownload();
                             if (!TestUtil.isEmptyOrNull(message)) {
-                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                                Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show();
                             }
                         }
                     });
                 }
             });
-
     }
 
-    private void setControllerState(ComposeMessageHolder holder, FileDataModel fileData, long fileSize) {
+    private void setControllerState(
+        ComposeMessageHolder holder,
+        AnimatedImageDrawableMessagePlayer animatedImageDrawableMessagePlayer,
+        FileDataModel fileData,
+        long fileSize
+    ) {
         if (getMessageModel().isOutbox()) {
             // outgoing message
             switch (getMessageModel().getState()) {
@@ -239,7 +256,7 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
                     holder.controller.setRetry();
                     break;
                 default:
-                    setAutoplay(fileData, fileSize, holder);
+                    setAutoplay(fileData, fileSize, holder, animatedImageDrawableMessagePlayer);
             }
         } else {
             // incoming message
@@ -250,13 +267,18 @@ public class AnimatedImageDrawableDecorator extends ChatAdapterDecorator {
                     holder.controller.setProgressingDeterminate(100);
                 }
             } else {
-                setAutoplay(fileData, fileSize, holder);
+                setAutoplay(fileData, fileSize, holder, animatedImageDrawableMessagePlayer);
             }
         }
     }
 
-    private void setAutoplay(FileDataModel fileData, long fileSize, ComposeMessageHolder holder) {
-        logger.debug("setAutoPlay holder position " + holder.position);
+    private void setAutoplay(
+        FileDataModel fileData,
+        long fileSize,
+        ComposeMessageHolder holder,
+        AnimatedImageDrawableMessagePlayer animatedImageDrawableMessagePlayer
+    ) {
+        logger.debug("setAutoPlay holder position {}", holder.position);
 
         if (fileData.isDownloaded()) {
             if (helper.getPreferenceService().isAnimationAutoplay() && animatedImageDrawableMessagePlayer != null) {

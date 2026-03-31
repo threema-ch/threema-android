@@ -12,12 +12,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.media.AudioManager
 import android.media.AudioManager.OnAudioFocusChangeListener
-import android.net.Uri
 import android.widget.Toast
 import android.widget.Toast.LENGTH_LONG
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.net.toUri
 import androidx.media.AudioAttributesCompat
 import androidx.media.AudioFocusRequestCompat
 import androidx.media.AudioManagerCompat
@@ -26,13 +26,12 @@ import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.DefaultLoadControl
-import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.exoplayer.audio.AudioSink
 import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSession.Callback
 import androidx.media3.session.MediaSessionService
+import ch.threema.android.isConnectedToHeadsetOrSpeaker
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.listeners.SensorListener
@@ -41,8 +40,7 @@ import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.notifications.NotificationIDs
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.SoundUtil
-import ch.threema.app.voicemessage.SamsungQuirkAudioSink
+import ch.threema.app.voicemessage.SamsungQuirkRenderersFactory
 import ch.threema.base.utils.getThreemaLogger
 import com.google.common.util.concurrent.Futures
 import com.google.common.util.concurrent.ListenableFuture
@@ -135,10 +133,8 @@ class VoiceMessagePlayerService :
     }
 
     private fun destroySelf() {
-        preferenceService?.let {
-            if (it.isUseProximitySensor) {
-                sensorService?.unregisterSensors(TAG)
-            }
+        if (preferenceService?.isUseProximitySensor() == true) {
+            sensorService?.unregisterSensors(TAG)
         }
         releaseAudioFocus()
         player.release()
@@ -163,27 +159,34 @@ class VoiceMessagePlayerService :
             )
             .build()
 
-        preferenceService?.let {
-            player.addListener(object : Player.Listener {
-                override fun onIsPlayingChanged(isPlaying: Boolean) {
-                    logger.debug("onIsPlayingChanged {}", isPlaying)
-                    if (isPlaying) {
-                        logger.info("Start playing")
-                        if (it.isUseProximitySensor && !SoundUtil.isHeadsetOn(audioManager)) {
-                            sensorService?.registerSensors(TAG, this@VoiceMessagePlayerService)
+        preferenceService?.let { preferenceService ->
+            player.addListener(
+                object : Player.Listener {
+                    override fun onIsPlayingChanged(isPlaying: Boolean) {
+                        logger.debug("onIsPlayingChanged {}", isPlaying)
+                        if (isPlaying) {
+                            logger.info("Start playing")
+                            if (preferenceService.isUseProximitySensor()) {
+                                if (audioManager.isConnectedToHeadsetOrSpeaker()) {
+                                    logger.info("Headphones or speaker connected")
+                                } else {
+                                    sensorService?.registerSensors(TAG, this@VoiceMessagePlayerService)
+                                }
+                            }
+                            requestAudioFocus()
+                        } else {
+                            logger.info("Stop playing")
+                            if (preferenceService.isUseProximitySensor()) {
+                                sensorService?.unregisterSensors(TAG)
+                            }
+                            releaseAudioFocus()
                         }
-                        requestAudioFocus()
-                    } else {
-                        logger.info("Stop playing")
-                        if (it.isUseProximitySensor) {
-                            sensorService?.unregisterSensors(TAG)
-                        }
-                        releaseAudioFocus()
                     }
-                }
-            })
+                },
+            )
         }
 
+        val uniqueControllerIds: MutableSet<Int> = mutableSetOf()
         val mediaSessionCallback = object : Callback {
             override fun onAddMediaItems(
                 mediaSession: MediaSession,
@@ -192,12 +195,26 @@ class VoiceMessagePlayerService :
             ): ListenableFuture<List<MediaItem>> {
                 val resolvedMediaItems = mediaItems.map { mediaItem ->
                     MediaItem.Builder()
-                        .setUri(Uri.parse(mediaItem.mediaId))
+                        .setUri(mediaItem.mediaId.toUri())
                         .setMediaId(mediaItem.mediaId)
                         .setMediaMetadata(mediaItem.mediaMetadata)
                         .build()
                 }
                 return Futures.immediateFuture(resolvedMediaItems)
+            }
+
+            override fun onPostConnect(session: MediaSession, controller: MediaSession.ControllerInfo) {
+                logger.info("Controller {} connected with hints: {}", controller.uid, controller.connectionHints)
+                uniqueControllerIds.add(controller.uid)
+            }
+
+            override fun onDisconnected(session: MediaSession, controller: MediaSession.ControllerInfo) {
+                logger.info("Controller {} disconnected", controller.uid)
+                uniqueControllerIds.remove(controller.uid)
+                if (uniqueControllerIds.isEmpty()) {
+                    logger.info("Stopping self because the last controller disconnected")
+                    pauseAllPlayersAndStopSelf()
+                }
             }
         }
 
@@ -206,21 +223,10 @@ class VoiceMessagePlayerService :
             .setCallback(mediaSessionCallback)
             .setSessionActivity(getSessionActivityPendingIntent())
 
-        // TODO(ANDR-3531): Remove this workaround after media3 dependency update to version >= 1.5
         try {
             mediaSession = mediaSessionBuilder.build()
-        } catch (exception: IllegalArgumentException) {
-            if (ConfigUtils.isMotorolaDevice()) {
-                // Some motorola devices throw an unexpected IllegalArgumentException.
-                // This workaround can be removed when we update media3-session to >= 1.5
-                // https://github.com/androidx/media/issues/1730
-                logger.error(
-                    "Caught IllegalArgumentException on a motorola device when attempting to set the media button broadcast receiver.",
-                    exception,
-                )
-            } else {
-                logger.error("Failed to create a media session.", exception)
-            }
+        } catch (exception: Exception) {
+            logger.error("Failed to create a media session.", exception)
             destroySelf()
             stopSelf()
             return false
@@ -316,7 +322,7 @@ class VoiceMessagePlayerService :
             hasAudioFocus = false
             try {
                 unregisterReceiver(audioBecomingNoisyReceiver)
-            } catch (e: IllegalArgumentException) {
+            } catch (_: IllegalArgumentException) {
                 // not registered... ignore exceptions
             }
         }
@@ -356,15 +362,5 @@ class VoiceMessagePlayerService :
             .setContentType(C.AUDIO_CONTENT_TYPE_SPEECH)
             .setAllowedCapturePolicy(C.ALLOW_CAPTURE_BY_NONE)
             .build()
-    }
-
-    class SamsungQuirkRenderersFactory(val context: Context) : DefaultRenderersFactory(context) {
-        override fun buildAudioSink(
-            context: Context,
-            enableFloatOutput: Boolean,
-            enableAudioTrackPlaybackParams: Boolean,
-        ): AudioSink {
-            return SamsungQuirkAudioSink(context, enableFloatOutput, enableAudioTrackPlaybackParams)
-        }
     }
 }

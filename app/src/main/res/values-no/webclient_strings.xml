@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">Ugyldig QR-kode data</string>
     <string name="webclient_init_session">Start ny økt</string>
     <string name="webclient_sessions_really_delete">Vil du virkelig slette denne skrivebord/web økten?</string>
     <string name="webclient_last_usage">Siste bruk: %s</string>

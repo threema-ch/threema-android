@@ -12,9 +12,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
+import org.koin.java.KoinJavaComponent;
 
+import java.util.Collections;
 import java.util.Date;
-import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
@@ -22,11 +23,11 @@ import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
+import ch.threema.KoinTestRule;
 import ch.threema.app.DangerousTest;
 import ch.threema.app.R;
 import ch.threema.app.ScreenshotTakingRule;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.factories.WebClientSessionModelFactory;
 import ch.threema.storage.models.WebClientSessionModel;
 
 import static androidx.test.InstrumentationRegistry.getInstrumentation;
@@ -37,7 +38,8 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static ch.threema.app.services.BrowserDetectionService.Browser;
+import static ch.threema.app.di.modules.SessionScopedKt.getSessionScopedModule;
+import static ch.threema.app.webclient.usecases.DetectBrowserUseCase.Browser;
 
 /**
  * Sessions activity UI tests.
@@ -53,6 +55,11 @@ public class SessionsActivityTest {
     @Rule
     public ActivityTestRule<SessionsActivity> activityTestRule
         = new ActivityTestRule<>(SessionsActivity.class, false, false);
+
+    @Rule
+    public final KoinTestRule koinTestRule = new KoinTestRule(
+        Collections.singletonList(getSessionScopedModule())
+    );
 
     @Rule
     public final RuleChain activityRule = ScreenshotTakingRule.getRuleChain();
@@ -81,10 +88,8 @@ public class SessionsActivityTest {
      * Clear all sessions.
      */
     private static void clearSessions() {
-        final DatabaseService databaseService = ThreemaApplication
-            .getServiceManager()
-            .getDatabaseService();
-        databaseService.getWebClientSessionModelFactory().deleteAll();
+        WebClientSessionModelFactory webClientSessionModelFactory = KoinJavaComponent.get(WebClientSessionModelFactory.class);
+        webClientSessionModelFactory.deleteAll();
     }
 
     /**
@@ -98,7 +103,6 @@ public class SessionsActivityTest {
         @NonNull Date lastConnection,
         @NonNull Browser browser
     ) {
-        final DatabaseService databaseService = Objects.requireNonNull(ThreemaApplication.getServiceManager()).getDatabaseService();
         final WebClientSessionModel model = new WebClientSessionModel();
 
         model.setLabel(label);
@@ -126,7 +130,8 @@ public class SessionsActivityTest {
         model.setSaltyRtcHost("saltyrtc.threema.example");
         model.setSaltyRtcPort(8080);
 
-        databaseService.getWebClientSessionModelFactory().createOrUpdate(model);
+        WebClientSessionModelFactory webClientSessionModelFactory = KoinJavaComponent.get(WebClientSessionModelFactory.class);
+        webClientSessionModelFactory.createOrUpdate(model);
     }
 
     @Before

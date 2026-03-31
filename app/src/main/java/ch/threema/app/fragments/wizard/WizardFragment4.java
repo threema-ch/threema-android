@@ -109,7 +109,7 @@ public class WizardFragment4 extends WizardFragment implements View.OnClickListe
 
         initValues();
 
-        if (ConfigUtils.isWorkRestricted() && callback.isSkipWizard()) {
+        if (callback.isSkipWizard()) {
             onClickFinish();
         }
     }

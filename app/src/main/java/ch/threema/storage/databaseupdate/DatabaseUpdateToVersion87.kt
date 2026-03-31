@@ -18,9 +18,5 @@ internal class DatabaseUpdateToVersion87(
 
     override fun getDescription() = "create rejected group message table"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 87
-    }
+    override val version = 87
 }

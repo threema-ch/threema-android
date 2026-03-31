@@ -10,11 +10,14 @@ import org.slf4j.Logger;
 import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
-import ch.threema.app.activities.PinLockActivity;
+import androidx.annotation.Nullable;
+import ch.threema.app.pinlock.PinLockActivity;
+import ch.threema.app.applock.AppLockActivity;
 import ch.threema.app.preference.service.PreferenceService;
-import ch.threema.app.utils.BiometricUtil;
 import ch.threema.app.utils.RuntimeUtil;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.localcrypto.MasterKeyProvider;
 
 public class ActivityService {
@@ -23,10 +26,8 @@ public class ActivityService {
     private final Context context;
     private final LockAppService lockAppService;
     private final PreferenceService preferenceService;
-    @NonNull
-    private final MasterKeyProvider masterKeyProvider;
-
-    private WeakReference<Activity> currentActivityReference = new WeakReference<>(null);
+    private final @NonNull MasterKeyProvider masterKeyProvider;
+    private @NonNull WeakReference<Activity> currentActivityReference = new WeakReference<>(null);
 
     public ActivityService(
         final Context context,
@@ -39,48 +40,51 @@ public class ActivityService {
         this.preferenceService = preferenceService;
         this.masterKeyProvider = masterKeyProvider;
 
-        this.lockAppService.addOnLockAppStateChanged(locked -> {
-            handleLockedState(locked);
+        this.lockAppService.addOnLockAppStateListener(isLocked -> {
+            handleLockedState(isLocked);
             return false;
         });
     }
 
     private synchronized void handleLockedState(final boolean locked) {
-        logger.debug("handleLockedState currentActivity: " + currentActivityReference.get());
+        logger.debug("handleLockedState currentActivity: {}", currentActivityReference.get());
 
         if (masterKeyProvider.isLocked()) {
             return;
         }
 
-        boolean isPinLock = currentActivityReference == null || currentActivityReference.get() == null || currentActivityReference.get() instanceof PinLockActivity;
-
-        if (!isPinLock) {
-            RuntimeUtil.runOnUiThread(() -> {
-                logger.info("handLockedState - locked = {}", locked);
-
-                if (locked) {
-                    if (currentActivityReference.get() != null) {
-                        if (preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_SYSTEM) ||
-                                preferenceService.getLockMechanism().equals(PreferenceService.LockingMech_BIOMETRIC)) {
-                            BiometricUtil.showUnlockDialog(currentActivityReference.get(), null, false, 0, null);
-                        } else {
-                            try {
-                                Intent intent = PinLockActivity.createIntent(context);
-                                currentActivityReference.get().startActivity(intent);
-                                currentActivityReference.get().overridePendingTransition(0, 0);
-                            } catch (Exception x) {
-                                logger.error("Exception", x);
-                            }
-                        }
-                    }
-                }
-            });
+        boolean isPinLock = currentActivityReference == null ||
+            currentActivityReference.get() == null ||
+            currentActivityReference.get() instanceof PinLockActivity;
+        if (isPinLock) {
+            return;
         }
+
+        logger.info("handleLockedState - locked = {}", locked);
+        if (!locked) {
+            return;
+        }
+
+        var lockMechanism = preferenceService.getLockMechanism();
+        RuntimeUtil.runOnUiThread(() -> {
+            var activity = currentActivityReference.get();
+            if (activity != null) {
+                Intent intent;
+                if (lockMechanism.equals(PreferenceService.LOCKING_MECH_SYSTEM) ||
+                    lockMechanism.equals(PreferenceService.LOCKING_MECH_BIOMETRIC)) {
+                    intent = AppLockActivity.createIntent(activity);
+
+                } else {
+                    intent = PinLockActivity.createIntent(context);
+                }
+                activity.startActivity(intent);
+                activity.overridePendingTransition(0, 0);
+            }
+        });
     }
 
     public void resume(Activity currentActivity) {
         this.currentActivityReference = new WeakReference<>(currentActivity);
-
         if (this.lockAppService.checkLock()) {
             if (this.timeLocking()) {
                 this.handleLockedState(true);
@@ -100,9 +104,11 @@ public class ActivityService {
         }
     }
 
-    public void userInteract(Activity interactedActivity) {
-        this.currentActivityReference.clear();
-        this.currentActivityReference = new WeakReference<>(interactedActivity);
+    public void userInteract(@Nullable Activity interactedActivity) {
+        if (currentActivityReference.get() != interactedActivity) {
+            this.currentActivityReference.clear();
+            this.currentActivityReference = new WeakReference<>(interactedActivity);
+        }
         this.timeLocking();
     }
 
@@ -144,7 +150,7 @@ public class ActivityService {
         }
     }
 
-    public static void activityUserInteract(Activity interactedActivity) {
+    public static void activityUserInteract(@Nullable Activity interactedActivity) {
         ActivityService activityService = KoinJavaComponent.getOrNull(ActivityService.class);
         if (activityService != null) {
             activityService.userInteract(interactedActivity);

@@ -1,6 +1,7 @@
 package ch.threema.app.startup
 
 import ch.threema.app.restrictions.AppRestrictionService
+import ch.threema.app.services.RemoteSecretMonitorService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RuntimeUtil
 import org.koin.core.module.dsl.factoryOf
@@ -22,5 +23,18 @@ val startupFeatureModule = module {
                 }
             },
         )
+    }
+
+    factoryOf(RemoteSecretMonitorService::Scheduler)
+
+    factory<RemoteSecretProtectionStateMonitor> {
+        if (ConfigUtils.isOnPremBuild()) {
+            RemoteSecretProtectionStateMonitorImpl(
+                remoteSecretMonitorServiceScheduler = get(),
+                masterKeyManager = get(),
+            )
+        } else {
+            NoOpRemoteSecretProtectionStateMonitorImpl()
+        }
     }
 }

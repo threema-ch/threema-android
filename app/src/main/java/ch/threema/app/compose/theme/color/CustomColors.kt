@@ -1,70 +1,15 @@
 package ch.threema.app.compose.theme.color
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import ch.threema.app.R
 
 object CustomColors {
 
-    /**
-     *  When changing sth. here, also change the XML equivalent
-     *  - `color/bubble_send_colorstatelist.xml`
-     *  - `color-night/bubble_send_colorstatelist.xml`
-     */
-    val chatBubbleSendContainer: Color
+    val listItemHighlightedContainer: Color
         @Composable
         @ReadOnlyComposable
-        get() =
-            if (isSystemInDarkTheme()) {
-                MaterialTheme.colorScheme.surfaceContainer
-            } else {
-                MaterialTheme.colorScheme.primaryContainer
-            }
-
-    /**
-     *  When changing sth. here, also change XML equivalent
-     *  - `color/bubble_send_text_colorstatelist.xml`
-     *  - `color-night/bubble_send_text_colorstatelist.xml`
-     */
-    val chatBubbleSendOnContainer: Color
-        @Composable
-        @ReadOnlyComposable
-        get() =
-            if (isSystemInDarkTheme()) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                MaterialTheme.colorScheme.onPrimaryContainer
-            }
-
-    /**
-     *  When changing sth. here, also change XML equivalent
-     *  - `color/bubble_receive_colorstatelist.xml`
-     *  - `color-night/bubble_receive_colorstatelist.xml`
-     */
-    val chatBubbleReceiveContainer: Color
-        @Composable
-        @ReadOnlyComposable
-        get() =
-            if (isSystemInDarkTheme()) {
-                MaterialTheme.colorScheme.surfaceContainerHigh
-            } else {
-                MaterialTheme.colorScheme.surfaceContainer
-            }
-
-    /**
-     *  When changing sth. here, also change XML equivalent
-     *  - `color/bubble_receive_text_colorstatelist.xml`
-     *  - `color-night/bubble_receive_text_colorstatelist.xml`
-     */
-    val chatBubbleReceiveOnContainer: Color
-        @Composable
-        @ReadOnlyComposable
-        get() =
-            if (isSystemInDarkTheme()) {
-                MaterialTheme.colorScheme.onSurface
-            } else {
-                MaterialTheme.colorScheme.onSurface
-            }
+        get() = colorResource(R.color.settings_multipane_selection_bg)
 }

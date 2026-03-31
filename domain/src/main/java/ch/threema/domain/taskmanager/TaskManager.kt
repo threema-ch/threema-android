@@ -2,6 +2,7 @@ package ch.threema.domain.taskmanager
 
 import ch.threema.base.SessionScoped
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.emptyByteArray
 import ch.threema.domain.protocol.connection.ConnectionLock
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.protocol.connection.data.CspMessage
@@ -250,7 +251,7 @@ internal class TaskManagerImpl(
         taskRunner.value.sendImmediately(
             CspMessage(
                 ProtocolDefines.PLTYPE_CLEAR_DEVICE_COOKIE_CHANGE_INDICATION.toUByte(),
-                byteArrayOf(),
+                emptyByteArray(),
             ),
         )
     }

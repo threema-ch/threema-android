@@ -26,9 +26,11 @@ class IncomingGroupDeleteProfilePictureTask(
     private val fileService by lazy { serviceManager.fileService }
     private val groupService by lazy { serviceManager.groupService }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
+    private val preferenceService by lazy { serviceManager.preferenceService }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
+        logger.info("Processing incoming delete-profile-picture message for group with id {}", message.apiGroupId)
+
         // Run the common group receive steps
         val groupModel = runCommonGroupReceiveSteps(message, handle, serviceManager)
         if (groupModel == null) {
@@ -45,10 +47,7 @@ class IncomingGroupDeleteProfilePictureTask(
         if (multiDeviceManager.isMultiDeviceActive) {
             val reflectionResult =
                 ReflectGroupSyncUpdateImmediateTask.ReflectGroupDeleteProfilePicture(
-                    groupModel,
-                    fileService,
-                    nonceFactory,
-                    multiDeviceManager,
+                    groupModel.groupIdentity,
                 ).reflect(handle)
 
             when (reflectionResult) {
@@ -80,7 +79,10 @@ class IncomingGroupDeleteProfilePictureTask(
 
         ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
 
-        ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(groupModel))
+        ShortcutUtil.updateShareTargetShortcut(
+            groupService.createReceiver(groupModel),
+            preferenceService.getContactNameFormat(),
+        )
 
         return ReceiveStepsResult.SUCCESS
     }

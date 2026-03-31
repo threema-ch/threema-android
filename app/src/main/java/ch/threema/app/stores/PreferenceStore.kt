@@ -1,6 +1,7 @@
 package ch.threema.app.stores
 
 import java.time.Instant
+import kotlinx.coroutines.flow.Flow
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -57,6 +58,8 @@ interface PreferenceStore {
     fun getBoolean(key: String) = getBoolean(key, defaultValue = false)
 
     fun getBoolean(key: String, defaultValue: Boolean): Boolean
+
+    fun watchBoolean(key: String, defaultValue: Boolean): Flow<Boolean>
 
     fun getBytes(key: String): ByteArray
 

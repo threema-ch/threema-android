@@ -34,7 +34,7 @@ class SystemUpdater(
         initialVersion: Int?,
     ): Boolean {
         val oldVersion = getOldVersion(initialVersion)
-        newVersion = systemUpdateProvider.getVersion()
+        newVersion = systemUpdateProvider.version
         if (oldVersion == NO_VERSION) {
             // fresh installation, no need to run any system updates
             storeVersionNumber(newVersion)
@@ -70,10 +70,10 @@ class SystemUpdater(
                 update.run()
             } catch (e: Exception) {
                 logger.error("Failed to run system update", e)
-                throw SystemUpdateException(update.getVersion())
+                throw SystemUpdateException(update.version)
             }
             logger.info("System update to {} successful", update.fullDescription)
-            storeVersionNumber(update.getVersion())
+            storeVersionNumber(update.version)
         }
     }
 
@@ -88,7 +88,7 @@ class SystemUpdater(
 
     private val SystemUpdate.fullDescription: String
         get() = buildString {
-            append("version ${getVersion()}")
+            append("version $version")
             getDescription()?.let { description ->
                 append(" ($description)")
             }

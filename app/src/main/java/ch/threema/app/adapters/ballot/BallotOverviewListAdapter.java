@@ -17,7 +17,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ContactService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
@@ -29,20 +31,31 @@ import ch.threema.storage.models.ballot.BallotModel;
 
 public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
 
+    @NonNull
     private final Context context;
+    @NonNull
     private final List<BallotModel> values;
     @Nullable
     private final MessageReceiver<?> messageReceiver;
+    @NonNull
     private final BallotService ballotService;
+    @NonNull
     private final ContactService contactService;
-    private final @NonNull RequestManager requestManager;
+    @NonNull
+    private final UserService userService;
+    @NonNull
+    private final PreferenceService preferenceService;
+    @NonNull
+    private final RequestManager requestManager;
 
     public BallotOverviewListAdapter(
-        Context context,
-        List<BallotModel> values,
+        @NonNull Context context,
+        @NonNull List<BallotModel> values,
         @Nullable MessageReceiver<?> messageReceiver,
-        BallotService ballotService,
-        ContactService contactService,
+        @NonNull BallotService ballotService,
+        @NonNull ContactService contactService,
+        @NonNull UserService userService,
+        @NonNull PreferenceService preferenceService,
         @NonNull RequestManager requestManager
     ) {
         super(context, R.layout.item_ballot_overview, values);
@@ -52,6 +65,8 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
         this.messageReceiver = messageReceiver;
         this.ballotService = ballotService;
         this.contactService = contactService;
+        this.userService = userService;
+        this.preferenceService = preferenceService;
         this.requestManager = requestManager;
     }
 
@@ -63,8 +78,9 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
         public MaterialButton countBoxView;
     }
 
+    @NonNull
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         View itemView = convertView;
         BallotOverviewItemHolder holder;
 
@@ -102,7 +118,7 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
                 holder.state.setText(R.string.ballot_state_closed);
                 holder.state.setVisibility(View.VISIBLE);
             } else if (ballotModel.getState() == BallotModel.State.OPEN) {
-                var myIdentity = contactService.getMe().getIdentity();
+                var myIdentity = userService.getIdentity();
                 if (BallotUtil.canClose(ballotModel, myIdentity, messageReceiver) || BallotUtil.canViewMatrix(ballotModel)) {
                     holder.state.setText(String.format(Locale.US, "%d / %d",
                         ballotService.getVotedParticipants(ballotModel.getId()).size(),
@@ -125,7 +141,12 @@ public class BallotOverviewListAdapter extends ArrayAdapter<BallotModel> {
             }
 
             if (holder.creator != null) {
-                holder.creator.setText(NameUtil.getDisplayName(this.contactService.getByIdentity(ballotModel.getCreatorIdentity())));
+                holder.creator.setText(
+                    NameUtil.getContactDisplayName(
+                        this.contactService.getByIdentity(ballotModel.getCreatorIdentity()),
+                        preferenceService.getContactNameFormat()
+                    )
+                );
             }
         }
 

@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
 import ch.threema.base.utils.getThreemaLogger
@@ -11,7 +10,7 @@ import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.media.FileDataModel
 import kotlinx.serialization.Serializable
@@ -22,13 +21,12 @@ class OutgoingFileMessageTask(
     private val messageModelId: Int,
     @MessageReceiverType
     private val receiverType: Int,
-    private val recipientIdentities: Set<Identity>,
+    private val recipientIdentities: Set<IdentityString>,
     private val thumbnailBlobId: ByteArray?,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
-    private val myIdentity by lazy { serviceManager.userService.identity }
+) : OutgoingCspMessageTask() {
+    private val myIdentity by lazy { userService.identity }
 
-    private val isMultiDeviceActive by lazy { serviceManager.multiDeviceManager.isMultiDeviceActive }
+    private val isMultiDeviceActive by lazy { multiDeviceManager.isMultiDeviceActive }
 
     override val type: String = "OutgoingFileMessageTask"
 
@@ -59,12 +57,12 @@ class OutgoingFileMessageTask(
         }
 
         sendContactMessage(
-            message,
-            messageModel,
-            messageModel.identity!!,
-            apiMessageId,
-            messageModel.createdAt!!,
-            handle,
+            message = message,
+            messageModel = messageModel,
+            toIdentity = messageModel.identity!!,
+            messageId = apiMessageId,
+            createdAt = messageModel.createdAt!!,
+            handle = handle,
         )
     }
 
@@ -77,17 +75,17 @@ class OutgoingFileMessageTask(
         val fileDataModel = messageModel.fileData
 
         sendGroupMessage(
-            group,
-            recipientIdentities,
-            messageModel,
-            messageModel.createdAt!!,
-            ensureMessageId(messageModel),
-            {
+            group = group,
+            recipients = recipientIdentities,
+            messageModel = messageModel,
+            createdAt = messageModel.createdAt!!,
+            messageId = ensureMessageId(messageModel),
+            createAbstractMessage = {
                 GroupFileMessage().apply {
                     fileData = fileDataModel.toFileData(thumbnailBlobId, messageModel)
                 }
             },
-            handle,
+            handle = handle,
         )
     }
 
@@ -129,10 +127,10 @@ class OutgoingFileMessageTask(
     }
 
     override fun serialize(): SerializableTaskData = OutgoingFileMessageData(
-        messageModelId,
-        receiverType,
-        recipientIdentities,
-        thumbnailBlobId,
+        messageModelId = messageModelId,
+        receiverType = receiverType,
+        recipientIdentities = recipientIdentities,
+        thumbnailBlobId = thumbnailBlobId,
     )
 
     @Serializable
@@ -140,16 +138,15 @@ class OutgoingFileMessageTask(
         private val messageModelId: Int,
         @MessageReceiverType
         private val receiverType: Int,
-        private val recipientIdentities: Set<Identity>,
+        private val recipientIdentities: Set<IdentityString>,
         private val thumbnailBlobId: ByteArray?,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingFileMessageTask(
-                messageModelId,
-                receiverType,
-                recipientIdentities,
-                thumbnailBlobId,
-                serviceManager,
+                messageModelId = messageModelId,
+                receiverType = receiverType,
+                recipientIdentities = recipientIdentities,
+                thumbnailBlobId = thumbnailBlobId,
             )
     }
 }

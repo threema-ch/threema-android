@@ -15,7 +15,7 @@ import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException
 import ch.threema.domain.stores.ContactStore
 import ch.threema.domain.stores.IdentityStore
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
 
 object TestHelpers {
@@ -24,18 +24,18 @@ object TestHelpers {
     @JvmStatic
     val noopContactStore: ContactStore
         get() = object : ContactStore {
-            override fun getContactForIdentity(identity: Identity): Contact {
+            override fun getContactForIdentity(identity: IdentityString): Contact {
                 return Contact(identity, ByteArray(256))
             }
 
             override fun addCachedContact(contact: BasicContact) {}
-            override fun getCachedContact(identity: Identity) = null
-            override fun getContactForIdentityIncludingCache(identity: Identity): Contact {
+            override fun getCachedContact(identity: IdentityString) = null
+            override fun getContactForIdentityIncludingCache(identity: IdentityString): Contact {
                 return getContactForIdentity(identity)
             }
 
             override fun addContact(contact: Contact) {}
-            override fun isSpecialContact(identity: Identity) = false
+            override fun isSpecialContact(identity: IdentityString) = false
         }
 
     @JvmStatic
@@ -61,9 +61,7 @@ object TestHelpers {
                 return ByteArray(32)
             }
 
-            override fun getIdentity(): Identity {
-                return MY_IDENTITY
-            }
+            override fun getIdentityString() = MY_IDENTITY
 
             override fun getServerGroup(): String {
                 return ""
@@ -82,7 +80,7 @@ object TestHelpers {
             }
 
             override fun storeIdentity(
-                identity: Identity,
+                identity: IdentityString,
                 serverGroup: String,
                 privateKey: ByteArray,
             ) {

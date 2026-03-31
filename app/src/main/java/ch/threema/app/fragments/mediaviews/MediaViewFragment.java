@@ -22,6 +22,7 @@ import java.util.concurrent.Future;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.UiThread;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -32,15 +33,19 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ActivityService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageType;
+import kotlin.Lazy;
 
 import static ch.threema.storage.models.data.MessageContentsType.VOICE_MESSAGE;
+import static org.koin.java.KoinJavaComponent.inject;
 
 abstract public class MediaViewFragment extends Fragment {
     private static final Logger logger = getThreemaLogger("MediaViewFragment");
@@ -60,21 +65,24 @@ abstract public class MediaViewFragment extends Fragment {
         void thumbnailLoaded(Drawable bitmap);
     }
 
-    private AbstractMessageModel messageModel;
+    private @Nullable AbstractMessageModel messageModel;
 
     private Future threadFullDecrypt;
     private final ExecutorService threadPoolExecutor = Executors.newSingleThreadExecutor();
     protected FileService fileService;
     protected MessageService messageService;
+    protected Lazy<NotificationPreferenceService> notificationPreferenceService = inject(NotificationPreferenceService.class);
     private File[] decryptedFileCache;
     private OnMediaLoadListener onMediaLoadListener;
     private File decryptedFile;
     private int imageState = ImageState_NONE;
     private WeakReference<TextView> emptyTextViewReference;
-    WeakReference<ViewGroup> rootViewReference;
+    private WeakReference<ViewGroup> rootViewReference;
 
     private Activity activity;
-    private int position;
+    protected int position;
+
+    protected volatile boolean isCurrentlyInFocus;
 
     private static final int KEEP_ALIVE_DELAY = 20000;
     private final static Handler keepAliveHandler = new Handler();
@@ -95,7 +103,6 @@ abstract public class MediaViewFragment extends Fragment {
     private void processBundle(Bundle bundle) {
         if (bundle != null) {
             this.position = bundle.getInt("position", 0);
-
             this.messageModel = ((MediaViewerActivity) this.activity).getMessageModel(this.position);
             this.decryptedFileCache = ((MediaViewerActivity) this.activity).getDecryptedFileCache();
         }
@@ -104,14 +111,11 @@ abstract public class MediaViewFragment extends Fragment {
     @Override
     public void onAttach(@NonNull Activity activity) {
         super.onAttach(activity);
-
         this.activity = activity;
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ServiceManager serviceManager = ThreemaApplication.getServiceManager();
         if (serviceManager == null) {
             return null;
@@ -125,16 +129,23 @@ abstract public class MediaViewFragment extends Fragment {
             return null;
         }
 
-        ViewGroup rootView = (ViewGroup) inflater.inflate(this.getFragmentResourceId(), container, false);
-        if (rootView != null) {
-            // keep a reference to the textview
-            this.rootViewReference = new WeakReference<>(rootView);
-            this.emptyTextViewReference = new WeakReference<>(rootView.findViewById(R.id.empty_text));
+        final @Nullable ViewGroup rootView = (ViewGroup) inflater.inflate(this.getFragmentResourceId(), container, false);
+        if (rootView == null) {
+            logger.error("Missing root view");
+            return null;
         }
 
-        processBundle(getArguments());
+        // keep a reference to the textview
+        this.rootViewReference = new WeakReference<>(rootView);
+        this.emptyTextViewReference = new WeakReference<>(rootView.findViewById(R.id.empty_text));
 
-        this.created(savedInstanceState);
+        processBundle(getArguments());
+        if (this.messageModel == null) {
+            logger.error("Missing message model");
+            return null;
+        }
+
+        this.created(savedInstanceState, rootView);
         this.decryptThumbnail();
 
         if (messageModel.getType() == MessageType.FILE) {
@@ -146,6 +157,7 @@ abstract public class MediaViewFragment extends Fragment {
         return rootView;
     }
 
+    @Nullable
     protected AbstractMessageModel getMessageModel() {
         return this.messageModel;
     }
@@ -165,14 +177,14 @@ abstract public class MediaViewFragment extends Fragment {
     }
 
     private void fireLoadedFile() {
-        if (TestUtil.required(this.onMediaLoadListener, this.decryptedFile)) {
+        if (onMediaLoadListener != null && decryptedFile != null) {
             this.onMediaLoadListener.loaded(this.decryptedFile);
         }
     }
 
     private void decryptThumbnail() {
-        if (TestUtil.required(this.messageModel, this.fileService)) {
-            logger.debug("show thumbnail of " + this.position);
+        if (messageModel != null && fileService != null) {
+            logger.debug("show thumbnail of {}", this.position);
             Drawable thumbnail = null;
             try {
                 Bitmap messageThumbnail = this.fileService.getMessageThumbnailBitmap(messageModel, null);
@@ -202,14 +214,14 @@ abstract public class MediaViewFragment extends Fragment {
                     this.onMediaLoadListener.thumbnailLoaded(thumbnail);
                 }
             } else {
-                this.showBrokenImage();
+                this.showFileNotFoundContent();
             }
         }
     }
 
     public void destroy() {
         if (messageModel != null) {
-            logger.debug("destroy decrypted image in fragment " + this.position);
+            logger.debug("destroy decrypted image in fragment {}", this.position);
         }
 
         this.killDecryptThread();
@@ -217,7 +229,7 @@ abstract public class MediaViewFragment extends Fragment {
 
     public void hide() {
         if (messageModel != null) {
-            logger.debug("hide fragment " + this.position);
+            logger.debug("hide fragment {}", this.position);
         }
         this.killDecryptThread();
         this.decryptThumbnail();
@@ -226,7 +238,7 @@ abstract public class MediaViewFragment extends Fragment {
     public void showDecrypted() {
         this.killDecryptThread();
 
-        logger.debug("showDecrypted " + position + " imageState = " + this.imageState);
+        logger.debug("showDecrypted {} imageState = {}", position, this.imageState);
 
         //already decrypted
         if (this.imageState == ImageState_DECRYPTED) {
@@ -242,12 +254,12 @@ abstract public class MediaViewFragment extends Fragment {
         }
 
         //load decrypted image
-        if (TestUtil.required(this.messageModel, this.fileService)) {
+        if (messageModel != null && fileService != null) {
             this.killDecryptThread();
 
             this.threadFullDecrypt = threadPoolExecutor.submit(() -> {
                 try {
-                    logger.debug("show decrypted of " + position);
+                    logger.debug("show decrypted of {}", position);
                     final File decrypted = fileService.getDecryptedMessageFile(messageModel);
                     if (decrypted == null || !decrypted.exists()) {
                         throw new Exception("Decrypted file not found");
@@ -277,9 +289,7 @@ abstract public class MediaViewFragment extends Fragment {
         }
     }
 
-    protected void showBrokenImage() {
-        //TODO
-        logger.debug("show broken image on position " + this.position);
+    protected void showFileNotFoundContent() {
         if (this.emptyTextViewReference != null && this.emptyTextViewReference.get() != null) {
             this.emptyTextViewReference.get().setText(R.string.media_file_not_found);
             this.emptyTextViewReference.get().setVisibility(View.VISIBLE);
@@ -287,11 +297,12 @@ abstract public class MediaViewFragment extends Fragment {
         this.imageState = ImageState_NONE;
     }
 
+    @UiThread
     private void fileDecrypted(File file) {
         if (file == null || !file.exists()) {
             return;
         }
-        logger.debug("file decrypted " + this.position);
+        logger.debug("file decrypted {}", this.position);
         this.decryptedFile = file;
         this.decryptedFileCache[this.position] = this.decryptedFile;
 
@@ -314,6 +325,18 @@ abstract public class MediaViewFragment extends Fragment {
         }
     }
 
+    public void setIsCurrentlyInFocus(boolean isCurrentlyInFocus) {
+        if (this.isCurrentlyInFocus && !isCurrentlyInFocus) {
+            this.isCurrentlyInFocus = false;
+            onFocusLost();
+        } else {
+            this.isCurrentlyInFocus = isCurrentlyInFocus;
+        }
+    }
+
+    protected void onFocusLost() {
+    }
+
     protected void showUi(boolean show) {
         if (isAdded() && getActivity() != null) {
             if (show) {
@@ -331,7 +354,7 @@ abstract public class MediaViewFragment extends Fragment {
         keepAliveHandler.removeCallbacksAndMessages(null);
     }
 
-    protected abstract void created(Bundle savedInstanceState);
+    protected abstract void created(@Nullable Bundle savedInstanceState, @NonNull ViewGroup rootView);
 
     protected abstract int getFragmentResourceId();
 
@@ -352,6 +375,15 @@ abstract public class MediaViewFragment extends Fragment {
 
     abstract protected void handleDecryptedFile(File file);
 
+    @Nullable
+    protected ViewGroup getRootViewReference() {
+        if (this.rootViewReference != null) {
+            return this.rootViewReference.get();
+        } else {
+            return null;
+        }
+    }
+
     /**
      * This method is called with the mime category when the fragment is created. If a subclass needs
      * the mime category, this method can be overridden.
@@ -368,9 +400,9 @@ abstract public class MediaViewFragment extends Fragment {
      * filename, this method can be overridden.
      * Note that this is only called for messages of type MessageType.FILE
      *
-     * @param filename the filename of the displayed file
+     * @param fileName the filename of the displayed file
      */
-    protected void handleFileName(@Nullable String filename) {
+    protected void handleFileName(@Nullable String fileName) {
         // nothing to do
     }
 

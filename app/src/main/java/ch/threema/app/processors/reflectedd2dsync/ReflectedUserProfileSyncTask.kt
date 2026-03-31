@@ -96,15 +96,15 @@ class ReflectedUserProfileSyncTask(
         when (userProfile.profilePictureShareWith.policyCase) {
             ProfilePictureShareWith.PolicyCase.NOBODY -> {
                 logger.info("Apply sharing profile picture with nobody")
-                preferenceService.profilePicRelease = PreferenceService.PROFILEPIC_RELEASE_NOBODY
+                preferenceService.setProfilePicRelease(PreferenceService.PROFILEPIC_RELEASE_NOBODY)
             }
             ProfilePictureShareWith.PolicyCase.EVERYONE -> {
                 logger.info("Apply sharing profile picture with everyone")
-                preferenceService.profilePicRelease = PreferenceService.PROFILEPIC_RELEASE_EVERYONE
+                preferenceService.setProfilePicRelease(PreferenceService.PROFILEPIC_RELEASE_EVERYONE)
             }
             ProfilePictureShareWith.PolicyCase.ALLOW_LIST -> {
                 logger.info("Apply sharing profile picture with allow list")
-                preferenceService.profilePicRelease = PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST
+                preferenceService.setProfilePicRelease(PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST)
                 profilePictureRecipientsService.replaceAll(userProfile.profilePictureShareWith.allowList.identitiesList.toTypedArray())
             }
             ProfilePictureShareWith.PolicyCase.POLICY_NOT_SET -> {

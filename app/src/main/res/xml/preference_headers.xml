@@ -54,7 +54,7 @@
         app:key="pref_key_about"
         app:title="@string/menu_about" />
     <Preference
-        app:fragment="ch.threema.app.preference.SettingsDeveloperFragment"
+        app:fragment="ch.threema.app.dev.preference.SettingsDeveloperFragment"
         app:icon="@drawable/ic_directions_bike"
         app:key="pref_key_developers"
         app:title="@string/prefs_developers" />

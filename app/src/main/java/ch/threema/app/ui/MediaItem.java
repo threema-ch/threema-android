@@ -1,7 +1,7 @@
 package ch.threema.app.ui;
 
-import static ch.threema.app.preference.service.PreferenceService.ImageScale_DEFAULT;
-import static ch.threema.app.preference.service.PreferenceService.VideoSize_DEFAULT;
+import static ch.threema.app.preference.service.PreferenceService.IMAGE_SCALE_DEFAULT;
+import static ch.threema.app.preference.service.PreferenceService.VIDEO_SIZE_DEFAULT;
 import static ch.threema.app.utils.BitmapUtil.FLIP_HORIZONTAL;
 import static ch.threema.app.utils.BitmapUtil.FLIP_NONE;
 import static ch.threema.app.utils.BitmapUtil.FLIP_VERTICAL;
@@ -220,9 +220,9 @@ public class MediaItem implements Parcelable {
         mediaItem.setFilename(FileUtil.getFilenameFromUri(context.getContentResolver(), mediaItem));
         if (asFile) {
             if (MimeUtil.isSupportedImageFile(mimeType)) {
-                mediaItem.setImageScale(PreferenceService.ImageScale_SEND_AS_FILE);
+                mediaItem.setImageScale(PreferenceService.IMAGE_SCALE_SEND_AS_FILE);
             } else if (MimeUtil.isVideoFile(mimeType)) {
-                mediaItem.setVideoSize(PreferenceService.VideoSize_SEND_AS_FILE);
+                mediaItem.setVideoSize(PreferenceService.VIDEO_SIZE_SEND_AS_FILE);
             } else {
                 mediaItem.setType(TYPE_FILE);
             }
@@ -269,8 +269,8 @@ public class MediaItem implements Parcelable {
         this.exifFlip = BitmapUtil.FLIP_NONE;
         this.mimeType = MimeUtil.MIME_TYPE_DEFAULT;
         this.renderingType = FileData.RENDERING_MEDIA;
-        this.imageScale = ImageScale_DEFAULT;
-        this.videoSize = VideoSize_DEFAULT;
+        this.imageScale = IMAGE_SCALE_DEFAULT;
+        this.videoSize = VIDEO_SIZE_DEFAULT;
         this.filename = null;
         this.deleteAfterUse = false;
         isEdited = false;
@@ -578,9 +578,9 @@ public class MediaItem implements Parcelable {
      */
     public boolean sendAsFile() {
         if (type == TYPE_VIDEO || type == TYPE_VIDEO_CAM) {
-            return getVideoSize() == PreferenceService.VideoSize_SEND_AS_FILE;
+            return getVideoSize() == PreferenceService.VIDEO_SIZE_SEND_AS_FILE;
         } else if (type == TYPE_IMAGE || type == TYPE_IMAGE_CAM) {
-            return getImageScale() == PreferenceService.ImageScale_SEND_AS_FILE;
+            return getImageScale() == PreferenceService.IMAGE_SCALE_SEND_AS_FILE;
         } else {
             return type == TYPE_FILE || type == TYPE_IMAGE_ANIMATED;
         }

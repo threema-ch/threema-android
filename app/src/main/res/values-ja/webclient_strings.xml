@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">無効なQRコードデータです</string>
     <string name="webclient_init_session">新しいセッションを開始する</string>
     <string name="webclient_sessions_really_delete">このThreema Webのセッションを本当に削除してもいいですか？</string>
     <string name="webclient_last_usage">最終接続: %s</string>

@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import java.util.List;
 
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.executor.HandlerExecutor;
@@ -20,7 +21,10 @@ import ch.threema.app.webclient.converter.Receiver;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.datatypes.ContactNameFormat;
 
 /**
  * Listen for changes that require the entire list of contacts to be refreshed in Threema Web.
@@ -39,17 +43,24 @@ public class ReceiversUpdateHandler extends MessageUpdater {
     private final SynchronizeContactsListener synchronizeContactsListener;
 
     // Dispatchers
-    private MessageDispatcher updateDispatcher;
+    private final MessageDispatcher updateDispatcher;
 
     // Services
-    private ContactService contactService;
+    private final ContactService contactService;
+    private final @NonNull PreferenceService preferenceService;
 
     @AnyThread
-    public ReceiversUpdateHandler(@NonNull HandlerExecutor handler, MessageDispatcher updateDispatcher, ContactService contactService) {
+    public ReceiversUpdateHandler(
+        @NonNull HandlerExecutor handler,
+        MessageDispatcher updateDispatcher,
+        ContactService contactService,
+        @NonNull PreferenceService preferenceService
+    ) {
         super(Protocol.SUB_TYPE_RECEIVERS);
         this.handler = handler;
         this.updateDispatcher = updateDispatcher;
         this.contactService = contactService;
+        this.preferenceService = preferenceService;
         this.contactSettingsListener = new ContactSettingsListener();
         this.synchronizeContactsListener = new SynchronizeContactsListener();
     }
@@ -82,7 +93,8 @@ public class ReceiversUpdateHandler extends MessageUpdater {
 
             // Convert contacts
             final List<MsgpackBuilder> data = Contact.convert(
-                contactService.find(Contact.getContactFilter())
+                contactService.find(Contact.getContactFilter()),
+                preferenceService.getContactNameFormat()
             );
 
             // Send message
@@ -97,7 +109,7 @@ public class ReceiversUpdateHandler extends MessageUpdater {
     private class ContactSettingsListener implements ch.threema.app.listeners.ContactSettingsListener {
         @Override
         public void onSortingChanged() {
-            logger.debug("Contact Listener: onSortingChanged");
+            logger.debug("ContactSettingsListener: onSortingChanged");
             handler.post(new Runnable() {
                 @Override
                 @WorkerThread
@@ -108,8 +120,8 @@ public class ReceiversUpdateHandler extends MessageUpdater {
         }
 
         @Override
-        public void onNameFormatChanged() {
-            logger.debug("Contact Listener: onNameFormatChanged");
+        public void onNameFormatChanged(@NonNull ContactNameFormat nameFormat) {
+            logger.debug("ContactSettingsListener: onNameFormatChanged");
             handler.post(new Runnable() {
                 @Override
                 @WorkerThread
@@ -117,17 +129,11 @@ public class ReceiversUpdateHandler extends MessageUpdater {
                     ReceiversUpdateHandler.this.updateContacts();
                 }
             });
-        }
-
-        @Override
-        public void onAvatarSettingChanged() {
-            logger.debug("Contact Listener: onAvatarSettingChanged");
-            // TODO
         }
 
         @Override
         public void onInactiveContactsSettingChanged() {
-            logger.debug("Contact Listener: onInactiveContactsSettingChanged");
+            logger.debug("ContactSettingsListener: onInactiveContactsSettingChanged");
             handler.post(new Runnable() {
                 @Override
                 @WorkerThread
@@ -139,7 +145,7 @@ public class ReceiversUpdateHandler extends MessageUpdater {
 
         @Override
         public void onNotificationSettingChanged(String uid) {
-            logger.debug("Contact Listener: onNotificationSettingChanged");
+            logger.debug("ContactSettingsListener: onNotificationSettingChanged");
             // TODO
         }
     }

@@ -1,6 +1,7 @@
 package ch.threema.app.groupmanagement
 
 import ch.threema.app.DangerousTest
+import ch.threema.app.compose.preview.PreviewData
 import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.tasks.ReflectGroupSyncDeleteTask
 import ch.threema.app.testutils.TestHelpers
@@ -15,12 +16,12 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.UserState
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,7 +36,7 @@ class RemoveGroupFlowTest : GroupFlowTest() {
     private val myContact = TestHelpers.TEST_CONTACT
 
     private val initialContactData = ContactModelData(
-        identity = "12345678",
+        identity = PreviewData.IDENTITY_OTHER_1.value,
         publicKey = ByteArray(32),
         createdAt = Date(),
         firstName = "",

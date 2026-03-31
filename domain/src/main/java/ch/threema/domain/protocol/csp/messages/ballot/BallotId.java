@@ -4,8 +4,10 @@ import ch.threema.base.ThreemaException;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.base.utils.Utils;
 
-import java.security.SecureRandom;
 import java.util.Arrays;
+
+import static ch.threema.common.SecureRandomExtensionsKt.generateRandomBytes;
+import static ch.threema.common.SecureRandomExtensionsKt.secureRandom;
 
 /**
  * Wrapper class for ballot IDs (consisting of 8 bytes, chosen by the ballot creator and not guaranteed
@@ -16,9 +18,7 @@ public class BallotId {
     private final byte[] ballotId;
 
     public BallotId() {
-        ballotId = new byte[ProtocolDefines.BALLOT_ID_LEN];
-        SecureRandom rnd = new SecureRandom();
-        rnd.nextBytes(ballotId);
+        ballotId = generateRandomBytes(secureRandom(), ProtocolDefines.BALLOT_ID_LEN);
     }
 
     public BallotId(byte[] ballotId) throws ThreemaException {

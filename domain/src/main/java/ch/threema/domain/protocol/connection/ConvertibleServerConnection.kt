@@ -2,7 +2,7 @@ package ch.threema.domain.protocol.connection
 
 import androidx.annotation.WorkerThread
 import ch.threema.domain.protocol.connection.util.ConnectionLoggingUtil
-import java8.util.function.Supplier
+import java.util.function.Supplier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -16,12 +16,11 @@ import ch.threema.app.multidevice.PersistedMultiDeviceProperties
 import ch.threema.app.multidevice.linking.DeviceLinkingStatus
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
+import ch.threema.app.stores.IdentityProvider
 import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.app.tasks.TaskCreator
-import ch.threema.app.utils.AppVersionProvider
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.base.crypto.NaCl
-import ch.threema.data.TestDatabaseService
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.repositories.ModelRepositories
@@ -37,13 +36,19 @@ import ch.threema.domain.protocol.connection.d2m.socket.D2mSocketCloseListener
 import ch.threema.domain.protocol.connection.data.DeviceId
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage.DevicesInfo
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.QueueSendCompleteListener
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
+import ch.threema.domain.types.Identity
+import ch.threema.storage.TestDatabaseProvider
+import ch.threema.storage.factories.ContactModelFactory
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.testhelpers.MUST_NOT_BE_CALLED
+import io.mockk.every
+import io.mockk.mockk
 import java.util.Date
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -80,7 +85,7 @@ class MarkContactAsDeletedBackgroundTaskTest {
             // Nothing to do
         }
     }
-    private lateinit var databaseService: TestDatabaseService
+    private lateinit var databaseProvider: TestDatabaseProvider
     private val multiDeviceManager = object : MultiDeviceManager {
         var multiDeviceEnabled = false
 
@@ -166,16 +171,26 @@ class MarkContactAsDeletedBackgroundTaskTest {
 
     @BeforeTest
     fun before() {
-        databaseService = TestDatabaseService()
+        databaseProvider = TestDatabaseProvider()
         val serviceManager = ThreemaApplication.requireServiceManager()
         testTaskCodec = TransactionAckTaskCodec()
+        val myIdentity = "00000000"
+        val identityProviderMock = mockk<IdentityProvider> {
+            every { getIdentity() } returns Identity(myIdentity)
+            every { getIdentityString() } returns myIdentity
+        }
+        val identityStoreMock = mockk<IdentityStore> {
+            every { getIdentity() } returns Identity(myIdentity)
+            every { getIdentityString() } returns myIdentity
+        }
         coreServiceManager = TestCoreServiceManager(
-            version = AppVersionProvider.appVersion,
-            databaseService = databaseService,
+            databaseProvider = databaseProvider,
+            identityProvider = identityProviderMock,
             preferenceStore = serviceManager.preferenceStore,
             encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
             multiDeviceManager = multiDeviceManager,
             taskManager = testTaskManager,
+            identityStore = identityStoreMock,
         )
         deleteContactServices = DeleteContactServices(
             serviceManager.userService,
@@ -189,9 +204,9 @@ class MarkContactAsDeletedBackgroundTaskTest {
             serviceManager.excludedSyncIdentitiesService,
             serviceManager.dhSessionStore,
             serviceManager.notificationService,
-            serviceManager.databaseService,
+            ContactModelFactory(databaseProvider, identityProviderMock),
         )
-        contactModelRepository = ModelRepositories(coreServiceManager).contacts
+        contactModelRepository = ModelRepositories(coreServiceManager, identityProviderMock).contacts
 
         // Add a contact "from sync". This has no side effects and does not reflect the contact.
         contactModelRepository.createFromSync(testContactModelData)

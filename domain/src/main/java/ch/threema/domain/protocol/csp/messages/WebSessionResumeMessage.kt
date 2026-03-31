@@ -1,5 +1,6 @@
 package ch.threema.domain.protocol.csp.messages
 
+import ch.threema.common.emptyByteArray
 import ch.threema.domain.protocol.csp.ProtocolDefines
 
 class WebSessionResumeMessage(private val data: Map<String, String>) : AbstractMessage() {
@@ -25,7 +26,7 @@ class WebSessionResumeMessage(private val data: Map<String, String>) : AbstractM
 
     override fun bumpLastUpdate(): Boolean = false
 
-    override fun getBody() = ByteArray(0)
+    override fun getBody() = emptyByteArray()
 
     fun getData(): Map<String, String> = data
 }

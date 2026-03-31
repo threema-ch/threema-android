@@ -183,6 +183,8 @@ public class BallotChooserActivity extends ThreemaToolbarActivity implements Lis
                     null,
                     dependencies.getBallotService(),
                     dependencies.getContactService(),
+                    dependencies.getUserService(),
+                    dependencies.getPreferenceService(),
                     Glide.with(this)
                 );
 

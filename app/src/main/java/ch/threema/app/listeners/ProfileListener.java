@@ -9,5 +9,5 @@ public interface ProfileListener {
     void onAvatarChanged(@NonNull TriggerSource triggerSource);
 
     @AnyThread
-    void onNicknameChanged(String newNickname);
+    default void onNicknameChanged(String newNickname) {}
 }

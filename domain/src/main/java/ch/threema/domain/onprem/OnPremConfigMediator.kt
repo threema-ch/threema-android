@@ -1,8 +1,8 @@
 package ch.threema.domain.onprem
 
-import ch.threema.domain.protocol.urls.DeviceGroupUrl
+import ch.threema.domain.protocol.urls.MediatorUrl
 
 data class OnPremConfigMediator(
-    val url: DeviceGroupUrl,
+    val url: MediatorUrl,
     val blob: OnPremConfigBlob,
 )

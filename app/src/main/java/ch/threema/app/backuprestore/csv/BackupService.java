@@ -26,12 +26,11 @@ import androidx.core.app.NotificationManagerCompat;
 import androidx.core.app.ServiceCompat;
 import androidx.documentfile.provider.DocumentFile;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +53,6 @@ import ch.threema.app.activities.DummyActivity;
 import ch.threema.app.home.HomeActivity;
 import ch.threema.app.backuprestore.BackupRestoreDataConfig;
 import ch.threema.app.backuprestore.RandomUtil;
-import ch.threema.app.collections.Functional;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.notifications.NotificationChannels;
@@ -79,6 +77,8 @@ import ch.threema.base.crypto.HashedNonce;
 import ch.threema.base.crypto.NonceFactory;
 import ch.threema.base.crypto.NonceScope;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static ch.threema.common.JavaCompat.stringToInputStream;
+
 import ch.threema.base.utils.Utils;
 import ch.threema.data.repositories.EmojiReactionsRepository;
 import ch.threema.domain.identitybackup.IdentityBackup;
@@ -88,8 +88,8 @@ import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupMessageModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
@@ -177,8 +177,8 @@ public class BackupService extends Service {
 
             if (!isCanceled) {
                 config = (BackupRestoreDataConfig) intent.getSerializableExtra(EXTRA_BACKUP_RESTORE_DATA_CONFIG);
-
-                if (config == null || userService.getIdentity() == null || userService.getIdentity().isEmpty()) {
+                final String myIdentity = userService.getIdentity();
+                if (config == null || myIdentity == null || myIdentity.isEmpty()) {
                     safeStopSelf();
                     return START_NOT_STICKY;
                 }
@@ -248,7 +248,7 @@ public class BackupService extends Service {
                 new AsyncTask<Void, Void, Boolean>() {
                     @Override
                     protected Boolean doInBackground(Void... params) {
-                        return backup();
+                        return backup(myIdentity);
                     }
 
                     @Override
@@ -336,8 +336,7 @@ public class BackupService extends Service {
                 : 1;
     }
 
-    private boolean backup() {
-        String identity = userService.getIdentity();
+    private boolean backup(@NonNull String myIdentity) {
         try (final OutputStream outputStream = getContentResolver().openOutputStream(backupFile.getUri());
              final FileHandlingZipOutputStream zipOutputStream = FileHandlingZipOutputStream.initializeZipOutputStream(outputStream, config.getPassword())) {
             logger.debug("Creating zip file {}", backupFile.getUri());
@@ -414,14 +413,14 @@ public class BackupService extends Service {
             zipOutputStream.addFileFromInputStream(new ByteArrayInputStream(settingsBuffer.toByteArray()), Tags.SETTINGS_FILE_NAME, true);
 
             if (this.config.backupIdentity()) {
-                if (!this.backupIdentity(identity, zipOutputStream)) {
+                if (!this.backupIdentity(myIdentity, zipOutputStream)) {
                     return this.cancelBackup(backupFile);
                 }
             }
 
             // backup contacts and messages
             if (this.config.backupContactAndMessages()) {
-                if (!this.backupContactsAndMessages(config, zipOutputStream)) {
+                if (!this.backupContactsAndMessages(myIdentity, config, zipOutputStream)) {
                     return this.cancelBackup(backupFile);
                 }
             }
@@ -472,7 +471,7 @@ public class BackupService extends Service {
         return backupSuccess;
     }
 
-    private boolean backupIdentity(String identity, FileHandlingZipOutputStream zipOutputStream) throws ThreemaException, IOException {
+    private boolean backupIdentity(String myIdentity, FileHandlingZipOutputStream zipOutputStream) throws ThreemaException, IOException {
         logger.info("Backup identity");
         if (!this.next("backup identity")) {
             return false;
@@ -482,12 +481,12 @@ public class BackupService extends Service {
         IdentityBackup.EncryptedIdentityBackup backup = IdentityBackup.encryptIdentityBackup(
             this.config.getPassword(),
             new IdentityBackup.PlainBackupData(
-                identity,
+                myIdentity,
                 privateKey
             )
         );
 
-        zipOutputStream.addFileFromInputStream(IOUtils.toInputStream(backup.getData()), Tags.IDENTITY_FILE_NAME, false);
+        zipOutputStream.addFileFromInputStream(stringToInputStream(backup.getData()), Tags.IDENTITY_FILE_NAME, false);
         return true;
     }
 
@@ -550,6 +549,7 @@ public class BackupService extends Service {
      * Backup media if configured.
      */
     private boolean backupContactsAndMessages(
+        @NonNull String myIdentity,
         @NonNull BackupRestoreDataConfig config,
         @NonNull FileHandlingZipOutputStream zipOutputStream
     ) throws ThreemaException, IOException {
@@ -558,7 +558,7 @@ public class BackupService extends Service {
             logger.info("Backup own avatar");
             try {
                 zipOutputStream.addFileFromInputStream(
-                    this.fileService.getUserDefinedProfilePictureStream(contactService.getMe().getIdentity()),
+                    this.fileService.getUserDefinedProfilePictureStream(myIdentity),
                     Tags.CONTACT_AVATAR_FILE_PREFIX + Tags.CONTACT_AVATAR_FILE_SUFFIX_ME,
                     false
                 );
@@ -613,6 +613,11 @@ public class BackupService extends Service {
                 for (final ContactModel contactModel : contactService.find(null)) {
                     if (!this.next("backup contact " + contactModel.getIdentity())) {
                         return false;
+                    }
+
+                    if (contactModel.getIdentity().equals(myIdentity)) {
+                        logger.warn("Skipping user as a contact");
+                        continue;
                     }
 
                     // Do not include removed contacts in data backup
@@ -812,7 +817,7 @@ public class BackupService extends Service {
         logger.info("Backup groups, messages and group avatars");
         try (final ByteArrayOutputStream groupBuffer = new ByteArrayOutputStream()) {
             try (final CSVWriter groupCsv = new CSVWriter(new OutputStreamWriter(groupBuffer), groupCsvHeader)) {
-                for (final GroupModel groupModel : this.groupService.getAll(groupFilter)) {
+                for (final GroupModelOld groupModel : this.groupService.getAll(groupFilter)) {
                     String groupUid = getFormattedUniqueId();
                     groupUidMap.put(groupModel.getId(), groupUid);
 
@@ -831,7 +836,7 @@ public class BackupService extends Service {
                         .write(Tags.TAG_GROUP_DESC, groupModel.getGroupDesc())
                         .write(Tags.TAG_GROUP_DESC_TIMESTAMP, groupModel.getGroupDescTimestamp())
                         .write(Tags.TAG_GROUP_UID, groupUid)
-                        .write(Tags.TAG_GROUP_USER_STATE, groupModel.getUserState() != null ? groupModel.getUserState().value : 0)
+                        .write(Tags.TAG_GROUP_USER_STATE, groupModel.getUserState() != null ? groupModel.getUserState().getValue() : 0)
                         .write();
 
                     //check if the group have a profile picture
@@ -1138,7 +1143,7 @@ public class BackupService extends Service {
                         String ref;
                         String refId;
                         if (link instanceof GroupBallotModel) {
-                            GroupModel groupModel = groupService
+                            GroupModelOld groupModel = groupService
                                 .getById(((GroupBallotModel) link).getGroupId());
 
                             if (groupModel == null) {
@@ -1194,7 +1199,10 @@ public class BackupService extends Service {
                             .getBallotVoteModelFactory()
                             .getByBallotId(ballotModel.getId());
                         for (final BallotVoteModel ballotVoteModel : ballotVoteModels) {
-                            BallotChoiceModel ballotChoiceModel = Functional.select(ballotChoiceModels, type -> type.getId() == ballotVoteModel.getBallotChoiceId());
+                            BallotChoiceModel ballotChoiceModel = ballotChoiceModels.stream()
+                                .filter(model -> model.getId() == ballotVoteModel.getBallotChoiceId())
+                                .findFirst()
+                                .orElse(null);
 
                             if (ballotChoiceModel == null) {
                                 continue;
@@ -1687,7 +1695,7 @@ public class BackupService extends Service {
             contentText = getString(R.string.backup_or_restore_error_body);
         }
 
-        Intent backupIntent = new Intent(this, HomeActivity.class);
+        Intent backupIntent = HomeActivity.createIntent(this);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder =
@@ -1717,7 +1725,7 @@ public class BackupService extends Service {
 
         String text;
 
-        Intent backupIntent = new Intent(this, HomeActivity.class);
+        Intent backupIntent = HomeActivity.createIntent(this);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, (int) System.currentTimeMillis(), backupIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder builder =

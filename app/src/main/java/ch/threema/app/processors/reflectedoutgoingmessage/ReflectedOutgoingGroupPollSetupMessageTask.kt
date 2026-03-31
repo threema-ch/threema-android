@@ -10,7 +10,7 @@ internal class ReflectedOutgoingGroupPollSetupMessageTask(
     serviceManager: ServiceManager,
 ) : ReflectedOutgoingGroupMessageTask<GroupPollSetupMessage>(
     outgoingMessage = outgoingMessage,
-    message = GroupPollSetupMessage.fromReflected(outgoingMessage, serviceManager.identityStore.getIdentity()!!),
+    message = GroupPollSetupMessage.fromReflected(outgoingMessage, serviceManager.identityStore.getIdentityString()!!),
     type = Common.CspE2eMessageType.GROUP_POLL_SETUP,
     serviceManager = serviceManager,
 ) {

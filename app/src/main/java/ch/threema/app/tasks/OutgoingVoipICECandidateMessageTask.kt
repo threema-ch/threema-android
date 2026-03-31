@@ -1,18 +1,16 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.common.now
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 class OutgoingVoipICECandidateMessageTask(
     private val voipICECandidatesData: VoipICECandidatesData,
-    private val toIdentity: Identity,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+    private val toIdentity: IdentityString,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingVoipICECandidateMessageTask"
 
     override val shortLogInfo: String = "cid=${voipICECandidatesData.callId}"

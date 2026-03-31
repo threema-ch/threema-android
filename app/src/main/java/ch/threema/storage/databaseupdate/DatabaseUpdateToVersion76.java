@@ -12,7 +12,6 @@ import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.field
  * Create column for user-specific message states in group models.
  */
 public class DatabaseUpdateToVersion76 implements DatabaseUpdate {
-    public static final int VERSION = 76;
 
     @NonNull
     private final SQLiteDatabase sqLiteDatabase;
@@ -35,6 +34,6 @@ public class DatabaseUpdateToVersion76 implements DatabaseUpdate {
 
     @Override
     public int getVersion() {
-        return VERSION;
+        return 76;
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Activity.OVERRIDE_TRANSITION_CLOSE
 import android.app.Activity.OVERRIDE_TRANSITION_OPEN
 import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.view.View
@@ -29,7 +30,8 @@ fun Activity.findRootView(): View? {
 }
 
 /**
- *  @return The insets of this activities root view at the current time. If the root view or its insets could not be determined, [Insets.NONE] is returned.
+ *  @return The insets of this activity's root view at the current time.
+ *  If the root view or its insets could not be determined, [Insets.NONE] is returned.
  */
 fun Activity.getCurrentInsets(@InsetsType types: Int): Insets {
     val rootView: View = findRootView() ?: return Insets.NONE
@@ -44,6 +46,7 @@ fun Activity.disableEnterTransition() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         overrideActivityTransition(OVERRIDE_TRANSITION_OPEN, 0, 0, Color.TRANSPARENT)
     } else {
+        @Suppress("DEPRECATION")
         overridePendingTransition(0, 0)
     }
 }
@@ -52,6 +55,13 @@ fun Activity.disableExitTransition() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         overrideActivityTransition(OVERRIDE_TRANSITION_CLOSE, 0, 0, Color.TRANSPARENT)
     } else {
+        @Suppress("DEPRECATION")
         overridePendingTransition(0, 0)
     }
+}
+
+fun Activity.navigateToLauncher() {
+    val intent = Intent(Intent.ACTION_MAIN)
+        .addCategory(Intent.CATEGORY_HOME)
+    startActivity(intent)
 }

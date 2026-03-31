@@ -30,21 +30,21 @@ import ch.threema.app.utils.ConfigUtils
 @Composable
 fun ErrorState(
     errors: Set<AppStartupError>,
-    onClickedExportLogs: () -> Unit,
-    onClickedRetryRemoteSecrets: () -> Unit,
+    onClickExportLogs: () -> Unit,
+    onClickRetryRemoteSecrets: () -> Unit,
 ) {
     val errorCodes = errors.mapNotNull { error -> (error as? AppStartupError.Unexpected)?.code }
 
     if (errorCodes.isNotEmpty()) {
         UnexpectedErrorState(
             errorCodes = errorCodes,
-            onClickedExportLogs = onClickedExportLogs,
+            onClickExportLogs = onClickExportLogs,
         )
     } else if (AppStartupError.BlockedByAdmin in errors) {
         BlockedByAdminState()
     } else if (AppStartupError.FailedToFetchRemoteSecret in errors) {
         FailedToFetchRemoteSecretState(
-            onClickedRetry = onClickedRetryRemoteSecrets,
+            onClickRetry = onClickRetryRemoteSecrets,
         )
     }
 }
@@ -52,7 +52,7 @@ fun ErrorState(
 @Composable
 private fun UnexpectedErrorState(
     errorCodes: Collection<String>,
-    onClickedExportLogs: () -> Unit,
+    onClickExportLogs: () -> Unit,
 ) {
     ErrorState(
         message = stringResource(R.string.an_error_occurred),
@@ -60,7 +60,7 @@ private fun UnexpectedErrorState(
     ) {
         ButtonPrimary(
             modifier = Modifier.fillMaxWidth(),
-            onClick = onClickedExportLogs,
+            onClick = onClickExportLogs,
             text = stringResource(R.string.prefs_exportlog),
             maxLines = 2,
         )
@@ -77,14 +77,14 @@ private fun BlockedByAdminState() {
 
 @Composable
 private fun FailedToFetchRemoteSecretState(
-    onClickedRetry: () -> Unit,
+    onClickRetry: () -> Unit,
 ) {
     ErrorState(
         message = stringResource(R.string.remote_secrets_failed_to_fetch),
     ) {
         ButtonPrimary(
             modifier = Modifier.fillMaxWidth(),
-            onClick = onClickedRetry,
+            onClick = onClickRetry,
             text = stringResource(R.string.retry),
             maxLines = 2,
         )
@@ -148,8 +148,8 @@ private fun AppStartupScreen_Preview_BlockedByAdmin() = ThreemaThemePreview {
     AppStartupScreen {
         ErrorState(
             errors = setOf(AppStartupError.BlockedByAdmin),
-            onClickedRetryRemoteSecrets = {},
-            onClickedExportLogs = {},
+            onClickRetryRemoteSecrets = {},
+            onClickExportLogs = {},
         )
     }
 }
@@ -160,8 +160,8 @@ private fun AppStartupScreen_Preview_FailedToFetchRemoteSecrets() = ThreemaTheme
     AppStartupScreen {
         ErrorState(
             errors = setOf(AppStartupError.FailedToFetchRemoteSecret),
-            onClickedRetryRemoteSecrets = {},
-            onClickedExportLogs = {},
+            onClickRetryRemoteSecrets = {},
+            onClickExportLogs = {},
         )
     }
 }
@@ -175,8 +175,8 @@ private fun AppStartupScreen_Preview_UnexpectedErrors() = ThreemaThemePreview {
                 AppStartupError.Unexpected("PW-123"),
                 AppStartupError.Unexpected("ABC"),
             ),
-            onClickedRetryRemoteSecrets = {},
-            onClickedExportLogs = {},
+            onClickRetryRemoteSecrets = {},
+            onClickExportLogs = {},
         )
     }
 }

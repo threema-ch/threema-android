@@ -19,9 +19,5 @@ class DatabaseUpdateToVersion92(
 
     override fun getDescription() = "remove star from fs status messages"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 92
-    }
+    override val version = 92
 }

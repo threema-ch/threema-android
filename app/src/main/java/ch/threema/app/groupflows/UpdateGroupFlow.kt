@@ -1,11 +1,12 @@
 package ch.threema.app.groupflows
 
 import ch.threema.app.managers.ListenerManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.profilepicture.CheckedProfilePicture
 import ch.threema.app.profilepicture.GroupProfilePictureUploader
 import ch.threema.app.profilepicture.GroupProfilePictureUploader.GroupProfilePictureUploadResult
-import ch.threema.app.protocol.ExpectedProfilePictureChange
-import ch.threema.app.protocol.PredefinedMessageIds
+import ch.threema.app.protocolsteps.ExpectedProfilePictureChange
+import ch.threema.app.protocolsteps.PredefinedMessageIds
 import ch.threema.app.services.FileService
 import ch.threema.app.services.GroupFlowDispatcher
 import ch.threema.app.tasks.GroupUpdateTask
@@ -18,7 +19,6 @@ import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
-import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.protocol.connection.ConnectionState
 import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.taskmanager.TaskManager
@@ -79,17 +79,23 @@ class GroupChanges(
 class UpdateGroupFlow(
     private val groupChanges: GroupChanges,
     private val groupModel: GroupModel,
-    private val groupModelRepository: GroupModelRepository,
     private val groupCallManager: GroupCallManager,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
     private val groupProfilePictureUploader: GroupProfilePictureUploader,
     private val fileService: FileService,
+    private val preferenceService: PreferenceService,
     private val taskManager: TaskManager,
     private val connection: ServerConnection,
 ) : BackgroundTask<GroupFlowResult> {
     private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
 
-    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentity() }
+    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentityString() }
+
+    init {
+        require(groupModel.groupIdentity.creatorIdentity !in groupChanges.addMembers) {
+            "Group creator cannot be added to the group"
+        }
+    }
 
     override fun runInBackground(): GroupFlowResult {
         logger.info("Running update group flow")
@@ -115,10 +121,7 @@ class UpdateGroupFlow(
                         removeMembers = groupChanges.removeMembers,
                         profilePictureChange = groupChanges.profilePictureChange,
                         uploadGroupProfilePicture = ::uploadGroupProfilePicture,
-                        groupModel = groupModel,
-                        nonceFactory = outgoingCspMessageServices.nonceFactory,
-                        contactModelRepository = outgoingCspMessageServices.contactModelRepository,
-                        multiDeviceManager = multiDeviceManager,
+                        groupIdentity = groupModel.groupIdentity,
                     ),
                 ).await()
 
@@ -233,11 +236,6 @@ class UpdateGroupFlow(
                 removedMembers = groupChanges.removeMembers,
                 groupIdentity = groupModel.groupIdentity,
                 predefinedMessageIds = PredefinedMessageIds.random(),
-                outgoingCspMessageServices = outgoingCspMessageServices,
-                groupCallManager = groupCallManager,
-                fileService = fileService,
-                groupProfilePictureUploader = groupProfilePictureUploader,
-                groupModelRepository = groupModelRepository,
             ),
         )
 
@@ -272,6 +270,7 @@ class UpdateGroupFlow(
             ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
             ShortcutUtil.updateShareTargetShortcut(
                 outgoingCspMessageServices.groupService.createReceiver(groupModel),
+                preferenceService.getContactNameFormat(),
             )
         }
 

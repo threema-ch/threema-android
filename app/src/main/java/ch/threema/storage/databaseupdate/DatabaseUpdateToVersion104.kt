@@ -1,7 +1,7 @@
 package ch.threema.storage.databaseupdate
 
 import android.content.Context
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 internal class DatabaseUpdateToVersion104(
@@ -31,7 +31,7 @@ internal class DatabaseUpdateToVersion104(
         }
     }
 
-    private fun initializeUserStateColumn(myIdentity: Identity) {
+    private fun initializeUserStateColumn(myIdentity: IdentityString) {
         // The default value is 0 (member) and we set all groups where the user is no member anymore
         // to 2 (left). We cannot (yet) distinguish 1 (kicked) from 2 (left) at this point.
         sqLiteDatabase.execSQL(
@@ -48,7 +48,7 @@ internal class DatabaseUpdateToVersion104(
         )
     }
 
-    private fun removeUserFromGroupMembers(myIdentity: Identity) {
+    private fun removeUserFromGroupMembers(myIdentity: IdentityString) {
         // Ensure that the user is not part of any groups' member list. From this point on, we do
         // never store the user in the member list even if the user is a member of the group. This
         // is because we now have the user state which becomes the new single source of truth
@@ -64,9 +64,5 @@ internal class DatabaseUpdateToVersion104(
 
     override fun getDescription() = "add group user state"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 104
-    }
+    override val version = 104
 }

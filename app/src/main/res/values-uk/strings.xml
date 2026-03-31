@@ -5,7 +5,6 @@
     <string name="title_section1">Чати</string>
     <string name="title_compose_message">Почати чат</string>
     <string name="title_choose_recipient">Виберіть отримувача</string>
-    <string name="title_keyfingerprint">Відбиток ключа</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="title_mythreemaid">Мій ID ${app_name_short}</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -64,9 +63,6 @@
     <string name="prefs_notification_light">Світловий індикатор</string>
     <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_notification_light">Використовувати світловий індикатор для вхідних повідомлень</string>
-    <string name="prefs_sum_light">Білий</string>
-    <string name="prefs_title_wallpaper">Вибрати фон</string>
-    <string name="prefs_sum_wallpaper">Виберіть зображення для фону</string>
     <string name="prefs_title_wallpaper_switch">Фон</string>
     <string name="prefs_title_enter">Надсилати з Enter</string>
     <string name="prefs_sum_enter_on">Клавіша Enter надсилає повідомлення</string>
@@ -127,11 +123,14 @@
     <string name="scan_successful">ID успішно відскановано, а контакт — підтверджено.</string>
     <string name="scan_duplicate">Цей ID вже відскановано та підтверджено.</string>
     <string name="linked_email">Ел. пошта</string>
+    <!-- Pattern for displaying the user's email address on the My Profile screen. %1$s is a placeholder for the email address, %2$s is a placeholder for the verification state (e.g. "pending") -->
+    <string name="linked_email_pattern">%1$s (%2$s)</string>
     <string name="linked_mobile">Номер телефону</string>
+    <!-- Pattern for displaying the user's mobile phone number on the My Profile screen. %1$s is a placeholder for the phone number, %2$s is a placeholder for the verification state (e.g. "pending") -->
+    <string name="linked_mobile_pattern">%1$s (%2$s)</string>
     <string name="public_nickname">Псевдонім</string>
     <string name="share_via">Поділитися…</string>
     <string name="share_subject">Чат із %s</string>
-    <string name="message_delete_undo">Скасувати</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="mobile_already_linked">Ваш ID ${app_name_short} вже зв\'язано із цим номером телефону</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -144,7 +143,6 @@
     <string name="image_placeholder">Зображення</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="invalid_threema_id">Недійсний ID ${app_name_short}</string>
-    <string name="contact_already_exists">Контакт уже існує</string>
     <string name="close">Закрити</string>
     <string name="creating_contact">Додавання контакта</string>
     <string name="creating_contact_successful">Контакт додано</string>
@@ -160,7 +158,6 @@
     <string name="verify_failed_summary">Не вдалося підтвердити номер телефону. Переконайтеся, що ви ввели правильний
 		номер і підключилися до мобільної мережі, перш ніж повторити спробу.</string>
     <string name="verify_failed_not_linked">Не вдалося підтвердити номер телефону. Процес підтвердження було скасовано.</string>
-    <string name="check_incoming_sms">Очікування SMS</string>
     <string name="backup_title">Експортувати ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_sum">Експортувати ID ${app_name_short}</string>
@@ -241,7 +238,6 @@
     <string name="acknowledge">Погоджуюся</string>
     <string name="decline">Не погоджуюся</string>
     <string name="forward_message">Переслати повідомлення</string>
-    <string name="file_is_not_a_image">Вибраний файл не є зображенням</string>
     <string name="connection_error">Не вдалося підключитися. Повторіть спробу пізніше.</string>
     <string name="me_myself_and_i">Я</string>
     <string name="really_forward">Переслати контакту \"%1$s\"?</string>
@@ -249,10 +245,8 @@
     <string name="ringtone_none">Без звуку</string>
     <string name="no_camera_installed">Немає доступних для використання камер</string>
     <string name="save_message_action">Зберегти</string>
-    <string name="file_is_not_a_video">Вибраний файл не є відео</string>
     <string name="masterkey_is_unlocked">Головний ключ розблоковано</string>
     <string name="file_too_large">Розмір файлу перевищує максимально дозволений (%1$d МБ)</string>
-    <string name="deleting_thread">Видалення чату</string>
     <string name="enter_serial_body"><![CDATA[Введіть ліцензійний ключ. Ви можете <a href="https://shop.threema.ch/">придбати</a> ліцензію або <a href="https://shop.threema.ch/retrieve_keys">відновити</a> ключ, придбаний раніше.]]></string>
     <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_enter_serial_body">Введіть облікові дані ${app_name_short}, надані вашою компанією.</string>
@@ -260,8 +254,6 @@
     <string name="enter_serial_title">Розблокувати ${app_name}</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="serial_required_want_exit">Ліцензійний ключ недійсний. Повторити спробу чи вийти з ${app_name}?</string>
-    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
-    <string name="work_serial_required_want_exit">Ліцензія недійсна. Повторити спробу чи вийти з ${app_name}?</string>
     <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Перевірка ліцензії</string>
     <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
@@ -274,7 +266,6 @@
     <string name="not_now">Нагадати пізніше</string>
     <string name="preparing_messages">Підготовка повідомлень</string>
     <string name="select_emoji">емодзі</string>
-    <string name="search_contact">Пошук контактів</string>
     <string name="push_reset_title">Скинути маркер сповіщень</string>
     <string name="push_reset_text">Маркер сповіщень скинуто</string>
     <string name="emoji_recent">Нещодавні</string>
@@ -320,7 +311,6 @@
     <string name="set_pin_again_summary">Введіть PIN-код ще раз</string>
     <string name="set_pin_hint">PIN-код</string>
     <string name="title_addgroup">Створити групу</string>
-    <string name="search_group">Пошук груп</string>
     <string name="updating_system">Оновлення системи</string>
     <string name="title_select_contacts">Виберіть учасників</string>
     <string name="pin_invalid_not_set">PIN-код недійсний. Не встановлено.</string>
@@ -343,8 +333,6 @@
     <string name="backup_delete_confirm">Файл резервної копії видалено</string>
     <string name="message_log_title">Про повідомлення</string>
     <string name="state_read">прочитано</string>
-    <string name="state_ack">погоджуюся</string>
-    <string name="state_dec">не погоджуюся</string>
     <string name="state_delivered">доставлено</string>
     <string name="state_sending">надсилання</string>
     <string name="state_pending">очікування</string>
@@ -355,10 +343,8 @@
     <string name="state_dialog_modified">Оновлено</string>
     <string name="state_dialog_edited">Відредаговано</string>
     <string name="state_dialog_deleted">Видалено</string>
-    <string name="state_dialog_status">Статус</string>
     <string name="title_tab_recent">Нещодавні</string>
     <string name="no_recent_conversations">Чатів не знайдено</string>
-    <string name="save_changes">Зберегти</string>
     <string name="creating_group">Створення групи</string>
     <string name="updating_group">Оновлення групи</string>
     <string name="leaving_group">Вихід із групи</string>
@@ -373,11 +359,6 @@
     <string name="status_group_member_kicked">Контакт \"%1$s\" вилучено з групи.</string>
     <string name="can_not_send_no_group_members">Неможливо надіслати повідомлення в порожню групу</string>
     <string name="you_are_not_a_member_of_this_group">Ви не є учасником цієї групи</string>
-    <string name="can_not_delete_not_valid">Неможливо видалити недійсний об\'єкт</string>
-    <string name="can_not_delete_contact_until_in_group">Цей контакт неможливо видалити, оскільки він є
-		 учасником або засновником групового чату. Вийдіть з усіх груп, до яких належить цей контакт, або видаліть їх і повторіть
-		спробу.</string>
-    <string name="can_not_delete_contact">Неможливо видалити контакт</string>
     <string name="title_public_nickname">Псевдонім</string>
     <string name="prefs_sum_excluded_sync_identities">ID із цього списку буде виключено із синхронізації контактів</string>
     <string name="prefs_title_excluded_sync_identities">Список виключень</string>
@@ -394,9 +375,7 @@
     <string name="yes">Так</string>
     <string name="deleting_contact">Видалення контакта</string>
     <string name="prefs_contact_soring">Сортування</string>
-    <string name="prefs_sum_contact_soring">Виберіть порядок сортування для списку контактів</string>
     <string name="prefs_contact_format">Формат імен контактів</string>
-    <string name="prefs_sum_contact_format">Виберіть формат імен контактів</string>
     <string name="prefs_contact_list_title">Список контактів</string>
     <string name="prefs_default_contact_picture_colored">Стандартні фото контактів</string>
     <string name="prefs_show_inactive_contacts">Показувати неактивні ID</string>
@@ -413,20 +392,8 @@
     <string name="contact_format_last_name_first_name">Прізвище, ім\'я</string>
     <string name="block_contact">Заблокувати контакт</string>
     <string name="unblock_contact">Розблокувати контакт</string>
-    <string name="one_unread_message">1 непрочитане повідомлення</string>
-    <string name="really_unlink_contact_title">Відв\'язати контакт</string>
-    <string name="really_unlink_contact">Справді відв\'язати контакт?</string>
-    <string name="do_unlink_contact">Відв\'язати контакт</string>
-    <string name="do_choose_other_contact">Виберіть ще один контакт</string>
-    <string name="touch_to_link">(немає)</string>
-    <string name="prefs_validate_contacts">Перевірити зв\'язування контактів</string>
-    <string name="prefs_validate_contacts_loading">Перевірка зв\'язування контактів</string>
-    <string name="prefs_title_fullscreen_ime">Повноекранна клавіатура</string>
-    <string name="prefs_sum_fullscreen_ime_on">Коли ви тримаєте пристрій горизонтально, клавіатура займає весь екран</string>
-    <string name="prefs_sum_fullscreen_ime_off">Коли ви тримаєте пристрій горизонтально, над клавіатурою за можливості показується чат</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="add_acount_from_within_threema">Керуйте ID ${app_name_short} в додатку ${app_name_short}.</string>
-    <string name="save_image">Зберегти зображення</string>
     <string name="share_image">Поділитися зображенням</string>
     <string name="view_in_gallery">Показати в галереї</string>
     <string name="token_register_failed">Не вдалося оновити маркер сповіщень. Повторіть спробу пізніше.</string>
@@ -468,8 +435,6 @@
 		певних екранів</string>
     <string name="media_gallery">Галерея медіафайлів</string>
     <string name="media_file_not_found">Не вдалося відкрити медіафайл, оскільки його видалено або не завантажено із сервера.</string>
-    <string name="no_media_found">У цьому чаті медіа типу \"%s\" не знайдено</string>
-    <string name="media_gallery_all">Усе</string>
     <string name="media_gallery_pictures">Зображення</string>
     <string name="media_gallery_videos">Відео</string>
     <string name="group_membership_title">Є учасником таких груп:</string>
@@ -491,7 +456,6 @@
     <string name="contact_not_found">Контакт не знайдено</string>
     <string name="contact_now_blocked">Контакт заблоковано</string>
     <string name="contact_now_unblocked">Контакт розблоковано</string>
-    <string name="sending_images">Надсилання зображень</string>
     <string name="share_conversation_body">Щоб відкрити цей файл, скористайтеся сучасною програмою для роботи з ZIP-файлами, яка підтримує стандарт шифрування AES, наприклад
 		http://www.7-zip.org або https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">Цей чат буде надіслано у вигляді зашифрованого ZIP-файлу. Установіть для нього пароль:</string>
@@ -529,8 +493,6 @@
     <string name="ballot_result_final">Остаточні результати</string>
     <string name="invalid_cannot_send">Ви не можете надсилати повідомлення недійсному контакту</string>
     <string name="ballot_answer_count_error">Введіть принаймні два варіанти відповіді для опитування.</string>
-    <string name="ballot_one_contact_not_supported">Увага! Контакт \"%1$s\" не зможе взяти участь у вашому опитуванні.</string>
-    <string name="ballot_x_contact_not_supported">Увага! Кілька контактів (%1$d) не зможе взяти участь у вашому опитуванні.</string>
     <string name="contact_state_inactive">Неактивний</string>
     <string name="contact_state_invalid">Недійсний</string>
     <string name="back">Назад</string>
@@ -538,6 +500,7 @@
     <string name="wearable_reply_label">Відповісти \"%s\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="push_disable_text">Якщо продовжити, замість системного сервісу push-сповіщень використовуватиметься сервіс ${app_name_short} Push. Він допомагає зменшити цифровий слід, але для його роботи потрібно дозволити додатку працювати у фоновому режимі. Якщо ви не знайшли відповідні параметри в налаштуваннях системи, зверніться за допомогою до служби підтримки виробника пристрою.</string>
+    <string name="debug_log_enabled_recently_warning">Якщо ви зіткнулися з конкретною проблемою, будь ласка, спробуйте відтворити її перед тим, як надсилати нам файл журналу налагодження. Це допоможе нам ефективніше дослідити проблему. Дякуємо.</string>
     <string name="ballot_intermediate_results_show">Показувати попередні результати</string>
     <string name="converting_video">Обробка відео</string>
     <string name="video_size_small">Високий (менше даних)</string>
@@ -580,8 +543,6 @@
     <string name="no_activity_for_mime_type">Немає додатків, які можуть відкрити цей файл.</string>
     <string name="no_activity_for_intent">Додаток не знайдено.</string>
     <string name="open_from">Відкрити з</string>
-    <string name="file_one_contact_not_supported">Контакт \"%1$s\" не може отримувати файли.</string>
-    <string name="file_x_contact_not_supported">Увага! Кілька контактів (%1$d) не зможе отримати ваш файл.</string>
     <string name="mime_android_apk">Пакет Android</string>
     <string name="mime_audio">Аудіофайл</string>
     <string name="mime_certificate">Цифровий сертифікат</string>
@@ -678,7 +639,6 @@
     <string name="notifications_until">До %s</string>
     <string name="notifications_mute">Вимк.</string>
     <string name="notifications_choose_sound">Вибрати звук</string>
-    <string name="error_video_conversion">Не вдалося перетворити відео.</string>
     <string name="confirm_your_pin">Перевірка PIN-коду</string>
     <string name="too_many_incorrect_attempts">Забагато невдалих спроб. Повторіть спробу через %s с.</string>
     <string name="no_lockscreen_set">Не встановлено блокування екрана.</string>
@@ -728,10 +688,6 @@
 		вашого відкритого ключа. Лише власник закритого ключа може розшифрувати ці повідомлення.</string>
     <string name="new_wizard_info_id">Ви також створили пару ключів. Відкритий ключ було безпечно надіслано на наші
 		сервери, а закритий зберігається лише на вашому пристрої. Завдяки цьому ніхто інший не може прочитати ваші повідомлення.</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_sync_contacts">Коли цей параметр увімкнено, ${app_name_short} виконує одностороннє шифрування (хешування) адрес ел. пошти і номерів телефонів,
-		перш ніж надсилати їх на сервер для пошуку відповідних контактів. Ми не зберігаємо
-		дані з телефонної книги.</string>
     <string name="new_wizard_info_sync_contacts_dialog">Синхронізація контактів допомагає знайти їх автоматично. Якщо ви погодитеся, ми зашифруємо номери телефонів і адреси електронної пошти з вашої телефонної книги, перш ніж надіслати їх на сервер для пошуку збігів серед контактів. Ваші дані не зберігатимуться й не передаватимуться.\n\nУвімкнути синхронізацію контактів?</string>
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">Якщо ви вкажете свій номер телефону й адресу ел. пошти, то контакти, які зберегли їх у своїй телефонній книзі, зможуть знайти вас у ${app_name_short} автоматично. Дані зберігатимуться на нашому сервері в хешованому вигляді. Ви можете пропустити цей крок, якщо хочете використовувати ${app_name} анонімно.</string>
@@ -768,9 +724,7 @@
     <string name="action_leave_and_delete_group">Вийти з групи й видалити її</string>
     <string name="action_dissolve_and_delete_group">Розпустити й видалити групу</string>
     <string name="delete_my_group_message">Справді видалити групу? Усі повідомлення буде вилучено, а інші учасники більше не зможуть використовувати групу.</string>
-    <string name="error_out_of_memory">Недостатньо пам\'яті для виконання цієї дії</string>
     <string name="configure">Налаштувати</string>
-    <string name="file_is_not_audio">Вибраний файл не є аудіо</string>
     <string name="disabled_by_policy">Деякі налаштування було вимкнено через політику пристрою</string>
     <string name="select_all">Вибрати все</string>
     <string name="deleting_messages">Видалення повідомлень</string>
@@ -853,7 +807,6 @@
     <string name="text">Текст</string>
     <string name="undo">Скасувати</string>
     <string name="android_backup_date">Останнє рез. копіювання</string>
-    <string name="check_now">Перевірити</string>
     <string name="discard">Відхилити</string>
     <string name="android_backup_restart_threema">Зачекайте. Додаток перезапуститься через кілька секунд.</string>
     <string name="battery_optimizations_title">Вимкнути оптимізацію використання акумулятора</string>
@@ -890,6 +843,7 @@
     <string name="play">Відтворити</string>
     <string name="pause">Призупинити</string>
     <string name="retry">Повторити спробу</string>
+    <string name="voice_message">Голосове повідомлення</string>
     <string name="voice_message_record">Записати голосове повідомлення</string>
     <string name="open_navdrawer">Відкрити панель навігації</string>
     <string name="profile_picture">Фото профілю</string>
@@ -904,7 +858,6 @@
     <string name="menu_send_profilpic">Показувати моє фото</string>
     <string name="menu_send_profilpic_off">Не показувати моє фото</string>
     <string name="menu_send_profilpic_now">Надіслати моє фото зараз</string>
-    <string name="profile_picture_sent">Фото профілю надіслано</string>
     <string name="sending_messages">Надсилання…</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Збереження великих медіафайлів до локальної резервної копії у форматі ZIP може тривати довгий час і вимагати більше ресурсів, ніж доступно вашому пристрою. ${app_name} не надсилатиме й не отримуватиме повідомлення, поки створюється резервна копія. Усе одно продовжити?</string>
@@ -939,11 +892,7 @@
     <string name="italic">Курсив</string>
     <string name="bold">Жирний</string>
     <string name="shortcut_choice_title">Створити ярлик для…</string>
-    <string name="prefs_title_device_info">Інформація про пристрій</string>
     <string name="notifications_disabled_title">Сповіщення вимкнено</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="notifications_disabled_text">Сповіщення для ${app_name} було вимкнено в налаштуваннях системи. Ви не отримуватимете сповіщення про нові повідомлення.</string>
-    <string name="notifications_disabled_settings">Змінити налаштування системи</string>
     <string name="error_attaching_files">Не вдалося додати вкладення.</string>
     <string name="prefs_fix_powermanager_problems">Вимкнути енергозбереження</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -993,21 +942,18 @@
     <string name="passphrase_service_name">Сервіс парольних фраз</string>
     <string name="passphrase_service_description">Сповіщення про розблокування парольної фрази</string>
     <string name="webclient_service_description">Сповіщення про активні сеанси у веб-клієнті або додатку для ПК</string>
-    <string name="prefs_title_accept_privacy_policy">Прийняти Політику конфіденційності</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="privacy_policy_explain">${app_name} захищає вашу конфіденційність ретельніше за інші месенджери. Докладніше: %1$s.</string>
-    <string name="privacy_policy_check_confirm">Щоб використовувати %s, прийміть нашу Політику конфіденційності.\n\n(Вимога згідно регламенту ЄС 2016/679)</string>
     <string name="prefs_title_incognito_keyboard">Конфіденційна клавіатура</string>
     <string name="prefs_sum_incognito_keyboard">Вимкнути збирання даних для персоналізованих пропозицій (якщо підтримується клавіатурою)</string>
-    <string name="tooltip_mentions">Введіть символ @ на клавіатурі, щоб звернутися напряму до учасника групи або згадати його в повідомленні.</string>
-    <string name="tooltip_imagepaint">Проявіть фантазію! Натисніть значок чарівної палички, щоб додати наклейки до своїх зображень або намалювати на них щось перед надсиланням.</string>
     <string name="call_ongoing">Триває виклик</string>
     <string name="ballot_received_votes">Отримано голосів: %1$d/%2$d</string>
     <string name="quote_not_found">Цитоване повідомлення не знайдено</string>
     <string name="ballot_secret">таємне</string>
     <string name="password_too_short_generic">Пароль закороткий</string>
     <string name="passwords_dont_match">Паролі не збігаються</string>
-    <string name="test_unsuccessful">Не вдалося підключитися</string>
+    <!-- Error message shown when setting up a custom server for the Threema Safe feature. %s is a placeholder for the details of the error. -->
+    <string name="threema_safe_test_unsuccessful">Не вдалось здійснити тест: %s</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="preparing_threema_safe">Підготовка ${app_name_short} Safe</string>
     <string name="disable_powermanager_title">Енергозбереження</string>
@@ -1058,9 +1004,6 @@
     <string name="add_group_members">Додати учасників</string>
     <string name="contact_add_confirm">Додати новий контакт \"%1$s\" до вашого списку контактів?</string>
     <string name="password_bad">Ненадійний пароль</string>
-    <string name="prefs_fix_background_data">Увімкнути фонові дані</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="prefs_fix_background_data_desc">Щоб отримувати повідомлення, коли ${app_name} працює у фоновому режимі, увімкніть \"Фонові дані\" і \"Необмежене використання трафіку\"</string>
     <string name="prefs_fix_device">Налаштування пристрою</string>
     <string name="safe_successful">Виконано</string>
     <string name="safe_unsuccessful">Помилка</string>
@@ -1072,7 +1015,6 @@
     <string name="safe_retention">Термін зберігання рез. копії</string>
     <string name="safe_result">Результат рез. копіювання</string>
     <string name="number_of_days">%d дн.</string>
-    <string name="backup_other_restore_options">Інші варіанти відновлення</string>
     <string name="safe_size">Розмір рез. копії</string>
     <string name="backup_version_mismatch">Версія цієї резервної копії новіша за підтримувану. Оновіть додаток до останньої версії.</string>
     <string name="safe_restore_failed">Помилка відновлення</string>
@@ -1103,7 +1045,6 @@
     <string name="delete_group_message">Вийти з групи та повністю видалити її? Усі повідомлення буде вилучено.</string>
     <string name="delete_left_group_message">Справді видалити групу? Усі повідомлення буде вилучено.</string>
     <string name="chats">Чати</string>
-    <string name="notification_setting_ignored">ВНЕСЕНІ ТУТ ЗМІНИ НІ НА ЩО НЕ ВПЛИВАЮТЬ!</string>
     <string name="notification_channel_alerts">Попередження й помилки</string>
     <string name="notification_channel_notices">Оголошення</string>
     <string name="chat_updates">Оновлення чату</string>
@@ -1111,7 +1052,6 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="tooltip_export_id">Натисніть тут, щоб поділитися своїм ID ${app_name_short} або роздрукувати його</string>
     <string name="downloading">Завантаження</string>
-    <string name="today">Сьогодні</string>
     <string name="restore_data_cancelled">Відновлення скасовано</string>
     <string name="safe_change_password">Змінити пароль</string>
     <string name="safe_configure_choose_password_title">Вибрати пароль</string>
@@ -1121,7 +1061,6 @@
     <string name="safe_password_updated">Пароль ${app_name_short} Safe змінено.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_activated">${app_name_short} Safe активовано.</string>
-    <string name="restore_zip_invalid_file">Файл резервної копії недійсний.</string>
     <string name="push_token_cleared">Маркер сповіщень очищено</string>
     <string name="insert_date">Вставити дату</string>
     <string name="add_answer">Додати варіант</string>
@@ -1130,11 +1069,7 @@
     <string name="voip_disabled">Виклики ${app_name_short} вимкнено</string>
     <string name="hide_chat_enter_message_explain">Чат позначено як приватний. Щоб відкрити його, спершу налаштуйте обмеження доступу.</string>
     <string name="unknown">Невідомо</string>
-    <string name="miui_notification_title">Важлива інформація про сповіщення в MIUI</string>
-    <string name="miui_notification_body">За умовчанням MIUI 10 блокує звукові та світлові сповіщення для будь-яких нових каналів сповіщень (за винятком деяких додатків, які Xiaomi вважає \"важливими\"). Вам доведеться самостійно ввімкнути кожен канал сповіщень додатка в налаштуваннях системи. Щоб дізнатися більше, зверніться до виробника свого телефона.</string>
-    <string name="miui12_notification_body">За умовчанням MIUI блокує звукові, світлові та спливаючі сповіщення для всіх додатків (за винятком кількох дуже популярних додатків, які Xiaomi вважає \"важливими\"). Вам доведеться ввімкнути сповіщення додатка вручну в налаштуваннях системи і робити це знову після кожного оновлення. Щоб дізнатися більше, зверніться до Xiaomi.</string>
     <string name="dont_show_again">Більше не показувати</string>
-    <string name="miui_notification_prefs">Налаштування MIUI</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_upload_successful">Резервну копію ${app_name_short} Safe передано</string>
     <string name="time_remaining">Залишилося %s</string>
@@ -1145,7 +1080,6 @@
     <string name="about_screen_remote_secrets_activated">Активовано</string>
     <string name="lock_option_biometric">Біометрія</string>
     <string name="biometric_enter_authentication">Авторизуйтеся, щоб отримати доступ</string>
-    <string name="biometric_authentication_failed">Помилка авторизації</string>
     <string name="biometric_authentication_successful">Авторизовано</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_safe_forced_explain">Ваш адміністратор увімкнув ${app_name_short} Safe на вашому пристрої.</string>
@@ -1154,8 +1088,6 @@
     <string name="work_select_categories">Виберіть категорії</string>
     <string name="my_profile">Мій профіль</string>
     <string name="message_too_long">Повідомлення задовге. Неможливо надіслати.</string>
-    <string name="database_migration_no_space">Не вдалося перенести базу даних: недостатньо місця на пристрої.</string>
-    <string name="advanced_options">Розширені налаштування</string>
     <string name="url_warning_body">Ім\'я хоста в посиланні, яке ви збираєтеся відкрити, виглядає підозріло.\n\nВидиме ім\'я хоста: <b>%s</b>\nСправжнє ім\'я хоста: <b>%s</b>\n\nМожливо, цей сайт намагається видати себе за інший, щоб ввести вас в оману.\n\nВсе одно продовжити?</string>
     <string name="url_warning_title">Попередження про фішинг</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1171,8 +1103,6 @@
     <string name="lp_or_select_nearby">Або виберіть місце поблизу</string>
     <string name="lp_use_this_location">Надіслати це розташування?</string>
     <string name="lp_search_place">Введіть місто</string>
-    <string name="lp_no_nearby_places_found">Місць поблизу не знайдено</string>
-    <string name="select_directory_for_backup">Зберегти тут</string>
     <string name="data_backup_headline">Створіть резервну копію даних, щоб зберегти всю свою інформацію, включно із чатами й медіафайлами.</string>
     <string name="data_backup_save_path">Шлях до рез. копії</string>
     <string name="change">Змінити</string>
@@ -1205,14 +1135,13 @@
         <p>Щоб дізнатися більше, натисніть значок меню і виберіть "Threema 2.0 для ПК (бета)".</p>
         ]]></string>
     <string name="tap_to_start">Натисніть тут, щоб запустити %s.</string>
+    <string name="notification_title_restart">Потрібен перезапуск</string>
     <string name="two_years">2 роки</string>
-    <string name="invalid_backup_path">Недійсний шлях до рез. копії</string>
     <string name="backup_data_no_permission">Неможливо записувати в указаний каталог. Виберіть інший.</string>
     <string name="prefs_sum_show_unread_badge">Показувати індикатори на вкладках навігації внизу екрана</string>
     <string name="prefs_title_show_unread_badge">Індикатори</string>
     <string name="open_myid_popup">Відкрити спливаюче вікно швидкого доступу</string>
     <string name="logo">Логотип / Прокрутити вгору</string>
-    <string name="quote_subj_end">Кінець цитати</string>
     <string name="quote_subj">Цитата</string>
     <string name="duration">Тривалість</string>
     <string name="seconds">Секунди</string>
@@ -1236,8 +1165,6 @@
     <string name="restore_data_backup_explain">Щоб відновити дані з резервної копії, спершу видаліть свій ID ${app_name_short} на екрані \"Мій профіль\".\n\nКоли додаток перезапуститься, натисніть \"Відновити з рез. копії\" &gt; \"Інші варіанти відновлення\" &gt; \"Резервне копіювання\" і виберіть файл резервної копії, з якого потрібно відновити дані.</string>
     <string name="audio_focus_loss_complete">Виклик завершено через відтворення звуку в іншому додатку.</string>
     <string name="tap_for_picture_hold_for_video">Натисніть для фото, утримуйте для відео</string>
-    <string name="sending_media">Надсилання медіафайлів</string>
-    <string name="permission_record_video_audio_required">Щоб записати відео, надайте доступ до мікрофона.</string>
     <string name="media_files">Файли</string>
     <string name="auto_download_limit_explain">Відео та файли розміром понад %s завантажуватимуться лише на вимогу.</string>
     <string name="quoted_message_deleted">Цитоване повідомлення більше недоступне</string>
@@ -1254,7 +1181,6 @@
     <string name="work_life_dnd_active">Діє політика неробочого часу</string>
     <string name="warning">Попередження</string>
     <string name="password_remember_warning">Запам\'ятайте введену інформацію! Оскільки %s не зберігає паролі на сервері, ми не зможемо допомогти, якщо ви забудете PIN-код або пароль.</string>
-    <string name="safe_backup_tap_to_restart">Натисніть системне сповіщення, щоб перезапустити додаток. Якщо ви не бачите сповіщення, відкрийте панель сповіщень, провівши по екрану вниз.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="send_to_support">Надіслати службі підтримки ${company_name}</string>
     <string name="menu_legal">Юридична інформація</string>
@@ -1300,7 +1226,6 @@
     <string name="forward_text">Переслати текст</string>
     <string name="an_error_occurred_during_send">Під час надсилання одного або кількох повідомлень сталася помилка.</string>
     <string name="state_processing">обробка</string>
-    <string name="passphrase_locked">Парольну фразу заблоковано</string>
     <string name="selected_media">Ви вибрали</string>
     <string name="attach_gif">Файл GIF</string>
     <string name="attach_gallery">Галерея</string>
@@ -1314,19 +1239,14 @@
     <string name="media_date_unknown">Дата невідома</string>
     <string name="max_selectable_media_exceeded">Максимальна кількість об\'єктів для одночасного надсилання: %d.</string>
     <string name="error_unable_loading_media_thumb">Помилка. Не вдалося завантажити ескіз медіафайлу.</string>
-    <string name="select">Вибрати</string>
     <string name="filter_list">Фільтрувати список</string>
     <string name="hint_filter_list">Введіть текст</string>
     <string name="add">Додати</string>
-    <string name="threema_message_from">Повідомлення від \"%s\"</string>
-    <string name="show_text">Показати текст</string>
     <string name="only_images_or_videos">Можна вибрати лише зображення або відео</string>
     <string name="media_gallery_gifs">Файли GIF</string>
     <string name="no_media_found_global">На цьому пристрої медіафайлів не знайдено</string>
     <string name="original_file_no_longer_avilable">Оригінальний файл більше недоступний. Надішліть повідомлення ще раз.</string>
-    <string name="state_transcoding">перекодування</string>
     <string name="importing_files">Імпортування файлів</string>
-    <string name="tooltip_image_resolution_hint">Натисніть тут, щоб змінити роздільну здатність зображення.</string>
     <string name="ballot_created_successfully">Опитування створено.</string>
     <string name="file_size">Розмір файлу</string>
     <string name="thirty_days_abbrev">30 днів</string>
@@ -1337,7 +1257,6 @@
     <string name="brush">Пензель</string>
     <string name="pencil">Олівець</string>
     <string name="highlighter">Маркер</string>
-    <string name="error_detecting_faces">Помилка під час виявлення облич</string>
     <string name="no_faces_detected">Облич не виявлено</string>
     <string name="smiley">Смайлики</string>
     <string name="blur">Розмивання</string>
@@ -1352,7 +1271,6 @@
     <string name="note_group_howto">Якщо ви не додасте до групи учасників, повідомлення в ній нікому не надсилатимуться. Таку групу можна використовувати, щоб безпечно зберігати або переносити на комп\'ютер нотатки, медіафайли чи документи.</string>
     <string name="mark_unread">Позначити як непрочитане</string>
     <string name="mark_read_short">Позначити як прочитане</string>
-    <string name="unread">Непрочитаний</string>
     <string name="missing_app_licence">Не вдалося підтвердити вашу покупку в магазині додатків. Якщо ви використовуєте Google Play, очистіть дані додатка Google Play Маркет і перезавантажте пристрій.</string>
     <string name="set_backup_path">Вибрати шлях до рез. копії</string>
     <string name="set_backup_path_intro">На наступному екрані виберіть папку, у якій зберігатимуться резервні копії.</string>
@@ -1364,21 +1282,16 @@
     <string name="app_store_error_code">Код помилки магазину додатків: %d</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_restore_type"><![CDATA[Виберіть тип резервної копії, з якої потрібно відновити дані. <br/><br/> <a href=%s>Докладніше про резервні копії в ${app_name_short}</a>]]></string>
-    <string name="data_backup_info">Відновити все, включно із чатами</string>
     <string name="new_to_threema">Вперше в %s?</string>
     <string name="back_to_threema">Повертаєтеся в %s?</string>
-    <string name="id_backup_info">Відновити лише ID</string>
-    <string name="restore_your_id_contacts_and_groups">Відновити ID, контакти та групи</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_backup">Рез. копія ${app_name_short} Safe</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Допомога</a>]]></string>
     <string name="download_failed">Помилка завантаження. Код помилки: %d</string>
     <string name="edit_answer">Редагувати варіант</string>
     <string name="share_media">Поділитися в іншому додатку…</string>
-    <string name="group_image">Фото групи</string>
     <string name="miui_battery_optimization">Щоб виконати цю дію, вимкніть оптимізацію використання акумулятора для %s. Оскільки Xiaomi не дозволяє додаткам відкривати цей екран налаштувань, вам доведеться зробити це вручну в налаштуваннях телефона. Якщо вам потрібна допомога, зверніться до служби підтримки Xiaomi.</string>
     <string name="forward_captions">Додати підпис</string>
-    <string name="importing_files_failed">Не вдалося імпортувати файл резервної копії. Переконайтеся, що у внутрішній пам\'яті пристрою достатньо місця.</string>
     <string name="label_continue">Продовжити</string>
     <string name="select_date">Вибрати дату</string>
     <string name="select_time">Вибрати час</string>
@@ -1392,22 +1305,17 @@
     <string name="prefs_sum_reset_receipts">Скинути індивідуальні налаштування статусу прочитання та індикатора вводу для контактів до параметрів за умовчанням</string>
     <string name="reset_successful">Скинуто до налаштувань за умовчанням</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="no_threema_qr_info">Це не QR-код для ${app_name_short}. Розкодований вміст: </string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Підтвердьте дані контакта, відсканувавши його QR-код. Щоб побачити код, попросіть людину натиснути на фото її профілю в лівому верхньому куті головного екрана ${app_name_short}.</string>
     <string name="enable_storage_access_for_media">Щоб бачити зображення та відео, збережені на пристрої, надайте доступ до сховища.</string>
     <string name="select_storage_access_for_media_is_granted">Ви надали доступ до окремих фото й відео.</string>
     <string name="take_me_there">Перейти…</string>
     <string name="manage">Керувати</string>
-    <string name="custom">інше спеціальне</string>
     <string name="show_public_key">Показати відкритий ключ</string>
     <string name="public_key_for">Відкритий ключ \"%s\"</string>
     <string name="copied">Скопійовано</string>
     <string name="no_votes_yet">Голосів поки немає.</string>
     <string name="permission_contacts_sync_required">Щоб синхронізувати контакти, надайте доступ до них.</string>
     <string name="not_voted_user_list">Не проголосували: %s</string>
-    <string name="contact_update">Оновлення станів контактів</string>
-    <string name="invalid_onprem_id">Цей ID не існує або несумісний з вашим ID.</string>
     <string name="enable_unknown_sources">Неможливо встановити. Переконайтеся, що для %s увімкнено параметр \"Установлювати невідомі додатки\".</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push">Push-сповіщення ${app_name_short}</string>
@@ -1459,14 +1367,11 @@
     <string name="relationTypeSpouse">Чоловік або дружина</string>
     <string name="contact_property_key">"Ключ"</string>
     <string name="header_nickname_entry">"Псевдонім"</string>
-    <string name="contact_picture_content_description">Фото контакта</string>
     <string name="prefs_title_use_system_ringtone">Звук дзвінка системи</string>
     <string name="organization_type">Організація</string>
     <string name="permission_bluetooth_connect_required">Щоб знаходити підключені Bluetooth-гарнітури, надайте дозвіл \"Пристрої поблизу\".</string>
     <string name="tooltip_multiple_recipients_title">Кілька отримувачів</string>
     <string name="tooltip_multiple_recipients_text">Натисніть і утримуйте екран, щоб вибрати кілька отримувачів повідомлення.</string>
-    <string name="synchronizing">Триває синхронізація…</string>
-    <string name="forward_security">Надсилати повідомлення з Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Шифрування PFS</string>
     <string name="forward_security_mode_none">Немає</string>
     <string name="clear_forward_security">Скинути Perfect Forward Secrecy для цього контакта</string>
@@ -1512,10 +1417,6 @@
     <string name="unable_to_restore_identity_because">Не вдалося відновити ID. Причина: %s</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="share_with_app">Поділитися в ${app_name}</string>
-    <string name="read_phone_state_dialog_allow">Надати доступ</string>
-    <string name="read_phone_state_dialog_disallow">Продовжити</string>
-    <string name="read_phone_state_dialog_never_ask_again">Не запитувати знову</string>
-    <string name="read_phone_state_dialog_title">Потрібно надати доступ</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="read_phone_state_dialog_message">Щоб виклики ${app_name_short} не переривали звичайні дзвінки, потрібно надати доступ до телефона. Інакше вхідний виклик ${app_name_short} надходитиме навіть під час звичайного дзвінка.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1536,7 +1437,6 @@
     <string name="group_no_members">У цій групі немає інших учасників</string>
     <string name="group_call">Груповий виклик</string>
     <string name="checking_compatibility">Перевірка сумісності…</string>
-    <string name="group_call_mic_permission_rationale">Щоб здійснювати групові виклики, потрібно надати %s доступ до мікрофона в розділі \"Дозволи\".</string>
     <string name="group_call_mic_permission_description">Щоб здійснювати групові виклики, надайте доступ до мікрофона, інакше вас не чутимуть.</string>
     <string name="call_mic_permission_description">Щоб здійснювати виклики, надайте доступ до мікрофона, інакше вас не чутимуть.</string>
     <string name="group_call_camera_permission_rationale">Щоб інші учасники бачили ваше відео, потрібно надати %s доступ до камери в розділі \"Дозволи\".</string>
@@ -1558,7 +1458,6 @@
     <string name="forward_security_mode_2dh">Одностороннє</string>
     <string name="forward_security_mode_all">Повний</string>
     <string name="forward_security_mode_partial">Частковий</string>
-    <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) захищає раніше записані розмови від дешифрування, навіть якщо скомпрометовано довгостроковий ключ шифрування.\n\nЦю функцію можна ввімкнути, якщо її підтримує додаток обох сторін.</string>
     <string name="group_call_inactivity_left">Груповий виклик покинуто через неактивність</string>
     <string name="missing_permission_external_storage">Не вдалося скопіювати файл. Спробуйте виконати такі кроки:\n1. Відкрийте додаток \"Налаштування\".\n2. Перейдіть до розділу \"Додатки\" й виберіть \"Спеціальний доступ для додатка\".\n3. Натисніть \"Доступ до всіх файлів\".\n4. Натисніть три крапки праворуч угорі й виберіть \"Показати системні\".\n5. Натисніть \"Зовнішня пам\'ять\" і переконайтеся, що вибрано варіант \"Надати доступ до керування всіма файлами\".\n6. Спробуйте відновити резервну копію ще раз.</string>
     <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy вимкнено в цьому чаті, оскільки версія додатка вашого співрозмовника не підтримує цю функцію або використовується ${app_name_desktop} 2.0 для ПК (бета).</string>
@@ -1591,7 +1490,6 @@
     <string name="group_name">Назва групи</string>
     <string name="star_message">Додати зірочку</string>
     <string name="starred_message">Повідомлення із зірочкою</string>
-    <string name="starred">Із зірочкою</string>
     <string name="starred_messages">Повідомлення із зірочкою</string>
     <string name="sorting">Сортування</string>
     <string name="sort_by">Сортувати за…</string>
@@ -1632,7 +1530,6 @@
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
     <string name="md_linked_devices_empty">Перш ніж зв\'язувати новий пристрій, завантажте й відкрийте останню бета-версію [${app_name_desktop} для ПК].</string>
-    <string name="md_link_device_qr_scan_message">Відскануйте QR-код</string>
     <string name="directory_request_failed">Помилка запиту каталогу. Повторіть спробу.</string>
     <string name="add_shortcut_exists">Такий ярлик уже існує.</string>
     <string name="scan_qr_code">Відскануйте QR-код</string>
@@ -1658,10 +1555,13 @@
     <string name="problemsolver_title_background_data">Обмежено фонові дані</string>
     <string name="problemsolver_title_notifications">Вимкнено сповіщення</string>
     <string name="problemsolver_title_fullscreen_notifications">Заборонено показ повноекранних сповіщень</string>
+    <string name="problemsolver_title_debug_log_enabled">Журналювання ще увімкнено</string>
     <string name="problemsolver_explain_fullscreen_notifications">Цьому додатку заборонено показувати повноекранні сповіщення. Ви можете пропустити вхідні виклики, коли телефон заблоковано. Щоб виправити це, увімкніть параметр \"Дозволити повноекранні сповіщення\".</string>
     <string name="problemsolver_explain_notifications">Сповіщення цього додатка повністю вимкнено. Ви не дізнаватиметеся про вхідні повідомлення або виклики, і додаток може не працювати належним чином. Щоб виправити це, увімкніть параметр \"Усі сповіщення\".</string>
     <string name="problemsolver_explain_background_data">Цей додаток не може використовувати мобільні дані під час роботи у фоновому режимі. Ви не отримуватимете сповіщення про вхідні повідомлення, поки не відкриєте додаток. Щоб виправити це, увімкніть параметр \"Фонові дані\".</string>
     <string name="problemsolver_explain_background">Використання цього додатка у фоновому режимі обмежено. Ви не отримуватимете сповіщення, і багато функцій не працюватиме належним чином.  Щоб виправити це, натисніть \"Використання акумулятора додатком\" і виберіть \"Необмежено\".</string>
+    <string name="problemsolver_explain_debug_log_enabled">Деякий час тому ви активували журнал налагодження. Якщо вам більше не потрібно записувати події та мережеву інформацію, радимо знову вимкнути ведення журналу.</string>
+    <string name="problemsolver_explain_debug_log_force_enabled">${app_name} наразі записує події та мережеву інформацію у файл, оскільки ви створили файл «%s». Якщо вам більше не потрібне ведення журналу, радимо видалити цей файл.</string>
     <string name="problemsolver_info_text">Назви деяких налаштувань системи можуть відрізнятися залежно від версії Android і виробника пристрою.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">\"Використання акумулятора додатком\" – \"Оптимізовано\"</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1679,7 +1579,6 @@
     <string name="edit_message_not_supported_for_contact">Неможливо редагувати повідомлення, оскільки в отримувача встановлено версію додатка, яка не підтримує цю функцію.</string>
     <string name="edit_message_not_supported_for_all_group_members">Ваші зміни не бачитимуть такі учасники групи: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Неможливо редагувати повідомлення, оскільки в жодного з учасників групи не встановлено версію додатка, яка підтримує цю функцію.</string>
-    <string name="prefs_notification_settings">Налаштування сповіщень</string>
     <string name="prefs_notification_settings_summary">Змінити звук і вібрацію в налаштуваннях системи</string>
     <string name="new_messages">Нові повідомлення</string>
     <string name="new_group_messages">Нові групові повідомлення</string>
@@ -1689,10 +1588,26 @@
     <string name="incoming_calls">Вхідні виклики</string>
     <string name="group_chats">Групові чати</string>
     <string name="edit_history_file_no_caption">Без підпису</string>
-    <string name="device_linking_failed">Помилка зв\'язування пристрою</string>
-    <string name="device_linking_failed_explain">Не вдалося зв\'язати пристрій. Повторіть спробу.\nПричина: %s.</string>
-    <string name="qr_code_scan_error">Під час сканування QR-коду сталася помилка</string>
-    <string name="verification_failed">Помилка підтвердження</string>
+    <string name="prefs_title_error_reporting">Сповіщення про помилки</string>
+    <string name="prefs_send_error_reports">Надсилати анонімні звіти</string>
+    <string name="error_reporting_option_never_send">Ніколи</string>
+    <string name="error_reporting_option_always_send">Завжди</string>
+    <string name="error_reporting_option_always_ask">Запитувати кожного разу</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_never_send">Ніколи не надсилати звіти про помилку у ${company_name}</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_always_send">Автоматично надсилати звіти про помилку у ${company_name} у разі виявлення критичної помилки</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_always_ask">Запитувати щоразу про надсилання звітів про помилку у ${company_name}</string>
+    <string name="error_detected_dialog_title">Надіслати анонімний звіт</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="crash_detected_dialog_text">Схоже, що ${app_name_short} нещодавно аварійно завершив роботу. Ви хотіли б надіслати анонімний звіт про помилку?</string>
+    <string name="crash_detected_dialog_remember_choice">Запам\'ятати мій вибір</string>
+    <string name="crash_detected_dialog_send_button">Надіслати</string>
+    <!-- Shown in the advanced settings, shows the user their own Device's uniquely generated ID, which is used for sending error reports -->
+    <string name="prefs_error_reporting_id">Анонімний ID пристрою</string>
+    <!-- The %s is a placeholder for an ID. It must be left as-is. -->
+    <string name="prefs_error_reporting_id_summary">Цей ID використовується для формування звіту про помилку. Він є анонімним та не пов\'язаний з вашим Threema ID.\n%s</string>
     <string name="md_device_currently_active">Зараз активний</string>
     <string name="md_device_last_active_at">Остання активність: %s</string>
     <plurals name="md_max_device_slots_reached_info">
@@ -1719,9 +1634,6 @@
     <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
     <string name="backup_path_selection_documents">Використовувати папку \"Documents\"</string>
     <!-- accessibility -->
-    <string name="cd_ack_icon">\"погоджуюся\" надіслано</string>
-    <string name="cd_dec_icon">\"не погоджуюся\" надіслано</string>
-    <string name="cd_ack_dec_group_count">стількома учасниками групи: %d</string>
     <string name="cd_edited">повідомлення відредаговано</string>
     <string name="cd_created_at">створено о %s</string>
     <string name="cd_edited_at">відредаговано о %s</string>
@@ -1780,7 +1692,8 @@
     <string name="device_linking_error_invalid_contact_title">Недійсний контакт</string>
     <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <string name="device_linking_error_invalid_contact_body">Контакт із даними %1$s неправильно збережено на цьому пристрої, що заважає зв\'язати новий пристрій. Зверніться до нашої служби підтримки (\"Головне меню\" &gt; \"Довідка\").</string>
-    <string name="device_linking_error_screen_close">Закрити</string>
+    <string name="device_linking_error_invalid_timestamp_title">Хибна дата</string>
+    <string name="device_linking_error_invalid_timestamp_body">Виявлено некоректну дату. Будь ласка, зверніться до служби підтримки («Головне меню &gt; Допомога»).</string>
     <string name="work_directory_title">Каталог компанії</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Шукати в каталозі</string>
@@ -1792,10 +1705,10 @@
     <string name="contact_availability_status_available">Доступний</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Недоступний</string>
-    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
-    <string name="error_preset_onprem_url_mismatch_mdm">Указана URL-адреса сервера недійсна. Зверніться до свого адміністратора.</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">Посилання для активації недійсне. Зверніться до свого адміністратора.</string>
+    <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
+    <string name="export_logs_screen_warning">З міркувань конфіденційності надавайте файл журналу лише службі підтримки ${company_name} та тільки якщо вас про це попросять.</string>
     <string name="work_intro_screen_work_title">НАДБЕЗПЕЧНЕ БІЗНЕС-СПІЛКУВАННЯ</string>
     <string name="work_intro_screen_work_subtitle">Threema Work — це безпечне рішення для бізнес-спілкування, що забезпечує наскрізне шифрування, відповідає вимогам GDPR і розроблено у Швейцарії.</string>
     <string name="work_intro_screen_work_sign_in_button_label">Увійти</string>
@@ -1810,6 +1723,10 @@
     <string name="work_intro_screen_onprem_learn_more_button_label">Докладніше</string>
     <string name="work_intro_screen_onprem_use_private_hint">Щоб використовувати Threema для особистого спілкування, завантажте додаток Threema Private.</string>
     <string name="work_intro_screen_onprem_download_private_button_label">Завантажити</string>
+    <!-- Description of the notification channel which is used when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_notification_channel_description">Коли ${remote_secret} активний, відображається постійне сповіщення.</string>
+    <!-- Text of the notification which is shown when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_notification_text">${remote_secret} активний. Натисніть, щоб дізнатися більше.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <string name="remote_secrets_blocked_by_admin">Доступ до цього додатка заблоковано адміністратором.\n\nЩоб дізнатися більше, зверніться до свого адміністратора.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
@@ -1849,6 +1766,11 @@
     <string name="referral_share_invitation_link">Поділитися посиланням-запрошенням</string>
     <string name="referral_view_terms_and_conditions">Переглянути Умови та положення</string>
     <string name="referral_invitation_message_content">Вітаю! Пропоную використовувати Threema Work — чудове рішення для безпечного бізнес-спілкування. Ось посилання на нього: %1$s</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_title">Завершувати виклик у разі від’єднання Bluetooth</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_on">Виклик завершується, якщо під час розмови буде від’єднано Bluetooth-гарнітуру.</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_off">Виклик триває, навіть якщо під час розмови буде від’єднано Bluetooth-гарнітуру. Примітка: це може завадити роботі кнопки завершення виклику на гарнітурі.</string>
+    <string name="failed_to_load_conversations">Не вдалось завантажити чати.</string>
+    <string name="contact_support">Звернутись до служби підтримки</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакти</item>

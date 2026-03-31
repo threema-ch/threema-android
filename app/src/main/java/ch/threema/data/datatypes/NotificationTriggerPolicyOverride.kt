@@ -5,7 +5,7 @@ import ch.threema.app.R
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE
 import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE_EXCEPT_MENTIONS
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import kotlinx.serialization.Serializable
 
 /**
@@ -61,7 +61,7 @@ sealed class NotificationTriggerPolicyOverride private constructor(val dbValue: 
      *  There we also search for mentions regarding either [myIdentity] or `@All`. If a mention is found, `false` will
      *  be returned.
      */
-    abstract fun muteAppliesRightNowToMessage(message: String, myIdentity: Identity): Boolean
+    abstract fun muteAppliesRightNowToMessage(message: String, myIdentity: IdentityString): Boolean
 
     /**
      *  @return The correct icon to show in the ui for the current policy value.
@@ -73,7 +73,7 @@ sealed class NotificationTriggerPolicyOverride private constructor(val dbValue: 
     data object NotMuted : NotificationTriggerPolicyOverride(dbValue = null) {
         override val muteAppliesRightNow: Boolean = false
 
-        override fun muteAppliesRightNowToMessage(message: String, myIdentity: Identity) = false
+        override fun muteAppliesRightNowToMessage(message: String, myIdentity: IdentityString) = false
 
         @DrawableRes
         override val iconResRightNow: Int? = null
@@ -83,7 +83,7 @@ sealed class NotificationTriggerPolicyOverride private constructor(val dbValue: 
     data object MutedIndefinite : NotificationTriggerPolicyOverride(dbValue = DEADLINE_INDEFINITE) {
         override val muteAppliesRightNow: Boolean = true
 
-        override fun muteAppliesRightNowToMessage(message: String, myIdentity: Identity): Boolean = muteAppliesRightNow
+        override fun muteAppliesRightNowToMessage(message: String, myIdentity: IdentityString): Boolean = muteAppliesRightNow
 
         @DrawableRes
         override val iconResRightNow: Int = R.drawable.ic_do_not_disturb_filled
@@ -93,7 +93,7 @@ sealed class NotificationTriggerPolicyOverride private constructor(val dbValue: 
     data object MutedIndefiniteExceptMentions : NotificationTriggerPolicyOverride(dbValue = DEADLINE_INDEFINITE_EXCEPT_MENTIONS) {
         override val muteAppliesRightNow: Boolean = true
 
-        override fun muteAppliesRightNowToMessage(message: String, myIdentity: Identity): Boolean =
+        override fun muteAppliesRightNowToMessage(message: String, myIdentity: IdentityString): Boolean =
             !message.contains("@[${ContactService.ALL_USERS_PLACEHOLDER_ID}]") &&
                 !message.contains("@[$myIdentity]")
 
@@ -106,7 +106,7 @@ sealed class NotificationTriggerPolicyOverride private constructor(val dbValue: 
         override val muteAppliesRightNow: Boolean
             get() = utcMillis > System.currentTimeMillis()
 
-        override fun muteAppliesRightNowToMessage(message: String, myIdentity: Identity): Boolean = muteAppliesRightNow
+        override fun muteAppliesRightNowToMessage(message: String, myIdentity: IdentityString): Boolean = muteAppliesRightNow
 
         @DrawableRes
         override val iconResRightNow: Int? = when (muteAppliesRightNow) {

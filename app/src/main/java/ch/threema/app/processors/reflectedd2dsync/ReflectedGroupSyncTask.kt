@@ -2,9 +2,9 @@ package ch.threema.app.processors.reflectedd2dsync
 
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationService
-import ch.threema.app.services.ConversationTagService
 import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE
 import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE_EXCEPT_MENTIONS
 import ch.threema.app.services.FileService
@@ -22,12 +22,13 @@ import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.GroupAlreadyExistsException
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.data.repositories.GroupStoreException
+import ch.threema.domain.models.UserState
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.Common.Blob
 import ch.threema.protobuf.Common.DeltaImage
@@ -43,7 +44,6 @@ import ch.threema.protobuf.d2d.MdD2D.GroupSync.Update.MemberStateChange
 import ch.threema.protobuf.d2d.sync.MdD2DSync
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Group
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Group.UserState
 import ch.threema.storage.models.ConversationModel
 import ch.threema.storage.models.ConversationTag
 import java.util.Collections
@@ -63,7 +63,7 @@ class ReflectedGroupSyncTask(
     private val multiDeviceManager: MultiDeviceManager,
     private val conversationCategoryService: ConversationCategoryService,
     private val conversationService: ConversationService,
-    private val conversationTagService: ConversationTagService,
+    private val preferenceService: PreferenceService,
     userService: UserService,
 ) {
     private val myIdentity by lazy { userService.identity }
@@ -182,16 +182,23 @@ class ReflectedGroupSyncTask(
             return
         }
 
-        val members =
-            (group.memberIdentities.identitiesList + groupModel.groupIdentity.creatorIdentity)
-                .filter { it != myIdentity }
-                .toSet()
+        // Note that the member list should not contain the user and the creator.
+        if (group.memberIdentities.identitiesList.contains(myIdentity!!)) {
+            // TODO(ANDR-4545): Log if this happens
+            logger.error("Member identities of a group should not contain the user identity")
+        }
+        if (group.memberIdentities.identitiesList.contains(group.groupIdentity.creatorIdentity)) {
+            // TODO(ANDR-4545): Log if this happens
+            logger.error("Member identities of a group should not contain the group creator")
+        }
+        val updatedMembers = (group.memberIdentities.identitiesList - myIdentity!! - group.groupIdentity.creatorIdentity).toSet()
+
         val oldMembers = groupModel.data?.otherMembers ?: run {
             logger.error("Group model data is null")
             return
         }
 
-        groupModel.setMembersFromSync(members)
+        groupModel.setMembersFromSync(updatedMembers)
 
         memberStateMap.forEach { (identity, state) ->
             when (state) {
@@ -202,7 +209,7 @@ class ReflectedGroupSyncTask(
                             identity,
                         )
 
-                        !members.contains(identity) -> logger.error(
+                        !updatedMembers.contains(identity) -> logger.error(
                             "New member set does not contain {}",
                             identity,
                         )
@@ -221,7 +228,7 @@ class ReflectedGroupSyncTask(
                             identity,
                         )
 
-                        members.contains(identity) -> logger.error(
+                        updatedMembers.contains(identity) -> logger.error(
                             "Member {} still contained in group",
                             identity,
                         )
@@ -267,12 +274,7 @@ class ReflectedGroupSyncTask(
                     }
                     val conversationModel = getConversationModel(groupModel.getDatabaseId())
                     if (conversationModel != null) {
-                        conversationTagService.removeTagAndNotify(
-                            conversationModel,
-                            ConversationTag.PINNED,
-                            TriggerSource.SYNC,
-                        )
-                        conversationModel.isPinTagged = false
+                        conversationService.untag(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
                     } else {
                         logger.error("The conversation intended to have normal visibility was not found.")
                     }
@@ -281,8 +283,7 @@ class ReflectedGroupSyncTask(
                 MdD2DSync.ConversationVisibility.ARCHIVED -> {
                     val conversationModel = getConversationModel(groupModel.getDatabaseId())
                     if (conversationModel != null) {
-                        conversationTagService.removeTagAndNotify(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
-                        conversationModel.isPinTagged = false
+                        conversationService.untag(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
                         conversationService.archive(conversationModel, TriggerSource.SYNC)
                     } else if (getArchivedConversationModel(groupModel.getDatabaseId()) != null) {
                         logger.warn("Conversation already is archived")
@@ -298,8 +299,7 @@ class ReflectedGroupSyncTask(
                     }
                     val conversationModel = getConversationModel(groupModel.getDatabaseId())
                     if (conversationModel != null) {
-                        conversationTagService.addTagAndNotify(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
-                        conversationModel.isPinTagged = true
+                        conversationService.tag(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
                     } else {
                         logger.error("The conversation intended to be pinned was not found.")
                     }
@@ -327,7 +327,7 @@ class ReflectedGroupSyncTask(
      */
     private fun notifyDeprecatedOnNewMemberListeners(
         groupIdentity: GroupIdentity,
-        newIdentity: Identity,
+        newIdentity: IdentityString,
     ) {
         ListenerManager.groupListeners.handle { it.onNewMember(groupIdentity, newIdentity) }
     }
@@ -337,7 +337,7 @@ class ReflectedGroupSyncTask(
      */
     private fun notifyDeprecatedOnMemberLeaveListeners(
         groupIdentity: GroupIdentity,
-        leftIdentity: Identity,
+        leftIdentity: IdentityString,
     ) {
         ListenerManager.groupListeners.handle { it.onMemberLeave(groupIdentity, leftIdentity) }
     }
@@ -347,7 +347,7 @@ class ReflectedGroupSyncTask(
      */
     private fun notifyDeprecatedOnMemberKickedListeners(
         groupIdentity: GroupIdentity,
-        kickedIdentity: Identity,
+        kickedIdentity: IdentityString,
     ) {
         ListenerManager.groupListeners.handle { it.onMemberKicked(groupIdentity, kickedIdentity) }
     }
@@ -356,7 +356,10 @@ class ReflectedGroupSyncTask(
         if (fileService.hasGroupProfilePicture(groupModel)) {
             fileService.removeGroupProfilePicture(groupModel)
             ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
-            ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(groupModel))
+            ShortcutUtil.updateShareTargetShortcut(
+                groupService.createReceiver(groupModel),
+                preferenceService.getContactNameFormat(),
+            )
         }
     }
 
@@ -379,7 +382,10 @@ class ReflectedGroupSyncTask(
 
                 fileService.writeGroupProfilePicture(groupModel, blobLoadingResult.blobBytes)
                 ListenerManager.groupListeners.handle { it.onUpdatePhoto(groupModel.groupIdentity) }
-                ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(groupModel))
+                ShortcutUtil.updateShareTargetShortcut(
+                    groupService.createReceiver(groupModel),
+                    preferenceService.getContactNameFormat(),
+                )
             }
 
             is ReflectedBlobDownloader.BlobLoadingResult.BlobMirrorNotAvailable -> {
@@ -414,18 +420,18 @@ class ReflectedGroupSyncTask(
         isArchived = false,
         groupDescription = null,
         groupDescriptionChangedAt = null,
-        otherMembers = Collections.unmodifiableSet(getMembers() + groupIdentity.creatorIdentity - myIdentity),
-        userState = userState.convert() ?: ch.threema.storage.models.GroupModel.UserState.MEMBER,
+        otherMembers = Collections.unmodifiableSet(getMembers() - groupIdentity.creatorIdentity - myIdentity),
+        userState = userState.convert() ?: UserState.MEMBER,
         notificationTriggerPolicyOverride = notificationTriggerPolicyOverride.convert(),
     )
 
     private fun Group.getMembers(): Set<String> = memberIdentities.identitiesList.toSet()
 
-    private fun UserState?.convert() = when (this) {
-        UserState.MEMBER -> ch.threema.storage.models.GroupModel.UserState.MEMBER
-        UserState.LEFT -> ch.threema.storage.models.GroupModel.UserState.LEFT
-        UserState.KICKED -> ch.threema.storage.models.GroupModel.UserState.KICKED
-        UserState.UNRECOGNIZED -> unrecognizedValue("Group.UserState")
+    private fun Group.UserState?.convert() = when (this) {
+        Group.UserState.MEMBER -> UserState.MEMBER
+        Group.UserState.LEFT -> UserState.LEFT
+        Group.UserState.KICKED -> UserState.KICKED
+        Group.UserState.UNRECOGNIZED -> unrecognizedValue("Group.UserState")
         null -> nullValue("Group.UserState")
     }
 

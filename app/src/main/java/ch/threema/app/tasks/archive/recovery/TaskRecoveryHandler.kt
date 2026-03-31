@@ -1,6 +1,5 @@
 package ch.threema.app.tasks.archive.recovery
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 
@@ -11,5 +10,5 @@ fun interface TaskRecoveryHandler {
     /**
      * Try recovering the [encodedTask]. If this succeeds, the task is returned. Otherwise this method returns null.
      */
-    fun tryRecovery(encodedTask: String, serviceManager: ServiceManager): Task<*, TaskCodec>?
+    fun tryRecovery(encodedTask: String): Task<*, TaskCodec>?
 }

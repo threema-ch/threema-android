@@ -30,7 +30,7 @@ class SynchronizedCheckBoxPreference : CheckBoxPreference {
     init {
         val serviceManager = ThreemaApplication.getServiceManager()
         if (serviceManager != null) {
-            synchronizedSetting = serviceManager.preferenceService.getSynchronizedBooleanSettingByKey(key)
+            synchronizedSetting = serviceManager.synchronizedSettingsService.getSynchronizedBooleanSettingByKey(key)
 
             if (synchronizedSetting == null) {
                 logger.error("Could not get synchronized setting with key '$key'")

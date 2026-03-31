@@ -10,12 +10,14 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import ch.threema.app.R
 import ch.threema.app.dialogs.TextWithCheckboxDialog
 import ch.threema.app.utils.NameUtil
+import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.storage.models.ContactModel
 import com.google.android.material.button.MaterialButton
 
 class ReportSpamView : ConstraintLayout, DefaultLifecycleObserver {
     private var listener: OnReportButtonClickListener? = null
     private var contactModel: ContactModel? = null
+    private var contactNameFormat: ContactNameFormat = ContactNameFormat.DEFAULT
 
     constructor(context: Context) : super(context) {
         init(context)
@@ -47,8 +49,9 @@ class ReportSpamView : ConstraintLayout, DefaultLifecycleObserver {
     }
 
     @UiThread
-    fun show(contactModel: ContactModel) {
+    fun show(contactModel: ContactModel, contactNameFormat: ContactNameFormat) {
         this.contactModel = contactModel
+        this.contactNameFormat = contactNameFormat
         if (visibility != VISIBLE) {
             visibility = VISIBLE
         }
@@ -68,7 +71,7 @@ class ReportSpamView : ConstraintLayout, DefaultLifecycleObserver {
             val dialog = TextWithCheckboxDialog.newInstance(
                 context.getString(
                     R.string.spam_report_dialog_title,
-                    NameUtil.getDisplayNameOrNickname(contactModel, true),
+                    NameUtil.getContactDisplayNameOrNickname(contactModel, true, contactNameFormat),
                 ),
                 R.string.spam_report_dialog_explain,
                 R.string.spam_report_dialog_block_checkbox,

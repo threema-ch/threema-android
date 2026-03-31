@@ -4,7 +4,7 @@ import android.provider.MediaStore.MEDIA_IGNORE_FILENAME
 import ch.threema.base.utils.Base32
 import ch.threema.common.clearDirectoryRecursively
 import ch.threema.common.files.FileHandle
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.libthreema.sha256
 import ch.threema.localcrypto.MasterKeyProvider
 import java.io.File
@@ -14,16 +14,16 @@ class ProfilePictureFileHandleProvider(
     private val appDirectoryProvider: AppDirectoryProvider,
     private val masterKeyProvider: MasterKeyProvider,
 ) {
-    fun getUserDefinedProfilePicture(identity: Identity): FileHandle =
+    fun getUserDefinedProfilePicture(identity: IdentityString): FileHandle =
         getFileHandle(identity, prefix = ".c-")
 
-    fun getContactDefinedProfilePicture(identity: Identity): FileHandle =
+    fun getContactDefinedProfilePicture(identity: IdentityString): FileHandle =
         getFileHandle(identity, prefix = ".p-")
 
-    fun getAndroidDefinedProfilePicture(identity: Identity): FileHandle =
+    fun getAndroidDefinedProfilePicture(identity: IdentityString): FileHandle =
         getFileHandle(identity, prefix = ".a-")
 
-    private fun getFileHandle(identity: Identity, prefix: String): FileHandle {
+    private fun getFileHandle(identity: IdentityString, prefix: String): FileHandle {
         val fileName = getFileName(prefix, identity)
         return appDirectoryProvider.userFilesDirectory.fileHandle(
             directory = PROFILE_PICTURES_DIRECTORY,

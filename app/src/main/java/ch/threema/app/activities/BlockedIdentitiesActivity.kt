@@ -6,7 +6,7 @@ import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 private val logger = getThreemaLogger("BlockedIdentitiesActivity")
 
@@ -24,11 +24,11 @@ class BlockedIdentitiesActivity : IdentityListActivity() {
                 return blockedIdentitiesService.getAllBlockedIdentities()
             }
 
-            override fun addIdentity(identity: Identity) {
+            override fun addIdentity(identity: IdentityString) {
                 blockedIdentitiesService.blockIdentity(identity)
             }
 
-            override fun removeIdentity(identity: Identity) {
+            override fun removeIdentity(identity: IdentityString) {
                 blockedIdentitiesService.unblockIdentity(identity)
             }
         }

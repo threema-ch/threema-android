@@ -36,8 +36,6 @@ public class VideoDataModel implements MediaMessageDataInterface {
 
     /**
      * Get Duration of video in SECONDS
-     *
-     * @return duration
      */
     public int getDuration() {
         return this.duration;

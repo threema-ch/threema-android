@@ -39,8 +39,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.services.VoipCallService;
+import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.AppRTCUtils;
 import ch.threema.app.voip.util.VoipUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
@@ -80,8 +82,14 @@ public class VoipBluetoothManager {
         SCO_CONNECTED
     }
 
+    @NonNull
     private final Context apprtcContext;
+    @NonNull
     private final VoipAudioManager voipAudioManager;
+    @NonNull
+    private final VoipStateService voipStateService;
+    @NonNull
+    private final PreferenceService preferenceService;
     private final AudioManager audioManager;
     private final Handler handler;
 
@@ -270,8 +278,17 @@ public class VoipBluetoothManager {
                         VoipBluetoothManager.this.stop();
                         VoipBluetoothManager.this.updateAudioDeviceState();
                     } else {
-                        logger.info("Bluetooth headset disconnected after {} ms. Ending call.", msElapsed);
-                        VoipUtil.sendVoipCommand(ThreemaApplication.getAppContext(), VoipCallService.class, VoipCallService.ACTION_HANGUP);
+                        logger.info("Bluetooth headset disconnected after {} ms.", msElapsed);
+                        if (voipStateService.getCallState().isCalling()) {
+                            if (preferenceService.shouldAbortCallOnBluetoothDisconnect()) {
+                                logger.info("Ending call because of disconnected bluetooth headset.");
+                                VoipUtil.sendVoipCommand(ThreemaApplication.getAppContext(), VoipCallService.class, VoipCallService.ACTION_HANGUP);
+                            } else {
+                                logger.info("Continuing call because of setting.");
+                            }
+                        } else {
+                            logger.info("Call is not running, therefore a headset disconnect does not abort the call.");
+                        }
                     }
                 } else {
                     // The output device was probably switched via UI
@@ -311,16 +328,28 @@ public class VoipBluetoothManager {
     /**
      * Construction.
      */
-    static VoipBluetoothManager create(Context context, VoipAudioManager audioManager) {
+    static VoipBluetoothManager create(
+        @NonNull Context context,
+        @NonNull VoipAudioManager audioManager,
+        @NonNull VoipStateService voipStateService,
+        @NonNull PreferenceService preferenceService
+    ) {
         logger.debug("create {}", AppRTCUtils.getThreadInfo());
-        return new VoipBluetoothManager(context, audioManager);
+        return new VoipBluetoothManager(context, audioManager, voipStateService, preferenceService);
     }
 
-    protected VoipBluetoothManager(Context context, VoipAudioManager audioManager) {
+    protected VoipBluetoothManager(
+        @NonNull Context context,
+        @NonNull VoipAudioManager audioManager,
+        @NonNull VoipStateService voipStateService,
+        @NonNull PreferenceService preferenceService
+    ) {
         logger.debug("ctor");
         ThreadUtils.checkIsOnMainThread();
         this.apprtcContext = context;
         this.voipAudioManager = audioManager;
+        this.voipStateService = voipStateService;
+        this.preferenceService = preferenceService;
         this.audioManager = getAudioManager(context);
         this.bluetoothState = State.UNINITIALIZED;
         this.bluetoothServiceListener = new BluetoothServiceListener();

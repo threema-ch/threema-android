@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.GeoLocationUtil;
+import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.MessageState;
@@ -21,13 +22,18 @@ import static android.view.View.GONE;
 
 public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 
-    public LocationChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
-        super(context, messageModel, helper);
+    public LocationChatAdapterDecorator(
+        AbstractMessageModel messageModel,
+        @NonNull ChatAdapterDecoratorListener chatAdapterDecoratorListener,
+        @NonNull LinkifyUtil.LinkifyListener linkifyListener,
+        Helper helper
+    ) {
+        super(messageModel, chatAdapterDecoratorListener, linkifyListener, helper);
     }
 
     @SuppressLint("StaticFieldLeak")
     @Override
-    protected void configureChatMessage(@NonNull final ComposeMessageHolder holder, final int position) {
+    protected void configureChatMessage(@NonNull final ComposeMessageHolder holder, Context context, final int position) {
         final LocationDataModel locationDataModel = this.getMessageModel().getLocationData();
 
         TextView addressLine = holder.bodyTextView;
@@ -38,7 +44,7 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
                     getMessageModel().getState() != MessageState.SENDFAILED
             ) {
                 if (!isInChoiceMode()) {
-                    viewLocation(getMessageModel());
+                    viewLocation(v.getContext(), getMessageModel());
                 }
             }
         }, holder.messageBlockView);
@@ -55,7 +61,7 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
 
         if (locationDataModel.poiNameOrNull != null) {
             if (holder.bodyTextView != null) {
-                holder.bodyTextView.setText(highlightMatches(locationDataModel.poiNameOrNull, filterString));
+                holder.bodyTextView.setText(highlightMatches(context, locationDataModel.poiNameOrNull, filterString));
                 holder.bodyTextView.setWidth(this.getThumbnailWidth());
                 holder.bodyTextView.setVisibility(View.VISIBLE);
             }
@@ -65,7 +71,7 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
         if (addressLine != null) {
             final @Nullable String poiAddress = locationDataModel.poiAddressOrNull;
             if (poiAddress != null) {
-                addressLine.setText(highlightMatches(poiAddress, filterString));
+                addressLine.setText(highlightMatches(context, poiAddress, filterString));
                 addressLine.setWidth(this.getThumbnailWidth());
                 addressLine.setVisibility(View.VISIBLE);
             } else {
@@ -74,7 +80,7 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
                 location.setLatitude(locationDataModel.latitude);
                 location.setLongitude(locationDataModel.longitude);
                 location.setAccuracy((long) locationDataModel.accuracyOrFallback);
-                geoLocation.updateAddressAndModel(getContext(), location);
+                geoLocation.updateAddressAndModel(context, location);
             }
         }
 
@@ -86,13 +92,13 @@ public class LocationChatAdapterDecorator extends ChatAdapterDecorator {
         RuntimeUtil.runOnUiThread(() -> setupResendStatus(holder));
     }
 
-    private void viewLocation(AbstractMessageModel messageModel) {
+    private void viewLocation(Context context, AbstractMessageModel messageModel) {
         if (messageModel == null) {
             return;
         }
 
-        if (!GeoLocationUtil.viewLocation(getContext(), messageModel.getLocationData())) {
-            RuntimeUtil.runOnUiThread(() -> Toast.makeText(getContext(), "Feature not available due to firmware error", Toast.LENGTH_LONG).show());
+        if (!GeoLocationUtil.viewLocation(context, messageModel.getLocationData())) {
+            RuntimeUtil.runOnUiThread(() -> Toast.makeText(context, "Feature not available due to firmware error", Toast.LENGTH_LONG).show());
         }
     }
 }

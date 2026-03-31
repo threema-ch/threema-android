@@ -2,16 +2,17 @@ package ch.threema.storage.factories
 
 import android.database.Cursor
 import android.database.SQLException
-import ch.threema.domain.types.Identity
-import ch.threema.storage.DatabaseService
+import ch.threema.domain.types.IdentityString
+import ch.threema.storage.DatabaseCreationProvider
+import ch.threema.storage.DatabaseProvider
 import ch.threema.storage.buildContentValues
-import ch.threema.storage.models.GroupModel
 import ch.threema.storage.models.IncomingGroupSyncRequestLogModel
+import ch.threema.storage.models.group.GroupModelOld
 import ch.threema.storage.runQuery
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
-class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseService) :
-    ModelFactory(databaseService, IncomingGroupSyncRequestLogModel.TABLE) {
+class IncomingGroupSyncRequestLogModelFactory(databaseProvider: DatabaseProvider) :
+    ModelFactory(databaseProvider, IncomingGroupSyncRequestLogModel.TABLE) {
     /**
      * Insert the provided model into the database.
      *
@@ -34,7 +35,7 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseService) 
     @Synchronized
     fun getByGroupIdAndSenderIdentity(
         localDbGroupId: Long,
-        senderIdentity: Identity,
+        senderIdentity: IdentityString,
     ): IncomingGroupSyncRequestLogModel {
         readableDatabase.runQuery(
             table = tableName,
@@ -48,20 +49,6 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseService) 
                     IncomingGroupSyncRequestLogModel(localDbGroupId, senderIdentity, 0)
                 }
             }
-    }
-
-    override fun getStatements(): Array<String> {
-        return arrayOf(
-            """
-                CREATE TABLE `${IncomingGroupSyncRequestLogModel.TABLE}`(
-                    `${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID}` INTEGER,
-                    `${IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY}` VARCHAR,
-                    `${IncomingGroupSyncRequestLogModel.COLUMN_LAST_HANDLED_REQUEST}` DATETIME,
-                    PRIMARY KEY (`${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID}`, `${IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY}`),
-                    FOREIGN KEY(`${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID}`) REFERENCES `${GroupModel.TABLE}`(`${GroupModel.COLUMN_ID}`) ON UPDATE CASCADE ON DELETE CASCADE
-                )
-            """,
-        )
     }
 
     private fun Cursor.toGroupSyncRequestLogModel(): IncomingGroupSyncRequestLogModel {
@@ -83,5 +70,19 @@ class IncomingGroupSyncRequestLogModelFactory(databaseService: DatabaseService) 
         put(IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID, groupId)
         put(IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY, senderIdentity)
         put(IncomingGroupSyncRequestLogModel.COLUMN_LAST_HANDLED_REQUEST, lastHandledRequest)
+    }
+
+    object Creator : DatabaseCreationProvider {
+        override fun getCreationStatements() = arrayOf(
+            """
+                CREATE TABLE `${IncomingGroupSyncRequestLogModel.TABLE}`(
+                    `${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID}` INTEGER,
+                    `${IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY}` VARCHAR,
+                    `${IncomingGroupSyncRequestLogModel.COLUMN_LAST_HANDLED_REQUEST}` DATETIME,
+                    PRIMARY KEY (`${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID}`, `${IncomingGroupSyncRequestLogModel.COLUMN_SENDER_IDENTITY}`),
+                    FOREIGN KEY(`${IncomingGroupSyncRequestLogModel.COLUMN_GROUP_ID}`) REFERENCES `${GroupModelOld.TABLE}`(`${GroupModelOld.COLUMN_ID}`) ON UPDATE CASCADE ON DELETE CASCADE
+                )
+            """.trimIndent(),
+        )
     }
 }

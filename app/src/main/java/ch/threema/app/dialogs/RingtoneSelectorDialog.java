@@ -12,10 +12,8 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -23,8 +21,10 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import org.msgpack.core.annotations.Nullable;
 import org.slf4j.Logger;
 
+import ch.threema.android.ToastKt;
 import ch.threema.app.R;
 import ch.threema.app.utils.RingtoneUtil;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -34,7 +34,6 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
 
     private RingtoneSelectorDialogClickListener callback;
     private Activity activity;
-    private AlertDialog alertDialog;
     private Uri selectedRingtoneUri, defaultUri;
     private static final String CURSOR_DEFAULT_ID = "-2";
     private static final String CURSOR_NONE_ID = "-1";
@@ -54,9 +53,16 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
      * @param defaultUri   Uri pointing to a ringtone that will be marked as "default". If null, the system's default ringtone for {@param ringtoneType} will be used
      * @param showDefault  Show a selection for the default ringtone
      * @param showSilent   Show a selection for a silent ringtone
-     * @return RingtoneSelectorDialog
      */
-    public static RingtoneSelectorDialog newInstance(String title, int ringtoneType, Uri existingUri, Uri defaultUri, boolean showDefault, boolean showSilent) {
+    @NonNull
+    public static RingtoneSelectorDialog newInstance(
+        String title,
+        int ringtoneType,
+        Uri existingUri,
+        Uri defaultUri,
+        boolean showDefault,
+        boolean showSilent
+    ) {
         RingtoneSelectorDialog dialog = new RingtoneSelectorDialog();
         Bundle args = new Bundle();
         args.putString("title", title);
@@ -78,7 +84,7 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
     }
 
     @Override
-    public void onAttach(Activity activity) {
+    public void onAttach(@NonNull Activity activity) {
         super.onAttach(activity);
 
         this.activity = activity;
@@ -105,7 +111,7 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
     }
 
     @Override
-    public void onCancel(DialogInterface dialogInterface) {
+    public void onCancel(@NonNull DialogInterface dialogInterface) {
         super.onCancel(dialogInterface);
 
         callback.onCancel(this.getTag());
@@ -114,12 +120,12 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
     @NonNull
     @Override
     public AppCompatDialog onCreateDialog(Bundle savedInstanceState) {
-        String title = getArguments().getString("title");
-        final int ringtoneType = getArguments().getInt("type");
-        defaultUri = getArguments().getParcelable("defaultUri");
-        final Uri existingUri = getArguments().getParcelable("existingUri");
-        final boolean showDefault = getArguments().getBoolean("showDefault");
-        final boolean showSilent = getArguments().getBoolean("showSilent");
+        final String title = requireArguments().getString("title");
+        final int ringtoneType = requireArguments().getInt("type");
+        defaultUri = requireArguments().getParcelable("defaultUri");
+        final Uri existingUri = requireArguments().getParcelable("existingUri");
+        final boolean showDefault = requireArguments().getBoolean("showDefault");
+        final boolean showSilent = requireArguments().getBoolean("showSilent");
 
         if (showDefault && defaultUri == null) {
             // get default URI from system if none is provided by caller
@@ -132,7 +138,7 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
 
         final String tag = this.getTag();
 
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity(), getTheme());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity(), getTheme());
         if (title != null) {
             builder.setTitle(title);
         }
@@ -145,70 +151,55 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
             } while (cursor.moveToNext());
         }
 
-        final TypedArray a = getContext().obtainStyledAttributes(null, R.styleable.AlertDialog,
-            R.attr.alertDialogStyle, 0);
-        int itemLayout = a.getResourceId(com.google.android.material.R.styleable.AlertDialog_singleChoiceItemLayout, 0);
-        RingtoneListItemAdapter adapter = new RingtoneListItemAdapter(getContext(), itemLayout, android.R.id.text1, labels);
+        final RingtoneListItemAdapter adapter;
+        try (final TypedArray typedAttributes = requireContext().obtainStyledAttributes(null, R.styleable.AlertDialog, R.attr.alertDialogStyle, 0)) {
+            int itemLayout = typedAttributes.getResourceId(androidx.appcompat.R.styleable.AlertDialog_singleChoiceItemLayout, 0);
+            adapter = new RingtoneListItemAdapter(requireContext(), itemLayout, android.R.id.text1, labels);
+        }
 
         builder
-            .setSingleChoiceItems(adapter, selectedIndex, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    if (i < adapter.getCount()) {
-                        selectedIndex = i;
+            .setSingleChoiceItems(adapter, selectedIndex, (dialogInterface, i) -> {
+                if (i < adapter.getCount()) {
+                    selectedIndex = i;
 
-                        stopPlaying();
+                    stopPlaying();
 
-                        selectedRingtoneUri = getUriFromPosition(selectedIndex, showSilent, showDefault);
-                        if (selectedRingtoneUri == null || selectedRingtoneUri.equals(SILENT_RINGTONE_URI)) {
-                            ringtoneManager.stopPreviousRingtone(); // "playing" silence
-                        } else {
-                            selectedRingtone = RingtoneManager.getRingtone(getContext(), selectedRingtoneUri);
-                            if (selectedRingtone != null) {
-                                try {
-                                    selectedRingtone.play();
-                                } catch (Exception e) {
-                                    // this may cause java.lang.NullPointerException: Attempt to invoke virtual method 'android.net.Uri android.net.Uri.getCanonicalUri()' on a null object reference
-                                    // on some HTC devices
-                                    Toast.makeText(getContext(), "Unable to play ringtone " + selectedRingtoneUri.toString(), Toast.LENGTH_LONG).show();
-                                    logger.debug("Unable to play ringtone " + selectedRingtoneUri.toString());
-                                    logger.error("Exception", e);
-
-                                    ringtoneManager.stopPreviousRingtone();
-                                }
+                    selectedRingtoneUri = getUriFromPosition(selectedIndex, showSilent, showDefault);
+                    if (selectedRingtoneUri == null || selectedRingtoneUri.equals(SILENT_RINGTONE_URI)) {
+                        ringtoneManager.stopPreviousRingtone(); // "playing" silence
+                    } else {
+                        selectedRingtone = RingtoneManager.getRingtone(getContext(), selectedRingtoneUri);
+                        if (selectedRingtone != null) {
+                            try {
+                                selectedRingtone.play();
+                            } catch (Exception e) {
+                                ToastKt.showToast(requireContext(), R.string.an_error_occurred);
+                                // This may cause java.lang.NullPointerException: Attempt to invoke virtual method
+                                // 'android.net.Uri android.net.Uri.getCanonicalUri()' on a null object reference on some HTC devices
+                                logger.error("Unable to play ringtone {}", selectedRingtoneUri, e);
+                                ringtoneManager.stopPreviousRingtone();
                             }
                         }
                     }
                 }
             })
-            .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                @Override
-                public void onDismiss(DialogInterface dialogInterface) {
-                    stopPlaying();
-                    callback.onCancel(tag);
-                }
+            .setOnDismissListener(dialogInterface -> {
+                stopPlaying();
+                callback.onCancel(tag);
             })
-            .setNegativeButton(android.R.string.cancel, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    stopPlaying();
-                    callback.onCancel(tag);
+            .setNegativeButton(android.R.string.cancel, (dialog, which) -> {
+                stopPlaying();
+                callback.onCancel(tag);
 
-                }
             })
-            .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    stopPlaying();
-                    if (selectedRingtoneUri != null) {
-                        callback.onRingtoneSelected(tag, selectedRingtoneUri);
-                    }
+            .setPositiveButton(android.R.string.ok, (dialog, which) -> {
+                stopPlaying();
+                if (selectedRingtoneUri != null) {
+                    callback.onRingtoneSelected(tag, selectedRingtoneUri);
                 }
             });
 
-        alertDialog = builder.create();
-
-        return alertDialog;
+        return builder.create();
     }
 
     @Override
@@ -294,11 +285,6 @@ public class RingtoneSelectorDialog extends ThreemaDialogFragment {
         @Override
         public boolean hasStableIds() {
             return true;
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
         }
     }
 

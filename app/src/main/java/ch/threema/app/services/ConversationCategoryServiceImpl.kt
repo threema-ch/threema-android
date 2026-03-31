@@ -13,7 +13,7 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
 import ch.threema.domain.types.ConversationUID
 import ch.threema.domain.types.GroupDatabaseId
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.d2d.sync.MdD2DSync
 import java.lang.ref.WeakReference
 
@@ -56,7 +56,7 @@ class ConversationCategoryServiceImpl(
     }
 
     @Synchronized
-    private fun removePrivateMarkFromContactChat(identity: Identity) {
+    private fun removePrivateMarkFromContactChat(identity: IdentityString) {
         val uniqueIdentifier = UniqueIdentifier.fromContactIdentity(identity)
         if (!privateChatsCache.isPrivateChat(uniqueIdentifier)) {
             logger.warn("Chat with {} hasn't been marked as private", identity)
@@ -196,7 +196,7 @@ class ConversationCategoryServiceImpl(
         privateChatsCache.invalidate()
     }
 
-    private fun reflectContact(identity: Identity, isPrivateChat: Boolean) {
+    private fun reflectContact(identity: IdentityString, isPrivateChat: Boolean) {
         if (multiDeviceManager.isMultiDeviceActive) {
             taskCreator.scheduleReflectContactConversationCategory(identity, isPrivateChat)
         }
@@ -227,7 +227,7 @@ class ConversationCategoryServiceImpl(
             val privateChatUniqueIds = getPrivateChatUniqueIds()
             privateChatUniqueIds.add(uniqueIdentifier.uniqueId)
             privateChatsCache = WeakReference(privateChatUniqueIds)
-            preferenceService.setListQuietly(PREF_LIST_NAME, privateChatUniqueIds.toTypedArray(), false)
+            preferenceService.setListQuietly(PREF_LIST_NAME, privateChatUniqueIds.toTypedArray())
         }
 
         @Synchronized
@@ -235,7 +235,7 @@ class ConversationCategoryServiceImpl(
             val privateChatUniqueIds = getPrivateChatUniqueIds()
             privateChatUniqueIds.remove(uniqueIdentifier.uniqueId)
             privateChatsCache = WeakReference(privateChatUniqueIds)
-            preferenceService.setListQuietly(PREF_LIST_NAME, privateChatUniqueIds.toTypedArray(), false)
+            preferenceService.setListQuietly(PREF_LIST_NAME, privateChatUniqueIds.toTypedArray())
         }
 
         @Synchronized
@@ -264,19 +264,19 @@ class ConversationCategoryServiceImpl(
                 // property. The map used the unique id string as key and always had -1 as value, as it was never possible to mark a chat as private
                 // for a limited time.
                 val privateChatUniqueIdentifiers = preferenceService.getStringMap(LEGACY_PREF_LIST_NAME).keys.toMutableSet()
-                preferenceService.setListQuietly(PREF_LIST_NAME, privateChatUniqueIdentifiers.toTypedArray(), false)
+                preferenceService.setListQuietly(PREF_LIST_NAME, privateChatUniqueIdentifiers.toTypedArray())
                 preferenceStore.remove(LEGACY_PREF_LIST_NAME)
                 return privateChatUniqueIdentifiers
             }
 
-            return preferenceService.getList(PREF_LIST_NAME, false).toMutableSet()
+            return preferenceService.getList(PREF_LIST_NAME).toMutableSet()
         }
     }
 
     @JvmInline
     private value class UniqueIdentifier(val uniqueId: ConversationUID) {
         companion object {
-            fun fromContactIdentity(identity: Identity): UniqueIdentifier {
+            fun fromContactIdentity(identity: IdentityString): UniqueIdentifier {
                 return UniqueIdentifier(ContactUtil.getUniqueIdString(identity))
             }
 

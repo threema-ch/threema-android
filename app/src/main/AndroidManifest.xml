@@ -187,7 +187,7 @@
         android:label="@string/app_name"
         android:largeHeap="true"
         android:localeConfig="@xml/locales_config"
-        android:manageSpaceActivity="ch.threema.app.activities.StorageManagementActivity"
+        android:manageSpaceActivity="ch.threema.app.storagemanagement.StorageManagementActivity"
         android:networkSecurityConfig="@xml/network_security_config"
         android:resizeableActivity="true"
         android:roundIcon="@mipmap/ic_launcher"
@@ -461,11 +461,10 @@
             android:configChanges="uiMode"
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
-            android:name=".activities.PinLockActivity"
-            android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
+            android:name=".pinlock.PinLockActivity"
             android:noHistory="true"
-            android:theme="@style/Theme.Threema.WithToolbar.NoAnim"
-            android:windowSoftInputMode="stateAlwaysVisible|adjustPan" />
+            android:theme="@style/Theme.Threema.WithToolbar"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
         <activity
             android:name=".activities.GroupAddActivity"
             android:configChanges="uiMode"
@@ -545,7 +544,7 @@
             android:configChanges="uiMode"
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
-            android:name=".activities.StorageManagementActivity"
+            android:name=".storagemanagement.StorageManagementActivity"
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
@@ -676,7 +675,7 @@
         <activity
             android:name=".activities.SMSVerificationLinkActivity"
             android:exported="true"
-            android:theme="@android:style/Theme.NoDisplay">
+            android:theme="@style/Theme.Threema.Translucent">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -795,7 +794,7 @@
             android:theme="@style/Theme.Threema.StarredMessages"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name="ch.threema.app.activities.StarredMessagesActivity"
+            android:name="ch.threema.app.activities.starred.StarredMessagesActivity"
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
             android:theme="@style/Theme.Threema.StarredMessages"
             android:windowSoftInputMode="adjustResize" />
@@ -865,9 +864,6 @@
             android:launchMode="singleTop"
             android:theme="@style/Theme.Threema.WithToolbar" />
         <activity
-            android:name=".debug.patternlibrary.PatternLibraryActivity"
-            android:theme="@style/Theme.Threema.Translucent" />
-        <activity
             android:name="ch.threema.app.emojireactions.EmojiReactionsOverviewActivity"
             android:theme="@style/Theme.Threema.Translucent"
             android:windowSoftInputMode="adjustResize" />
@@ -887,6 +883,38 @@
             android:exported="false"
             android:launchMode="singleTop"
             android:theme="@style/Theme.Threema.AppStartup" />
+        <activity
+            android:name=".logging.ExportDebugLogActivity"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.Threema.AppStartup">
+
+            <intent-filter
+                android:autoVerify="true"
+                android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="${actionUrl}"
+                    android:path="/debug"
+                    android:scheme="https" />
+            </intent-filter>
+            <intent-filter
+                android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="debug"
+                    android:scheme="${uriScheme}" />
+            </intent-filter>
+        </activity>
 
         <!-- services -->
         <service
@@ -927,7 +955,7 @@
                 android:value="@string/special_use_fgs_passphrase_service_explanation" />
         </service>
         <service
-            android:name=".services.WidgetService"
+            android:name=".widget.WidgetService"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
         <service
@@ -969,6 +997,11 @@
             android:exported="false"
             android:foregroundServiceType="remoteMessaging"
             android:label="ThreemaPushService" />
+        <service
+            android:name=".services.RemoteSecretMonitorService"
+            android:exported="false"
+            android:foregroundServiceType="remoteMessaging"
+            android:label="DualLockService" />
 
         <service
             android:name=".voip.groupcall.service.GroupCallService"
@@ -999,6 +1032,15 @@
             <meta-data
                 android:name="autoStoreLocales"
                 android:value="true" />
+        </service>
+
+        <service
+            android:name=".services.AudioPlayerService"
+            android:exported="false"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
         </service>
 
         <!-- broadcast receivers -->
@@ -1061,7 +1103,7 @@
 
         <!-- content providers -->
         <provider
-            android:name=".NamedFileProvider"
+            android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">

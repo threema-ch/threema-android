@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices
@@ -10,19 +9,14 @@ import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.util.Date
 
-abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager) :
-    OutgoingCspMessageTask(serviceManager) {
-    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
-    private val blockedIdentitiesService by lazy { serviceManager.blockedIdentitiesService }
-    private val apiConnector by lazy { serviceManager.apiConnector }
-
+abstract class OutgoingCspGroupControlMessageTask : OutgoingCspMessageTask() {
     protected abstract val messageId: MessageId
-    protected abstract val creatorIdentity: Identity
+    protected abstract val creatorIdentity: IdentityString
     protected abstract val groupId: GroupId
-    protected abstract val recipientIdentities: Set<Identity>
+    protected abstract val recipientIdentities: Set<IdentityString>
     protected open val date: Date = Date()
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -43,8 +37,8 @@ abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager
         )
 
         handle.runBundledMessagesSendSteps(
-            outgoingCspMessageHandle,
-            OutgoingCspMessageServices(
+            outgoingCspMessageHandle = outgoingCspMessageHandle,
+            services = OutgoingCspMessageServices(
                 forwardSecurityMessageProcessor,
                 identityStore,
                 userService,
@@ -53,10 +47,11 @@ abstract class OutgoingCspGroupControlMessageTask(serviceManager: ServiceManager
                 contactModelRepository,
                 groupService,
                 nonceFactory,
-                blockedIdentitiesService,
                 preferenceService,
+                synchronizedSettingsService,
                 multiDeviceManager,
             ),
+            identityBlockedSteps = identityBlockedSteps,
         )
     }
 

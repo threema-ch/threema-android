@@ -65,14 +65,14 @@ class HomeViewModelTest {
     @Test
     fun `checkMultiDeviceGroup should save current timestamp if no timestamp is saved`() = runTest {
         // arrange
-        every { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp } returns null
+        every { preferenceServiceMock.getLastMultiDeviceGroupCheckTimestamp() } returns null
         every { multiDeviceManagerMock.isMultiDeviceActive } returns false
 
         // act
         viewModel.checkMultiDeviceGroup()
 
         // assert
-        verify(exactly = 1) { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp }
+        verify(exactly = 1) { preferenceServiceMock.getLastMultiDeviceGroupCheckTimestamp() }
         verify(exactly = 1) { preferenceServiceMock.setLastMultiDeviceGroupCheckTimestamp(testTimeProvider.get()) }
         coVerify(exactly = 0) { multiDeviceManagerMock.removeMultiDeviceLocally(any()) }
         coVerify(exactly = 0) { multiDeviceManagerMock.enableForwardSecurity(any()) }
@@ -85,14 +85,14 @@ class HomeViewModelTest {
         val currentTime = testTimeProvider.get()
         val fiftyMinutesAgo = currentTime - 50.minutes
 
-        every { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp } returns fiftyMinutesAgo
+        every { preferenceServiceMock.getLastMultiDeviceGroupCheckTimestamp() } returns fiftyMinutesAgo
         every { multiDeviceManagerMock.isMultiDeviceActive } returns false
 
         // act
         viewModel.checkMultiDeviceGroup()
 
         // assert
-        verify(exactly = 1) { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp }
+        verify(exactly = 1) { preferenceServiceMock.getLastMultiDeviceGroupCheckTimestamp() }
         verify(exactly = 0) { preferenceServiceMock.setLastMultiDeviceGroupCheckTimestamp(testTimeProvider.get()) }
         verify(exactly = 0) { multiDeviceManagerMock.isMultiDeviceActive }
         coVerify(exactly = 0) { multiDeviceManagerMock.removeMultiDeviceLocally(any()) }
@@ -106,14 +106,14 @@ class HomeViewModelTest {
         val currentTime = testTimeProvider.get()
         val sixtyMinutesAgo = currentTime - 60.minutes
 
-        every { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp } returns sixtyMinutesAgo
+        every { preferenceServiceMock.getLastMultiDeviceGroupCheckTimestamp() } returns sixtyMinutesAgo
         every { multiDeviceManagerMock.isMultiDeviceActive } returns false
 
         // act
         viewModel.checkMultiDeviceGroup()
 
         // assert
-        verify(exactly = 1) { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp }
+        verify(exactly = 1) { preferenceServiceMock.getLastMultiDeviceGroupCheckTimestamp() }
         verify(exactly = 1) { preferenceServiceMock.setLastMultiDeviceGroupCheckTimestamp(testTimeProvider.get()) }
         verify(exactly = 1) { multiDeviceManagerMock.isMultiDeviceActive }
         coVerify(exactly = 0) { multiDeviceManagerMock.removeMultiDeviceLocally(any()) }
@@ -127,7 +127,7 @@ class HomeViewModelTest {
         val currentTime = testTimeProvider.get()
         val sixtyMinutesAgo = currentTime - 60.minutes
 
-        every { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp } returns sixtyMinutesAgo
+        every { preferenceServiceMock.getLastMultiDeviceGroupCheckTimestamp() } returns sixtyMinutesAgo
         every { multiDeviceManagerMock.isMultiDeviceActive } returns true
         coEvery { taskCreatorMock.scheduleDeactivateMultiDeviceIfAloneTask().await() } just Runs
 
@@ -135,7 +135,7 @@ class HomeViewModelTest {
         viewModel.checkMultiDeviceGroup()
 
         // assert
-        verify(exactly = 1) { preferenceServiceMock.lastMultiDeviceGroupCheckTimestamp }
+        verify(exactly = 1) { preferenceServiceMock.getLastMultiDeviceGroupCheckTimestamp() }
         verify(exactly = 1) { preferenceServiceMock.setLastMultiDeviceGroupCheckTimestamp(testTimeProvider.get()) }
         verify(exactly = 1) { multiDeviceManagerMock.isMultiDeviceActive }
         coVerify(exactly = 0) { multiDeviceManagerMock.removeMultiDeviceLocally(any()) }

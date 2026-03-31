@@ -22,6 +22,13 @@ class StringExtensionsTest {
     }
 
     @Test
+    fun `replace last`() {
+        assertEquals("Hello Beautiful World", "Hello Hello World".replaceLast("Hello", "Beautiful"))
+        assertEquals("abc.def.abc.ghi", "abc.def.abc.def".replaceLast("def", "ghi"))
+        assertEquals("Hello", "Hello".replaceLast("World", "Moon"))
+    }
+
+    @Test
     fun `take string unless empty`() {
         assertEquals("test", "test".takeUnlessEmpty())
         assertNull("".takeUnlessEmpty())

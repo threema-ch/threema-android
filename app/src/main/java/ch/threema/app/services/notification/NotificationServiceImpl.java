@@ -21,9 +21,9 @@ import org.jetbrains.annotations.Contract;
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -50,10 +50,12 @@ import ch.threema.app.activities.BackupAdminActivity;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.home.HomeActivity;
 import ch.threema.app.activities.ServerMessageActivity;
-import ch.threema.app.collections.Functional;
 import ch.threema.app.notifications.NotificationIDs;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ConversationCategoryService;
+import ch.threema.app.stores.IdentityProvider;
 import ch.threema.app.utils.DoNotDisturbUtil;
+import ch.threema.app.widget.WidgetUpdater;
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
@@ -74,7 +76,6 @@ import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.app.widget.WidgetUtil;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.activities.GroupCallActivity;
 
@@ -85,7 +86,7 @@ import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ServerMessageModel;
 
@@ -105,11 +106,13 @@ public class NotificationServiceImpl implements NotificationService {
     private static final long NOTIFY_AGAIN_TIMEOUT = 30 * DateUtils.SECOND_IN_MILLIS;
     private static final String NAME_PREPEND_SEPARATOR = ": ";
 
-    private final @NonNull Context context;
+    private final @NonNull Context appContext;
     private final @NonNull LockAppService lockAppService;
     private final @NonNull ConversationCategoryService conversationCategoryService;
     private final @NonNull NotificationPreferenceService notificationPreferenceService;
     private final @NonNull RingtoneService ringtoneService;
+    private final @NonNull PreferenceService preferenceService;
+    private final @NonNull IdentityProvider identityProvider;
     private @Nullable ContactService _contactService = null;
     private @Nullable GroupService groupService = null;
 
@@ -133,19 +136,23 @@ public class NotificationServiceImpl implements NotificationService {
     private final ForwardSecurityNotificationManager fsNotificationManager;
 
     public NotificationServiceImpl(
-        @NonNull Context context,
+        @NonNull Context appContext,
         @NonNull LockAppService lockAppService,
         @NonNull ConversationCategoryService conversationCategoryService,
         @NonNull NotificationPreferenceService notificationPreferenceService,
-        @NonNull RingtoneService ringtoneService
+        @NonNull RingtoneService ringtoneService,
+        @NonNull PreferenceService preferenceService,
+        @NonNull IdentityProvider identityProvider
     ) {
-        this.context = context;
+        this.appContext = appContext;
         this.lockAppService = lockAppService;
         this.conversationCategoryService = conversationCategoryService;
         this.notificationPreferenceService = notificationPreferenceService;
         this.ringtoneService = ringtoneService;
-        this.notificationManagerCompat = NotificationManagerCompat.from(context);
-        this.fsNotificationManager = new ForwardSecurityNotificationManager(context, conversationCategoryService);
+        this.preferenceService = preferenceService;
+        this.identityProvider = identityProvider;
+        this.notificationManagerCompat = NotificationManagerCompat.from(appContext);
+        this.fsNotificationManager = new ForwardSecurityNotificationManager(appContext, conversationCategoryService, preferenceService);
         this.pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE;
 
         initContactService();
@@ -153,7 +160,7 @@ public class NotificationServiceImpl implements NotificationService {
 
         // create or update notification channels
         if (ConfigUtils.supportsNotificationChannels()) {
-            NotificationChannels.INSTANCE.createOrMigrateNotificationChannels(ThreemaApplication.getAppContext());
+            NotificationChannels.INSTANCE.createOrMigrateNotificationChannels(appContext);
         }
     }
 
@@ -198,7 +205,7 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void recreateNotificationChannels() {
         if (ConfigUtils.supportsNotificationChannels()) {
-            NotificationChannels.INSTANCE.recreateNotificationChannels(ThreemaApplication.getAppContext());
+            NotificationChannels.INSTANCE.recreateNotificationChannels(appContext);
         }
     }
 
@@ -213,7 +220,7 @@ public class NotificationServiceImpl implements NotificationService {
 
     @SuppressLint("MissingPermission")
     @Override
-    public void addGroupCallNotification(@NonNull GroupModel group, @NonNull ContactModelData contactModelData) {
+    public void addGroupCallNotification(@NonNull GroupModelOld group, @NonNull ContactModelData contactModelData) {
         if (getGroupService() == null) {
             logger.error("Group service is null; cannot show notification");
             return;
@@ -231,21 +238,21 @@ public class NotificationServiceImpl implements NotificationService {
 
         NotificationCompat.Action joinAction = new NotificationCompat.Action(
             R.drawable.ic_phone_locked_outline,
-            context.getString(R.string.voip_gc_join_call),
+            appContext.getString(R.string.voip_gc_join_call),
             getGroupCallJoinPendingIntent(group.getId(), pendingIntentFlags)
         );
 
-        Intent notificationIntent = new Intent(context, ComposeMessageActivity.class);
+        Intent notificationIntent = new Intent(appContext, ComposeMessageActivity.class);
         notificationIntent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) group.getId());
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
         PendingIntent openPendingIntent = createPendingIntentWithTaskStack(notificationIntent);
 
-        String contentText = context.getString(R.string.voip_gc_notification_call_started, contactModelData.getShortName(), group.getName());
+        String contentText = appContext.getString(R.string.voip_gc_notification_call_started, contactModelData.getShortName(), group.getName());
 
         // public version of the notification
-        NotificationCompat.Builder publicBuilder = new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_GROUP_CALLS)
-            .setContentTitle(context.getString(R.string.group_call))
-            .setContentText(context.getString(R.string.voip_gc_notification_new_call_public))
+        NotificationCompat.Builder publicBuilder = new NotificationCompat.Builder(appContext, NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_GROUP_CALLS)
+            .setContentTitle(appContext.getString(R.string.group_call))
+            .setContentText(appContext.getString(R.string.voip_gc_notification_new_call_public))
             .setSmallIcon(R.drawable.ic_phone_locked_outline)
             .setGroup(NotificationGroups.CALLS)
             .setGroupSummary(false)
@@ -253,9 +260,9 @@ public class NotificationServiceImpl implements NotificationService {
             .setChannelId(NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_GROUP_CALLS);
 
         // private version of the notification
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_GROUP_CALLS)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(appContext, NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_GROUP_CALLS)
             .setStyle(new NotificationCompat.BigTextStyle().bigText(contentText))
-            .setContentTitle(context.getString(R.string.group_call))
+            .setContentTitle(appContext.getString(R.string.group_call))
             .setContentText(contentText)
             .setContentIntent(openPendingIntent)
             .setSmallIcon(R.drawable.ic_phone_locked_outline)
@@ -298,9 +305,9 @@ public class NotificationServiceImpl implements NotificationService {
     private PendingIntent getGroupCallJoinPendingIntent(int groupId, int flags) {
         // To make sure a new PendingIntent only for this group is created, use the group id as request code.
         return PendingIntent.getActivity(
-            context,
+            appContext,
             GC_PENDING_INTENT_BASE + groupId,
-            GroupCallActivity.createJoinCallIntent(context, groupId),
+            GroupCallActivity.createJoinCallIntent(appContext, groupId),
             flags
         );
     }
@@ -320,9 +327,11 @@ public class NotificationServiceImpl implements NotificationService {
         }
 
         synchronized (this.conversationNotificationsCache) {
+            final @NonNull ConversationNotificationGroup currentNotificationsGroup = conversationNotification.getGroup();
+
             //check if current receiver is the receiver of the group
             if (this.visibleConversationReceiver != null &&
-                conversationNotification.getGroup().messageReceiver.isEqual(this.visibleConversationReceiver)) {
+                currentNotificationsGroup.messageReceiver.isEqual(this.visibleConversationReceiver)) {
                 //ignore notification
                 logger.info("No notification - chat visible");
                 return;
@@ -336,68 +345,53 @@ public class NotificationServiceImpl implements NotificationService {
                 cachedConversationNotification -> cachedConversationNotification.getUid().equals(conversationNotification.getUid())
             );
             if (!notificationAlreadyExistsInCache) {
-                uniqueMessageReceiverId = conversationNotification.getGroup().messageReceiver.getUniqueIdString();
-                if (!doNotDisturbUtil.isMessageMuted(conversationNotification.getGroup().messageReceiver.getNotificationTriggerPolicyOverrideOrNull(), conversationNotification.getRawMessage())) {
+                uniqueMessageReceiverId = currentNotificationsGroup.messageReceiver.getUniqueIdString();
+                if (!doNotDisturbUtil.isMessageMuted(currentNotificationsGroup.messageReceiver.getNotificationTriggerPolicyOverrideOrNull(), conversationNotification.getRawMessage())) {
                     this.conversationNotificationsCache.addFirst(conversationNotification);
                 }
             } else if (updateExisting) {
-                uniqueMessageReceiverId = conversationNotification.getGroup().messageReceiver.getUniqueIdString();
+                uniqueMessageReceiverId = currentNotificationsGroup.messageReceiver.getUniqueIdString();
             }
 
             Map<String, ConversationNotificationGroup> uniqueNotificationGroups = new HashMap<>();
-
-            //to refactor on merge update and add
-            final ConversationNotificationGroup currentNotificationsGroup = conversationNotification.getGroup();
-
             int numberOfNotificationsForCurrentChat = 0;
 
             ListIterator<ConversationNotification> cacheIterator = this.conversationNotificationsCache.listIterator();
             while (cacheIterator.hasNext()) {
-
                 ConversationNotification cachedConversationNotification = cacheIterator.next();
+
+                if (conversationNotification.getUid().equals(cachedConversationNotification.getUid()) && updateExisting) {
+                    if (conversationNotification.isMessageDeleted()) {
+                        cacheIterator.remove();
+                        continue;
+                    }
+
+                    cacheIterator.set(conversationNotification);
+                }
 
                 ConversationNotificationGroup cachedConversationNotificationsGroup = cachedConversationNotification.getGroup();
                 uniqueNotificationGroups.put(cachedConversationNotificationsGroup.uid, cachedConversationNotificationsGroup);
 
-                boolean isMessageDeleted = conversationNotification.isMessageDeleted();
-                boolean didRemoveNotificationFromCache = false;
-
-                if (conversationNotification.getUid().equals(cachedConversationNotification.getUid()) && updateExisting) {
-                    if (isMessageDeleted) {
-                        cacheIterator.remove();
-                        didRemoveNotificationFromCache = true;
-                    } else {
-                        cacheIterator.set(conversationNotification);
-                    }
-                }
-
-                if (cachedConversationNotificationsGroup.equals(currentNotificationsGroup) && !didRemoveNotificationFromCache) {
+                if (cachedConversationNotificationsGroup.equals(currentNotificationsGroup)) {
                     numberOfNotificationsForCurrentChat++;
                 }
             }
 
+            if (conversationNotificationsCache.isEmpty()) {
+                cancelPinLockedNewMessagesNotification();
+            }
+
             final boolean cacheDoesNotContainCurrentNotificationsGroup = this.conversationNotificationsCache.stream().noneMatch(
-                cachedConversationNotification -> cachedConversationNotification.getGroup().uid.equals(conversationNotification.getGroup().uid)
+                cachedConversationNotification -> cachedConversationNotification.getGroup().uid.equals(currentNotificationsGroup.uid)
             );
             if (cacheDoesNotContainCurrentNotificationsGroup) {
-                this.conversationNotificationsCache.add(conversationNotification);
-                cancelConversationNotification(conversationNotification.getUid());
+                cancelConversationNotification(conversationNotification);
+                showIconBadge(conversationNotificationsCache.size());
                 return;
             }
 
-            if (!TestUtil.required(conversationNotification, currentNotificationsGroup)) {
-                logger.info("No notification - missing data");
+            if (updateExisting && lockAppService.isLocked()) {
                 return;
-            }
-
-            if (updateExisting) {
-                if (!notificationPreferenceService.isShowMessagePreview() || conversationCategoryService.isPrivateChat(uniqueMessageReceiverId)) {
-                    return;
-                }
-
-                if (this.lockAppService.isLocked()) {
-                    return;
-                }
             }
 
             final String latestFullName = currentNotificationsGroup.name;
@@ -407,7 +401,7 @@ public class NotificationServiceImpl implements NotificationService {
                 : NotificationChannels.NOTIFICATION_CHANNEL_CHATS_DEFAULT;
             final int totalUnreadMessagesCount = this.conversationNotificationsCache.size();
             final int totalUnreadConversationsCount = uniqueNotificationGroups.size();
-            String channelId = uniqueMessageReceiverId != null && NotificationChannels.INSTANCE.doesPerConversationChannelExist(context, uniqueMessageReceiverId) ? uniqueMessageReceiverId : parentChannelId;
+            String channelId = uniqueMessageReceiverId != null && NotificationChannels.doesPerConversationChannelExist(appContext, uniqueMessageReceiverId) ? uniqueMessageReceiverId : parentChannelId;
             NotificationSchema notificationSchema = this.createNotificationSchema(currentNotificationsGroup, conversationNotification.getRawMessage());
 
             if (notificationSchema == null) {
@@ -415,8 +409,8 @@ public class NotificationServiceImpl implements NotificationService {
                 return;
             }
 
-            if (this.lockAppService.isLocked()) {
-                this.showPinLockedNewMessageNotification(notificationSchema, conversationNotification.getUid(), parentChannelId);
+            if (lockAppService.isLocked()) {
+                showPinLockedNewMessageNotification(notificationSchema, conversationNotification.getUid(), parentChannelId);
                 return;
             }
 
@@ -426,13 +420,13 @@ public class NotificationServiceImpl implements NotificationService {
             CharSequence tickerText;
             CharSequence singleMessageText;
             String summaryText = totalUnreadConversationsCount > 1 ?
-                ConfigUtils.getSafeQuantityString(context, R.plurals.new_messages_in_chats, totalUnreadMessagesCount, totalUnreadMessagesCount, totalUnreadConversationsCount) :
-                ConfigUtils.getSafeQuantityString(context, R.plurals.new_messages, totalUnreadMessagesCount, totalUnreadMessagesCount);
+                ConfigUtils.getSafeQuantityString(appContext, R.plurals.new_messages_in_chats, totalUnreadMessagesCount, totalUnreadMessagesCount, totalUnreadConversationsCount) :
+                ConfigUtils.getSafeQuantityString(appContext, R.plurals.new_messages, totalUnreadMessagesCount, totalUnreadMessagesCount);
             String contentTitle;
             Intent notificationIntent;
 
             /* set avatar, intent and contentTitle */
-            notificationIntent = new Intent(context, ComposeMessageActivity.class);
+            notificationIntent = new Intent(appContext, ComposeMessageActivity.class);
             currentNotificationsGroup.messageReceiver.prepareIntent(notificationIntent);
             contentTitle = latestFullName;
 
@@ -457,36 +451,38 @@ public class NotificationServiceImpl implements NotificationService {
 
             int conversationId = currentNotificationsGroup.notificationId * 10;
 
-            Intent replyIntent = new Intent(context, NotificationActionService.class);
+            Intent replyIntent = new Intent(appContext, NotificationActionService.class);
             replyIntent.setAction(NotificationActionService.ACTION_REPLY);
             IntentDataUtil.addMessageReceiverToIntent(replyIntent, currentNotificationsGroup.messageReceiver);
-            PendingIntent replyPendingIntent = PendingIntent.getService(context, conversationId, replyIntent, pendingIntentFlags);
+            PendingIntent replyPendingIntent = PendingIntent.getService(appContext, conversationId, replyIntent, pendingIntentFlags);
 
-            Intent markReadIntent = new Intent(context, NotificationActionService.class);
+            Intent markReadIntent = new Intent(appContext, NotificationActionService.class);
             markReadIntent.setAction(NotificationActionService.ACTION_MARK_AS_READ);
             IntentDataUtil.addMessageReceiverToIntent(markReadIntent, currentNotificationsGroup.messageReceiver);
-            PendingIntent markReadPendingIntent = PendingIntent.getService(context, conversationId + 1, markReadIntent, pendingIntentFlags);
+            PendingIntent markReadPendingIntent = PendingIntent.getService(appContext, conversationId + 1, markReadIntent, pendingIntentFlags);
 
-            Intent ackIntent = new Intent(context, NotificationActionService.class);
+            Intent ackIntent = new Intent(appContext, NotificationActionService.class);
             ackIntent.setAction(NotificationActionService.ACTION_ACK);
             IntentDataUtil.addMessageReceiverToIntent(ackIntent, currentNotificationsGroup.messageReceiver);
             ackIntent.putExtra(AppConstants.INTENT_DATA_MESSAGE_ID, conversationNotification.getId());
-            PendingIntent ackPendingIntent = PendingIntent.getService(context, conversationId + 2, ackIntent, pendingIntentFlags);
+            PendingIntent ackPendingIntent = PendingIntent.getService(appContext, conversationId + 2, ackIntent, pendingIntentFlags);
 
-            Intent decIntent = new Intent(context, NotificationActionService.class);
+            Intent decIntent = new Intent(appContext, NotificationActionService.class);
             decIntent.setAction(NotificationActionService.ACTION_DEC);
             IntentDataUtil.addMessageReceiverToIntent(decIntent, currentNotificationsGroup.messageReceiver);
             decIntent.putExtra(AppConstants.INTENT_DATA_MESSAGE_ID, conversationNotification.getId());
-            PendingIntent decPendingIntent = PendingIntent.getService(context, conversationId + 3, decIntent, pendingIntentFlags);
+            PendingIntent decPendingIntent = PendingIntent.getService(appContext, conversationId + 3, decIntent, pendingIntentFlags);
 
             long timestamp = System.currentTimeMillis();
-            boolean onlyAlertOnce = (timestamp - currentNotificationsGroup.lastNotificationDate) < NOTIFY_AGAIN_TIMEOUT;
+            boolean onlyAlertOnce = conversationNotification.isMessageEdited() ||
+                conversationNotification.isMessageDeleted() ||
+                (timestamp - currentNotificationsGroup.lastNotificationDate) < NOTIFY_AGAIN_TIMEOUT;
             currentNotificationsGroup.lastNotificationDate = timestamp;
 
             final NotificationCompat.Builder builder;
 
             summaryText = ConfigUtils.getSafeQuantityString(
-                context,
+                appContext,
                 R.plurals.new_messages,
                 numberOfNotificationsForCurrentChat,
                 numberOfNotificationsForCurrentChat
@@ -498,14 +494,14 @@ public class NotificationServiceImpl implements NotificationService {
             }
 
             // public version of the notification
-            NotificationCompat.Builder publicBuilder = new NotificationCompat.Builder(context, channelId)
+            NotificationCompat.Builder publicBuilder = new NotificationCompat.Builder(appContext, channelId)
                 .setContentTitle(summaryText)
-                .setContentText(context.getString(R.string.notification_hidden_text))
+                .setContentText(appContext.getString(R.string.notification_hidden_text))
                 .setSmallIcon(R.drawable.ic_notification_small)
                 .setOnlyAlertOnce(onlyAlertOnce);
 
             // private version
-            builder = new NotificationCompat.Builder(context, channelId)
+            builder = new NotificationCompat.Builder(appContext, channelId)
                 .setContentTitle(contentTitle)
                 .setContentText(singleMessageText)
                 .setTicker(tickerText)
@@ -527,7 +523,7 @@ public class NotificationServiceImpl implements NotificationService {
                     builder.setVibrate(NotificationChannels.VIBRATE_PATTERN_REGULAR);
                 }
                 if (notificationSchema.shouldUseLight) {
-                    builder.setLights(ContextCompat.getColor(context, R.color.md_theme_light_primary), 2500, 2500);
+                    builder.setLights(ContextCompat.getColor(appContext, R.color.md_theme_light_primary), 2500, 2500);
                 }
             }
 
@@ -540,7 +536,7 @@ public class NotificationServiceImpl implements NotificationService {
                     builder.setShortcutId(uniqueMessageReceiverId);
                     builder.setLocusId(new LocusIdCompat(uniqueMessageReceiverId));
                 }
-                addConversationNotificationActions(builder, replyPendingIntent, ackPendingIntent, markReadPendingIntent, conversationNotification, numberOfNotificationsForCurrentChat, totalUnreadConversationsCount, uniqueMessageReceiverId, currentNotificationsGroup);
+                addConversationNotificationActions(builder, replyPendingIntent, ackPendingIntent, markReadPendingIntent, conversationNotification, numberOfNotificationsForCurrentChat, uniqueMessageReceiverId, currentNotificationsGroup);
                 addWearableExtender(builder, currentNotificationsGroup, ackPendingIntent, decPendingIntent, replyPendingIntent, markReadPendingIntent, numberOfNotificationsForCurrentChat, uniqueMessageReceiverId);
             }
 
@@ -581,13 +577,12 @@ public class NotificationServiceImpl implements NotificationService {
             return null;
         }
 
-        String myIdentity = contactService.getMe().getIdentity();
-
+        String myIdentity = identityProvider.getIdentityString();
 
         String chatName = group.name;
         boolean isGroupChat = group.messageReceiver instanceof GroupMessageReceiver;
         Person.Builder builder = new Person.Builder()
-            .setName(context.getString(R.string.me_myself_and_i))
+            .setName(appContext.getString(R.string.me_myself_and_i))
             .setKey(ContactUtil.getUniqueIdString(myIdentity));
 
         Bitmap avatar = contactService.getAvatar(myIdentity, false);
@@ -607,7 +602,8 @@ public class NotificationServiceImpl implements NotificationService {
             ConversationNotification notification = notifications.get(i);
 
             CharSequence messageText = notification.getMessage();
-            Date date = notification.getWhen();
+            Instant time = notification.getCreatedAt();
+            long created = time == null ? 0 : time.toEpochMilli();
 
             Person person = notification.getSenderPerson();
 
@@ -622,12 +618,13 @@ public class NotificationServiceImpl implements NotificationService {
                 }
             }
 
-            long created = date == null ? 0 : date.getTime();
-
             NotificationCompat.MessagingStyle.Message message = new NotificationCompat.MessagingStyle.Message(messageText, created, person);
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && notification.getThumbnailUri() != null && notification.getThumbnailMimeType() != null) {
-                message.setData(notification.getThumbnailMimeType(), notification.getThumbnailUri());
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P && notification.getThumbnailMimeType() != null) {
+                var thumbnailUri = notification.getOrCreateThumbnail();
+                if (thumbnailUri != null) {
+                    message.setData(notification.getThumbnailMimeType(), thumbnailUri);
+                }
             }
             messages.add(message);
         }
@@ -659,7 +656,6 @@ public class NotificationServiceImpl implements NotificationService {
         PendingIntent markReadPendingIntent,
         ConversationNotification conversationNotification,
         int unreadMessagesCount,
-        int unreadGroupsCount,
         String uniqueId,
         ConversationNotificationGroup newestGroup
     ) {
@@ -668,11 +664,11 @@ public class NotificationServiceImpl implements NotificationService {
 
         if (notificationPreferenceService.isShowMessagePreview() && !conversationCategoryService.isPrivateChat(uniqueId)) {
             RemoteInput remoteInput = new RemoteInput.Builder(AppConstants.EXTRA_VOICE_REPLY)
-                .setLabel(context.getString(R.string.compose_message_and_enter))
+                .setLabel(appContext.getString(R.string.compose_message_and_enter))
                 .build();
 
             NotificationCompat.Action.Builder replyActionBuilder = new NotificationCompat.Action.Builder(
-                R.drawable.ic_reply_black_18dp, context.getString(R.string.wearable_reply), replyPendingIntent)
+                R.drawable.ic_reply_black_18dp, appContext.getString(R.string.wearable_reply), replyPendingIntent)
                 .addRemoteInput(remoteInput)
                 .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_REPLY)
                 .setShowsUserInterface(false);
@@ -688,22 +684,22 @@ public class NotificationServiceImpl implements NotificationService {
                 }
                 showMarkAsReadAction = true;
             } else if (newestGroup.messageReceiver instanceof ContactMessageReceiver) {
-                if (conversationNotification.getMessageType().equals(MessageType.VOIP_STATUS)) {
+                if (MessageType.VOIP_STATUS.equals(conversationNotification.getMessageType())) {
                     // Create an intent for the call action
-                    Intent callActivityIntent = new Intent(context, CallActivity.class);
+                    Intent callActivityIntent = new Intent(appContext, CallActivity.class);
                     callActivityIntent.putExtra(EXTRA_ACTIVITY_MODE, CallActivity.MODE_OUTGOING_CALL);
                     callActivityIntent.putExtra(EXTRA_CONTACT_IDENTITY, ((ContactMessageReceiver) newestGroup.messageReceiver).getContact().getIdentity());
                     callActivityIntent.putExtra(EXTRA_IS_INITIATOR, true);
                     callActivityIntent.putExtra(EXTRA_CALL_ID, -1L);
 
                     PendingIntent callPendingIntent = PendingIntent.getActivity(
-                        context,
+                        appContext,
                         getRandomRequestCode(), // http://stackoverflow.com/questions/19031861/pendingintent-not-opening-activity-in-android-4-3
                         callActivityIntent,
                         this.pendingIntentFlags);
 
                     builder.addAction(
-                        new NotificationCompat.Action.Builder(R.drawable.ic_call_white_24dp, context.getString(R.string.voip_return_call), callPendingIntent)
+                        new NotificationCompat.Action.Builder(R.drawable.ic_call_white_24dp, appContext.getString(R.string.voip_return_call), callPendingIntent)
                             .setShowsUserInterface(true)
                             .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_CALL)
                             .build());
@@ -726,7 +722,7 @@ public class NotificationServiceImpl implements NotificationService {
     @NonNull
     @Contract("_ -> new")
     private NotificationCompat.Action getMarkAsReadAction(PendingIntent markReadPendingIntent) {
-        return new NotificationCompat.Action.Builder(R.drawable.ic_mark_read_bitmap, context.getString(R.string.mark_read_short), markReadPendingIntent)
+        return new NotificationCompat.Action.Builder(R.drawable.ic_mark_read_bitmap, appContext.getString(R.string.mark_read_short), markReadPendingIntent)
             .setShowsUserInterface(false)
             .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_MARK_AS_READ)
             .build();
@@ -735,7 +731,7 @@ public class NotificationServiceImpl implements NotificationService {
     @NonNull
     @Contract("_ -> new")
     private NotificationCompat.Action getThumbsUpAction(PendingIntent ackPendingIntent) {
-        return new NotificationCompat.Action.Builder(R.drawable.emoji_thumbs_up, context.getString(R.string.acknowledge), ackPendingIntent)
+        return new NotificationCompat.Action.Builder(R.drawable.emoji_thumbs_up, appContext.getString(R.string.acknowledge), ackPendingIntent)
             .setShowsUserInterface(false)
             .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_THUMBS_UP)
             .build();
@@ -752,15 +748,15 @@ public class NotificationServiceImpl implements NotificationService {
         String uniqueId
     ) {
 
-        String replyLabel = String.format(context.getString(R.string.wearable_reply_label), newestGroup.name);
+        String replyLabel = String.format(appContext.getString(R.string.wearable_reply_label), newestGroup.name);
         RemoteInput remoteInput = new RemoteInput.Builder(AppConstants.EXTRA_VOICE_REPLY)
             .setLabel(replyLabel)
-            .setChoices(context.getResources().getStringArray(R.array.wearable_reply_choices))
+            .setChoices(appContext.getResources().getStringArray(R.array.wearable_reply_choices))
             .build();
 
         NotificationCompat.Action.Builder replyActionBuilder =
             new NotificationCompat.Action.Builder(R.drawable.ic_wear_full_reply,
-                context.getString(R.string.wearable_reply), replyPendingIntent)
+                appContext.getString(R.string.wearable_reply), replyPendingIntent)
                 .addRemoteInput(remoteInput)
                 .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_REPLY)
                 .setShowsUserInterface(false);
@@ -775,20 +771,20 @@ public class NotificationServiceImpl implements NotificationService {
         if (notificationPreferenceService.isShowMessagePreview() && !conversationCategoryService.isPrivateChat(uniqueId)) {
             if (numberOfUnreadMessagesForThisChat == 1 && newestGroup.messageReceiver instanceof ContactMessageReceiver) {
                 NotificationCompat.Action ackAction = new NotificationCompat.Action.Builder(R.drawable.emoji_thumbs_up,
-                    context.getString(R.string.acknowledge), ackPendingIntent)
+                    appContext.getString(R.string.acknowledge), ackPendingIntent)
                     .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_THUMBS_UP)
                     .build();
                 wearableExtender.addAction(ackAction);
 
                 NotificationCompat.Action decAction = new NotificationCompat.Action.Builder(R.drawable.emoji_thumbs_down,
-                    context.getString(R.string.decline), decPendingIntent)
+                    appContext.getString(R.string.decline), decPendingIntent)
                     .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_THUMBS_DOWN)
                     .build();
                 wearableExtender.addAction(decAction);
             }
 
             NotificationCompat.Action markReadAction = new NotificationCompat.Action.Builder(R.drawable.ic_mark_read,
-                context.getString(R.string.mark_read), markReadPendingIntent)
+                appContext.getString(R.string.mark_read), markReadPendingIntent)
                 .setShowsUserInterface(false)
                 .setSemanticAction(NotificationCompat.Action.SEMANTIC_ACTION_MARK_AS_READ)
                 .build();
@@ -849,14 +845,14 @@ public class NotificationServiceImpl implements NotificationService {
         synchronized (this.conversationNotificationsCache) {
             logger.info("Cancel {} conversation notifications", uids.length);
             for (final String uid : uids) {
-                ConversationNotification conversationNotification = Functional.select(
-                    this.conversationNotificationsCache,
-                    conversationNotification1 -> TestUtil.compare(conversationNotification1.getUid(), uid)
-                );
+                ConversationNotification conversationNotification = conversationNotificationsCache.stream()
+                    .filter(conversationNotification1 -> TestUtil.compare(conversationNotification1.getUid(), uid))
+                    .findFirst()
+                    .orElse(null);
 
                 if (conversationNotification != null) {
                     logger.info("Cancel notification {}", uid);
-                    cancelAndDestroyConversationNotification(conversationNotification);
+                    cancelConversationNotification(conversationNotification);
                 } else {
                     logger.info("Notification {} not found", uid);
                 }
@@ -870,17 +866,17 @@ public class NotificationServiceImpl implements NotificationService {
             }
         }
 
-        WidgetUtil.updateWidgets(context);
+        WidgetUpdater.update();
     }
 
-    private void cancelAndDestroyConversationNotification(@Nullable ConversationNotification conversationNotification) {
+    private void cancelConversationNotification(@Nullable ConversationNotification conversationNotification) {
         if (conversationNotification == null) {
             return;
         }
         synchronized (this.conversationNotificationsCache) {
             logger.info("Destroy notification {}", conversationNotification.getUid());
             cancel(conversationNotification.getGroup().notificationId);
-            conversationNotification.destroy();
+            conversationNotification.getGroup().conversations.remove(conversationNotification);
         }
     }
 
@@ -891,7 +887,7 @@ public class NotificationServiceImpl implements NotificationService {
         synchronized (this.conversationNotificationsCache) {
             if (!conversationNotificationsCache.isEmpty()) {
                 for (ConversationNotification conversationNotification : conversationNotificationsCache) {
-                    this.cancelAndDestroyConversationNotification(conversationNotification);
+                    this.cancelConversationNotification(conversationNotification);
                 }
                 conversationNotificationsCache.clear();
             }
@@ -977,9 +973,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public boolean isConversationNotificationVisible() {
-        Intent notificationIntent = new Intent(context, ComposeMessageActivity.class);
+        Intent notificationIntent = new Intent(appContext, ComposeMessageActivity.class);
         PendingIntent test = PendingIntent.getActivity(
-            context,
+            appContext,
             NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID,
             notificationIntent,
             PendingIntent.FLAG_NO_CREATE | PendingIntent.FLAG_IMMUTABLE
@@ -998,11 +994,11 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void showPinLockedNewMessageNotification(@NonNull NotificationSchema notificationSchema, String uid, String channelId) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.context, channelId)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(appContext, channelId)
             .setSmallIcon(R.drawable.ic_notification_small)
-            .setContentTitle(this.context.getString(R.string.new_messages_locked))
-            .setContentText(this.context.getString(R.string.new_messages_locked_description))
-            .setTicker(this.context.getString(R.string.new_messages_locked))
+            .setContentTitle(appContext.getString(R.string.new_messages_locked))
+            .setContentText(appContext.getString(R.string.new_messages_locked_description))
+            .setTicker(appContext.getString(R.string.new_messages_locked))
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setPriority(notificationPreferenceService.getLegacyNotificationPriority())
             .setOnlyAlertOnce(false)
@@ -1018,8 +1014,8 @@ public class NotificationServiceImpl implements NotificationService {
         showIconBadge(0);
 
         // cancel this message as soon as the app is unlocked
-        this.lockAppService.addOnLockAppStateChanged(isLocked -> {
-            logger.debug("LockAppState changed. locked = " + isLocked);
+        this.lockAppService.addOnLockAppStateListener(isLocked -> {
+            logger.debug("LockAppState changed. locked = {}", isLocked);
             if (!isLocked) {
                 cancelPinLockedNewMessagesNotification();
                 return true;
@@ -1036,11 +1032,11 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     private void showMasterKeyLockedNewMessageNotification(@NonNull NotificationSchema notificationSchema) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this.context, NotificationChannels.NOTIFICATION_CHANNEL_CHATS_DEFAULT)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(appContext, NotificationChannels.NOTIFICATION_CHANNEL_CHATS_DEFAULT)
             .setSmallIcon(R.drawable.ic_notification_small)
-            .setContentTitle(this.context.getString(R.string.new_messages_locked))
-            .setContentText(this.context.getString(R.string.new_messages_locked_description))
-            .setTicker(this.context.getString(R.string.new_messages_locked))
+            .setContentTitle(appContext.getString(R.string.new_messages_locked))
+            .setContentText(appContext.getString(R.string.new_messages_locked_description))
+            .setTicker(appContext.getString(R.string.new_messages_locked))
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setOnlyAlertOnce(false)
             .setContentIntent(getPendingIntentForActivity(HomeActivity.class))
@@ -1071,19 +1067,19 @@ public class NotificationServiceImpl implements NotificationService {
             return;
         }
 
-        Intent intent = new Intent(context, ServerMessageActivity.class);
+        Intent intent = new Intent(appContext, ServerMessageActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
-            context,
+            appContext,
             0,
             intent,
             PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_NOTICE)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(appContext, NotificationChannels.NOTIFICATION_CHANNEL_NOTICE)
             .setSmallIcon(R.drawable.ic_error_red_24dp)
-            .setTicker(this.context.getString(R.string.server_message_title))
-            .setContentTitle(this.context.getString(R.string.server_message_title))
-            .setContentText(this.context.getString(R.string.tap_here_for_more))
+            .setTicker(appContext.getString(R.string.server_message_title))
+            .setContentTitle(appContext.getString(R.string.server_message_title))
+            .setContentText(appContext.getString(R.string.tap_here_for_more))
             .setContentIntent(pendingIntent)
             .setLocalOnly(true)
             .setPriority(NotificationCompat.PRIORITY_MAX)
@@ -1095,13 +1091,13 @@ public class NotificationServiceImpl implements NotificationService {
     private PendingIntent createPendingIntentWithTaskStack(@NonNull Intent intent) {
         intent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
 
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(appContext);
         stackBuilder.addNextIntentWithParentStack(intent);
         return stackBuilder.getPendingIntent(0, this.pendingIntentFlags);
     }
 
     private PendingIntent getPendingIntentForActivity(Class<? extends Activity> activityClass) {
-        Intent notificationIntent = new Intent(this.context, activityClass);
+        Intent notificationIntent = new Intent(appContext, activityClass);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         return createPendingIntentWithTaskStack(notificationIntent);
     }
@@ -1111,11 +1107,11 @@ public class NotificationServiceImpl implements NotificationService {
         int num = failedMessages.size();
 
         if (num > 0) {
-            Intent sendIntent = new Intent(context, ReSendMessagesBroadcastReceiver.class);
+            Intent sendIntent = new Intent(appContext, ReSendMessagesBroadcastReceiver.class);
             IntentDataUtil.appendMultipleMessageTypes(failedMessages, sendIntent);
 
             PendingIntent sendPendingIntent = PendingIntent.getBroadcast(
-                context,
+                appContext,
                 NotificationIDs.UNSENT_MESSAGE_NOTIFICATION_ID,
                 sendIntent,
                 this.pendingIntentFlags
@@ -1123,37 +1119,37 @@ public class NotificationServiceImpl implements NotificationService {
 
             NotificationCompat.Action tryAgainAction = new NotificationCompat.Action.Builder(
                 R.drawable.ic_wear_full_retry,
-                context.getString(R.string.try_again),
+                appContext.getString(R.string.try_again),
                 sendPendingIntent
             ).build();
             NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender();
             wearableExtender.addAction(tryAgainAction);
 
-            Intent cancelIntent = new Intent(context, CancelResendMessagesBroadcastReceiver.class);
+            Intent cancelIntent = new Intent(appContext, CancelResendMessagesBroadcastReceiver.class);
             IntentDataUtil.appendMultipleMessageTypes(failedMessages, cancelIntent);
 
             PendingIntent cancelSendingMessages = PendingIntent.getBroadcast(
-                context,
+                appContext,
                 NotificationIDs.UNSENT_MESSAGE_NOTIFICATION_ID,
                 cancelIntent,
                 this.pendingIntentFlags
             );
 
-            String content = ConfigUtils.getSafeQuantityString(context, R.plurals.sending_message_failed, num, num);
+            String content = ConfigUtils.getSafeQuantityString(appContext, R.plurals.sending_message_failed, num, num);
 
             NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
+                new NotificationCompat.Builder(appContext, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
                     .setSmallIcon(R.drawable.ic_error_red_24dp)
                     .setTicker(content)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
                     .setCategory(NotificationCompat.CATEGORY_ERROR)
                     .setContentIntent(getPendingIntentForActivity(HomeActivity.class))
                     .extend(wearableExtender)
-                    .setContentTitle(this.context.getString(R.string.app_name))
+                    .setContentTitle(appContext.getString(R.string.app_name))
                     .setContentText(content)
                     .setStyle(new NotificationCompat.BigTextStyle().bigText(content))
                     .setDeleteIntent(cancelSendingMessages)
-                    .addAction(R.drawable.ic_refresh_white_24dp, context.getString(R.string.try_again), sendPendingIntent);
+                    .addAction(R.drawable.ic_refresh_white_24dp, appContext.getString(R.string.try_again), sendPendingIntent);
 
             this.notify(NotificationIDs.UNSENT_MESSAGE_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_ALERT);
         } else {
@@ -1168,19 +1164,19 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public void showSafeBackupFailed(int fullDaysSinceLastBackup) {
-        Intent intent = new Intent(context, BackupAdminActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
+        Intent intent = new Intent(appContext, BackupAdminActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(appContext, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-        String content = String.format(this.context.getString(R.string.safe_failed_notification), fullDaysSinceLastBackup);
+        String content = String.format(appContext.getString(R.string.safe_failed_notification), fullDaysSinceLastBackup);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(appContext, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
             .setSmallIcon(R.drawable.ic_error_red_24dp)
             .setTicker(content)
             .setLocalOnly(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_ERROR)
             .setContentIntent(pendingIntent)
-            .setContentTitle(this.context.getString(R.string.app_name))
+            .setContentTitle(appContext.getString(R.string.app_name))
             .setContentText(content)
             .setStyle(new NotificationCompat.BigTextStyle().bigText(content));
 
@@ -1209,15 +1205,16 @@ public class NotificationServiceImpl implements NotificationService {
                     if (contactListBuilder.length() > 0) {
                         contactListBuilder.append(", ");
                     }
-                    contactListBuilder.append(NameUtil.getDisplayName(contactModel));
+                    contactListBuilder.append(
+                        NameUtil.getContactDisplayName(contactModel, preferenceService.getContactNameFormat())
+                    );
                 }
-                message = this.context.getString(R.string.notification_contact_has_joined_multiple, contactModels.size(), contactListBuilder.toString());
-                notificationIntent = new Intent(context, HomeActivity.class);
-                notificationIntent.putExtra(HomeActivity.EXTRA_SHOW_CONTACTS, true);
+                message = appContext.getString(R.string.notification_contact_has_joined_multiple, contactModels.size(), contactListBuilder.toString());
+                notificationIntent = HomeActivity.createIntent(appContext, true);
             } else {
-                String name = NameUtil.getDisplayName(contactModels.get(0));
-                message = String.format(this.context.getString(R.string.notification_contact_has_joined), name);
-                notificationIntent = new Intent(context, ComposeMessageActivity.class);
+                String name = NameUtil.getContactDisplayName(contactModels.get(0), preferenceService.getContactNameFormat());
+                message = String.format(appContext.getString(R.string.notification_contact_has_joined), name);
+                notificationIntent = new Intent(appContext, ComposeMessageActivity.class);
                 if (getContactService() != null) {
                     getContactService().createReceiver(contactModels.get(0)).prepareIntent(notificationIntent);
                 }
@@ -1225,9 +1222,9 @@ public class NotificationServiceImpl implements NotificationService {
             notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_USER_ACTION);
             PendingIntent openPendingIntent = createPendingIntentWithTaskStack(notificationIntent);
 
-            NotificationCompat.Builder builder = new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS)
+            NotificationCompat.Builder builder = new NotificationCompat.Builder(appContext, NotificationChannels.NOTIFICATION_CHANNEL_NEW_SYNCED_CONTACTS)
                 .setSmallIcon(R.drawable.ic_notification_small)
-                .setContentTitle(this.context.getString(R.string.notification_channel_new_contact))
+                .setContentTitle(appContext.getString(R.string.notification_channel_new_contact))
                 .setContentText(message)
                 .setContentIntent(openPendingIntent)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(message))
@@ -1285,10 +1282,10 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void cancel(int notificationId) {
         //make sure that pending intent is also cancelled to allow to check for active conversation notifications pre SDK 23
-        Intent intent = new Intent(context, ComposeMessageActivity.class);
+        Intent intent = new Intent(appContext, ComposeMessageActivity.class);
         if (notificationId == NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID) {
             PendingIntent pendingConversationIntent = PendingIntent.getActivity(
-                context,
+                appContext,
                 NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID,
                 intent,
                 this.pendingIntentFlags
@@ -1313,55 +1310,53 @@ public class NotificationServiceImpl implements NotificationService {
             this.cancel(uniqueId);
         }
 
-        //remove all cached notifications from the receiver
+        // remove all cached notifications from the receiver
         synchronized (this.conversationNotificationsCache) {
             for (Iterator<ConversationNotification> iterator = this.conversationNotificationsCache.iterator(); iterator.hasNext(); ) {
                 ConversationNotification conversationNotification = iterator.next();
                 if (conversationNotification != null
-                    && conversationNotification.getGroup() != null
                     && conversationNotification.getGroup().messageReceiver.getUniqueIdString().equals(uniqueIdString)) {
                     iterator.remove();
-                    //call destroy
-                    this.cancelAndDestroyConversationNotification(conversationNotification);
+                    cancelConversationNotification(conversationNotification);
                 }
             }
             showIconBadge(conversationNotificationsCache.size());
         }
         this.cancel(NotificationIDs.NEW_MESSAGE_NOTIFICATION_ID);
 
-        WidgetUtil.updateWidgets(context);
+        WidgetUpdater.update();
     }
 
     private void showIconBadge(int unreadMessages) {
-        logger.info("Badge: showing " + unreadMessages + " unread");
+        logger.info("Badge: showing {} unread", unreadMessages);
 
-        if (context.getPackageManager().resolveContentProvider("com.teslacoilsw.notifier", 0) != null) {
+        if (appContext.getPackageManager().resolveContentProvider("com.teslacoilsw.notifier", 0) != null) {
             // nova launcher / teslaunread
             try {
-                String launcherClassName = context.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID).getComponent().getClassName();
+                String launcherClassName = appContext.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID).getComponent().getClassName();
                 final ContentValues contentValues = new ContentValues();
                 contentValues.put("tag", BuildConfig.APPLICATION_ID + "/" + launcherClassName);
                 contentValues.put("count", unreadMessages);
 
-                context.getApplicationContext().getContentResolver().insert(Uri.parse("content://com.teslacoilsw.notifier/unread_count"), contentValues);
+                appContext.getApplicationContext().getContentResolver().insert(Uri.parse("content://com.teslacoilsw.notifier/unread_count"), contentValues);
             } catch (Exception e) {
                 logger.error("Exception", e);
             }
         } else if (ConfigUtils.isHuaweiDevice()) {
             try {
-                String launcherClassName = context.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID).getComponent().getClassName();
+                String launcherClassName = appContext.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID).getComponent().getClassName();
                 Bundle localBundle = new Bundle();
                 localBundle.putString("package", BuildConfig.APPLICATION_ID);
                 localBundle.putString("class", launcherClassName);
                 localBundle.putInt("badgenumber", unreadMessages);
-                context.getContentResolver().call(Uri.parse("content://com.huawei.android.launcher.settings/badge/"), "change_badge", null, localBundle);
+                appContext.getContentResolver().call(Uri.parse("content://com.huawei.android.launcher.settings/badge/"), "change_badge", null, localBundle);
             } catch (Exception e) {
                 logger.error("Exception", e);
             }
         } else if (ConfigUtils.isSonyDevice()) {
             try {
-                String launcherClassName = context.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID).getComponent().getClassName();
-                if (context.getPackageManager().resolveContentProvider("com.sonymobile.home.resourceprovider", 0) != null) {
+                String launcherClassName = appContext.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID).getComponent().getClassName();
+                if (appContext.getPackageManager().resolveContentProvider("com.sonymobile.home.resourceprovider", 0) != null) {
                     // use content provider
                     final ContentValues contentValues = new ContentValues();
                     contentValues.put("badge_count", unreadMessages);
@@ -1371,12 +1366,12 @@ public class NotificationServiceImpl implements NotificationService {
                     if (isMainThread()) {
                         if (queryHandler == null) {
                             queryHandler = new AsyncQueryHandler(
-                                context.getApplicationContext().getContentResolver()) {
+                                appContext.getApplicationContext().getContentResolver()) {
                             };
                         }
                         queryHandler.startInsert(0, null, Uri.parse("content://com.sonymobile.home.resourceprovider/badge"), contentValues);
                     } else {
-                        context.getApplicationContext().getContentResolver().insert(Uri.parse("content://com.sonymobile.home.resourceprovider/badge"), contentValues);
+                        appContext.getApplicationContext().getContentResolver().insert(Uri.parse("content://com.sonymobile.home.resourceprovider/badge"), contentValues);
                     }
                 } else {
                     // use broadcast
@@ -1385,7 +1380,7 @@ public class NotificationServiceImpl implements NotificationService {
                     intent.putExtra("com.sonyericsson.home.intent.extra.badge.ACTIVITY_NAME", launcherClassName);
                     intent.putExtra("com.sonyericsson.home.intent.extra.badge.MESSAGE", String.valueOf(unreadMessages));
                     intent.putExtra("com.sonyericsson.home.intent.extra.badge.SHOW_MESSAGE", unreadMessages > 0);
-                    context.sendBroadcast(intent);
+                    appContext.sendBroadcast(intent);
                 }
             } catch (Exception e) {
                 logger.error("Exception", e);
@@ -1393,12 +1388,12 @@ public class NotificationServiceImpl implements NotificationService {
         } else {
             // also works on LG and later HTC devices
             try {
-                String launcherClassName = context.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID).getComponent().getClassName();
+                String launcherClassName = appContext.getPackageManager().getLaunchIntentForPackage(BuildConfig.APPLICATION_ID).getComponent().getClassName();
                 Intent intent = new Intent("android.intent.action.BADGE_COUNT_UPDATE");
                 intent.putExtra("badge_count", unreadMessages);
                 intent.putExtra("badge_count_package_name", BuildConfig.APPLICATION_ID);
                 intent.putExtra("badge_count_class_name", launcherClassName);
-                context.sendBroadcast(intent);
+                appContext.sendBroadcast(intent);
             } catch (Exception e) {
                 logger.error("Exception", e);
             }
@@ -1408,13 +1403,13 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     public void showWebclientResumeFailed(String msg) {
         NotificationCompat.Builder builder =
-            new NotificationCompat.Builder(this.context, NotificationChannels.NOTIFICATION_CHANNEL_NOTICE)
+            new NotificationCompat.Builder(appContext, NotificationChannels.NOTIFICATION_CHANNEL_NOTICE)
                 .setSmallIcon(R.drawable.ic_web_notification)
                 .setTicker(msg)
                 .setLocalOnly(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setCategory(NotificationCompat.CATEGORY_ERROR)
-                .setContentTitle(this.context.getString(R.string.app_name))
+                .setContentTitle(appContext.getString(R.string.app_name))
                 .setContentText(msg)
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(msg));
         this.notify(NotificationIDs.WEB_RESUME_FAILED_NOTIFICATION_ID, builder, null, NotificationChannels.NOTIFICATION_CHANNEL_NOTICE);

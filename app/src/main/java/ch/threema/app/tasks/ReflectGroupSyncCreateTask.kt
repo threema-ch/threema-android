@@ -1,8 +1,7 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.profilepicture.GroupProfilePictureUploader.GroupProfilePictureUploadResult
-import ch.threema.app.protocol.ExpectedProfilePictureChange
+import ch.threema.app.protocolsteps.ExpectedProfilePictureChange
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModelData
@@ -21,8 +20,7 @@ class ReflectGroupSyncCreateTask(
     private val groupModelRepository: GroupModelRepository,
     private val nonceFactory: NonceFactory,
     private val uploadGroupProfilePicture: () -> GroupProfilePictureUploadResult?,
-    multiDeviceManager: MultiDeviceManager,
-) : ReflectGroupSyncTask<GroupProfilePictureUploadResult?, GroupProfilePictureUploadResult?>(multiDeviceManager),
+) : ReflectGroupSyncTask<GroupProfilePictureUploadResult?, GroupProfilePictureUploadResult?>(),
     ActiveTask<ReflectionResult<GroupProfilePictureUploadResult?>> {
     override val type = "ReflectGroupSyncCreate"
 

@@ -22,7 +22,7 @@ import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.work.WorkContact
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import kotlinx.coroutines.runBlocking
 
@@ -42,7 +42,7 @@ open class AddOrUpdateWorkContactBackgroundTask(
     /**
      * The user's identity.
      */
-    private val myIdentity: Identity,
+    private val myIdentity: IdentityString,
     /**
      * The contact model repository.
      */
@@ -65,7 +65,10 @@ open class AddOrUpdateWorkContactBackgroundTask(
 
     @WorkerThread
     override fun runInBackground(): ContactModel? {
+        logger.info("Adding or updating work contact with identity {}", workContact.threemaId)
+
         if (!ConfigUtils.isWorkBuild()) {
+            logger.error("Cannot add or update work contact in non-work builds")
             return null
         }
 
@@ -96,6 +99,8 @@ open class AddOrUpdateWorkContactBackgroundTask(
 
     @WorkerThread
     private fun createContact(): ContactModel? {
+        logger.info("Creating work contact {}", workContact.threemaId)
+
         return runBlocking {
             try {
                 contactModelRepository.createFromLocal(
@@ -137,6 +142,8 @@ open class AddOrUpdateWorkContactBackgroundTask(
     }
 
     private fun updateContact(contactModel: ContactModel) {
+        logger.info("Updating work contact {}", contactModel.identity)
+
         val currentContactModelData: ContactModelData = contactModel.data ?: run {
             logger.error("Contact has already been deleted")
             return
@@ -180,8 +187,8 @@ open class AddOrUpdateWorkContactBackgroundTask(
  * This task does not do anything if it is not a work build.
  */
 class AddOrUpdateWorkIdentityBackgroundTask(
-    private val identity: Identity,
-    private val myIdentity: Identity,
+    private val identity: IdentityString,
+    private val myIdentity: IdentityString,
     private val licenseService: LicenseService<*>,
     private val apiConnector: APIConnector,
     private val contactModelRepository: ContactModelRepository,
@@ -204,6 +211,7 @@ class AddOrUpdateWorkIdentityBackgroundTask(
     @WorkerThread
     override fun runInBackground(): ContactModel? {
         if (!ConfigUtils.isWorkBuild()) {
+            logger.error("Cannot fetch work contact in non-work builds")
             return null
         }
 
@@ -213,6 +221,8 @@ class AddOrUpdateWorkIdentityBackgroundTask(
             logger.error("No user credentials available")
             return null
         }
+
+        logger.info("Fetching contact with identity {} from work server", identity)
 
         val workContact = apiConnector.fetchWorkContacts(
             credentials.username,

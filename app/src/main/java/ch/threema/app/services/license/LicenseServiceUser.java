@@ -16,7 +16,7 @@ public class LicenseServiceUser extends LicenseServiceThreema<UserCredentials> {
     public boolean hasCredentials() {
         var username = preferenceService.getLicenseUsername();
         var password = preferenceService.getLicensePassword();
-        return username != null && !username.isEmpty() && password != null && !password.isEmpty();
+        return username != null && password != null;
     }
 
     @Override
@@ -34,10 +34,9 @@ public class LicenseServiceUser extends LicenseServiceThreema<UserCredentials> {
     @Override
     @Nullable
     public UserCredentials loadCredentials() {
-        String username = this.preferenceService.getLicenseUsername();
-        String password = this.preferenceService.getLicensePassword();
-
-        if (username != null && !username.isEmpty() && password != null && !password.isEmpty()) {
+        String username = preferenceService.getLicenseUsername();
+        String password = preferenceService.getLicensePassword();
+        if (username != null && password != null) {
             return new UserCredentials(username, password);
         }
         return null;

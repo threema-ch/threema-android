@@ -11,9 +11,5 @@ internal class DatabaseUpdateToVersion88(
 
     override fun getDescription() = "remove pending group message table"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 88
-    }
+    override val version = 88
 }

@@ -38,7 +38,6 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.domain.models.SerialCredentials;
 import ch.threema.domain.models.UserCredentials;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.ui.SpacingValues;
@@ -440,11 +439,11 @@ public class EnterSerialActivity extends ThreemaActivity {
     @SuppressLint("StaticFieldLeak")
     private void check(final LicenseCredentials credentials, String onPremServer) {
         if (ConfigUtils.isOnPremBuild()) {
-            if (onPremServer != null) {
-                onPremServer = getUrlToOppf(onPremServer);
-            }
+            var oppfUrl = onPremServer != null
+                ? getUrlToOppf(onPremServer)
+                : null;
             var preferenceService = dependencies.getPreferenceService();
-            preferenceService.setOnPremServer(onPremServer);
+            preferenceService.setOppfUrl(oppfUrl);
             preferenceService.setLicenseUsername(((UserCredentials) credentials).username);
             preferenceService.setLicensePassword(((UserCredentials) credentials).password);
         }
@@ -612,7 +611,7 @@ public class EnterSerialActivity extends ThreemaActivity {
      */
     @Nullable
     private String getConfiguredUsername() {
-        return AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_username));
+        return dependencies.getAppRestrictions().getLicenseUsername();
     }
 
     /**
@@ -620,7 +619,7 @@ public class EnterSerialActivity extends ThreemaActivity {
      */
     @Nullable
     private String getConfiguredPassword() {
-        return AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__license_password));
+        return dependencies.getAppRestrictions().getLicensePassword();
     }
 
     /**
@@ -636,7 +635,7 @@ public class EnterSerialActivity extends ThreemaActivity {
 
         final String serverUrl = ConfigUtils.isWhitelabelOnPremBuild(this)
             ? getPresetOnPremServerUrlIfWhiteLabeled()
-            : AppRestrictionUtil.getStringRestriction(getString(R.string.restriction__onprem_server));
+            : dependencies.getAppRestrictions().getOnPremServer();
 
         return serverUrl != null ? getUrlToOppf(serverUrl) : null;
     }

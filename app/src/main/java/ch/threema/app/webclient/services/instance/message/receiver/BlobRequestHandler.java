@@ -1,6 +1,5 @@
 package ch.threema.app.webclient.services.instance.message.receiver;
 
-import org.apache.commons.io.FileUtils;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
@@ -31,6 +30,8 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static ch.threema.common.JavaCompat.readBytes;
+
 import ch.threema.storage.models.AbstractMessageModel;
 
 @WorkerThread
@@ -155,7 +156,7 @@ public class BlobRequestHandler extends MessageReceiver {
                     switch (messageModel.getType()) {
                         case VOICEMESSAGE:
                             mime = MimeUtil.MIME_TYPE_AUDIO_AAC;
-                            name = filename + VoiceRecorderActivity.VOICEMESSAGE_FILE_EXTENSION;
+                            name = filename + VoiceRecorderActivity.VOICE_MESSAGE_FILE_EXTENSION;
                             break;
                         case FILE:
                             mime = messageModel.getFileData().getMimeType();
@@ -176,7 +177,7 @@ public class BlobRequestHandler extends MessageReceiver {
                     }
                     logger.debug("File decrypted: {}", decryptedFile.getPath());
                     logger.debug("Reading file to byte array");
-                    final byte[] data = FileUtils.readFileToByteArray(decryptedFile);
+                    final byte[] data = readBytes(decryptedFile);
                     logger.debug("Sending blob to Threema Web");
                     postSuccess(
                         receiverType, receiverId, temporaryId, messageId,

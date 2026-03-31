@@ -14,8 +14,8 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
 import ch.threema.app.R
 import ch.threema.app.adapters.SendMediaPreviewAdapter.SendMediaHolder
-import ch.threema.app.preference.service.PreferenceService.ImageScale_SEND_AS_FILE
-import ch.threema.app.preference.service.PreferenceService.VideoSize_SEND_AS_FILE
+import ch.threema.app.preference.service.PreferenceService.Companion.IMAGE_SCALE_SEND_AS_FILE
+import ch.threema.app.preference.service.PreferenceService.Companion.VIDEO_SIZE_SEND_AS_FILE
 import ch.threema.app.ui.CheckableFrameLayout
 import ch.threema.app.ui.MediaItem
 import ch.threema.app.ui.MediaItem.*
@@ -158,7 +158,7 @@ class SendMediaPreviewAdapter(
      */
     private fun updateSendAsFileLayout(holder: SendMediaItemHolder, item: MediaItem) {
         val sendAsFile =
-            item.type == TYPE_FILE || item.imageScale == ImageScale_SEND_AS_FILE || item.videoSize == VideoSize_SEND_AS_FILE
+            item.type == TYPE_FILE || item.imageScale == IMAGE_SCALE_SEND_AS_FILE || item.videoSize == VIDEO_SIZE_SEND_AS_FILE
         holder.fileIndicatorView.visibility = if (sendAsFile) View.VISIBLE else View.GONE
     }
 

@@ -3,18 +3,18 @@ package ch.threema.app.stores;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.domain.models.BasicContact;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.VerificationLevel;
@@ -71,12 +71,19 @@ public class DatabaseContactStore implements ContactStore {
         }
     }
 
+    @Nullable
     @Override
-    public @Nullable ContactModel getContactForIdentity(@NonNull String identity) {
+    public ContactModel getContactForIdentity(@NonNull String identity) {
         return this.databaseService.getContactModelFactory().getByIdentity(identity);
     }
 
-    public @Nullable ContactModel getContactModelForLookupKey(final String lookupKey) {
+    @NonNull
+    public List<ContactModel> getContactsForIdentities(@NonNull List<String> identities) {
+        return this.databaseService.getContactModelFactory().getByIdentities(identities);
+    }
+
+    @Nullable
+    public ContactModel getContactModelForLookupKey(final @NonNull String lookupKey) {
         return this.databaseService.getContactModelFactory().getByLookupKey(lookupKey);
     }
 
@@ -122,24 +129,6 @@ public class DatabaseContactStore implements ContactStore {
             if (Arrays.equals(contactModel.getModifiedValueCandidates(), existingModel.getModifiedValueCandidates())) {
                 logger.info("Do not save unmodified contact");
                 return;
-            }
-
-            // TODO(ANDR-3113): Just for debugging. Must be removed once the error is found.
-            if (ConfigUtils.isDevBuild()) {
-                Date existingLastUpdate = existingModel.getLastUpdate();
-                Date newLastUpdate = contactModel.getLastUpdate();
-                if (existingLastUpdate != null && newLastUpdate != null
-                    && newLastUpdate.before(existingLastUpdate)) {
-                    logger.error(
-                        "Storing contact model of '{}' with older last update ({}) than before ({}): {}",
-                        contactModel.getIdentity(),
-                        newLastUpdate.getTime(),
-                        existingLastUpdate.getTime(),
-                        Arrays.stream(Thread.currentThread().getStackTrace())
-                            .map(StackTraceElement::toString)
-                            .collect(Collectors.joining("\n"))
-                    );
-                }
             }
         }
 

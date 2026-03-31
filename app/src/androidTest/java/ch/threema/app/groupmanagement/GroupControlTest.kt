@@ -1,13 +1,6 @@
 package ch.threema.app.groupmanagement
 
-import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.launchActivity
-import androidx.test.espresso.Espresso
-import androidx.test.espresso.NoMatchingViewException
-import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.intent.Intents
-import androidx.test.espresso.matcher.ViewMatchers
-import ch.threema.app.R
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import ch.threema.app.home.HomeActivity
 import ch.threema.app.processors.MessageProcessorProvider
 import ch.threema.app.testutils.TestHelpers.TestGroup
@@ -15,12 +8,12 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
-import ch.threema.domain.stores.IdentityStore
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
+import org.junit.Rule
 
 /**
  * A collection of basic data and utility functions to test group control messages. If the common
@@ -28,31 +21,15 @@ import kotlinx.coroutines.test.runTest
  * receive methods should be overridden.
  */
 abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProvider() {
+
+    @get:Rule
+    val composeTestRule = createAndroidComposeRule<HomeActivity>()
+
     /**
      * Create a message of the tested group message type. This is used to create a message that will
      * be used to test the common group receive steps.
      */
     abstract fun createMessageForGroup(): T
-
-    protected fun startScenario(): ActivityScenario<HomeActivity> {
-        Intents.init()
-
-        val scenario = launchActivity<HomeActivity>()
-
-        do {
-            var switchedToMessages = false
-            try {
-                Espresso.onView(ViewMatchers.withId(R.id.messages)).perform(ViewActions.click())
-                switchedToMessages = true
-            } catch (exception: NoMatchingViewException) {
-                Espresso.onView(ViewMatchers.withId(R.id.close_button)).perform(ViewActions.click())
-            }
-        } while (!switchedToMessages)
-
-        Intents.release()
-
-        return scenario
-    }
 
     /**
      * Check common group receive steps: The group could not be found and the user is the creator of
@@ -61,7 +38,7 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
     @Test
     open fun testCommonGroupReceiveStepUnknownGroupUserCreator() = runTest {
         val (message, identityStore) = getMyUnknownGroupMessage()
-        setupAndProcessMessage(message, identityStore)
+        processMessage(message, identityStore)
 
         // Nothing is expected to be sent
         assertTrue(sentMessagesInsideTask.isEmpty())
@@ -75,7 +52,7 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
     @Test
     open fun testCommonGroupReceiveStepUnknownGroupUserNotCreator() = runTest {
         val (message, identityStore) = getUnknownGroupMessage()
-        setupAndProcessMessage(message, identityStore)
+        processMessage(message, identityStore)
 
         val firstMessage = sentMessagesInsideTask.poll() as GroupSyncRequestMessage
         assertEquals(message.groupCreator, firstMessage.toIdentity)
@@ -95,7 +72,7 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
     @Test
     open fun testCommonGroupReceiveStepLeftGroupUserCreator() = runTest {
         val (message, identityStore) = getMyLeftGroupMessage()
-        setupAndProcessMessage(message, identityStore)
+        processMessage(message, identityStore)
 
         // Check that empty sync is sent.
         val firstMessage = sentMessagesInsideTask.poll() as GroupSetupMessage
@@ -117,7 +94,7 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
     open fun testCommonGroupReceiveStepLeftGroupUserNotCreator() = runTest {
         // First, test the common group receive steps for a message from the group creator
         val (firstIncomingMessage, firstIdentityStore) = getLeftGroupMessageFromCreator()
-        setupAndProcessMessage(firstIncomingMessage, firstIdentityStore)
+        processMessage(firstIncomingMessage, firstIdentityStore)
 
         // Check that a group leave is sent back to the sender
         val firstSentMessage = sentMessagesInsideTask.poll() as GroupLeaveMessage
@@ -130,7 +107,7 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
 
         // Second, test the common group receive steps for a message from a group member
         val (secondIncomingMessage, secondIdentityStore) = getLeftGroupMessage()
-        setupAndProcessMessage(secondIncomingMessage, secondIdentityStore)
+        processMessage(secondIncomingMessage, secondIdentityStore)
 
         // Check that a group leave is sent back to the sender
         val secondSentMessage = sentMessagesInsideTask.poll() as GroupLeaveMessage
@@ -151,7 +128,7 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
     @Test
     open fun testCommonGroupReceiveStepSenderNotMemberUserCreator() = runTest {
         val (message, identityStore) = getSenderNotMemberOfMyGroupMessage()
-        setupAndProcessMessage(message, identityStore)
+        processMessage(message, identityStore)
 
         // Check that a group setup with empty member list is sent back to the sender
         val firstMessage = sentMessagesInsideTask.poll() as GroupSetupMessage
@@ -172,7 +149,7 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
     @Test
     open fun testCommonGroupReceiveStepSenderNotMemberUserNotCreator() = runTest {
         val (message, identityStore) = getSenderNotMemberMessage()
-        setupAndProcessMessage(message, identityStore)
+        processMessage(message, identityStore)
 
         // Check that a group sync request has been sent to the creator of the group
         val firstMessage = sentMessagesInsideTask.poll() as GroupSyncRequestMessage
@@ -183,18 +160,6 @@ abstract class GroupControlTest<T : AbstractGroupMessage> : MessageProcessorProv
 
         assertTrue(sentMessagesInsideTask.isEmpty())
         assertTrue(sentMessagesNewTask.isEmpty())
-    }
-
-    private suspend fun setupAndProcessMessage(
-        message: AbstractGroupMessage,
-        identityStore: IdentityStore,
-    ) {
-        // Start home activity and navigate to chat section
-        launchActivity<HomeActivity>()
-
-        Espresso.onView(ViewMatchers.withId(R.id.messages)).perform(ViewActions.click())
-
-        processMessage(message, identityStore)
     }
 
     /**

@@ -5,7 +5,7 @@
     android:title="@string/prefs_title_calls">
 
     <PreferenceCategory
-        android:key="pref_key_voip"
+        android:key="@string/preferences__voip"
         android:title="@string/prefs_title_voip">
 
         <ch.threema.app.preference.SynchronizedCheckBoxPreference
@@ -38,6 +38,15 @@
             android:key="@string/preferences__voip_reject_mobile_calls"
             android:title="@string/prefs_voip_reject_incoming_calls_title"
             android:summary="@string/prefs_voip_reject_incoming_calls_summary"
+            android:dependency="@string/preferences__voip_enable" />
+
+        <CheckBoxPreference
+            android:widgetLayout="@layout/preference_switch_layout"
+            android:defaultValue="true"
+            android:key="@string/preferences__voip_abort_on_bluetooth_disconnect"
+            android:title="@string/prefs_voip_abort_on_bluetooth_disconnect_title"
+            android:summaryOn="@string/prefs_voip_abort_on_bluetooth_disconnect_summary_on"
+            android:summaryOff="@string/prefs_voip_abort_on_bluetooth_disconnect_summary_off"
             android:dependency="@string/preferences__voip_enable" />
 
         <DropDownPreference

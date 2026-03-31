@@ -66,6 +66,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.Semaphore;
@@ -93,11 +94,11 @@ import ch.threema.app.voip.util.VoipVideoParams;
 import ch.threema.app.webrtc.Camera;
 import ch.threema.app.webrtc.DataChannelObserver;
 import ch.threema.app.webrtc.UnboundedFlowControlledDataChannel;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.protobuf.callsignaling.O2OCall;
-import java8.util.concurrent.CompletableFuture;
-import java8.util.stream.StreamSupport;
+
+import static ch.threema.android.DelayedExecutorCompatKt.createDelayedExecutor;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * Peer connection client implementation.
@@ -365,8 +366,7 @@ public class PeerConnectionClient {
         VoipUtil.setLoggerPrefix(logger, callId);
 
         // Create logger for SdpPatcher
-        @SuppressLint("LoggerName")
-        final Logger sdpPatcherLogger = getThreemaLogger("PeerConnectionClient:SdpPatcher");
+        @SuppressLint("LoggerName") final Logger sdpPatcherLogger = getThreemaLogger("PeerConnectionClient:SdpPatcher");
         VoipUtil.setLoggerPrefix(sdpPatcherLogger, callId);
 
         // Initialize instance variables
@@ -521,7 +521,7 @@ public class PeerConnectionClient {
             decoderFactory = new SoftwareVideoDecoderFactory();
         }
 
-        // Create peer connection factor
+        // Create peer connection factory
         logger.debug("Creating peer connection factory");
         final PeerConnectionFactory.Options options = new PeerConnectionFactory.Options();
         this.factory = PeerConnectionFactory.builder()
@@ -706,7 +706,7 @@ public class PeerConnectionClient {
         // to reach our TURN servers via IPv6 or no connection can be established at all.
         final APIConnector.TurnServerInfo turnServerInfo = Config.getTurnServerCache().getTurnServers();
         final List<String> turnServers = Arrays.asList(this.peerConnectionParameters.forceTurn ? turnServerInfo.turnUrlsDualStack : turnServerInfo.turnUrls);
-        StreamSupport.stream(turnServers)
+        turnServers.stream()
             .map(server -> PeerConnection.IceServer.builder(server)
                 .setUsername(turnServerInfo.turnUsername)
                 .setPassword(turnServerInfo.turnPassword)
@@ -1099,11 +1099,7 @@ public class PeerConnectionClient {
         @Nullable final Throwable t,
         boolean abortCall
     ) {
-        if (t != null) {
-            logger.error("Error: " + errorMessage, t);
-        } else {
-            logger.error("Error: {}", errorMessage);
-        }
+        logger.error("Error: {}", errorMessage, t);
         executor.execute(() -> {
             if (events != null) {
                 events.onError(callId, errorMessage, abortCall);
@@ -1342,18 +1338,16 @@ public class PeerConnectionClient {
                     }
                     events.onTransportConnected(callId);
                 } else if (newState == PeerConnection.PeerConnectionState.DISCONNECTED) {
-                    // Schedule to fail the transport after 10s
+                    // Schedule to fail the transport after 10 seconds
                     if (transportFailedFuture == null) {
                         logger.info("Scheduling to fail transport in 10s if not reconnected in the meantime");
-                        //noinspection Convert2Lambda
-                        transportFailedFuture = CompletableFuture.runAsync(new Runnable() {
-                            @Override
-                            @AnyThread
-                            public void run() {
+                        transportFailedFuture = CompletableFuture.runAsync(
+                            () -> {
                                 logger.info("transportFailedFuture: Time's up, calling onTransportFailed");
                                 events.onTransportFailed(callId);
-                            }
-                        }, CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS, executor));
+                            },
+                            createDelayedExecutor(10 * 1000, executor)
+                        );
                     }
                     events.onTransportDisconnected(callId);
                 } else if (newState == PeerConnection.PeerConnectionState.FAILED) {
@@ -1570,14 +1564,10 @@ public class PeerConnectionClient {
                 logger.error("transportExpectedStableFuture was already running!");
                 transportExpectedStableFuture.cancel(true);
             }
-            //noinspection Convert2Lambda
-            transportExpectedStableFuture = CompletableFuture.runAsync(new Runnable() {
-                @Override
-                @AnyThread
-                public void run() {
-                    logger.info("transportExpectedStableFuture: Transport is expected to be 'stable' now");
-                }
-            }, CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS, executor));
+            transportExpectedStableFuture = CompletableFuture.runAsync(
+                () -> logger.info("transportExpectedStableFuture: Transport is expected to be 'stable' now"),
+                createDelayedExecutor(10 * 1000, executor)
+            );
         }
 
         @Override

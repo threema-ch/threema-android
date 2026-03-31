@@ -2,283 +2,135 @@ package ch.threema.storage
 
 import android.content.Context
 import ch.threema.storage.databaseupdate.*
+import kotlin.collections.asReversed
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 class DatabaseUpdater(
-    private val context: Context,
+    private val appContext: Context,
     private val database: SQLiteDatabase,
 ) {
-    fun getUpdates(oldVersion: Int): List<DatabaseUpdate> = buildList {
-        if (oldVersion < 4) {
-            add(DatabaseUpdateToVersion4(database))
-        }
-        if (oldVersion < 6) {
-            add(DatabaseUpdateToVersion6(database))
-        }
-        if (oldVersion < 7) {
-            add(DatabaseUpdateToVersion7(context, database))
-        }
-        if (oldVersion < 8) {
-            add(DatabaseUpdateToVersion8(database))
-        }
-        if (oldVersion < 9) {
-            add(DatabaseUpdateToVersion9(database))
-        }
-        if (oldVersion < 10) {
-            add(DatabaseUpdateToVersion10(database))
-        }
-        if (oldVersion < 11) {
-            add(DatabaseUpdateToVersion11(database))
-        }
-        if (oldVersion < 12) {
-            add(DatabaseUpdateToVersion12(database))
-        }
-        if (oldVersion < 13) {
-            add(DatabaseUpdateToVersion13(database))
-        }
-        if (oldVersion < 15) {
-            add(DatabaseUpdateToVersion15(database))
-        }
-        if (oldVersion < 16) {
-            add(DatabaseUpdateToVersion16(database))
-        }
-        if (oldVersion < 17) {
-            add(DatabaseUpdateToVersion17(database))
-        }
-        if (oldVersion < 19) {
-            add(DatabaseUpdateToVersion19(database))
-        }
-        if (oldVersion < 20) {
-            add(DatabaseUpdateToVersion20(database))
-        }
-        if (oldVersion < 21) {
-            add(DatabaseUpdateToVersion21(database))
-        }
-        if (oldVersion < 24) {
-            add(DatabaseUpdateToVersion24(database))
-        }
-        if (oldVersion < 25) {
-            add(DatabaseUpdateToVersion25(database))
-        }
-        if (oldVersion < 27) {
-            add(DatabaseUpdateToVersion27(database))
-        }
-        if (oldVersion < 28) {
-            add(DatabaseUpdateToVersion28(database))
-        }
-        if (oldVersion < 32) {
-            add(DatabaseUpdateToVersion32(database))
-        }
-        if (oldVersion < 33) {
-            add(DatabaseUpdateToVersion33(database))
-        }
-        if (oldVersion < 34) {
-            add(DatabaseUpdateToVersion34(database))
-        }
-        if (oldVersion < 35) {
-            add(DatabaseUpdateToVersion35(database))
-        }
-        if (oldVersion < 36) {
-            add(DatabaseUpdateToVersion36(database))
-        }
-        if (oldVersion < 37) {
-            add(DatabaseUpdateToVersion37(database))
-        }
-        if (oldVersion < 38) {
-            add(DatabaseUpdateToVersion38(database))
-        }
-        if (oldVersion < 40) {
-            add(DatabaseUpdateToVersion40(database))
-        }
-        if (oldVersion < 41) {
-            add(DatabaseUpdateToVersion41(database))
-        }
-        if (oldVersion < 44) {
-            add(DatabaseUpdateToVersion44(database))
-        }
-        if (oldVersion < 45) {
-            add(DatabaseUpdateToVersion45(database))
-        }
-        if (oldVersion < 47) {
-            add(DatabaseUpdateToVersion47(database))
-        }
-        if (oldVersion < 49) {
-            add(DatabaseUpdateToVersion49(database))
-        }
-        if (oldVersion < 50) {
-            add(DatabaseUpdateToVersion50(database))
-        }
-        if (oldVersion < 51) {
-            add(DatabaseUpdateToVersion51(database))
-        }
-        if (oldVersion < 52) {
-            add(DatabaseUpdateToVersion52(database))
-        }
-        if (oldVersion < 56) {
-            add(DatabaseUpdateToVersion56(database))
-        }
-        if (oldVersion < 58) {
-            add(DatabaseUpdateToVersion58(database))
-        }
-        if (oldVersion < 59) {
-            add(DatabaseUpdateToVersion59(database))
-        }
-        if (oldVersion < 60) {
-            add(DatabaseUpdateToVersion60(database))
-        }
-        if (oldVersion < 61) {
-            add(DatabaseUpdateToVersion61(database))
-        }
-        if (oldVersion < 62) {
-            add(DatabaseUpdateToVersion62(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion65.VERSION) {
-            add(DatabaseUpdateToVersion65(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion67.VERSION) {
-            add(DatabaseUpdateToVersion67(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion68.VERSION) {
-            add(DatabaseUpdateToVersion68(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion69.VERSION) {
-            add(DatabaseUpdateToVersion69(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion70.VERSION) {
-            add(DatabaseUpdateToVersion70(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion71.VERSION) {
-            add(DatabaseUpdateToVersion71(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion72.VERSION) {
-            add(DatabaseUpdateToVersion72(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion73.VERSION) {
-            add(DatabaseUpdateToVersion73(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion74.VERSION) {
-            add(DatabaseUpdateToVersion74(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion75.VERSION) {
-            add(DatabaseUpdateToVersion75(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion76.VERSION) {
-            add(DatabaseUpdateToVersion76(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion77.VERSION) {
-            add(DatabaseUpdateToVersion77(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion78.VERSION) {
-            add(DatabaseUpdateToVersion78(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion79.VERSION) {
-            add(DatabaseUpdateToVersion79(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion80.VERSION) {
-            add(DatabaseUpdateToVersion80(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion81.VERSION) {
-            add(DatabaseUpdateToVersion81(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion82.VERSION) {
-            add(DatabaseUpdateToVersion82(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion83.VERSION) {
-            add(DatabaseUpdateToVersion83(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion84.VERSION) {
-            add(DatabaseUpdateToVersion84(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion85.VERSION) {
-            add(DatabaseUpdateToVersion85(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion86.VERSION) {
-            add(DatabaseUpdateToVersion86(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion87.VERSION) {
-            add(DatabaseUpdateToVersion87(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion88.VERSION) {
-            add(DatabaseUpdateToVersion88(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion89.VERSION) {
-            add(DatabaseUpdateToVersion89(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion90.VERSION) {
-            add(DatabaseUpdateToVersion90(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion92.VERSION) {
-            add(DatabaseUpdateToVersion92(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion93.VERSION) {
-            add(DatabaseUpdateToVersion93(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion94.VERSION) {
-            add(DatabaseUpdateToVersion94(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion95.VERSION) {
-            add(DatabaseUpdateToVersion95(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion96.VERSION) {
-            add(DatabaseUpdateToVersion96(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion97.VERSION) {
-            add(DatabaseUpdateToVersion97(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion98.VERSION) {
-            add(DatabaseUpdateToVersion98(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion99.VERSION) {
-            add(DatabaseUpdateToVersion99(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion100.VERSION) {
-            add(DatabaseUpdateToVersion100(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion101.VERSION) {
-            add(DatabaseUpdateToVersion101(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion102.VERSION) {
-            add(DatabaseUpdateToVersion102(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion103.VERSION) {
-            add(DatabaseUpdateToVersion103(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion104.VERSION) {
-            add(DatabaseUpdateToVersion104(database, context))
-        }
-        if (oldVersion < DatabaseUpdateToVersion105.VERSION) {
-            add(DatabaseUpdateToVersion105())
-        }
-        if (oldVersion < DatabaseUpdateToVersion106.VERSION) {
-            add(DatabaseUpdateToVersion106(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion107.VERSION) {
-            add(DatabaseUpdateToVersion107(database, context))
-        }
-        if (oldVersion < DatabaseUpdateToVersion108.VERSION) {
-            add(DatabaseUpdateToVersion108(database, context))
-        }
-        if (oldVersion < DatabaseUpdateToVersion109.VERSION) {
-            add(DatabaseUpdateToVersion109(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion110.VERSION) {
-            add(DatabaseUpdateToVersion110(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion111.VERSION) {
-            add(DatabaseUpdateToVersion111(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion112.VERSION) {
-            add(DatabaseUpdateToVersion112(database, context))
-        }
-        if (oldVersion < DatabaseUpdateToVersion113.VERSION) {
-            add(DatabaseUpdateToVersion113(database))
-        }
-        if (oldVersion < DatabaseUpdateToVersion114.VERSION) {
-            add(DatabaseUpdateToVersion114(database))
-        }
+    fun getUpdates(oldVersion: Int): List<DatabaseUpdate> {
+        if (oldVersion == VERSION) {
+            return emptyList()
+        }
+        return updates
+            .asReversed()
+            .asSequence()
+            .map { updateConstructor ->
+                updateConstructor.invoke(database, appContext)
+            }
+            .takeWhile { update ->
+                oldVersion < update.version
+            }
+            .toList()
+            .reversed()
     }
 
     companion object {
-        const val VERSION = DatabaseUpdateToVersion114.VERSION
+        const val VERSION = 117
+
+        private val updates: List<(SQLiteDatabase, Context) -> DatabaseUpdate>
+            get() = listOf<(SQLiteDatabase, Context) -> DatabaseUpdate>(
+                update(::DatabaseUpdateToVersion4),
+                update(::DatabaseUpdateToVersion6),
+                update(::DatabaseUpdateToVersion7),
+                update(::DatabaseUpdateToVersion8),
+                update(::DatabaseUpdateToVersion9),
+                update(::DatabaseUpdateToVersion10),
+                update(::DatabaseUpdateToVersion11),
+                update(::DatabaseUpdateToVersion12),
+                update(::DatabaseUpdateToVersion13),
+                update(::DatabaseUpdateToVersion15),
+                update(::DatabaseUpdateToVersion16),
+                update(::DatabaseUpdateToVersion17),
+                update(::DatabaseUpdateToVersion19),
+                update(::DatabaseUpdateToVersion20),
+                update(::DatabaseUpdateToVersion21),
+                update(::DatabaseUpdateToVersion24),
+                update(::DatabaseUpdateToVersion25),
+                update(::DatabaseUpdateToVersion27),
+                update(::DatabaseUpdateToVersion28),
+                update(::DatabaseUpdateToVersion32),
+                update(::DatabaseUpdateToVersion33),
+                update(::DatabaseUpdateToVersion34),
+                update(::DatabaseUpdateToVersion35),
+                update(::DatabaseUpdateToVersion36),
+                update(::DatabaseUpdateToVersion37),
+                update(::DatabaseUpdateToVersion38),
+                update(::DatabaseUpdateToVersion40),
+                update(::DatabaseUpdateToVersion41),
+                update(::DatabaseUpdateToVersion44),
+                update(::DatabaseUpdateToVersion45),
+                update(::DatabaseUpdateToVersion47),
+                update(::DatabaseUpdateToVersion49),
+                update(::DatabaseUpdateToVersion50),
+                update(::DatabaseUpdateToVersion51),
+                update(::DatabaseUpdateToVersion52),
+                update(::DatabaseUpdateToVersion56),
+                update(::DatabaseUpdateToVersion58),
+                update(::DatabaseUpdateToVersion59),
+                update(::DatabaseUpdateToVersion60),
+                update(::DatabaseUpdateToVersion61),
+                update(::DatabaseUpdateToVersion62),
+                update(::DatabaseUpdateToVersion65),
+                update(::DatabaseUpdateToVersion67),
+                update(::DatabaseUpdateToVersion68),
+                update(::DatabaseUpdateToVersion69),
+                update(::DatabaseUpdateToVersion70),
+                update(::DatabaseUpdateToVersion71),
+                update(::DatabaseUpdateToVersion72),
+                update(::DatabaseUpdateToVersion73),
+                update(::DatabaseUpdateToVersion74),
+                update(::DatabaseUpdateToVersion75),
+                update(::DatabaseUpdateToVersion76),
+                update(::DatabaseUpdateToVersion77),
+                update(::DatabaseUpdateToVersion78),
+                update(::DatabaseUpdateToVersion79),
+                update(::DatabaseUpdateToVersion80),
+                update(::DatabaseUpdateToVersion81),
+                update(::DatabaseUpdateToVersion82),
+                update(::DatabaseUpdateToVersion83),
+                update(::DatabaseUpdateToVersion84),
+                update(::DatabaseUpdateToVersion85),
+                update(::DatabaseUpdateToVersion86),
+                update(::DatabaseUpdateToVersion87),
+                update(::DatabaseUpdateToVersion88),
+                update(::DatabaseUpdateToVersion89),
+                update(::DatabaseUpdateToVersion90),
+                update(::DatabaseUpdateToVersion92),
+                update(::DatabaseUpdateToVersion93),
+                update(::DatabaseUpdateToVersion94),
+                update(::DatabaseUpdateToVersion95),
+                update(::DatabaseUpdateToVersion96),
+                update(::DatabaseUpdateToVersion97),
+                update(::DatabaseUpdateToVersion98),
+                update(::DatabaseUpdateToVersion99),
+                update(::DatabaseUpdateToVersion100),
+                update(::DatabaseUpdateToVersion101),
+                update(::DatabaseUpdateToVersion102),
+                update(::DatabaseUpdateToVersion103),
+                update(::DatabaseUpdateToVersion104),
+                update(::DatabaseUpdateToVersion105),
+                update(::DatabaseUpdateToVersion106),
+                update(::DatabaseUpdateToVersion107),
+                update(::DatabaseUpdateToVersion108),
+                update(::DatabaseUpdateToVersion109),
+                update(::DatabaseUpdateToVersion110),
+                update(::DatabaseUpdateToVersion111),
+                update(::DatabaseUpdateToVersion112),
+                update(::DatabaseUpdateToVersion113),
+                update(::DatabaseUpdateToVersion114),
+                update(::DatabaseUpdateToVersion115),
+                update(::DatabaseUpdateToVersion116),
+                update(::DatabaseUpdateToVersion117),
+            )
+
+        private fun update(databaseUpdate: () -> DatabaseUpdate): (SQLiteDatabase, Context) -> DatabaseUpdate =
+            { _, _ -> databaseUpdate() }
+
+        private fun update(databaseUpdate: (SQLiteDatabase) -> DatabaseUpdate): (SQLiteDatabase, Context) -> DatabaseUpdate =
+            { database, _ -> databaseUpdate(database) }
+
+        private fun update(databaseUpdate: (SQLiteDatabase, Context) -> DatabaseUpdate) = databaseUpdate
     }
 }

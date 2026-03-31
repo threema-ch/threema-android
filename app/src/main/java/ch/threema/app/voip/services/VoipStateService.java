@@ -1,12 +1,10 @@
 package ch.threema.app.voip.services;
 
 import android.app.ActivityOptions;
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Build;
@@ -33,29 +31,20 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
-import androidx.core.app.Person;
-import androidx.core.content.LocusIdCompat;
-import androidx.core.graphics.drawable.IconCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
-import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.messagereceiver.ContactMessageReceiver;
-import ch.threema.app.notifications.NotificationChannels;
-import ch.threema.app.notifications.NotificationGroups;
+import ch.threema.app.notifications.CallNotificationManager;
+import ch.threema.app.notifications.CallNotificationManager.IncomingCallNotificationResult;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LifetimeService;
-import ch.threema.app.services.NotificationPreferenceService;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.DoNotDisturbUtil;
 import ch.threema.app.utils.IdUtil;
-import ch.threema.app.utils.NameUtil;
 import ch.threema.app.voip.CallState;
 import ch.threema.app.voip.CallStateSnapshot;
 import ch.threema.app.voip.Config;
@@ -65,7 +54,9 @@ import ch.threema.app.voip.receivers.VoipMediaButtonReceiver;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.SessionScoped;
 import ch.threema.base.ThreemaException;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import ch.threema.data.models.ContactModel;
+import ch.threema.data.models.ContactModelData;
+import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage;
@@ -79,11 +70,11 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipMessage;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
-import ch.threema.storage.models.ContactModel;
-import java8.util.concurrent.CompletableFuture;
 
-import static ch.threema.app.notifications.NotificationIDs.INCOMING_CALL_NOTIFICATION_ID;
+import java.util.concurrent.CompletableFuture;
+
 import static ch.threema.app.ThreemaApplication.getAppContext;
+import static ch.threema.app.notifications.NotificationIDs.INCOMING_CALL_NOTIFICATION_ID;
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 import static ch.threema.app.voip.activities.CallActivity.EXTRA_ACCEPT_INCOMING_CALL;
 import static ch.threema.app.voip.services.CallRejectWorkerKt.KEY_CALL_ID;
@@ -96,6 +87,7 @@ import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANCEL_WEAR;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CANDIDATES;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_CONTACT_IDENTITY;
 import static ch.threema.app.voip.services.VoipCallService.EXTRA_IS_INITIATOR;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
  * The service keeping track of VoIP call state.
@@ -117,14 +109,20 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     private final NotificationManagerCompat notificationManagerCompat;
 
     // Threema services
+    @NonNull
     private final ContactService contactService;
-    private final NotificationPreferenceService notificationPreferenceService;
+    @NonNull
+    private final ContactModelRepository contactModelRepository;
+    @NonNull
+    private final CallNotificationManager callNotificationManager;
+    @NonNull
     private final LifetimeService lifetimeService;
 
     @NonNull
     private final DoNotDisturbUtil doNotDisturbUtil = KoinJavaComponent.get(DoNotDisturbUtil.class);
 
     // App context
+    @NonNull
     private final Context appContext;
 
     // State
@@ -133,6 +131,8 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     private Long callStartTimestamp = null;
     private boolean isPeerRinging = false;
     private final List<Long> messageIds = new ArrayList<>();
+    @Nullable
+    private String peerIdentity = null;
 
     // Map that stores incoming offers
     private final HashMap<Long, VoipCallOfferData> offerMap = new HashMap<>();
@@ -167,13 +167,15 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     private final AtomicBoolean timeoutReject = new AtomicBoolean(true);
 
     public VoipStateService(
-            ContactService contactService,
-            NotificationPreferenceService notificationPreferenceService,
-            LifetimeService lifetimeService,
-            final Context appContext
+        @NonNull ContactService contactService,
+        @NonNull ContactModelRepository contactModelRepository,
+        @NonNull CallNotificationManager callNotificationManager,
+        @NonNull LifetimeService lifetimeService,
+        @NonNull final Context appContext
     ) {
         this.contactService = contactService;
-        this.notificationPreferenceService = notificationPreferenceService;
+        this.contactModelRepository = contactModelRepository;
+        this.callNotificationManager = callNotificationManager;
         this.lifetimeService = lifetimeService;
         this.appContext = appContext;
         this.candidatesCache = new HashMap<>();
@@ -225,6 +227,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
      * Note: Does not require locking, since the {@link CallState}
      * class is thread safe.
      */
+    @NonNull
     public CallStateSnapshot getCallState() {
         return this.callState.getStateSnapshot();
     }
@@ -293,10 +296,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     /**
      * Set the current call state to RINGING.
      */
-    public synchronized void setStateRinging(long callId) {
+    public synchronized void setStateRinging(long callId, @NonNull String peerIdentity) {
         if (this.callState.isRinging()) {
             return;
         }
+        this.peerIdentity = peerIdentity;
 
         // Transition call state
         final CallStateSnapshot prevState = this.callState.getStateSnapshot();
@@ -307,10 +311,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     /**
      * Set the current call state to INITIALIZING.
      */
-    public synchronized void setStateInitializing(long callId) {
+    public synchronized void setStateInitializing(long callId, @NonNull String peerIdentity) {
         if (this.callState.isInitializing()) {
             return;
         }
+        this.peerIdentity = peerIdentity;
 
         // Transition call state
         final CallStateSnapshot prevState = this.callState.getStateSnapshot();
@@ -352,10 +357,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     /**
      * Set the current call state to CALLING.
      */
-    public synchronized void setStateCalling(long callId) {
+    public synchronized void setStateCalling(long callId, @Nullable String peerIdentity) {
         if (this.callState.isCalling()) {
             return;
         }
+        this.peerIdentity = peerIdentity;
 
         // Transition call state
         final CallStateSnapshot prevState = this.callState.getStateSnapshot();
@@ -371,10 +377,11 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     /**
      * Set the current call state to DISCONNECTING.
      */
-    public synchronized void setStateDisconnecting(long callId) {
+    public synchronized void setStateDisconnecting(long callId, @Nullable String peerIdentity) {
         if (this.callState.isDisconnecting()) {
             return;
         }
+        this.peerIdentity = peerIdentity;
 
         // Transition call state
         final CallStateSnapshot prevState = this.callState.getStateSnapshot();
@@ -395,6 +402,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         if (this.callState.isIdle()) {
             return;
         }
+        this.peerIdentity = null;
 
         // Transition call state
         final CallStateSnapshot prevState = this.callState.getStateSnapshot();
@@ -583,10 +591,15 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         );
         logCallInfo(callId, "{}", callOfferData.getOfferData());
 
-        // Get contact and receiver
-        final ContactModel contact = this.contactService.getByIdentity(callerIdentity);
-        if (contact == null) {
-            logCallError(callId, "Could not fetch contact for identity {}", callerIdentity);
+        // Get contactModel and contact model data
+        final ContactModel contactModel = contactModelRepository.getByIdentity(callerIdentity);
+        if (contactModel == null) {
+            logCallError(callId, "Could not fetch contactModel for identity {}", callerIdentity);
+            return false;
+        }
+        final ContactModelData contactModelData = contactModel.getData();
+        if (contactModelData == null) {
+            logCallError(callId, "Could not get contact model data for identity {}", callerIdentity);
             return false;
         }
 
@@ -595,34 +608,46 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         boolean silentReject = false; // Set to true if you don't want a "missed call" chat message
         if (!ConfigUtils.isCallsEnabled()) {
             // Calls disabled
-            logCallInfo(callId, "Rejecting call from {} (disabled)", contact.getIdentity());
+            logCallInfo(callId, "Rejecting call from {} (disabled)", contactModel.getIdentity());
             rejectReason = VoipCallAnswerData.RejectReason.DISABLED;
             silentReject = true;
         } else if (!this.validateOfferData(callOfferData.getOfferData())) {
             // Offer invalid
-            logCallWarning(callId, "Rejecting call from {} (invalid offer)", contact.getIdentity());
+            logCallWarning(callId, "Rejecting call from {} (invalid offer)", contactModel.getIdentity());
             rejectReason = VoipCallAnswerData.RejectReason.UNKNOWN;
             silentReject = true;
         } else if (!this.callState.isIdle()) {
             // Another call is already active
-            logCallInfo(callId, "Rejecting call from {} (busy)", contact.getIdentity());
+            logCallInfo(callId, "Received a call offer while a call is already running with {}", peerIdentity);
+
+            boolean offerIsFromRunningCallParticipant = callerIdentity.equals(peerIdentity);
+            boolean offerContainsCurrentCallId = callState.getCallId() == callId;
+
+            if (offerIsFromRunningCallParticipant && offerContainsCurrentCallId) {
+                // If we received a call offer for the same call twice, we can discard it.
+                logCallWarning(callId, "Discarding call offer with the same call id from the same caller");
+                return false;
+            }
+
+            // If it is a different call, we reject it because there is already a call running.
+            logCallInfo(callId, "Rejecting call from {} (busy)", contactModel.getIdentity());
             rejectReason = VoipCallAnswerData.RejectReason.BUSY;
         } else if (VoipUtil.isPSTNCallOngoing(this.appContext)) {
             // A PSTN call is ongoing
-            logCallInfo(callId, "Rejecting call from {} (PSTN call ongoing)", contact.getIdentity());
+            logCallInfo(callId, "Rejecting call from {} (PSTN call ongoing)", contactModel.getIdentity());
             rejectReason = VoipCallAnswerData.RejectReason.BUSY;
         } else if (doNotDisturbUtil.isDoNotDisturbActive()) {
             // Called outside working hours
-            logCallInfo(callId, "Rejecting call from {} (called outside of working hours)", contact.getIdentity());
+            logCallInfo(callId, "Rejecting call from {} (called outside of working hours)", contactModel.getIdentity());
             rejectReason = VoipCallAnswerData.RejectReason.OFF_HOURS;
         } else if (ConfigUtils.hasInvalidCredentials()) {
-            logCallInfo(callId, "Rejecting call from {} (credentials have been revoked)", contact.getIdentity());
+            logCallInfo(callId, "Rejecting call from {} (credentials have been revoked)", contactModel.getIdentity());
             rejectReason = VoipCallAnswerData.RejectReason.UNKNOWN;
         }
 
         if (rejectReason != null) {
             try {
-                this.sendRejectCallAnswerMessage(contact, callId, rejectReason, !silentReject);
+                this.sendRejectCallAnswerMessage(contactModel, callId, rejectReason, !silentReject);
             } catch (ThreemaException e) {
                 logger.error(callId + ": Could not send reject call message", e);
             }
@@ -633,7 +658,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         Config.getTurnServerCache().prefetchTurnServers();
 
         // Reset fetch cache
-        UpdateFeatureLevelRoutine.removeTimeCache(contact.getIdentity());
+        UpdateFeatureLevelRoutine.removeTimeCache(contactModel.getIdentity());
 
         // Store offer in offer map
         logger.debug("Adding information for call {} to offerMap", callId);
@@ -647,7 +672,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         answerIntent.putExtras(bundle);
         final PendingIntent accept = PendingIntent.getActivity(
             this.appContext,
-            -IdUtil.getTempId(contact),
+            -IdUtil.getContactTempId(contactModel.getIdentity()),
             answerIntent,
             PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE
         );
@@ -661,17 +686,30 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
         final PendingIntent reject = PendingIntent.getService(
             this.appContext,
-            -IdUtil.getTempId(contact),
+            -IdUtil.getContactTempId(contactModel.getIdentity()),
             rejectIntent,
             PendingIntent.FLAG_CANCEL_CURRENT | PendingIntent.FLAG_ONE_SHOT | PendingIntent.FLAG_IMMUTABLE);
 
-        final ContactMessageReceiver messageReceiver = this.contactService.createReceiver(contact);
+        final PendingIntent inCallPendingIntent = createLaunchPendingIntent(contactModel.getIdentity(), voipCallOfferMessage);
 
         // Set state to RINGING
-        this.setStateRinging(callId);
+        this.setStateRinging(callId, callerIdentity);
 
         // Show call notification
-        showNotification(contact, accept, reject, voipCallOfferMessage);
+        IncomingCallNotificationResult notificationResult = callNotificationManager.showIncomingCallNotification(
+            contactModelData,
+            accept,
+            inCallPendingIntent,
+            reject
+        );
+
+        if (notificationResult instanceof IncomingCallNotificationResult.Success) {
+            logger.info("Incoming call notification successfully shown");
+            this.callNotificationTags.add(contactModel.getIdentity());
+        } else if (notificationResult instanceof IncomingCallNotificationResult.IncomingCallNotificationsDisabled) {
+            logger.warn("Notifications are disabled. Trying to start call activity.");
+            launchCallActivityIntent(inCallPendingIntent);
+        }
 
         // Update conversation timestamp
         if (voipCallOfferMessage.bumpLastUpdate()) {
@@ -680,7 +718,7 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
         // Send "ringing" message to caller
         try {
-            this.sendCallRingingMessage(contact, callId);
+            this.sendCallRingingMessage(contactModel, callId);
         } catch (ThreemaException e) {
             logger.error(callId + ": Could not send ringing message", e);
         }
@@ -1236,30 +1274,29 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
      */
     synchronized void sendCallHangupMessage(
         final @NonNull ContactModel contactModel,
-        final long callId
-    ) throws ThreemaException {
-        final CallStateSnapshot state = this.callState.getStateSnapshot();
+        final @NonNull CallStateSnapshot callStateSnapshot,
+        final @Nullable Integer duration,
+        final @Nullable Boolean isInitiator
+    ) {
+        final long callId = callStateSnapshot.getCallId();
         final String peerIdentity = contactModel.getIdentity();
 
         final VoipCallHangupData callHangupData = new VoipCallHangupData()
             .setCallId(callId);
 
-        final Integer duration = getCallDuration();
-        final boolean outgoing = this.isInitiator() == Boolean.TRUE;
-
         contactService.createReceiver(contactModel).sendVoipCallHangupMessage(callHangupData);
         logCallInfo(
             callId,
             "Call hangup message enqueued to {} (prevState={}, duration={})",
-            contactModel.getIdentity(), state, duration
+            contactModel.getIdentity(), callStateSnapshot, duration
         );
 
         // Notify the VoIP call event listener
-        if (duration == null && (state.isInitializing() || state.isCalling() || state.isDisconnecting())) {
+        if (duration == null && (callStateSnapshot.isInitializing() || callStateSnapshot.isCalling() || callStateSnapshot.isDisconnecting())) {
             // Connection was never established
             VoipListenerManager.callEventListener.handle(
                 listener -> {
-                    if (outgoing) {
+                    if (isInitiator == Boolean.TRUE) {
                         listener.onAborted(callId, peerIdentity);
                     } else {
                         listener.onMissed(callId, peerIdentity, true, null);
@@ -1398,118 +1435,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
     // Private helper methods
 
-    /**
-     * Show a call notification.
-     */
-    @WorkerThread
-    private void showNotification(
-        @NonNull ContactModel contact,
-        @NonNull PendingIntent accept,
-        @NonNull PendingIntent reject,
-        final VoipCallOfferMessage msg) {
-        final long timestamp = System.currentTimeMillis();
-        final Bitmap avatar = this.contactService.getAvatar(contact.getIdentity(), false);
-        final PendingIntent inCallPendingIntent = createLaunchPendingIntent(contact.getIdentity(), msg);
-        Notification notification = null;
-
-        String callerName = NameUtil.getDisplayNameOrNickname(contact, true);
-
-        if (notificationManagerCompat.areNotificationsEnabled()) {
-            final NotificationCompat.Builder nbuilder = new NotificationCompat.Builder(this.appContext, NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_CALLS)
-                .setContentTitle(appContext.getString(R.string.voip_notification_title))
-                .setContentText(appContext.getString(R.string.voip_notification_text, callerName))
-                .setOngoing(true)
-                .setWhen(timestamp)
-                .setAutoCancel(false)
-                .setShowWhen(true)
-                .setGroup(NotificationGroups.CALLS)
-                .setGroupSummary(false);
-
-            if (!ConfigUtils.supportsNotificationChannels()) {
-                // If notification channels are not supported, we fall back to explicitly setting sound and vibration on the notification.
-                // On devices that do support notification channels, this would have no effect, so we can skip it there.
-                nbuilder.setSound(notificationPreferenceService.getLegacyVoipCallRingtone(), AudioManager.STREAM_RING);
-                if (notificationPreferenceService.isLegacyVoipCallVibrate()) {
-                    nbuilder.setVibrate(NotificationChannels.VIBRATE_PATTERN_GROUP_CALL);
-                }
-            }
-
-            // We want a full screen notification
-            // Set up the main intent to send the user to the incoming call screen
-            nbuilder.setFullScreenIntent(inCallPendingIntent, true);
-            nbuilder.setContentIntent(inCallPendingIntent);
-
-            // Icons and colors
-            nbuilder
-                .setLargeIcon(avatar)
-                .setSmallIcon(R.drawable.ic_phone_locked_white_24dp);
-
-            // Alerting
-            nbuilder.setPriority(NotificationCompat.PRIORITY_MAX)
-                .setCategory(NotificationCompat.CATEGORY_CALL);
-
-            // Privacy
-            nbuilder.setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
-                // TODO(ANDR-XXXX)
-                .setPublicVersion(new NotificationCompat.Builder(appContext, NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_CALLS)
-                    .setContentTitle(appContext.getString(R.string.voip_notification_title))
-                    .setContentText(appContext.getString(R.string.notification_hidden_text))
-                    .setSmallIcon(R.drawable.ic_phone_locked_white_24dp)
-                    .setGroup(NotificationGroups.CALLS)
-                    .setGroupSummary(false)
-                    .setCategory(NotificationCompat.CATEGORY_CALL)
-                    .build()
-                );
-
-            Person.Builder personBuilder = new Person.Builder()
-                .setName(callerName)
-                .setKey(ContactUtil.getUniqueIdString(contact.getIdentity()));
-            Bitmap callerProfilePicture = contactService.getAvatar(contact.getIdentity(), false);
-            if (callerProfilePicture != null) {
-                personBuilder.setIcon(IconCompat.createWithBitmap(callerProfilePicture));
-            }
-            // Add identity to notification for DND priority override
-            String contactLookupUri = contactService.getAndroidContactLookupUriString(contact);
-            if (contactLookupUri != null) {
-                personBuilder.setUri(contactLookupUri);
-            }
-            Person person = personBuilder.build();
-
-            nbuilder.setLocusId(new LocusIdCompat(ContactUtil.getUniqueIdString(contact.getIdentity())));
-            nbuilder.addPerson(person);
-            nbuilder.setStyle(
-                NotificationCompat.CallStyle.forIncomingCall(
-                    person,
-                    reject,
-                    accept
-                )
-            );
-
-            // Build notification
-            notification = nbuilder.build();
-
-            // Set flags
-            notification.flags |= NotificationCompat.FLAG_INSISTENT | NotificationCompat.FLAG_NO_CLEAR | NotificationCompat.FLAG_ONGOING_EVENT;
-
-            synchronized (this.callNotificationTags) {
-                this.notificationManagerCompat.notify(contact.getIdentity(), INCOMING_CALL_NOTIFICATION_ID, notification);
-                this.callNotificationTags.add(contact.getIdentity());
-            }
-        } else {
-            // notifications disabled in system settings - fire inCall pending intent to show CallActivity
-            try {
-                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                    ActivityOptions options = ActivityOptions.makeBasic().setPendingIntentBackgroundActivityStartMode(ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_DENIED);
-                    inCallPendingIntent.send(options.toBundle());
-                } else {
-                    inCallPendingIntent.send();
-                }
-            } catch (PendingIntent.CanceledException e) {
-                logger.error("Could not send inCallPendingIntent", e);
-            }
-        }
-    }
-
     private PendingIntent createLaunchPendingIntent(
         @NonNull String identity,
         @Nullable VoipCallOfferMessage msg
@@ -1526,12 +1451,26 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
             intent.putExtra(EXTRA_CALL_ID, data.getCallIdOrDefault(0L));
         }
 
-        // PendingIntent that can be used to launch the InCallActivity.  The
+        // PendingIntent that can be used to launch the CallActivity.  The
         // system fires off this intent if the user pulls down the windowshade
         // and clicks the notification's expanded view.  It's also used to
-        // launch the InCallActivity immediately when when there's an incoming
+        // launch the CallActivity immediately when there's an incoming
         // call (see the "fullScreenIntent" field below).
         return PendingIntent.getActivity(appContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+    }
+
+    private void launchCallActivityIntent(@NonNull PendingIntent inCallPendingIntent) {
+        // notifications disabled in system settings - fire inCall pending intent to show CallActivity
+        try {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                ActivityOptions options = ActivityOptions.makeBasic().setPendingIntentBackgroundActivityStartMode(ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_DENIED);
+                inCallPendingIntent.send(options.toBundle());
+            } else {
+                inCallPendingIntent.send();
+            }
+        } catch (PendingIntent.CanceledException e) {
+            logger.error("Could not send inCallPendingIntent", e);
+        }
     }
 
     /**
@@ -1604,6 +1543,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-        logger.info("Audio Focus change: " + focusChange);
+        logger.info("Audio Focus change: {}", focusChange);
     }
 }

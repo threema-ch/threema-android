@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
@@ -10,7 +9,7 @@ import ch.threema.domain.protocol.csp.messages.ballot.GroupPollVoteMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ballot.BallotModel
 import java.util.Date
 import kotlinx.serialization.Serializable
@@ -19,15 +18,14 @@ private val logger = getThreemaLogger("OutgoingPollVoteGroupMessageTask")
 
 class OutgoingPollVoteGroupMessageTask(
     private val messageId: MessageId,
-    private val recipientIdentities: Set<Identity>,
+    private val recipientIdentities: Set<IdentityString>,
     private val ballotId: BallotId,
     private val ballotCreator: String,
     private val ballotVotes: Array<BallotVote>,
     private val ballotType: BallotModel.Type,
     private val apiGroupId: GroupId,
     private val groupCreator: String,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingPollVoteGroupMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -81,7 +79,7 @@ class OutgoingPollVoteGroupMessageTask(
     @Serializable
     class OutgoingPollVoteGroupMessageData(
         private val messageId: String,
-        private val recipientIdentities: Set<Identity>,
+        private val recipientIdentities: Set<IdentityString>,
         private val ballotId: ByteArray,
         private val ballotCreator: String,
         private val ballotVotes: List<Pair<Int, Int>>,
@@ -89,19 +87,18 @@ class OutgoingPollVoteGroupMessageTask(
         private val apiGroupId: String,
         private val groupCreator: String,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingPollVoteGroupMessageTask(
-                MessageId.fromString(messageId),
-                recipientIdentities,
-                BallotId(ballotId),
-                ballotCreator,
-                ballotVotes.map {
+                messageId = MessageId.fromString(messageId),
+                recipientIdentities = recipientIdentities,
+                ballotId = BallotId(ballotId),
+                ballotCreator = ballotCreator,
+                ballotVotes = ballotVotes.map {
                     BallotVote(it.first, it.second)
                 }.toTypedArray(),
-                ballotType,
-                GroupId(apiGroupId),
-                groupCreator,
-                serviceManager,
+                ballotType = ballotType,
+                apiGroupId = GroupId(apiGroupId),
+                groupCreator = groupCreator,
             )
     }
 }

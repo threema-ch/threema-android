@@ -5,7 +5,6 @@ import ch.threema.app.R
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.tasks.ReflectSettingsSyncTask
-import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
@@ -18,9 +17,7 @@ private val logger = getThreemaLogger("KeyboardDataCollectionPolicySetting")
  * The setting whether the keyboard should be requested to disable data collection. Stores true if the collection should be prevented.
  */
 class KeyboardDataCollectionPolicySetting internal constructor(
-    private val preferenceService: PreferenceService,
-    private val multiDeviceManager: MultiDeviceManager,
-    private val nonceFactory: NonceFactory,
+    multiDeviceManager: MultiDeviceManager,
     taskManager: TaskManager,
     preferenceStore: PreferenceStore,
     context: Context,
@@ -30,13 +27,8 @@ class KeyboardDataCollectionPolicySetting internal constructor(
     multiDeviceManager = multiDeviceManager,
     taskManager = taskManager,
 ) {
-    override fun instantiateReflectionTask(): Task<*, TaskCodec> {
-        return ReflectSettingsSyncTask.ReflectKeyboardDataCollectionPolicySyncUpdate(
-            multiDeviceManager,
-            nonceFactory,
-            preferenceService,
-        )
-    }
+    override fun instantiateReflectionTask(): Task<*, TaskCodec> =
+        ReflectSettingsSyncTask.ReflectKeyboardDataCollectionPolicySyncUpdate()
 
     fun getKeyboardDataCollectionPolicy(): KeyboardDataCollectionPolicy =
         when (get()) {

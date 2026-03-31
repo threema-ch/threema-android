@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat
 import ch.threema.app.R
-import ch.threema.app.services.AvatarCacheServiceImpl
 import ch.threema.app.services.FileService
+import ch.threema.app.services.avatarcache.AvatarCacheServiceImpl
 import ch.threema.app.utils.AvatarConverterUtil
 import ch.threema.app.utils.BitmapUtil
 import ch.threema.data.datatypes.IdColor
@@ -32,8 +32,8 @@ class GroupAvatarFetcher(
     }
 
     override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-        val groupModel = config.subject?.let {
-            groupModelRepository.getByCreatorIdentityAndId(it.creatorIdentity, it.apiGroupId)
+        val groupModel: GroupModel? = config.subject?.let { groupIdentity ->
+            groupModelRepository.getByGroupIdentity(groupIdentity)
         }
         val defaultAvatar: Boolean
         val defaultAvatarIfNone: Boolean

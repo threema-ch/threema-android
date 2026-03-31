@@ -15,11 +15,11 @@ import ch.threema.data.models.EmojiReactionsModel
 import ch.threema.data.models.toDataType
 import ch.threema.data.storage.DbEmojiReaction
 import ch.threema.data.storage.EmojiReactionsDao
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.AbstractMessageModel
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
+import ch.threema.storage.models.group.GroupMessageModel
 import org.koin.mp.KoinPlatform
 
 private val logger = getThreemaLogger("EmojiReactionsRepository")
@@ -30,7 +30,7 @@ class EmojiReactionsRepository(
     private val emojiReactionDao: EmojiReactionsDao,
     private val coreServiceManager: CoreServiceManager,
 ) {
-    private val myIdentity by lazy { coreServiceManager.identityStore.getIdentity()!! }
+    private val myIdentity by lazy { coreServiceManager.identityStore.getIdentityString()!! }
 
     // TODO(ANDR-3325): Remove message service
     private val messageService: MessageService by KoinPlatform.getKoin().inject()
@@ -153,7 +153,7 @@ class EmojiReactionsRepository(
 
     private fun createEmojiReactionData(
         messageModel: AbstractMessageModel,
-        senderIdentity: Identity,
+        senderIdentity: IdentityString,
         emojiSequence: String,
     ): EmojiReactionData {
         return EmojiReactionData(
@@ -178,7 +178,7 @@ class EmojiReactionsRepository(
     @Throws(EmojiReactionEntryCreateException::class, IllegalStateException::class)
     fun createEntry(
         targetMessage: AbstractMessageModel,
-        senderIdentity: Identity,
+        senderIdentity: IdentityString,
         emojiSequence: String,
     ) {
         synchronized(cache) {
@@ -225,7 +225,7 @@ class EmojiReactionsRepository(
     @Throws(EmojiReactionEntryRemoveException::class, IllegalStateException::class)
     fun removeEntry(
         targetMessage: AbstractMessageModel,
-        senderIdentity: Identity,
+        senderIdentity: IdentityString,
         emojiSequence: String,
     ) {
         synchronized(cache) {

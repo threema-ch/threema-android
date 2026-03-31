@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ContactUtil;
@@ -62,17 +63,21 @@ public class ModifyContactHandler extends MessageReceiver {
     private final ContactService contactService;
     @NonNull
     private final ContactModelRepository contactModelRepository;
+    @NonNull
+    private final PreferenceService preferenceService;
 
     @AnyThread
     public ModifyContactHandler(
         @NonNull MessageDispatcher dispatcher,
         @NonNull ContactService contactService,
-        @NonNull ContactModelRepository contactModelRepository
+        @NonNull ContactModelRepository contactModelRepository,
+        @NonNull PreferenceService preferenceService
     ) {
         super(Protocol.SUB_TYPE_CONTACT);
         this.dispatcher = dispatcher;
         this.contactService = contactService;
         this.contactModelRepository = contactModelRepository;
+        this.preferenceService = preferenceService;
     }
 
     @Override
@@ -229,7 +234,7 @@ public class ModifyContactHandler extends MessageReceiver {
         try {
             this.send(this.dispatcher,
                 new MsgpackObjectBuilder()
-                    .put(Protocol.SUB_TYPE_RECEIVER, Contact.convert(contact)),
+                    .put(Protocol.SUB_TYPE_RECEIVER, Contact.convert(contact, preferenceService.getContactNameFormat())),
                 new MsgpackObjectBuilder()
                     .put(Protocol.ARGUMENT_SUCCESS, true)
                     .put(Protocol.ARGUMENT_IDENTITY, threemaId)

@@ -19,7 +19,7 @@ import ch.threema.app.webclient.utils.ThumbnailUtils;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.ReceiverModel;
 
 @AnyThread
@@ -44,7 +44,7 @@ public class Utils extends Converter {
             this.id = contactModel.getIdentity();
         }
 
-        public ModelWrapper(GroupModel groupModel) {
+        public ModelWrapper(GroupModelOld groupModel) {
             this.model = groupModel;
             this.receiverType = MessageReceiver.Type_GROUP;
             this.id = String.valueOf(groupModel.getId());
@@ -139,7 +139,7 @@ public class Utils extends Converter {
                         receiver = getContactService().createReceiver((ContactModel) this.model);
                         break;
                     case MessageReceiver.Type_GROUP:
-                        receiver = getGroupService().createReceiver((GroupModel) this.model);
+                        receiver = getGroupService().createReceiver((GroupModelOld) this.model);
                         break;
                     case MessageReceiver.Type_DISTRIBUTION_LIST:
                         receiver = getDistributionListService().createReceiver((DistributionListModel) this.model);
@@ -178,10 +178,10 @@ public class Utils extends Converter {
                             bitmap = getContactService().getAvatar(((ContactModel) this.model).getIdentity(), highResolution, false);
                             break;
                         case MessageReceiver.Type_GROUP:
-                            bitmap = getGroupService().getAvatar((GroupModel) this.model, highResolution);
+                            bitmap = getGroupService().getAvatar((GroupModelOld) this.model, highResolution);
                             break;
                         case MessageReceiver.Type_DISTRIBUTION_LIST:
-                            bitmap = getDistributionListService().getAvatar((DistributionListModel) this.model, highResolution);
+                            bitmap = getDistributionListService().getAvatar(((DistributionListModel) this.model).getId(), highResolution);
                             break;
                         default:
                             throw typeException();
@@ -205,7 +205,7 @@ public class Utils extends Converter {
             return contactService.getByIdentity(id);
         }
 
-        private GroupModel getGroupModel(String stringId) throws ConversionException {
+        private GroupModelOld getGroupModel(String stringId) throws ConversionException {
             try {
                 // Convert id
                 int id = Integer.parseInt(stringId);

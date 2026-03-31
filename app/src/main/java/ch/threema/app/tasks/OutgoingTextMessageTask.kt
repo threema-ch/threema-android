@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
 import ch.threema.app.messagereceiver.MessageReceiver.Type_CONTACT
 import ch.threema.app.messagereceiver.MessageReceiver.Type_GROUP
@@ -9,16 +8,15 @@ import ch.threema.domain.protocol.csp.messages.TextMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import kotlinx.serialization.Serializable
 
 class OutgoingTextMessageTask(
     private val messageModelId: Int,
     @MessageReceiverType
     private val receiverType: Int,
-    private val recipientIdentities: Set<Identity>,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+    private val recipientIdentities: Set<IdentityString>,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingTextMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -59,17 +57,17 @@ class OutgoingTextMessageTask(
         val textIncludingQuote = messageModel.bodyAndQuotedMessageId
 
         sendGroupMessage(
-            group,
-            recipientIdentities,
-            messageModel,
-            messageModel.createdAt!!,
-            ensureMessageId(messageModel),
-            {
+            group = group,
+            recipients = recipientIdentities,
+            messageModel = messageModel,
+            createdAt = messageModel.createdAt!!,
+            messageId = ensureMessageId(messageModel),
+            createAbstractMessage = {
                 GroupTextMessage().apply {
                     text = textIncludingQuote
                 }
             },
-            handle,
+            handle = handle,
         )
     }
 
@@ -85,14 +83,13 @@ class OutgoingTextMessageTask(
         private val messageModelId: Int,
         @MessageReceiverType
         private val receiverType: Int,
-        private val recipientIdentities: Set<Identity>,
+        private val recipientIdentities: Set<IdentityString>,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingTextMessageTask(
-                messageModelId,
-                receiverType,
-                recipientIdentities,
-                serviceManager,
+                messageModelId = messageModelId,
+                receiverType = receiverType,
+                recipientIdentities = recipientIdentities,
             )
     }
 }

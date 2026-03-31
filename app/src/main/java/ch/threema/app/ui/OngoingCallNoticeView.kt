@@ -20,9 +20,9 @@ import ch.threema.app.utils.GroupCallUtil
 import ch.threema.app.voip.activities.CallActivity
 import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.GroupCallDescription
-import ch.threema.app.voip.groupcall.LocalGroupId
 import ch.threema.app.voip.services.VoipCallService
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.data.datatypes.LocalGroupId
 import com.google.android.material.button.MaterialButton
 
 private val logger = getThreemaLogger("OngoingCallNoticeView")

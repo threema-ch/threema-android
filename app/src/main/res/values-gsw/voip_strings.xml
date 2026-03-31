@@ -53,14 +53,18 @@
     <string name="voip_prefs_video_codec_no_h264hip">H264-HiP deaktiviere</string>
     <string name="voip_prefs_video_codec_sw">Software-Codecs</string>
     <string name="voip_connection_failed">Verbindig hät nöd chöne ufbaut werde</string>
-    <string name="voip_connection_lost">Verbindig isch unterbroche worde</string>
+    <string name="voip_call_disconnected">Aruef underbroche</string>
     <string name="prefs_voip_reject_incoming_calls_title">Natel-Arüef zruggwiise</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Iigehendi Mobiltelefon-Arüef zruggwiise, während en Threema-Aruef lauft.</string>
     <string name="voip_contact_not_found">Für die Nummere isch kein Threema-Kontakt gfunde worde.</string>
     <string name="voip_another_pstn_call">Aruef nöd möglich. En gwöhnliche Telefonaruef lauft scho.</string>
     <string name="voip_call_status_off_hours">Aruef usserhalb vode Arbetsziit</string>
     <string name="voip_peer_video_disabled">Video-Arüef sind dur de Gspröchspartner deaktiviert worde.</string>
-    <string name="voip_reject_channel_name">Aruef-Statusänderig</string>
+    <string name="voip_error_processing_call_anser">Fehler bide Verarbeitig vode Aruefantwort</string>
+    <string name="voip_error_peer_connection">Fehler bide Peer-Verbindig</string>
+    <string name="voip_error_determine_common_video_quality_profile">S’allgemeine Videoqualitätsprofil hät nöd chöne ermittlet werde</string>
+    <string name="voip_audio_focus_lost">Audio-Fokus verlore</string>
+    <string name="voip_could_not_initialize">De Aruef hät nöd chöne ufbaut werde</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC-Diagnose</string>
     <string name="voip_prefs_webrtc_debug_summary">Started Sie das Tool, zum Problem mit em Aruef-Verbindigsufbau z’diagnostiziere</string>
@@ -71,13 +75,9 @@
     <string name="voip_webrtc_debug_copied">Text isch id Zwüscheablag kopiert worde.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Id Zwüscheablag kopiere</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">All Gruppemitglieder sind informiert worde</string>
-    <string name="voip_gc_notification_channel_description">Gruppearüef</string>
-    <string name="voip_gc_notification_title">Gruppearuef</string>
     <string name="voip_gc_notification_call_started">%1$s hät en Gruppearuef in %2$s gstarted</string>
     <string name="voip_gc_notification_call_started_generic">%1$s hät en Gruppearuef gstarted</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Sie händ en Gruppearuef gstarted</string>
-    <string name="voip_gc_dismiss_call">Ignoriere</string>
     <string name="voip_gc_join_call">Teilneh</string>
     <string name="voip_gc_ongoing_call">Gruppearuef lauft</string>
     <string name="voip_gc_waiting_for_participants">Warte uf anderi Teilnehmer</string>

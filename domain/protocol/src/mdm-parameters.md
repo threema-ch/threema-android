@@ -103,14 +103,33 @@ The following steps are defined as _MDM Merge And Apply Steps_.
 9. For each `parameter` of `merged-parameters`, run the associated steps defined
    for the parameter.
 
-¹: When running these steps as part of a Threema Work sync, the precedence is
-defined by the most recently received `override` parameter with `true` mapping
-to _threema_ and `false` mapping to _external_. For reflected
-`md-d2d-sync.MdmParameters`, the precedence is defined as part of the message.
+¹: When running these steps as part of a Work Sync, the precedence is defined by
+the most recently received `override` parameter with `true` mapping to _threema_
+and `false` mapping to _external_. For reflected `md-d2d-sync.MdmParameters`,
+the precedence is defined as part of the message.
 
 ## Parameters
 
 [//]: # TODO(SE-307): Document steps for all parameters.
+
+### th_enable_remote_secret (boolean)
+
+When this parameter is set:
+
+1. If `true` and storage is currently not protected by the Remote Secret feature
+   and no task is scheduled to run the _Remote Secret Activate Steps_, schedule
+   a persistent task bound to the application to run the _Remote Secret Activate
+   Steps_.
+2. If `false` and storage is currently protected by the Remote Secret feature
+   and no task is scheduled to run the _Remote Secret Deactivate Steps_,
+   schedule a persistent task bound to the application to run the _Remote Secret
+   Deactivate Steps_.
+
+When this parameter is unset:
+
+1. If storage is currently protected by the Remote Secret feature and no task is
+   scheduled to run the _Remote Secret Deactivate Steps_, schedule a persistent
+   task bound to the application to run the _Remote Secret Deactivate Steps_.
 
 ### th_disable_add_contact (boolean)
 

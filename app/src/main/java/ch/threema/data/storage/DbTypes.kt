@@ -5,11 +5,11 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.UserState
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
 
 // This file contains the types used in the database abstraction layer.
@@ -17,7 +17,7 @@ import java.util.Date
 // TODO(ANDR-2998): Notification sound policy override
 data class DbContact(
     /** The contact identity string. Must be 8 characters long. */
-    val identity: Identity,
+    val identity: IdentityString,
     /** The 32-byte public key of the contact. */
     val publicKey: ByteArray,
     /** Timestamp when this contact was added to the contact list. */
@@ -65,7 +65,7 @@ data class DbContact(
 
 data class DbGroup(
     /** The group creator identity string. Must be 8 characters long. */
-    val creatorIdentity: Identity,
+    val creatorIdentity: IdentityString,
     /**
      * The group id of the group. It is the hex string representation of the group id as little
      * endian byte array.
@@ -122,7 +122,7 @@ data class DbEmojiReaction(
     /** The row id of the message this reaction refers to - see [ch.threema.storage.models.AbstractMessageModel.COLUMN_ID] */
     val messageId: Int,
     /** The identity of the person who reacted. This may differ from the sender of the message */
-    val senderIdentity: Identity,
+    val senderIdentity: IdentityString,
     /** The emoji codepoint sequence of the reaction. This can never be empty */
     val emojiSequence: String,
     /** Timestamp when the reaction was locally created. */

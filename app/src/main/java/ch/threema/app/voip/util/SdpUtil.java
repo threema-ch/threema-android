@@ -78,7 +78,10 @@ public class SdpUtil {
     }
 
     @NonNull
-    public static IceCandidate[] getIceCandidates(@NonNull VoipICECandidatesData.Candidate[] candidates) {
+    public static IceCandidate[] getIceCandidates(@Nullable VoipICECandidatesData.Candidate[] candidates) {
+        if (candidates == null) {
+            return new IceCandidate[0];
+        }
         final List<IceCandidate> iceCandidateList = new LinkedList<>();
         for (VoipICECandidatesData.Candidate candidate : candidates) {
             if (candidate != null) {
@@ -89,7 +92,7 @@ public class SdpUtil {
                 ));
             }
         }
-        return iceCandidateList.toArray(new IceCandidate[iceCandidateList.size()]);
+        return iceCandidateList.toArray(new IceCandidate[0]);
     }
 
     /**

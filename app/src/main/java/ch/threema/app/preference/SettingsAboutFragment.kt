@@ -13,10 +13,11 @@ import ch.threema.app.BuildConfig
 import ch.threema.app.BuildFlavor
 import ch.threema.app.R
 import ch.threema.app.activities.DownloadApkActivity
+import ch.threema.app.dev.hasDevFeatures
 import ch.threema.app.dialogs.GenericProgressDialog
 import ch.threema.app.dialogs.SimpleStringAlertDialog
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.restrictions.AppRestrictionUtil
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.services.license.LicenseService
 import ch.threema.app.services.license.LicenseServiceSerial
 import ch.threema.app.utils.ConfigUtils
@@ -49,6 +50,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     private val licenseService: LicenseService<*> by inject()
     private val masterKeyManager: MasterKeyManager by inject()
     private val dispatcherProvider: DispatcherProvider by inject()
+    private val appRestrictions: AppRestrictions by inject()
 
     override fun initializePreferences() {
         initLicensePref()
@@ -124,7 +126,7 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
     }
 
     private fun onSecretUnlocked() {
-        if (ConfigUtils.isDevBuild() && !preferenceService.showDeveloperMenu()) {
+        if (hasDevFeatures() && !preferenceService.showDeveloperMenu()) {
             preferenceService.setShowDeveloperMenu(true)
             showToast("Developer settings unlocked")
         }
@@ -194,12 +196,12 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
         getPref<Preference>(R.string.preferences__work_license_name)
             .let { workLicensePreference ->
                 if (shouldShowUsername) {
-                    workLicensePreference.summary = preferenceService.licenseUsername
+                    workLicensePreference.summary = preferenceService.getLicenseUsername()
                 }
                 workLicensePreference.isVisible = shouldShowUsername
             }
 
-        getPref<Preference>(R.string.preferences__onprem_server)
+        getPref<Preference>(R.string.preferences__oppf_url)
             .let { serverConfigPreference ->
                 if (shouldShowServer) {
                     serverConfigPreference.summary = getServerInfo()
@@ -217,22 +219,14 @@ class SettingsAboutFragment : ThreemaPreferenceFragment() {
             }
     }
 
-    private fun shouldShowUsername(): Boolean {
-        return when {
-            !ConfigUtils.isWorkBuild() -> false
-            ConfigUtils.isWorkRestricted() -> {
-                AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__readonly_profile)) != true
-            }
-            else -> true
-        }
-    }
+    private fun shouldShowUsername(): Boolean =
+        ConfigUtils.isWorkBuild() && !appRestrictions.isReadOnlyProfile()
 
-    private fun getServerInfo(): String {
-        return preferenceService.onPremServer
+    private fun getServerInfo(): String =
+        preferenceService.getOppfUrl()
             ?.toUri()
             ?.authority
             ?: "?"
-    }
 
     private fun getVersionNameWithBuildNumber() = buildString {
         appendVersionName()

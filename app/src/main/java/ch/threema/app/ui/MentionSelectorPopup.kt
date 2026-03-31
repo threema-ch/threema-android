@@ -20,8 +20,6 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.window.layout.WindowMetricsCalculator
 import ch.threema.app.R
 import ch.threema.app.adapters.MentionSelectorAdapter
-import ch.threema.app.collections.Functional
-import ch.threema.app.collections.IPredicateNonNull
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.GroupService
@@ -30,13 +28,13 @@ import ch.threema.app.utils.AnimationUtil
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.NameUtil
+import ch.threema.common.emptyByteArray
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.models.IdentityState
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
-import java.util.Locale
 
 @SuppressLint("InflateParams")
 class MentionSelectorPopup(
@@ -52,7 +50,7 @@ class MentionSelectorPopup(
     private var filterText: String = ""
     private var filterStart: Int = 0
     private val recyclerView: RecyclerView
-    private val allContactModel: ContactModel = ContactModel.createUnchecked(ContactService.ALL_USERS_PLACEHOLDER_ID, byteArrayOf())
+    private val allContactModel: ContactModel = ContactModel.createUnchecked(ContactService.ALL_USERS_PLACEHOLDER_ID, emptyByteArray())
     private var editText: ComposeEditText? = null
     private val popupLayout: MaterialCardView
     private var viewableSpaceHeight = 0
@@ -167,8 +165,7 @@ class MentionSelectorPopup(
                 }
         }
 
-        val coordinates =
-            ConfigUtils.getPopupWindowPositionAboveAnchor(activity, anchorView ?: editText)
+        val coordinates = ConfigUtils.getPopupWindowPositionAboveAnchor(activity, anchorView ?: editText)
         val popupX = if (anchorView == null) 0 else coordinates[0]
         var popupY = coordinates[1]
 
@@ -193,12 +190,14 @@ class MentionSelectorPopup(
 
         try {
             showAtLocation(editText, Gravity.LEFT or Gravity.BOTTOM, popupX, popupY)
-            contentView.viewTreeObserver.addOnGlobalLayoutListener(object : OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    contentView.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    AnimationUtil.slideInAnimation(contentView, true, 150)
-                }
-            })
+            contentView.viewTreeObserver.addOnGlobalLayoutListener(
+                object : OnGlobalLayoutListener {
+                    override fun onGlobalLayout() {
+                        contentView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                        AnimationUtil.slideInAnimation(contentView, true, 150)
+                    }
+                },
+            )
             this.anchorView?.let {
                 ViewCompat.setWindowInsetsAnimationCallback(
                     it,
@@ -206,7 +205,7 @@ class MentionSelectorPopup(
                 )
                 it.addOnLayoutChangeListener(onLayoutChangeListener)
             }
-        } catch (e: BadTokenException) {
+        } catch (_: BadTokenException) {
             //
         }
     }
@@ -227,7 +226,7 @@ class MentionSelectorPopup(
         var groupContacts = contactService.getByIdentities(
             groupModelData.getAllMembers(userService.identity!!).toList(),
         )
-        val isSortingFirstName = preferenceService.isContactListSortingFirstName
+        val isSortingFirstName = preferenceService.isContactListSortingFirstName()
 
         groupContacts.sortWith { model1: ContactModel?, model2: ContactModel? ->
             ContactUtil.getSafeNameString(model1, isSortingFirstName).compareTo(
@@ -237,22 +236,22 @@ class MentionSelectorPopup(
         groupContacts.add(allContactModel)
 
         if (!init && filterText.length - filterStart > 0) {
-            groupContacts = Functional.filter(
-                groupContacts,
-                IPredicateNonNull { contactModel: ContactModel ->
-                    val lowercaseName =
-                        filterText.substring(filterStart).lowercase(Locale.getDefault())
-                    if (userService.isMe(contactModel.identity) && NameUtil.getQuoteName(
-                            contactModel,
-                            userService,
-                        ).lowercase(Locale.getDefault()).contains(lowercaseName)
-                    ) {
-                        return@IPredicateNonNull true
-                    }
-                    ContactUtil.getSafeNameString(contactModel, isSortingFirstName)
-                        .lowercase(Locale.getDefault()).contains(lowercaseName)
-                },
-            )
+            val name = filterText.substring(filterStart)
+            groupContacts = groupContacts.filter { contactModel ->
+                if (
+                    userService.isMe(contactModel.identity) &&
+                    NameUtil.getQuoteName(
+                        contactModel,
+                        userService,
+                        preferenceService.getContactNameFormat(),
+                    )
+                        .contains(name, ignoreCase = true)
+                ) {
+                    return@filter true
+                }
+                ContactUtil.getSafeNameString(contactModel, isSortingFirstName)
+                    .contains(name, ignoreCase = true)
+            }
         }
 
         if (groupContacts.isEmpty()) { // just show all selector as default placeholder if there are no more specific results
@@ -265,6 +264,7 @@ class MentionSelectorPopup(
                 userService,
                 contactService,
                 groupService,
+                preferenceService,
                 groupModel,
             )
             mentionAdapter?.setOnClickListener(this)
@@ -309,6 +309,6 @@ class MentionSelectorPopup(
     }
 
     interface MentionSelectorListener {
-        fun onContactSelected(identity: Identity?, length: Int, insertPosition: Int)
+        fun onContactSelected(identity: IdentityString?, length: Int, insertPosition: Int)
     }
 }

@@ -3,8 +3,10 @@ package ch.threema.app.workers
 import android.content.Context
 import android.content.Intent
 import androidx.work.*
+import ch.threema.android.buildOneTimeWorkRequest
+import ch.threema.android.setInitialDelay
 import ch.threema.base.utils.getThreemaLogger
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.milliseconds
 
 private val logger = getThreemaLogger("RestartWorker")
 
@@ -22,13 +24,12 @@ class RestartWorker(
     }
 
     companion object {
-        fun buildOneTimeWorkRequest(delayMs: Long): OneTimeWorkRequest =
-            OneTimeWorkRequestBuilder<RestartWorker>()
-                .apply {
-                    if (delayMs > 0) {
-                        setInitialDelay(delayMs, TimeUnit.MILLISECONDS)
-                    }
+        @JvmStatic
+        fun buildWorkRequest(delayMs: Long): OneTimeWorkRequest =
+            buildOneTimeWorkRequest<RestartWorker> {
+                if (delayMs > 0) {
+                    setInitialDelay(delayMs.milliseconds)
                 }
-                .build()
+            }
     }
 }

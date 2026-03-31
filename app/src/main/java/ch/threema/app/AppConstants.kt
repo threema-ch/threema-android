@@ -1,5 +1,7 @@
 package ch.threema.app
 
+import ch.threema.domain.types.IdentityString
+
 object AppConstants {
 
     const val INTENT_DATA_CONTACT = "identity"
@@ -36,4 +38,7 @@ object AppConstants {
     const val MAX_PW_LENGTH_BACKUP = 256
 
     const val ACTIVITY_CONNECTION_LIFETIME = 60_000L
+
+    const val THREEMA_SUPPORT_IDENTITY: IdentityString = "*SUPPORT"
+    const val THREEMA_CHANNEL_IDENTITY: IdentityString = "*THREEMA"
 }

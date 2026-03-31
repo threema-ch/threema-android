@@ -71,16 +71,16 @@ public class VoipCallOfferData extends VoipCallData<VoipCallOfferData> {
 
                 offerData.sdpType = JSONUtil.getStringOrNull(o, KEY_SDP_TYPE);
                 if (offerData.sdpType == null) {
-                    logger.error("Bad VoipCallOfferData: " + KEY_SDP_TYPE + " must be defined");
+                    logger.error("Bad VoipCallOfferData: {} must be defined", KEY_SDP_TYPE);
                     throw new BadMessageException("TM060");
                 } else if (offerData.sdpType.equals("answer") || offerData.sdpType.equals("pranswer")) {
-                    logger.error("Bad VoipCallOfferData: " + KEY_SDP_TYPE + " may not be \"answer\" or \"pranswer\"");
+                    logger.error("Bad VoipCallOfferData: {} may not be \"answer\" or \"pranswer\"", KEY_SDP_TYPE);
                     throw new BadMessageException("TM060");
                 }
 
                 offerData.sdp = JSONUtil.getStringOrNull(o, KEY_SDP);
                 if (offerData.sdp == null && !offerData.sdpType.equals("rollback")) {
-                    logger.error("Bad VoipCallOfferData: " + KEY_SDP + " may only be null if " + KEY_SDP_TYPE + "=rollback");
+                    logger.error("Bad VoipCallOfferData: {} may only be null if {}=rollback", KEY_SDP, KEY_SDP_TYPE);
                     throw new BadMessageException("TM060");
                 }
 

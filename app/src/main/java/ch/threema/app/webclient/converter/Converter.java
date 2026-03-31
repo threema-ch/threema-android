@@ -1,7 +1,5 @@
 package ch.threema.app.webclient.converter;
 
-import android.content.Context;
-
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 
@@ -15,6 +13,7 @@ import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 
@@ -24,26 +23,28 @@ import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 @AnyThread
 public abstract class Converter {
 
-    private static ServiceManager serviceManager = null;
-
     @NonNull
     protected static ServiceManager getServiceManager() {
-        if (serviceManager == null) {
-            serviceManager = ThreemaApplication.requireServiceManager();
-        }
-        return serviceManager;
+        return ThreemaApplication.requireServiceManager();
     }
 
+    @NonNull
     protected static BlockedIdentitiesService getBlockedContactsService() {
         return getServiceManager().getBlockedIdentitiesService();
     }
 
+    @NonNull
     protected static ContactService getContactService() throws ConversionException {
         try {
             return getServiceManager().getContactService();
         } catch (NullPointerException | MasterKeyLockedException e) {
             throw new ConversionException(e);
         }
+    }
+
+    @NonNull
+    protected static UserService getUserService() {
+        return getServiceManager().getUserService();
     }
 
     @NonNull
@@ -55,10 +56,7 @@ public abstract class Converter {
         }
     }
 
-    protected static Context getContext() {
-        return getServiceManager().getContext();
-    }
-
+    @NonNull
     protected static GroupService getGroupService() throws ConversionException {
         try {
             return getServiceManager().getGroupService();
@@ -67,6 +65,7 @@ public abstract class Converter {
         }
     }
 
+    @NonNull
     protected static DistributionListService getDistributionListService() throws ConversionException {
         try {
             return getServiceManager().getDistributionListService();
@@ -75,6 +74,7 @@ public abstract class Converter {
         }
     }
 
+    @NonNull
     protected static PreferenceService getPreferenceService() throws ConversionException {
         try {
             return getServiceManager().getPreferenceService();
@@ -83,6 +83,7 @@ public abstract class Converter {
         }
     }
 
+    @NonNull
     protected static FileService getFileService() throws ConversionException {
         try {
             return getServiceManager().getFileService();

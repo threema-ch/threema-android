@@ -307,7 +307,7 @@ public class VideoEditView extends FrameLayout implements VideoTimelineThumbnail
     protected void dispatchDraw(Canvas canvas) {
         super.dispatchDraw(canvas);
 
-        if (videoItem != null && videoItem.getVideoSize() == PreferenceService.VideoSize_SEND_AS_FILE) {
+        if (videoItem != null && videoItem.getVideoSize() == PreferenceService.VIDEO_SIZE_SEND_AS_FILE) {
             return;
         }
 
@@ -395,7 +395,7 @@ public class VideoEditView extends FrameLayout implements VideoTimelineThumbnail
     @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (videoItem.getVideoSize() == PreferenceService.VideoSize_SEND_AS_FILE) {
+        if (videoItem.getVideoSize() == PreferenceService.VIDEO_SIZE_SEND_AS_FILE) {
             return super.onTouchEvent(event);
         }
 
@@ -615,7 +615,7 @@ public class VideoEditView extends FrameLayout implements VideoTimelineThumbnail
     }
 
     private void updateVideoTimelineVisibility() {
-        int visibility = videoItem != null && videoItem.getVideoSize() == PreferenceService.VideoSize_SEND_AS_FILE ? INVISIBLE : VISIBLE;
+        int visibility = videoItem != null && videoItem.getVideoSize() == PreferenceService.VIDEO_SIZE_SEND_AS_FILE ? INVISIBLE : VISIBLE;
 
         timelineGridLayout.setVisibility(visibility);
         startContainer.setVisibility(visibility);

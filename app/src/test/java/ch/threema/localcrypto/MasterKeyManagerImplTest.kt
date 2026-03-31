@@ -10,7 +10,7 @@ import ch.threema.localcrypto.models.MasterKeyData
 import ch.threema.localcrypto.models.MasterKeyReadResult
 import ch.threema.localcrypto.models.MasterKeyState
 import ch.threema.localcrypto.models.PassphraseLockState
-import ch.threema.localcrypto.models.RemoteSecretProtectionCheckResult
+import ch.threema.localcrypto.models.RemoteSecretProtectionInstruction
 import ch.threema.testhelpers.assertSuspendsForever
 import ch.threema.testhelpers.expectItem
 import io.mockk.every
@@ -210,7 +210,7 @@ class MasterKeyManagerImplTest {
         val masterKeyManager = MasterKeyManagerImpl(
             keyStorageManager = keyStorageManagerMock,
             remoteSecretManager = mockk {
-                every { checkRemoteSecretProtection(any()) } returns RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED
+                every { checkRemoteSecretProtection(any()) } returns RemoteSecretProtectionInstruction.NO_CHANGE_NEEDED
             },
             passphraseStore = passphraseStoreMock,
             random = mockk(),
@@ -321,7 +321,7 @@ class MasterKeyManagerImplTest {
         val masterKeyManager = MasterKeyManagerImpl(
             keyStorageManager = keyStorageManagerMock,
             remoteSecretManager = mockk {
-                every { checkRemoteSecretProtection(any()) } returns RemoteSecretProtectionCheckResult.SHOULD_ACTIVATE
+                every { checkRemoteSecretProtection(any()) } returns RemoteSecretProtectionInstruction.SHOULD_ACTIVATE
             },
             passphraseStore = passphraseStoreMock,
             random = mockk(),
@@ -359,7 +359,7 @@ class MasterKeyManagerImplTest {
             keyStorageManager = masterKeyStorageManagerMock,
             crypto = cryptoMock,
             remoteSecretManager = mockk {
-                every { checkRemoteSecretProtection(any()) } returns RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED
+                every { checkRemoteSecretProtection(any()) } returns RemoteSecretProtectionInstruction.NO_CHANGE_NEEDED
             },
             passphraseStore = mockk(relaxed = true),
             random = mockk(),

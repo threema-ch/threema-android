@@ -5,21 +5,29 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.ContentObserver;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.ContactsContract;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
+import ch.threema.android.ToastDuration;
+import ch.threema.app.apptaskexecutor.AppTaskExecutor;
 import ch.threema.app.listeners.BallotVoteListener;
 import ch.threema.app.listeners.ContactListener;
-import ch.threema.app.listeners.ContactSettingsListener;
 import ch.threema.app.listeners.ContactTypingListener;
 import ch.threema.app.listeners.ConversationListener;
 import ch.threema.app.listeners.DistributionListListener;
@@ -35,8 +43,8 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
-import ch.threema.app.services.AvatarCacheService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.ConversationService;
@@ -45,13 +53,12 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.notification.NotificationService;
+import ch.threema.app.androidcontactsync.usecases.UpdateContactNameUseCase;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.ConversationNotificationUtil;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
-import ch.threema.android.Toaster;
-import ch.threema.app.widget.WidgetUtil;
+import ch.threema.app.widget.WidgetUpdater;
 import ch.threema.app.voip.listeners.VoipCallEventListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
 import ch.threema.app.webclient.listeners.WebClientServiceListener;
@@ -65,6 +72,7 @@ import ch.threema.base.ThreemaException;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import ch.threema.data.models.ContactModel;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.stores.IdentityStore;
@@ -73,7 +81,7 @@ import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ServerMessageModel;
 import ch.threema.storage.models.WebClientSessionModel;
@@ -83,15 +91,22 @@ import ch.threema.storage.models.ballot.IdentityBallotModel;
 import ch.threema.storage.models.ballot.LinkBallotModel;
 import ch.threema.storage.models.data.status.GroupStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
+import kotlin.Unit;
 
-import static ch.threema.android.ToasterKt.showToast;
+import static ch.threema.android.ToastKt.showToast;
 
 // TODO(ANDR-3400) This code was moved out from ThreemaApplication and needs some heavy refactoring
 public class GlobalListeners {
 
     private static final Logger logger = getThreemaLogger("GlobalListeners");
 
+    private final AppTaskExecutor appTaskExecutor = KoinJavaComponent.get(AppTaskExecutor.class);
+
     public static final Lock onAndroidContactChangeLock = new ReentrantLock();
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    private final ExecutorService workerExecutor = Executors.newCachedThreadPool();
 
     public GlobalListeners(
         @NonNull Context appContext,
@@ -100,7 +115,7 @@ public class GlobalListeners {
         this.appContext = appContext;
         this.serviceManager = serviceManager;
 
-        webClientWakeUpListener = () -> showToast(appContext, R.string.webclient_protocol_version_to_old, Toaster.Duration.LONG);
+        webClientWakeUpListener = () -> showToast(appContext, R.string.webclient_protocol_version_to_old, ToastDuration.LONG);
     }
 
     @NonNull
@@ -116,7 +131,6 @@ public class GlobalListeners {
         ListenerManager.messageDeletedForAllListener.add(messageDeletedForAllListener);
         ListenerManager.serverMessageListeners.add(serverMessageListener);
         ListenerManager.contactListeners.add(contactListener);
-        ListenerManager.contactSettingsListeners.add(contactSettingsListener);
         ListenerManager.conversationListeners.add(conversationListener);
         ListenerManager.ballotVoteListeners.add(ballotVoteListener);
         ListenerManager.synchronizeContactsListeners.add(synchronizeContactsListener);
@@ -136,7 +150,6 @@ public class GlobalListeners {
         ListenerManager.messageDeletedForAllListener.remove(messageDeletedForAllListener);
         ListenerManager.serverMessageListeners.remove(serverMessageListener);
         ListenerManager.contactListeners.remove(contactListener);
-        ListenerManager.contactSettingsListeners.remove(contactSettingsListener);
         ListenerManager.conversationListeners.remove(conversationListener);
         ListenerManager.ballotVoteListeners.remove(ballotVoteListener);
         ListenerManager.synchronizeContactsListeners.remove(synchronizeContactsListener);
@@ -146,6 +159,8 @@ public class GlobalListeners {
         WebClientListenerManager.wakeUpListener.remove(webClientWakeUpListener);
         VoipListenerManager.callEventListener.remove(voipCallEventListener);
         unregisterContactNameChangeListener();
+        handler.removeCallbacksAndMessages(null);
+        workerExecutor.shutdownNow();
     }
 
     private void registerContactNameChangeListener() {
@@ -166,7 +181,7 @@ public class GlobalListeners {
         }
     }
 
-    private void showNotesGroupNotice(GroupModel groupModel, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) {
+    private void showNotesGroupNotice(GroupModelOld groupModel, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) {
         if (oldState != newState) {
             try {
                 GroupService groupService = serviceManager.getGroupService();
@@ -194,31 +209,31 @@ public class GlobalListeners {
         }
     }
 
-    private void showConversationNotification(AbstractMessageModel newMessage, boolean updateExisting) {
+    private void showConversationNotification(@NonNull AbstractMessageModel newMessage, boolean updateExisting) {
         try {
-            if (!newMessage.isOutbox()
-                && !newMessage.isStatusMessage()
-                && !newMessage.isRead()) {
-
+            if (!newMessage.isOutbox() && !newMessage.isStatusMessage() && !newMessage.isRead()) {
                 NotificationService notificationService = serviceManager.getNotificationService();
                 ContactService contactService = serviceManager.getContactService();
                 GroupService groupService = serviceManager.getGroupService();
                 ConversationCategoryService conversationCategoryService = serviceManager.getConversationCategoryService();
+                PreferenceService preferenceService = serviceManager.getPreferenceService();
 
-                if (TestUtil.required(notificationService, contactService, groupService)) {
-                    if (newMessage.getType() != MessageType.GROUP_CALL_STATUS) {
-                        notificationService.showConversationNotification(ConversationNotificationUtil.convert(
-                                appContext,
-                                newMessage,
-                                contactService,
-                                groupService,
-                                conversationCategoryService),
-                            updateExisting);
-                    }
-
-                    // update widget on incoming message
-                    WidgetUtil.updateWidgets(appContext);
+                if (newMessage.getType() != MessageType.GROUP_CALL_STATUS) {
+                    notificationService.showConversationNotification(
+                        ConversationNotificationUtil.convert(
+                            appContext,
+                            newMessage,
+                            contactService,
+                            groupService,
+                            conversationCategoryService,
+                            preferenceService.getContactNameFormat()
+                        ),
+                        updateExisting
+                    );
                 }
+
+                // update widget on incoming message
+                WidgetUpdater.update();
             }
         } catch (ThreemaException e) {
             logger.error("Exception", e);
@@ -230,7 +245,7 @@ public class GlobalListeners {
         @Override
         public void onCreate(@NonNull GroupIdentity groupIdentity) {
             try {
-                GroupModel groupModel = getGroupModel(groupIdentity);
+                GroupModelOld groupModel = getGroupModel(groupIdentity);
                 if (groupModel == null) {
                     return;
                 }
@@ -249,9 +264,9 @@ public class GlobalListeners {
 
         @Override
         public void onRename(@NonNull GroupIdentity groupIdentity) {
-            RuntimeUtil.runOnWorkerThread(() -> {
+            workerExecutor.execute(() -> {
                 try {
-                    GroupModel groupModel = getGroupModel(groupIdentity);
+                    GroupModelOld groupModel = getGroupModel(groupIdentity);
                     if (groupModel == null) {
                         return;
                     }
@@ -268,7 +283,10 @@ public class GlobalListeners {
                         null,
                         groupName
                     );
-                    ShortcutUtil.updatePinnedShortcut(messageReceiver);
+                    ShortcutUtil.updatePinnedShortcut(
+                        messageReceiver,
+                        serviceManager.getPreferenceService().getContactNameFormat()
+                    );
                 } catch (ThreemaException e) {
                     logger.error("Exception", e);
                 }
@@ -277,9 +295,9 @@ public class GlobalListeners {
 
         @Override
         public void onUpdatePhoto(@NonNull GroupIdentity groupIdentity) {
-            RuntimeUtil.runOnWorkerThread(() -> {
+            workerExecutor.execute(() -> {
                 try {
-                    GroupModel groupModel = getGroupModel(groupIdentity);
+                    GroupModelOld groupModel = getGroupModel(groupIdentity);
                     if (groupModel == null) {
                         return;
                     }
@@ -292,7 +310,10 @@ public class GlobalListeners {
                         null,
                         null
                     );
-                    ShortcutUtil.updatePinnedShortcut(messageReceiver);
+                    ShortcutUtil.updatePinnedShortcut(
+                        messageReceiver,
+                        serviceManager.getPreferenceService().getContactNameFormat()
+                    );
                 } catch (ThreemaException e) {
                     logger.error("Exception", e);
                 }
@@ -301,7 +322,7 @@ public class GlobalListeners {
 
         @Override
         public void onNewMember(@NonNull GroupIdentity groupIdentity, String identityNew) {
-            GroupModel groupModel = getGroupModel(groupIdentity);
+            GroupModelOld groupModel = getGroupModel(groupIdentity);
             if (groupModel == null) {
                 return;
             }
@@ -324,12 +345,12 @@ public class GlobalListeners {
             }
 
             //reset avatar to recreate it!
-            serviceManager.getAvatarCacheService().reset(groupModel);
+            serviceManager.getAvatarCacheService().reset(groupIdentity);
         }
 
         @Override
         public void onMemberLeave(@NonNull GroupIdentity groupIdentity, @NonNull String identityLeft) {
-            GroupModel groupModel = getGroupModel(groupIdentity);
+            GroupModelOld groupModel = getGroupModel(groupIdentity);
             if (groupModel == null) {
                 return;
             }
@@ -356,7 +377,7 @@ public class GlobalListeners {
         public void onMemberKicked(@NonNull GroupIdentity groupIdentity, String identityKicked) {
             final String myIdentity = serviceManager.getUserService().getIdentity();
 
-            GroupModel groupModel = getGroupModel(groupIdentity);
+            GroupModelOld groupModel = getGroupModel(groupIdentity);
             if (groupModel == null) {
                 return;
             }
@@ -391,7 +412,7 @@ public class GlobalListeners {
         @Override
         public void onUpdate(@NonNull GroupIdentity groupIdentity) {
             try {
-                GroupModel groupModel = getGroupModel(groupIdentity);
+                GroupModelOld groupModel = getGroupModel(groupIdentity);
                 if (groupModel == null) {
                     return;
                 }
@@ -403,9 +424,9 @@ public class GlobalListeners {
 
         @Override
         public void onLeave(@NonNull GroupIdentity groupIdentity) {
-            RuntimeUtil.runOnWorkerThread(() -> {
+            workerExecutor.execute(() -> {
                 try {
-                    GroupModel groupModel = getGroupModel(groupIdentity);
+                    GroupModelOld groupModel = getGroupModel(groupIdentity);
                     if (groupModel == null) {
                         return;
                     }
@@ -419,7 +440,7 @@ public class GlobalListeners {
         @Override
         public void onGroupStateChanged(@NonNull GroupIdentity groupIdentity, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) {
             logger.debug("onGroupStateChanged: {} -> {}", oldState, newState);
-            GroupModel groupModel = getGroupModel(groupIdentity);
+            GroupModelOld groupModel = getGroupModel(groupIdentity);
             if (groupModel == null) {
                 return;
             }
@@ -428,11 +449,11 @@ public class GlobalListeners {
         }
 
         @Nullable
-        private GroupModel getGroupModel(@NonNull GroupIdentity groupIdentity) {
+        private GroupModelOld getGroupModel(@NonNull GroupIdentity groupIdentity) {
             try {
                 GroupService groupService = serviceManager.getGroupService();
                 groupService.removeFromCache(groupIdentity);
-                GroupModel groupModel = groupService.getByGroupIdentity(groupIdentity);
+                GroupModelOld groupModel = groupService.getByGroupIdentity(groupIdentity);
                 if (groupModel == null) {
                     logger.error("Group model is null");
                 }
@@ -457,10 +478,13 @@ public class GlobalListeners {
 
         @Override
         public void onModify(DistributionListModel distributionListModel) {
-            RuntimeUtil.runOnWorkerThread(() -> {
+            workerExecutor.execute(() -> {
                 try {
                     serviceManager.getConversationService().refresh(distributionListModel);
-                    ShortcutUtil.updatePinnedShortcut(serviceManager.getDistributionListService().createReceiver(distributionListModel));
+                    ShortcutUtil.updatePinnedShortcut(
+                        serviceManager.getDistributionListService().createReceiver(distributionListModel),
+                        serviceManager.getPreferenceService().getContactNameFormat()
+                    );
                 } catch (ThreemaException e) {
                     logger.error("Exception", e);
                 }
@@ -571,10 +595,11 @@ public class GlobalListeners {
                 return;
             }
 
-            RuntimeUtil.runOnWorkerThread(() -> {
+            workerExecutor.execute(() -> {
                 try {
                     final ConversationService conversationService = serviceManager.getConversationService();
                     final ContactService contactService = serviceManager.getContactService();
+                    final PreferenceService preferenceService = serviceManager.getPreferenceService();
 
                     // Refresh conversation cache
                     conversationService.updateContactConversation(identity);
@@ -582,9 +607,9 @@ public class GlobalListeners {
 
                     ContactMessageReceiver messageReceiver = contactService.createReceiver(modifiedContactModel);
                     if (messageReceiver != null) {
-                        ShortcutUtil.updatePinnedShortcut(messageReceiver);
+                        ShortcutUtil.updatePinnedShortcut(messageReceiver, preferenceService.getContactNameFormat());
                     }
-                } catch (ThreemaException e) {
+                } catch (Exception e) {
                     logger.error("Exception", e);
                 }
             });
@@ -592,46 +617,19 @@ public class GlobalListeners {
 
         @Override
         public void onAvatarChanged(final @NonNull String identity) {
-            RuntimeUtil.runOnWorkerThread(() -> {
+            workerExecutor.execute(() -> {
                 try {
                     ContactMessageReceiver messageReceiver = serviceManager.getContactService().createReceiver(identity);
                     if (messageReceiver != null) {
-                        ShortcutUtil.updatePinnedShortcut(messageReceiver);
+                        ShortcutUtil.updatePinnedShortcut(
+                            messageReceiver,
+                            serviceManager.getPreferenceService().getContactNameFormat()
+                        );
                     }
                 } catch (ThreemaException e) {
                     logger.error("Exception", e);
                 }
             });
-        }
-    };
-
-    @NonNull
-    private final ContactSettingsListener contactSettingsListener = new ContactSettingsListener() {
-        @Override
-        public void onSortingChanged() {
-            //do nothing!
-        }
-
-        @Override
-        public void onNameFormatChanged() {
-            //do nothing
-        }
-
-        @Override
-        public void onAvatarSettingChanged() {
-            //reset the avatar cache!
-            AvatarCacheService s = serviceManager.getAvatarCacheService();
-            s.clear();
-        }
-
-        @Override
-        public void onInactiveContactsSettingChanged() {
-
-        }
-
-        @Override
-        public void onNotificationSettingChanged(String uid) {
-
         }
     };
 
@@ -642,7 +640,7 @@ public class GlobalListeners {
         }
 
         @Override
-        public void onModified(@NonNull ConversationModel modifiedConversationModel, @Nullable Integer oldPosition) {
+        public void onModified(@NonNull ConversationModel modifiedConversationModel) {
         }
 
         @Override
@@ -678,13 +676,13 @@ public class GlobalListeners {
                     MessageService messageService = s.getMessageService();
                     UserService userService = s.getUserService();
 
-                    if (TestUtil.required(ballotModel, contactService, groupService, messageService, userService)) {
+                    if (ballotModel != null) {
                         LinkBallotModel linkBallotModel = ballotService.getLinkedBallotModel(ballotModel);
                         if (linkBallotModel != null) {
                             GroupStatusDataModel.GroupStatusType type = null;
                             MessageReceiver<? extends AbstractMessageModel> receiver = null;
                             if (linkBallotModel instanceof GroupBallotModel) {
-                                GroupModel groupModel = groupService.getById(((GroupBallotModel) linkBallotModel).getGroupId());
+                                GroupModelOld groupModel = groupService.getById(((GroupBallotModel) linkBallotModel).getGroupId());
 
                                 // its a group ballot,write status
                                 receiver = groupService.createReceiver(groupModel);
@@ -804,13 +802,28 @@ public class GlobalListeners {
                     return;
                 }
 
-                if (!serviceManager.getPreferenceService().isSyncContacts()) {
+                if (!serviceManager.getSynchronizedSettingsService().isSyncContacts()) {
                     logger.warn("Contact synchronization is not enabled. Aborting.");
                     return;
                 }
 
-                boolean success = serviceManager.getContactService().updateAllContactNamesFromAndroidContacts();
-                logger.info("Finished updating contact names from android contacts (success={})", success);
+                logger.info("Updating all contact names from android contacts");
+                List<ContactModel> allContactModels = serviceManager.getModelRepositories().getContacts().getAll();
+                Set<ContactModel> linkedContactModels = new HashSet<>();
+                for (ContactModel contactModel : allContactModels) {
+                    ContactModelData contactModelData = contactModel.getData();
+                    if (contactModelData != null && contactModelData.androidContactLookupInfo != null) {
+                        linkedContactModels.add(contactModel);
+                    }
+                }
+                appTaskExecutor.runInAppTask(continuation -> {
+                    // Note that continuation can only be used once to call a suspend function!
+                    // Inject contact name use case here to prevent creating it if contacts never change.
+                    UpdateContactNameUseCase updateContactNameUseCase = KoinJavaComponent.get(UpdateContactNameUseCase.class);
+                    updateContactNameUseCase.call(linkedContactModels, continuation);
+                    logger.info("Finished updating contact names from android contacts");
+                    return Unit.INSTANCE;
+                });
             } catch (MasterKeyLockedException masterKeyLockedException) {
                 logger.error("Cantact name change observer could not be run successfully", masterKeyLockedException);
             } finally {
@@ -896,12 +909,12 @@ public class GlobalListeners {
         ) {
             logger.info("WebClientListenerManager: onStarted");
 
-            RuntimeUtil.runOnUiThread(() -> {
+            handler.post(() -> {
                 String toastText = appContext.getString(R.string.webclient_new_connection_toast);
                 if (model.getLabel() != null) {
                     toastText += " (" + model.getLabel() + ")";
                 }
-                showToast(appContext, toastText, Toaster.Duration.LONG);
+                showToast(appContext, toastText, ToastDuration.LONG);
 
                 final Intent intent = new Intent(appContext, SessionAndroidService.class);
 
@@ -938,7 +951,7 @@ public class GlobalListeners {
             logger.info("WebClientListenerManager: onStateChanged");
 
             if (newState == WebClientSessionState.DISCONNECTED) {
-                RuntimeUtil.runOnUiThread(() -> {
+                handler.post(() -> {
                     logger.info("updating SessionAndroidService");
                     if (SessionAndroidService.isRunning()) {
                         final Intent intent = new Intent(appContext, SessionAndroidService.class);
@@ -956,7 +969,7 @@ public class GlobalListeners {
         public void onStopped(@NonNull final WebClientSessionModel model, @NonNull final DisconnectContext reason) {
             logger.info("WebClientListenerManager: onStopped");
 
-            RuntimeUtil.runOnUiThread(() -> {
+            handler.post(() -> {
                 if (SessionAndroidService.isRunning()) {
                     final Intent intent = new Intent(appContext, SessionAndroidService.class);
                     intent.setAction(SessionAndroidService.ACTION_STOP);
@@ -1040,9 +1053,9 @@ public class GlobalListeners {
                 final MessageService messageService = serviceManager.getMessageService();
 
                 // If an incoming status message is not targeted at our own identity, something's wrong
-                final String appIdentity = identityStore.getIdentity();
-                if (TestUtil.compare(identity, appIdentity) && !isOutbox) {
-                    this.logger.error("Could not save voip status (identity={}, appIdentity={}, outbox={})", identity, appIdentity, isOutbox);
+                final String ownIdentity = identityStore.getIdentityString();
+                if (TestUtil.compare(identity, ownIdentity) && !isOutbox) {
+                    this.logger.error("Could not save voip status (identity={}, appIdentity={}, outbox={})", identity, ownIdentity, isOutbox);
                     return;
                 }
 

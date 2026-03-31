@@ -1,5 +1,8 @@
 package ch.threema.domain.protocol.connection.csp;
 
+import ch.threema.base.SessionScoped;
+
+@SessionScoped
 public interface DeviceCookieManager {
     /**
      * Obtain an existing or new device cookie.

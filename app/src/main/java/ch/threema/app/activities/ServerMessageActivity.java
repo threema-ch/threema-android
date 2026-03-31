@@ -1,5 +1,7 @@
 package ch.threema.app.activities;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.method.LinkMovementMethod;
 import android.view.MenuItem;
@@ -112,5 +114,10 @@ public class ServerMessageActivity extends ThreemaActivity {
 
     private void cancelServerMessageNotification() {
         dependencies.getNotificationService().cancel(NotificationIDs.SERVER_MESSAGE_NOTIFICATION_ID);
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context) {
+        return new Intent(context, ServerMessageActivity.class);
     }
 }

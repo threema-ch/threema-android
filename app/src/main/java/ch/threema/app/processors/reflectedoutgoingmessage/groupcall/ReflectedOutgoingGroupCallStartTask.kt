@@ -13,7 +13,7 @@ internal class ReflectedOutgoingGroupCallStartTask(
     outgoingMessage = outgoingMessage,
     message = GroupCallStartMessage.fromReflected(
         message = outgoingMessage,
-        ownIdentity = serviceManager.identityStore.getIdentity()!!,
+        ownIdentity = serviceManager.identityStore.getIdentityString()!!,
     ),
     type = Common.CspE2eMessageType.GROUP_CALL_START,
     serviceManager = serviceManager,

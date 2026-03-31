@@ -7,12 +7,11 @@ import ch.threema.app.files.WallpaperFileHandleProvider
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.localcrypto.MasterKeyProvider
 import java.io.File
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("SystemUpdateToVersion114")
 
-class SystemUpdateToVersion114 : SystemUpdate, KoinComponent {
+class SystemUpdateToVersion114 : SystemUpdate {
 
     private val appContext: Context by inject()
     private val masterKeyProvider: MasterKeyProvider by inject()
@@ -58,11 +57,7 @@ class SystemUpdateToVersion114 : SystemUpdate, KoinComponent {
         }
     }
 
-    override fun getVersion() = VERSION
+    override val version = 114
 
     override fun getDescription() = "move (and encrypt) global wallpaper file"
-
-    companion object {
-        const val VERSION = 114
-    }
 }

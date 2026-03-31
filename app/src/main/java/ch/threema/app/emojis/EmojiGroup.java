@@ -43,10 +43,6 @@ public class EmojiGroup {
         return this.spritemapBitmaps.get(spritemapId);
     }
 
-    public boolean hasSpritemapBitmap(int spritemapId) {
-        return this.spritemapBitmaps.indexOfKey(spritemapId) >= 0;
-    }
-
     public void setSpritemapBitmap(int spritemapId, @NonNull EmojiSpritemapBitmap spritemapBitmap) {
         this.spritemapBitmaps.put(spritemapId, spritemapBitmap);
     }

@@ -18,7 +18,8 @@ import ch.threema.localcrypto.models.PassphraseLockState
 import ch.threema.localcrypto.models.RemoteSecretAuthenticationToken
 import ch.threema.localcrypto.models.RemoteSecretCheckType
 import ch.threema.localcrypto.models.RemoteSecretClientParameters
-import ch.threema.localcrypto.models.RemoteSecretProtectionCheckResult
+import ch.threema.localcrypto.models.RemoteSecretProtectionInstruction
+import ch.threema.localcrypto.models.RemoteSecretProtectionState
 import java.io.IOException
 import java.security.SecureRandom
 import kotlin.Throws
@@ -27,6 +28,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -80,6 +82,9 @@ class MasterKeyManagerImpl(
                 }
             }
         }
+
+    override val remoteSecretProtectionState: Flow<RemoteSecretProtectionState>
+        get() = lockStateHolder.remoteSecretProtectionFlow
 
     /**
      * Checks if a master key exists in storage and will read it.
@@ -159,6 +164,9 @@ class MasterKeyManagerImpl(
             }
         }
 
+    override suspend fun awaitIsProtectedWithRemoteSecret(): Boolean =
+        remoteSecretProtectionState.first() == RemoteSecretProtectionState.ACTIVE
+
     override suspend fun isProtected() =
         storageStateHolder.isProtected()
 
@@ -212,12 +220,12 @@ class MasterKeyManagerImpl(
         // Check if we will need to activate or deactivate remote secret protection after unlocking, and if so
         // keep the passphrase in memory until that is completed
         when (remoteSecretManager.checkRemoteSecretProtection(newLockData as? MasterKeyState.WithRemoteSecret)) {
-            RemoteSecretProtectionCheckResult.SHOULD_ACTIVATE,
-            RemoteSecretProtectionCheckResult.SHOULD_DEACTIVATE,
+            RemoteSecretProtectionInstruction.SHOULD_ACTIVATE,
+            RemoteSecretProtectionInstruction.SHOULD_DEACTIVATE,
             -> {
                 passphraseStore.passphrase = passphrase
             }
-            RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED -> Unit
+            RemoteSecretProtectionInstruction.NO_CHANGE_NEEDED -> Unit
         }
 
         when (newLockData) {
@@ -319,17 +327,17 @@ class MasterKeyManagerImpl(
                 return false
             }
         return when (remoteSecretManager.checkRemoteSecretProtection(remoteSecretLockState.remoteSecretLockData)) {
-            RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED -> {
+            RemoteSecretProtectionInstruction.NO_CHANGE_NEEDED -> {
                 remoteSecretProtectionUpdateAllowedAtRuntime = true
                 false
             }
-            RemoteSecretProtectionCheckResult.SHOULD_ACTIVATE,
-            RemoteSecretProtectionCheckResult.SHOULD_DEACTIVATE,
+            RemoteSecretProtectionInstruction.SHOULD_ACTIVATE,
+            RemoteSecretProtectionInstruction.SHOULD_DEACTIVATE,
             -> true
         }
     }
 
-    override fun getRemoteSecretProtectionState(): RemoteSecretProtectionCheckResult? {
+    override fun getRemoteSecretProtectionInstruction(): RemoteSecretProtectionInstruction? {
         val remoteSecretLockState = lockStateHolder.getRemoteSecretLockState()
             ?: return null
         return remoteSecretManager.checkRemoteSecretProtection(remoteSecretLockState.remoteSecretLockData)
@@ -347,11 +355,11 @@ class MasterKeyManagerImpl(
         val passphrase = passphraseStore.passphrase
 
         when (remoteSecretManager.checkRemoteSecretProtection(remoteSecretLockData)) {
-            RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED -> {
+            RemoteSecretProtectionInstruction.NO_CHANGE_NEEDED -> {
                 logger.debug("Nothing needs to be done with remote secrets")
             }
 
-            RemoteSecretProtectionCheckResult.SHOULD_ACTIVATE -> {
+            RemoteSecretProtectionInstruction.SHOULD_ACTIVATE -> {
                 logger.info("Adding remote secret protection")
                 if (isProtectedWithPassphrase() && passphrase == null) {
                     // If we need the passphrase but don't have it, we stop here to avoid
@@ -375,9 +383,10 @@ class MasterKeyManagerImpl(
                         parameters = result.parameters,
                     ),
                 )
+                _events.send(MasterKeyEvent.RemoteSecretActivated)
             }
 
-            RemoteSecretProtectionCheckResult.SHOULD_DEACTIVATE -> {
+            RemoteSecretProtectionInstruction.SHOULD_DEACTIVATE -> {
                 logger.info("Removing remote secret protection")
                 val masterKeyData = awaitMasterKeyData()
                 storageStateHolder.setStateWithoutRemoteSecretProtection(

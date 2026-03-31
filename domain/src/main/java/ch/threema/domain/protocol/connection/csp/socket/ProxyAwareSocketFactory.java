@@ -60,7 +60,7 @@ public class ProxyAwareSocketFactory {
         // Check if the chosen proxy supports SOCKS or HTTP. For SOCKS, we can directly
         // create a Socket with the proxy configuration. For HTTP, we need to supply our own
         // implementation as JDK 7 does not support HTTP for Socket.
-        logger.info("Using proxy: " + chosenProxy);
+        logger.info("Using proxy: {}", chosenProxy);
         switch (chosenProxy.type()) {
             case SOCKS:
                 return new Socket(chosenProxy);

@@ -6,8 +6,8 @@ import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
 
 public class ResumePauseHandler {
     private static final Map<String, ResumePauseHandler> instances = new HashMap<>();
@@ -18,11 +18,12 @@ public class ResumePauseHandler {
     private boolean isActive;
     private boolean hasHandlers = false;
 
-    private ResumePauseHandler(Activity activity) {
+    private ResumePauseHandler(@NonNull Activity activity) {
         this.activityReference = new WeakReference<>(activity);
     }
 
-    public static ResumePauseHandler getByActivity(Object useInObject, Activity activity) {
+    @NonNull
+    public static ResumePauseHandler getByActivity(@NonNull Object useInObject, @NonNull Activity activity) {
         final String key = useInObject.getClass().toString();
         synchronized (lock) {
             ResumePauseHandler instance = instances.get(key);
@@ -91,13 +92,8 @@ public class ResumePauseHandler {
     }
 
     private void run(final RunIfActive runIfActive) {
-        if (TestUtil.required(runIfActive, this.activityReference.get())) {
-            RuntimeUtil.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    runIfActive.runOnUiThread();
-                }
-            });
+        if (runIfActive != null && activityReference.get() != null) {
+            RuntimeUtil.runOnUiThread(runIfActive::runOnUiThread);
         }
     }
 

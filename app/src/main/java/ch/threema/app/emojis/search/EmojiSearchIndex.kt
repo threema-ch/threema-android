@@ -21,7 +21,7 @@ class EmojiSearchIndex(
     private val brokenSearchTermLanguages = mutableSetOf<String>()
     private val languageSupport = mutableMapOf<String, Boolean>()
     private val languageVersion = mutableMapOf<String, Int>()
-    private var searchIndexVersion = preferenceService.emojiSearchIndexVersion
+    private var searchIndexVersion = preferenceService.getEmojiSearchIndexVersion()
 
     private companion object {
         const val SEARCH_INDEX_VERSION = 11
@@ -71,7 +71,7 @@ class EmojiSearchIndex(
                 val emojis = readEmojisOrdersFromAssets()
                 dao.insertEmojis(emojis)
                 dao.updateEmojiDiversities(readEmojiDiversitiesFromAssets())
-                preferenceService.emojiSearchIndexVersion = SEARCH_INDEX_VERSION
+                preferenceService.setEmojiSearchIndexVersion(SEARCH_INDEX_VERSION)
                 searchIndexVersion = SEARCH_INDEX_VERSION
             }
             prepareSearchTerms(language, dao)

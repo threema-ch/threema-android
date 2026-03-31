@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">Neplatná data z QR kódu</string>
     <string name="webclient_init_session">Zahájit novou relaci</string>
     <string name="webclient_sessions_really_delete">Skutečně si přejete odstranit tuto desktopovou/webovou relaci?</string>
     <string name="webclient_last_usage">Poslední použití: %s</string>

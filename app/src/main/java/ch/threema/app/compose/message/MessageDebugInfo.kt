@@ -17,21 +17,23 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ch.threema.app.R
+import ch.threema.app.compose.common.colorReferenceResource
 import ch.threema.app.compose.theme.ThreemaThemePreview
-import ch.threema.app.compose.theme.color.CustomColors
 import ch.threema.app.compose.theme.dimens.GridUnit
+import ch.threema.storage.models.MessageType
 
 @Composable
 fun MessageDebugInfoBox(
     modifier: Modifier = Modifier,
+    type: MessageType?,
     rowId: Int,
     uid: String,
     isOutbox: Boolean,
 ) {
     val borderColor: Color = if (isOutbox) {
-        CustomColors.chatBubbleSendContainer
+        colorReferenceResource(R.attr.colorMessageBubbleSendContainer)
     } else {
-        CustomColors.chatBubbleReceiveContainer
+        colorReferenceResource(R.attr.colorMessageBubbleReceiveContainer)
     }
     MessageDebugInfoList(
         modifier = modifier
@@ -45,6 +47,7 @@ fun MessageDebugInfoBox(
                     }
                 },
             ),
+        type = type,
         rowId = rowId,
         uid = uid,
     )
@@ -53,6 +56,7 @@ fun MessageDebugInfoBox(
 @Composable
 private fun MessageDebugInfoList(
     modifier: Modifier = Modifier,
+    type: MessageType?,
     rowId: Int,
     uid: String,
 ) {
@@ -60,6 +64,12 @@ private fun MessageDebugInfoList(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(GridUnit.x0_5),
     ) {
+        type?.let {
+            MessageDetailsRow(
+                label = "type",
+                value = it.toString(),
+            )
+        }
         MessageDetailsRow(
             label = "rowId",
             value = rowId.toString(),
@@ -83,6 +93,7 @@ private fun MessageDetailsListBoxPreview_Outbox() {
     ThreemaThemePreview {
         MessageDebugInfoBox(
             modifier = Modifier.padding(GridUnit.x2),
+            type = null,
             rowId = 123,
             uid = "haha-not-very-unique",
             isOutbox = true,
@@ -96,6 +107,7 @@ private fun MessageDetailsListBoxPreview_Inbox() {
     ThreemaThemePreview {
         MessageDebugInfoBox(
             modifier = Modifier.padding(GridUnit.x2),
+            type = MessageType.TEXT,
             rowId = 123,
             uid = "haha-not-very-unique",
             isOutbox = false,
@@ -111,6 +123,7 @@ private fun MessageDetailsListPreview() {
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .padding(GridUnit.x2),
+            type = MessageType.TEXT,
             rowId = 123,
             uid = "haha-not-very-unique",
         )

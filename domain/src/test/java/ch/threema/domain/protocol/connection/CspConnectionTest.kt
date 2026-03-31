@@ -100,7 +100,7 @@ internal class CspConnectionTest : ServerConnectionTest() {
             )
         }
 
-        return CspConnectionImpl(dependencyProvider)
+        return CspConnectionImpl(dependencyProvider, awaitAppReady = {})
     }
 
     private fun createConfiguration(): CspConnectionConfiguration {

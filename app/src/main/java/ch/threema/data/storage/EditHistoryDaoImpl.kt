@@ -1,21 +1,21 @@
 package ch.threema.data.storage
 
 import androidx.core.database.getStringOrNull
-import androidx.sqlite.db.SupportSQLiteOpenHelper
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.repositories.EditHistoryEntryCreateException
+import ch.threema.storage.DatabaseProvider
 import ch.threema.storage.buildContentValues
 import ch.threema.storage.factories.ContactEditHistoryEntryModelFactory
 import ch.threema.storage.factories.GroupEditHistoryEntryModelFactory
 import ch.threema.storage.models.AbstractMessageModel
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
+import ch.threema.storage.models.group.GroupMessageModel
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 private val logger = getThreemaLogger("EditHistoryDaoImpl")
 
 class EditHistoryDaoImpl(
-    private val sqlite: SupportSQLiteOpenHelper,
+    private val databaseProvider: DatabaseProvider,
 ) : EditHistoryDao {
     override fun create(entry: DbEditHistoryEntry, messageModel: AbstractMessageModel): Long {
         val contentValues = buildContentValues {
@@ -33,7 +33,7 @@ class EditHistoryDaoImpl(
             )
         }
 
-        return sqlite.writableDatabase.insert(
+        return databaseProvider.writableDatabase.insert(
             table = table,
             conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
             values = contentValues,
@@ -41,12 +41,12 @@ class EditHistoryDaoImpl(
     }
 
     override fun deleteAllByMessageUid(messageUid: String) {
-        var deletedEntries = sqlite.writableDatabase.delete(
+        var deletedEntries = databaseProvider.writableDatabase.delete(
             table = ContactEditHistoryEntryModelFactory.TABLE,
             whereClause = "${DbEditHistoryEntry.COLUMN_MESSAGE_UID} = ?",
             whereArgs = arrayOf(messageUid),
         )
-        deletedEntries += sqlite.writableDatabase.delete(
+        deletedEntries += databaseProvider.writableDatabase.delete(
             table = GroupEditHistoryEntryModelFactory.TABLE,
             whereClause = "${DbEditHistoryEntry.COLUMN_MESSAGE_UID} = ?",
             whereArgs = arrayOf(messageUid),
@@ -55,7 +55,7 @@ class EditHistoryDaoImpl(
     }
 
     override fun findAllByMessageUid(messageUid: String): List<DbEditHistoryEntry> {
-        val cursor = (sqlite.readableDatabase as SQLiteDatabase)
+        val cursor = databaseProvider.readableDatabase
             .rawQuery(
                 "SELECT * FROM ${ContactEditHistoryEntryModelFactory.TABLE} WHERE ${DbEditHistoryEntry.COLUMN_MESSAGE_UID} = ? " +
                     "UNION " +

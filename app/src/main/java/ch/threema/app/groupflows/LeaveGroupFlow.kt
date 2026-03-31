@@ -13,12 +13,11 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.MessageId
-import ch.threema.domain.protocol.api.APIConnector
+import ch.threema.domain.models.UserState
 import ch.threema.domain.protocol.connection.ConnectionState
 import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.storage.models.GroupModel.UserState
 import kotlinx.coroutines.runBlocking
 
 private val logger = getThreemaLogger("LeaveGroupFlow")
@@ -48,7 +47,6 @@ class LeaveGroupFlow(
     private val groupModel: GroupModel,
     private val groupModelRepository: GroupModelRepository,
     private val groupCallManager: GroupCallManager,
-    private val apiConnector: APIConnector,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
     private val taskManager: TaskManager,
     private val connection: ServerConnection,
@@ -57,7 +55,7 @@ class LeaveGroupFlow(
 
     private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
 
-    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentity()!! }
+    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentityString()!! }
 
     override fun runInBackground(): GroupFlowResult {
         logger.info("Running leave group flow with intent {}", intent)
@@ -113,7 +111,7 @@ class LeaveGroupFlow(
         persist()
 
         // Finally, send the csp messages to the group members
-        sendCsp(groupModelData.otherMembers)
+        sendCsp(groupModelData.otherMembersAndCreator)
 
         return GroupFlowResult.Success(groupModel)
     }
@@ -121,13 +119,7 @@ class LeaveGroupFlow(
     private fun reflect(): ReflectionResult<Unit> = runBlocking {
         when (intent) {
             GroupLeaveIntent.LEAVE ->
-                taskManager.schedule(
-                    ReflectLocalGroupLeaveOrDisband(
-                        groupModel,
-                        outgoingCspMessageServices.nonceFactory,
-                        multiDeviceManager,
-                    ),
-                )
+                taskManager.schedule(ReflectLocalGroupLeaveOrDisband(groupModel.groupIdentity))
 
             GroupLeaveIntent.LEAVE_AND_REMOVE ->
                 taskManager.schedule(
@@ -164,9 +156,6 @@ class LeaveGroupFlow(
                 groupModel.groupIdentity,
                 MessageId.random(),
                 members,
-                groupModelRepository,
-                apiConnector,
-                outgoingCspMessageServices,
             ),
         )
     }

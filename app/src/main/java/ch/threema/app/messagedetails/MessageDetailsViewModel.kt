@@ -3,16 +3,18 @@ package ch.threema.app.messagedetails
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.lifecycle.ViewModel
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.MessageService
 import ch.threema.app.utils.QuoteUtil
 import ch.threema.app.utils.StateBitmapUtil
+import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.repositories.EmojiReactionsRepository
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.DistributionListMessageModel
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
+import ch.threema.storage.models.group.GroupMessageModel
 import java.util.Date
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,6 +24,7 @@ import kotlinx.coroutines.flow.update
 class MessageDetailsViewModel(
     messageService: MessageService,
     private val emojiReactionsRepository: EmojiReactionsRepository,
+    private val preferenceService: PreferenceService,
     private val messageId: Int,
     private val messageType: String,
 ) : ViewModel() {
@@ -29,7 +32,9 @@ class MessageDetailsViewModel(
         val message = messageService.getMessageModelFromId(messageId, messageType)
         MutableStateFlow(
             ChatMessageDetailsUiState(
-                message = message.toUiModel(),
+                message = message.toUiModel(
+                    contactNameFormat = preferenceService.getContactNameFormat(),
+                ),
                 hasReactions = message.hasReactions(),
                 shouldMarkupText = true,
             ),
@@ -41,7 +46,13 @@ class MessageDetailsViewModel(
         emojiReactionsRepository.safeGetReactionsByMessage(this).isNotEmpty()
 
     fun refreshMessage(updatedMessage: AbstractMessageModel) {
-        _uiState.update { it.copy(message = updatedMessage.toUiModel()) }
+        _uiState.update {
+            it.copy(
+                message = updatedMessage.toUiModel(
+                    contactNameFormat = preferenceService.getContactNameFormat(),
+                ),
+            )
+        }
     }
 
     fun markupText(value: Boolean) {
@@ -107,10 +118,17 @@ data class MessageDetailsUiModel(
     }
 }
 
-fun AbstractMessageModel.toUiModel() = MessageUiModel(
+fun AbstractMessageModel.toUiModel(contactNameFormat: ContactNameFormat) = MessageUiModel(
     id = this.id,
     uid = this.uid!!,
-    text = QuoteUtil.getMessageBody(this, false) ?: "",
+    text = QuoteUtil.getMessageBody(
+        this.type,
+        this.body,
+        this.caption,
+        this.isOutbox,
+        false,
+        contactNameFormat,
+    ) ?: "",
     createdAt = this.createdAt!!,
     editedAt = this.editedAt,
     isDeleted = this.isDeleted,
@@ -142,8 +160,10 @@ fun AbstractMessageModel?.toMessageTimestampsUiModel(): MessageTimestampsUiModel
 
         val shouldShowPostedAt =
             (
-                state != MessageState.SENDING && state != MessageState.SENDFAILED &&
-                    state != MessageState.FS_KEY_MISMATCH && state != MessageState.PENDING
+                state != MessageState.SENDING &&
+                    state != MessageState.SENDFAILED &&
+                    state != MessageState.FS_KEY_MISMATCH &&
+                    state != MessageState.PENDING
                 ) ||
                 type == MessageType.BALLOT
 

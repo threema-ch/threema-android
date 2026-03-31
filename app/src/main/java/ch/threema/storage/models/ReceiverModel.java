@@ -2,7 +2,9 @@ package ch.threema.storage.models;
 
 import java.util.Date;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import ch.threema.domain.models.ReceiverIdentifier;
 
 /**
  * Base interface for ContactModel, GroupModel and DistributionListModel.
@@ -35,4 +37,10 @@ public interface ReceiverModel {
      * distribution lists.
      */
     boolean isHidden();
+
+    /**
+     * Returns the corresponding {@code ReceiverIdentifier} for this receiver. It can be used to clearly identify the model.
+     */
+    @NonNull
+    ReceiverIdentifier getIdentifier();
 }

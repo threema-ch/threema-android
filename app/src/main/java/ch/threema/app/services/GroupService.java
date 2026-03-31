@@ -25,14 +25,15 @@ import ch.threema.base.SessionScoped;
 import ch.threema.data.datatypes.IdColor;
 import ch.threema.base.ThreemaException;
 import ch.threema.data.models.GroupIdentity;
+import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupMessageModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.access.GroupAccessModel;
 
 /**
@@ -46,7 +47,7 @@ import ch.threema.storage.models.access.GroupAccessModel;
  * messages and fire the group listeners.
  */
 @SessionScoped
-public interface GroupService extends AvatarService<GroupModel> {
+public interface GroupService extends AvatarService<GroupModelOld> {
 
     /**
      * Group state not yet determined
@@ -112,7 +113,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return the group model of the requested group, or null if not available
      */
     @Nullable
-    GroupModel getById(int groupId);
+    GroupModelOld getById(int groupId);
 
     /**
      * Get the group with the local group id.
@@ -121,9 +122,19 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return the group model of the requested group, or null if not available
      */
     @Nullable
-    default GroupModel getById(long groupId) {
+    default GroupModelOld getById(long groupId) {
         return getById((int) groupId);
     }
+
+    /**
+     * Tries to read the requested group models from cache first, and adds missing models from database (if existing). If one or all group-ids
+     * could not be found, there will be no error. In this case the result list will just miss these models.
+     * <br>
+     * <br>
+     * <b>Order:</b> The result list does not guarantee to be in the same order as the given {@code groupIds} list
+     */
+    @NonNull
+    List<GroupModelOld> getByIds(@NonNull List<Integer> groupIds);
 
     /**
      * Get the group by api group id and creator identity from the given abstract group message.
@@ -132,7 +143,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return the group that belongs to the abstract group message, or null if no group was found
      */
     @Nullable
-    GroupModel getByGroupMessage(@NonNull AbstractGroupMessage message);
+    GroupModelOld getByGroupMessage(@NonNull AbstractGroupMessage message);
 
     /**
      * Get the group by api group id and creator identity.
@@ -143,7 +154,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * group with the given group id and creator
      */
     @Nullable
-    GroupModel getByApiGroupIdAndCreator(@NonNull GroupId apiGroupId, @NonNull String creatorIdentity);
+    GroupModelOld getByApiGroupIdAndCreator(@NonNull GroupId apiGroupId, @NonNull String creatorIdentity);
 
     /**
      * Get the group by its group identity consisting of the creator identity and the group id.
@@ -153,7 +164,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * group with the given group identity
      */
     @Nullable
-    GroupModel getByGroupIdentity(@NonNull GroupIdentity groupIdentity);
+    GroupModelOld getByGroupIdentity(@NonNull GroupIdentity groupIdentity);
 
     /**
      * Get all groups.
@@ -161,7 +172,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return a list of group models
      */
     @NonNull
-    List<GroupModel> getAll();
+    List<GroupModelOld> getAll();
 
     /**
      * Get all groups according to the given filter.
@@ -170,7 +181,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return a list of group models
      */
     @NonNull
-    List<GroupModel> getAll(@Nullable GroupFilter filter);
+    List<GroupModelOld> getAll(@Nullable GroupFilter filter);
 
     /**
      * Run the rejected messages refresh steps: The receivers that requested a re-send of a rejected
@@ -180,7 +191,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      *
      * @param groupModel the group model that is refreshed
      */
-    void runRejectedMessagesRefreshSteps(@NonNull ch.threema.data.models.GroupModel groupModel);
+    void runRejectedMessagesRefreshSteps(@NonNull GroupModel groupModel);
 
     /**
      * Remove different properties from the given group. This includes ballots, files from the
@@ -191,7 +202,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      *  the rest of the database is cleared.
      */
     void removeGroupBelongings(
-        @NonNull ch.threema.data.models.GroupModel groupModel,
+        @NonNull GroupModel groupModel,
         @NonNull TriggerSource triggerSource
     );
 
@@ -209,7 +220,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return a list of the contact models
      */
     @NonNull
-    Collection<ContactModel> getMembers(@NonNull GroupModel groupModel);
+    Collection<ContactModel> getMembers(@NonNull GroupModelOld groupModel);
 
     /**
      * Get the group members including the group creator and the user (if the creator or user are
@@ -224,20 +235,20 @@ public interface GroupService extends AvatarService<GroupModel> {
     /**
      * Return the identities of all members of this group including the creator (if the creator has
      * not left the group) and the user (if the user is part of the group). To check whether the
-     * user is a member of the group, use {@link #isGroupMember(GroupModel)}.
+     * user is a member of the group, use {@link #isGroupMember(GroupModelOld)}.
      *
      * @param groupModel Group model of the group
      * @return String array of identities (i.e. Threema IDs)
      */
     @NonNull
-    String[] getGroupMemberIdentities(@NonNull GroupModel groupModel);
+    String[] getGroupMemberIdentities(@NonNull GroupModelOld groupModel);
 
     /**
      * Return the member identities (including the creator if part of the group) of the group except
      * the user.
      */
     @NonNull
-    Set<String> getMembersWithoutUser(@NonNull GroupModel groupModel);
+    Set<String> getMembersWithoutUser(@NonNull GroupModelOld groupModel);
 
     /**
      * Get a string where the group members' display names are concatenated and separated by a
@@ -247,7 +258,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return a string of all members names, including the group creator
      */
     @NonNull
-    String getMembersString(@Nullable GroupModel groupModel);
+    String getMembersString(@Nullable GroupModelOld groupModel);
 
     /**
      * Get a string where the group members' display names are concatenated and separated by a
@@ -257,7 +268,15 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return a string of all members names, including the group creator
      */
     @NonNull
-    String getMembersString(@Nullable ch.threema.data.models.GroupModel groupModel);
+    String getMembersString(@Nullable GroupModel groupModel);
+
+    /**
+     * Create a receiver for the given group identity
+     *
+     * @return a group message receiver
+     */
+    @Nullable
+    GroupMessageReceiver createReceiver(@NonNull GroupIdentity groupIdentity);
 
     /**
      * Create a receiver for the given group model.
@@ -266,7 +285,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return a group message receiver
      */
     @NonNull
-    GroupMessageReceiver createReceiver(@NonNull GroupModel groupModel);
+    GroupMessageReceiver createReceiver(@NonNull GroupModelOld groupModel);
 
     /**
      * Create a receiver for the given group model.
@@ -275,7 +294,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return a group message receiver or null if the old group model could not be found
      */
     @Nullable
-    GroupMessageReceiver createReceiver(@NonNull ch.threema.data.models.GroupModel groupModel);
+    GroupMessageReceiver createReceiver(@NonNull GroupModel groupModel);
 
     /**
      * Check whether the user is the creator of the given group.
@@ -283,7 +302,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @param groupModel the group model
      * @return {@code true} if the user is the creator, {@code false} otherwise.
      */
-    boolean isGroupCreator(@Nullable GroupModel groupModel);
+    boolean isGroupCreator(@Nullable GroupModelOld groupModel);
 
     /**
      * Check whether the user is a member of the given group. Note that the group creator is also a
@@ -292,7 +311,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @param groupModel the group model
      * @return {@code true} if the user is a group member, {@code false} otherwise
      */
-    boolean isGroupMember(@NonNull GroupModel groupModel);
+    boolean isGroupMember(@NonNull GroupModelOld groupModel);
 
     /**
      * Check whether the given identity is part of the group. Note that the group creator is also a
@@ -302,7 +321,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @param identity   the identity that is checked
      * @return {@code true} if the identity belongs to a group member, {@code false} otherwise
      */
-    boolean isGroupMember(@NonNull GroupModel groupModel, @NonNull String identity);
+    boolean isGroupMember(@NonNull GroupModelOld groupModel, @NonNull String identity);
 
     /**
      * Count members in a group. This includes the group creator and the user.
@@ -310,7 +329,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @param groupModel the group model
      * @return Number of members in this group including group creator and the current user
      */
-    int countMembers(@NonNull GroupModel groupModel);
+    int countMembers(@NonNull GroupModelOld groupModel);
 
     /**
      * Whether the provided group is an implicit note group (i.e. data is kept local). A group is
@@ -319,16 +338,16 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @param groupModel the model of the group
      * @return true if the group is a note group, false otherwise
      */
-    boolean isNotesGroup(@NonNull GroupModel groupModel);
+    boolean isNotesGroup(@NonNull GroupModelOld groupModel);
 
     /**
      * Get the number of other members in the group (including the group creator). To check for notes
-     * groups use {@link #isNotesGroup(GroupModel)}.
+     * groups use {@link #isNotesGroup(GroupModelOld)}.
      *
      * @param model the group model
      * @return the number of other members
      */
-    int countMembersWithoutUser(@NonNull GroupModel model);
+    int countMembersWithoutUser(@NonNull GroupModelOld model);
 
     /**
      * Get a map from the group member identity to its id color.
@@ -337,7 +356,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return a map with the ID colors of the members
      */
     @NonNull
-    Map<String, IdColor> getGroupMemberIDColors(@NonNull ch.threema.data.models.GroupModel model);
+    Map<String, IdColor> getGroupMemberIDColors(@NonNull GroupModel model);
 
     /**
      * Send a group sync request for the group id to the creator.
@@ -354,16 +373,15 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @return a list of groups
      */
     @NonNull
-    List<GroupModel> getGroupsByIdentity(@Nullable String identity);
+    List<GroupModelOld> getGroupsByIdentity(@Nullable String identity);
 
     /**
      * Get group status info for the provided group
      *
      * @param groupModel Group
      * @param allowEmpty Whether to allow access even if there are no other members in this group
-     * @return GroupAccessModel
      */
-    GroupAccessModel getAccess(@Nullable GroupModel groupModel, boolean allowEmpty);
+    GroupAccessModel getAccess(@Nullable GroupModelOld groupModel, boolean allowEmpty);
 
     /**
      * Mark the group as archived or unarchived. This change is reflected and uses the new group
@@ -374,9 +392,9 @@ public interface GroupService extends AvatarService<GroupModel> {
      *  when the conversation of this group is *not* pinned.
      *
      * @param groupCreatorIdentity the identity of the group creator
-     * @param groupId the api id of the group
-     * @param isArchived whether the group should be archived or not
-     * @param triggerSource the source that triggered this action
+     * @param groupId              the api id of the group
+     * @param isArchived           whether the group should be archived or not
+     * @param triggerSource        the source that triggered this action
      */
     void setIsArchived(
         @NonNull String groupCreatorIdentity,
@@ -390,7 +408,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      * <p>
      * Save the model and notify listeners.
      */
-    void bumpLastUpdate(@NonNull GroupModel groupModel);
+    void bumpLastUpdate(@NonNull GroupModelOld groupModel);
 
     /**
      * Check whether the group contains the maximum supported amount of members.
@@ -398,7 +416,26 @@ public interface GroupService extends AvatarService<GroupModel> {
      * @param groupModel the group model
      * @return true if the group is full, false otherwise
      */
-    boolean isFull(GroupModel groupModel);
+    boolean isFull(GroupModelOld groupModel);
+
+    /**
+     * Get the intent to open the group details.
+     *
+     * @param activity   the current activity
+     * @return the intent to open the group details
+     */
+    @NonNull
+    Intent getGroupDetailIntent(long groupDatabaseId, @NonNull Activity activity);
+
+    /**
+     * Get the intent to open the group details.
+     *
+     * @param groupModel the group model
+     * @param activity   the current activity
+     * @return the intent to open the group details
+     */
+    @NonNull
+    Intent getGroupDetailIntent(@NonNull GroupModelOld groupModel, @NonNull Activity activity);
 
     /**
      * Get the intent to open the group details.
@@ -411,16 +448,6 @@ public interface GroupService extends AvatarService<GroupModel> {
     Intent getGroupDetailIntent(@NonNull GroupModel groupModel, @NonNull Activity activity);
 
     /**
-     * Get the intent to open the group details.
-     *
-     * @param groupModel the group model
-     * @param activity   the current activity
-     * @return the intent to open the group details
-     */
-    @NonNull
-    Intent getGroupDetailIntent(@NonNull ch.threema.data.models.GroupModel groupModel, @NonNull Activity activity);
-
-    /**
      * Get the avatar with the given avatar options of the given model as bitmap.
      *
      * @param groupModel the group model of which the avatar is returned
@@ -429,7 +456,16 @@ public interface GroupService extends AvatarService<GroupModel> {
      */
     @Nullable
     @AnyThread
-    Bitmap getAvatar(@Nullable ch.threema.data.models.GroupModel groupModel, @NonNull AvatarOptions options);
+    Bitmap getAvatar(@Nullable GroupModel groupModel, @NonNull AvatarOptions options);
+
+    /**
+     * Get the color of the default group profile picture.
+     *
+     * @param groupModel the group model for which the group profile picture color is to be determined.
+     *                   If null, the default color is returned
+     * @return the group profile picture color of the given group model, or the default color if the subject is null
+     */
+    int getGroupProfilePictureColor(@Nullable GroupModel groupModel);
 
     /**
      * Load the avatar of the given model into the provided image view. The avatar bitmap is loaded
@@ -441,7 +477,7 @@ public interface GroupService extends AvatarService<GroupModel> {
      */
     @AnyThread
     void loadAvatarIntoImageView(
-        @NonNull ch.threema.data.models.GroupModel groupModel,
+        @NonNull GroupModel groupModel,
         @NonNull ImageView imageView,
         @NonNull AvatarOptions options,
         @NonNull RequestManager requestManager
@@ -452,8 +488,8 @@ public interface GroupService extends AvatarService<GroupModel> {
     /**
      * Check to which extent a feature is supported by the members of a group
      *
-     * @param groupModelData  group model data
-     * @param featureMask feature mask
+     * @param groupModelData group model data
+     * @param featureMask    feature mask
      * @return the feature support indicating whether all, not all or none of the group members support the feature
      */
     GroupFeatureSupport getFeatureSupport(@NonNull GroupModelData groupModelData, @ThreemaFeature.Feature long featureMask);

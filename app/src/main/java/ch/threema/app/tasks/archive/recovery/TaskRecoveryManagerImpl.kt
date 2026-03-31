@@ -1,6 +1,5 @@
 package ch.threema.app.tasks.archive.recovery
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.tasks.archive.recovery.handlers.GroupCreateTaskRecoveryHandler
 import ch.threema.app.tasks.archive.recovery.handlers.GroupUpdateTaskRecoveryHandler
 import ch.threema.domain.taskmanager.Task
@@ -14,6 +13,6 @@ class TaskRecoveryManagerImpl : TaskRecoveryManager {
         )
     }
 
-    override fun recoverTask(encodedTask: String, serviceManager: ServiceManager): Task<*, TaskCodec>? =
-        taskRecoveryHandlers.firstNotNullOfOrNull { taskRecoveryHandler -> taskRecoveryHandler.tryRecovery(encodedTask, serviceManager) }
+    override fun recoverTask(encodedTask: String): Task<*, TaskCodec>? =
+        taskRecoveryHandlers.firstNotNullOfOrNull { taskRecoveryHandler -> taskRecoveryHandler.tryRecovery(encodedTask) }
 }

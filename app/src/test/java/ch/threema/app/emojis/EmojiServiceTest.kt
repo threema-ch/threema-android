@@ -12,7 +12,7 @@ class EmojiServiceTest {
     fun `searching for a term returns results from index`() = runTest {
         val emojiService = EmojiService(
             preferenceService = mockk {
-                every { diverseEmojiPrefs } returns emptyMap()
+                every { getDiverseEmojiPrefs() } returns emptyMap()
             },
             searchIndex = mockk {
                 every { search(any(), "test") } returns listOf(
@@ -60,7 +60,7 @@ class EmojiServiceTest {
     fun `searching for an emoji returns the emoji`() = runTest {
         val emojiService = EmojiService(
             preferenceService = mockk {
-                every { diverseEmojiPrefs } returns emptyMap()
+                every { getDiverseEmojiPrefs() } returns emptyMap()
             },
             searchIndex = mockk {
                 every { search(any(), any()) } returns emptyList()

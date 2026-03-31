@@ -13,12 +13,6 @@ public class LoadingUtil {
 
     /**
      * Run a {screen} in a thread and show a loading alert with {subjectId} and {textId}
-     *
-     * @param fragmentManager
-     * @param subjectId
-     * @param textId
-     * @param script
-     * @return
      */
     public static Thread runInAlert(FragmentManager fragmentManager, int subjectId, int textId, final Runnable script) {
         GenericProgressDialog.newInstance(subjectId, textId).show(fragmentManager, DIALOG_TAG_PROGRESS_LOADINGUTIL);

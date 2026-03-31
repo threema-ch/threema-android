@@ -176,7 +176,7 @@ public class GeoLocationUtil {
             final @Nullable String address = bundle.getString("address");
             targetView.setText(address);
 
-            if (TestUtil.required(this.messageModel, this.messageService)) {
+            if (messageModel != null && messageService != null) {
 
                 // Apply the passed ´address´ value to the existing message model
                 LocationDataModel locationDataModel = messageModel.getLocationData();

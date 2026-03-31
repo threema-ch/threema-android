@@ -10,6 +10,9 @@ import java.nio.ByteOrder;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
+import static ch.threema.common.SecureRandomExtensionsKt.generateRandomBytes;
+import static ch.threema.common.SecureRandomExtensionsKt.secureRandom;
+
 /**
  * Wrapper class for group IDs (consisting of 8 bytes, chosen by the group creator and not guaranteed
  * to be unique across multiple group creators).
@@ -19,9 +22,7 @@ public class GroupId implements Serializable {
     private final byte[] value;
 
     public GroupId() {
-        this.value = new byte[ProtocolDefines.GROUP_ID_LEN];
-        SecureRandom rnd = new SecureRandom();
-        rnd.nextBytes(this.value);
+        this.value = generateRandomBytes(secureRandom(), ProtocolDefines.GROUP_ID_LEN);
     }
 
     public GroupId(byte[] groupId) throws ThreemaException {

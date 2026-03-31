@@ -1,53 +1,29 @@
 package ch.threema.app.protocol
 
+import android.os.Build
 import ch.threema.app.DangerousTest
-import ch.threema.app.TestCoreServiceManager
-import ch.threema.app.TestTaskManager
-import ch.threema.app.ThreemaApplication
-import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.preference.service.PreferenceServiceImpl
+import ch.threema.app.preference.service.SynchronizedSettingsService
+import ch.threema.app.protocolsteps.BlockState
+import ch.threema.app.protocolsteps.IdentityBlockedSteps
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.GroupService
-import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
-import ch.threema.app.testutils.clearDatabaseAndCaches
-import ch.threema.app.utils.AppVersionProvider
-import ch.threema.data.TestDatabaseService
-import ch.threema.data.datatypes.IdColor
+import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
-import ch.threema.data.repositories.ModelRepositories
-import ch.threema.domain.helpers.UnusedTaskCodec
-import ch.threema.domain.models.ContactSyncState
-import ch.threema.domain.models.GroupId
-import ch.threema.domain.models.IdentityState
-import ch.threema.domain.models.IdentityType
-import ch.threema.domain.models.ReadReceiptPolicy
-import ch.threema.domain.models.TypingIndicatorPolicy
-import ch.threema.domain.models.VerificationLevel
-import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.stores.ContactStore
-import ch.threema.domain.types.Identity
-import ch.threema.storage.DatabaseService
-import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupMemberModel
-import ch.threema.storage.models.GroupModel
+import ch.threema.storage.models.ContactModel.AcquaintanceLevel
+import ch.threema.storage.models.group.GroupModelOld
+import io.mockk.every
+import io.mockk.mockk
 import java.util.Date
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlinx.coroutines.runBlocking
+import org.junit.Assume.assumeTrue
+import org.junit.Before
 
 @DangerousTest
 class IdentityBlockedStepsTest {
-    private lateinit var contactModelRepository: ContactModelRepository
-    private lateinit var contactStore: ContactStore
-    private lateinit var groupService: GroupService
-    private lateinit var blockUnknownPreferenceService: PreferenceService
-    private lateinit var noBlockPreferenceService: PreferenceService
-    private lateinit var blockedIdentitiesService: BlockedIdentitiesService
-
-    private val myContact = TestHelpers.TEST_CONTACT
     private val knownContact = TestContact("12345678")
     private val unknownContact = TestContact("TESTTEST")
     private val specialContact = TestContact("*3MAPUSH")
@@ -56,70 +32,45 @@ class IdentityBlockedStepsTest {
     private val inNoGroup = TestContact("********")
     private val inLeftGroup = TestContact("--------")
 
-    @BeforeTest
+    private lateinit var contactModelRepositoryMock: ContactModelRepository
+    private lateinit var contactStoreMock: ContactStore
+    private lateinit var groupServiceMock: GroupService
+    private lateinit var blockedIdentitiesServiceMock: BlockedIdentitiesService
+    private lateinit var noBlockUnknownSynchronizedSettingsServiceMock: SynchronizedSettingsService
+    private lateinit var blockUnknownSynchronizedSettingsServiceMock: SynchronizedSettingsService
+
+    @Before
     fun setup() {
-        val serviceManager = ThreemaApplication.requireServiceManager()
-
-        clearDatabaseAndCaches(serviceManager)
-
-        assert(myContact.identity == TestHelpers.ensureIdentity(serviceManager))
-
-        val databaseService = TestDatabaseService()
-        val coreServiceManager = TestCoreServiceManager(
-            version = AppVersionProvider.appVersion,
-            databaseService = databaseService,
-            preferenceStore = serviceManager.preferenceStore,
-            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
-            taskManager = TestTaskManager(UnusedTaskCodec()),
+        // Because mockk does not support mocking objects below android P, we skip this test in this case.
+        assumeTrue(
+            Build.VERSION.SDK_INT > Build.VERSION_CODES.P,
         )
-        contactModelRepository = ModelRepositories(coreServiceManager).contacts
-        contactStore = serviceManager.contactStore
-        groupService = serviceManager.groupService
-        blockedIdentitiesService = serviceManager.blockedIdentitiesService
-        blockedIdentitiesService.blockIdentity(explicitlyBlockedContact.identity)
 
-        blockUnknownPreferenceService = object : PreferenceServiceImpl(
-            ThreemaApplication.getAppContext(),
-            serviceManager.preferenceStore,
-            serviceManager.encryptedPreferenceStore,
-            coreServiceManager.taskManager,
-            coreServiceManager.multiDeviceManager,
-            coreServiceManager.nonceFactory,
-        ) {
-            override fun isBlockUnknown(): Boolean {
-                return true
+        contactModelRepositoryMock = getContactModelRepositoryMock()
+        contactStoreMock = getContactStoreMock()
+        groupServiceMock = getGroupServiceMock()
+        blockedIdentitiesServiceMock = mockk {
+            every { isBlocked(any()) } answers {
+                firstArg<String>() == explicitlyBlockedContact.identity
             }
         }
-
-        noBlockPreferenceService = object : PreferenceServiceImpl(
-            ThreemaApplication.getAppContext(),
-            serviceManager.preferenceStore,
-            serviceManager.encryptedPreferenceStore,
-            coreServiceManager.taskManager,
-            coreServiceManager.multiDeviceManager,
-            coreServiceManager.nonceFactory,
-        ) {
-            override fun isBlockUnknown(): Boolean {
-                return false
-            }
+        noBlockUnknownSynchronizedSettingsServiceMock = mockk {
+            every { isBlockUnknown() } returns false
         }
-
-        addKnownContacts()
-        addGroups(serviceManager.databaseService)
+        blockUnknownSynchronizedSettingsServiceMock = mockk {
+            every { isBlockUnknown() } returns true
+        }
     }
 
     @Test
     fun testExplicitlyBlockedContact() {
         assertEquals(
             BlockState.EXPLICITLY_BLOCKED,
-            runIdentityBlockedSteps(explicitlyBlockedContact.identity, noBlockPreferenceService),
+            runIdentityBlockedSteps(explicitlyBlockedContact.identity, noBlockUnknownSynchronizedSettingsServiceMock),
         )
         assertEquals(
             BlockState.EXPLICITLY_BLOCKED,
-            runIdentityBlockedSteps(
-                explicitlyBlockedContact.identity,
-                blockUnknownPreferenceService,
-            ),
+            runIdentityBlockedSteps(explicitlyBlockedContact.identity, blockUnknownSynchronizedSettingsServiceMock),
         )
     }
 
@@ -127,7 +78,7 @@ class IdentityBlockedStepsTest {
     fun testImplicitlyBlockedContact() {
         assertEquals(
             BlockState.IMPLICITLY_BLOCKED,
-            runIdentityBlockedSteps(unknownContact.identity, blockUnknownPreferenceService),
+            runIdentityBlockedSteps(unknownContact.identity, blockUnknownSynchronizedSettingsServiceMock),
         )
     }
 
@@ -135,7 +86,7 @@ class IdentityBlockedStepsTest {
     fun testImplicitlyBlockedSpecialContact() {
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(specialContact.identity, blockUnknownPreferenceService),
+            runIdentityBlockedSteps(specialContact.identity, blockUnknownSynchronizedSettingsServiceMock),
         )
     }
 
@@ -143,7 +94,7 @@ class IdentityBlockedStepsTest {
     fun testGroupContactWithGroup() {
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(inGroup.identity, blockUnknownPreferenceService),
+            runIdentityBlockedSteps(inGroup.identity, blockUnknownSynchronizedSettingsServiceMock),
         )
     }
 
@@ -151,7 +102,7 @@ class IdentityBlockedStepsTest {
     fun testGroupContactWithoutGroup() {
         assertEquals(
             BlockState.IMPLICITLY_BLOCKED,
-            runIdentityBlockedSteps(inNoGroup.identity, blockUnknownPreferenceService),
+            runIdentityBlockedSteps(inNoGroup.identity, blockUnknownSynchronizedSettingsServiceMock),
         )
     }
 
@@ -159,7 +110,7 @@ class IdentityBlockedStepsTest {
     fun testGroupContactWithLeftGroup() {
         assertEquals(
             BlockState.IMPLICITLY_BLOCKED,
-            runIdentityBlockedSteps(inLeftGroup.identity, blockUnknownPreferenceService),
+            runIdentityBlockedSteps(inLeftGroup.identity, blockUnknownSynchronizedSettingsServiceMock),
         )
     }
 
@@ -167,7 +118,7 @@ class IdentityBlockedStepsTest {
     fun testKnownContact() {
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(knownContact.identity, blockUnknownPreferenceService),
+            runIdentityBlockedSteps(knownContact.identity, blockUnknownSynchronizedSettingsServiceMock),
         )
     }
 
@@ -175,193 +126,101 @@ class IdentityBlockedStepsTest {
     fun testWithoutBlockingUnknown() {
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(knownContact.identity, noBlockPreferenceService),
+            runIdentityBlockedSteps(knownContact.identity, noBlockUnknownSynchronizedSettingsServiceMock),
         )
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(unknownContact.identity, noBlockPreferenceService),
+            runIdentityBlockedSteps(unknownContact.identity, noBlockUnknownSynchronizedSettingsServiceMock),
         )
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(specialContact.identity, noBlockPreferenceService),
+            runIdentityBlockedSteps(specialContact.identity, noBlockUnknownSynchronizedSettingsServiceMock),
         )
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(inGroup.identity, noBlockPreferenceService),
+            runIdentityBlockedSteps(inGroup.identity, noBlockUnknownSynchronizedSettingsServiceMock),
         )
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(inNoGroup.identity, noBlockPreferenceService),
+            runIdentityBlockedSteps(inNoGroup.identity, noBlockUnknownSynchronizedSettingsServiceMock),
         )
         assertEquals(
             BlockState.NOT_BLOCKED,
-            runIdentityBlockedSteps(inLeftGroup.identity, noBlockPreferenceService),
+            runIdentityBlockedSteps(inLeftGroup.identity, noBlockUnknownSynchronizedSettingsServiceMock),
         )
     }
 
-    private fun runIdentityBlockedSteps(
-        identity: Identity,
-        preferenceService: PreferenceService,
-    ) = runIdentityBlockedSteps(
-        identity,
-        contactModelRepository,
-        contactStore,
-        groupService,
-        blockedIdentitiesService,
-        preferenceService,
-    )
+    private fun runIdentityBlockedSteps(identity: String, synchronizedSettingsService: SynchronizedSettingsService) =
+        IdentityBlockedSteps(
+            contactModelRepository = contactModelRepositoryMock,
+            contactStore = contactStoreMock,
+            groupService = groupServiceMock,
+            blockedIdentitiesService = blockedIdentitiesServiceMock,
+            synchronizedSettingsService = synchronizedSettingsService,
+        ).run(identity = identity)
 
-    private fun addKnownContacts() = runBlocking {
-        contactModelRepository.createFromLocal(
-            ContactModelData(
-                identity = knownContact.identity,
-                publicKey = knownContact.publicKey,
-                createdAt = Date(),
-                firstName = "",
-                lastName = "",
-                nickname = "",
-                idColor = IdColor(0),
-                verificationLevel = VerificationLevel.UNVERIFIED,
-                workVerificationLevel = WorkVerificationLevel.NONE,
-                identityType = IdentityType.NORMAL,
-                acquaintanceLevel = ContactModel.AcquaintanceLevel.DIRECT,
-                activityState = IdentityState.ACTIVE,
-                syncState = ContactSyncState.INITIAL,
-                featureMask = 0u,
-                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
-                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
-                isArchived = false,
-                androidContactLookupInfo = null,
-                localAvatarExpires = null,
-                isRestored = false,
-                profilePictureBlobId = null,
-                jobTitle = null,
-                department = null,
-                notificationTriggerPolicyOverride = null,
-            ),
-        )
-        contactModelRepository.createFromLocal(
-            ContactModelData(
-                identity = inGroup.identity,
-                publicKey = inGroup.publicKey,
-                createdAt = Date(),
-                firstName = "",
-                lastName = "",
-                nickname = "",
-                idColor = IdColor(0),
-                verificationLevel = VerificationLevel.UNVERIFIED,
-                workVerificationLevel = WorkVerificationLevel.NONE,
-                identityType = IdentityType.NORMAL,
-                acquaintanceLevel = ContactModel.AcquaintanceLevel.GROUP,
-                activityState = IdentityState.ACTIVE,
-                syncState = ContactSyncState.INITIAL,
-                featureMask = 0u,
-                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
-                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
-                isArchived = false,
-                androidContactLookupInfo = null,
-                localAvatarExpires = null,
-                isRestored = false,
-                profilePictureBlobId = null,
-                jobTitle = null,
-                department = null,
-                notificationTriggerPolicyOverride = null,
-            ),
-        )
-        contactModelRepository.createFromLocal(
-            ContactModelData(
-                identity = inNoGroup.identity,
-                publicKey = inNoGroup.publicKey,
-                createdAt = Date(),
-                firstName = "",
-                lastName = "",
-                nickname = "",
-                idColor = IdColor(0),
-                verificationLevel = VerificationLevel.UNVERIFIED,
-                workVerificationLevel = WorkVerificationLevel.NONE,
-                identityType = IdentityType.NORMAL,
-                acquaintanceLevel = ContactModel.AcquaintanceLevel.GROUP,
-                activityState = IdentityState.ACTIVE,
-                syncState = ContactSyncState.INITIAL,
-                featureMask = 0u,
-                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
-                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
-                isArchived = false,
-                androidContactLookupInfo = null,
-                localAvatarExpires = null,
-                isRestored = false,
-                profilePictureBlobId = null,
-                jobTitle = null,
-                department = null,
-                notificationTriggerPolicyOverride = null,
-            ),
-        )
-        contactModelRepository.createFromLocal(
-            ContactModelData(
-                identity = inLeftGroup.identity,
-                publicKey = inLeftGroup.publicKey,
-                createdAt = Date(),
-                firstName = "",
-                lastName = "",
-                nickname = "",
-                idColor = IdColor(0),
-                verificationLevel = VerificationLevel.UNVERIFIED,
-                workVerificationLevel = WorkVerificationLevel.NONE,
-                identityType = IdentityType.NORMAL,
-                acquaintanceLevel = ContactModel.AcquaintanceLevel.GROUP,
-                activityState = IdentityState.ACTIVE,
-                syncState = ContactSyncState.INITIAL,
-                featureMask = 0u,
-                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
-                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
-                isArchived = false,
-                androidContactLookupInfo = null,
-                localAvatarExpires = null,
-                isRestored = false,
-                profilePictureBlobId = null,
-                jobTitle = null,
-                department = null,
-                notificationTriggerPolicyOverride = null,
-            ),
-        )
+    private fun getContactModelRepositoryMock(): ContactModelRepository = mockk {
+        every { getByIdentity(knownContact.identity) } returns getContactModelMock(knownContact, AcquaintanceLevel.DIRECT)
+
+        every { getByIdentity(unknownContact.identity) } returns null
+
+        every { getByIdentity(inGroup.identity) } returns getContactModelMock(inGroup, AcquaintanceLevel.GROUP)
+
+        every { getByIdentity(inNoGroup.identity) } returns getContactModelMock(inNoGroup, AcquaintanceLevel.GROUP)
+
+        every { getByIdentity(inLeftGroup.identity) } returns getContactModelMock(inLeftGroup, AcquaintanceLevel.GROUP)
     }
 
-    private fun addGroups(databaseService: DatabaseService) = runBlocking {
-        databaseService.groupModelFactory.apply {
-            create(
-                GroupModel()
-                    .setApiGroupId(GroupId(0))
-                    .setCreatorIdentity(myContact.identity)
-                    .setUserState(GroupModel.UserState.MEMBER)
-                    .setCreatedAt(Date()),
-            )
-            create(
-                GroupModel()
-                    .setApiGroupId(GroupId(1))
-                    .setCreatorIdentity(myContact.identity)
-                    .setUserState(GroupModel.UserState.LEFT)
-                    .setCreatedAt(Date()),
-            )
+    private fun getContactStoreMock(): ContactStore = mockk {
+        every { isSpecialContact(any()) } answers {
+            firstArg<String>() == specialContact.identity
         }
-        val memberGroup = databaseService.groupModelFactory.getByApiGroupIdAndCreator(
-            GroupId(0).toString(),
-            myContact.identity,
-        )
-        val leftGroup = databaseService.groupModelFactory.getByApiGroupIdAndCreator(
-            GroupId(1).toString(),
-            myContact.identity,
-        )
-        databaseService.groupMemberModelFactory.apply {
-            create(
-                GroupMemberModel()
-                    .setGroupId(memberGroup.id)
-                    .setIdentity(inGroup.identity),
-            )
-            create(
-                GroupMemberModel()
-                    .setGroupId(leftGroup.id)
-                    .setIdentity(inLeftGroup.identity),
-            )
+    }
+
+    private fun getGroupServiceMock(): GroupService = mockk {
+        val groupModelMock: GroupModelOld = mockk()
+        val leftGroupModelMock: GroupModelOld = mockk()
+
+        every { getGroupsByIdentity(any()) } answers {
+            when (firstArg<String>()) {
+                inGroup.identity -> listOf(groupModelMock)
+                inLeftGroup.identity -> listOf(leftGroupModelMock)
+                else -> emptyList()
+            }
         }
+
+        every { isGroupMember(groupModelMock) } returns true
+        every { isGroupMember(leftGroupModelMock) } returns false
+    }
+
+    private fun getContactModelMock(contact: TestContact, acquaintanceLevel: AcquaintanceLevel): ContactModel = mockk {
+        val contactModelData = ContactModelData(
+            identity = contact.identity,
+            publicKey = contact.publicKey,
+            createdAt = Date(),
+            firstName = "",
+            lastName = "",
+            nickname = null,
+            idColor = mockk(),
+            verificationLevel = mockk(),
+            workVerificationLevel = mockk(),
+            identityType = mockk(),
+            acquaintanceLevel = acquaintanceLevel,
+            activityState = mockk(),
+            syncState = mockk(),
+            featureMask = 0u,
+            readReceiptPolicy = mockk(),
+            typingIndicatorPolicy = mockk(),
+            isArchived = false,
+            androidContactLookupInfo = null,
+            localAvatarExpires = null,
+            isRestored = false,
+            profilePictureBlobId = null,
+            jobTitle = null,
+            department = null,
+            notificationTriggerPolicyOverride = mockk(),
+        )
+
+        every { data } returns contactModelData
     }
 }

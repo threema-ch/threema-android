@@ -31,3 +31,14 @@ fun Duration.toHMMSS(): String =
             else -> "%02d:%02d".format(minutes, seconds)
         }
     }
+
+/**
+ * As negative timestamps (aka dates before 1970) do not make sense in our case and are not supported
+ * by the protocol this method can be used to coerce timestamps to a non-negative value.
+ *
+ * @return 0 if this Long is < 0, this Long otherwise
+ */
+fun Long.toNonNegativeTimestamp(): Long =
+    coerceAtLeast(
+        minimumValue = 0L,
+    )

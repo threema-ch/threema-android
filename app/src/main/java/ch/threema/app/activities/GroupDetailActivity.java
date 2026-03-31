@@ -28,7 +28,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -77,15 +76,17 @@ import ch.threema.app.listeners.GroupListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.mediagallery.MediaGalleryActivity;
 import ch.threema.app.profilepicture.CheckedProfilePicture;
+import ch.threema.app.services.ContactService;
 import ch.threema.app.ui.AvatarEditView;
 import ch.threema.app.ui.GroupDetailViewModel;
 import ch.threema.app.ui.ResumePauseHandler;
 import ch.threema.app.ui.SelectorDialogItem;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
+import ch.threema.app.utils.DisplayableGroupParticipant;
+import ch.threema.app.utils.DisplayableGroupParticipants;
 import ch.threema.app.utils.GroupCallUtil;
 import ch.threema.app.utils.GroupUtil;
 import ch.threema.app.utils.IntentDataUtil;
@@ -95,12 +96,15 @@ import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.groupcall.GroupCallDescription;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.base.utils.CoroutinesExtensionKt;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.data.models.GroupIdentity;
+import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
@@ -153,9 +157,15 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     private final ResumePauseHandler.RunIfActive runIfActiveUpdate = new ResumePauseHandler.RunIfActive() {
         @Override
         public void runOnUiThread() {
-            groupDetailViewModel.setGroupName(groupModel.getName());
+            GroupModelData groupModelData = groupModel.getData();
+            if (groupModelData == null) {
+                logger.warn("Group has been deleted");
+                finish();
+                return;
+            }
 
-            groupDetailViewModel.setGroupIdentities(dependencies.getGroupService().getGroupMemberIdentities(groupModel));
+            groupDetailViewModel.setGroupName(groupModelData.name);
+            groupDetailViewModel.setGroupIdentities(groupModelData.getAllMembers(myIdentity).toArray(new String[]{}));
             sortGroupMembers();
         }
     };
@@ -172,7 +182,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         public void onAvatarRemoved() {
             groupDetailViewModel.setAvatarFile(null);
             groupDetailViewModel.setIsAvatarRemoved(true);
-            avatarEditView.setDefaultAvatar(null, groupModel);
+            avatarEditView.setDefaultGroupAvatar();
             updateFloatingActionButtonAndMenu();
         }
     };
@@ -184,8 +194,14 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private final ContactSettingsListener contactSettingsListener = new ContactSettingsListener() {
+
         @Override
-        public void onAvatarSettingChanged() {
+        public void onIsDefaultContactPictureColoredChanged(boolean isColored) {
+            resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
+        }
+
+        @Override
+        public void onShowContactDefinedAvatarsChanged(boolean shouldShow) {
             resumePauseHandler.runOnActive(RUN_ON_ACTIVE_RELOAD, runIfActiveUpdate);
         }
     };
@@ -314,16 +330,42 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         groupId = getIntent().getLongExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0L);
         if (this.groupId == 0) {
             finish();
+            return;
         }
-        this.groupModel = dependencies.getGroupService().getById(groupId);
+        groupModel = dependencies.getGroupModelRepository().getByLocalGroupDbId(groupId);
+        if (groupModel == null) {
+            logger.warn("Group model couldn't be found");
+            finish();
+            return;
+        }
+        GroupModelData groupModelData = groupModel.getData();
+        if (groupModelData == null) {
+            logger.warn("Group model has been deleted");
+            finish();
+            return;
+        }
+        DisplayableGroupParticipants displayableGroupParticipants = DisplayableGroupParticipants.getDisplayableGroupParticipantsOfGroup(
+            groupModel,
+            dependencies.getContactModelRepository(),
+            dependencies.getUserService(),
+            dependencies.getPreferenceService()
+        );
+        if (displayableGroupParticipants == null) {
+            logger.error("Cannot get displayable group participants as group seems to have been deleted in the meantime.");
+            finish();
+            return;
+        }
+        List<DisplayableGroupParticipant> displayableGroupParticipantList = new ArrayList<>(displayableGroupParticipants.getMembersWithoutCreator().size() + 1);
+        displayableGroupParticipantList.add(displayableGroupParticipants.getCreator());
+        displayableGroupParticipantList.addAll(displayableGroupParticipants.getMembersWithoutCreator());
 
         observeNewGroupModel();
 
         if (savedInstanceState == null) {
             // new instance
-            this.groupDetailViewModel.setGroupContacts(dependencies.getContactService().getByIdentities(dependencies.getGroupService().getGroupMemberIdentities(this.groupModel)));
-            this.groupDetailViewModel.setGroupName(this.groupModel.getName());
-            String groupDesc = this.groupModel.getGroupDesc();
+            this.groupDetailViewModel.setGroupMembers(displayableGroupParticipantList);
+            this.groupDetailViewModel.setGroupName(groupModelData.name);
+            String groupDesc = groupModelData.groupDescription;
             if (groupDesc == null || groupDesc.isEmpty()) {
                 this.groupDetailViewModel.setGroupDesc(null);
                 this.groupDetailViewModel.setGroupDescState(NONE);
@@ -331,17 +373,17 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
                 this.groupDetailViewModel.setGroupDesc(groupDesc);
                 this.groupDetailViewModel.setGroupDescState(COLLAPSED);
             }
-            this.groupDetailViewModel.setGroupDescTimestamp(this.groupModel.getGroupDescTimestamp());
+            this.groupDetailViewModel.setGroupDescTimestamp(groupModelData.groupDescriptionChangedAt);
         }
 
         this.avatarEditView.setHires(true);
         if (groupDetailViewModel.getIsAvatarRemoved()) {
-            this.avatarEditView.setDefaultAvatar(null, groupModel);
+            this.avatarEditView.setDefaultGroupAvatar();
         } else {
             if (groupDetailViewModel.getAvatarFile() != null) {
                 this.avatarEditView.setAvatarFile(groupDetailViewModel.getAvatarFile());
             } else {
-                this.avatarEditView.loadAvatarForModel(null, groupModel);
+                this.avatarEditView.loadAvatarForGroupModel(groupModel);
             }
         }
         this.avatarEditView.setListener(this.avatarEditViewListener);
@@ -360,7 +402,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         setTitle();
         updateFloatingActionButtonAndMenu();
 
-        if (dependencies.getGroupService().isGroupCreator(groupModel) && dependencies.getGroupService().isGroupMember(groupModel)) {
+        if (groupModel.isCreator() && groupModel.isMember()) {
             operationMode = MODE_EDIT;
             actionBar.setHomeButtonEnabled(false);
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -369,7 +411,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
                 logger.info("FAB (save group settings) clicked");
                 saveGroupSettings();
             });
-            groupNameEditText.setMaxByteSize(GroupModel.GROUP_NAME_MAX_LENGTH_BYTES);
+            groupNameEditText.setMaxByteSize(GroupModelOld.GROUP_NAME_MAX_LENGTH_BYTES);
             groupNameEditText.addTextChangedListener(new SimpleTextWatcher() {
                 @Override
                 public void afterTextChanged(@NonNull Editable editable) {
@@ -391,7 +433,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
             // If the user is not a member of the group, then display the group name with strike
             // through style
-            if (!dependencies.getGroupService().isGroupMember(groupModel)) {
+            if (!groupModel.isMember()) {
                 // Get the paint flags and add the strike through flag
                 int paintFlags = groupNameEditText.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG;
                 groupNameEditText.setPaintFlags(paintFlags);
@@ -420,16 +462,15 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
         groupDetailRecyclerView.setAdapter(this.groupDetailAdapter);
 
-        final Observer<List<ContactModel>> groupMemberObserver = groupMembers -> {
+        final Observer<List<DisplayableGroupParticipant>> groupMemberObserver = groupParticipants ->
             // Update the UI
-            groupDetailAdapter.setContactModels(groupMembers);
-        };
+            groupDetailAdapter.setGroupMembers(groupParticipants);
 
         // Observe the LiveData, passing in this activity as the LifecycleOwner and the observer.
         groupDetailViewModel.getGroupMembers().observe(this, groupMemberObserver);
         groupDetailViewModel.onDataChanged();
 
-        @ColorInt int color = dependencies.getGroupService().getAvatarColor(groupModel);
+        @ColorInt int color = dependencies.getGroupService().getGroupProfilePictureColor(groupModel);
         collapsingToolbar.setContentScrimColor(color);
         collapsingToolbar.setStatusBarScrimColor(color);
 
@@ -445,7 +486,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     @Override
-    public void handleDeviceInsets(){
+    public void handleDeviceInsets() {
         // As the CollapsingToolbarLayout will consume the window insets internally, we have to apply the window insets to every our child views
         // with one inset listener from the root layout
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_content), (view, windowInsets) -> {
@@ -492,7 +533,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             this,
             this.groupModel,
             groupDetailViewModel,
-            dependencies.getServiceManager()
+            dependencies.getContactService()
         );
 
         this.groupDetailAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
@@ -525,35 +566,22 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void sortGroupMembers() {
-        final boolean isSortingFirstName = dependencies.getPreferenceService().isContactListSortingFirstName();
-        List<ContactModel> contactModels = groupDetailViewModel.getGroupContacts();
-        Collections.sort(contactModels, new Comparator<ContactModel>() {
-            @Override
-            public int compare(ContactModel model1, ContactModel model2) {
-                return ContactUtil.getSafeNameString(model1, isSortingFirstName).compareTo(
-                    ContactUtil.getSafeNameString(model2, isSortingFirstName)
-                );
+        List<DisplayableGroupParticipant> displayableGroupParticipants = groupDetailViewModel.getDisplayableGroupParticipants();
+        displayableGroupParticipants.sort((o1, o2) -> {
+            if (o1 instanceof DisplayableGroupParticipant.Creator) {
+                return -1;
+            } else if (o2 instanceof DisplayableGroupParticipant.Creator) {
+                return 1;
+            } else {
+                return o1.getDisplayableContactOrUser().getDisplayName().compareTo(o2.getDisplayableContactOrUser().getDisplayName());
             }
         });
-
-        if (contactModels.size() > 1 && groupModel.getCreatorIdentity() != null) {
-            for (ContactModel currentMember : contactModels) {
-                if (groupModel.getCreatorIdentity().equals(currentMember.getIdentity())) {
-                    contactModels.remove(currentMember);
-                    contactModels.add(0, currentMember);
-                    break;
-                }
-            }
-        }
-
-        groupDetailViewModel.setGroupContacts(contactModels);
+        groupDetailViewModel.setGroupMembers(displayableGroupParticipants);
     }
 
-    private void removeMemberFromGroup(final ContactModel contactModel) {
-        if (contactModel != null) {
-            this.groupDetailViewModel.removeGroupContact(contactModel);
-            updateFloatingActionButtonAndMenu();
-        }
+    private void removeMemberFromGroup(@NonNull String identity) {
+        this.groupDetailViewModel.removeGroupContact(identity);
+        updateFloatingActionButtonAndMenu();
     }
 
     @Override
@@ -582,18 +610,18 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         MenuItem mediaGalleryMenu = menu.findItem(R.id.menu_gallery);
         MenuItem groupCallMenu = menu.findItem(R.id.menu_group_call);
 
-        if (AppRestrictionUtil.isCreateGroupDisabled(this)) {
+        if (dependencies.getAppRestrictions().isCreateGroupDisabled()) {
             cloneMenu.setVisible(false);
         }
 
         if (groupModel != null) {
-            var groupService = dependencies.getGroupService();
             GroupCallDescription call = dependencies.getGroupCallManager().getCurrentChosenCall(groupModel);
-            groupCallMenu.setVisible(GroupCallUtil.qualifiesForGroupCalls(groupService, groupModel) && !hasChanges() && call == null);
+            groupCallMenu.setVisible(GroupCallUtil.qualifiesForGroupCalls(groupModel) && !hasChanges() && call == null);
 
-            boolean isMember = groupService.isGroupMember(groupModel);
-            boolean isCreator = groupService.isGroupCreator(groupModel);
-            boolean hasOtherMembers = groupService.countMembersWithoutUser(groupModel) > 0;
+            boolean isMember = groupModel.isMember();
+            boolean isCreator = groupModel.isCreator();
+            GroupModelData groupModelData = groupModel.getData();
+            boolean hasOtherMembers = groupModelData != null && !groupModel.getRecipients().isEmpty();
 
             // The clone menu only makes sense if at least one other member is present
             cloneMenu.setVisible(hasOtherMembers);
@@ -634,7 +662,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int itemId = item.getItemId();
         if (itemId == android.R.id.home) {
             onBackPressed();
@@ -667,8 +695,8 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         } else if (itemId == R.id.menu_delete_group) {
             @StringRes int title;
             @StringRes int description;
-            boolean isGroupCreator = dependencies.getGroupService().isGroupCreator(groupModel);
-            boolean isGroupMember = dependencies.getGroupService().isGroupMember(groupModel);
+            boolean isGroupCreator = groupModel.isCreator();
+            boolean isGroupMember = groupModel.isMember();
             if (isGroupCreator && isGroupMember) {
                 // Group creator and still member
                 title = R.string.action_dissolve_and_delete_group;
@@ -703,7 +731,12 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
                 startActivity(mediaGalleryIntent);
             }
         } else if (itemId == R.id.menu_group_call) {
-            GroupCallUtil.initiateCall(this, groupModel);
+            GroupModelOld oldGroupModel = dependencies.getGroupService().getById(groupModel.getDatabaseId());
+            if (oldGroupModel != null) {
+                GroupCallUtil.initiateCall(this, oldGroupModel);
+            } else {
+                logger.warn("Could not find old group model");
+            }
         }
         return super.onOptionsItemSelected(item);
     }
@@ -717,9 +750,9 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void deleteGroupAndQuit() {
-        if (!dependencies.getGroupService().isGroupMember(groupModel)) {
+        if (!groupModel.isMember()) {
             removeGroupAndQuit();
-        } else if (dependencies.getGroupService().isGroupCreator(groupModel)) {
+        } else if (groupModel.isCreator()) {
             disbandOrDeleteGroupAndQuit(GroupDisbandIntent.DISBAND_AND_REMOVE);
         } else {
             leaveOrDeleteGroupAndQuit(GroupLeaveIntent.LEAVE_AND_REMOVE);
@@ -727,8 +760,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void leaveOrDeleteGroupAndQuit(GroupLeaveIntent intent) {
-        ch.threema.data.models.GroupModel newGroupModel = getNewGroupModel();
-        if (newGroupModel == null) {
+        if (groupModel == null) {
             logger.error("Could not leave or delete group: group model missing");
             SimpleStringAlertDialog
                 .newInstance(R.string.error, R.string.error_leaving_group_internal)
@@ -743,7 +775,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         loadingDialog.show(getSupportFragmentManager());
 
         Deferred<GroupFlowResult> leaveGroupFlowResultDeferred = dependencies.getGroupFlowDispatcher()
-            .runLeaveGroupFlow(intent, newGroupModel);
+            .runLeaveGroupFlow(intent, groupModel);
 
         CoroutinesExtensionKt.onCompleted(
             leaveGroupFlowResultDeferred,
@@ -791,8 +823,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void disbandOrDeleteGroupAndQuit(GroupDisbandIntent intent) {
-        ch.threema.data.models.GroupModel newGroupModel = getNewGroupModel();
-        if (newGroupModel == null) {
+        if (groupModel == null) {
             logger.error("Could not disband or delete group: group model missing");
             SimpleStringAlertDialog
                 .newInstance(R.string.error, R.string.error_disbanding_group_internal)
@@ -807,7 +838,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         loadingDialog.show(getSupportFragmentManager());
 
         Deferred<GroupFlowResult> disbandGroupFlowResultDeferred = dependencies.getGroupFlowDispatcher()
-            .runDisbandGroupFlow(intent, newGroupModel);
+            .runDisbandGroupFlow(intent, groupModel);
 
         CoroutinesExtensionKt.onCompleted(
             disbandGroupFlowResultDeferred,
@@ -847,8 +878,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void removeGroupAndQuit() {
-        ch.threema.data.models.GroupModel newGroupModel = getNewGroupModel();
-        if (newGroupModel == null) {
+        if (groupModel == null) {
             logger.error("Cannot remove group: group model is null");
             SimpleStringAlertDialog
                 .newInstance(R.string.error, R.string.error_removing_group_internal)
@@ -863,7 +893,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         loadingDialog.show(getSupportFragmentManager());
 
         Deferred<GroupFlowResult> removeGroupFlowResultDeferred = dependencies.getGroupFlowDispatcher()
-            .runRemoveGroupFlow(newGroupModel);
+            .runRemoveGroupFlow(groupModel);
 
         CoroutinesExtensionKt.onCompleted(
             removeGroupFlowResultDeferred,
@@ -905,20 +935,6 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         });
     }
 
-    @Nullable
-    private ch.threema.data.models.GroupModel getNewGroupModel() {
-        ch.threema.data.models.GroupModel newGroupModel = dependencies.getGroupModelRepository().getByCreatorIdentityAndId(
-            groupModel.getCreatorIdentity(),
-            groupModel.getApiGroupId()
-        );
-
-        if (newGroupModel == null) {
-            logger.error("New group model is null");
-        }
-
-        return newGroupModel;
-    }
-
     private void cloneGroup(final String newGroupName) {
         final @NonNull LoadingWithTimeoutDialogXml loadingDialog = LoadingWithTimeoutDialogXml.newInstance(
             GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
@@ -926,12 +942,18 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         );
         loadingDialog.show(getSupportFragmentManager(), null);
 
+        GroupModelOld oldGroupModel = dependencies.getGroupService().getById(groupModel.getDatabaseId());
+        if (oldGroupModel == null) {
+            logger.error("Old group model is null");
+            return;
+        }
+
         Deferred<GroupFlowResult> cloneGroupFlowResultDeferred = dependencies.getGroupFlowDispatcher().runCreateGroupFlow(
-            this,
+            dependencies.getAppRestrictions(),
             new GroupCreateProperties(
                 newGroupName,
-                CheckedProfilePicture.getOrConvertFromBitmap(dependencies.getGroupService().getAvatar(groupModel, true, false)),
-                Set.of(dependencies.getGroupService().getGroupMemberIdentities(groupModel))
+                CheckedProfilePicture.getOrConvertFromBitmap(dependencies.getGroupService().getAvatar(oldGroupModel, true, false)),
+                Set.of(dependencies.getGroupService().getGroupMemberIdentities(oldGroupModel))
             )
         );
 
@@ -964,7 +986,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
     @AnyThread
     private void onGroupClonedSuccessfully(
-        @NonNull ch.threema.data.models.GroupModel groupModel,
+        @NonNull GroupModel groupModel,
         @NonNull LoadingWithTimeoutDialogXml loadingDialog
     ) {
         RuntimeUtil.runOnUiThread(() -> {
@@ -1006,16 +1028,21 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     private void addNewMembers() {
         Intent intent = new Intent(GroupDetailActivity.this, GroupAddActivity.class);
         IntentDataUtil.append(groupModel, intent);
-        IntentDataUtil.append(groupDetailViewModel.getGroupContacts(), intent);
+        List<DisplayableGroupParticipant> groupMembers = groupDetailViewModel.getDisplayableGroupParticipants();
+        List<ContactModel> contactModels = new ArrayList<>(groupMembers.size());
+        ContactService contactService = dependencies.getContactService();
+        for (DisplayableGroupParticipant displayableGroupMember : groupMembers) {
+            ContactModel contactModel = contactService.getByIdentity(displayableGroupMember.getDisplayableContactOrUser().getIdentity());
+            if (contactModel != null) {
+                contactModels.add(contactModel);
+            }
+        }
+        IntentDataUtil.append(contactModels, intent);
         startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_GROUP_ADD);
     }
 
     private void syncGroup() {
-        ch.threema.data.models.GroupModel newGroupModel = dependencies.getGroupModelRepository().getByCreatorIdentityAndId(
-            groupModel.getCreatorIdentity(),
-            groupModel.getApiGroupId()
-        );
-        if (newGroupModel == null) {
+        if (groupModel == null) {
             logger.error("Failed to resync group: New group model is null");
             SimpleStringAlertDialog
                 .newInstance(R.string.error, R.string.error_resyncing_group_internal)
@@ -1024,7 +1051,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         }
 
         Deferred<GroupFlowResult> resyncGroupFlowResultDeferred = dependencies.getGroupFlowDispatcher()
-            .runGroupResyncFlow(newGroupModel);
+            .runGroupResyncFlow(groupModel);
 
         final @NonNull LoadingWithTimeoutDialogXml loadingDialog = LoadingWithTimeoutDialogXml.newInstance(
             GROUP_FLOWS_LOADING_DIALOG_TIMEOUT_SECONDS,
@@ -1073,19 +1100,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void saveGroupSettings() {
-        ch.threema.data.models.GroupModel newGroupModel = dependencies.getGroupModelRepository().getByGroupIdentity(
-            new GroupIdentity(
-                groupModel.getCreatorIdentity(),
-                groupModel.getApiGroupId().toLong()
-            )
-        );
-        if (newGroupModel == null) {
-            logger.error("Group model does not exist");
-            showGroupUpdateErrorInternal();
-            return;
-        }
-
-        GroupModelData groupModelData = newGroupModel.getData();
+        GroupModelData groupModelData = groupModel.getData();
         if (groupModelData == null) {
             logger.warn("Group model data is null");
             showGroupUpdateErrorInternal();
@@ -1104,7 +1119,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
 
         GroupChanges groupChanges = new GroupChanges(
             getGroupNameChange(),
-            getProfilePictureChange(newGroupModel),
+            getProfilePictureChange(groupModel),
             updatedIdentities,
             groupModelData
         );
@@ -1115,7 +1130,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         );
         loadingDialog.show(getSupportFragmentManager());
 
-        Deferred<GroupFlowResult> updateResultDeferred = dependencies.getGroupFlowDispatcher().runUpdateGroupFlow(groupChanges, newGroupModel);
+        Deferred<GroupFlowResult> updateResultDeferred = dependencies.getGroupFlowDispatcher().runUpdateGroupFlow(groupChanges, groupModel);
 
         CoroutinesExtensionKt.onCompleted(
             updateResultDeferred,
@@ -1178,8 +1193,9 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     @Nullable
     private String getGroupNameChange() {
         @NonNull String newGroupName = groupDetailViewModel.getGroupName();
-        @NonNull String oldGroupName = groupModel.getName() != null ?
-            groupModel.getName() : "";
+        GroupModelData groupModelData = groupModel.getData();
+        @NonNull String oldGroupName = groupModelData != null ?
+            (groupModelData.name != null ? groupModelData.name : "") : "";
 
         if (!newGroupName.equals(oldGroupName)) {
             return newGroupName;
@@ -1189,7 +1205,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     @NonNull
-    private ProfilePictureChange getProfilePictureChange(ch.threema.data.models.GroupModel groupModel) {
+    private ProfilePictureChange getProfilePictureChange(GroupModel groupModel) {
         if (!groupDetailViewModel.hasAvatarChanges()) {
             return ProfilePictureChange.NoChange.INSTANCE;
         }
@@ -1215,12 +1231,18 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void showCloneDialog() {
+        GroupModelData groupModelData = groupModel.getData();
+        if (groupModelData == null) {
+            logger.error("Group model data is null");
+            return;
+        }
+
         TextEntryDialog.newInstance(
             R.string.action_clone_group,
             R.string.name,
             R.string.ok,
             R.string.cancel,
-            groupModel.getName(),
+            groupModelData.name,
             0,
             0
         ).show(getSupportFragmentManager(), DIALOG_TAG_CLONE_GROUP);
@@ -1278,7 +1300,9 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
                     break;
                 case SELECTOR_OPTION_REMOVE:
                     logger.info("Kick user button clicked");
-                    removeMemberFromGroup(selectorInfo.contactModel);
+                    if (selectorInfo.contactModel != null) {
+                        removeMemberFromGroup(selectorInfo.contactModel.getIdentity());
+                    }
                     break;
                 case SELECTOR_OPTION_CALL:
                     logger.info("Call button clicked");
@@ -1291,24 +1315,21 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     @Override
-    public void onCancel(String tag) {
-    }
-
-    @Override
     public void onYes(@NonNull String tag, @NonNull String text) {
         // text entry dialog
-        switch (tag) {
-            case DIALOG_TAG_CLONE_GROUP:
-                logger.info("Clone group dialog confirmed");
-                cloneGroup(text);
-                break;
-            default:
-                break;
+        if (tag.equals(DIALOG_TAG_CLONE_GROUP)) {
+            logger.info("Clone group dialog confirmed");
+            cloneGroup(text);
         }
     }
 
-    public void onGroupDescChange(String newGroupDesc) {
-        if (newGroupDesc.equals(groupModel.getGroupDesc())) {
+    public void onGroupDescChange(@NonNull String newGroupDesc) {
+        GroupModelData groupModelData = groupModel.getData();
+        if (groupModelData == null) {
+            return;
+        }
+
+        if (newGroupDesc.equals(groupModelData.groupDescription)) {
             return;
         }
         groupDetailViewModel.setGroupDescTimestamp(new Date());
@@ -1335,7 +1356,10 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
+        if (tag == null) {
+            return;
+        }
         switch (tag) {
             case DIALOG_TAG_LEAVE_GROUP:
                 logger.info("Leave group dialog confirmed");
@@ -1385,13 +1409,9 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     @Override
-    public void onNo(String tag, Object data) {
-        switch (tag) {
-            case DIALOG_TAG_QUIT:
-                finish();
-                break;
-            default:
-                break;
+    public void onNo(@Nullable String tag, @Nullable Object data) {
+        if (tag != null && tag.equals(DIALOG_TAG_QUIT)) {
+            finish();
         }
     }
 
@@ -1403,7 +1423,12 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
         Editable groupNameEditable = groupNameEditText.getText();
         String editedGroupNameText = groupNameEditable != null ? groupNameEditable.toString() : "";
 
-        String currentGroupName = groupModel.getName() != null ? groupModel.getName() : "";
+        GroupModelData groupModelData = groupModel.getData();
+        if (groupModelData == null) {
+            return false;
+        }
+
+        String currentGroupName = groupModelData.name != null ? groupModelData.name : "";
 
         return !editedGroupNameText.equals(currentGroupName);
     }
@@ -1418,7 +1443,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             return;
         }
 
-        if (dependencies.getGroupService().isGroupCreator(this.groupModel) && hasChanges()) {
+        if (groupModel.isCreator() && hasChanges()) {
             this.floatingActionButton.show();
         } else {
             this.floatingActionButton.hide();
@@ -1427,7 +1452,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     private void navigateHome() {
-        Intent intent = new Intent(GroupDetailActivity.this, HomeActivity.class);
+        Intent intent = HomeActivity.createIntent(GroupDetailActivity.this);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
         ActivityCompat.finishAffinity(GroupDetailActivity.this);
@@ -1444,10 +1469,14 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     }
 
     @Override
-    public void onGroupMemberClick(View v, @NonNull ContactModel contactModel) {
+    public void onGroupMemberClick(View v, @NonNull String identity) {
         logger.info("Group member clicked");
-        String identity = contactModel.getIdentity();
-        String shortName = NameUtil.getShortName(contactModel);
+        ContactModel contactModel = dependencies.getContactService().getByIdentity(identity);
+        if (contactModel == null) {
+            logger.error("Could not find contact model for the clicked identity");
+            return;
+        }
+        String shortName = NameUtil.getShortName(contactModel, dependencies.getPreferenceService().getContactNameFormat());
 
         ArrayList<SelectorDialogItem> items = new ArrayList<>();
         ArrayList<Integer> optionsMap = new ArrayList<>();
@@ -1467,7 +1496,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
             }
 
             if (operationMode == MODE_EDIT) {
-                if (groupModel != null && !TestUtil.compare(groupModel.getCreatorIdentity(), identity)) {
+                if (groupModel != null && !groupModel.getGroupIdentity().getCreatorIdentity().equals(identity)) {
                     items.add(new SelectorDialogItem(String.format(getString(R.string.kick_user_from_group), shortName), R.drawable.ic_person_remove_outline));
                     optionsMap.add(SELECTOR_OPTION_REMOVE);
                 }
@@ -1521,7 +1550,7 @@ public class GroupDetailActivity extends GroupEditActivity implements SelectorDi
     private void observeNewGroupModel() {
         LiveData<GroupModelData> groupModelDataLiveData = groupDetailViewModel.group;
         if (groupModelDataLiveData == null) {
-            ch.threema.data.models.GroupModel newGroupModel =
+            GroupModel newGroupModel =
                 dependencies.getGroupModelRepository().getByLocalGroupDbId(this.groupId);
 
             if (newGroupModel == null) {

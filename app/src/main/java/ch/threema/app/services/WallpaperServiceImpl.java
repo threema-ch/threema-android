@@ -27,7 +27,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.fragment.app.Fragment;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -52,9 +51,11 @@ import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.MimeUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static ch.threema.common.JavaCompat.copyStream;
+
 import ch.threema.common.files.FileHandle;
-import java8.util.concurrent.CompletableFuture;
-import java8.util.function.Supplier;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Supplier;
 import kotlin.jvm.functions.Function0;
 
 public class WallpaperServiceImpl implements WallpaperService {
@@ -417,7 +418,7 @@ public class WallpaperServiceImpl implements WallpaperService {
                 if (activity != null) {
                     try (InputStream inputStream = activity.getContentResolver().openInputStream(data.getData()); FileOutputStream fos = new FileOutputStream(tempWallpaperFile)) {
                         if (inputStream != null) {
-                            IOUtils.copy(inputStream, fos);
+                            copyStream(inputStream, fos);
                             return true;
                         }
                     } catch (Exception e) {

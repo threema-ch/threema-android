@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">Geçersiz kare kodu verisi</string>
     <string name="webclient_init_session">Yeni oturum başlat</string>
     <string name="webclient_sessions_really_delete">Bu masaüstü / web oturumunu gerçekten silmek istiyor musunuz?</string>
     <string name="webclient_last_usage">Son kullanım: %s</string>

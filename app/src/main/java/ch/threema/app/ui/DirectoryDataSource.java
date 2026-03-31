@@ -90,7 +90,7 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
 
     @Override
     public void loadAfter(@NonNull LoadParams<WorkDirectory> params, @NonNull LoadCallback<WorkDirectory, WorkDirectoryContact> callback) {
-        logger.debug("*** loadAfter: " + params.key.nextFilter.getPage());
+        logger.debug("*** loadAfter: {}", params.key.nextFilter.getPage());
         fetchData(params.key.nextFilter, callback);
     }
 
@@ -98,6 +98,12 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
     private void fetchData(final WorkDirectoryFilter workDirectoryFilter, final LoadCallback<WorkDirectory, WorkDirectoryContact> callback) {
         if (workDirectoryFilter == null) {
             // no more data
+            return;
+        }
+        var username = preferenceService.getLicenseUsername();
+        var password = preferenceService.getLicensePassword();
+        if (username == null || password == null) {
+            logger.warn("Credentials missing, cannot fetch work directory");
             return;
         }
 
@@ -108,8 +114,8 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
 
                 try {
                     workDirectory = apiConnector.fetchWorkDirectory(
-                        preferenceService.getLicenseUsername(),
-                        preferenceService.getLicensePassword(),
+                        username,
+                        password,
                         identityStore,
                         workDirectoryFilter
                     );
@@ -133,6 +139,12 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
 
     @SuppressLint("StaticFieldLeak")
     private void fetchInitialData(final LoadInitialCallback<WorkDirectory, WorkDirectoryContact> callback) {
+        var username = preferenceService.getLicenseUsername();
+        var password = preferenceService.getLicensePassword();
+        if (username == null || password == null) {
+            logger.warn("Credentials missing, cannot fetch initial work directory");
+            return;
+        }
         new AsyncTask<Void, Void, WorkDirectory>() {
             @Override
             protected WorkDirectory doInBackground(Void... voids) {
@@ -148,8 +160,8 @@ public class DirectoryDataSource extends PageKeyedDataSource<WorkDirectory, Work
 
                 try {
                     workDirectory = apiConnector.fetchWorkDirectory(
-                        preferenceService.getLicenseUsername(),
-                        preferenceService.getLicensePassword(),
+                        username,
+                        password,
                         identityStore,
                         workDirectoryFilter
                     );

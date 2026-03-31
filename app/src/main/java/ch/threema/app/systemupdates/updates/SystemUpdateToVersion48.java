@@ -4,14 +4,16 @@ import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.content.Context;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.Arrays;
 
-import androidx.annotation.NonNull;
 import androidx.preference.PreferenceManager;
 import ch.threema.app.R;
 import ch.threema.app.stores.PreferenceStore;
+import kotlin.Lazy;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
@@ -20,26 +22,23 @@ import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 public class SystemUpdateToVersion48 implements SystemUpdate {
     private static final Logger logger = getThreemaLogger("SystemUpdateToVersion48");
 
-    private @NonNull final Context context;
-
-    public SystemUpdateToVersion48(@NonNull Context context) {
-        this.context = context;
-    }
+    private final Lazy<Context> appContextLazy = KoinJavaComponent.inject(Context.class);
 
     @Override
     public void run() {
-        final AccountManager accountManager = AccountManager.get(context);
-        final String myIdentity = PreferenceManager.getDefaultSharedPreferences(context).getString(PreferenceStore.PREFS_IDENTITY, null);
+        var appContext = appContextLazy.getValue();
+        final AccountManager accountManager = AccountManager.get(appContext);
+        final String myIdentity = PreferenceManager.getDefaultSharedPreferences(appContext).getString(PreferenceStore.PREFS_IDENTITY, null);
 
         if (accountManager != null && myIdentity != null) {
             try {
                 Account accountToRename = null;
 
-                for (Account account : Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))) {
+                for (Account account : Arrays.asList(accountManager.getAccountsByType(appContext.getPackageName()))) {
                     if (account.name.equals(myIdentity)) {
                         accountToRename = account;
                     } else {
-                        if (!account.name.equals(context.getString(R.string.title_mythreemaid))) {
+                        if (!account.name.equals(appContext.getString(R.string.title_mythreemaid))) {
                             accountManager.removeAccount(account, null, null);
                         }
                     }
@@ -47,7 +46,7 @@ public class SystemUpdateToVersion48 implements SystemUpdate {
 
                 // rename old-style ID-based account to generic name
                 if (accountToRename != null) {
-                    accountManager.renameAccount(accountToRename, context.getString(R.string.title_mythreemaid), null, null);
+                    accountManager.renameAccount(accountToRename, appContext.getString(R.string.title_mythreemaid), null, null);
                 }
             } catch (Exception e) {
                 logger.error("Exception", e);

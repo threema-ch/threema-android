@@ -9,29 +9,34 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
 
+import org.koin.java.KoinJavaComponent;
+
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.AbstractRecyclerAdapter;
-import ch.threema.app.services.BrowserDetectionService.Browser;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.ViewUtil;
 import ch.threema.app.webclient.services.SessionService;
 import ch.threema.app.webclient.state.WebClientSessionState;
+import ch.threema.app.webclient.usecases.DetectBrowserUseCase;
 import ch.threema.storage.models.WebClientSessionModel;
 
 @UiThread
 public class SessionListAdapter extends AbstractRecyclerAdapter<WebClientSessionModel, RecyclerView.ViewHolder> {
 
+    private final DetectBrowserUseCase detectBrowserUseCase = KoinJavaComponent.get(DetectBrowserUseCase.class);
+
     private final Context context;
     private final LayoutInflater inflater;
     private final SessionService sessionService;
+    @Nullable
     private final String currentPushToken;
     private OnClickItemListener onClickItemListener;
     private final int red, green, orange, grey;
@@ -194,8 +199,7 @@ public class SessionListAdapter extends AbstractRecyclerAdapter<WebClientSession
 
                 // Detect browser based on user agent
                 final String userAgent = model.getClientDescription();
-                final Browser browser = ThreemaApplication.getServiceManager()
-                    .getBrowserDetectionService().detectBrowser(userAgent);
+                final DetectBrowserUseCase.Browser browser = detectBrowserUseCase.call(userAgent);
 
                 // Set browser icon
                 final int browserId;
@@ -228,6 +232,4 @@ public class SessionListAdapter extends AbstractRecyclerAdapter<WebClientSession
                 break;
         }
     }
-
-
 }

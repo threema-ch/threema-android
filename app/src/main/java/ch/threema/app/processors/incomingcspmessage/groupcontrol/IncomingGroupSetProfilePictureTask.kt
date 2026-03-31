@@ -31,11 +31,13 @@ class IncomingGroupSetProfilePictureTask(
 ) {
     private val fileService by lazy { serviceManager.fileService }
     private val apiService by lazy { serviceManager.apiService }
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val groupService by lazy { serviceManager.groupService }
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
+    private val preferenceService by lazy { serviceManager.preferenceService }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
+        logger.info("Processing incoming set-profile-picture message for group with id {}", message.apiGroupId)
+
         // Run the common group receive steps
         val group = runCommonGroupReceiveSteps(message, handle, serviceManager)
         if (group == null) {
@@ -118,11 +120,8 @@ class IncomingGroupSetProfilePictureTask(
         blobId = blobId,
         encryptionKey = encryptionKey,
         blobNonce = blobNonce,
-        groupModel = groupModel,
+        groupIdentity = groupModel.groupIdentity,
         profilePictureBlob = profilePictureBlob,
-        fileService = fileService,
-        nonceFactory = nonceFactory,
-        multiDeviceManager = multiDeviceManager,
     ).reflect(handle)
 
     private fun updateGroupPictureLocally(group: GroupModel, blob: ByteArray): ReceiveStepsResult {
@@ -130,7 +129,10 @@ class IncomingGroupSetProfilePictureTask(
 
         ListenerManager.groupListeners.handle { it.onUpdatePhoto(group.groupIdentity) }
 
-        ShortcutUtil.updateShareTargetShortcut(groupService.createReceiver(group))
+        ShortcutUtil.updateShareTargetShortcut(
+            groupService.createReceiver(group),
+            preferenceService.getContactNameFormat(),
+        )
 
         return ReceiveStepsResult.SUCCESS
     }

@@ -7,8 +7,8 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageState
+import ch.threema.storage.models.group.GroupMessageModel
 import java.util.Date
 
 private val logger = getThreemaLogger("ReflectedOutgoingGroupDeliveryReceiptTask")
@@ -23,7 +23,7 @@ internal class ReflectedOutgoingGroupDeliveryReceiptTask(
     serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }
-    private val myIdentity by lazy { serviceManager.identityStore.getIdentity()!! }
+    private val myIdentity by lazy { serviceManager.identityStore.getIdentityString()!! }
 
     override fun processOutgoingMessage() {
         logger.info(

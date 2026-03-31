@@ -9,7 +9,6 @@ import android.util.AttributeSet;
 import com.google.android.material.textfield.TextInputEditText;
 
 import androidx.preference.PreferenceManager;
-import ch.threema.app.R;
 import ch.threema.app.preference.service.KeyboardDataCollectionPolicySetting;
 
 public class ThreemaTextInputEditText extends TextInputEditText {

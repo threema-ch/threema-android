@@ -23,10 +23,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
+import ch.threema.app.apptaskexecutor.AppTaskExecutor;
+import ch.threema.app.preference.service.SynchronizedSettingsService;
+import ch.threema.app.androidcontactsync.usecases.UpdateContactNameUseCase;
 import ch.threema.data.datatypes.AndroidContactLookupInfo;
 import ch.threema.app.asynctasks.AddContactBackgroundTask;
-import ch.threema.app.debug.AndroidContactSyncLogger;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DeviceService;
@@ -55,6 +58,7 @@ import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.IdentityStore;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 import ch.threema.data.datatypes.IdColor;
+import kotlin.Unit;
 
 public class SynchronizeContactsRoutine implements Runnable {
     private static final Logger logger = getThreemaLogger("SynchronizeContactsRoutine");
@@ -70,8 +74,13 @@ public class SynchronizeContactsRoutine implements Runnable {
     private final ExcludedSyncIdentitiesService excludedSyncIdentitiesService;
     private final DeviceService deviceService;
     private final PreferenceService preferenceService;
+    private final SynchronizedSettingsService synchronizedSettingsService;
     private final IdentityStore identityStore;
     private final BlockedIdentitiesService blockedIdentitiesService;
+    @NonNull
+    private final AppTaskExecutor appTaskExecutor;
+    @NonNull
+    private final UpdateContactNameUseCase updateContactNameUseCase;
 
     private OnStatusUpdate onStatusUpdate;
     private final List<OnFinished> onFinished = new ArrayList<>();
@@ -100,8 +109,11 @@ public class SynchronizeContactsRoutine implements Runnable {
         @NonNull ExcludedSyncIdentitiesService excludedSyncIdentitiesService,
         DeviceService deviceService,
         PreferenceService preferenceService,
+        @NonNull SynchronizedSettingsService synchronizedSettingsService,
         IdentityStore identityStore,
         BlockedIdentitiesService blockedIdentitiesService,
+        @NonNull AppTaskExecutor appTaskExecutor,
+        @NonNull UpdateContactNameUseCase updateContactNameUseCase,
         @NonNull Set<String> processingIdentities
     ) {
         this.context = context;
@@ -114,8 +126,11 @@ public class SynchronizeContactsRoutine implements Runnable {
         this.excludedSyncIdentitiesService = excludedSyncIdentitiesService;
         this.deviceService = deviceService;
         this.preferenceService = preferenceService;
+        this.synchronizedSettingsService = synchronizedSettingsService;
         this.identityStore = identityStore;
         this.blockedIdentitiesService = blockedIdentitiesService;
+        this.appTaskExecutor = appTaskExecutor;
+        this.updateContactNameUseCase = updateContactNameUseCase;
         this.processingIdentities = processingIdentities;
     }
 
@@ -156,7 +171,7 @@ public class SynchronizeContactsRoutine implements Runnable {
         List<ContactModel> insertedContacts = new ArrayList<>();
 
         try {
-            if (!this.preferenceService.isSyncContacts()) {
+            if (!synchronizedSettingsService.isSyncContacts()) {
                 throw new ThreemaException("Sync is disabled in preferences, not allowed to call synchronizecontacts routine");
             }
 
@@ -213,11 +228,8 @@ public class SynchronizeContactsRoutine implements Runnable {
 
             logger.info("Number of IDs matching phone or email: {}", matchIdentityResults.size());
 
-            AndroidContactSyncLogger androidContactSyncLogger = new AndroidContactSyncLogger();
-
             ArrayList<ContentProviderOperation> contentProviderOperations = new ArrayList<>();
             for (Map.Entry<String, APIConnector.MatchIdentityResult> matchIdentityResultEntry : matchIdentityResults.entrySet()) {
-                boolean isNewContact = false;
                 String identity = matchIdentityResultEntry.getKey();
                 APIConnector.MatchIdentityResult result = matchIdentityResultEntry.getValue();
 
@@ -306,70 +318,69 @@ public class SynchronizeContactsRoutine implements Runnable {
 
                     insertedContacts.add(contact);
 
-                    isNewContact = true;
                     logger.info("Inserting new Threema contact {}", identity);
                 }
                 contact.setAndroidContactLookupKey(
                     new AndroidContactLookupInfo(lookupKey, contactId)
                 );
 
-                try {
-                    boolean createNewRawContact;
+                boolean createNewRawContact;
 
-                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contact, androidContactSyncLogger, context); // throws an exception if no name can be determined
-                    AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact, context);
+                CountDownLatch latch = new CountDownLatch(1);
+                final ContactModel finalContactModel = contact;
+                appTaskExecutor.runInAppTask((continuation -> {
+                    // Note that continuation can only be used once to call a suspend function!
+                    updateContactNameUseCase.call(Set.of(finalContactModel), continuation);
+                    return Unit.INSTANCE;
+                })).invokeOnCompletion(throwable -> {
+                    latch.countDown();
+                    return Unit.INSTANCE;
+                });
+                latch.await();
 
-                    contact.setAcquaintanceLevelFromLocal(AcquaintanceLevel.DIRECT);
-                    if (data.verificationLevel == VerificationLevel.UNVERIFIED) {
-                        contact.setVerificationLevelFromLocal(VerificationLevel.SERVER_VERIFIED);
-                    }
+                AndroidContactUtil.getInstance().updateAvatarByAndroidContact(contact, context);
 
-                    List<AndroidContactUtil.RawContactInfo> rawContactInfos = existingRawContacts.get(contact.getIdentity());
+                contact.setAcquaintanceLevelFromLocal(AcquaintanceLevel.DIRECT);
+                if (data.verificationLevel == VerificationLevel.UNVERIFIED) {
+                    contact.setVerificationLevelFromLocal(VerificationLevel.SERVER_VERIFIED);
+                }
 
-                    if (rawContactInfos.isEmpty()) {
-                        // raw contact does not exist yet, create it
-                        createNewRawContact = true;
-                        newRawContactCount++;
-                    } else {
-                        // a raw contact exists - check if it points to the correct parent
-                        createNewRawContact = true;
-                        for (AndroidContactUtil.RawContactInfo rawContactInfo : rawContactInfos) {
-                            if (rawContactInfo.contactId > 0L && rawContactInfo.contactId == contactId) {
-                                // all good - no change necessary
-                                createNewRawContact = false;
-                                existingRawContacts.remove(contact.getIdentity(), rawContactInfo);
-                                break;
-                            }
+                List<AndroidContactUtil.RawContactInfo> rawContactInfos = existingRawContacts.get(contact.getIdentity());
+
+                if (rawContactInfos.isEmpty()) {
+                    // raw contact does not exist yet, create it
+                    createNewRawContact = true;
+                    newRawContactCount++;
+                } else {
+                    // a raw contact exists - check if it points to the correct parent
+                    createNewRawContact = true;
+                    for (AndroidContactUtil.RawContactInfo rawContactInfo : rawContactInfos) {
+                        if (rawContactInfo.contactId > 0L && rawContactInfo.contactId == contactId) {
+                            // all good - no change necessary
+                            createNewRawContact = false;
+                            existingRawContacts.remove(contact.getIdentity(), rawContactInfo);
+                            break;
                         }
-                        if (createNewRawContact) {
-                            modifiedRawContactCount++;
-                        }
                     }
-
                     if (createNewRawContact) {
-                        boolean supportsVoiceCalls = ContactUtil.canReceiveVoipMessages(contact.getIdentity(), this.blockedIdentitiesService)
-                            && ConfigUtils.isCallsEnabled();
+                        modifiedRawContactCount++;
+                    }
+                }
 
-                        // create a raw contact for our stuff and aggregate it
-                        AndroidContactUtil.getInstance().createThreemaRawContact(
-                            contentProviderOperations,
-                            matchKeyEmail != null ?
-                                matchKeyEmail.rawContactId :
-                                matchKeyPhone.rawContactId,
-                            contact.getIdentity(),
-                            supportsVoiceCalls);
-                    }
-                } catch (ThreemaException e) {
-                    if (isNewContact) {
-                        // probably not a valid contact
-                        insertedContacts.remove(contact);
-                        logger.info("Ignore Threema contact {} due to missing name", identity);
-                    }
-                    logger.error("Contact lookup Exception", e);
+                if (createNewRawContact) {
+                    boolean supportsVoiceCalls = ContactUtil.canReceiveVoipMessages(contact.getIdentity(), this.blockedIdentitiesService)
+                        && ConfigUtils.isCallsEnabled();
+
+                    // create a raw contact for our stuff and aggregate it
+                    AndroidContactUtil.getInstance().createThreemaRawContact(
+                        contentProviderOperations,
+                        matchKeyEmail != null ?
+                            matchKeyEmail.rawContactId :
+                            matchKeyPhone.rawContactId,
+                        contact.getIdentity(),
+                        supportsVoiceCalls);
                 }
             }
-
-            androidContactSyncLogger.logDuplicates();
 
             if (!contentProviderOperations.isEmpty()) {
                 try {

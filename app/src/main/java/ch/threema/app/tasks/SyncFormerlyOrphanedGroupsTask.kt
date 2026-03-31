@@ -1,9 +1,7 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.systemupdates.updates.SystemUpdateToVersion110
-import ch.threema.base.crypto.NonceFactory
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -17,16 +15,17 @@ import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Group
 import ch.threema.protobuf.d2d.sync.group
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * This task is needed for [SystemUpdateToVersion110], to ensure that the state changes made by the system update
  * are reflected if needed. It should not be used for any other purposes.
  */
-class SyncFormerlyOrphanedGroupsTask(
-    private val multiDeviceManager: MultiDeviceManager,
-    private val groupModelRepository: GroupModelRepository,
-    private val nonceFactory: NonceFactory,
-) : ActiveTask<Unit>, PersistableTask {
+class SyncFormerlyOrphanedGroupsTask() : ActiveTask<Unit>, PersistableTask, KoinComponent {
+    private val multiDeviceManager: MultiDeviceManager by inject()
+    private val groupModelRepository: GroupModelRepository by inject()
+
     override suspend fun invoke(handle: ActiveTaskCodec) {
         if (!multiDeviceManager.isMultiDeviceActive) {
             return
@@ -69,11 +68,6 @@ class SyncFormerlyOrphanedGroupsTask(
 
     @Serializable
     data object SyncFormerlyOrphanedGroupsTaskData : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-            SyncFormerlyOrphanedGroupsTask(
-                serviceManager.multiDeviceManager,
-                serviceManager.modelRepositories.groups,
-                serviceManager.nonceFactory,
-            )
+        override fun createTask(): Task<*, TaskCodec> = SyncFormerlyOrphanedGroupsTask()
     }
 }

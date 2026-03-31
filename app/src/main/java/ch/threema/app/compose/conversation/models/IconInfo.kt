@@ -3,11 +3,11 @@ package ch.threema.app.compose.conversation.models
 import androidx.annotation.ColorInt
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 
-@Stable
+@Immutable
 data class IconInfo(
-    @DrawableRes val icon: Int,
+    @DrawableRes val res: Int,
     @StringRes val contentDescription: Int?,
     @ColorInt val tintOverride: Int? = null,
 )

@@ -123,3 +123,16 @@ message OuterKeyStorageV1 {
     Argon2idProtected argon2id_protected_intermediate = 2;
   }
 }
+
+// Outer outer key storage, wraps an instance of `OuterKeyStorage`,
+// encrypted with a secret key stored in the Android Key Store.
+message KeyWrapper {
+  // Alias of the secret key from the Android KeyStore that was used to encrypt the data in `encrypted_key_storage_data`
+  string key_store_alias = 1;
+
+  // The IV associated with the encrypted data in `encrypted_key_storage_data`
+  bytes iv = 2;
+
+  // The encrypted bytes of `OuterKeyStorage`
+  bytes encrypted_key_storage_data = 3;
+}

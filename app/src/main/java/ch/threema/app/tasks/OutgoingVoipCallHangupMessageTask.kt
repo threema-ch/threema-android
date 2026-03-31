@@ -1,18 +1,16 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.common.now
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupData
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 class OutgoingVoipCallHangupMessageTask(
     private val voipCallHangupData: VoipCallHangupData,
-    private val toIdentity: Identity,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+    private val toIdentity: IdentityString,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingVoipCallHangupMessageTask"
 
     override val shortLogInfo: String = "cid=${voipCallHangupData.callId}"

@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.utils.BatteryStatusUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.app.webclient.Protocol;
 import ch.threema.app.webclient.converter.BatteryStatus;
@@ -19,6 +18,7 @@ import ch.threema.app.webclient.manager.WebClientListenerManager;
 import ch.threema.app.webclient.services.BatteryStatusServiceImpl;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageUpdater;
+import ch.threema.app.webclient.utils.BatteryStatusUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
@@ -56,7 +56,7 @@ public class BatteryStatusUpdateHandler extends MessageUpdater {
 
     @Override
     public void register() {
-        logger.debug("register(" + this.sessionId + ")");
+        logger.debug("register({})", this.sessionId);
         WebClientListenerManager.batteryStatusListener.add(this.listener);
     }
 
@@ -65,7 +65,7 @@ public class BatteryStatusUpdateHandler extends MessageUpdater {
      */
     @Override
     public void unregister() {
-        logger.debug("unregister(" + this.sessionId + ")");
+        logger.debug("unregister({})", this.sessionId);
         WebClientListenerManager.batteryStatusListener.remove(this.listener);
     }
 

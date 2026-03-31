@@ -15,11 +15,15 @@ import ch.threema.app.R;
 import ch.threema.app.activities.ComposeMessageActivity;
 import ch.threema.app.home.HomeActivity;
 import ch.threema.app.activities.RecipientListBaseActivity;
-import ch.threema.app.services.WidgetService;
+import ch.threema.app.widget.WidgetService;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.IntentDataUtil.PENDING_INTENT_FLAG_MUTABLE;
 
+/**
+ * Warning: moving or renaming this class will result in all widgets being removed from the home screen.
+ */
 public class WidgetProvider extends AppWidgetProvider {
     private static final Logger logger = getThreemaLogger("WidgetProvider");
 
@@ -34,7 +38,7 @@ public class WidgetProvider extends AppWidgetProvider {
             Intent intent = new Intent(context, RecipientListBaseActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
-            Intent titleIntent = new Intent(context, HomeActivity.class);
+            Intent titleIntent = HomeActivity.createIntent(context);
             PendingIntent titlePendingIntent = PendingIntent.getActivity(context, 0, titleIntent, PendingIntent.FLAG_IMMUTABLE);
 
             // Get the layout for the App Widget and attach an on-click listener
@@ -72,19 +76,5 @@ public class WidgetProvider extends AppWidgetProvider {
         }
 
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-    }
-
-    /*
-     * This is called when an instance the App Widget is created for the first time. For example,
-     * if the user adds two instances of your App Widget, this is only called the first time.
-     * If you need to open a new database or perform other setup that only needs to occur once for
-     * all App Widget instances, then this is a good place to do it.
-     */
-
-    @Override
-    public void onEnabled(Context context) {
-        logger.debug("onEnabled");
-
-        super.onEnabled(context);
     }
 }

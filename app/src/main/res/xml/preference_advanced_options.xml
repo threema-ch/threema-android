@@ -25,36 +25,32 @@
         android:key="pref_key_logging"
         android:title="@string/prefs_logging">
         <CheckBoxPreference
-            android:defaultValue="false"
-            android:key="@string/preferences__message_log_switch"
-            android:summaryOff="@string/prefs_title_sum_message_log_off"
-            android:summaryOn="@string/prefs_title_sum_message_log_on"
+            android:key="@string/preferences__debug_log_switch"
+            android:persistent="false"
             android:title="@string/prefs_title_message_log_switch"
             android:widgetLayout="@layout/preference_switch_layout" />
         <Preference
-            android:dependency="@string/preferences__message_log_switch"
             android:key="@string/preferences__sendlog"
             android:summary="@string/prefs_sendlog_summary"
             android:title="@string/prefs_sendlog" />
         <Preference
-            android:dependency="@string/preferences__message_log_switch"
             android:key="@string/preferences__exportlog"
             android:summary="@string/prefs_exportlog_summary"
             android:title="@string/prefs_exportlog" />
-        <!-- TODO(ANDR-4339): The strings in the following preference need to be translated, and it needs to be made visible -->
+    </PreferenceCategory>
+    <PreferenceCategory
+        android:key="@string/preferences__error_reporting_category"
+        android:title="@string/prefs_title_error_reporting"
+        app:isPreferenceVisible="false">
         <DropDownPreference
-            app:isPreferenceVisible="false"
-            android:defaultValue="@string/crash_reporting_value_always_ask"
-            android:entries="@array/list_crash_reporting"
-            android:entryValues="@array/list_crash_reporting_values"
-            android:key="@string/preferences__crash_reporting"
-            android:title="Automatically Report Crashes" />
-        <!-- TODO(ANDR-4339): The following preference should be removed -->
+            android:entries="@array/list_error_reporting_options"
+            android:entryValues="@array/list_error_reporting_values"
+            android:key="@string/preferences__error_reporting"
+            android:title="@string/prefs_send_error_reports" />
         <Preference
-            app:isPreferenceVisible="false"
-            android:key="@string/preferences__cause_crash"
-            android:summary="Intentionally cause a crash to test crash reporting"
-            android:title="Trigger A Test Crash" />
+            android:key="@string/preferences__sentry_id"
+            android:title="@string/prefs_error_reporting_id" />
+
     </PreferenceCategory>
     <PreferenceCategory
         android:key="pref_key_network"
@@ -75,7 +71,7 @@
             android:widgetLayout="@layout/preference_switch_layout" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="pref_key_fix_device"
+        android:key="@string/preferences__fix_device"
         android:title="@string/prefs_fix_device">
         <Preference
             android:key="@string/preferences__powermanager_workarounds"
@@ -87,7 +83,7 @@
             android:title="@string/prefs_title_hibernation" />
     </PreferenceCategory>
     <PreferenceCategory
-        android:key="pref_key_voip"
+        android:key="@string/preferences__voip"
         android:title="@string/prefs_title_voip">
         <DropDownPreference
             android:defaultValue="hw"

@@ -2,11 +2,13 @@ package ch.threema.app.systemupdates.updates;
 
 import android.content.Context;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
-import androidx.annotation.NonNull;
 import androidx.core.app.NotificationManagerCompat;
 import ch.threema.app.BuildConfig;
+import kotlin.Lazy;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
@@ -15,16 +17,12 @@ import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 public class SystemUpdateToVersion53 implements SystemUpdate {
     private static final Logger logger = getThreemaLogger("SystemUpdateToVersion53");
 
-    @NonNull
-    private final Context context;
-
-    public SystemUpdateToVersion53(@NonNull Context context) {
-        this.context = context;
-    }
+    private final Lazy<Context> appContextLazy = KoinJavaComponent.inject(Context.class);
 
     @Override
     public void run() {
-        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+        var appContext = appContextLazy.getValue();
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(appContext);
         try {
             notificationManagerCompat.deleteNotificationChannel("passphrase_service");
             notificationManagerCompat.deleteNotificationChannel("webclient");

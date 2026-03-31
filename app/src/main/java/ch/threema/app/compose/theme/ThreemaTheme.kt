@@ -42,7 +42,7 @@ fun ThreemaTheme(
 }
 
 @Composable
-private fun ThreemaThemeBase(
+fun ThreemaThemeBase(
     isDarkTheme: Boolean = isSystemInDarkTheme(),
     shouldUseDynamicColors: Boolean,
     content: @Composable () -> Unit,

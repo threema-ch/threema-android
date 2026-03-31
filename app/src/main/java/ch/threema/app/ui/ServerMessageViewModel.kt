@@ -3,13 +3,11 @@ package ch.threema.app.ui
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import ch.threema.storage.DatabaseService
+import ch.threema.storage.factories.ServerMessageModelFactory
 
 class ServerMessageViewModel(
-    databaseService: DatabaseService,
+    private val serverMessageModelFactory: ServerMessageModelFactory,
 ) : ViewModel() {
-    private val serverMessageModelFactory = databaseService.serverMessageModelFactory
-
     private val serverMessage = MutableLiveData<String?>()
     fun getServerMessage(): LiveData<String?> = serverMessage
 

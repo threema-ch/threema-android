@@ -2,7 +2,6 @@ package ch.threema.app.listeners;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import ch.threema.storage.models.ContactModel;
 
 public interface ContactListener {
     /**

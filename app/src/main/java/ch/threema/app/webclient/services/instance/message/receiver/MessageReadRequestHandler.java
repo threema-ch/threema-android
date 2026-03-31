@@ -20,7 +20,7 @@ import ch.threema.app.webclient.services.instance.MessageReceiver;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageType;
 
 /**
@@ -67,7 +67,7 @@ public class MessageReadRequestHandler extends MessageReceiver {
                 }
                 break;
             case Receiver.Type.GROUP:
-                GroupModel groupModel = groupService.getById(Integer.valueOf(receiverId));
+                GroupModelOld groupModel = groupService.getById(Integer.valueOf(receiverId));
                 if (groupModel != null) {
                     receiver = groupService.createReceiver(groupModel);
                 }

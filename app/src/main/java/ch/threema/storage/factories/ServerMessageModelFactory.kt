@@ -3,7 +3,8 @@ package ch.threema.storage.factories
 import android.database.sqlite.SQLiteException
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.CursorHelper
-import ch.threema.storage.DatabaseService
+import ch.threema.storage.DatabaseCreationProvider
+import ch.threema.storage.DatabaseProvider
 import ch.threema.storage.buildContentValues
 import ch.threema.storage.models.ServerMessageModel
 import ch.threema.storage.runDelete
@@ -12,8 +13,8 @@ import java.sql.SQLException
 
 private val logger = getThreemaLogger("ServerMessageModelFactory")
 
-class ServerMessageModelFactory(databaseService: DatabaseService) :
-    ModelFactory(databaseService, ServerMessageModel.TABLE) {
+class ServerMessageModelFactory(databaseProvider: DatabaseProvider) :
+    ModelFactory(databaseProvider, ServerMessageModel.TABLE) {
     fun storeServerMessageModel(serverMessageModel: ServerMessageModel) {
         val contentValues = buildContentValues {
             put(ServerMessageModel.COLUMN_MESSAGE, serverMessageModel.message)
@@ -65,10 +66,12 @@ class ServerMessageModelFactory(databaseService: DatabaseService) :
         }
     }
 
-    override fun getStatements(): Array<String> = arrayOf(
-        "CREATE TABLE `${ServerMessageModel.TABLE}` (" +
-            "`${ServerMessageModel.COLUMN_MESSAGE}` VARCHAR PRIMARY KEY ON CONFLICT REPLACE," +
-            "`${ServerMessageModel.COLUMN_TYPE}` INTEGER" +
-            ")",
-    )
+    object Creator : DatabaseCreationProvider {
+        override fun getCreationStatements() = arrayOf(
+            "CREATE TABLE `${ServerMessageModel.TABLE}` (" +
+                "`${ServerMessageModel.COLUMN_MESSAGE}` VARCHAR PRIMARY KEY ON CONFLICT REPLACE," +
+                "`${ServerMessageModel.COLUMN_TYPE}` INTEGER" +
+                ")",
+        )
+    }
 }

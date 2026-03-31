@@ -1,7 +1,7 @@
 package ch.threema.storage.models.data.status
 
 import android.util.JsonWriter
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.data.status.StatusDataModel.StatusType
 
 class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
@@ -66,7 +66,7 @@ class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
 
     var statusType: GroupStatusType = GroupStatusType.CREATED
         private set
-    var identity: Identity? = null
+    var identity: IdentityString? = null
         private set
     var ballotName: String? = null
         private set
@@ -120,7 +120,7 @@ class GroupStatusDataModel : StatusDataModel.StatusDataModelInterface {
         @JvmStatic
         fun create(
             type: GroupStatusType,
-            identity: Identity?,
+            identity: IdentityString?,
             ballotName: String?,
             newGroupName: String?,
         ): GroupStatusDataModel {

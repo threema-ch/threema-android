@@ -1,19 +1,19 @@
 package ch.threema.storage
 
-import ch.threema.app.ThreemaApplication
 import ch.threema.storage.factories.TaskArchiveFactory
 import junit.framework.TestCase.assertEquals
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
-class TaskArchiveFactoryTest {
+class TaskArchiveFactoryTest : KoinComponent {
     private lateinit var taskArchiveFactory: TaskArchiveFactory
 
     @BeforeTest
     fun setup() {
-        taskArchiveFactory =
-            ThreemaApplication.requireServiceManager().databaseService.taskArchiveFactory
+        taskArchiveFactory = TaskArchiveFactory(get())
         taskArchiveFactory.deleteAll()
     }
 

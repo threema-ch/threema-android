@@ -53,14 +53,12 @@
     <string name="voip_prefs_video_codec_no_h264hip">Адключыць H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Праграмныя кодэкі</string>
     <string name="voip_connection_failed">Не ўдалося ўсталяваць злучэнне.</string>
-    <string name="voip_connection_lost">Злучэнне згублена</string>
     <string name="prefs_voip_reject_incoming_calls_title">Адхіляць званкі з мабільных</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Адхіляць уваходныя званкі з мабільных, калі здзяйсняецца званок Threema.</string>
     <string name="voip_contact_not_found">Па гэтым нумары не знойдзены кантакт Threema.</string>
     <string name="voip_another_pstn_call">Не ўдаецца запусціць званок. Выконваецца звычайны тэлефонны званок.</string>
     <string name="voip_call_status_off_hours">Званок у непрац. час</string>
     <string name="voip_peer_video_disabled">Відэазванкі адключаны субяседнікам.</string>
-    <string name="voip_reject_channel_name">Змена стану выкліку</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Дыягностыка WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Запусціце гэты сродак для адладкі непаладак з наладай злучэння для галасавой сувязі</string>
@@ -71,13 +69,9 @@
     <string name="voip_webrtc_debug_copied">Даныя скапіяваны ў буфер абмену.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Капіяваць у буфер абмену</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">Усе ўдзельнікі суполкі былі апавешчаныя</string>
-    <string name="voip_gc_notification_channel_description">Супольныя званкі</string>
-    <string name="voip_gc_notification_title">Супольны званок</string>
     <string name="voip_gc_notification_call_started">%1$s пачаў супольны выклік у %2$s</string>
     <string name="voip_gc_notification_call_started_generic">%1$s пачаў супольны выклік</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Вы пачалі супольны выклік</string>
-    <string name="voip_gc_dismiss_call">Ігнараваць</string>
     <string name="voip_gc_join_call">Далучыцца</string>
     <string name="voip_gc_ongoing_call">Ідзе супольны выклік</string>
     <string name="voip_gc_waiting_for_participants">Чакаем удзельнікаў</string>

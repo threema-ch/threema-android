@@ -9,7 +9,7 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.protocol.multidevice.MultiDeviceProperties
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.Common.GroupIdentity
 import ch.threema.protobuf.d2d.ContactSyncKt
 import ch.threema.protobuf.d2d.MdD2D
@@ -100,7 +100,7 @@ fun getEncryptedOutgoingMessageUpdateSentEnvelope(
 fun getEncryptedIncomingContactMessageUpdateReadEnvelope(
     messageIds: Set<MessageId>,
     timestamp: Long,
-    senderIdentity: Identity,
+    senderIdentity: IdentityString,
     mediatorDeviceId: DeviceId,
     multiDeviceKeys: MultiDeviceKeys,
 ): MultiDeviceKeys.EncryptedEnvelopeResult {
@@ -116,7 +116,7 @@ fun getEncryptedIncomingContactMessageUpdateReadEnvelope(
 fun getEncryptedIncomingGroupMessageUpdateReadEnvelope(
     messageIds: Set<MessageId>,
     timestamp: Long,
-    creatorIdentity: Identity,
+    creatorIdentity: IdentityString,
     groupId: GroupId,
     mediatorDeviceId: DeviceId,
     multiDeviceKeys: MultiDeviceKeys,

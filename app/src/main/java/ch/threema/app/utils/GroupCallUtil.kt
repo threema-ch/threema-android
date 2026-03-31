@@ -19,10 +19,11 @@ import ch.threema.app.services.UserService
 import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.data.models.GroupModel
 import ch.threema.domain.protocol.ThreemaFeature
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupModel
+import ch.threema.storage.models.group.GroupModelOld
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -70,7 +71,7 @@ object GroupCallUtil {
     @JvmStatic
     fun initiateCall(
         activity: AppCompatActivity,
-        groupModel: GroupModel,
+        groupModel: GroupModelOld,
     ) {
         val serviceManager = ThreemaApplication.getServiceManager() ?: return
         val contactModelRepository = serviceManager.modelRepositories.contacts
@@ -147,7 +148,7 @@ object GroupCallUtil {
 
     private fun launchGroupCallWithSupportedMembers(
         activity: AppCompatActivity,
-        groupModel: GroupModel,
+        groupModel: GroupModelOld,
         otherMembers: List<ContactModel>,
     ) {
         val otherMembersNotSupportingGroupCallsCount =
@@ -168,7 +169,7 @@ object GroupCallUtil {
 
     private fun launchActivity(
         context: Context,
-        groupModel: GroupModel,
+        groupModel: GroupModelOld,
         otherMembersNotSupportingGroupCallsCount: Int,
     ) {
         if (otherMembersNotSupportingGroupCallsCount > 0) {
@@ -194,8 +195,14 @@ object GroupCallUtil {
     }
 
     @JvmStatic
-    fun qualifiesForGroupCalls(groupService: GroupService, groupModel: GroupModel): Boolean =
+    fun qualifiesForGroupCalls(groupService: GroupService, groupModel: GroupModelOld): Boolean =
         ConfigUtils.isGroupCallsEnabled() &&
             groupService.countMembers(groupModel) > 1 &&
             groupService.isGroupMember(groupModel)
+
+    @JvmStatic
+    fun qualifiesForGroupCalls(groupModel: GroupModel): Boolean =
+        ConfigUtils.isGroupCallsEnabled() &&
+            groupModel.data?.isMember == true &&
+            groupModel.getRecipients().isNotEmpty()
 }

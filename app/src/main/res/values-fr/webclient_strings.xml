@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">Données de code QR invalides</string>
     <string name="webclient_init_session">Initier une nouvelle session</string>
     <string name="webclient_sessions_really_delete">Voulez-vous vraiment supprimer cette session Desktop/Web ?</string>
     <string name="webclient_last_usage">Dernière utilisation : %s</string>

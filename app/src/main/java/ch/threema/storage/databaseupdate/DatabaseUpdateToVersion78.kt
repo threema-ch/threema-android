@@ -11,9 +11,5 @@ internal class DatabaseUpdateToVersion78(
 
     override fun getDescription() = "GroupCalls"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 78
-    }
+    override val version = 78
 }

@@ -55,7 +55,7 @@ public class InMemoryIdentityStore implements IdentityStore {
     }
 
     @Override
-    public String getIdentity() {
+    public String getIdentityString() {
         return identity;
     }
 

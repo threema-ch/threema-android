@@ -7,12 +7,14 @@ import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextDecoration
 import ch.threema.app.BuildFlavor
 import ch.threema.app.R
 import ch.threema.app.compose.common.linkifyWeb
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 /**
  * @param iconTintAttrRes If `null` the original colors from the passed icon are used. This can lead to a loss of contrast.
@@ -103,12 +105,29 @@ sealed class LinkingResult(
             bodyTextRes = R.string.device_linking_error_unexpected_body,
         )
 
-        data class InvalidContact(private val invalidIdentity: Identity) : Failure(
+        data class InvalidContact(private val invalidIdentity: IdentityString) : Failure(
             titleTextRes = R.string.device_linking_error_invalid_contact_title,
             bodyTextRes = R.string.device_linking_error_invalid_contact_body,
         ) {
             override fun resolveBodyText(context: Context): AnnotatedString {
                 return AnnotatedString(context.getString(bodyTextRes, invalidIdentity))
+            }
+        }
+
+        data class InvalidTimestamp(
+            private val description: String,
+            private val timestamp: Long,
+        ) : Failure(
+            titleTextRes = R.string.device_linking_error_invalid_timestamp_title,
+            bodyTextRes = R.string.device_linking_error_invalid_timestamp_body,
+        ) {
+            override fun resolveBodyText(context: Context): AnnotatedString = buildAnnotatedString {
+                appendLine(context.getString(bodyTextRes))
+                appendLine()
+                pushStyle(SpanStyle(fontFamily = FontFamily.Monospace))
+                appendLine(description)
+                append("$timestamp")
+                pop()
             }
         }
     }

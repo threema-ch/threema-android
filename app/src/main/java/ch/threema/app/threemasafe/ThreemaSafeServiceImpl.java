@@ -11,12 +11,16 @@ import android.view.Display;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import ch.threema.app.preference.service.SynchronizedSettingsService;
+import ch.threema.app.restrictions.AppRestrictions;
 import ch.threema.app.stores.EncryptedPreferenceStore;
+import ch.threema.app.usecases.OverrideOneTimeHintsUseCase;
 import ch.threema.base.crypto.NaCl;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -26,7 +30,6 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -67,7 +70,6 @@ import ch.threema.app.services.ProfilePictureRecipientsService;
 import ch.threema.app.services.LocaleService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
@@ -87,6 +89,7 @@ import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
+import ch.threema.domain.models.UserState;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.api.APIConnector;
@@ -104,8 +107,8 @@ import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
 import ch.threema.storage.models.DistributionListMemberModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupMemberModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupMemberModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import okhttp3.OkHttpClient;
 
 import static android.view.Display.DEFAULT_DISPLAY;
@@ -116,10 +119,10 @@ import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_OPEN
 import static ch.threema.app.threemasafe.ThreemaSafeConfigureActivity.EXTRA_WORK_FORCE_PASSWORD;
 import static ch.threema.common.ByteArrayExtensionsKt.toLong;
 import static ch.threema.common.LongExtensionsKt.toByteArray;
+import static ch.threema.common.TimeExtensionsKt.toNonNegativeTimestamp;
+import static ch.threema.common.SecureRandomExtensionsKt.generateRandomBytes;
+import static ch.threema.common.SecureRandomExtensionsKt.secureRandom;
 import static ch.threema.libthreema.LibthreemaKt.scrypt;
-import static ch.threema.storage.models.GroupModel.UserState.KICKED;
-import static ch.threema.storage.models.GroupModel.UserState.LEFT;
-import static ch.threema.storage.models.GroupModel.UserState.MEMBER;
 
 public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     private static final Logger logger = getThreemaLogger("ThreemaSafeServiceImpl");
@@ -199,7 +202,10 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     private static final String TAG_SAFE_SETTINGS_RECENT_EMOJIS = "recentEmojis";
 
     private final Context context;
+    @NonNull
     private final PreferenceService preferenceService;
+    @NonNull
+    private final SynchronizedSettingsService synchronizedSettingsService;
     private final UserService userService;
     private final IdentityStore identityStore;
     @NonNull
@@ -224,10 +230,13 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     private final ContactModelRepository contactModelRepository;
     @NonNull
     private final ThreemaSafeApiClient threemaSafeApiClient;
+    @NonNull
+    private final AppRestrictions appRestrictions;
 
     public ThreemaSafeServiceImpl(
         Context context,
-        PreferenceService preferenceService,
+        @NonNull PreferenceService preferenceService,
+        @NonNull SynchronizedSettingsService synchronizedSettingsService,
         UserService userService,
         ContactService contactService,
         GroupService groupService,
@@ -245,10 +254,12 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         @NonNull ServerAddressProvider serverAddressProvider,
         @NonNull EncryptedPreferenceStore encryptedPreferenceStore,
         @NonNull ContactModelRepository contactModelRepository,
-        @NonNull OkHttpClient okHttpClient
-    ) {
+        @NonNull OkHttpClient okHttpClient,
+        @NonNull AppRestrictions appRestrictions
+        ) {
         this.context = context;
         this.preferenceService = preferenceService;
+        this.synchronizedSettingsService = synchronizedSettingsService;
         this.userService = userService;
         this.contactService = contactService;
         this.groupService = groupService;
@@ -265,6 +276,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         this.serverAddressProvider = serverAddressProvider;
         this.encryptedPreferenceStore = encryptedPreferenceStore;
         this.contactModelRepository = contactModelRepository;
+        this.appRestrictions = appRestrictions;
 
         this.threemaSafeApiClient = new ThreemaSafeApiClient(
             prepareOkHttpClient(okHttpClient, apiService)
@@ -337,6 +349,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     }
 
     @Override
+    @Nullable
     public byte[] getThreemaSafeMasterKey() {
         return preferenceService.getThreemaSafeMasterKey();
     }
@@ -349,9 +362,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
             preferenceService.setThreemaSafeServerRetention(response.retentionDays);
             return response;
         } catch (IOException e) {
-            throw new ThreemaException("Threema Safe server test request failed", e);
+            throw new ThreemaException(e.getMessage(), e);
         } catch (JSONException e) {
-            throw new ThreemaException("Malformed server response");
+            throw new ThreemaException("Malformed server response", e);
         } catch (IllegalArgumentException e) {
             throw new ThreemaException(e.getMessage());
         }
@@ -417,7 +430,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
             }
 
             // Upload the threema safe once
-            OneTimeWorkRequest workRequest = ThreemaSafeUploadWorker.Companion.buildOneTimeWorkRequest(force);
+            OneTimeWorkRequest workRequest = ThreemaSafeUploadWorker.buildWorkRequest(force);
             workManager.enqueueUniqueWork(WorkerNames.WORKER_THREEMA_SAFE_UPLOAD, ExistingWorkPolicy.REPLACE, workRequest);
         } catch (IllegalStateException e) {
             logger.error("Unable to schedule safe upload one time work", e);
@@ -492,10 +505,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
             throw new ThreemaSafeUploadException("No key", true);
         }
 
-        SecureRandom random = new SecureRandom();
-
-        byte[] nonce = new byte[NaCl.NONCE_BYTES];
-        random.nextBytes(nonce);
+        byte[] nonce = generateRandomBytes(secureRandom(), NaCl.NONCE_BYTES);
 
         try {
             byte[] encdata = NaCl.symmetricEncryptData(gzippedPlaintext, getThreemaSafeEncryptionKey(), nonce);
@@ -605,6 +615,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
         restoreJson(identity, json);
 
+        OverrideOneTimeHintsUseCase overrideOneTimeHintsUseCase = KoinJavaComponent.get(OverrideOneTimeHintsUseCase.class);
+        overrideOneTimeHintsUseCase.call();
+
         // successfully restored - update mdm settings config
         ThreemaSafeMDMConfig.getInstance().saveConfig(preferenceService);
     }
@@ -616,7 +629,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
             try {
                 // Schedule the start of the worker every 24 hours
                 WorkManager workManager = WorkManager.getInstance(ThreemaApplication.getAppContext());
-                PeriodicWorkRequest workRequest = ThreemaSafeUploadWorker.Companion.buildPeriodicWorkRequest(SCHEDULE_PERIOD);
+                PeriodicWorkRequest workRequest = ThreemaSafeUploadWorker.buildWorkRequest(SCHEDULE_PERIOD);
                 workManager.enqueueUniquePeriodicWork(
                     WorkerNames.WORKER_PERIODIC_THREEMA_SAFE_UPLOAD,
                     policy,
@@ -696,24 +709,22 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         if (contactModel != null) {
             userService.setPublicNickname(nickname, TriggerSource.LOCAL);
 
-
             boolean isLinksRestricted = false;
             if (ConfigUtils.isWorkRestricted()) {
                 // if links have been set do not restore links if readonly profile is set to true and the user is unable to change or remove links
                 String stringPreset;
-                stringPreset = AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__linked_email));
+                stringPreset = appRestrictions.getLinkedEmail();
                 if (stringPreset != null) {
                     isLinksRestricted = true;
                     addUserLink(TAG_SAFE_USER_LINK_TYPE_EMAIL, stringPreset);
                 }
-                stringPreset = AppRestrictionUtil.getStringRestriction(context.getString(R.string.restriction__linked_phone));
+                stringPreset = appRestrictions.getLinkedPhone();
                 if (stringPreset != null) {
                     isLinksRestricted = true;
                     addUserLink(TAG_SAFE_USER_LINK_TYPE_MOBILE, stringPreset);
                 }
                 // do not restore links if readonly profile is set to true and the user is unable to change or remove links later
-                Boolean booleanRestriction = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__readonly_profile));
-                if (booleanRestriction != null && booleanRestriction) {
+                if (appRestrictions.isReadOnlyProfile()) {
                     isLinksRestricted = true;
                 }
             }
@@ -753,8 +764,10 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         }
     }
 
-    private void addUserLink(String type, String value) {
-        if (TestUtil.isEmptyOrNull(type, value)) return;
+    private void addUserLink(@NonNull String type, @Nullable String value) {
+        if (value == null || value.isEmpty()) {
+            return;
+        }
 
         switch (type) {
             case TAG_SAFE_USER_LINK_TYPE_EMAIL:
@@ -799,12 +812,20 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         if (contacts == null) return;
         if (databaseService == null) return;
 
+        final @Nullable String myIdentity = identityStore.getIdentityString();
+        if (myIdentity == null) {
+            throw new IllegalStateException("Cannot restore contacts before user identity");
+        }
+
         ContactModelFactory contactModelFactory = databaseService.getContactModelFactory();
 
         ArrayList<String> identities = new ArrayList<>();
         for (int i = 0; i < contacts.length(); i++) {
             try {
-                identities.add(contacts.getJSONObject(i).getString(TAG_SAFE_CONTACT_IDENTITY));
+                String identity = contacts.getJSONObject(i).getString(TAG_SAFE_CONTACT_IDENTITY);
+                if (!myIdentity.equals(identity)) {
+                    identities.add(identity);
+                }
             } catch (JSONException e) {
                 // ignore & continue with next contact
             }
@@ -912,7 +933,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
                 // do not create group if creator no longer exists (i.e. was revoked)
                 if (contactService.getByIdentity(creatorIdentity) != null) {
-                    GroupModel groupModel = new GroupModel();
+                    GroupModelOld groupModel = new GroupModelOld();
 
                     long createdAt = group.optLong(TAG_SAFE_GROUP_CREATED_AT, 0L);
 
@@ -949,7 +970,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
                                         apiConnector,
                                         contactModelRepository,
                                         AddContactRestrictionPolicy.IGNORE,
-                                        context,
+                                        appRestrictions,
                                         null
                                     ).runSynchronously();
 
@@ -961,17 +982,15 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
 
                                 if (identity.equals(myIdentity)) {
                                     userIsMember = true;
+                                } else if (identity.equals(groupModel.getCreatorIdentity())) {
+                                    creatorIsMember = true;
                                 } else {
-                                    // Only create a group member model if it is not the user itself
+                                    // Only create a group member model if it is not the user or creator
                                     GroupMemberModel groupMemberModel = new GroupMemberModel();
                                     groupMemberModel.setGroupId(groupModel.getId());
                                     groupMemberModel.setIdentity(identity);
 
                                     groupMemberModelFactory.create(groupMemberModel);
-
-                                    if (identity.equals(groupModel.getCreatorIdentity())) {
-                                        creatorIsMember = true;
-                                    }
                                 }
                             }
                         }
@@ -979,9 +998,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
                         if (userIsMember && !myIdentity.equals(groupModel.getCreatorIdentity()) && !creatorIsMember) {
                             // If the creator is not a member, the group is considered to be 'orphaned'. This is not allowed, so instead we treat
                             // the group as if we had been kicked from it.
-                            groupModel.setUserState(KICKED);
+                            groupModel.setUserState(UserState.KICKED);
                         } else {
-                            groupModel.setUserState(userIsMember ? MEMBER : LEFT);
+                            groupModel.setUserState(userIsMember ? UserState.MEMBER : UserState.LEFT);
                         }
                         groupModelFactory.update(groupModel);
                     }
@@ -1039,7 +1058,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
                                 apiConnector,
                                 contactModelRepository,
                                 AddContactRestrictionPolicy.IGNORE,
-                                context,
+                                appRestrictions,
                                 null
                             ).runSynchronously();
 
@@ -1065,24 +1084,24 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     private void restoreSettings(JSONObject settings) {
         boolean syncContactsRestricted = false;
         if (ConfigUtils.isWorkRestricted()) {
-            Boolean booleanPreset = AppRestrictionUtil.getBooleanRestriction(context.getString(R.string.restriction__contact_sync));
+            Boolean booleanPreset = appRestrictions.isContactSyncEnabledOrNull();
             if (booleanPreset != null) {
-                preferenceService.getContactSyncPolicySetting().setFromLocal(booleanPreset);
+                synchronizedSettingsService.getContactSyncPolicySetting().setFromLocal(booleanPreset);
                 syncContactsRestricted = true;
             }
         }
 
         if (!syncContactsRestricted) {
-            preferenceService.getContactSyncPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_SYNC_CONTACTS, false));
+            synchronizedSettingsService.getContactSyncPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_SYNC_CONTACTS, false));
         }
 
-        preferenceService.getUnknownContactPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_BLOCK_UNKNOWN, false));
-        preferenceService.getTypingIndicatorPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_SEND_TYPING, true));
-        preferenceService.getReadReceiptPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_READ_RECEIPTS, true));
-        preferenceService.getO2oCallPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_THREEMA_CALLS, true));
-        preferenceService.getO2oCallConnectionPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_RELAY_THREEMA_CALLS, false));
-        preferenceService.getScreenshotPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_DISABLE_SCREENSHOTS, false));
-        preferenceService.getKeyboardDataCollectionPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_INCOGNITO_KEYBOARD, false));
+        synchronizedSettingsService.getUnknownContactPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_BLOCK_UNKNOWN, false));
+        synchronizedSettingsService.getTypingIndicatorPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_SEND_TYPING, true));
+        synchronizedSettingsService.getReadReceiptPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_READ_RECEIPTS, true));
+        synchronizedSettingsService.getO2oCallPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_THREEMA_CALLS, true));
+        synchronizedSettingsService.getO2oCallConnectionPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_RELAY_THREEMA_CALLS, false));
+        synchronizedSettingsService.getScreenshotPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_DISABLE_SCREENSHOTS, false));
+        synchronizedSettingsService.getKeyboardDataCollectionPolicySetting().setFromLocal(settings.optBoolean(TAG_SAFE_SETTINGS_INCOGNITO_KEYBOARD, false));
 
         setSettingsBlockedContacts(settings.optJSONArray(TAG_SAFE_SETTINGS_BLOCKED_CONTACTS));
         setSettingsSyncExcluded(settings.optJSONArray(TAG_SAFE_SETTINGS_SYNC_EXCLUDED_IDS));
@@ -1219,8 +1238,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
             // re-fetched, so it must be included.
             contact.put(TAG_SAFE_CONTACT_PUBLIC_KEY, Base64.encodeBytes(contactModel.getPublicKey()));
         }
-        if (contactModel.getDateCreated() != null) {
-            contact.put(TAG_SAFE_CONTACT_CREATED_AT, Utils.getUnsignedTimestamp(contactModel.getDateCreated()));
+        Date dateCreated = contactModel.getDateCreated();
+        if (dateCreated != null) {
+            contact.put(TAG_SAFE_CONTACT_CREATED_AT, toNonNegativeTimestamp(dateCreated.getTime()));
         } else {
             contact.put(TAG_SAFE_CONTACT_CREATED_AT, 0);
         }
@@ -1247,6 +1267,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
      */
     @NonNull
     private JSONArray getContacts() throws JSONException {
+        final @Nullable String myIdentity = identityStore.getIdentityString();
         final @NonNull List<ContactModel> contactModels = contactService.getAll();
         if (contactModels.isEmpty()) {
             return new JSONArray();
@@ -1254,7 +1275,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         final @NonNull Set<String> removedContacts = contactService.getRemovedContacts();
         final @NonNull JSONArray contactsJsonArray = new JSONArray();
         for (final @Nullable ContactModel contactModel : contactModels) {
-            if (contactModel != null && !removedContacts.contains(contactModel.getIdentity())) {
+            if (contactModel != null && !removedContacts.contains(contactModel.getIdentity()) && !contactModel.getIdentity().equals(myIdentity)) {
                 contactsJsonArray.put(convertContactModelToJSON(contactModel));
             }
         }
@@ -1273,7 +1294,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         return membersArray;
     }
 
-    private JSONObject getGroup(GroupModel groupModel) throws JSONException {
+    private JSONObject getGroup(GroupModelOld groupModel) throws JSONException {
         JSONObject group = new JSONObject();
 
         group.put(TAG_SAFE_GROUP_ID, groupModel.getApiGroupId());
@@ -1281,13 +1302,14 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         if (groupModel.getName() != null) {
             group.put(TAG_SAFE_GROUP_NAME, groupModel.getName());
         }
-        if (groupModel.getCreatedAt() != null) {
-            group.put(TAG_SAFE_GROUP_CREATED_AT, Utils.getUnsignedTimestamp(groupModel.getCreatedAt()));
+        Date createdAt = groupModel.getCreatedAt();
+        if (createdAt != null) {
+            group.put(TAG_SAFE_GROUP_CREATED_AT, toNonNegativeTimestamp(createdAt.getTime()));
         } else {
             group.put(TAG_SAFE_GROUP_CREATED_AT, 0);
         }
         JSONArray groupMembers;
-        if (groupModel.getUserState() == MEMBER) {
+        if (groupModel.getUserState() == UserState.MEMBER) {
             // In case the user is a member, we should include the user in the list
             groupMembers = getGroupMembers(this.groupService.getGroupMemberIdentities(groupModel), null);
         } else {
@@ -1307,7 +1329,7 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     private JSONArray getGroups() throws JSONException {
         JSONArray groupsArray = new JSONArray();
 
-        for (final GroupModel groupModel : this.groupService.getAll(new GroupService.GroupFilter() {
+        for (final GroupModelOld groupModel : this.groupService.getAll(new GroupService.GroupFilter() {
             @Override
             public boolean sortByDate() {
                 return false;
@@ -1348,8 +1370,9 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         JSONObject distributionlist = new JSONObject();
         distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_ID, Utils.byteArrayToHexString(toByteArray(distributionListModel.getId(), ByteOrder.LITTLE_ENDIAN)));
         distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_NAME, distributionListModel.getName());
-        if (distributionListModel.getCreatedAt() != null) {
-            distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, Utils.getUnsignedTimestamp(distributionListModel.getCreatedAt()));
+        Date createdAt = distributionListModel.getCreatedAt();
+        if (createdAt != null) {
+            distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, toNonNegativeTimestamp(createdAt.getTime()));
         } else {
             distributionlist.put(TAG_SAFE_DISTRIBUTIONLIST_CREATED_AT, 0);
         }
@@ -1408,8 +1431,13 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
         user.put(TAG_SAFE_USER_PRIVATE_KEY, Base64.encodeBytes(identityStore.getPrivateKey()));
         user.put(TAG_SAFE_USER_NICKNAME, userService.getPublicNickname());
 
+        String myIdentity = identityStore.getIdentityString();
+        if (myIdentity == null) {
+            throw new IllegalStateException("Identity is null");
+        }
+
         try {
-            Bitmap image = fileService.getUserDefinedProfilePicture(contactService.getMe().getIdentity());
+            Bitmap image = fileService.getUserDefinedProfilePicture(myIdentity);
             if (image != null) {
                 // scale image - assume profile pics are always square
                 if (Math.max(image.getWidth(), image.getHeight()) > PROFILEPIC_MAX_WIDTH) {
@@ -1521,14 +1549,14 @@ public class ThreemaSafeServiceImpl implements ThreemaSafeService {
     private JSONObject getSettings() throws JSONException {
         JSONObject settings = new JSONObject();
 
-        settings.put(TAG_SAFE_SETTINGS_SYNC_CONTACTS, preferenceService.isSyncContacts());
-        settings.put(TAG_SAFE_SETTINGS_BLOCK_UNKNOWN, preferenceService.isBlockUnknown());
-        settings.put(TAG_SAFE_SETTINGS_SEND_TYPING, preferenceService.isTypingIndicatorEnabled());
-        settings.put(TAG_SAFE_SETTINGS_READ_RECEIPTS, preferenceService.areReadReceiptsEnabled());
-        settings.put(TAG_SAFE_SETTINGS_THREEMA_CALLS, preferenceService.isVoipEnabled());
-        settings.put(TAG_SAFE_SETTINGS_RELAY_THREEMA_CALLS, preferenceService.getForceTURN());
-        settings.put(TAG_SAFE_SETTINGS_DISABLE_SCREENSHOTS, preferenceService.areScreenshotsDisabled());
-        settings.put(TAG_SAFE_SETTINGS_INCOGNITO_KEYBOARD, preferenceService.isIncognitoKeyboardRequested());
+        settings.put(TAG_SAFE_SETTINGS_SYNC_CONTACTS, synchronizedSettingsService.isSyncContacts());
+        settings.put(TAG_SAFE_SETTINGS_BLOCK_UNKNOWN, synchronizedSettingsService.isBlockUnknown());
+        settings.put(TAG_SAFE_SETTINGS_SEND_TYPING, synchronizedSettingsService.isTypingIndicatorEnabled());
+        settings.put(TAG_SAFE_SETTINGS_READ_RECEIPTS, synchronizedSettingsService.areReadReceiptsEnabled());
+        settings.put(TAG_SAFE_SETTINGS_THREEMA_CALLS, synchronizedSettingsService.isVoipEnabled());
+        settings.put(TAG_SAFE_SETTINGS_RELAY_THREEMA_CALLS, synchronizedSettingsService.isForceTURN());
+        settings.put(TAG_SAFE_SETTINGS_DISABLE_SCREENSHOTS, synchronizedSettingsService.areScreenshotsDisabled());
+        settings.put(TAG_SAFE_SETTINGS_INCOGNITO_KEYBOARD, synchronizedSettingsService.isIncognitoKeyboardRequested());
         settings.put(TAG_SAFE_SETTINGS_BLOCKED_CONTACTS, getSettingsBlockedContacts());
         settings.put(TAG_SAFE_SETTINGS_SYNC_EXCLUDED_IDS, getSettingsSyncExcludedContacts());
         settings.put(TAG_SAFE_SETTINGS_RECENT_EMOJIS, getSettingsRecentEmojis());

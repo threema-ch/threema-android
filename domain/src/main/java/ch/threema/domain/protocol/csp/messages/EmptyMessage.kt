@@ -1,5 +1,6 @@
 package ch.threema.domain.protocol.csp.messages
 
+import ch.threema.common.emptyByteArray
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
 
@@ -30,5 +31,5 @@ class EmptyMessage : AbstractMessage() {
 
     override fun bumpLastUpdate() = false
 
-    override fun getBody() = ByteArray(0)
+    override fun getBody() = emptyByteArray()
 }

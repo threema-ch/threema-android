@@ -1,6 +1,7 @@
 package ch.threema.domain.protocol.taskmanager
 
 import ch.threema.base.crypto.NaCl
+import ch.threema.common.emptyByteArray
 import ch.threema.domain.helpers.InMemoryContactStore
 import ch.threema.domain.helpers.InMemoryIdentityStore
 import ch.threema.domain.models.Contact
@@ -62,7 +63,7 @@ class BypassTest {
     }
 
     private val noopDeviceCookieManager: DeviceCookieManager = object : DeviceCookieManager {
-        override fun obtainDeviceCookie(): ByteArray = ByteArray(0)
+        override fun obtainDeviceCookie(): ByteArray = emptyByteArray()
 
         override fun changeIndicationReceived() {
             // Nothing to do
@@ -92,8 +93,8 @@ class BypassTest {
     @Test
     fun testReflected() = runBlocking {
         val expectation: Map<InboundL4Message, MessageAction> = mapOf(
-            InboundD2mMessage.Reflected(0u, 1u, 100u, ByteArray(0)) to MessageAction.BYPASS,
-            InboundD2mMessage.Reflected(0u, 2u, 100u, ByteArray(0)) to MessageAction.BYPASS,
+            InboundD2mMessage.Reflected(0u, 1u, 100u, emptyByteArray()) to MessageAction.BYPASS,
+            InboundD2mMessage.Reflected(0u, 2u, 100u, emptyByteArray()) to MessageAction.BYPASS,
         )
         val simulationResult = receiveWhileReading(expectation.keys.toList())
 

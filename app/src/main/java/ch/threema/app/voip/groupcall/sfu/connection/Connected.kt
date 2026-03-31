@@ -14,7 +14,6 @@ import ch.threema.app.webrtc.SaneDataChannelObserver
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import com.google.protobuf.InvalidProtocolBufferException
-import java8.util.function.Function
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.sync.Mutex
@@ -190,11 +189,11 @@ class Connected internal constructor(
     @WorkerThread
     private fun createHandshake(
         remoteParticipantId: ParticipantId,
-        supplier: Function<ParticipantId, P2PHandshake>,
+        supplier: (ParticipantId) -> P2PHandshake,
     ): P2PHandshake {
         GroupCallThreadUtil.assertDispatcherThread()
 
-        return supplier.apply(remoteParticipantId).also {
+        return supplier(remoteParticipantId).also {
             call.context.setHandshake(remoteParticipantId, it)
         }
     }

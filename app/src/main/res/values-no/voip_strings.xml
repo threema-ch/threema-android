@@ -53,14 +53,12 @@
     <string name="voip_prefs_video_codec_no_h264hip">Deaktiver H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Programvarekodeker</string>
     <string name="voip_connection_failed">Tilkobling kunne ikke etableres</string>
-    <string name="voip_connection_lost">Mistet forbindelse</string>
     <string name="prefs_voip_reject_incoming_calls_title">Avvis telefonanrop</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Avvis innkommende telefonanrop mens et Threema anrop er aktivt.</string>
     <string name="voip_contact_not_found">Ingen Threema kontakt ble funnet for dette nummeret.</string>
     <string name="voip_another_pstn_call">Ikke mulig å igangsette et anrop. Et vanlig telefonanrop er fortsatt aktivt.</string>
     <string name="voip_call_status_off_hours">Anrop utenom arbeid</string>
     <string name="voip_peer_video_disabled">Videoanrop har blitt deaktivert av den andre part.</string>
-    <string name="voip_reject_channel_name">Anropsstatus endret</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC feilsøking</string>
     <string name="voip_prefs_webrtc_debug_summary">Start dette verktøyet for å feilsøke problemer med å etablere et anrop</string>
@@ -71,13 +69,9 @@
     <string name="voip_webrtc_debug_copied">Kopiert til utklippstavle.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Kopier til utklippstavle</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">Alle gruppemedlemmer har blitt varslet</string>
-    <string name="voip_gc_notification_channel_description">Gruppesamtaler</string>
-    <string name="voip_gc_notification_title">Gruppesamtale</string>
     <string name="voip_gc_notification_call_started">%1$s startet en gruppesamtale i %2$s</string>
     <string name="voip_gc_notification_call_started_generic">%1$s startet en gruppesamtale</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Du startet en gruppesamtale</string>
-    <string name="voip_gc_dismiss_call">Ignorer</string>
     <string name="voip_gc_join_call">Bli med</string>
     <string name="voip_gc_ongoing_call">Pågående gruppesamtale</string>
     <string name="voip_gc_waiting_for_participants">Venter på deltakere</string>

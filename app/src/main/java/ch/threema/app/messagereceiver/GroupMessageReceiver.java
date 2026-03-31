@@ -19,9 +19,9 @@ import ch.threema.app.AppConstants;
 import ch.threema.app.emojis.EmojiUtil;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.multidevice.MultiDeviceManager;
-import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.MessageService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.tasks.OutboundIncomingGroupMessageUpdateReadTask;
 import ch.threema.app.tasks.OutgoingFileMessageTask;
 import ch.threema.app.tasks.OutgoingGroupDeleteMessageTask;
@@ -39,6 +39,8 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.crypto.SymmetricEncryptionResult;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.datatypes.ContactNameFormat;
+import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.data.repositories.GroupModelRepository;
@@ -52,8 +54,8 @@ import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.protobuf.csp.e2e.Reaction;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupMessageModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.access.GroupAccessModel;
@@ -68,13 +70,13 @@ import static ch.threema.domain.protocol.csp.ProtocolDefines.DELIVERYRECEIPT_MSG
 public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> {
     private static final Logger logger = getThreemaLogger("GroupMessageReceiver");
 
-    private final GroupModel group;
+    private final GroupModelOld group;
     @Nullable
-    private final ch.threema.data.models.GroupModel groupModel;
+    private final GroupModel groupModel;
     private final GroupService groupService;
     private final DatabaseService databaseService;
     @NonNull
-    private final ContactService contactService;
+    private final UserService userService;
     @NonNull
     private final ContactModelRepository contactModelRepository;
     @NonNull
@@ -84,10 +86,10 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
     private final MultiDeviceManager multiDeviceManager;
 
     public GroupMessageReceiver(
-        GroupModel group,
+        GroupModelOld group,
         GroupService groupService,
         DatabaseService databaseService,
-        @NonNull ContactService contactService,
+        @NonNull UserService userService,
         @NonNull ContactModelRepository contactModelRepository,
         @NonNull GroupModelRepository groupModelRepository,
         @NonNull ServiceManager serviceManager
@@ -95,7 +97,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         this.group = group;
         this.groupService = groupService;
         this.databaseService = databaseService;
-        this.contactService = contactService;
+        this.userService = userService;
         this.contactModelRepository = contactModelRepository;
         this.groupModelRepository = groupModelRepository;
         this.serviceManager = serviceManager;
@@ -163,8 +165,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         taskManager.schedule(new OutgoingTextMessageTask(
             messageModel.getId(),
             Type_GROUP,
-            otherMembers,
-            serviceManager
+            otherMembers
         ));
     }
 
@@ -172,8 +173,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         taskManager.schedule(new OutgoingTextMessageTask(
             messageModel.getId(),
             Type_GROUP,
-            getRecipientIdentities(recipientIdentities),
-            serviceManager
+            getRecipientIdentities(recipientIdentities)
         ));
     }
 
@@ -198,8 +198,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         taskManager.schedule(new OutgoingLocationMessageTask(
             messageModel.getId(),
             Type_GROUP,
-            otherMembers,
-            serviceManager
+            otherMembers
         ));
     }
 
@@ -211,8 +210,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         taskManager.schedule(new OutgoingLocationMessageTask(
             messageModel.getId(),
             Type_GROUP,
-            getRecipientIdentities(recipientIdentities),
-            serviceManager
+            getRecipientIdentities(recipientIdentities)
         ));
     }
 
@@ -222,7 +220,6 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         @Nullable final byte[] fileBlobId,
         @Nullable SymmetricEncryptionResult encryptionResult,
         @NonNull final GroupMessageModel messageModel,
-        @Nullable MessageId messageId,
         @Nullable Collection<String> recipientIdentities
     ) {
         // Enrich file data model with blob id and encryption key
@@ -236,8 +233,9 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
         // and therefore updated.
         messageModel.setFileData(modelFileData);
 
-        // Create a new message id if the given message id is null
-        messageModel.setMessageId(messageId != null ? messageId : MessageId.random());
+        if (messageModel.getMessageId() == null) {
+            messageModel.setMessageId(MessageId.random());
+        }
         saveLocalModel(messageModel);
 
         // Note that lastUpdate lastUpdate was bumped when the file message was created
@@ -247,8 +245,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
             messageModel.getId(),
             Type_GROUP,
             getRecipientIdentities(recipientIdentities),
-            thumbnailBlobId,
-            serviceManager
+            thumbnailBlobId
         ));
     }
 
@@ -276,8 +273,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
                 Type_GROUP,
                 getRecipientIdentities(recipientIdentities),
                 ballotId,
-                ballotData,
-                serviceManager
+                ballotData
             ));
         }
     }
@@ -302,8 +298,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
             votes,
             ballotModel.getType(),
             group.getApiGroupId(),
-            group.getCreatorIdentity(),
-            serviceManager
+            group.getCreatorIdentity()
         ));
     }
 
@@ -318,8 +313,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
                     messageIds,
                     timestamp,
                     group.getApiGroupId(),
-                    group.getCreatorIdentity(),
-                    serviceManager
+                    group.getCreatorIdentity()
                 )
             );
         }
@@ -334,8 +328,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
                 editedAt,
                 GroupUtil.getRecipientIdentitiesByFeatureSupport(
                     getFeatureSupport(ThreemaFeature.EDIT_MESSAGES)
-                ),
-                serviceManager
+                )
             )
         );
     }
@@ -348,8 +341,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
                 deletedAt,
                 GroupUtil.getRecipientIdentitiesByFeatureSupport(
                     getFeatureSupport(ThreemaFeature.DELETE_MESSAGES)
-                ),
-                serviceManager
+                )
             )
         );
     }
@@ -379,8 +371,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
                 actionCase,
                 emojiSequence,
                 reactedAt,
-                emojiReactionsIdentities,
-                serviceManager
+                emojiReactionsIdentities
             )
         );
 
@@ -420,13 +411,13 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
             new OutgoingGroupDeliveryReceiptMessageTask(
                 messageModel.getId(),
                 receiptType,
-                identities,
-                serviceManager
+                identities
             )
         );
     }
 
     @Override
+    @NonNull
     public List<GroupMessageModel> loadMessages(MessageService.MessageFilter filter) {
         return databaseService.getGroupMessageModelFactory().find(
             group.getId(),
@@ -452,12 +443,12 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
             group.getId());
     }
 
-    public GroupModel getGroup() {
+    public GroupModelOld getGroup() {
         return group;
     }
 
     @Nullable
-    public ch.threema.data.models.GroupModel getGroupModel() {
+    public GroupModel getGroupModel() {
         return groupModel;
     }
 
@@ -467,30 +458,35 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
     }
 
     @Override
-    public String getDisplayName() {
+    public String getDisplayName(@NonNull ContactNameFormat contactNameFormat) {
         // Get new group model to ensure the display name is fresh
-        ch.threema.data.models.GroupModel groupModel = groupModelRepository.getByCreatorIdentityAndId(
+        GroupModel groupModel = groupModelRepository.getByCreatorIdentityAndId(
             group.getCreatorIdentity(),
             group.getApiGroupId()
         );
         if (groupModel != null) {
-            GroupModelData groupModelData = groupModel.getData();
+            final @Nullable GroupModelData groupModelData = groupModel.getData();
             if (groupModelData != null) {
-                return NameUtil.getDisplayName(groupModelData, contactModelRepository, contactService);
+                return NameUtil.getGroupDisplayName(
+                    groupModelData,
+                    contactModelRepository,
+                    userService,
+                    contactNameFormat
+                );
             }
         }
 
         // In case the new group model cannot be found, we fall back to the old group model
-        return NameUtil.getDisplayName(group, groupService);
+        return NameUtil.getGroupDisplayName(group, groupService, contactNameFormat);
     }
 
     @Override
-    public String getShortName() {
-        return getDisplayName();
+    public String getShortName(@NonNull ContactNameFormat contactNameFormat) {
+        return getDisplayName(contactNameFormat);
     }
 
     @Override
-    public void prepareIntent(Intent intent) {
+    public void prepareIntent(@NonNull Intent intent) {
         intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) group.getId());
     }
 
@@ -528,7 +524,7 @@ public class GroupMessageReceiver implements MessageReceiver<GroupMessageModel> 
     }
 
     @Override
-    public boolean sendMediaData() {
+    public boolean shouldSendMediaData() {
         if (multiDeviceManager.isMultiDeviceActive()) {
             // We need to upload the media in any case (also for notes groups) if multi device is
             // active. In this case the upload is needed as the message is reflected.

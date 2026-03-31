@@ -4,14 +4,18 @@ import android.content.ContentValues;
 
 import android.database.Cursor;
 
+import org.jetbrains.annotations.NotNull;
+
+import androidx.annotation.NonNull;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.models.ballot.GroupBallotModel;
 
 public class GroupBallotModelFactory extends ModelFactory {
 
-    public GroupBallotModelFactory(DatabaseService databaseService) {
-        super(databaseService, GroupBallotModel.TABLE);
+    public GroupBallotModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, GroupBallotModel.TABLE);
     }
 
     public GroupBallotModel getByGroupIdAndBallotId(int groupId, int ballotId) {
@@ -105,11 +109,14 @@ public class GroupBallotModelFactory extends ModelFactory {
         return null;
     }
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `group_ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `groupId` INTEGER NOT NULL , `ballotId` INTEGER NOT NULL )",
-            "CREATE UNIQUE INDEX `groupBallotId` ON `group_ballot` ( `groupId`, `ballotId` )"
-        };
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE `group_ballot` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `groupId` INTEGER NOT NULL , `ballotId` INTEGER NOT NULL )",
+                "CREATE UNIQUE INDEX `groupBallotId` ON `group_ballot` ( `groupId`, `ballotId` )"
+            };
+        }
     }
 }

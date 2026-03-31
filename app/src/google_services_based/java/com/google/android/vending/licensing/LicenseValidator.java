@@ -204,9 +204,6 @@ class LicenseValidator {
 
     /**
      * Confers with policy and calls appropriate callback method.
-     *
-     * @param response
-     * @param rawData
      */
     private void handleResponse(int response, ResponseData rawData) {
         // Update policy data and increment retry counter (if needed)

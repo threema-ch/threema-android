@@ -1,15 +1,17 @@
 package ch.threema.app.activities;
 
-import static ch.threema.app.preference.service.PreferenceService.LockingMech_NONE;
+import static ch.threema.app.preference.service.PreferenceService.LOCKING_MECH_NONE;
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.fragment.app.Fragment;
@@ -25,14 +27,15 @@ import org.slf4j.Logger;
 import java.time.Instant;
 
 import ch.threema.app.R;
+import ch.threema.app.applock.CheckAppLockContract;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.fragments.BackupDataFragment;
 import ch.threema.app.threemasafe.BackupThreemaSafeFragment;
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig;
 import ch.threema.app.utils.AnimationUtil;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.HiddenChatUtil;
+import kotlin.Unit;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class BackupAdminActivity extends ThreemaToolbarActivity {
@@ -46,6 +49,14 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
     private boolean isUnlocked;
     private ThreemaSafeMDMConfig safeConfig;
 
+    private final ActivityResultLauncher<Unit> checkLockLauncher = registerForActivityResult(new CheckAppLockContract(), unlocked -> {
+        if (unlocked) {
+            isUnlocked = true;
+        } else {
+            finish();
+        }
+    });
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,12 +68,12 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
         isUnlocked = false;
         safeConfig = ThreemaSafeMDMConfig.getInstance();
 
-        if (AppRestrictionUtil.isBackupsDisabled(this)) {
+        if (dependencies.getAppRestrictions().isBackupsDisabled()) {
             this.finish();
             return;
         }
 
-        if (AppRestrictionUtil.isDataBackupsDisabled(this) && threemaSafeUIDisabled()) {
+        if (dependencies.getAppRestrictions().isDataBackupsDisabled() && threemaSafeUIDisabled()) {
             this.finish();
             return;
         }
@@ -107,28 +118,13 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
     protected void onResume() {
         super.onResume();
 
-        if (!isUnlocked) {
-            if (!dependencies.getPreferenceService().getLockMechanism().equals(LockingMech_NONE)) {
-                HiddenChatUtil.launchLockCheckDialog(this, dependencies.getPreferenceService());
-            }
+        if (!isUnlocked && !dependencies.getPreferenceService().getLockMechanism().equals(LOCKING_MECH_NONE)) {
+            checkLockLauncher.launch(Unit.INSTANCE);
         }
     }
 
     public int getLayoutResource() {
         return R.layout.activity_backup_admin;
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == ThreemaActivity.ACTIVITY_ID_CHECK_LOCK) {
-            if (resultCode == RESULT_OK) {
-                isUnlocked = true;
-            } else {
-                finish();
-            }
-        }
     }
 
     @Override
@@ -144,7 +140,7 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
     }
 
     private boolean dataBackupUIDisabled() {
-        return AppRestrictionUtil.isDataBackupsDisabled(this);
+        return dependencies.getAppRestrictions().isDataBackupsDisabled();
     }
 
     @Override
@@ -186,5 +182,10 @@ public class BackupAdminActivity extends ThreemaToolbarActivity {
             }
             return null;
         }
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context) {
+        return new Intent(context, BackupAdminActivity.class);
     }
 }

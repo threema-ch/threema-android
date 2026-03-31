@@ -8,7 +8,7 @@ import android.net.NetworkInfo
 import android.os.Build
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
-import ch.threema.app.workers.ConnectivityChangeWorker.Companion.buildOneTimeWorkRequest
+import ch.threema.app.workers.ConnectivityChangeWorker
 import ch.threema.app.workers.WorkerNames
 import ch.threema.base.utils.getThreemaLogger
 
@@ -32,7 +32,7 @@ class ConnectivityChangeReceiver : BroadcastReceiver() {
                 }
                 ?: "UNKNOWN"
 
-            val workRequest = buildOneTimeWorkRequest(networkState)
+            val workRequest = ConnectivityChangeWorker.buildWorkRequest(networkState)
             WorkManager.getInstance(context)
                 .enqueueUniqueWork(WorkerNames.WORKER_CONNECTIVITY_CHANGE, ExistingWorkPolicy.REPLACE, workRequest)
         } catch (e: IllegalStateException) {

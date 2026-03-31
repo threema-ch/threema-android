@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 
 import java.util.Collections;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.ServiceCompat;
@@ -25,7 +26,6 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.notification.NotificationService;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.ContactModel;
 
@@ -112,7 +112,7 @@ public class VoiceActionService extends SearchActionVerificationClientService {
             return false;
         }
 
-        logger.debug("Audio uri: " + uri);
+        logger.debug("Audio uri: {}", uri);
 
         MediaItem mediaItem = new MediaItem(uri, MediaItem.TYPE_VOICEMESSAGE);
         mediaItem.setCaption(caption);
@@ -120,7 +120,7 @@ public class VoiceActionService extends SearchActionVerificationClientService {
         messageService.sendMediaAsync(Collections.singletonList(mediaItem), Collections.singletonList(messageReceiver), new MessageServiceImpl.SendResultListener() {
             @Override
             public void onError(String errorMessage) {
-                logger.debug("Error sending audio message: " + errorMessage);
+                logger.debug("Error sending audio message: {}", errorMessage);
                 lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
             }
 
@@ -135,62 +135,34 @@ public class VoiceActionService extends SearchActionVerificationClientService {
     }
 
     public void doPerformAction(Intent intent, boolean isVerified) {
-
         if (isVerified) {
             Bundle bundle = intent.getExtras();
 
             if (bundle != null) {
-                String identity = bundle.getString("com.google.android.voicesearch.extra.RECIPIENT_CONTACT_CHAT_ID");
-                String message = bundle.getString("android.intent.extra.TEXT");
+                @Nullable String identity = bundle.getString("com.google.android.voicesearch.extra.RECIPIENT_CONTACT_CHAT_ID");
+                @Nullable String message = bundle.getString("android.intent.extra.TEXT");
 
-                if (!TestUtil.isEmptyOrNull(identity, message)) {
-                    ContactModel contactModel = contactService.getByIdentity(identity);
+                @Nullable ContactModel contactModel = contactService.getByIdentity(identity);
 
-                    if (contactModel != null) {
-                        final MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
+                if (contactModel != null) {
+                    final MessageReceiver messageReceiver = contactService.createReceiver(contactModel);
+                    lifetimeService.acquireConnection(TAG);
 
-                        if (messageReceiver != null) {
-                            lifetimeService.acquireConnection(TAG);
+                    if (!sendAudioMessage(messageReceiver, intent, message) && message != null && !message.isEmpty()) {
+                        try {
+                            messageService.sendText(message, messageReceiver);
+                            messageService.markConversationAsRead(messageReceiver, notificationService);
 
-                            if (!sendAudioMessage(messageReceiver, intent, message)) {
-                                try {
-                                    messageService.sendText(message, messageReceiver);
-                                    messageService.markConversationAsRead(messageReceiver, notificationService);
-
-                                    logger.debug("Message sent to: " + identity);
-                                } catch (Exception e) {
-                                    logger.error("Exception", e);
-                                }
-
-                                lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
-                            }
+                            logger.debug("Message sent to: {}", identity);
+                        } catch (Exception e) {
+                            logger.error("Exception", e);
                         }
+
+                        lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
                     }
                 }
             }
         }
-    }
-
-    /*    @Override
-        public boolean isTestingMode() {
-            return true;
-        }
-    */
-    final protected boolean requiredInstances() {
-        if (!this.checkInstances()) {
-            this.instantiate();
-        }
-        return this.checkInstances();
-    }
-
-    protected boolean checkInstances() {
-        return TestUtil.required(
-            this.messageService,
-            this.lifetimeService,
-            this.notificationService,
-            this.contactService,
-            this.lockAppService
-        );
     }
 
     protected void instantiate() {

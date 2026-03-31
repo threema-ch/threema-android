@@ -3,25 +3,25 @@ package ch.threema.app.workers
 import android.content.Context
 import androidx.work.BackoffPolicy
 import androidx.work.CoroutineWorker
-import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
-import ch.threema.app.ThreemaApplication
+import androidx.work.await
+import ch.threema.android.buildPeriodicWorkRequest
+import ch.threema.android.setBackoffCriteria
+import ch.threema.android.setInitialDelay
+import ch.threema.android.setInputData
 import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.restrictions.AppRestrictionUtil
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.services.ConversationService
 import ch.threema.app.services.FileService
-import ch.threema.app.services.GroupService
 import ch.threema.app.services.MessageService
 import ch.threema.app.services.ballot.BallotService
 import ch.threema.app.utils.AutoDeleteUtil
-import ch.threema.app.utils.ConfigUtils
-import ch.threema.app.utils.WorkManagerUtil
+import ch.threema.app.utils.DispatcherProvider
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.storage.models.ConversationModel
@@ -30,11 +30,11 @@ import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.DisplayTag
 import ch.threema.storage.models.data.media.BallotDataModel
 import java.util.Date
-import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.core.component.KoinComponent
@@ -47,88 +47,10 @@ class AutoDeleteWorker(
     workerParameters: WorkerParameters,
 ) : CoroutineWorker(context, workerParameters), KoinComponent {
 
-    private val preferenceService: PreferenceService by inject()
     private val conversationService: ConversationService by inject()
-    private val groupService: GroupService by inject()
     private val messageService: MessageService by inject()
     private val fileService: FileService by inject()
     private val ballotService: BallotService by inject()
-
-    companion object {
-        const val EXTRA_GRACE_DAYS = "grace_days"
-        private val schedulePeriod = 0.5.days
-
-        /**
-         * Schedule the auto delete worker to run periodically. If auto delete is not configured
-         * and a worker is already scheduled, it will be cancelled.
-         */
-        fun scheduleAutoDelete(context: Context) {
-            val graceDays = getGraceDays(context)
-            if (graceDays != null && graceDays > ProtocolDefines.AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE) {
-                logger.info("Scheduling auto delete")
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val operation = WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                            WorkerNames.WORKER_AUTO_DELETE,
-                            ExistingPeriodicWorkPolicy.UPDATE,
-                            buildPeriodicWorkRequest(graceDays),
-                        )
-                        logger.info(
-                            "Schedule result = {}",
-                            withContext(Dispatchers.IO) {
-                                operation.result.get()
-                            },
-                        )
-                    } catch (e: IllegalStateException) {
-                        logger.error("Exception scheduling auto delete", e)
-                    }
-                }
-            } else {
-                logger.info("No auto delete configured")
-                cancelAutoDelete(context)
-            }
-        }
-
-        private fun buildPeriodicWorkRequest(graceDays: Int): PeriodicWorkRequest {
-            logger.info("Building Periodic Work Request with graceDays = {}", graceDays)
-
-            val data = Data.Builder()
-                .putInt(EXTRA_GRACE_DAYS, graceDays)
-                .build()
-
-            return PeriodicWorkRequestBuilder<AutoDeleteWorker>(
-                schedulePeriod.inWholeMilliseconds,
-                TimeUnit.MILLISECONDS,
-            )
-                .setInitialDelay(5, TimeUnit.MINUTES)
-                .setBackoffCriteria(BackoffPolicy.LINEAR, 1, TimeUnit.HOURS)
-                .setInputData(data)
-                .build()
-        }
-
-        private fun getGraceDays(context: Context): Int? {
-            var newGraceDays =
-                if (ConfigUtils.isWorkRestricted()) AppRestrictionUtil.getKeepMessagesDays(context) else null
-
-            if (newGraceDays == null) {
-                val preferenceService = ThreemaApplication.getServiceManager()?.preferenceService
-                if (preferenceService != null) {
-                    newGraceDays = preferenceService.autoDeleteDays
-                }
-            }
-            return newGraceDays
-        }
-
-        fun cancelAutoDelete(context: Context) {
-            CoroutineScope(Dispatchers.IO).launch {
-                cancelAutoDeleteAwait(context)
-            }
-        }
-
-        suspend fun cancelAutoDeleteAwait(context: Context) {
-            WorkManagerUtil.cancelUniqueWorkAwait(context, WorkerNames.WORKER_AUTO_DELETE)
-        }
-    }
 
     override suspend fun doWork(): Result {
         logger.info("Start auto delete work")
@@ -196,7 +118,8 @@ class AutoDeleteWorker(
             if (createdDate == null) {
                 createdDate = messageModel.postedAt
             }
-            if (createdDate != null && AutoDeleteUtil.getDifferenceDays(
+            if (createdDate != null &&
+                AutoDeleteUtil.getDifferenceDays(
                     createdDate,
                     today,
                 ) >= graceDays
@@ -231,5 +154,68 @@ class AutoDeleteWorker(
             }
         }
         return numDeletedMessages
+    }
+
+    class Scheduler(
+        private val workManager: WorkManager,
+        private val preferenceService: PreferenceService,
+        private val appRestrictions: AppRestrictions,
+        private val dispatcherProvider: DispatcherProvider,
+    ) {
+        /**
+         * Schedule the auto delete worker to run periodically. If auto delete is not configured
+         * and a worker is already scheduled, it will be cancelled.
+         */
+        fun scheduleAutoDelete() {
+            val graceDays = getGraceDays()
+            if (graceDays > ProtocolDefines.AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE) {
+                logger.info("Scheduling auto delete")
+                CoroutineScope(dispatcherProvider.io).launch {
+                    try {
+                        val operation = workManager.enqueueUniquePeriodicWork(
+                            WorkerNames.WORKER_AUTO_DELETE,
+                            ExistingPeriodicWorkPolicy.UPDATE,
+                            buildWorkRequest(graceDays),
+                        )
+                        logger.info("Schedule result = {}", operation.result.get())
+                    } catch (e: IllegalStateException) {
+                        logger.error("Exception scheduling auto delete", e)
+                    }
+                }
+            } else {
+                logger.info("No auto delete configured")
+                cancelAutoDelete()
+            }
+        }
+
+        private fun buildWorkRequest(graceDays: Int): PeriodicWorkRequest {
+            logger.info("Building Periodic Work Request with graceDays = {}", graceDays)
+            return buildPeriodicWorkRequest<AutoDeleteWorker>(schedulePeriod) {
+                setInitialDelay(5.minutes)
+                setBackoffCriteria(BackoffPolicy.LINEAR, 1.hours)
+                setInputData {
+                    putInt(EXTRA_GRACE_DAYS, graceDays)
+                }
+            }
+        }
+
+        private fun getGraceDays(): Int =
+            appRestrictions.getKeepMessagesDays()
+                ?: preferenceService.getAutoDeleteDays()
+
+        fun cancelAutoDelete() {
+            CoroutineScope(dispatcherProvider.io).launch {
+                cancelAutoDeleteAwait()
+            }
+        }
+
+        suspend fun cancelAutoDeleteAwait() = withContext(dispatcherProvider.io) {
+            workManager.cancelUniqueWork(WorkerNames.WORKER_AUTO_DELETE).await()
+        }
+    }
+
+    companion object {
+        private const val EXTRA_GRACE_DAYS = "grace_days"
+        private val schedulePeriod = 0.5.days
     }
 }

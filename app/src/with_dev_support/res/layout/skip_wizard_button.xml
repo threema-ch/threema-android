@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:tools="http://schemas.android.com/tools">
+    <Button xmlns:android="http://schemas.android.com/apk/res/android"
+        android:tag="wizard_dev_skip"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/grid_unit_x6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Skip Wizard"
+        tools:ignore="HardcodedText" />
+</merge>

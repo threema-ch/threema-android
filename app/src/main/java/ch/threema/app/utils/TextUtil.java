@@ -1,29 +1,16 @@
 package ch.threema.app.utils;
 
-import android.content.Context;
-
-import org.slf4j.Logger;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.text.Normalizer;
 import java.util.ArrayList;
-import java.util.regex.Pattern;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.WorkerThread;
 import ch.threema.app.emojis.EmojiParser;
-import ch.threema.app.restrictions.AppRestrictionUtil;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class TextUtil {
-    private static final Logger logger = getThreemaLogger("TextUtil");
-
     public static final String TILDE = "~";
     public static final String SPACE = " ";
+    public static final String ELLIPSIS = "…";
 
     /**
      * Splits a given text string into multiple strings no longer than maxLength bytes keeping in account emojis (even composite emojis such as flags)
@@ -65,60 +52,8 @@ public class TextUtil {
         return splitText;
     }
 
-    private static final String[] passwordChecks = {
-        "(.)\\1+",    // do not allow single repeating characters
-        "^[0-9]{0,15}$",    // do not short numeric-only passwords
-    };
-
     /**
-     * Check a given password string for badness
-     *
-     * @return true if the password is considered bad or listed in the list of bad passwords, false otherwise
-     */
-    @WorkerThread
-    public static boolean checkBadPassword(@NonNull Context context, @NonNull String password) {
-        if (AppRestrictionUtil.isSafePasswordPatternSet(context)) {
-            try {
-                Pattern pattern = Pattern.compile(AppRestrictionUtil.getSafePasswordPattern(context));
-                return !pattern.matcher(password).matches();
-            } catch (Exception e) {
-                return true;
-            }
-        } else {
-            // check if password is unsafe
-            for (String pattern : passwordChecks) {
-                if (password.matches(pattern)) {
-                    return true;
-                }
-            }
-
-            BufferedReader bufferedReader = null;
-            try {
-                bufferedReader = new BufferedReader(new InputStreamReader(context.getAssets().open("passwords/bad_passwords.txt")));
-                String line;
-                while ((line = bufferedReader.readLine()) != null) {
-                    if (password.equalsIgnoreCase(line)) {
-                        return true;
-                    }
-                }
-            } catch (IOException e) {
-                logger.error("Exception", e);
-            } finally {
-                if (bufferedReader != null) {
-                    try {
-                        bufferedReader.close();
-                    } catch (IOException e) {
-                        logger.error("Exception", e);
-                    }
-                }
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Check if the query matches the text. A query matches the text
-     * text if
+     * Check if the query matches the text. A query matches the text if
      * <ul>
      *     <li>the text contains the query, or</li>
      *     <li>the normalized text without the diacritics contains the query.</li>

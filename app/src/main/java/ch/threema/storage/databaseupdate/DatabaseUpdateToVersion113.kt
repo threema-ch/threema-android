@@ -13,11 +13,7 @@ class DatabaseUpdateToVersion113(
         )
     }
 
-    override fun getVersion() = VERSION
+    override val version = 113
 
     override fun getDescription() = "create table for persisting app tasks"
-
-    companion object {
-        const val VERSION = 113
-    }
 }

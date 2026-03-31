@@ -5,7 +5,7 @@ import ch.threema.localcrypto.models.RemoteSecretAuthenticationToken
 import ch.threema.localcrypto.models.RemoteSecretClientParameters
 import ch.threema.localcrypto.models.RemoteSecretCreationResult
 import ch.threema.localcrypto.models.RemoteSecretParameters
-import ch.threema.localcrypto.models.RemoteSecretProtectionCheckResult
+import ch.threema.localcrypto.models.RemoteSecretProtectionInstruction
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.just
@@ -34,7 +34,7 @@ class RemoteSecretManagerImplTest {
         val result = remoteSecretManager.checkRemoteSecretProtection(lockData = null)
 
         assertEquals(
-            RemoteSecretProtectionCheckResult.SHOULD_ACTIVATE,
+            RemoteSecretProtectionInstruction.SHOULD_ACTIVATE,
             result,
         )
     }
@@ -56,7 +56,7 @@ class RemoteSecretManagerImplTest {
         val result = remoteSecretManager.checkRemoteSecretProtection(lockData = mockk())
 
         assertEquals(
-            RemoteSecretProtectionCheckResult.SHOULD_DEACTIVATE,
+            RemoteSecretProtectionInstruction.SHOULD_DEACTIVATE,
             result,
         )
     }
@@ -78,7 +78,7 @@ class RemoteSecretManagerImplTest {
         val result = remoteSecretManager.checkRemoteSecretProtection(lockData = mockk())
 
         assertEquals(
-            RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED,
+            RemoteSecretProtectionInstruction.NO_CHANGE_NEEDED,
             result,
         )
     }
@@ -100,7 +100,7 @@ class RemoteSecretManagerImplTest {
         val result = remoteSecretManager.checkRemoteSecretProtection(lockData = null)
 
         assertEquals(
-            RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED,
+            RemoteSecretProtectionInstruction.NO_CHANGE_NEEDED,
             result,
         )
     }

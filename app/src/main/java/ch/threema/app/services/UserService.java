@@ -80,7 +80,7 @@ public interface UserService {
 
     void checkEmailLinkState(@NonNull TriggerSource triggerSource);
 
-    Date linkWithMobileNumber(String number, @NonNull TriggerSource triggerSource) throws Exception;
+    void linkWithMobileNumber(String number, @NonNull TriggerSource triggerSource) throws Exception;
 
     void makeMobileLinkCall() throws Exception;
 
@@ -130,6 +130,12 @@ public interface UserService {
      */
     @Nullable
     String setPublicNickname(@Nullable String publicNickname, @NonNull TriggerSource triggerSource);
+
+    /**
+     * Gets the display name of the user. This is always "Me" (localized).
+     */
+    @NonNull
+    String getDisplayName();
 
     /**
      * Get the user profile picture. If no profile picture is set, then null is returned.
@@ -205,7 +211,7 @@ public interface UserService {
      */
     void setForwardSecurityEnabled(boolean isFsEnabled);
 
-    boolean setRevocationKey(String revocationKey);
+    boolean setRevocationKey(@NonNull String revocationKey);
 
     @Nullable
     Instant getLastRevocationKeySet();

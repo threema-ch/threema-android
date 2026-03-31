@@ -45,6 +45,7 @@ private val logger = ConnectionLoggingUtil.getConnectionLogger("BaseServerConnec
  */
 internal abstract class BaseServerConnection(
     private val dependencyProvider: ServerConnectionDependencyProvider,
+    private val awaitAppReady: suspend () -> Unit,
 ) : ServerConnection, ServerConnectionDispatcher.ExceptionHandler {
     private val connectionStateListeners = mutableSetOf<ConnectionStateListener>()
 
@@ -128,6 +129,7 @@ internal abstract class BaseServerConnection(
         reconnectAllowed.set(true)
 
         connectionJob = CoroutineScope(Dispatchers.Default).launch {
+            awaitAppReady()
             while (canConnect) {
                 var monitorCloseEventJob: Job? = null
                 var queueSendCompleteListener: QueueSendCompleteListener? = null
@@ -199,10 +201,13 @@ internal abstract class BaseServerConnection(
                     waitForCspAuthenticatedJob.join()
 
                     ioJob?.join()
-                } catch (exception: Exception) {
-                    logger.error("Connection exception", exception)
-
-                    onException(exception)
+                } catch (e: Exception) {
+                    if (e is IOException || e.cause is IOException) {
+                        logger.warn("Connection exception", e)
+                    } else {
+                        logger.error("Unexpected connection exception", e)
+                    }
+                    onException(e)
                 }
 
                 setConnectionState(ConnectionState.DISCONNECTED)

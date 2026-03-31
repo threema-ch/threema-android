@@ -5,11 +5,11 @@ import androidx.lifecycle.ViewModel
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 class ContactDetailViewModel(
     contactModelRepository: ContactModelRepository,
-    identity: Identity,
+    identity: IdentityString,
 ) : ViewModel() {
 
     val contactModel: ContactModel = contactModelRepository.getByIdentity(identity)

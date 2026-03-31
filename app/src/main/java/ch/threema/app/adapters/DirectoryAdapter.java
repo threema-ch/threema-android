@@ -21,17 +21,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.ui.InitialAvatarView;
 import ch.threema.app.utils.TestUtil;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
 
 public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, RecyclerView.ViewHolder> {
+    @NonNull
     private final Context context;
     private final LayoutInflater inflater;
+    @NonNull
     private final PreferenceService preferenceService;
+    @NonNull
     private final ContactService contactService;
+    @NonNull
+    private final UserService userService;
     private final WorkOrganization workOrganization;
     private final HashMap<String, String> categoryMap = new HashMap<>();
     private DirectoryAdapter.OnClickItemListener onClickItemListener;
@@ -63,13 +70,20 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
         }
     }
 
-    public DirectoryAdapter(Context context, PreferenceService preferenceService, ContactService contactService, List<WorkDirectoryCategory> categoryList) {
+    public DirectoryAdapter(
+        @NonNull Context context,
+        @NonNull PreferenceService preferenceService,
+        @NonNull ContactService contactService,
+        @NonNull UserService userService,
+        @NonNull List<WorkDirectoryCategory> categoryList
+    ) {
         super(DIFF_CALLBACK);
 
         this.context = context;
         this.inflater = LayoutInflater.from(context);
         this.preferenceService = preferenceService;
         this.contactService = contactService;
+        this.userService = userService;
         this.workOrganization = preferenceService.getWorkOrganization();
 
         for (WorkDirectoryCategory category : categoryList) {
@@ -102,7 +116,7 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int position) {
-        boolean isMe = false;
+        boolean isMe;
         final DirectoryHolder holder = (DirectoryHolder) viewHolder;
 
         final WorkDirectoryContact workDirectoryContact = this.getItem(position);
@@ -112,9 +126,7 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
         }
 
         holder.contact = workDirectoryContact;
-        if (holder.contact != null) {
-            isMe = holder.contact.threemaId.equals(contactService.getMe().getIdentity());
-        }
+        isMe = holder.contact.threemaId.equals(userService.getIdentity());
 
         if (this.onClickItemListener != null) {
             if (!isMe) {
@@ -129,7 +141,7 @@ public class DirectoryAdapter extends PagedListAdapter<WorkDirectoryContact, Rec
         }
 
         String name;
-        if (preferenceService.isContactFormatFirstNameLastName()) {
+        if (preferenceService.getContactNameFormat() == ContactNameFormat.FIRSTNAME_LASTNAME) {
             name = (workDirectoryContact.firstName != null ? workDirectoryContact.firstName + " " : "") +
                 (workDirectoryContact.lastName != null ? workDirectoryContact.lastName : "");
         } else {

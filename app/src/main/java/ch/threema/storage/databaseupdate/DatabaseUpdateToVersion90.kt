@@ -36,9 +36,5 @@ class DatabaseUpdateToVersion90(
 
     override fun getDescription() = "update message index"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 90
-    }
+    override val version = 90
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">无效的二维码数据</string>
     <string name="webclient_init_session">建立新会话</string>
     <string name="webclient_sessions_really_delete">您确定要删除桌面版/网页版会话吗？</string>
     <string name="webclient_last_usage">上次使用：%s</string>

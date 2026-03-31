@@ -21,9 +21,10 @@ class IncomingGroupNameTask(
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<GroupNameMessage>(message, triggerSource, serviceManager) {
     private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
+        logger.info("Processing incoming group-name message for group with id {}", message.apiGroupId)
+
         // Run the common group receive steps
         val groupModel = runCommonGroupReceiveSteps(message, handle, serviceManager)
         val data = groupModel?.data
@@ -41,10 +42,8 @@ class IncomingGroupNameTask(
 
         if (multiDeviceManager.isMultiDeviceActive) {
             val reflectionResult = ReflectGroupSyncUpdateImmediateTask.ReflectGroupName(
-                newGroupName,
-                groupModel,
-                nonceFactory,
-                multiDeviceManager,
+                newGroupName = newGroupName,
+                groupIdentity = groupModel.groupIdentity,
             ).reflect(handle)
 
             when (reflectionResult) {

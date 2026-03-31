@@ -71,7 +71,7 @@ class UpdateAppLogoRoutine(
                                 .copyIntoFile(temporaryFile)
                             logger.info("Logo downloaded. Expires at {}.", expires)
 
-                            setLogo(logoUrl, temporaryFile, expires, theme)
+                            setLogo(temporaryFile, expires, theme)
                         } finally {
                             temporaryFile.delete()
                         }
@@ -86,15 +86,13 @@ class UpdateAppLogoRoutine(
         }
     }
 
-    private fun setLogo(url: String, file: File, expires: Instant, @AppThemeSetting theme: String) {
+    private fun setLogo(file: File, expires: Instant, @AppThemeSetting theme: String) {
         fileService.saveAppLogo(file, theme)
-        preferenceService.setAppLogo(url, theme)
         preferenceService.setAppLogoExpiresAt(expires, theme)
     }
 
     private fun clearLogo(@AppThemeSetting theme: String) {
         logger.info("Clearing app logo for (forcedUpdate={}, theme={})", forceUpdate, theme)
         fileService.saveAppLogo(null, theme)
-        preferenceService.clearAppLogo(theme)
     }
 }

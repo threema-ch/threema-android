@@ -43,7 +43,7 @@ import ch.threema.data.models.EmojiReactionData;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.FirstUnreadMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
+import ch.threema.storage.models.group.GroupMessageModel;
 import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.media.AudioDataModel;
 import ch.threema.storage.models.data.media.FileDataModel;
@@ -220,8 +220,15 @@ public class Message extends Converter {
                 // should be stripped from the body.)
                 final Context context = ThreemaApplication.getAppContext();
                 final QuoteUtil.QuoteContent quoteContent = QuoteUtil.getQuoteContent(
-                    message, messageReceiver, true, null,
-                    context, messageService, userService, fileService
+                    message,
+                    messageReceiver,
+                    true,
+                    null,
+                    context,
+                    messageService,
+                    userService,
+                    fileService,
+                    getPreferenceService().getContactNameFormat()
                 );
 
                 if (quoteContent != null) {
@@ -316,7 +323,14 @@ public class Message extends Converter {
                     .put(IS_OUTBOX, message.isOutbox())
                     .put(IS_STATUS, true)
                     .put(PARTNER_ID, message.getIdentity())
-                    .put(BODY, MessageUtil.getViewElement(ThreemaApplication.getAppContext(), message).text)
+                    .put(
+                        BODY,
+                        MessageUtil.getViewElement(
+                            ThreemaApplication.getAppContext(),
+                            message,
+                            getPreferenceService().getContactNameFormat()
+                        ).text
+                    )
                     .put(IS_UNREAD, false)
                     .put(STATUS_TYPE, "text");
                 maybePutState(builder, STATE, DELIVERED);
@@ -334,16 +348,31 @@ public class Message extends Converter {
         try {
             GroupCallStatusDataModel groupCallStatusDataModel = message.getGroupCallStatusData();
             if (groupCallStatusDataModel != null) {
+                String myIdentity = getUserService().getIdentity();
+                if (myIdentity == null) {
+                    throw new ConversionException("User identity is null");
+                }
+
                 builder
                     .put(ID, String.valueOf(message.getId()))
                     .put(TYPE, MessageType.TEXT)
                     .put(SORT_KEY, message.getId())
                     .put(IS_OUTBOX, message.isOutbox())
                     .put(IS_STATUS, true)
-                    .put(PARTNER_ID, groupCallStatusDataModel.getStatus() == GroupCallStatusDataModel.STATUS_STARTED ?
-                        groupCallStatusDataModel.getCallerIdentity() :
-                        getContactService().getMe().getIdentity())
-                    .put(BODY, MessageUtil.getViewElement(ThreemaApplication.getAppContext(), message).text)
+                    .put(
+                        PARTNER_ID,
+                        groupCallStatusDataModel.getStatus() == GroupCallStatusDataModel.STATUS_STARTED
+                            ? groupCallStatusDataModel.getCallerIdentity()
+                            : myIdentity
+                    )
+                    .put(
+                        BODY,
+                        MessageUtil.getViewElement(
+                            ThreemaApplication.getAppContext(),
+                            message,
+                            getPreferenceService().getContactNameFormat()
+                        ).text
+                    )
                     .put(IS_UNREAD, false)
                     .put(STATUS_TYPE, "text");
                 maybePutState(builder, STATE, DELIVERED);
@@ -368,7 +397,14 @@ public class Message extends Converter {
                     .put(IS_OUTBOX, message.isOutbox())
                     .put(IS_STATUS, true)
                     .put(PARTNER_ID, message.getIdentity())
-                    .put(BODY, MessageUtil.getViewElement(ThreemaApplication.getAppContext(), message).text)
+                    .put(
+                        BODY,
+                        MessageUtil.getViewElement(
+                            ThreemaApplication.getAppContext(),
+                            message,
+                            getPreferenceService().getContactNameFormat()
+                        ).text
+                    )
                     .put(IS_UNREAD, false)
                     .put(STATUS_TYPE, "text");
                 maybePutState(builder, STATE, DELIVERED);

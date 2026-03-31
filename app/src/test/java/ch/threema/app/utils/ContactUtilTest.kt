@@ -2,7 +2,7 @@ package ch.threema.app.utils
 
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.FileService
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel
 import io.mockk.every
 import io.mockk.mockk
@@ -51,7 +51,7 @@ class ContactUtilTest {
     fun canChangeAvatar() {
         val preferenceServiceMock = mockk<PreferenceService> {
             // Preferences disabled
-            every { profilePicReceive } returns false
+            every { getProfilePicReceive() } returns false
         }
         val fileServiceMock = mockk<FileService> {
             // No contact defined profile picture set
@@ -92,7 +92,7 @@ class ContactUtilTest {
         )
 
         // Preferences disabled
-        every { preferenceServiceMock.profilePicReceive } returns false
+        every { preferenceServiceMock.getProfilePicReceive() } returns false
 
         // Contact defined profile picture set
         every { fileServiceMock.hasContactDefinedProfilePicture(any()) } returns true
@@ -131,7 +131,7 @@ class ContactUtilTest {
         )
 
         // Preferences enabled
-        every { preferenceServiceMock.profilePicReceive } returns true
+        every { preferenceServiceMock.getProfilePicReceive() } returns true
 
         // No contact defined profile picture set
         every { fileServiceMock.hasContactDefinedProfilePicture(any()) } returns false
@@ -170,7 +170,7 @@ class ContactUtilTest {
         )
 
         // Preferences enabled
-        every { preferenceServiceMock.profilePicReceive } returns true
+        every { preferenceServiceMock.getProfilePicReceive() } returns true
 
         // Contact defined profile picture set
         every { fileServiceMock.hasContactDefinedProfilePicture(any()) } returns true
@@ -209,5 +209,5 @@ class ContactUtilTest {
         )
     }
 
-    private fun createModel(identity: Identity) = ContactModel.create(identity, ByteArray(32))
+    private fun createModel(identity: IdentityString) = ContactModel.create(identity, ByteArray(32))
 }

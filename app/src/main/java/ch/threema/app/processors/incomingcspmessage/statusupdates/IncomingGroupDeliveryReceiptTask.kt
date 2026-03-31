@@ -11,8 +11,8 @@ import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageState
+import ch.threema.storage.models.group.GroupMessageModel
 
 private val logger = getThreemaLogger("IncomingGroupDeliveryReceiptTask")
 

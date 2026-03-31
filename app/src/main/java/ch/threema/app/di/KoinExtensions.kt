@@ -106,6 +106,17 @@ inline fun <reified T : Any> KoinComponent.injectNonBinding(
     get<T>(qualifier, parameters)
 }
 
+/**
+ * Same as [injectNonBinding], but allows nullable types. This makes it possible to accessing session-scoped components in a safe way, as
+ * null is returned if the session-scope is not active.
+ */
+inline fun <reified T : Any> KoinComponent.injectNullableNonBinding(
+    qualifier: Qualifier? = null,
+    noinline parameters: ParametersDefinition? = null,
+) = Delegate {
+    getOrNull<T>(qualifier, parameters)
+}
+
 class Delegate<T>(val getValue: () -> T) {
     operator fun getValue(thisRef: Any?, property: KProperty<*>): T = getValue()
 }

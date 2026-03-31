@@ -3,7 +3,7 @@ package ch.threema.storage.databaseupdate
 import android.content.Context
 import androidx.preference.PreferenceManager
 import ch.threema.app.stores.PreferenceStore
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.runQuery
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
@@ -29,5 +29,5 @@ fun SQLiteDatabase.tableExists(
     )
         .use { cursor -> cursor.count > 0 }
 
-fun getMyIdentity(context: Context): Identity? =
+fun getMyIdentity(context: Context): IdentityString? =
     PreferenceManager.getDefaultSharedPreferences(context).getString(PreferenceStore.PREFS_IDENTITY, null)

@@ -2,6 +2,7 @@ package ch.threema.app.tasks
 
 import android.content.Context
 import androidx.work.await
+import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.multidevice.linking.DeviceLinkingCancelledException
@@ -28,6 +29,8 @@ import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("DeviceLinkingPartTwoTask")
 
@@ -35,11 +38,12 @@ class DeviceLinkingPartTwoTask(
     private val rendezvousConnection: RendezvousConnection,
     private val serviceManager: ServiceManager,
     private val taskCancelledSignal: Deferred<Unit>,
-) : ActiveTask<Result<Unit>> {
+) : ActiveTask<Result<Unit>>, KoinComponent {
     private val preferenceService: PreferenceService by lazy { serviceManager.preferenceService }
     private val multiDeviceManager: MultiDeviceManager by lazy { serviceManager.multiDeviceManager }
     private val multiDeviceKeys: MultiDeviceKeys by lazy { multiDeviceManager.propertiesProvider.get().keys }
     private val deviceLinkingDataCollector by lazy { DeviceLinkingDataCollector(serviceManager) }
+    private val autoDeleteWorkerScheduler: AutoDeleteWorker.Scheduler by inject()
 
     override val type: String = "DeviceLinkingPartTwoTask"
 
@@ -66,7 +70,7 @@ class DeviceLinkingPartTwoTask(
         var awaitOutsideCancelSignalJob: Job? = null
 
         val stateChangingProcesses = getStateChangingProcesses()
-        val context = serviceManager.context
+        val context = ThreemaApplication.getAppContext()
 
         val transferDataAndWaitForCloseJob = launch(start = CoroutineStart.LAZY) {
             try {
@@ -177,12 +181,14 @@ class DeviceLinkingPartTwoTask(
         ContactsSyncAdapterService.enableSync()
     }
 
+    @Suppress("unused")
     private suspend fun pauseAutoDeleteWorker(context: Context) {
-        AutoDeleteWorker.cancelAutoDeleteAwait(context)
+        autoDeleteWorkerScheduler.cancelAutoDeleteAwait()
     }
 
+    @Suppress("unused")
     private fun resumeAutoDeleteWorker(context: Context) {
-        AutoDeleteWorker.scheduleAutoDelete(context)
+        autoDeleteWorkerScheduler.scheduleAutoDelete()
     }
 
     private suspend fun pauseWorkSync(context: Context) {

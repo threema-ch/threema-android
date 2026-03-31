@@ -2,7 +2,7 @@ package ch.threema.app.voip.groupcall
 
 import androidx.annotation.AnyThread
 
-interface GroupCallObserver {
+fun interface GroupCallObserver {
     /**
      * Called when there is an update of a group call.
      * The cases when this is called might differ depending on the subscription used.

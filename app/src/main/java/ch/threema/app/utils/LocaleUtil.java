@@ -53,19 +53,23 @@ public class LocaleUtil {
         return ConfigurationCompat.getLocales(context.getResources().getConfiguration()).get(0);
     }
 
-    public static String formatTimeStampStringAbsolute(Context context, long when) {
+    @NonNull
+    public static String formatTimeStampStringAbsolute(@NonNull Context context, long when) {
         return DateUtils.formatDateTime(context, when, DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_ABBREV_ALL);
     }
 
-    public static String formatTimeStampStringAbsolute(Context context, @NonNull Instant when) {
+    @NonNull
+    public static String formatTimeStampStringAbsolute(@NonNull Context context, @NonNull Instant when) {
         return formatTimeStampStringAbsolute(context, when.toEpochMilli());
     }
 
-    public static String formatTimeStampString(Context context, @NonNull Instant when, boolean fullFormat) {
+    @NonNull
+    public static String formatTimeStampString(@NonNull Context context, @NonNull Instant when, boolean fullFormat) {
         return formatTimeStampString(context, when.toEpochMilli(), fullFormat);
     }
 
-    public static String formatTimeStampString(Context context, long when, boolean fullFormat) {
+    @NonNull
+    public static String formatTimeStampString(@NonNull Context context, long when, boolean fullFormat) {
         String time = DateUtils.formatDateTime(context, when, DateUtils.FORMAT_NO_NOON | DateUtils.FORMAT_NO_MIDNIGHT | DateUtils.FORMAT_ABBREV_ALL | DateUtils.FORMAT_SHOW_TIME);
 
         if (DateUtils.isToday(when)) {
@@ -84,6 +88,7 @@ public class LocaleUtil {
         return DateUtils.getRelativeTimeSpanString(when, System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_SHOW_DATE).toString();
     }
 
+    @NonNull
     public static String formatTimerText(long elapsedTime, boolean showMs) {
         int minutes = (int) (elapsedTime / 60000);
         int seconds = (int) ((elapsedTime % 60000) / 1000);

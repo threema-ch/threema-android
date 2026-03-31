@@ -1,18 +1,8 @@
 package ch.threema.app.stores
 
-import java.time.Instant
 import org.json.JSONArray
 
-abstract class BasePreferenceStore : PreferenceStore {
-    override fun save(key: String, value: Instant?) {
-        save(key, value?.toEpochMilli() ?: 0L)
-    }
-
-    override fun getInstant(key: String): Instant? =
-        getLong(key)
-            .takeUnless { it == 0L }
-            ?.let(Instant::ofEpochMilli)
-
+abstract class BasePreferenceStore {
     protected fun Map<String, String?>.encodeToJSONArray(): JSONArray {
         val json = JSONArray()
         for ((key, value) in this) {
@@ -53,7 +43,7 @@ abstract class BasePreferenceStore : PreferenceStore {
     }
 
     protected fun Array<String>.encodeToString(): String {
-        require(none { STRING_ARRAY_SEPARATOR in it })
+        require(none { STRING_ARRAY_SEPARATOR in it && it.isNotEmpty() })
         return joinToString(separator = STRING_ARRAY_SEPARATOR)
     }
 

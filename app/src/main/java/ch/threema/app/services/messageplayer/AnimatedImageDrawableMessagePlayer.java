@@ -156,7 +156,7 @@ public class AnimatedImageDrawableMessagePlayer extends MessagePlayer {
 
     @Override
     protected void makeResume(int source) {
-        logger.debug("makeResume: " + getMessageModel().getId());
+        logger.debug("makeResume: {}", getMessageModel().getId());
         if (this.imageContainer != null && this.imageDrawable != null) {
             if (imageDrawable instanceof Animatable) {
                 if (!((Animatable) imageDrawable).isRunning()) {

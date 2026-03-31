@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="webclient" translatable="false">Desktop/Web</string>
-    <string name="webclient_qr_scan_error">Invalid QR code data</string>
     <string name="webclient_init_session">Initiate new session</string>
     <string name="webclient_sessions_really_delete">Do you really want to delete this desktop/web session?</string>
     <string name="webclient_last_usage">Last usage: %s</string>

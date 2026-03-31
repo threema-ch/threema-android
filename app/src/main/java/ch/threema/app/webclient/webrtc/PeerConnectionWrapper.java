@@ -40,8 +40,7 @@ import ch.threema.app.webclient.state.PeerConnectionState;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.logging.ThreemaLogger;
-import java8.util.concurrent.CompletableFuture;
-import java8.util.stream.StreamSupport;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Wrapper around the WebRTC PeerConnection.
@@ -101,7 +100,7 @@ public class PeerConnectionWrapper {
         final List<org.webrtc.PeerConnection.IceServer> iceServers = new ArrayList<>();
         final APIConnector.TurnServerInfo turnServerInfo = Config.getTurnServerCache().getTurnServers();
         final List<String> turnServers = Arrays.asList(turnServerInfo.turnUrls);
-        StreamSupport.stream(turnServers)
+        turnServers.stream()
             .map(server -> PeerConnection.IceServer.builder(server)
                 .setUsername(turnServerInfo.turnUsername)
                 .setPassword(turnServerInfo.turnPassword)

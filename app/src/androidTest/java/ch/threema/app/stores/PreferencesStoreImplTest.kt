@@ -2,7 +2,11 @@ package ch.threema.app.stores
 
 import androidx.core.content.edit
 import androidx.preference.PreferenceManager
+import app.cash.turbine.test
 import ch.threema.app.ThreemaApplication
+import ch.threema.common.emptyByteArray
+import ch.threema.testhelpers.expectItem
+import java.time.Instant
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -12,6 +16,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.test.runTest
 import org.json.JSONArray
 import org.json.JSONObject
 import org.koin.core.component.KoinComponent
@@ -27,6 +32,7 @@ class PreferencesStoreImplTest : KoinComponent {
         store = PreferenceStoreImpl(
             sharedPreferences = get(),
             onChanged = { _, _ -> onChangedCalled = true },
+            commit = true,
         )
         store.clear()
         onChangedCalled = false
@@ -76,6 +82,22 @@ class PreferencesStoreImplTest : KoinComponent {
 
         assertEquals(123, store.getInt("foo"))
         assertTrue(onChangedCalled)
+    }
+
+    @Test
+    fun saveAndRestoreInstant() {
+        assertNull(store.getInstant("foo"))
+        assertFalse(store.containsKey("foo"))
+
+        store.save("foo", Instant.ofEpochMilli(1_766_407_316_000L))
+
+        assertEquals(Instant.ofEpochMilli(1_766_407_316_000L), store.getInstant("foo"))
+        assertTrue(onChangedCalled)
+
+        store.save("foo", null as Instant?)
+
+        assertNull(store.getInstant("foo"))
+        assertFalse(store.containsKey("foo"))
     }
 
     @Test
@@ -187,7 +209,7 @@ class PreferencesStoreImplTest : KoinComponent {
         assertEquals(false, store.getBoolean("foo"))
         assertNull(store.getStringArray("foo"))
         assertEquals(emptyMap(), store.getMap("foo"))
-        assertContentEquals(ByteArray(0), store.getBytes("foo"))
+        assertContentEquals(emptyByteArray(), store.getBytes("foo"))
         assertEquals(JSONArray(), store.getJSONArray("foo"))
         assertNull(store.getJSONObject("foo"))
     }
@@ -206,6 +228,49 @@ class PreferencesStoreImplTest : KoinComponent {
     fun stringArrayValuesCannotContainSemicolon() {
         assertFailsWith<IllegalArgumentException> {
             store.save("foo", arrayOf("Hi", "Hello;World"))
+        }
+    }
+
+    @Test
+    fun watchBooleanShouldEmitCorrectValueChangesToKey() = runTest {
+        val key = "is_colored"
+        store.watchBoolean(key, false).test {
+            // Expect the defined default value (as the key does not exist on disk right now)
+            expectItem(false)
+
+            // Change the value
+            store.save(key, true)
+            expectItem(true)
+
+            // Should emit the defined default value when removing the preference
+            store.remove(key)
+            expectItem(false)
+
+            // Add the key again
+            store.save(key, true)
+            expectItem(true)
+
+            // Expect no distinct change
+            store.save(key, true)
+            expectNoEvents()
+
+            // Change the value (to the default value)
+            store.save(key, false)
+            expectItem(false)
+
+            // Expecting no distinct change, as the last saved value was already the default value
+            store.remove(key)
+            expectNoEvents()
+
+            // Adding the key again (with its default value)
+            store.save(key, false)
+            expectNoEvents()
+
+            // Changing the value
+            store.save(key, true)
+            expectItem(true)
+
+            cancelAndIgnoreRemainingEvents()
         }
     }
 }

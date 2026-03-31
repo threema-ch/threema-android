@@ -34,8 +34,8 @@ import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.stores.DHSessionStoreException
 import ch.threema.domain.stores.DHSessionStoreInterface
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.domain.types.Identity
-import ch.threema.storage.DatabaseService
+import ch.threema.domain.types.IdentityString
+import ch.threema.storage.factories.ContactModelFactory
 import ch.threema.storage.models.ContactModel
 import java.lang.ref.WeakReference
 
@@ -58,7 +58,7 @@ data class DeleteContactServices(
     val excludedSyncIdentitiesService: ExcludedSyncIdentitiesService,
     val dhSessionStore: DHSessionStoreInterface,
     val notificationService: NotificationService,
-    val databaseService: DatabaseService,
+    val contactModelFactory: ContactModelFactory,
 )
 
 /**
@@ -180,7 +180,7 @@ open class MarkContactAsDeletedBackgroundTask(
         cancelled = true
     }
 
-    private fun markContactAsDeleted(identity: Identity): Boolean {
+    private fun markContactAsDeleted(identity: IdentityString): Boolean {
         val contactModel = contactModelRepository.getByIdentity(identity) ?: return false
 
         // Note that the conversation needs to be deleted before the downgrade due to the old model
@@ -232,7 +232,7 @@ open class DeleteAllContactsBackgroundTask(
         }
 
         // Delete all contacts
-        deleteContactServices.databaseService.contactModelFactory.deleteAll()
+        deleteContactServices.contactModelFactory.deleteAll()
         contacts.forEach(::cleanContactLeftovers)
 
         super.runAfter(result)
@@ -257,7 +257,7 @@ open class DeleteAllContactsBackgroundTask(
      *
      * This should only be called after the contact was successfully removed from the database.
      */
-    private fun cleanContactLeftovers(identity: Identity) {
+    private fun cleanContactLeftovers(identity: IdentityString) {
         deleteContactServices.contactService.invalidateCache(identity)
         deleteContactServices.conversationService.delete(identity)
 

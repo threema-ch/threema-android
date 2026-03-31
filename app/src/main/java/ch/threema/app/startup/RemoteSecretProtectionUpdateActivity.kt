@@ -88,13 +88,13 @@ private fun RemoteSecretActivationScreen(
             RemoteSecretActivationScreen(
                 updateType = state.updateType,
                 status = state.status,
-                onClickedRetry = {
+                onClickRetry = {
                     logger.info("Retry button clicked")
                     viewModel.onClickedRetry()
                 },
-                onDismissedDialog = {
+                onDismissDialog = {
                     logger.info("Info dialog dismissed")
-                    viewModel.onDismissedDialog()
+                    viewModel.onDismissDialog()
                 },
             )
         }
@@ -105,8 +105,8 @@ private fun RemoteSecretActivationScreen(
 private fun RemoteSecretActivationScreen(
     updateType: RemoteSecretUpdateType,
     status: RemoteSecretUpdateStatus,
-    onClickedRetry: () -> Unit,
-    onDismissedDialog: () -> Unit,
+    onClickRetry: () -> Unit,
+    onDismissDialog: () -> Unit,
 ) {
     AppStartupScreen {
         when (status) {
@@ -118,7 +118,7 @@ private fun RemoteSecretActivationScreen(
             ) {
                 ButtonPrimary(
                     modifier = Modifier.fillMaxWidth(),
-                    onClick = onClickedRetry,
+                    onClick = onClickRetry,
                     text = stringResource(R.string.retry),
                     maxLines = 2,
                 )
@@ -131,13 +131,13 @@ private fun RemoteSecretActivationScreen(
                         title = stringResource(R.string.remote_secret_activated_notification_title),
                         text = stringResource(R.string.remote_secret_activated_dialog_content)
                             .rememberLinkifyWeb(faqEntryUrl),
-                        onDismissRequest = onDismissedDialog,
+                        onDismissRequest = onDismissDialog,
                     )
                     RemoteSecretUpdateType.DEACTIVATING -> InfoDialog(
                         title = stringResource(R.string.remote_secret_deactivated_notification_title),
                         text = stringResource(R.string.remote_secret_deactivated_dialog_content)
                             .rememberLinkifyWeb(faqEntryUrl),
-                        onDismissRequest = onDismissedDialog,
+                        onDismissRequest = onDismissDialog,
                     )
                 }
             }
@@ -185,8 +185,8 @@ private fun RemoteSecretActivationScreen_Preview_Activating() = ThreemaThemePrev
     RemoteSecretActivationScreen(
         updateType = RemoteSecretUpdateType.ACTIVATING,
         status = RemoteSecretUpdateStatus.IN_PROGRESS,
-        onClickedRetry = {},
-        onDismissedDialog = {},
+        onClickRetry = {},
+        onDismissDialog = {},
     )
 }
 
@@ -196,8 +196,8 @@ private fun RemoteSecretActivationScreen_Preview_Activated() = ThreemaThemePrevi
     RemoteSecretActivationScreen(
         updateType = RemoteSecretUpdateType.ACTIVATING,
         status = RemoteSecretUpdateStatus.SUCCEEDED,
-        onClickedRetry = {},
-        onDismissedDialog = {},
+        onClickRetry = {},
+        onDismissDialog = {},
     )
 }
 
@@ -207,7 +207,7 @@ private fun RemoteSecretActivationScreen_Preview_Error() = ThreemaThemePreview {
     RemoteSecretActivationScreen(
         updateType = RemoteSecretUpdateType.ACTIVATING,
         status = RemoteSecretUpdateStatus.FAILED,
-        onClickedRetry = {},
-        onDismissedDialog = {},
+        onClickRetry = {},
+        onDismissDialog = {},
     )
 }

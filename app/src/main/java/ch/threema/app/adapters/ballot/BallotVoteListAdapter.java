@@ -19,7 +19,6 @@ import java.util.Map;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.ui.CheckableRelativeLayout;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 
 public class BallotVoteListAdapter extends ArrayAdapter<BallotChoiceModel> {
@@ -102,7 +101,7 @@ public class BallotVoteListAdapter extends ArrayAdapter<BallotChoiceModel> {
             itemView.setChecked(this.isSelected(choiceModel));
         }
 
-        if (TestUtil.required(holder.checkBox, holder.radioButton)) {
+        if (holder.checkBox != null && holder.radioButton != null) {
             holder.radioButton.setVisibility(!this.multipleChoice ? View.VISIBLE : View.GONE);
             holder.radioButton.setEnabled(!this.readonly);
 

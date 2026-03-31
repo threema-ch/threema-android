@@ -9,7 +9,6 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -19,17 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import androidx.fragment.app.FragmentActivity;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ResettableInputStream;
-import ch.threema.base.SessionScoped;
 import ch.threema.base.ThreemaException;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.data.models.GroupModel;
 
-@SessionScoped
 public interface FileService {
 
     /**
@@ -42,6 +40,7 @@ public interface FileService {
      *
      * @return Uri of data backup path or null if not yet selected by user
      */
+    @Nullable
     Uri getBackupUri();
 
     /**
@@ -49,23 +48,10 @@ public interface FileService {
      */
     File getTempPath();
 
-    File getIntTmpPath();
-
     /**
      * create a temporary file
      */
     File createTempFile(String prefix, String suffix) throws IOException;
-
-    /**
-     * cleanup temporary directory
-     */
-    @WorkerThread
-    default void cleanTempDirs() {
-        cleanTempDirs(0);
-    }
-
-    @WorkerThread
-    void cleanTempDirs(long ageThresholdMillis);
 
     boolean hasUserDefinedProfilePicture(@NonNull String identity);
 
@@ -351,8 +337,8 @@ public interface FileService {
     /**
      * Save the thumbnail to disk using the file name specified in the supplied AbstractMessageModel
      *
-     * @param messageModel   Message Model used as the source for the file name
-     * @param thumbnail      InputStream to read the thumbnail's image data from
+     * @param messageModel Message Model used as the source for the file name
+     * @param thumbnail    InputStream to read the thumbnail's image data from
      */
     default void saveThumbnail(AbstractMessageModel messageModel, @NonNull InputStream thumbnail) throws Exception {
         if (messageModel != null && messageModel.getUid() != null) {
@@ -419,12 +405,6 @@ public interface FileService {
 
     Uri getShareFileUri(File destFile, String filename);
 
-    long getInternalStorageUsage();
-
-    long getInternalStorageSize();
-
-    long getInternalStorageFree();
-
     /**
      * Decrypt messages specified by the 'models' parameter and return a list of URIs of the temporary files
      * When receiving the URIs in OnDecryptedFilesComplete.onComplete, they will have the same order as passed in by `models` list.
@@ -438,7 +418,7 @@ public interface FileService {
 
     void loadDecryptedMessageFile(final AbstractMessageModel model, final OnDecryptedFileComplete onDecryptedFileCompleted);
 
-    void saveMedia(final AppCompatActivity activity, final View feedbackView, final CopyOnWriteArrayList<AbstractMessageModel> selectedMessages, boolean quiet);
+    void saveMedia(final FragmentActivity activity, final View feedbackView, final CopyOnWriteArrayList<AbstractMessageModel> selectedMessages, boolean quiet);
 
     void saveAppLogo(@Nullable File logo, @ConfigUtils.AppThemeSetting String theme);
 
@@ -459,6 +439,7 @@ public interface FileService {
     interface OnDecryptedFileComplete {
         void complete(File decryptedFile);
 
+        // TODO(ANDR-4472): Should use an exception instead of a string as an argument
         void error(String message);
     }
 

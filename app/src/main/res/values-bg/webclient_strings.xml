@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">Невалиден QR код</string>
     <string name="webclient_init_session">Започнете нова сесия</string>
     <string name="webclient_sessions_really_delete">Сигурни ли сте, че искате да изтриете тази десктоп/уеб сесия?</string>
     <string name="webclient_last_usage">Използвано за последно: %s</string>

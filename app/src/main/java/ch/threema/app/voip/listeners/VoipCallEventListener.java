@@ -12,9 +12,6 @@ import androidx.annotation.Nullable;
  */
 public interface VoipCallEventListener {
 
-    /**
-     * @param peerIdentity
-     */
     @AnyThread
     void onRinging(String peerIdentity);
 

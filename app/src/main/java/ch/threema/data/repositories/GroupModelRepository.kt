@@ -13,7 +13,7 @@ import ch.threema.data.models.GroupModelData
 import ch.threema.data.models.GroupModelDataFactory
 import ch.threema.data.storage.DatabaseBackend
 import ch.threema.domain.models.GroupId
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 @SessionScoped
 class GroupModelRepository(
@@ -24,7 +24,7 @@ class GroupModelRepository(
 ) {
     private object GroupModelRepositoryToken : RepositoryToken
 
-    private val myIdentity by lazy { coreServiceManager.identityStore.getIdentity()!! }
+    private val myIdentity by lazy { coreServiceManager.identityStore.getIdentityString()!! }
 
     init {
         // Register an "old" group listener that updates the "new" models
@@ -108,7 +108,7 @@ class GroupModelRepository(
     }
 
     @Synchronized
-    fun getByCreatorIdentityAndId(creatorIdentity: Identity, groupId: GroupId): GroupModel? {
+    fun getByCreatorIdentityAndId(creatorIdentity: IdentityString, groupId: GroupId): GroupModel? {
         val groupIdentity = GroupIdentity(creatorIdentity, groupId.toLong())
         return getByGroupIdentity(groupIdentity)
     }
@@ -163,6 +163,10 @@ class GroupModelRepository(
             notifyDeprecatedOnNewMemberListeners(groupModel.groupIdentity, myIdentity)
         }
 
+        if (groupModelData.groupIdentity.creatorIdentity != myIdentity) {
+            notifyDeprecatedOnNewMemberListeners(groupModel.groupIdentity, groupModelData.groupIdentity.creatorIdentity)
+        }
+
         groupModelData.otherMembers.forEach {
             notifyDeprecatedOnNewMemberListeners(groupModel.groupIdentity, it)
         }
@@ -202,7 +206,7 @@ class GroupModelRepository(
      */
     private fun notifyDeprecatedOnNewMemberListeners(
         groupIdentity: GroupIdentity,
-        newIdentity: Identity,
+        newIdentity: IdentityString,
     ) {
         ListenerManager.groupListeners.handle { it.onNewMember(groupIdentity, newIdentity) }
     }

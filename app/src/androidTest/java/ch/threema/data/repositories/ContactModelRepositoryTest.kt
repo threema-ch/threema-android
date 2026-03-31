@@ -1,13 +1,16 @@
 package ch.threema.data.repositories
 
+import ch.threema.KoinTestRule
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestMultiDeviceManager
 import ch.threema.app.TestTaskManager
-import ch.threema.app.ThreemaApplication
+import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.stores.EncryptedPreferenceStore
+import ch.threema.app.stores.IdentityProvider
+import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.testutils.TestHelpers
-import ch.threema.app.utils.AppVersionProvider
+import ch.threema.app.testutils.mockUser
 import ch.threema.base.crypto.NaCl
-import ch.threema.data.TestDatabaseService
 import ch.threema.data.datatypes.AndroidContactLookupInfo
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData
@@ -20,11 +23,17 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
+import ch.threema.storage.DatabaseService
+import ch.threema.storage.TestDatabaseProvider
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.testhelpers.nonSecureRandomArray
 import ch.threema.testhelpers.randomIdentity
+import io.mockk.every
+import io.mockk.mockk
 import java.util.Date
 import junit.framework.TestCase.assertNotNull
 import kotlin.test.BeforeTest
@@ -36,18 +45,22 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.runBlocking
+import org.junit.Rule
 import org.junit.runner.RunWith
 import org.junit.runners.Parameterized
+import org.koin.dsl.module
 
 @RunWith(value = Parameterized::class)
 class ContactModelRepositoryTest(private val contactModelData: ContactModelData) {
     // Services where MD is disabled
-    private lateinit var databaseService: TestDatabaseService
+    private lateinit var databaseProvider: TestDatabaseProvider
+    private lateinit var databaseService: DatabaseService
     private lateinit var coreServiceManager: TestCoreServiceManager
     private lateinit var contactModelRepository: ContactModelRepository
 
     // Services where MD is enabled
-    private lateinit var databaseServiceMd: TestDatabaseService
+    private lateinit var databaseProviderMd: TestDatabaseProvider
+    private lateinit var databaseServiceMd: DatabaseService
     private lateinit var taskCodecMd: TransactionAckTaskCodec
     private lateinit var coreServiceManagerMd: TestCoreServiceManager
     private lateinit var contactModelRepositoryMd: ContactModelRepository
@@ -56,6 +69,23 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         FROM_LOCAL,
         FROM_REMOTE,
     }
+
+    private var isMultiDeviceEnabled = false
+
+    private val instrumentedTestModule = module {
+        factory<MultiDeviceManager> {
+            if (isMultiDeviceEnabled) {
+                coreServiceManagerMd.multiDeviceManager
+            } else {
+                coreServiceManager.multiDeviceManager
+            }
+        }
+    }
+
+    @get:Rule
+    val koinTestRule = KoinTestRule(
+        modules = listOf(instrumentedTestModule),
+    )
 
     companion object {
         @JvmStatic
@@ -71,7 +101,7 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         )
 
         private fun getInitialContactModelData(
-            identity: Identity = "ABCDEFGH",
+            identity: IdentityString = "ABCDEFGH",
             publicKey: ByteArray = ByteArray(NaCl.PUBLIC_KEY_BYTES),
             createdAt: Date = Date(),
             firstName: String = "",
@@ -122,38 +152,51 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
 
     @BeforeTest
     fun before() {
-        val serviceManager = ThreemaApplication.requireServiceManager()
-        TestHelpers.setIdentity(
-            serviceManager,
-            TestHelpers.TEST_CONTACT,
-        )
+        val preferenceStore: PreferenceStore = mockk {
+            mockUser(TestHelpers.TEST_CONTACT)
+        }
+        val encryptedPreferenceStore: EncryptedPreferenceStore = mockk {
+            mockUser(TestHelpers.TEST_CONTACT)
+        }
+        val identityProviderMock: IdentityProvider = mockk {
+            every { getIdentity() } returns Identity(TestHelpers.TEST_CONTACT.identity)
+            every { getIdentityString() } returns TestHelpers.TEST_CONTACT.identity
+        }
+        val identityStoreMock = mockk<IdentityStore> {
+            every { getIdentity() } returns Identity(TestHelpers.TEST_CONTACT.identity)
+            every { getIdentityString() } returns TestHelpers.TEST_CONTACT.identity
+        }
 
         // Instantiate services where MD is disabled
-        this.databaseService = TestDatabaseService()
+        this.databaseProvider = TestDatabaseProvider()
         this.coreServiceManager = TestCoreServiceManager(
-            version = AppVersionProvider.appVersion,
-            databaseService = databaseService,
-            preferenceStore = serviceManager.preferenceStore,
-            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
+            databaseProvider = databaseProvider,
+            identityProvider = identityProviderMock,
+            preferenceStore = preferenceStore,
+            encryptedPreferenceStore = encryptedPreferenceStore,
             taskManager = TestTaskManager(UnusedTaskCodec()),
+            identityStore = identityStoreMock,
         )
-        this.contactModelRepository = ModelRepositories(coreServiceManager).contacts
+        this.databaseService = coreServiceManager.databaseService
+        this.contactModelRepository = ModelRepositories(coreServiceManager, identityProviderMock).contacts
 
         // Instantiate services where MD is enabled
-        this.databaseServiceMd = TestDatabaseService()
+        this.databaseProviderMd = TestDatabaseProvider()
         this.taskCodecMd = TransactionAckTaskCodec()
         this.coreServiceManagerMd = TestCoreServiceManager(
-            version = AppVersionProvider.appVersion,
-            databaseService = databaseServiceMd,
-            preferenceStore = serviceManager.preferenceStore,
-            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
+            databaseProvider = databaseProviderMd,
+            identityProvider = identityProviderMock,
+            preferenceStore = preferenceStore,
+            encryptedPreferenceStore = encryptedPreferenceStore,
             multiDeviceManager = TestMultiDeviceManager(
                 isMultiDeviceActive = true,
                 isMdDisabledOrSupportsFs = false,
             ),
             taskManager = TestTaskManager(taskCodecMd),
+            identityStore = identityStoreMock,
         )
-        this.contactModelRepositoryMd = ModelRepositories(coreServiceManagerMd).contacts
+        this.databaseServiceMd = coreServiceManagerMd.databaseService
+        this.contactModelRepositoryMd = ModelRepositories(coreServiceManagerMd, identityProviderMock).contacts
     }
 
     /**
@@ -234,6 +277,15 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         assertContentEquals(publicKey, model.data?.publicKey)
     }
 
+    @Test
+    fun userCannotBeAddedAsContact() {
+        assertFailsWith<InvalidContactException> {
+            contactModelRepository.createFromSync(
+                contactModelData = contactModelData.copy(identity = TestHelpers.TEST_CONTACT.identity),
+            )
+        }
+    }
+
     private fun testCreateFromLocalOrRemote(
         contactModelData: ContactModelData,
         triggerSource: TestTriggerSource,
@@ -244,19 +296,30 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         val (newModel, newModelMd) = runBlocking {
             when (triggerSource) {
                 TestTriggerSource.FROM_LOCAL -> {
-                    contactModelRepository.createFromLocal(contactModelData) to
-                        contactModelRepositoryMd.createFromLocal(contactModelData)
+                    declareNonMdDependencies()
+                    val newModel = contactModelRepository.createFromLocal(contactModelData)
+
+                    declareMdDependencies()
+                    val newModelMd = contactModelRepositoryMd.createFromLocal(contactModelData)
+
+                    newModel to newModelMd
                 }
 
                 TestTriggerSource.FROM_REMOTE -> {
-                    contactModelRepository.createFromRemote(
+                    declareNonMdDependencies()
+                    val newContactModel = contactModelRepository.createFromRemote(
                         contactModelData = contactModelData,
                         handle = UnusedTaskCodec(),
-                    ) to
+                    )
+
+                    declareMdDependencies()
+                    val newContactModelMd =
                         contactModelRepositoryMd.createFromRemote(
                             contactModelData = contactModelData,
                             handle = taskCodecMd,
                         )
+
+                    newContactModel to newContactModelMd
                 }
             }
         }
@@ -293,27 +356,36 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
 
         val (runCreation, runCreationMd) = when (triggerSource) {
             TestTriggerSource.FROM_LOCAL -> {
-                suspend {
+                val runCreation = suspend {
+                    declareNonMdDependencies()
                     contactModelRepository.createFromLocal(contactModelData)
-                } to
+                }
+                val runCreationMd =
                     suspend {
+                        declareMdDependencies()
                         contactModelRepositoryMd.createFromLocal(contactModelData)
                     }
+
+                runCreation to runCreationMd
             }
 
             TestTriggerSource.FROM_REMOTE -> {
-                suspend {
+                val runCreation = suspend {
+                    declareNonMdDependencies()
                     contactModelRepository.createFromRemote(
                         contactModelData = contactModelData,
                         handle = UnusedTaskCodec(),
                     )
-                } to
-                    suspend {
-                        contactModelRepositoryMd.createFromRemote(
-                            contactModelData = contactModelData,
-                            handle = taskCodecMd,
-                        )
-                    }
+                }
+                val runCreationMd = suspend {
+                    declareMdDependencies()
+                    contactModelRepositoryMd.createFromRemote(
+                        contactModelData = contactModelData,
+                        handle = taskCodecMd,
+                    )
+                }
+
+                runCreation to runCreationMd
             }
         }
 
@@ -418,6 +490,14 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
         assertEquals(null, model!!.data?.nickname)
         model.setNicknameFromSync("testnick")
         assertEquals("testnick", model.data?.nickname)
+    }
+
+    private fun declareNonMdDependencies() {
+        isMultiDeviceEnabled = false
+    }
+
+    private fun declareMdDependencies() {
+        isMultiDeviceEnabled = true
     }
 
     private fun assertContentEquals(expected: ContactModelData?, actual: ContactModelData?) {

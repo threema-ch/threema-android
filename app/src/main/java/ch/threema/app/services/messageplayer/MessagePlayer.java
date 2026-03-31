@@ -27,7 +27,6 @@ import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ProgressListener;
 import ch.threema.base.ThreemaException;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
@@ -244,7 +243,7 @@ public abstract class MessagePlayer {
     }
 
     protected boolean isReceiverMatch(MessageReceiver receiver) {
-        if (TestUtil.required(this.messageReceiver, receiver)) {
+        if (messageReceiver != null && receiver != null) {
             return this.messageReceiver.getUniqueIdString().equals(receiver.getUniqueIdString());
         }
         return false;
@@ -335,7 +334,7 @@ public abstract class MessagePlayer {
     }
 
     public void pause(int source) {
-        logger.debug("pause. source = " + source + " state = " + this.state);
+        logger.debug("pause. source = {} state = {}", source, this.state);
         if (this.state == State_PLAYING) {
             this.state = State_PAUSE;
             this.makePause(source);

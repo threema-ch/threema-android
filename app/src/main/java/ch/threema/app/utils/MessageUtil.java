@@ -4,27 +4,31 @@ import android.content.Context;
 
 import org.slf4j.Logger;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.adapters.decorators.GroupStatusAdapterDecorator;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UserService;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.app.ui.models.MessageViewElement;
+import ch.threema.data.datatypes.ContactNameFormat;
+import ch.threema.data.models.GroupModel;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.messages.DeleteMessage;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
@@ -32,7 +36,12 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
+import ch.threema.storage.models.data.media.AudioDataModel;
+import ch.threema.storage.models.data.media.BallotDataModel;
+import ch.threema.storage.models.data.media.FileDataModel;
+import ch.threema.storage.models.data.media.VideoDataModel;
+import ch.threema.storage.models.data.status.StatusDataModel;
+import ch.threema.storage.models.group.GroupMessageModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
@@ -61,29 +70,46 @@ public class MessageUtil {
         MessageType.IMAGE,
         MessageType.VOICEMESSAGE);
 
-    public static String getDisplayDate(@NonNull Context context, @Nullable AbstractMessageModel messageModel, boolean full) {
-        if (messageModel == null) {
+    @NonNull
+    public static String getDisplayDate(
+        @NonNull Context context,
+        @Nullable Date postedAt,
+        boolean isOutbox,
+        @Nullable Date modifiedAt,
+        boolean full
+    ) {
+        if (postedAt == null && modifiedAt == null) {
             return "";
         }
-
-        Date d = getDisplayDate(messageModel);
-
-        if (d != null) {
-            return LocaleUtil.formatTimeStampString(context, d.getTime(), full);
+        final @Nullable Date date = getDisplayDate(postedAt, isOutbox, modifiedAt);
+        if (date != null) {
+            return LocaleUtil.formatTimeStampString(context, date.getTime(), full);
         } else {
             return "";
         }
     }
 
     @Nullable
-    public static Date getDisplayDate(@NonNull AbstractMessageModel messageModel) {
-        Date d = messageModel.getPostedAt();
-        if (messageModel.isOutbox()) {
-            if (messageModel.getModifiedAt() != null) {
-                d = messageModel.getModifiedAt();
-            }
+    public static Date getDisplayDate(
+        @Nullable Date postedAt,
+        boolean isOutbox,
+        @Nullable Date modifiedAt
+    ) {
+        if (isOutbox && modifiedAt != null) {
+            return modifiedAt;
+        } else {
+            return postedAt;
         }
-        return d;
+    }
+
+    @Nullable
+    public static Instant getDisplayInstant(
+        @Nullable Date postedAt,
+        boolean isOutbox,
+        @Nullable Date modifiedAt
+    ) {
+        var date = getDisplayDate(postedAt, isOutbox, modifiedAt);
+        return date != null ? date.toInstant() : null;
     }
 
     public static boolean hasDataFile(AbstractMessageModel messageModel) {
@@ -298,18 +324,16 @@ public class MessageUtil {
      * @return ArrayList of all MessageReceivers
      */
     public static ArrayList<MessageReceiver> getAllReceivers(final MessageReceiver messageReceiver) {
-
         ArrayList<MessageReceiver> allReceivers = new ArrayList<>();
         allReceivers.add(messageReceiver);
 
         List<MessageReceiver> affectedReceivers = messageReceiver.getAffectedMessageReceivers();
         if (affectedReceivers != null && !affectedReceivers.isEmpty()) {
-            allReceivers.addAll(Functional.filter(affectedReceivers, new IPredicateNonNull<>() {
-                @Override
-                public boolean apply(@NonNull MessageReceiver type) {
-                    return !type.isEqual(messageReceiver);
-                }
-            }));
+            allReceivers.addAll(
+                affectedReceivers.stream()
+                    .filter(receiver -> receiver != null && !receiver.isEqual(messageReceiver))
+                    .collect(Collectors.toList())
+            );
         }
         return allReceivers;
     }
@@ -410,20 +434,6 @@ public class MessageUtil {
         }
     }
 
-    public static String getCaption(List<String> captionList, int index) {
-        String captionText = null;
-
-        if (captionList != null && !captionList.isEmpty() && index < captionList.size() && captionList.get(index) != null) {
-            captionText = captionList.get(index);
-        }
-
-        if (captionText != null) {
-            return captionText.trim();
-        }
-
-        return null;
-    }
-
     public static String getCaptionText(AbstractMessageModel messageModel) {
         if (messageModel != null) {
             switch (messageModel.getType()) {
@@ -448,379 +458,451 @@ public class MessageUtil {
         return state == MessageState.USERACK || state == MessageState.USERDEC;
     }
 
-    public static class MessageViewElement {
-        public final @Nullable
-        @DrawableRes Integer icon;
-        public final @Nullable String placeholder;
-        public final @Nullable Integer color;
-        public final @Nullable String text;
-        public final @Nullable String contentDescription;
-
-        protected MessageViewElement(@Nullable @DrawableRes Integer icon, @Nullable String placeholder, @Nullable String text, @Nullable String contentDescription, @Nullable Integer color) {
-            this.icon = icon;
-            this.placeholder = placeholder;
-            this.color = color;
-            this.text = text;
-            this.contentDescription = contentDescription;
+    @NonNull
+    public static MessageViewElement getViewElement(
+        @NonNull Context context,
+        @Nullable AbstractMessageModel messageModel,
+        @NonNull final ContactNameFormat contactNameFormat
+    ) {
+        if (messageModel == null) {
+            return new MessageViewElement(null, null, null, null, null);
         }
+        return getViewElement(
+            context,
+            messageModel.getType(),
+            messageModel.getBody(),
+            messageModel.getCaption(),
+            messageModel.isOutbox(),
+            contactNameFormat
+        );
     }
 
     @NonNull
-    public static MessageViewElement getViewElement(Context context, AbstractMessageModel messageModel) {
-        if (messageModel != null && messageModel.getType() != null) {
-            switch (messageModel.getType()) {
-                case TEXT:
-                    return new MessageViewElement(null,
-                        null,
-                        QuoteUtil.getMessageBody(messageModel, false),
-                        null,
-                        null);
-                case IMAGE:
-                    return new MessageViewElement(R.drawable.ic_photo_filled,
-                        context.getString(R.string.image_placeholder),
-                        TestUtil.isEmptyOrNull(messageModel.getCaption()) ? null : messageModel.getCaption(),
-                        null,
-                        null);
-                case VIDEO:
-                    return new MessageViewElement(R.drawable.ic_movie_filled,
-                        context.getString(R.string.video_placeholder),
-                        messageModel.getVideoData().getDurationString(),
-                        null,
-                        null);
-                case LOCATION:
-                    final @NonNull LocationDataModel locationDataModel = messageModel.getLocationData();
-                    @Nullable String locationText = null;
-                    if (locationDataModel.poiNameOrNull != null) {
-                        locationText = locationDataModel.poiNameOrNull;
-                    } else if (locationDataModel.poiAddressOrNull != null) {
-                        locationText = locationDataModel.poiAddressOrNull;
-                    }
-
-                    return new MessageViewElement(
-                        R.drawable.ic_location_on_filled,
-                        context.getString(R.string.location_placeholder),
-                        locationText,
-                        null,
-                        null
-                    );
-                case VOICEMESSAGE:
-                    return new MessageViewElement(R.drawable.ic_mic_filled,
-                        context.getString(R.string.audio_placeholder),
-                        ElapsedTimeFormatter.secondsToString(messageModel.getAudioData().getDuration()),
-                        ". " + context.getString(R.string.duration) + " " + ElapsedTimeFormatter.getDurationStringHuman(context, messageModel.getAudioData().getDuration()) + ". ",
-                        null);
-                case FILE:
-                    if (MimeUtil.isImageFile(messageModel.getFileData().getMimeType())) {
-                        return new MessageViewElement(R.drawable.ic_photo_filled,
-                            context.getString(R.string.image_placeholder),
-                            TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption()) ?
-                                null :
-                                messageModel.getFileData().getCaption(),
-                            null,
-                            null);
-                    }
-
-                    if (MimeUtil.isVideoFile(messageModel.getFileData().getMimeType())) {
-                        String durationString = messageModel.getFileData().getDurationString();
-
-                        return new MessageViewElement(R.drawable.ic_movie_filled,
-                            context.getString(R.string.video_placeholder),
-                            TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption()) ?
-                                durationString :
-                                messageModel.getFileData().getCaption(),
-                            null,
-                            null);
-                    }
-
-                    if (MimeUtil.isAudioFile(messageModel.getFileData().getMimeType())) {
-                        String durationString = messageModel.getFileData().getDurationString();
-
-                        if (messageModel.getFileData().getRenderingType() == FileData.RENDERING_MEDIA) {
-                            return new MessageViewElement(R.drawable.ic_mic_filled,
-                                context.getString(R.string.audio_placeholder),
-                                durationString,
-                                ". " + context.getString(R.string.duration) + " " + ElapsedTimeFormatter.getDurationStringHuman(context, messageModel.getFileData().getDurationSeconds()) + ". ",
-                                null);
-                        } else {
-                            return new MessageViewElement(R.drawable.ic_doc_audio,
-                                context.getString(R.string.audio_placeholder),
-                                TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption()) ?
-                                    ("00:00".equals(durationString) ? null : durationString) :
-                                    messageModel.getFileData().getCaption(),
-                                null,
-                                null);
-                        }
-                    }
-
-                    return new MessageViewElement(IconUtil.getMimeIcon(messageModel.getFileData().getMimeType()),
-                        context.getString(R.string.file_placeholder),
-                        TestUtil.isEmptyOrNull(messageModel.getFileData().getCaption()) ?
-                            messageModel.getFileData().getFileName() :
-                            messageModel.getFileData().getCaption(),
-                        null,
-                        null);
-
-                case BALLOT:
-                    String messageString = BallotUtil.getNotificationString(context, messageModel);
-                    return new MessageViewElement(R.drawable.ic_baseline_rule,
-                        context.getString(R.string.ballot_placeholder),
-                        TestUtil.isEmptyOrNull(messageString) ? null : messageString,
-                        null,
-                        null);
-                case GROUP_STATUS:
-                    GroupStatusDataModel groupStatusDataModel = messageModel.getGroupStatusData();
-                    if (groupStatusDataModel == null) {
-                        return new MessageViewElement(null, null, null, null, null);
-                    }
-                    ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-
-                    ContactService contactService = null;
-                    UserService userService = null;
-
-                    if (serviceManager != null) {
-                        try {
-                            contactService = serviceManager.getContactService();
-                        } catch (MasterKeyLockedException e) {
-                            logger.error("Could not get contact service", e);
-                            // Don't abort: if the contact service cannot be created, then the
-                            // status messages only show the threema id instead of the display name
-                        }
-                        userService = serviceManager.getUserService();
-                    }
-
-                    String statusText = GroupStatusAdapterDecorator.Companion.getStatusText(
-                        groupStatusDataModel,
-                        userService,
-                        contactService,
-                        context
-                    );
-
-                    return new MessageViewElement(
-                        null,
-                        statusText,
-                        statusText,
-                        null,
-                        null
-                    );
-                case VOIP_STATUS:
-                    VoipStatusDataModel voipStatusDataModel = messageModel.getVoipStatusData();
-                    if (voipStatusDataModel != null) {
-                        switch (messageModel.getVoipStatusData().getStatus()) {
-                            case VoipStatusDataModel.REJECTED:
-                                // Determine reject reason
-                                final Byte reasonCodeByte = messageModel.getVoipStatusData().getReason();
-                                final byte reasonCode = reasonCodeByte == null
-                                    ? VoipCallAnswerData.RejectReason.UNKNOWN
-                                    : reasonCodeByte;
-
-                                // Default values
-                                int rejectColor = R.color.material_red;
-                                String rejectPlaceholder = messageModel.isOutbox()
-                                    ? context.getString(R.string.voip_call_status_rejected)
-                                    : context.getString(R.string.voip_call_status_missed);
-
-                                // Provide more details for certain reject reasons
-                                //noinspection NestedSwitchStatement
-                                switch (reasonCode) {
-                                    case VoipCallAnswerData.RejectReason.BUSY:
-                                        rejectPlaceholder = messageModel.isOutbox()
-                                            ? context.getString(R.string.voip_call_status_busy)
-                                            : context.getString(R.string.voip_call_status_missed) + " (" + context.getString(R.string.voip_call_status_busy_short) + ")";
-                                        break;
-                                    case VoipCallAnswerData.RejectReason.TIMEOUT:
-                                        rejectPlaceholder = messageModel.isOutbox()
-                                            ? context.getString(R.string.voip_call_status_unavailable)
-                                            : context.getString(R.string.voip_call_status_missed);
-                                        break;
-                                    case VoipCallAnswerData.RejectReason.REJECTED:
-                                        rejectPlaceholder = context.getString(R.string.voip_call_status_rejected);
-                                        rejectColor = messageModel.isOutbox()
-                                            ? R.color.material_red
-                                            : R.color.material_orange;
-                                        break;
-                                    case VoipCallAnswerData.RejectReason.DISABLED:
-                                        rejectPlaceholder = messageModel.isOutbox()
-                                            ? context.getString(R.string.voip_call_status_disabled)
-                                            : context.getString(R.string.voip_call_status_rejected);
-                                        rejectColor = messageModel.isOutbox()
-                                            ? R.color.material_red
-                                            : R.color.material_orange;
-                                        break;
-                                    case VoipCallAnswerData.RejectReason.OFF_HOURS:
-                                        rejectPlaceholder = context.getString(R.string.voip_call_status_off_hours);
-                                        rejectColor = messageModel.isOutbox()
-                                            ? R.color.material_red
-                                            : R.color.material_orange;
-                                        break;
-                                }
-                                return new MessageViewElement(
-                                    messageModel.isOutbox() ?
-                                        R.drawable.ic_call_missed_outgoing_black_24dp :
-                                        R.drawable.ic_call_missed_black_24dp,
-                                    rejectPlaceholder,
-                                    rejectPlaceholder,
-                                    null,
-                                    rejectColor);
-                            case VoipStatusDataModel.ABORTED:
-                                return new MessageViewElement(R.drawable.ic_call_missed_outgoing_black_24dp,
-                                    context.getString(R.string.voip_call_status_aborted),
-                                    context.getString(R.string.voip_call_status_aborted),
-                                    null,
-                                    R.color.material_orange);
-                            case VoipStatusDataModel.MISSED:
-                                return new MessageViewElement(
-                                    messageModel.isOutbox() ?
-                                        R.drawable.ic_call_missed_outgoing_black_24dp :
-                                        R.drawable.ic_call_missed_black_24dp,
-                                    context.getString(R.string.voip_call_status_missed),
-                                    context.getString(R.string.voip_call_status_missed),
-                                    null,
-                                    R.color.material_red);
-                            case VoipStatusDataModel.FINISHED:
-                                return new MessageViewElement(
-                                    messageModel.isOutbox() ?
-                                        R.drawable.ic_call_made_black_24dp :
-                                        R.drawable.ic_call_received_black_24dp,
-                                    context.getString(messageModel.isOutbox() ?
-                                        R.string.voip_call_finished_outbox :
-                                        R.string.voip_call_finished_inbox),
-                                    context.getString(messageModel.isOutbox() ?
-                                        R.string.voip_call_finished_outbox :
-                                        R.string.voip_call_finished_inbox),
-                                    null,
-                                    R.color.material_green);
-                        }
-                    }
-                    break;
-                case GROUP_CALL_STATUS:
-                    GroupCallStatusDataModel groupCallStatusDataModel = messageModel.getGroupCallStatusData();
-                    if (groupCallStatusDataModel != null) {
-                        switch (groupCallStatusDataModel.getStatus()) {
-                            case GroupCallStatusDataModel.STATUS_STARTED:
-                                String body = context.getString(R.string.voip_gc_call_started);
-                                if (groupCallStatusDataModel.getCallerIdentity() != null) {
-                                    try {
-                                        contactService = ThreemaApplication.getServiceManager().getContactService();
-                                        body = String.format(
-                                            context.getString(messageModel.isOutbox() ?
-                                                R.string.voip_gc_notification_call_started_generic_outbox :
-                                                R.string.voip_gc_notification_call_started_generic),
-                                            NameUtil.getShortName(groupCallStatusDataModel.getCallerIdentity(), contactService));
-                                    } catch (Exception e) {
-                                        logger.debug("Contact service unavailable");
-                                    }
-                                }
-
-                                return new MessageViewElement(
-                                    R.drawable.ic_phone_locked_outline,
-                                    context.getString(R.string.voip_gc_call_started),
-                                    body,
-                                    null,
-                                    null
-                                );
-                            case GroupCallStatusDataModel.STATUS_ENDED:
-                                return new MessageViewElement(
-                                    R.drawable.ic_phone_locked_outline,
-                                    context.getString(R.string.voip_gc_call_ended),
-                                    context.getString(R.string.voip_gc_call_ended),
-                                    null,
-                                    null
-                                );
-                        }
-                        break;
-                    }
-                case FORWARD_SECURITY_STATUS:
-                    ForwardSecurityStatusDataModel forwardSecurityStatusDataModel = messageModel.getForwardSecurityStatusData();
-                    if (forwardSecurityStatusDataModel != null) {
-                        switch (forwardSecurityStatusDataModel.getStatus()) {
-                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_RESET:
-                                return new MessageViewElement(
-                                    R.drawable.ic_baseline_key_off_24,
-                                    context.getString(R.string.forward_security_reset_simple),
-                                    context.getString(R.string.forward_security_reset_simple),
-                                    null,
-                                    R.color.material_red
-                                );
-                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED:
-                                return new MessageViewElement(
-                                    R.drawable.ic_baseline_key_24,
-                                    context.getString(R.string.forward_security_established),
-                                    context.getString(R.string.forward_security_established),
-                                    null,
-                                    R.color.material_green
-                                );
-                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX:
-                                return new MessageViewElement(
-                                    R.drawable.ic_baseline_key_24,
-                                    context.getString(R.string.forward_security_established_rx),
-                                    context.getString(R.string.forward_security_established_rx),
-                                    null,
-                                    R.color.material_green
-                                );
-                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED:
-                                String body = ConfigUtils.getSafeQuantityString(context, R.plurals.forward_security_messages_skipped, forwardSecurityStatusDataModel.getQuantity(), forwardSecurityStatusDataModel.getQuantity());
-                                return new MessageViewElement(
-                                    R.drawable.ic_baseline_key_24,
-                                    body,
-                                    body,
-                                    null,
-                                    null
-                                );
-                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER:
-                                return new MessageViewElement(
-                                    R.drawable.ic_baseline_key_24,
-                                    context.getString(R.string.forward_security_message_out_of_order),
-                                    context.getString(R.string.forward_security_message_out_of_order),
-                                    null,
-                                    null
-                                );
-                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY:
-                                return new MessageViewElement(
-                                    R.drawable.ic_baseline_key_off_24,
-                                    context.getString(R.string.message_without_forward_security),
-                                    context.getString(R.string.message_without_forward_security),
-                                    null,
-                                    null
-                                );
-                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE:
-                                return new MessageViewElement(
-                                    R.drawable.ic_baseline_key_24,
-                                    context.getString(R.string.forward_security_downgraded_status_message),
-                                    context.getString(R.string.forward_security_downgraded_status_message),
-                                    null,
-                                    null
-                                );
-                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE:
-                                return new MessageViewElement(
-                                    R.drawable.ic_baseline_key_off_24,
-                                    context.getString(R.string.forward_security_illegal_session_status_message),
-                                    context.getString(R.string.forward_security_illegal_session_status_message),
-                                    null,
-                                    null
-                                );
-                            // TODO(ANDR-2519): Can this be removed when md supports fs? Only if this
-                            //  type has never been stored to the database
-                            case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED:
-                                return new MessageViewElement(
-                                    R.drawable.ic_baseline_key_off_24,
-                                    context.getString(R.string.forward_security_disabled),
-                                    context.getString(R.string.forward_security_disabled),
-                                    null,
-                                    null
-                                );
-                            default:
-                                return new MessageViewElement(
-                                    R.drawable.ic_baseline_key_24,
-                                    forwardSecurityStatusDataModel.getStaticText(),
-                                    forwardSecurityStatusDataModel.getStaticText(),
-                                    null,
-                                    null
-                                );
-                        }
-                    }
-                    break;
-            }
+    public static MessageViewElement getViewElement(
+        @NonNull Context context,
+        @Nullable MessageType messageType,
+        @Nullable String messageBody,
+        @Nullable String messageCaption,
+        @Nullable Boolean isOutbox,
+        @NonNull final ContactNameFormat contactNameFormat
+    ) {
+        if (messageType == null || isOutbox == null) {
+            return new MessageViewElement(null, null, null, null, null);
         }
+        switch (messageType) {
+            case TEXT:
+                return new MessageViewElement(
+                    null,
+                    null,
+                    QuoteUtil.getMessageBody(messageType, messageBody, messageCaption, isOutbox, false, contactNameFormat),
+                    null,
+                    null
+                );
+            case IMAGE:
+                return new MessageViewElement(
+                    R.drawable.ic_photo_filled,
+                    context.getString(R.string.image_placeholder),
+                    TestUtil.isEmptyOrNull(messageCaption) ? null : messageCaption,
+                    null,
+                    null
+                );
+            case VIDEO:
+                final @NonNull VideoDataModel videoDataModel;
+                if (messageBody != null && !messageBody.isEmpty()) {
+                    videoDataModel = VideoDataModel.create(messageBody);
+                } else {
+                    videoDataModel = VideoDataModel.createEmpty();
+                }
+                return new MessageViewElement(
+                    R.drawable.ic_movie_filled,
+                    context.getString(R.string.video_placeholder),
+                    videoDataModel.getDurationString(),
+                    null,
+                    null
+                );
+            case LOCATION:
+                final @NonNull LocationDataModel locationDataModel;
+                if (messageBody != null && !messageBody.isEmpty()) {
+                    locationDataModel = LocationDataModel.fromStringOrDefault(messageBody);
+                } else {
+                    locationDataModel = LocationDataModel.createEmpty();
+                }
+                @Nullable String locationText = null;
+                if (locationDataModel.poiNameOrNull != null) {
+                    locationText = locationDataModel.poiNameOrNull;
+                } else if (locationDataModel.poiAddressOrNull != null) {
+                    locationText = locationDataModel.poiAddressOrNull;
+                }
+                return new MessageViewElement(
+                    R.drawable.ic_location_on_filled,
+                    context.getString(R.string.location_placeholder),
+                    locationText,
+                    null,
+                    null
+                );
+            case VOICEMESSAGE:
+                int duration = 0;
+                if (messageBody != null && !messageBody.isEmpty()) {
+                    final @NonNull AudioDataModel audioDataModel = AudioDataModel.create(messageBody);
+                    duration = audioDataModel.getDuration();
+                }
+                return new MessageViewElement(
+                    R.drawable.ic_mic_filled,
+                    context.getString(R.string.audio_placeholder),
+                    ElapsedTimeFormatter.secondsToString(duration),
+                    ". " + context.getString(R.string.duration) + " " + ElapsedTimeFormatter.getDurationStringHuman(context, duration) + ". ",
+                    null
+                );
+            case FILE:
+
+                final @NonNull FileDataModel fileDataModel;
+                if (messageBody != null && !messageBody.isEmpty()) {
+                    fileDataModel = FileDataModel.create(messageBody);
+                } else {
+                    fileDataModel = FileDataModel.createEmpty();
+                }
+
+                if (MimeUtil.isImageFile(fileDataModel.getMimeType())) {
+                    return new MessageViewElement(
+                        R.drawable.ic_photo_filled,
+                        context.getString(R.string.image_placeholder),
+                        TestUtil.isEmptyOrNull(fileDataModel.getCaption())
+                            ? null
+                            : fileDataModel.getCaption(),
+                        null,
+                        null
+                    );
+                }
+
+                if (MimeUtil.isVideoFile(fileDataModel.getMimeType())) {
+                    String durationString = fileDataModel.getDurationString();
+
+                    return new MessageViewElement(
+                        R.drawable.ic_movie_filled,
+                        context.getString(R.string.video_placeholder),
+                        TestUtil.isEmptyOrNull(fileDataModel.getCaption())
+                            ? durationString
+                            : fileDataModel.getCaption(),
+                        null,
+                        null
+                    );
+                }
+
+                if (MimeUtil.isAudioFile(fileDataModel.getMimeType())) {
+                    String durationString = fileDataModel.getDurationString();
+
+                    if (fileDataModel.getRenderingType() == FileData.RENDERING_MEDIA) {
+                        return new MessageViewElement(
+                            R.drawable.ic_mic_filled,
+                            context.getString(R.string.audio_placeholder),
+                            durationString,
+                            ". " + context.getString(R.string.duration) + " " + ElapsedTimeFormatter.getDurationStringHuman(context, fileDataModel.getDurationSeconds()) + ". ",
+                            null
+                        );
+                    } else {
+                        return new MessageViewElement(
+                            R.drawable.ic_doc_audio,
+                            context.getString(R.string.audio_placeholder),
+                            TestUtil.isEmptyOrNull(fileDataModel.getCaption())
+                                ? ("00:00".equals(durationString) ? null : durationString)
+                                : fileDataModel.getCaption(),
+                            null,
+                            null
+                        );
+                    }
+                }
+
+                return new MessageViewElement(
+                    IconUtil.getMimeIcon(fileDataModel.getMimeType()),
+                    context.getString(R.string.file_placeholder),
+                    TestUtil.isEmptyOrNull(fileDataModel.getCaption())
+                        ? fileDataModel.getFileName()
+                        : fileDataModel.getCaption(),
+                    null,
+                    null
+                );
+
+            case BALLOT:
+                @Nullable String messageString = null;
+                if (messageBody != null && !messageBody.isEmpty()) {
+                    final @Nullable BallotDataModel ballotDataModel = BallotDataModel.create(messageBody);
+                    messageString = BallotUtil.getNotificationString(context, ballotDataModel.getBallotId());
+                }
+                return new MessageViewElement(
+                    R.drawable.ic_baseline_rule,
+                    context.getString(R.string.ballot_placeholder),
+                    TestUtil.isEmptyOrNull(messageString)
+                        ? null
+                        : messageString,
+                    null,
+                    null
+                );
+            case GROUP_STATUS:
+                final @Nullable GroupStatusDataModel groupStatusDataModel = (GroupStatusDataModel) StatusDataModel.convert(messageBody);
+                if (groupStatusDataModel == null) {
+                    return new MessageViewElement(null, null, null, null, null);
+                }
+                final @Nullable ServiceManager serviceManager = ThreemaApplication.getServiceManager();
+                @Nullable ContactService contactService = null;
+                @Nullable UserService userService = null;
+                if (serviceManager != null) {
+                    try {
+                        contactService = serviceManager.getContactService();
+                    } catch (MasterKeyLockedException e) {
+                        logger.error("Could not get contact service", e);
+                        // Don't abort: if the contact service cannot be created, then the
+                        // status messages only show the threema id instead of the display name
+                    }
+                    userService = serviceManager.getUserService();
+                }
+
+                String statusText = GroupStatusAdapterDecorator.getStatusText(
+                    groupStatusDataModel,
+                    userService,
+                    contactService,
+                    contactNameFormat,
+                    context
+                );
+
+                return new MessageViewElement(
+                    null,
+                    statusText,
+                    statusText,
+                    null,
+                    null
+                );
+            case VOIP_STATUS:
+                final @Nullable VoipStatusDataModel voipStatusDataModel = (VoipStatusDataModel) StatusDataModel.convert(messageBody);
+                if (voipStatusDataModel != null) {
+                    switch (voipStatusDataModel.getStatus()) {
+                        case VoipStatusDataModel.REJECTED:
+                            // Determine reject reason
+                            final Byte reasonCodeByte = voipStatusDataModel.getReason();
+                            final byte reasonCode = reasonCodeByte == null
+                                ? VoipCallAnswerData.RejectReason.UNKNOWN
+                                : reasonCodeByte;
+
+                            // Default values
+                            int rejectColor = R.color.material_red;
+                            String rejectPlaceholder = isOutbox
+                                ? context.getString(R.string.voip_call_status_rejected)
+                                : context.getString(R.string.voip_call_status_missed);
+
+                            // Provide more details for certain reject reasons
+                            //noinspection NestedSwitchStatement
+                            switch (reasonCode) {
+                                case VoipCallAnswerData.RejectReason.BUSY:
+                                    rejectPlaceholder = isOutbox
+                                        ? context.getString(R.string.voip_call_status_busy)
+                                        : context.getString(R.string.voip_call_status_missed) + " (" + context.getString(R.string.voip_call_status_busy_short) + ")";
+                                    break;
+                                case VoipCallAnswerData.RejectReason.TIMEOUT:
+                                    rejectPlaceholder = isOutbox
+                                        ? context.getString(R.string.voip_call_status_unavailable)
+                                        : context.getString(R.string.voip_call_status_missed);
+                                    break;
+                                case VoipCallAnswerData.RejectReason.REJECTED:
+                                    rejectPlaceholder = context.getString(R.string.voip_call_status_rejected);
+                                    rejectColor = isOutbox
+                                        ? R.color.material_red
+                                        : R.color.material_orange;
+                                    break;
+                                case VoipCallAnswerData.RejectReason.DISABLED:
+                                    rejectPlaceholder = isOutbox
+                                        ? context.getString(R.string.voip_call_status_disabled)
+                                        : context.getString(R.string.voip_call_status_rejected);
+                                    rejectColor = isOutbox
+                                        ? R.color.material_red
+                                        : R.color.material_orange;
+                                    break;
+                                case VoipCallAnswerData.RejectReason.OFF_HOURS:
+                                    rejectPlaceholder = context.getString(R.string.voip_call_status_off_hours);
+                                    rejectColor = isOutbox
+                                        ? R.color.material_red
+                                        : R.color.material_orange;
+                                    break;
+                            }
+                            return new MessageViewElement(
+                                isOutbox
+                                    ? R.drawable.ic_call_missed_outgoing_black_24dp
+                                    : R.drawable.ic_call_missed_black_24dp,
+                                rejectPlaceholder,
+                                rejectPlaceholder,
+                                null,
+                                rejectColor
+                            );
+                        case VoipStatusDataModel.ABORTED:
+                            return new MessageViewElement(
+                                R.drawable.ic_call_missed_outgoing_black_24dp,
+                                context.getString(R.string.voip_call_status_aborted),
+                                context.getString(R.string.voip_call_status_aborted),
+                                null,
+                                R.color.material_orange
+                            );
+                        case VoipStatusDataModel.MISSED:
+                            return new MessageViewElement(
+                                isOutbox
+                                    ? R.drawable.ic_call_missed_outgoing_black_24dp
+                                    : R.drawable.ic_call_missed_black_24dp,
+                                context.getString(R.string.voip_call_status_missed),
+                                context.getString(R.string.voip_call_status_missed),
+                                null,
+                                R.color.material_red
+                            );
+                        case VoipStatusDataModel.FINISHED:
+                            return new MessageViewElement(
+                                isOutbox
+                                    ? R.drawable.ic_call_made_black_24dp
+                                    : R.drawable.ic_call_received_black_24dp,
+                                context.getString(
+                                    isOutbox
+                                        ? R.string.voip_call_finished_outbox
+                                        : R.string.voip_call_finished_inbox
+                                ),
+                                context.getString(
+                                    isOutbox
+                                        ? R.string.voip_call_finished_outbox
+                                        : R.string.voip_call_finished_inbox
+                                ),
+                                null,
+                                R.color.material_green
+                            );
+                    }
+                }
+                break;
+            case GROUP_CALL_STATUS:
+                final @Nullable GroupCallStatusDataModel groupCallStatusDataModel = (GroupCallStatusDataModel) StatusDataModel.convert(messageBody);
+                if (groupCallStatusDataModel != null) {
+                    switch (groupCallStatusDataModel.getStatus()) {
+                        case GroupCallStatusDataModel.STATUS_STARTED:
+                            String body = context.getString(R.string.voip_gc_call_started);
+                            if (groupCallStatusDataModel.getCallerIdentity() != null) {
+                                try {
+                                    contactService = ThreemaApplication.getServiceManager().getContactService();
+                                    body = String.format(
+                                        context.getString(
+                                            isOutbox
+                                                ? R.string.voip_gc_notification_call_started_generic_outbox
+                                                : R.string.voip_gc_notification_call_started_generic
+                                        ),
+                                        NameUtil.getShortName(groupCallStatusDataModel.getCallerIdentity(), contactService, contactNameFormat)
+                                    );
+                                } catch (Exception e) {
+                                    logger.debug("Contact service unavailable");
+                                }
+                            }
+
+                            return new MessageViewElement(
+                                R.drawable.ic_phone_locked_outline,
+                                context.getString(R.string.voip_gc_call_started),
+                                body,
+                                null,
+                                null
+                            );
+                        case GroupCallStatusDataModel.STATUS_ENDED:
+                            return new MessageViewElement(
+                                R.drawable.ic_phone_locked_outline,
+                                context.getString(R.string.voip_gc_call_ended),
+                                context.getString(R.string.voip_gc_call_ended),
+                                null,
+                                null
+                            );
+                    }
+                    break;
+                }
+            case FORWARD_SECURITY_STATUS:
+                final @Nullable ForwardSecurityStatusDataModel forwardSecurityStatusDataModel =
+                    (ForwardSecurityStatusDataModel) StatusDataModel.convert(messageBody);
+                if (forwardSecurityStatusDataModel != null) {
+                    switch (forwardSecurityStatusDataModel.getStatus()) {
+                        case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_RESET:
+                            return new MessageViewElement(
+                                R.drawable.ic_baseline_key_off_24,
+                                context.getString(R.string.forward_security_reset_simple),
+                                context.getString(R.string.forward_security_reset_simple),
+                                null,
+                                R.color.material_red
+                            );
+                        case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED:
+                            return new MessageViewElement(
+                                R.drawable.ic_baseline_key_24,
+                                context.getString(R.string.forward_security_established),
+                                context.getString(R.string.forward_security_established),
+                                null,
+                                R.color.material_green
+                            );
+                        case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ESTABLISHED_RX:
+                            return new MessageViewElement(
+                                R.drawable.ic_baseline_key_24,
+                                context.getString(R.string.forward_security_established_rx),
+                                context.getString(R.string.forward_security_established_rx),
+                                null,
+                                R.color.material_green
+                            );
+                        case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGES_SKIPPED:
+                            String body = ConfigUtils.getSafeQuantityString(context, R.plurals.forward_security_messages_skipped, forwardSecurityStatusDataModel.getQuantity(), forwardSecurityStatusDataModel.getQuantity());
+                            return new MessageViewElement(
+                                R.drawable.ic_baseline_key_24,
+                                body,
+                                body,
+                                null,
+                                null
+                            );
+                        case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_MESSAGE_OUT_OF_ORDER:
+                            return new MessageViewElement(
+                                R.drawable.ic_baseline_key_24,
+                                context.getString(R.string.forward_security_message_out_of_order),
+                                context.getString(R.string.forward_security_message_out_of_order),
+                                null,
+                                null
+                            );
+                        case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.MESSAGE_WITHOUT_FORWARD_SECURITY:
+                            return new MessageViewElement(
+                                R.drawable.ic_baseline_key_off_24,
+                                context.getString(R.string.message_without_forward_security),
+                                context.getString(R.string.message_without_forward_security),
+                                null,
+                                null
+                            );
+                        case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_UNAVAILABLE_DOWNGRADE:
+                            return new MessageViewElement(
+                                R.drawable.ic_baseline_key_24,
+                                context.getString(R.string.forward_security_downgraded_status_message),
+                                context.getString(R.string.forward_security_downgraded_status_message),
+                                null,
+                                null
+                            );
+                        case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_ILLEGAL_SESSION_STATE:
+                            return new MessageViewElement(
+                                R.drawable.ic_baseline_key_off_24,
+                                context.getString(R.string.forward_security_illegal_session_status_message),
+                                context.getString(R.string.forward_security_illegal_session_status_message),
+                                null,
+                                null
+                            );
+                        // TODO(ANDR-2519): Can this be removed when md supports fs? Only if this
+                        //  type has never been stored to the database
+                        case ForwardSecurityStatusDataModel.ForwardSecurityStatusType.FORWARD_SECURITY_DISABLED:
+                            return new MessageViewElement(
+                                R.drawable.ic_baseline_key_off_24,
+                                context.getString(R.string.forward_security_disabled),
+                                context.getString(R.string.forward_security_disabled),
+                                null,
+                                null
+                            );
+                        default:
+                            return new MessageViewElement(
+                                R.drawable.ic_baseline_key_24,
+                                forwardSecurityStatusDataModel.getStaticText(),
+                                forwardSecurityStatusDataModel.getStaticText(),
+                                null,
+                                null
+                            );
+                    }
+                }
+                break;
+        }
+
         return new MessageViewElement(null, null, null, null, null);
     }
 
@@ -886,7 +968,7 @@ public class MessageUtil {
         @NonNull AbstractMessageModel message,
         @NonNull MessageReceiver receiver
     ) {
-        final @Nullable ch.threema.data.models.GroupModel groupModel;
+        final @Nullable GroupModel groupModel;
         if (receiver instanceof GroupMessageReceiver) {
             groupModel = ((GroupMessageReceiver) receiver).getGroupModel();
         } else {

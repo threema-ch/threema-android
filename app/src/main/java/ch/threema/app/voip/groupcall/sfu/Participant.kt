@@ -1,13 +1,12 @@
 package ch.threema.app.voip.groupcall.sfu
 
 import androidx.annotation.UiThread
-import ch.threema.app.utils.NameUtil
 import ch.threema.app.voip.groupcall.sfu.webrtc.LocalCtx
 import ch.threema.app.voip.groupcall.sfu.webrtc.RemoteCtx
 import ch.threema.app.webrtc.Camera
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.domain.types.Identity
-import ch.threema.storage.models.ContactModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -59,7 +58,7 @@ abstract class Participant(override val id: ParticipantId) : ParticipantDescript
 
     abstract val type: String
 
-    abstract val name: String
+    abstract fun getDisplayName(contactNameFormat: ContactNameFormat): String
 
     open var microphoneActive: Boolean = false
 
@@ -98,28 +97,30 @@ private interface RemoteParticipant {
 
 abstract class NormalParticipant(
     id: ParticipantId,
-    protected val contactModel: ContactModel,
+    private val displayableParticipant: DisplayableParticipant,
 ) : Participant(id), NormalParticipantDescription {
-    override val identity: Identity = contactModel.identity
-    override val nickname: String = contactModel.publicNickName ?: contactModel.identity
 
-    override val name: String by lazy {
-        NameUtil.getDisplayNameOrNickname(contactModel, true)
-    }
+    override val identity = displayableParticipant.identity
+    override val nickname = displayableParticipant.nickname
+
+    override fun getDisplayName(contactNameFormat: ContactNameFormat) = displayableParticipant.getDisplayName(contactNameFormat)
 }
 
 abstract class NormalRemoteParticipant(
     id: ParticipantId,
-    contactModel: ContactModel,
-) : NormalParticipant(id, contactModel), RemoteParticipant {
+    displayableParticipant: DisplayableParticipant,
+) : RemoteParticipant, NormalParticipant(
+    id = id,
+    displayableParticipant = displayableParticipant,
+) {
     override var remoteCtx: RemoteCtx? = null
 }
 
 class LocalParticipant internal constructor(
     id: ParticipantId,
-    contactModel: ContactModel,
+    displayableParticipant: DisplayableParticipant,
     private val localCtx: LocalCtx,
-) : NormalParticipant(id, contactModel) {
+) : NormalParticipant(id, displayableParticipant) {
     override val type = "LocalParticipant"
 
     override val mirrorRenderer: Boolean

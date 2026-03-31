@@ -3,39 +3,37 @@ package ch.threema.app.systemupdates.updates;
 import android.content.Context;
 import android.database.Cursor;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import androidx.annotation.NonNull;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.utils.Base32;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import ch.threema.storage.DatabaseProvider;
+import kotlin.Lazy;
 
 import static android.provider.MediaStore.MEDIA_IGNORE_FILENAME;
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class SystemUpdateToVersion42 implements SystemUpdate {
     private static final Logger logger = getThreemaLogger("SystemUpdateToVersion42");
 
-    private @NonNull final Context context;
-    private @NonNull final ServiceManager serviceManager;
-
-    public SystemUpdateToVersion42(@NonNull Context context, @NonNull ServiceManager serviceManager) {
-        this.context = context;
-        this.serviceManager = serviceManager;
-    }
+    private final Lazy<Context> appContextLazy = KoinJavaComponent.inject(Context.class);
+    private final Lazy<DatabaseProvider> databaseProviderLazy = KoinJavaComponent.inject(DatabaseProvider.class);
 
     @Override
     public void run() {
-        final File appPath = new File(context.getExternalFilesDir(null), "data");
+        var appContext = appContextLazy.getValue();
+
+        final File appPath = new File(appContext.getExternalFilesDir(null), "data");
         final File avatarPath = new File(appPath, "/.avatar");
         final File wallpaperPath = new File(appPath.getPath() + "/.wallpaper");
 
-        var database = serviceManager.getDatabaseService().getReadableDatabase();
+        var database = databaseProviderLazy.getValue().getReadableDatabase();
 
         Cursor contacts = database.rawQuery("SELECT identity FROM contacts", null);
         if (contacts != null) {

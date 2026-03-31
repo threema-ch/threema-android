@@ -29,7 +29,6 @@ import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
-import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voip.activities.CallActivity;
 import ch.threema.app.voip.services.VoipCallService;
@@ -91,7 +90,6 @@ public class VoipUtil {
      *
      * @param activity         The activity that triggered this call.
      * @param contactModel     The contact to call
-     * @param onFinishRunnable
      * @return true if the call could be initiated, false otherwise
      */
     public static boolean initiateCall(
@@ -126,7 +124,7 @@ public class VoipUtil {
             return false;
         }
 
-        VoipStateService voipStateService = null;
+        VoipStateService voipStateService;
         try {
             voipStateService = serviceManager.getVoipStateService();
         } catch (ThreemaException e) {

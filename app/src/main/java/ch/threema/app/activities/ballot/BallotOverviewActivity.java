@@ -45,8 +45,9 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.RuntimeUtil;
+
+import static ch.threema.android.ToastKt.showToast;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.taskmanager.TriggerSource;
@@ -262,6 +263,8 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
                     messageReceiver,
                     dependencies.getBallotService(),
                     dependencies.getContactService(),
+                    dependencies.getUserService(),
+                    dependencies.getPreferenceService(),
                     Glide.with(this)
                 );
 
@@ -387,7 +390,8 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
                         try {
                             dependencies.getBallotService().remove(this.ballots.get(index));
                         } catch (NotAllowedException e) {
-                            LogUtil.exception(e, this);
+                            logger.error("Failed to delete ballot", e);
+                            showToast(this, R.string.an_error_occurred);
                             return;
                         }
                     }
@@ -406,7 +410,10 @@ public class BallotOverviewActivity extends ThreemaToolbarActivity implements Li
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
+        if (tag == null) {
+            return;
+        }
         if (tag.equals(DIALOG_TAG_BALLOT_DELETE)) {
             removeSelectedBallotsDo((SparseBooleanArray) data);
         } else if (tag.equals(AppConstants.CONFIRM_TAG_CLOSE_BALLOT)) {

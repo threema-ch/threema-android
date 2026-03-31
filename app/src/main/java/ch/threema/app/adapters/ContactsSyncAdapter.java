@@ -53,7 +53,7 @@ public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
                 return;
             }
 
-            if (serviceManager.getPreferenceService().isSyncContacts()) {
+            if (serviceManager.getSynchronizedSettingsService().isSyncContacts()) {
                 logger.info("Start sync adapter run");
                 SynchronizeContactsService synchronizeContactsService = serviceManager.getSynchronizeContactsService();
 
@@ -87,8 +87,7 @@ public class ContactsSyncAdapter extends AbstractThreadedSyncAdapter {
                 routine.run();
             }
         } catch (MasterKeyLockedException e) {
-            logger.debug("MasterKeyLockedException [" + e.getMessage() + "]");
-
+            logger.debug("Master key is locked, skipping");
         } finally {
             logger.debug(
                 "sync finished Sync [numEntries={}, updates={}, inserts={}, deletes={}",

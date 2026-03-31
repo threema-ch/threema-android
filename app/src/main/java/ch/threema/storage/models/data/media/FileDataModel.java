@@ -18,7 +18,9 @@ import ch.threema.app.utils.ListReader;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.TestUtil;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 
@@ -381,6 +383,7 @@ public class FileDataModel implements MediaMessageDataInterface {
         return sw.toString();
     }
 
+    @NonNull
     public static FileDataModel create(@NonNull String s) {
         FileDataModel m = new FileDataModel();
         m.fromString(s);
@@ -390,6 +393,7 @@ public class FileDataModel implements MediaMessageDataInterface {
     /**
      * Do not use this in new code. It only exists to handle places where a [FileModel] needs to be returned and `null` is not allowed.
      */
+    @NonNull
     @Deprecated()
     public static FileDataModel createEmpty() {
         return new FileDataModel();

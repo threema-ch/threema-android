@@ -1,11 +1,9 @@
 package ch.threema.app.globalsearch;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.PorterDuff;
 import android.text.SpannableStringBuilder;
-import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,10 +12,8 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.DrawableRes;
-import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -27,24 +23,22 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.bitmap.BitmapTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
-import com.google.android.material.card.MaterialCardView;
 
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.emojis.EmojiImageSpan;
 import ch.threema.app.emojis.EmojiMarkupUtil;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationCategoryService;
 import ch.threema.app.services.GroupService;
+import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.AvatarView;
-import ch.threema.app.ui.CheckableRelativeLayout;
 import ch.threema.app.ui.listitemholder.AvatarListItemHolder;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
@@ -55,47 +49,49 @@ import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextExtensionsKt;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupMessageModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.data.media.BallotDataModel;
 
-import static ch.threema.app.utils.MessageUtilKt.getUiContentColor;
-
 public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final Logger logger = getThreemaLogger("GlobalSearchAdapter");
     private static final String FLOW_CHARACTER = "\u25BA\uFE0E"; // "►"
 
-    private GroupService groupService;
-    private ContactService contactService;
-    private BallotService ballotService;
-    @Nullable
-    private ConversationCategoryService conversationCategoryService;
+    @NonNull
+    private final GroupService groupService;
+    @NonNull
+    private final ContactService contactService;
+    @NonNull
+    private final UserService userService;
+    @NonNull
+    private final BallotService ballotService;
+    @NonNull
+    private final ConversationCategoryService conversationCategoryService;
+    @NonNull
+    private final PreferenceService preferenceService;
 
     private final Context context;
     private OnClickItemListener onClickItemListener;
-    private final SparseBooleanArray checkedItems = new SparseBooleanArray();
     private String queryString;
     private final int snippetThreshold;
     private List<AbstractMessageModel> messageModels; // Cached copy of AbstractMessageModels
-    private final @LayoutRes int itemLayout;
-    private final ColorStateList colorStateListSend, colorStateListReceive;
     private final @NonNull RequestManager requestManager;
 
     private static class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView titleView;
         private final TextView dateView;
         private final TextView snippetView;
-        @Nullable
-        private final TextView deletedPlaceholder; // will be null for layouts other than item_starred_messages
         private final ImageView thumbnailView;
-        private final MaterialCardView messageBlock;
         AvatarListItemHolder avatarListItemHolder;
 
         private ViewHolder(final View itemView) {
@@ -104,49 +100,42 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             titleView = itemView.findViewById(R.id.name);
             dateView = itemView.findViewById(R.id.date);
             snippetView = itemView.findViewById(R.id.snippet);
-            deletedPlaceholder = itemView.findViewById(R.id.deleted_placeholder);
             AvatarView avatarView = itemView.findViewById(R.id.avatar_view);
             thumbnailView = itemView.findViewById(R.id.thumbnail_view);
-            messageBlock = itemView.findViewById(R.id.message_block);
 
             avatarListItemHolder = new AvatarListItemHolder();
             avatarListItemHolder.avatarView = avatarView;
-        }
-
-        protected boolean getHasBubbleBackground() {
-            return this.messageBlock != null;
         }
     }
 
     public GlobalSearchAdapter(
         @NonNull Context context,
         @NonNull RequestManager requestManager,
-        @LayoutRes int itemLayout,
-        int snippetThreshold
+        int snippetThreshold,
+        @NonNull GroupService groupService,
+        @NonNull ContactService contactService,
+        @NonNull UserService userService,
+        @NonNull BallotService ballotService,
+        @NonNull ConversationCategoryService conversationCategoryService,
+        @NonNull PreferenceService preferenceService
     ) {
         this.context = context;
         this.requestManager = requestManager;
-        this.itemLayout = itemLayout;
         this.snippetThreshold = snippetThreshold;
 
-        try {
-            this.groupService = ThreemaApplication.requireServiceManager().getGroupService();
-            this.contactService = ThreemaApplication.requireServiceManager().getContactService();
-            this.ballotService = ThreemaApplication.requireServiceManager().getBallotService();
-            this.conversationCategoryService = ThreemaApplication.requireServiceManager().getConversationCategoryService();
-        } catch (Exception e) {
-            logger.error("Unable to get Services", e);
-        }
-
-        this.colorStateListSend = ContextCompat.getColorStateList(context, R.color.bubble_send_colorstatelist);
-        this.colorStateListReceive = ContextCompat.getColorStateList(context, R.color.bubble_receive_colorstatelist);
+        this.groupService = groupService;
+        this.contactService = contactService;
+        this.userService = userService;
+        this.ballotService = ballotService;
+        this.conversationCategoryService = conversationCategoryService;
+        this.preferenceService = preferenceService;
     }
 
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-            .inflate(itemLayout, parent, false);
+            .inflate(R.layout.item_global_search, parent, false);
         return new ViewHolder(itemView);
     }
 
@@ -156,29 +145,11 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         if (messageModels != null) {
             AbstractMessageModel messageModel = getItem(position);
-
-            if (viewHolder.getHasBubbleBackground()) {
-                if (messageModel.isOutbox()) {
-                    viewHolder.messageBlock.setCardBackgroundColor(colorStateListSend);
-                } else {
-                    viewHolder.messageBlock.setCardBackgroundColor(colorStateListReceive);
-                }
-
-                var uiContentColor = getUiContentColor(messageModel, context);
-                viewHolder.titleView.setTextColor(uiContentColor);
-                viewHolder.snippetView.setTextColor(uiContentColor);
-                viewHolder.dateView.setTextColor(uiContentColor);
-            }
-
             viewHolder.snippetView.setVisibility(View.VISIBLE);
-            if (viewHolder.deletedPlaceholder != null) {
-                viewHolder.deletedPlaceholder.setVisibility(View.GONE);
-            }
-
             final @NonNull String uid = messageModel instanceof GroupMessageModel
                 ? GroupUtil.getUniqueIdString(((GroupMessageModel) messageModel).getGroupId())
                 : ContactUtil.getUniqueIdString(messageModel.getIdentity());
-            if (conversationCategoryService == null || conversationCategoryService.isPrivateChat(uid)) {
+            if (conversationCategoryService.isPrivateChat(uid)) {
                 viewHolder.dateView.setText("");
                 viewHolder.thumbnailView.setVisibility(View.GONE);
                 viewHolder.titleView.setText("");
@@ -186,11 +157,10 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 viewHolder.avatarListItemHolder.avatarView.setVisibility(View.INVISIBLE);
                 viewHolder.avatarListItemHolder.avatarView.setBadgeVisible(false);
             } else if (messageModel.isDeleted()) {
-                // deleted placeholder for starred items - global search will never find deleted items
                 initDeletedViewHolder(viewHolder, messageModel);
             } else {
                 if (messageModel instanceof GroupMessageModel) {
-                    final GroupModel groupModel = groupService.getById(((GroupMessageModel) messageModel).getGroupId());
+                    final GroupModelOld groupModel = groupService.getById(((GroupMessageModel) messageModel).getGroupId());
                     AvatarListItemUtil.loadAvatar(
                         groupModel,
                         groupService,
@@ -238,11 +208,10 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             }
 
             if (this.onClickItemListener != null) {
-                viewHolder.itemView.setOnClickListener(v -> onClickItemListener.onClick(messageModel, viewHolder.itemView, position));
-                viewHolder.itemView.setOnLongClickListener(v -> onClickItemListener.onLongClick(messageModel, viewHolder.itemView, position));
+                viewHolder.itemView.setOnClickListener(
+                    view -> onClickItemListener.onClick(messageModel, view, position)
+                );
             }
-
-            ((CheckableRelativeLayout) viewHolder.itemView).setChecked(checkedItems.get(position));
         } else {
             // Covers the case of data not being ready yet.
             viewHolder.titleView.setText("");
@@ -251,23 +220,13 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    private void initDeletedViewHolder(@NonNull ViewHolder viewHolder, AbstractMessageModel message) {
+    private void initDeletedViewHolder(@NonNull ViewHolder viewHolder, @NonNull AbstractMessageModel message) {
         viewHolder.snippetView.setVisibility(View.INVISIBLE);
         viewHolder.snippetView.setText("");
-
-        if (viewHolder.deletedPlaceholder != null) {
-            viewHolder.deletedPlaceholder.setVisibility(View.VISIBLE);
-            viewHolder.deletedPlaceholder.setText(R.string.message_was_deleted);
-            if (viewHolder.getHasBubbleBackground()) {
-                assert viewHolder.deletedPlaceholder != null;
-                viewHolder.deletedPlaceholder.setTextColor(getUiContentColor(message, viewHolder.deletedPlaceholder.getContext()));
-            }
-        }
-
         viewHolder.dateView.setText(LocaleUtil.formatDateRelative(message.getCreatedAt().getTime()));
 
         if (message instanceof GroupMessageModel) {
-            final GroupModel groupModel = groupService.getById(((GroupMessageModel) message).getGroupId());
+            final GroupModelOld groupModel = groupService.getById(((GroupMessageModel) message).getGroupId());
             viewHolder.titleView.setText(getTitle((GroupMessageModel) message, groupModel));
         } else {
             final ContactModel contactModel = this.contactService.getByIdentity(message.getIdentity());
@@ -276,17 +235,32 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     private String getTitle(@NonNull AbstractMessageModel messageModel, @Nullable ContactModel contactModel) {
-        String name = NameUtil.getDisplayNameOrNickname(context, messageModel, contactService);
-        return messageModel.isOutbox() ?
-            name + " " + FLOW_CHARACTER + " " + NameUtil.getDisplayNameOrNickname(contactModel, true) :
-            name;
+        final @Nullable String name = NameUtil.getContactDisplayNameOrNickname(
+            context,
+            messageModel,
+            contactService,
+            userService,
+            preferenceService.getContactNameFormat()
+        );
+        return messageModel.isOutbox()
+            ? name + " " + FLOW_CHARACTER + " " + NameUtil.getContactDisplayNameOrNickname(contactModel, true, preferenceService.getContactNameFormat())
+            : name;
     }
 
     @NonNull
-    private String getTitle(@NonNull GroupMessageModel messageModel, GroupModel groupModel) {
-        final ContactModel contactModel = messageModel.isOutbox() ? this.contactService.getMe() : this.contactService.getByIdentity(messageModel.getIdentity());
-        String groupName = NameUtil.getDisplayName(groupModel, groupService);
-        return String.format("%s %s %s", NameUtil.getDisplayNameOrNickname(contactModel, true), FLOW_CHARACTER, groupName);
+    private String getTitle(@NonNull GroupMessageModel messageModel, GroupModelOld groupModel) {
+        final @NonNull ContactNameFormat contactNameFormat = preferenceService.getContactNameFormat();
+
+        String senderName;
+        if (messageModel.isOutbox()) {
+            senderName = userService.getDisplayName();
+        } else {
+            final ContactModel contactModel = this.contactService.getByIdentity(messageModel.getIdentity());
+            senderName = NameUtil.getContactDisplayNameOrNickname(contactModel, true, contactNameFormat);
+        }
+        final @Nullable String groupDisplayName = NameUtil.getGroupDisplayName(groupModel, groupService, contactNameFormat);
+
+        return String.format("%s %s %s", senderName, FLOW_CHARACTER, groupDisplayName);
     }
 
     private void loadThumbnail(@NonNull AbstractMessageModel messageModel, ViewHolder viewHolder) {
@@ -349,6 +323,7 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
      * @param viewHolder ItemHolder containing a textview
      * @return Snippet containing the match with a trailing ellipsis if the match is located beyond the first snippetThreshold characters
      */
+    @NonNull
     private CharSequence getSnippet(@NonNull String fullText, @Nullable String needle, ViewHolder viewHolder) {
         if (!TestUtil.isEmptyOrNull(needle)) {
             int firstMatch = fullText.toLowerCase().indexOf(needle);
@@ -374,7 +349,6 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
         return EmojiMarkupUtil.getInstance().addTextSpans(context, fullText, viewHolder.snippetView, false, false, false, false);
     }
-
 
     public void setMessageModels(List<AbstractMessageModel> messageModels) {
         this.messageModels = messageModels;
@@ -456,32 +430,6 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         }
     }
 
-    public void toggleChecked(int pos) {
-        if (checkedItems.get(pos, false)) {
-            checkedItems.delete(pos);
-        } else {
-            checkedItems.put(pos, true);
-        }
-        notifyItemChanged(pos);
-    }
-
-    public int getCheckedItemsCount() {
-        return checkedItems.size();
-    }
-
-    public List<AbstractMessageModel> getCheckedItems() {
-        List<AbstractMessageModel> items = new ArrayList<>(checkedItems.size());
-        for (int i = 0; i < checkedItems.size(); i++) {
-            items.add(messageModels.get(checkedItems.keyAt(i)));
-        }
-        return items;
-    }
-
-    public void clearCheckedItems() {
-        checkedItems.clear();
-        notifyDataSetChanged();
-    }
-
     public void setOnClickItemListener(OnClickItemListener onClickItemListener) {
         this.onClickItemListener = onClickItemListener;
     }
@@ -491,10 +439,6 @@ public class GlobalSearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public interface OnClickItemListener {
-        void onClick(AbstractMessageModel messageModel, View view, int position);
-
-        default boolean onLongClick(AbstractMessageModel messageModel, View view, int position) {
-            return false;
-        }
+        void onClick(@NonNull AbstractMessageModel messageModel, @NonNull View view, int position);
     }
 }

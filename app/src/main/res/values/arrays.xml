@@ -304,18 +304,22 @@
         <item>@string/receipts_override_choice_dont_send</item>
     </string-array>
 
-    <!-- TODO(ANDR-4339): These strings need to be translated -->
-    <string-array name="list_crash_reporting">
-        <item>Always ask</item>
-        <item>Always send</item>
-        <item>Never send</item>
+    <string-array name="list_error_reporting_options">
+        <item>@string/error_reporting_option_never_send</item>
+        <item>@string/error_reporting_option_always_send</item>
+        <item>@string/error_reporting_option_always_ask</item>
     </string-array>
-    <string-array name="list_crash_reporting_values">
-        <item>@string/crash_reporting_value_always_ask</item>
-        <item>@string/crash_reporting_value_always_send</item>
-        <item>@string/crash_reporting_value_never_send</item>
+    <string-array name="list_error_reporting_summaries">
+        <item>@string/error_reporting_summary_never_send</item>
+        <item>@string/error_reporting_summary_always_send</item>
+        <item>@string/error_reporting_summary_always_ask</item>
     </string-array>
-    <string name="crash_reporting_value_always_ask" translatable="false">ask</string>
-    <string name="crash_reporting_value_always_send" translatable="false">always</string>
-    <string name="crash_reporting_value_never_send" translatable="false">never</string>
+    <string-array name="list_error_reporting_values">
+        <item>@string/error_reporting_value_never_send</item>
+        <item>@string/error_reporting_value_always_send</item>
+        <item>@string/error_reporting_value_always_ask</item>
+    </string-array>
+    <string name="error_reporting_value_always_ask" translatable="false">ask</string>
+    <string name="error_reporting_value_always_send" translatable="false">always</string>
+    <string name="error_reporting_value_never_send" translatable="false">never</string>
 </resources>

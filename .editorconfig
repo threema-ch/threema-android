@@ -20,6 +20,8 @@ ktlint_function_naming_ignore_when_annotated_with = Composable
 # and do not match our preferences
 ktlint_standard_function-signature = disabled
 ktlint_standard_no-wildcard-imports = disabled
+ktlint_standard_class-signature = disabled
+ktlint_standard_function-expression-body = disabled
 
 [*.{yml,yaml}]
 indent_size = 2

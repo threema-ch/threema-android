@@ -1,18 +1,24 @@
 package ch.threema.app.di.modules
 
-import android.annotation.SuppressLint
 import ch.threema.app.di.MasterKeyLockStateChangeHandler
-import ch.threema.app.di.Qualifiers
 import ch.threema.app.files.AppDirectoryProvider
 import ch.threema.app.listeners.PreferenceListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ListenerProvider
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.PreferenceServiceImpl
+import ch.threema.app.services.FileService
+import ch.threema.app.services.FileServiceImpl
 import ch.threema.app.services.NotificationPreferenceService
 import ch.threema.app.services.NotificationPreferenceServiceImpl
 import ch.threema.app.services.RingtoneService
 import ch.threema.app.services.RingtoneServiceImpl
+import ch.threema.app.services.ServerMessageService
+import ch.threema.app.services.ServerMessageServiceImpl
 import ch.threema.app.services.ServiceManagerProvider
 import ch.threema.app.services.ServiceManagerProviderImpl
+import ch.threema.app.services.avatarcache.AvatarCacheService
+import ch.threema.app.services.avatarcache.AvatarCacheServiceImpl
 import ch.threema.app.startup.AppStartupMonitor
 import ch.threema.app.startup.AppStartupMonitorImpl
 import ch.threema.app.stores.EncryptedPreferenceStore
@@ -23,14 +29,8 @@ import ch.threema.app.stores.MutableIdentityProvider
 import ch.threema.app.stores.PreferenceStore
 import ch.threema.app.stores.PreferenceStoreImpl
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig
-import ch.threema.app.utils.ConfigUtils
-import ch.threema.base.utils.getThreemaLogger
-import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.localcrypto.MasterKeyManager
 import ch.threema.localcrypto.MasterKeyProvider
-import kotlin.time.Duration.Companion.seconds
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.binds
@@ -55,6 +55,7 @@ val singletonsModule = module {
                     listener.onChanged(key, value)
                 }
             },
+            commit = false,
         )
     }
     single<EncryptedPreferenceStore> {
@@ -68,33 +69,18 @@ val singletonsModule = module {
             },
         )
     }
-
+    singleOf(::AvatarCacheServiceImpl) bind AvatarCacheService::class
+    singleOf(::FileServiceImpl) bind FileService::class
     singleOf(::IdentityProviderImpl) binds arrayOf(IdentityProvider::class, MutableIdentityProvider::class)
     singleOf(::NotificationPreferenceServiceImpl) bind NotificationPreferenceService::class
+    singleOf(::PreferenceServiceImpl) bind PreferenceService::class
     singleOf(::RingtoneServiceImpl) bind RingtoneService::class
-
-    single<OkHttpClient>(qualifier = Qualifiers.okHttpBase) {
-        buildBaseOkHttpClient()
-    }
+    singleOf(::ServerMessageServiceImpl) bind ServerMessageService::class
 
     factory<ThreemaSafeMDMConfig> { ThreemaSafeMDMConfig.getInstance() }
     factory<MasterKeyProvider> { get<MasterKeyManager>().masterKeyProvider }
 
     singleOf(::ListenerProvider)
-}
 
-private fun buildBaseOkHttpClient(): OkHttpClient =
-    OkHttpClient.Builder()
-        .apply {
-            connectTimeout(ProtocolDefines.CONNECT_TIMEOUT.seconds)
-            writeTimeout(ProtocolDefines.WRITE_TIMEOUT.seconds)
-            readTimeout(ProtocolDefines.READ_TIMEOUT.seconds)
-            if (ConfigUtils.isDevBuild()) {
-                @SuppressLint("LoggerName")
-                val okHttpLogger = getThreemaLogger("OkHttp")
-                val interceptor = HttpLoggingInterceptor(okHttpLogger::debug)
-                interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC)
-                addNetworkInterceptor(interceptor)
-            }
-        }
-        .build()
+    includes(okHttpClientsModule)
+}

@@ -1,6 +1,7 @@
 package ch.threema.base.crypto
 
 import ch.threema.base.crypto.NaCl.Companion.BOX_OVERHEAD_BYTES
+import ch.threema.common.emptyByteArray
 import ch.threema.libthreema.ChunkedXSalsa20Poly1305Decryptor
 import ch.threema.libthreema.ChunkedXSalsa20Poly1305Encryptor
 import ch.threema.libthreema.CryptoException
@@ -137,7 +138,7 @@ class NaClTest {
     @Test
     fun `can encrypt and decrypt empty array`() {
         // arrange
-        val inputBytes = ByteArray(0)
+        val inputBytes = emptyByteArray()
 
         // act
         val encryptedBytes = naclAlice.encrypt(
@@ -159,7 +160,7 @@ class NaClTest {
     @Test
     fun `can symmetric encrypt and decrypt empty array`() {
         // arrange
-        val inputBytes = ByteArray(0)
+        val inputBytes = emptyByteArray()
 
         // act
         val encryptedBytes = NaCl.symmetricEncryptData(
@@ -188,7 +189,7 @@ class NaClTest {
         val invalidNonces: List<ByteArray> = listOf(
             nonSecureRandomArray(NaCl.NONCE_BYTES - 1),
             nonSecureRandomArray(NaCl.NONCE_BYTES + 1),
-            ByteArray(0),
+            emptyByteArray(),
         )
 
         // act
@@ -274,7 +275,7 @@ class NaClTest {
         val invalidPrivateKeys: List<ByteArray> = listOf(
             alicePrivateKey.copyOf(newSize = alicePrivateKey.size - 1),
             alicePrivateKey.copyOf(newSize = alicePrivateKey.size + 1),
-            ByteArray(0),
+            emptyByteArray(),
         )
 
         // act
@@ -319,7 +320,7 @@ class NaClTest {
         val invalidNonces: List<ByteArray> = listOf(
             nonSecureRandomArray(NaCl.NONCE_BYTES - 1),
             nonSecureRandomArray(NaCl.NONCE_BYTES + 1),
-            ByteArray(0),
+            emptyByteArray(),
         )
 
         // act

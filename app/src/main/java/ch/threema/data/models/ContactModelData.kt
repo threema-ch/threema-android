@@ -7,6 +7,7 @@ import ch.threema.common.isNotNullOrBlank
 import ch.threema.common.plus
 import ch.threema.common.toDate
 import ch.threema.data.datatypes.AndroidContactLookupInfo
+import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.domain.models.BasicContact
@@ -17,7 +18,7 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import java.math.BigInteger
 import java.time.Instant
@@ -31,7 +32,7 @@ import kotlin.time.Duration
  */
 data class ContactModelData(
     /** The contact identity string. Must be 8 characters long. */
-    @JvmField val identity: Identity,
+    @JvmField val identity: IdentityString,
     /** The 32-byte public key of the contact. */
     @JvmField val publicKey: ByteArray,
     /** Timestamp when this contact was added to the contact list. */
@@ -97,6 +98,9 @@ data class ContactModelData(
     @JvmField val notificationTriggerPolicyOverride: Long?,
 ) {
     companion object {
+
+        const val DISPLAY_NAME_INVALID_CONTACT = "invalid contact"
+
         /**
          * Factory function using only Java-compatible types.
          *
@@ -105,7 +109,7 @@ data class ContactModelData(
          */
         @JvmStatic
         fun javaCreate(
-            identity: Identity,
+            identity: IdentityString,
             publicKey: ByteArray,
             createdAt: Date,
             firstName: String,
@@ -183,28 +187,37 @@ data class ContactModelData(
     /**
      * Return the display name for this contact.
      *
-     * - Use first and/or last name if set
-     * - Use nickname if set
-     * - Fall back to identity
+     * Priority:
+     * 1. First- and/or last-name also depending on [contactNameFormat]
+     * 2. Nickname with or without the `~` prefix depending on [nicknameHasPrefix]
+     * 3. Identity
+     * 4. Fallback to [DISPLAY_NAME_INVALID_CONTACT]
      */
-    fun getDisplayName(): String {
-        val hasFirstName = this.firstName.isNotBlank()
-        val hasLastName = this.lastName.isNotBlank()
-        val hasNickname = !this.nickname.isNullOrBlank() && this.nickname != this.identity
-
+    fun getDisplayName(
+        contactNameFormat: ContactNameFormat,
+        nicknameHasPrefix: Boolean = true,
+    ): String {
+        val hasFirstName = firstName.isNotBlank()
+        val hasLastName = lastName.isNotBlank()
+        val hasNickname = !nickname.isNullOrBlank() && nickname.trim() != identity
+        val hasIdentity = identity.isNotBlank()
         if (hasFirstName && hasLastName) {
-            return "${this.firstName} ${this.lastName}"
+            return when (contactNameFormat) {
+                ContactNameFormat.FIRSTNAME_LASTNAME -> "${firstName.trim()} ${lastName.trim()}"
+                ContactNameFormat.LASTNAME_FIRSTNAME -> "${lastName.trim()} ${firstName.trim()}"
+            }
         }
-        if (hasFirstName) {
-            return this.firstName
+        return if (hasFirstName) {
+            firstName.trim()
+        } else if (hasLastName) {
+            lastName.trim()
+        } else if (hasNickname) {
+            if (nicknameHasPrefix) "~${nickname.trim()}" else nickname.trim()
+        } else if (hasIdentity) {
+            identity
+        } else {
+            DISPLAY_NAME_INVALID_CONTACT
         }
-        if (hasLastName) {
-            return this.lastName
-        }
-        if (hasNickname) {
-            return "~${this.nickname}"
-        }
-        return this.identity
     }
 
     fun getShortName(): String = when {
@@ -236,11 +249,17 @@ data class ContactModelData(
      * Get the contact model data as basic contact.
      */
     fun toBasicContact(): BasicContact = BasicContact(
-        identity,
-        publicKey,
-        featureMask,
-        activityState,
-        identityType,
+        identity = identity,
+        publicKey = publicKey,
+        featureMask = featureMask,
+        identityState = activityState,
+        identityType = identityType,
+        verificationLevel = verificationLevel,
+        workVerificationLevel = workVerificationLevel,
+        firstName = firstName,
+        lastName = lastName,
+        jobTitle = jobTitle,
+        department = department,
     )
 
     val currentNotificationTriggerPolicyOverride

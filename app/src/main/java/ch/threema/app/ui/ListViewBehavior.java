@@ -37,7 +37,7 @@ public class ListViewBehavior extends CoordinatorLayout.Behavior<View> {
         if (height != layoutParams.height) {
             layoutParams.height = height;
             child.setLayoutParams(layoutParams);
-            logger.debug("*** height: " + layoutParams.height);
+            logger.debug("*** height: {}", layoutParams.height);
             return true;
         } else {
             return false;

@@ -2,7 +2,7 @@
 
 package ch.threema.app.emojis
 
-import ch.threema.app.collections.IntTrie
+import ch.threema.android.IntTrie
 
 /**
  * Emoji parser.

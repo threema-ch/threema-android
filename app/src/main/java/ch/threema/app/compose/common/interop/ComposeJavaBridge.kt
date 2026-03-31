@@ -9,7 +9,9 @@ import ch.threema.app.compose.message.MessageBubble
 import ch.threema.app.compose.theme.ThreemaTheme
 import ch.threema.app.dialogs.loadingtimeout.LoadingWithTimeoutDialogScreen
 import ch.threema.app.messagedetails.toUiModel
+import ch.threema.app.utils.LinkifyUtil
 import ch.threema.app.webclient.activities.MultiDeviceBanner
+import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.storage.models.AbstractMessageModel
 import kotlin.time.Duration.Companion.seconds
 
@@ -18,13 +20,18 @@ object ComposeJavaBridge {
     fun setEditModeMessageBubble(
         composeView: ComposeView,
         model: AbstractMessageModel,
+        contactNameFormat: ContactNameFormat,
+        linkifyListener: LinkifyUtil.LinkifyListener,
     ) {
-        val messageBubbleUiState = model.toUiModel()
+        val messageBubbleUiState = model.toUiModel(
+            contactNameFormat = contactNameFormat,
+        )
         composeView.setContent {
             ThreemaTheme {
                 MessageBubble(
                     text = messageBubbleUiState.text,
                     isOutbox = messageBubbleUiState.isOutbox,
+                    linkifyListener = linkifyListener,
                 )
             }
         }

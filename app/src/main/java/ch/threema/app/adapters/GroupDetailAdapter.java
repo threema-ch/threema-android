@@ -19,25 +19,21 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.chip.Chip;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
-import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.AvatarView;
 import ch.threema.app.ui.GroupDetailViewModel;
 import ch.threema.app.ui.SectionHeaderView;
 import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.ConfigUtils;
+import ch.threema.app.utils.DisplayableContactOrUser;
+import ch.threema.app.utils.DisplayableGroupParticipant;
 import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.LocaleUtil;
-import ch.threema.app.utils.NameUtil;
-import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
-import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.data.models.GroupModel;
 
 public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public enum GroupDescState {NONE, COLLAPSED, EXPANDED}
@@ -49,9 +45,8 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     private final Context context;
     private final ContactService contactService;
-    private final GroupService groupService;
     private final GroupModel groupModel;
-    private List<ContactModel> contactModels; // Cached copy of group members
+    private List<DisplayableGroupParticipant> groupMembers;
     private OnGroupDetailsClickListener onClickListener;
     private final GroupDetailViewModel groupDetailViewModel;
     HeaderHolder headerHolder;
@@ -105,8 +100,8 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             this.groupNoticeView = itemView.findViewById(R.id.group_notice_view);
             this.groupNoticeTextView = itemView.findViewById(R.id.group_notice);
 
-            boolean isCreator = groupService.isGroupCreator(groupModel);
-            boolean isMember = groupService.isGroupMember(groupModel);
+            boolean isCreator = groupModel.isCreator();
+            boolean isMember = groupModel.isMember();
 
             if (!isCreator && !isMember) {
                 // Show empty group notice
@@ -147,27 +142,22 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
      * @param context              the context
      * @param groupModel           the group model of the group
      * @param groupDetailViewModel the group detail view model
-     * @param serviceManager       the service manager
-     * @throws MasterKeyLockedException      when the master key is locked
      */
     public GroupDetailAdapter(
         Context context,
         GroupModel groupModel,
         GroupDetailViewModel groupDetailViewModel,
-        @NonNull ServiceManager serviceManager
-    ) throws MasterKeyLockedException {
+        @NonNull ContactService contactService
+    ) {
         this.context = context;
         this.groupModel = groupModel;
         this.groupDetailViewModel = groupDetailViewModel;
-        this.contactService = serviceManager.getContactService();
-        this.groupService = serviceManager.getGroupService();
+        this.contactService = contactService;
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    public void setContactModels(List<ContactModel> newContactModels) {
-        // Get the contact models that should be displayed. Note that in groups where the user is
-        // the creator but has left the group, the creator should still be shown in the list.
-        this.contactModels = getContactModelsFromMembers(newContactModels);
+    public void setGroupMembers(List<DisplayableGroupParticipant> groupMembers) {
+        this.groupMembers = groupMembers;
         notifyDataSetChanged();
     }
 
@@ -191,24 +181,25 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof ItemHolder) {
             ItemHolder itemHolder = (ItemHolder) holder;
-            final ContactModel contactModel = getItem(position);
-            Bitmap avatar = this.contactService.getAvatar(contactModel.getIdentity(), false);
+            final DisplayableGroupParticipant displayableGroupParticipant = getItem(position);
+            final DisplayableContactOrUser displayableContactOrUser = displayableGroupParticipant.getDisplayableContactOrUser();
+            Bitmap avatar = this.contactService.getAvatar(displayableContactOrUser.getIdentity(), false);
 
-            itemHolder.nameView.setText(NameUtil.getDisplayNameOrNickname(contactModel, true));
-            itemHolder.idView.setText(contactModel.getIdentity());
-            AdapterUtil.styleContact(itemHolder.nameView, contactModel);
+            itemHolder.nameView.setText(displayableContactOrUser.getDisplayName());
+            itemHolder.idView.setText(displayableContactOrUser.getIdentity());
+            AdapterUtil.styleContact(itemHolder.nameView, displayableContactOrUser.getIdentityState());
             itemHolder.avatarView.setImageBitmap(avatar);
-            itemHolder.avatarView.setBadgeVisible(contactService.showBadge(contactModel));
-            itemHolder.view.setOnClickListener(v -> onClickListener.onGroupMemberClick(v, contactModel));
+            itemHolder.avatarView.setBadgeVisible(displayableGroupParticipant.getDisplayableContactOrUser().getShowBadge());
+            itemHolder.view.setOnClickListener(v -> onClickListener.onGroupMemberClick(v, displayableContactOrUser.getIdentity()));
 
-            boolean isAdmin = contactModel.getIdentity().equals(groupModel.getCreatorIdentity());
-            itemHolder.adminChip.setVisibility(isAdmin ? View.VISIBLE : View.GONE);
-            itemHolder.idView.setVisibility(isAdmin ? View.GONE : View.VISIBLE);
+            boolean isCreator = displayableGroupParticipant instanceof DisplayableGroupParticipant.Creator;
+            itemHolder.adminChip.setVisibility(isCreator ? View.VISIBLE : View.GONE);
+            itemHolder.idView.setVisibility(isCreator ? View.GONE : View.VISIBLE);
         } else {
             this.headerHolder = (HeaderHolder) holder;
             headerHolder.addMembersView.setOnClickListener(v -> onClickListener.onAddMembersClick(v));
 
-            isGroupEditable = groupService.isGroupCreator(groupModel) && groupService.isGroupMember(groupModel);
+            isGroupEditable = groupModel.isCreator() && groupModel.isMember();
 
             if (ConfigUtils.supportGroupDescription()) {
                 initGroupDescriptionSection();
@@ -217,11 +208,11 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             }
 
             boolean addMembersViewVisibility = isGroupEditable
-                && contactModels != null && contactModels.size() < BuildConfig.MAX_GROUP_SIZE;
+                && groupMembers != null && groupMembers.size() < BuildConfig.MAX_GROUP_SIZE;
 
-            if (contactModels != null && !contactModels.isEmpty()) {
+            if (groupMembers != null && !groupMembers.isEmpty()) {
                 headerHolder.groupMembersTitleView.setVisibility(View.VISIBLE);
-                headerHolder.groupMembersTitleView.setText(ConfigUtils.getSafeQuantityString(context, R.plurals.number_of_group_members, contactModels.size(), contactModels.size()));
+                headerHolder.groupMembersTitleView.setText(ConfigUtils.getSafeQuantityString(context, R.plurals.number_of_group_members, groupMembers.size(), groupMembers.size()));
             } else {
                 headerHolder.groupMembersTitleView.setVisibility(View.GONE);
             }
@@ -254,8 +245,8 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     @Override
     public int getItemCount() {
-        if (contactModels != null)
-            return contactModels.size() + 1;
+        if (groupMembers != null)
+            return groupMembers.size() + 1;
         else return 1;
     }
 
@@ -271,12 +262,12 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         return position == 0;
     }
 
-    public int getPosition(ContactModel contactModel) {
-        return contactModels.indexOf(contactModel) + 1;
+    public int getPosition(DisplayableGroupParticipant displayableGroupMember) {
+        return groupMembers.indexOf(displayableGroupMember) + 1;
     }
 
-    public ContactModel getItem(int position) {
-        return contactModels.get(position - 1);
+    public DisplayableGroupParticipant getItem(int position) {
+        return groupMembers.get(position - 1);
     }
 
     public void setOnClickListener(OnGroupDetailsClickListener listener) {
@@ -300,30 +291,6 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
                 showGroupDescTimestamp();
                 break;
         }
-    }
-
-    @NonNull
-    private List<ContactModel> getContactModelsFromMembers(@NonNull List<ContactModel> members) {
-        boolean containsCreator = false;
-        for (ContactModel member : members) {
-            if (groupModel.getCreatorIdentity().equals(member.getIdentity())) {
-                containsCreator = true;
-                break;
-            }
-        }
-        ContactModel me = contactService.getMe();
-
-        // Show me in group details if I am the creator and the group is left. Only show me, when
-        // the group is not empty.
-        if (!containsCreator
-            && me.getIdentity().equals(groupModel.getCreatorIdentity())
-            && groupService.countMembers(groupModel) > 0
-        ) {
-            List<ContactModel> creatorWithMembers = new LinkedList<>(members);
-            creatorWithMembers.add(0, me);
-            return creatorWithMembers;
-        }
-        return members;
     }
 
     /**
@@ -398,7 +365,7 @@ public class GroupDetailAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public interface OnGroupDetailsClickListener {
-        void onGroupMemberClick(View v, @NonNull ContactModel contactModel);
+        void onGroupMemberClick(View v, @NonNull String identity);
 
         void onGroupDescriptionEditClick();
 

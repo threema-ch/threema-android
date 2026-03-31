@@ -2,6 +2,7 @@ package ch.threema.app.activities;
 
 import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -56,9 +57,9 @@ import ch.threema.app.ui.ThreemaSearchView;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.data.models.ContactModel;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
@@ -238,7 +239,13 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
         categoryList = dependencies.getPreferenceService().getWorkDirectoryCategories();
 
-        directoryAdapter = new DirectoryAdapter(this, dependencies.getPreferenceService(), dependencies.getContactService(), categoryList);
+        directoryAdapter = new DirectoryAdapter(
+            this,
+            dependencies.getPreferenceService(),
+            dependencies.getContactService(),
+            dependencies.getUserService(),
+            categoryList
+        );
         directoryAdapter.setOnClickItemListener(new DirectoryAdapter.OnClickItemListener() {
             @Override
             public void onClick(WorkDirectoryContact workDirectoryContact, int position) {
@@ -390,19 +397,15 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
     }
 
     private void launchContact(@NonNull final WorkDirectoryContact workDirectoryContact, final int position) {
-        if (workDirectoryContact.threemaId != null) {
-            if (dependencies.getContactService().getByIdentity(workDirectoryContact.threemaId) == null) {
-                addContact(workDirectoryContact, () -> {
-                    openContact(workDirectoryContact.threemaId);
-                    directoryAdapter.notifyItemChanged(position);
-                });
-            } else if (workDirectoryContact.threemaId.equalsIgnoreCase(dependencies.getContactService().getMe().getIdentity())) {
-                Toast.makeText(this, R.string.me_myself_and_i, Toast.LENGTH_LONG).show();
-            } else {
+        if (dependencies.getContactService().getByIdentity(workDirectoryContact.threemaId) == null) {
+            addContact(workDirectoryContact, () -> {
                 openContact(workDirectoryContact.threemaId);
-            }
+                directoryAdapter.notifyItemChanged(position);
+            });
+        } else if (workDirectoryContact.threemaId.equalsIgnoreCase(dependencies.getUserService().getIdentity())) {
+            Toast.makeText(this, R.string.me_myself_and_i, Toast.LENGTH_LONG).show();
         } else {
-            Toast.makeText(this, R.string.contact_not_found, Toast.LENGTH_LONG).show();
+            openContact(workDirectoryContact.threemaId);
         }
     }
 
@@ -625,5 +628,10 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         if (animateOut) {
             overridePendingTransition(R.anim.slide_in_left_short, R.anim.slide_out_right_short);
         }
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context) {
+        return new Intent(context, DirectoryActivity.class);
     }
 }

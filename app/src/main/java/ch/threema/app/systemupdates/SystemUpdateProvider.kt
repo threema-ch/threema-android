@@ -1,97 +1,61 @@
 package ch.threema.app.systemupdates
 
-import android.content.Context
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.systemupdates.updates.*
 
-class SystemUpdateProvider(
-    private val context: Context,
-    private val serviceManager: ServiceManager,
-) {
-    fun getUpdates(oldVersion: Int): List<SystemUpdate> = buildList {
-        if (oldVersion < 12) {
-            add(SystemUpdateToVersion12(serviceManager))
+class SystemUpdateProvider {
+    fun getUpdates(oldVersion: Int): List<SystemUpdate> {
+        if (oldVersion == version) {
+            return emptyList()
         }
-        if (oldVersion < 14) {
-            add(SystemUpdateToVersion14(serviceManager))
-        }
-        if (oldVersion < 31) {
-            add(SystemUpdateToVersion31(context))
-        }
-        if (oldVersion < 39) {
-            add(SystemUpdateToVersion39(serviceManager))
-        }
-        if (oldVersion < 40) {
-            add(SystemUpdateToVersion40(serviceManager))
-        }
-        if (oldVersion < 42) {
-            add(SystemUpdateToVersion42(context, serviceManager))
-        }
-        if (oldVersion < 43) {
-            add(SystemUpdateToVersion43(serviceManager))
-        }
-        if (oldVersion < 46) {
-            add(SystemUpdateToVersion46(serviceManager))
-        }
-        if (oldVersion < 48) {
-            add(SystemUpdateToVersion48(context))
-        }
-        if (oldVersion < 53) {
-            add(SystemUpdateToVersion53(context))
-        }
-        if (oldVersion < 54) {
-            add(SystemUpdateToVersion54(context))
-        }
-        if (oldVersion < 55) {
-            add(SystemUpdateToVersion55())
-        }
-        if (oldVersion < 63) {
-            add(SystemUpdateToVersion63(context))
-        }
-        if (oldVersion < 64) {
-            add(SystemUpdateToVersion64(context))
-        }
-        if (oldVersion < SystemUpdateToVersion66.VERSION) {
-            add(SystemUpdateToVersion66(context, serviceManager))
-        }
-        if (oldVersion < SystemUpdateToVersion72.VERSION) {
-            add(SystemUpdateToVersion72())
-        }
-        if (oldVersion < SystemUpdateToVersion91.VERSION) {
-            add(SystemUpdateToVersion91(context))
-        }
-        if (oldVersion < SystemUpdateToVersion110.VERSION) {
-            add(SystemUpdateToVersion110(serviceManager))
-        }
-        if (oldVersion < SystemUpdateToVersion111.VERSION) {
-            add(SystemUpdateToVersion111(serviceManager))
-        }
-        if (oldVersion < SystemUpdateToVersion112.VERSION) {
-            add(SystemUpdateToVersion112(serviceManager))
-        }
-        if (oldVersion < SystemUpdateToVersion113.VERSION) {
-            add(SystemUpdateToVersion113(serviceManager))
-        }
-        if (oldVersion < SystemUpdateToVersion114.VERSION) {
-            add(SystemUpdateToVersion114())
-        }
-        if (oldVersion < SystemUpdateToVersion115.VERSION) {
-            add(SystemUpdateToVersion115(context))
-        }
-        if (oldVersion < SystemUpdateToVersion116.VERSION) {
-            add(SystemUpdateToVersion116())
-        }
-        if (oldVersion < SystemUpdateToVersion117.VERSION) {
-            add(SystemUpdateToVersion117())
-        }
-        if (oldVersion < SystemUpdateToVersion118.VERSION) {
-            add(SystemUpdateToVersion118())
-        }
+        return updates
+            .asReversed()
+            .asSequence()
+            .map { updateConstructor ->
+                updateConstructor.invoke()
+            }
+            .takeWhile { update ->
+                oldVersion < update.version
+            }
+            .toList()
+            .reversed()
     }
 
-    fun getVersion() = VERSION
+    private val updates: List<() -> SystemUpdate>
+        get() = listOf(
+            ::SystemUpdateToVersion12,
+            ::SystemUpdateToVersion14,
+            ::SystemUpdateToVersion31,
+            ::SystemUpdateToVersion39,
+            ::SystemUpdateToVersion40,
+            ::SystemUpdateToVersion42,
+            ::SystemUpdateToVersion43,
+            ::SystemUpdateToVersion46,
+            ::SystemUpdateToVersion48,
+            ::SystemUpdateToVersion53,
+            ::SystemUpdateToVersion54,
+            ::SystemUpdateToVersion55,
+            ::SystemUpdateToVersion63,
+            ::SystemUpdateToVersion64,
+            ::SystemUpdateToVersion66,
+            ::SystemUpdateToVersion72,
+            ::SystemUpdateToVersion91,
+            ::SystemUpdateToVersion110,
+            ::SystemUpdateToVersion111,
+            ::SystemUpdateToVersion112,
+            ::SystemUpdateToVersion113,
+            ::SystemUpdateToVersion114,
+            ::SystemUpdateToVersion115,
+            ::SystemUpdateToVersion117,
+            ::SystemUpdateToVersion118,
+            ::SystemUpdateToVersion119,
+            ::SystemUpdateToVersion120,
+            ::SystemUpdateToVersion121,
+            ::SystemUpdateToVersion122,
+            ::SystemUpdateToVersion123,
+            ::SystemUpdateToVersion124,
+            ::SystemUpdateToVersion125,
+            ::SystemUpdateToVersion126,
+        )
 
-    companion object {
-        const val VERSION = SystemUpdateToVersion118.VERSION
-    }
+    val version = 126
 }

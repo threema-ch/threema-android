@@ -9,7 +9,8 @@ import ch.threema.localcrypto.models.RemoteSecretAuthenticationToken
 import ch.threema.localcrypto.models.RemoteSecretClientParameters
 import ch.threema.localcrypto.models.RemoteSecretCreationResult
 import ch.threema.localcrypto.models.RemoteSecretParameters
-import ch.threema.localcrypto.models.RemoteSecretProtectionCheckResult
+import ch.threema.localcrypto.models.RemoteSecretProtectionInstruction
+import ch.threema.localcrypto.models.RemoteSecretProtectionState
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.coVerifyOrder
@@ -22,11 +23,14 @@ import io.mockk.verify
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -96,7 +100,7 @@ class MasterKeyManagerImplRemoteSecretTest {
         }
         every {
             remoteSecretManagerMock.checkRemoteSecretProtection(null)
-        } returns RemoteSecretProtectionCheckResult.SHOULD_ACTIVATE
+        } returns RemoteSecretProtectionInstruction.SHOULD_ACTIVATE
         coEvery {
             remoteSecretManagerMock.createRemoteSecret(clientParametersMock)
         } returns RemoteSecretCreationResult(
@@ -106,6 +110,10 @@ class MasterKeyManagerImplRemoteSecretTest {
         every {
             crypto.encryptWithRemoteSecret(plain, REMOTE_SECRET, parametersMock)
         } returns withRemoteSecretMock
+
+        val deferredEvent = async(UnconfinedTestDispatcher()) {
+            masterKeyManager.events.first()
+        }
 
         masterKeyManager.updateRemoteSecretProtectionStateIfNeeded(clientParametersMock)
 
@@ -129,6 +137,7 @@ class MasterKeyManagerImplRemoteSecretTest {
         verify(exactly = 1) {
             passphraseStoreMock.passphrase = null
         }
+        assertEquals(MasterKeyEvent.RemoteSecretActivated, deferredEvent.await())
     }
 
     @Test
@@ -146,7 +155,7 @@ class MasterKeyManagerImplRemoteSecretTest {
         }
         every {
             remoteSecretManagerMock.checkRemoteSecretProtection(withRemoteSecretMock)
-        } returns RemoteSecretProtectionCheckResult.SHOULD_DEACTIVATE
+        } returns RemoteSecretProtectionInstruction.SHOULD_DEACTIVATE
         coEvery { remoteSecretManagerMock.awaitRemoteSecretAndClear() } returns REMOTE_SECRET
 
         every { storageStateHolderMock.getStorageState() } returns MasterKeyState.Plain(MasterKeyData(MASTER_KEY))
@@ -181,7 +190,7 @@ class MasterKeyManagerImplRemoteSecretTest {
         }
         every {
             remoteSecretManagerMock.checkRemoteSecretProtection(any())
-        } returns RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED
+        } returns RemoteSecretProtectionInstruction.NO_CHANGE_NEEDED
 
         verify(exactly = 1) {
             // setUnlocked is called once initially
@@ -311,6 +320,24 @@ class MasterKeyManagerImplRemoteSecretTest {
 
         verify { lockStateHolder.setLockedWithRemoteSecret(remoteSecretLockDataMock) }
         verify { passphraseStore.passphrase = null }
+    }
+
+    @Test
+    fun `master key is protected with remote secret when remote secret protection state is ACTIVE`() = runTest {
+        every { lockStateHolderMock.remoteSecretProtectionFlow } returns flow {
+            emit(RemoteSecretProtectionState.ACTIVE)
+        }
+
+        assertTrue(masterKeyManager.awaitIsProtectedWithRemoteSecret())
+    }
+
+    @Test
+    fun `master key is not protected with remote secret when remote secret protection state is INACTIVE`() = runTest {
+        every { lockStateHolderMock.remoteSecretProtectionFlow } returns flow {
+            emit(RemoteSecretProtectionState.INACTIVE)
+        }
+
+        assertFalse(masterKeyManager.awaitIsProtectedWithRemoteSecret())
     }
 
     private fun createMasterKeyManagerWithStorageState(

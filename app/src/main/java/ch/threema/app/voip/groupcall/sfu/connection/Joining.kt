@@ -6,7 +6,7 @@ import ch.threema.app.utils.WebRTCUtil
 import ch.threema.app.voip.groupcall.sfu.*
 import ch.threema.base.utils.Utils.hexStringToByteArray
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.storage.models.ContactModel
+import ch.threema.domain.types.Identity
 import org.webrtc.RtcCertificatePem
 
 private val FINGERPRINT_REGEX = Regex("^sha-256 (([0-9a-zA-Z]{2}:?){32})\$")
@@ -16,7 +16,8 @@ class Joining internal constructor(
     call: GroupCall,
     private val sfuBaseUrl: String,
     private val context: Context,
-    private val me: ContactModel,
+    private val myIdentity: Identity,
+    private val myDisplayName: String,
     private val sfuConnection: SfuConnection,
 ) : GroupCallConnectionState(StateName.JOINING, call) {
     init {
@@ -53,7 +54,14 @@ class Joining internal constructor(
                 ),
             )
         } else {
-            Connecting(call, me, context, certificate, joinResponse.body)
+            Connecting(
+                call = call,
+                myIdentity = myIdentity,
+                myDisplayName = myDisplayName,
+                context = context,
+                certificate = certificate,
+                joinResponse = joinResponse.body,
+            )
         }
     }
 

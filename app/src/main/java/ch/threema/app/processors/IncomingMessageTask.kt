@@ -1,32 +1,39 @@
 package ch.threema.app.processors
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.processors.incomingcspmessage.getSubTaskFromMessage
 import ch.threema.app.processors.push.IncomingWebSessionResumeMessageTask
-import ch.threema.app.protocol.runIdentityBlockedSteps
+import ch.threema.app.protocolsteps.Contact
+import ch.threema.app.protocolsteps.IdentityBlockedSteps
+import ch.threema.app.protocolsteps.Init
+import ch.threema.app.protocolsteps.Invalid
+import ch.threema.app.protocolsteps.SpecialContact
+import ch.threema.app.protocolsteps.UserContact
+import ch.threema.app.protocolsteps.ValidContactsLookupSteps
+import ch.threema.app.services.ContactService
 import ch.threema.app.services.ContactServiceImpl
+import ch.threema.app.services.MessageService
 import ch.threema.app.tasks.ActiveComposableTask
 import ch.threema.base.crypto.Nonce
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.Utils
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
-import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.ModelDeletedException
-import ch.threema.domain.models.ContactSyncState
+import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.MessageId
-import ch.threema.domain.models.ReadReceiptPolicy
-import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
-import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.coders.MessageBox
 import ch.threema.domain.protocol.csp.coders.MessageCoder
+import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.protocol.csp.fs.PeerRatchetIdentifier
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
@@ -34,6 +41,8 @@ import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException
 import ch.threema.domain.protocol.csp.messages.WebSessionResumeMessage
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityEnvelopeMessage
+import ch.threema.domain.stores.ContactStore
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.NetworkException
 import ch.threema.domain.taskmanager.ProtocolException
@@ -41,26 +50,28 @@ import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.taskmanager.catchAllExceptNetworkException
 import ch.threema.domain.taskmanager.catchExceptNetworkException
 import ch.threema.domain.taskmanager.getEncryptedIncomingMessageEnvelope
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import java.util.Date
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("IncomingMessageTask")
 
 class IncomingMessageTask(
     private val messageBox: MessageBox,
     private val serviceManager: ServiceManager,
-) : ActiveComposableTask<Unit> {
-    private val contactService by lazy { serviceManager.contactService }
-    private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
-    private val contactStore by lazy { serviceManager.contactStore }
-    private val identityStore by lazy { serviceManager.identityStore }
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
-    private val messageService by lazy { serviceManager.messageService }
-    private val blockedIdentitiesService by lazy { serviceManager.blockedIdentitiesService }
-    private val preferenceService by lazy { serviceManager.preferenceService }
-    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
-    private val forwardSecurityMessageProcessor by lazy { serviceManager.forwardSecurityMessageProcessor }
+) : ActiveComposableTask<Unit>, KoinComponent {
+    private val contactService: ContactService by inject()
+    private val contactModelRepository: ContactModelRepository by inject()
+    private val contactStore: ContactStore by inject()
+    private val identityStore: IdentityStore by inject()
+    private val nonceFactory: NonceFactory by inject()
+    private val messageService: MessageService by inject()
+    private val multiDeviceManager: MultiDeviceManager by inject()
+    private val forwardSecurityMessageProcessor: ForwardSecurityMessageProcessor by inject()
+    private val identityBlockedSteps: IdentityBlockedSteps by inject()
+    private val validContactsLookupSteps: ValidContactsLookupSteps by inject()
     private val incomingForwardSecurityPreProcessor by lazy {
         IncomingForwardSecurityProcessor(
             serviceManager,
@@ -100,12 +111,45 @@ class IncomingMessageTask(
             messageBox.messageId,
         )
 
-        val (message, peerRatchetIdentifier) = suspend {
-            decryptMessage(messageBox, handle)
+        val (message, peerRatchetIdentifier, contactOrInit) = suspend {
+            // If the nonce has already been used, acknowledge and discard the message
+            if (nonceFactory.exists(NonceScope.CSP, Nonce(messageBox.nonce))) {
+                logger.warn(
+                    "Skipped processing message {} as its nonce has already been used",
+                    messageBox.messageId,
+                )
+                throw DiscardMessageException()
+            }
+
+            if (messageBox.toIdentity != identityStore.getIdentityString()) {
+                logger.warn(
+                    "Skipped processing message {} as its recipient identity {} is not the user's identity",
+                    messageBox.messageId,
+                    messageBox.toIdentity,
+                )
+                throw DiscardMessageException()
+            }
+
+            val contactOrInit = validContactsLookupSteps.run(identity = messageBox.fromIdentity)
+            if (contactOrInit is UserContact) {
+                logger.warn("Skipped processing message {} as its sender is the user itself", messageBox.messageId)
+                throw DiscardMessageException()
+            }
+            if (contactOrInit is Invalid) {
+                logger.warn("Skipped processing message {} as its sender ({}) is invalid", messageBox.messageId, messageBox.fromIdentity)
+                throw DiscardMessageException()
+            }
+            if (contactOrInit is Init) {
+                // We need to cache the contact so that the message can be decrypted
+                contactStore.cacheContact(contactOrInit.contactModelData)
+            }
+
+            val (message, peerRatchetIdentifier) = decryptMessage(messageBox, handle)
+            Triple(message, peerRatchetIdentifier, contactOrInit)
         }.catchExceptNetworkException { e: DiscardMessageException ->
             logger.warn("Discard message {}", messageBox.messageId)
             // If the message could be decrypted, then check if it should be protected against
-            // replay. Otherwise we do not protect it against replay.
+            // replay. Otherwise, we do not protect it against replay.
             val protectAgainstReplay = e.discardedMessage?.protectAgainstReplay() ?: false
             acknowledgeMessage(messageBox, protectAgainstReplay, e.peerRatchetIdentifier, handle)
             return
@@ -121,13 +165,8 @@ class IncomingMessageTask(
 
         suspend {
             if (!message.exemptFromBlocking()) {
-                val blockState = runIdentityBlockedSteps(
-                    message.fromIdentity,
-                    contactModelRepository,
-                    contactStore,
-                    serviceManager.groupService,
-                    blockedIdentitiesService,
-                    preferenceService,
+                val blockState = identityBlockedSteps.run(
+                    identity = message.fromIdentity,
                 )
                 if (blockState.isBlocked()) {
                     logger.info(
@@ -160,18 +199,30 @@ class IncomingMessageTask(
                         throw DiscardMessageException(message)
                     }
                 }.run(handle)
-            } else {
+            } else if (contactOrInit !is SpecialContact) {
                 // Handle message from other contact
 
                 // Extract the nickname from the message
                 val nickname = message.nickname?.trim()
 
-                // Create contact if message allows it and contact does not exists yet
-                if (message.createImplicitlyDirectContact() &&
-                    contactModelRepository.getByIdentity(message.fromIdentity)
-                        ?.data?.acquaintanceLevel != AcquaintanceLevel.DIRECT
-                ) {
-                    createDirectContactIfNotExists(message.fromIdentity, nickname, handle)
+                if (message.createImplicitlyDirectContact()) {
+                    if (contactOrInit is Init) {
+                        // Create contact if message allows it and contact does not exist yet
+                        createDirectContact(
+                            contactModelData = contactOrInit.contactModelData,
+                            nickname = nickname,
+                            handle = handle,
+                        )
+                    } else if (contactOrInit is Contact) {
+                        // Change acquaintance level of contact if it is group or deleted
+                        val contactModelData = contactOrInit.contactModel.data!!
+                        if (contactModelData.acquaintanceLevel == AcquaintanceLevel.GROUP) {
+                            // Note that it is ok to set it _from local_ because we do not await its completion inside the incoming message task
+                            contactOrInit.contactModel.setAcquaintanceLevelFromLocal(
+                                acquaintanceLevel = AcquaintanceLevel.DIRECT,
+                            )
+                        }
+                    }
                 }
 
                 // Update the nickname if it changed (and if contact exists)
@@ -237,18 +288,6 @@ class IncomingMessageTask(
         messageBox: MessageBox,
         handle: ActiveTaskCodec,
     ): Pair<AbstractMessage?, PeerRatchetIdentifier?> {
-        // If the nonce has already been used, acknowledge and discard the message
-        if (nonceFactory.exists(NonceScope.CSP, Nonce(messageBox.nonce))) {
-            logger.warn(
-                "Skipped processing message {} as its nonce has already been used",
-                messageBox.messageId,
-            )
-            throw DiscardMessageException()
-        }
-
-        // First, we need to ensure we have the public key of the sender
-        contactService.fetchAndCacheContact(messageBox.fromIdentity)
-
         // Try to decode the message. At this point we have the public key of the sender either
         // stored or cached in the contact store.
         val messageCoder = MessageCoder(this.contactStore, this.identityStore)
@@ -336,7 +375,7 @@ class IncomingMessageTask(
         }
     }
 
-    private suspend fun sendAck(messageId: MessageId, identity: Identity, handle: ActiveTaskCodec) {
+    private suspend fun sendAck(messageId: MessageId, identity: IdentityString, handle: ActiveTaskCodec) {
         logger.debug("Sending ack for message ID {} from {}", messageId, identity)
 
         val data = identity.encodeToByteArray() + messageId.messageId
@@ -369,7 +408,7 @@ class IncomingMessageTask(
         )
     }
 
-    private fun setIdentityStateToActive(identity: Identity) {
+    private fun setIdentityStateToActive(identity: IdentityString) {
         val contactModel = contactModelRepository.getByIdentity(identity)
         try {
             // Note: Actually, this change is triggered by remote and not by local. However, this is
@@ -383,7 +422,7 @@ class IncomingMessageTask(
     }
 
     private suspend fun updateNicknameIfChanged(
-        fromIdentity: Identity,
+        fromIdentity: IdentityString,
         nickname: String,
         handle: ActiveTaskCodec,
     ) {
@@ -396,61 +435,31 @@ class IncomingMessageTask(
         contactModel.setNicknameFromRemote(nickname, handle)
     }
 
-    private suspend fun createDirectContactIfNotExists(
-        identity: Identity,
+    private fun ContactStore.cacheContact(contactModelData: ContactModelData) {
+        addCachedContact(contactModelData.toBasicContact())
+    }
+
+    private suspend fun createDirectContact(
+        contactModelData: ContactModelData,
         nickname: String?,
         handle: ActiveTaskCodec,
     ) {
-        val contactModel = contactModelRepository.getByIdentity(identity)
-        val data = contactModel?.data
-        if (data != null && data.acquaintanceLevel == AcquaintanceLevel.GROUP) {
-            // Update acquaintance level from local
-            contactModel.setAcquaintanceLevelFromLocal(AcquaintanceLevel.DIRECT)
-        } else if (data == null) {
-            val fetchedContact = contactStore.getCachedContact(identity)
-                ?: run {
-                    logger.error("No cached contact for identity {}. Cannot add contact.", identity)
-                    return
-                }
+        // TODO(ANDR-3105): Remove this once predefined contacts are implemented correctly
+        val verificationLevel =
+            if (ContactServiceImpl.TRUSTED_PUBLIC_KEYS.contains(contactModelData.publicKey)) {
+                VerificationLevel.FULLY_VERIFIED
+            } else {
+                contactModelData.verificationLevel
+            }
 
-            val verificationLevel =
-                if (ContactServiceImpl.TRUSTED_PUBLIC_KEYS.contains(fetchedContact.publicKey)) {
-                    VerificationLevel.FULLY_VERIFIED
-                } else {
-                    VerificationLevel.UNVERIFIED
-                }
-
-            // Create new contact
-            contactModelRepository.createFromRemote(
-                ContactModelData(
-                    identity = fetchedContact.identity,
-                    publicKey = fetchedContact.publicKey,
-                    createdAt = now(),
-                    firstName = "",
-                    lastName = "",
-                    nickname = nickname,
-                    idColor = IdColor.ofIdentity(fetchedContact.identity),
-                    verificationLevel = verificationLevel,
-                    workVerificationLevel = WorkVerificationLevel.NONE,
-                    identityType = fetchedContact.identityType,
-                    acquaintanceLevel = AcquaintanceLevel.DIRECT,
-                    activityState = fetchedContact.identityState,
-                    syncState = ContactSyncState.INITIAL,
-                    featureMask = fetchedContact.featureMask,
-                    readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
-                    typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
-                    isArchived = false,
-                    androidContactLookupInfo = null,
-                    localAvatarExpires = null,
-                    isRestored = false,
-                    profilePictureBlobId = null,
-                    jobTitle = null,
-                    department = null,
-                    notificationTriggerPolicyOverride = null,
-                ),
-                handle,
-            )
-        }
+        // Create new contact
+        contactModelRepository.createFromRemote(
+            contactModelData = contactModelData.copy(
+                nickname = nickname,
+                verificationLevel = verificationLevel,
+            ),
+            handle = handle,
+        )
     }
 
     private suspend fun executeMessageSteps(

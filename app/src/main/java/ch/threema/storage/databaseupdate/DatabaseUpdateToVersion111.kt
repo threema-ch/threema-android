@@ -41,11 +41,7 @@ class DatabaseUpdateToVersion111(
         logger.info("Deleted {} identity links to orphaned ballots", identityLinkCount)
     }
 
-    override fun getVersion() = VERSION
+    override val version = 111
 
     override fun getDescription() = "remove polls from deleted contacts"
-
-    companion object {
-        const val VERSION = 111
-    }
 }

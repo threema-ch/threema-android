@@ -1,21 +1,18 @@
 package ch.threema.app.groupflows
 
-import android.content.Context
 import ch.threema.app.profilepicture.CheckedProfilePicture
 import ch.threema.app.profilepicture.GroupProfilePictureUploader
 import ch.threema.app.profilepicture.GroupProfilePictureUploader.GroupProfilePictureUploadResult
-import ch.threema.app.protocol.ExpectedProfilePictureChange
-import ch.threema.app.protocol.PredefinedMessageIds
-import ch.threema.app.restrictions.AppRestrictionUtil
+import ch.threema.app.protocolsteps.ExpectedProfilePictureChange
+import ch.threema.app.protocolsteps.PredefinedMessageIds
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.services.FileService
 import ch.threema.app.services.GroupFlowDispatcher
 import ch.threema.app.tasks.GroupCreateTask
 import ch.threema.app.tasks.ReflectGroupSyncCreateTask
 import ch.threema.app.tasks.ReflectionResult
-import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.app.utils.executor.BackgroundTask
-import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
 import ch.threema.common.secureRandom
@@ -23,6 +20,7 @@ import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.GroupModelRepository
+import ch.threema.domain.models.UserState
 import ch.threema.domain.protocol.connection.ConnectionState
 import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.taskmanager.TaskManager
@@ -43,11 +41,10 @@ class GroupCreateProperties(
  * group flows are not executed concurrently.
  */
 class CreateGroupFlow(
-    private val context: Context,
+    private val appRestrictions: AppRestrictions,
     private val groupCreateProperties: GroupCreateProperties,
     private val groupModelRepository: GroupModelRepository,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
-    private val groupCallManager: GroupCallManager,
     private val groupProfilePictureUploader: GroupProfilePictureUploader,
     private val fileService: FileService,
     private val taskManager: TaskManager,
@@ -57,7 +54,7 @@ class CreateGroupFlow(
     private val multiDeviceManager = outgoingCspMessageServices.multiDeviceManager
     private val nonceFactory = outgoingCspMessageServices.nonceFactory
 
-    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentity()!! }
+    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentityString()!! }
 
     private val groupModelData by lazy {
         val now = now()
@@ -74,13 +71,13 @@ class CreateGroupFlow(
             groupDescription = null,
             groupDescriptionChangedAt = null,
             otherMembers = groupCreateProperties.members - myIdentity,
-            userState = ch.threema.storage.models.GroupModel.UserState.MEMBER,
+            userState = UserState.MEMBER,
             notificationTriggerPolicyOverride = null,
         )
     }
 
     override fun runInBackground(): GroupFlowResult {
-        if (ConfigUtils.isWorkBuild() && AppRestrictionUtil.isCreateGroupDisabled(context)) {
+        if (appRestrictions.isCreateGroupDisabled()) {
             return GroupFlowResult.Failure.Other
         }
         val groupFlowResult: GroupFlowResult = if (multiDeviceManager.isMultiDeviceActive) {
@@ -131,7 +128,6 @@ class CreateGroupFlow(
                     groupModelRepository = groupModelRepository,
                     nonceFactory = nonceFactory,
                     uploadGroupProfilePicture = ::uploadGroupPicture,
-                    multiDeviceManager = multiDeviceManager,
                 ),
             ).await()
             when (reflectionResult) {
@@ -230,11 +226,6 @@ class CreateGroupFlow(
                 members = groupModelData.otherMembers,
                 groupIdentity = groupModelData.groupIdentity,
                 predefinedMessageIds = PredefinedMessageIds.random(),
-                outgoingCspMessageServices = outgoingCspMessageServices,
-                groupCallManager = groupCallManager,
-                fileService = fileService,
-                groupProfilePictureUploader = groupProfilePictureUploader,
-                groupModelRepository = groupModelRepository,
             ),
         )
 

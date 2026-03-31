@@ -13,12 +13,11 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupModel
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.MessageId
-import ch.threema.domain.protocol.api.APIConnector
+import ch.threema.domain.models.UserState
 import ch.threema.domain.protocol.connection.ConnectionState
 import ch.threema.domain.protocol.connection.ServerConnection
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.storage.models.GroupModel.UserState
 import kotlinx.coroutines.runBlocking
 
 private val logger = getThreemaLogger("DisbandGroupFlow")
@@ -48,12 +47,11 @@ class DisbandGroupFlow(
     private val groupModel: GroupModel,
     private val groupModelRepository: GroupModelRepository,
     private val groupCallManager: GroupCallManager,
-    private val apiConnector: APIConnector,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
     private val taskManager: TaskManager,
     private val connection: ServerConnection,
 ) : BackgroundTask<GroupFlowResult> {
-    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentity()!! }
+    private val myIdentity by lazy { outgoingCspMessageServices.identityStore.getIdentityString()!! }
 
     private val groupService by lazy { outgoingCspMessageServices.groupService }
 
@@ -121,13 +119,7 @@ class DisbandGroupFlow(
     private fun reflect(): ReflectionResult<Unit> = runBlocking {
         when (intent) {
             GroupDisbandIntent.DISBAND ->
-                taskManager.schedule(
-                    ReflectLocalGroupLeaveOrDisband(
-                        groupModel,
-                        outgoingCspMessageServices.nonceFactory,
-                        multiDeviceManager,
-                    ),
-                )
+                taskManager.schedule(ReflectLocalGroupLeaveOrDisband(groupModel.groupIdentity))
 
             GroupDisbandIntent.DISBAND_AND_REMOVE ->
                 taskManager.schedule(
@@ -161,12 +153,9 @@ class DisbandGroupFlow(
         // Schedule persistent task to send out csp group setup messages
         taskManager.schedule(
             OutgoingGroupDisbandTask(
-                groupModel.groupIdentity,
-                members,
-                MessageId.random(),
-                groupModelRepository,
-                apiConnector,
-                outgoingCspMessageServices,
+                groupIdentity = groupModel.groupIdentity,
+                members = members,
+                messageId = MessageId.random(),
             ),
         )
     }

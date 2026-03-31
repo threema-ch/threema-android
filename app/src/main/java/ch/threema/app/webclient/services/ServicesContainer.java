@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 
+import ch.threema.app.restrictions.AppRestrictions;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.ConversationCategoryService;
@@ -24,7 +25,8 @@ import ch.threema.app.services.license.LicenseService;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.factories.ContactModelFactory;
+import ch.threema.storage.factories.WebClientSessionModelFactory;
 
 /**
  * Contains all necessary services used by the web client.
@@ -53,7 +55,9 @@ public class ServicesContainer {
     @NonNull
     public final NotificationService notification;
     @NonNull
-    public final DatabaseService database;
+    public final ContactModelFactory contactModelFactory;
+    @NonNull
+    public final WebClientSessionModelFactory webClientSessionModelFactory;
     @NonNull
     public final BlockedIdentitiesService blockedIdentitiesService;
     @NonNull
@@ -82,6 +86,8 @@ public class ServicesContainer {
     public final GroupModelRepository groupModelRepository;
     @NonNull
     public final GroupFlowDispatcher groupFlowDispatcher;
+    @NonNull
+    public final AppRestrictions appRestrictions;
 
     public ServicesContainer(
         @NonNull final Context appContext,
@@ -93,7 +99,8 @@ public class ServicesContainer {
         @NonNull final ConversationTagService conversationTag,
         @NonNull final MessageService message,
         @NonNull final NotificationService notification,
-        @NonNull final DatabaseService database,
+        @NonNull final ContactModelFactory contactModelFactory,
+        @NonNull final WebClientSessionModelFactory webClientSessionModelFactory,
         @NonNull final BlockedIdentitiesService blockedIdentitiesService,
         @NonNull final PreferenceService preference,
         @NonNull final UserService user,
@@ -104,7 +111,8 @@ public class ServicesContainer {
         @NonNull final APIConnector apiConnector,
         @NonNull final ContactModelRepository contactModelRepository,
         @NonNull final GroupModelRepository groupModelRepository,
-        @NonNull final GroupFlowDispatcher groupFlowDispatcher
+        @NonNull final GroupFlowDispatcher groupFlowDispatcher,
+        @NonNull final AppRestrictions appRestrictions
     ) {
         this.appContext = appContext;
         this.lifetime = lifetime;
@@ -115,7 +123,8 @@ public class ServicesContainer {
         this.conversationTag = conversationTag;
         this.message = message;
         this.notification = notification;
-        this.database = database;
+        this.contactModelFactory = contactModelFactory;
+        this.webClientSessionModelFactory = webClientSessionModelFactory;
         this.blockedIdentitiesService = blockedIdentitiesService;
         this.preference = preference;
         this.user = user;
@@ -128,6 +137,7 @@ public class ServicesContainer {
         this.contactModelRepository = contactModelRepository;
         this.groupModelRepository = groupModelRepository;
         this.groupFlowDispatcher = groupFlowDispatcher;
+        this.appRestrictions = appRestrictions;
 
         // Initialize wakelock service
         this.wakeLock = new WakeLockServiceImpl(appContext, lifetime);

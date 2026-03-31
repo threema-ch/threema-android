@@ -82,7 +82,7 @@ public class PassphraseService extends Service {
         logger.debug("showPersistentNotification");
 
         // The Intent to launch our activity if the user selects this notification
-        Intent notificationIntent = new Intent(this, HomeActivity.class);
+        Intent notificationIntent = HomeActivity.createIntent(this);
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP |
             Intent.FLAG_ACTIVITY_SINGLE_TOP);
         notificationIntent.setAction(Long.toString(System.currentTimeMillis()));

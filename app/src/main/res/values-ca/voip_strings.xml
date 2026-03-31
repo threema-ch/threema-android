@@ -53,7 +53,6 @@
     <string name="voip_prefs_video_codec_no_h264hip">Desactivar H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Còdecs de programari</string>
     <string name="voip_connection_failed">No s\'ha pogut establir la connexió</string>
-    <string name="voip_connection_lost">Connexió perduda</string>
     <string name="prefs_voip_reject_incoming_calls_title">Rebutjar trucades de mòbil</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Rebutjar trucades de mòbil entrants mentre hi hagi una trucada de Threema activa.</string>
     <string name="voip_contact_not_found">No s\'ha trobat el contacte de Threema per aquest número.</string>

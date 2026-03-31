@@ -20,7 +20,7 @@ import ch.threema.app.R
 import ch.threema.app.dialogs.RingtoneSelectorDialog
 import ch.threema.app.dialogs.RingtoneSelectorDialog.RingtoneSelectorDialogClickListener
 import ch.threema.app.notifications.NotificationChannels
-import ch.threema.app.restrictions.AppRestrictionUtil
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RingtoneUtil
 import ch.threema.app.utils.contracts.PickRingtoneContract
@@ -31,6 +31,7 @@ import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import java.text.DateFormatSymbols
 import java.util.Locale
+import org.koin.android.ext.android.inject
 
 private val logger = getThreemaLogger("SettingsNotificationsFragment")
 
@@ -38,6 +39,8 @@ class SettingsNotificationsFragment : ThreemaPreferenceFragment(), RingtoneSelec
     init {
         logScreenVisibility(logger)
     }
+
+    private val appRestrictions: AppRestrictions by inject()
 
     private lateinit var sharedPreferences: SharedPreferences
 
@@ -155,7 +158,7 @@ class SettingsNotificationsFragment : ThreemaPreferenceFragment(), RingtoneSelec
             }
         }
 
-        if (ConfigUtils.isWorkRestricted() && AppRestrictionUtil.hasBooleanRestriction(getString(R.string.restriction__disable_message_preview))) {
+        if (appRestrictions.isMessagePreviewDisabledOrNull() != null) {
             with(getPref<CheckBoxPreference>(getString(R.string.preferences__notification_preview))) {
                 isEnabled = false
                 isSelectable = false

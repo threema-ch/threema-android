@@ -1,5 +1,8 @@
 package ch.threema.data.datatypes
 
+import android.net.Uri
+import android.provider.ContactsContract
+
 /**
  * This contains the required information to look up a contact in the android contacts.
  */
@@ -15,8 +18,10 @@ data class AndroidContactLookupInfo(
     val contactId: Long?,
 ) {
     /**
-     * The obfuscated string representation of the android contact lookup info. This can be used for logging purposes.
+     * Get the contact uri that can be used to access the android contact.
      */
-    val obfuscatedString: String
-        get() = "${lookupKey.hashCode()}/$contactId"
+    fun getContactUri(): Uri = Uri.withAppendedPath(
+        ContactsContract.Contacts.CONTENT_LOOKUP_URI,
+        lookupKey + (if (contactId != null) "/$contactId" else ""),
+    )
 }

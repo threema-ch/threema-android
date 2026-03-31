@@ -2,23 +2,19 @@ package ch.threema.storage.factories
 
 import ch.threema.data.models.GroupModel
 import ch.threema.domain.models.MessageId
-import ch.threema.domain.types.Identity
-import ch.threema.storage.DatabaseService
+import ch.threema.domain.types.IdentityString
+import ch.threema.storage.DatabaseCreationProvider
+import ch.threema.storage.DatabaseProvider
 import ch.threema.storage.buildContentValues
 import ch.threema.storage.runDelete
 import ch.threema.storage.runQuery
 
-class RejectedGroupMessageFactory(databaseService: DatabaseService) :
-    ModelFactory(databaseService, "rejected_group_messages") {
-    companion object {
-        private const val COLUMN_MESSAGE_ID = "messageId"
-        private const val COLUMN_REJECTED_IDENTITY = "rejectedIdentity"
-        private const val COLUMN_GROUP_ID = "groupId"
-    }
+class RejectedGroupMessageFactory(databaseProvider: DatabaseProvider) :
+    ModelFactory(databaseProvider, TABLE_NAME) {
 
     fun insertMessageReject(
         rejectedMessageId: MessageId,
-        rejectedIdentity: Identity,
+        rejectedIdentity: IdentityString,
         groupDatabaseId: Long,
     ) {
         val contentValues = buildContentValues {
@@ -49,7 +45,7 @@ class RejectedGroupMessageFactory(databaseService: DatabaseService) :
 
     fun removeMessageReject(
         rejectedMessageId: MessageId,
-        rejectedIdentity: Identity,
+        rejectedIdentity: IdentityString,
         groupModel: GroupModel,
     ) {
         writableDatabase.runDelete(
@@ -67,7 +63,7 @@ class RejectedGroupMessageFactory(databaseService: DatabaseService) :
         )
     }
 
-    fun removeMessageRejectByGroupAndIdentity(group: GroupModel, identity: Identity) {
+    fun removeMessageRejectByGroupAndIdentity(group: GroupModel, identity: IdentityString) {
         writableDatabase.runDelete(
             table = tableName,
             whereClause = "$COLUMN_REJECTED_IDENTITY=? AND $COLUMN_GROUP_ID=?",
@@ -75,12 +71,21 @@ class RejectedGroupMessageFactory(databaseService: DatabaseService) :
         )
     }
 
-    override fun getStatements(): Array<String> = arrayOf(
-        "CREATE TABLE `$tableName` (" +
-            "`$COLUMN_MESSAGE_ID` INTEGER NOT NULL, " +
-            "`$COLUMN_REJECTED_IDENTITY` VARCHAR NOT NULL, " +
-            "`$COLUMN_GROUP_ID` INTEGER NOT NULL, " +
-            "PRIMARY KEY (`$COLUMN_MESSAGE_ID`, `$COLUMN_REJECTED_IDENTITY`, `$COLUMN_GROUP_ID`) ON CONFLICT IGNORE " +
-            ")",
-    )
+    object Creator : DatabaseCreationProvider {
+        override fun getCreationStatements() = arrayOf(
+            "CREATE TABLE `$TABLE_NAME` (" +
+                "`${COLUMN_MESSAGE_ID}` INTEGER NOT NULL, " +
+                "`${COLUMN_REJECTED_IDENTITY}` VARCHAR NOT NULL, " +
+                "`${COLUMN_GROUP_ID}` INTEGER NOT NULL, " +
+                "PRIMARY KEY (`${COLUMN_MESSAGE_ID}`, `${COLUMN_REJECTED_IDENTITY}`, `${COLUMN_GROUP_ID}`) ON CONFLICT IGNORE " +
+                ")",
+        )
+    }
+
+    companion object {
+        private const val TABLE_NAME = "rejected_group_messages"
+        private const val COLUMN_MESSAGE_ID = "messageId"
+        private const val COLUMN_REJECTED_IDENTITY = "rejectedIdentity"
+        private const val COLUMN_GROUP_ID = "groupId"
+    }
 }

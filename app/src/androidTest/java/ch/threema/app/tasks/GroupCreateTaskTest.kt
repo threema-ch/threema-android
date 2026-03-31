@@ -1,14 +1,16 @@
 package ch.threema.app.tasks
 
+import ch.threema.KoinTestRule
 import ch.threema.app.DangerousTest
 import ch.threema.app.TestMultiDeviceManager
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.protocol.ExpectedProfilePictureChange
-import ch.threema.app.protocol.PredefinedMessageIds
+import ch.threema.app.di.modules.sessionScopedModule
+import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.protocolsteps.ExpectedProfilePictureChange
+import ch.threema.app.protocolsteps.PredefinedMessageIds
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.clearDatabaseAndCaches
-import ch.threema.app.utils.OutgoingCspMessageServices
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModelData
@@ -19,19 +21,20 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.UserState
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.connection.data.OutboundD2mMessage
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupModel
-import io.mockk.mockk
 import java.util.Date
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlinx.coroutines.test.runTest
+import org.junit.Rule
+import org.koin.dsl.module
 
 @DangerousTest
 class GroupCreateTaskTest {
@@ -65,6 +68,8 @@ class GroupCreateTaskTest {
 
     private val serviceManager by lazy { ThreemaApplication.requireServiceManager() }
 
+    private var isMultiDeviceEnabled = false
+
     private val testMultiDeviceManagerMdEnabled by lazy {
         TestMultiDeviceManager(
             isMdDisabledOrSupportsFs = false,
@@ -78,6 +83,21 @@ class GroupCreateTaskTest {
             isMultiDeviceActive = false,
         )
     }
+
+    private val instrumentedTestModule = module {
+        factory<MultiDeviceManager> {
+            if (isMultiDeviceEnabled) {
+                testMultiDeviceManagerMdEnabled
+            } else {
+                testMultiDeviceManagerMdDisabled
+            }
+        }
+    }
+
+    @get:Rule
+    val koinTestRule = KoinTestRule(
+        modules = listOf(sessionScopedModule, instrumentedTestModule),
+    )
 
     @BeforeTest
     fun setup() {
@@ -99,7 +119,7 @@ class GroupCreateTaskTest {
                     synchronizedAt = null,
                     lastUpdate = now,
                     isArchived = false,
-                    userState = GroupModel.UserState.MEMBER,
+                    userState = UserState.MEMBER,
                     otherMembers = setOf(initialContactModelData.identity),
                     groupDescription = null,
                     groupDescriptionChangedAt = null,
@@ -113,6 +133,8 @@ class GroupCreateTaskTest {
 
     @Test
     fun testSimpleGroupMd() = runTest {
+        enableMultiDevice()
+
         val predefinedMessageIds = PredefinedMessageIds.random()
         val groupCreateTask = GroupCreateTask(
             name = "My Group",
@@ -120,11 +142,6 @@ class GroupCreateTaskTest {
             members = setOf(initialContactModelData.identity),
             groupIdentity = GroupIdentity(myContact.identity, 42),
             predefinedMessageIds = predefinedMessageIds,
-            outgoingCspMessageServices = getOutgoingCspMessageServicesMd(),
-            groupCallManager = serviceManager.groupCallManager,
-            fileService = serviceManager.fileService,
-            groupProfilePictureUploader = mockk(),
-            groupModelRepository = serviceManager.modelRepositories.groups,
         )
 
         val handle = TransactionAckTaskCodec()
@@ -156,6 +173,8 @@ class GroupCreateTaskTest {
 
     @Test
     fun testSimpleGroupNonMd() = runTest {
+        disableMultiDevice()
+
         val predefinedMessageIds = PredefinedMessageIds.random()
         val groupCreateTask = GroupCreateTask(
             name = "My Group",
@@ -163,11 +182,6 @@ class GroupCreateTaskTest {
             members = setOf("12345678"),
             groupIdentity = GroupIdentity(myContact.identity, 42),
             predefinedMessageIds = predefinedMessageIds,
-            outgoingCspMessageServices = getOutgoingCspMessageServicesNonMd(),
-            groupCallManager = serviceManager.groupCallManager,
-            fileService = serviceManager.fileService,
-            groupProfilePictureUploader = mockk(),
-            groupModelRepository = serviceManager.modelRepositories.groups,
         )
 
         val handle = TransactionAckTaskCodec()
@@ -191,35 +205,13 @@ class GroupCreateTaskTest {
         }
     }
 
-    private fun getOutgoingCspMessageServicesMd() = OutgoingCspMessageServices(
-        forwardSecurityMessageProcessor = serviceManager.forwardSecurityMessageProcessor,
-        identityStore = serviceManager.identityStore,
-        userService = serviceManager.userService,
-        contactStore = serviceManager.contactStore,
-        contactService = serviceManager.contactService,
-        contactModelRepository = serviceManager.modelRepositories.contacts,
-        groupService = serviceManager.groupService,
-        nonceFactory = serviceManager.nonceFactory,
-        blockedIdentitiesService = serviceManager.blockedIdentitiesService,
-        preferenceService = serviceManager.preferenceService,
-        multiDeviceManager = testMultiDeviceManagerMdEnabled,
-    ).apply {
-        forwardSecurityMessageProcessor.setForwardSecurityEnabled(false)
+    private fun enableMultiDevice() {
+        isMultiDeviceEnabled = true
+        serviceManager.forwardSecurityMessageProcessor.setForwardSecurityEnabled(false)
     }
 
-    private fun getOutgoingCspMessageServicesNonMd() = OutgoingCspMessageServices(
-        forwardSecurityMessageProcessor = serviceManager.forwardSecurityMessageProcessor,
-        identityStore = serviceManager.identityStore,
-        userService = serviceManager.userService,
-        contactStore = serviceManager.contactStore,
-        contactService = serviceManager.contactService,
-        contactModelRepository = serviceManager.modelRepositories.contacts,
-        groupService = serviceManager.groupService,
-        nonceFactory = serviceManager.nonceFactory,
-        blockedIdentitiesService = serviceManager.blockedIdentitiesService,
-        preferenceService = serviceManager.preferenceService,
-        multiDeviceManager = testMultiDeviceManagerMdDisabled,
-    ).apply {
-        forwardSecurityMessageProcessor.setForwardSecurityEnabled(true)
+    private fun disableMultiDevice() {
+        isMultiDeviceEnabled = false
+        serviceManager.forwardSecurityMessageProcessor.setForwardSecurityEnabled(true)
     }
 }

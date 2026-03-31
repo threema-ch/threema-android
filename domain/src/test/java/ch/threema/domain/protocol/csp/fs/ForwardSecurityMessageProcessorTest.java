@@ -513,7 +513,7 @@ public class ForwardSecurityMessageProcessorTest {
         processReceivedMessages(bobContext.handle, aliceContext);
 
         // Alice should now have initiated a session with negotiated version 1.0
-        DHSession aliceSession = aliceContext.dhSessionStore.getBestDHSession(aliceContext.identityStore.getIdentity(), bobContext.identityStore.getIdentity(), testCodec);
+        DHSession aliceSession = aliceContext.dhSessionStore.getBestDHSession(aliceContext.identityStore.getIdentityString(), bobContext.identityStore.getIdentityString(), testCodec);
         Assert.assertNotNull(aliceSession);
         Assert.assertEquals(DHSession.State.RL44, aliceSession.getState());
         Assert.assertEquals(DHSession.DHVersions.restored(Version.V1_0, Version.V1_0), aliceSession.getCurrent4DHVersions());
@@ -522,7 +522,7 @@ public class ForwardSecurityMessageProcessorTest {
         Assert.assertEquals(Version.V1_0, aliceSession.getMinimumIncomingAppliedVersion());
 
         // Bob also has initiated a session with negotiated version 1.0
-        DHSession bobSession = bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentity(), aliceContext.identityStore.getIdentity(), testCodec);
+        DHSession bobSession = bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentityString(), aliceContext.identityStore.getIdentityString(), testCodec);
         Assert.assertNotNull(bobSession);
         Assert.assertEquals(DHSession.State.R24, bobSession.getState());
         Assert.assertEquals(DHSession.DHVersions.restored(Version.V1_0, Version.V1_0), bobSession.getCurrent4DHVersions());
@@ -588,7 +588,7 @@ public class ForwardSecurityMessageProcessorTest {
         processReceivedMessages(bobContext.handle, aliceContext);
 
         // Alice should now have initiated a session with the maximum supported version
-        DHSession aliceSession = aliceContext.dhSessionStore.getBestDHSession(aliceContext.identityStore.getIdentity(), bobContext.identityStore.getIdentity(), testCodec);
+        DHSession aliceSession = aliceContext.dhSessionStore.getBestDHSession(aliceContext.identityStore.getIdentityString(), bobContext.identityStore.getIdentityString(), testCodec);
         Assert.assertNotNull(aliceSession);
         Assert.assertEquals(DHSession.State.RL44, aliceSession.getState());
         Assert.assertEquals(DHSession.DHVersions.restored(DHSession.SUPPORTED_VERSION_MAX, DHSession.SUPPORTED_VERSION_MAX), aliceSession.getCurrent4DHVersions());
@@ -597,7 +597,7 @@ public class ForwardSecurityMessageProcessorTest {
         Assert.assertEquals(DHSession.SUPPORTED_VERSION_MAX, aliceSession.getMinimumIncomingAppliedVersion());
 
         // Bob also has initiated a session with the maximum supported version
-        DHSession bobSession = bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentity(), aliceContext.identityStore.getIdentity(), testCodec);
+        DHSession bobSession = bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentityString(), aliceContext.identityStore.getIdentityString(), testCodec);
         Assert.assertNotNull(bobSession);
         Assert.assertEquals(DHSession.State.R24, bobSession.getState());
         Assert.assertEquals(DHSession.DHVersions.restored(DHSession.SUPPORTED_VERSION_MAX, DHSession.SUPPORTED_VERSION_MAX), bobSession.getCurrent4DHVersions());
@@ -641,7 +641,7 @@ public class ForwardSecurityMessageProcessorTest {
         processReceivedMessages(bobContext.handle, aliceContext);
 
         // Alice should now have initiated a session with the maximum supported version
-        DHSession aliceSession = aliceContext.dhSessionStore.getBestDHSession(aliceContext.identityStore.getIdentity(), bobContext.identityStore.getIdentity(), testCodec);
+        DHSession aliceSession = aliceContext.dhSessionStore.getBestDHSession(aliceContext.identityStore.getIdentityString(), bobContext.identityStore.getIdentityString(), testCodec);
         Assert.assertNotNull(aliceSession);
         Assert.assertEquals(DHSession.State.RL44, aliceSession.getState());
         Assert.assertEquals(DHSession.DHVersions.restored(DHSession.SUPPORTED_VERSION_MAX, DHSession.SUPPORTED_VERSION_MAX), aliceSession.getCurrent4DHVersions());
@@ -650,7 +650,7 @@ public class ForwardSecurityMessageProcessorTest {
         Assert.assertEquals(DHSession.SUPPORTED_VERSION_MAX, aliceSession.getMinimumIncomingAppliedVersion());
 
         // Bob also has initiated a session with the maximum supported version
-        DHSession bobSession = bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentity(), aliceContext.identityStore.getIdentity(), testCodec);
+        DHSession bobSession = bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentityString(), aliceContext.identityStore.getIdentityString(), testCodec);
         Assert.assertNotNull(bobSession);
         Assert.assertEquals(DHSession.State.R24, bobSession.getState());
         Assert.assertEquals(DHSession.DHVersions.restored(DHSession.SUPPORTED_VERSION_MAX, DHSession.SUPPORTED_VERSION_MAX), bobSession.getCurrent4DHVersions());
@@ -670,7 +670,7 @@ public class ForwardSecurityMessageProcessorTest {
         // Now Bob processes the text message from Alice. Note that the message should be rejected
         // and therefore return an empty list.
         Assert.assertNull(processOneReceivedMessage(aliceContext.handle, bobContext, 0, true));
-        Assert.assertNull(bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentity(), aliceContext.identityStore.getIdentity(), testCodec));
+        Assert.assertNull(bobContext.dhSessionStore.getBestDHSession(bobContext.identityStore.getIdentityString(), aliceContext.identityStore.getIdentityString(), testCodec));
 
         // Assert that Alice did receive a session reject
         Assert.assertEquals(1, bobContext.handle.getOutboundMessages().size());
@@ -1181,7 +1181,7 @@ public class ForwardSecurityMessageProcessorTest {
         }
 
         Contact bob = Objects.requireNonNull(
-            aliceContext.contactStore.getContactForIdentity(bobContext.identityStore.getIdentity())
+            aliceContext.contactStore.getContactForIdentity(bobContext.identityStore.getIdentityString())
         );
 
         // Now create some unused sessions to test that all sessions are being terminated
@@ -1189,8 +1189,8 @@ public class ForwardSecurityMessageProcessorTest {
             aliceContext.dhSessionStore.storeDHSession(new DHSession(bob, aliceContext.identityStore));
         }
 
-        String aliceIdentity = aliceContext.identityStore.getIdentity();
-        String bobIdentity = bobContext.identityStore.getIdentity();
+        String aliceIdentity = aliceContext.identityStore.getIdentityString();
+        String bobIdentity = bobContext.identityStore.getIdentityString();
 
         // Alice now sends a terminate with the given cause
         aliceContext.fsmp.clearAndTerminateAllSessions(bob, cause, aliceContext.handle);
@@ -1239,11 +1239,11 @@ public class ForwardSecurityMessageProcessorTest {
             bobContext.contactStore.addContact(DummyUsers.getContactForUser(DummyUsers.ALICE));
         }
 
-        String aliceIdentity = aliceContext.identityStore.getIdentity();
-        String bobIdentity = bobContext.identityStore.getIdentity();
+        String aliceIdentity = aliceContext.identityStore.getIdentityString();
+        String bobIdentity = bobContext.identityStore.getIdentityString();
 
         Contact bob = Objects.requireNonNull(
-            aliceContext.contactStore.getContactForIdentity(bobContext.identityStore.getIdentity())
+            aliceContext.contactStore.getContactForIdentity(bobContext.identityStore.getIdentityString())
         );
 
         // Now create some unused sessions to test that all sessions are being terminated
@@ -1432,7 +1432,7 @@ public class ForwardSecurityMessageProcessorTest {
             return 0;
         }
 
-        DHSession session = ctx.dhSessionStore.getDHSession(ctx.identityStore.getIdentity(), msg.getFromIdentity(), msg.getData().getSessionId(), testCodec);
+        DHSession session = ctx.dhSessionStore.getDHSession(ctx.identityStore.getIdentityString(), msg.getFromIdentity(), msg.getData().getSessionId(), testCodec);
         if (session == null) {
             return -1;
         }

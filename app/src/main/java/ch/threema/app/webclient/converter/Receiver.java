@@ -4,11 +4,13 @@ import androidx.annotation.AnyThread;
 
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.webclient.exceptions.ConversionException;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 @AnyThread
 public class Receiver extends Converter {
@@ -25,13 +27,16 @@ public class Receiver extends Converter {
     /**
      * Assembles and converts a list of contacts, groups and distribution lists.
      */
-    public static MsgpackObjectBuilder convert(List<ContactModel> contacts,
-                                               List<GroupModel> groups,
-                                               List<DistributionListModel> distributionLists)
-        throws ConversionException {
+    @NonNull
+    public static MsgpackObjectBuilder convert(
+        List<ContactModel> contacts,
+        List<GroupModelOld> groups,
+        List<DistributionListModel> distributionLists,
+        @NonNull ContactNameFormat contactNameFormat
+    ) throws ConversionException {
         MsgpackObjectBuilder builder = new MsgpackObjectBuilder();
         try {
-            builder.put(Type.CONTACT, Contact.convert(contacts));
+            builder.put(Type.CONTACT, Contact.convert(contacts, contactNameFormat));
             builder.put(Type.GROUP, Group.convert(groups));
             builder.put(Type.DISTRIBUTION_LIST, DistributionList.convert(distributionLists));
         } catch (NullPointerException e) {

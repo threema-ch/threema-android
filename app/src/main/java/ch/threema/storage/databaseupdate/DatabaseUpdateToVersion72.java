@@ -10,7 +10,6 @@ import androidx.annotation.NonNull;
  * For ID colors we store the first byte of the SHA-256 hash of the contact identity.
  */
 public class DatabaseUpdateToVersion72 implements DatabaseUpdate {
-    public static final int VERSION = 72;
 
     @NonNull
     private final SQLiteDatabase sqLiteDatabase;
@@ -33,6 +32,6 @@ public class DatabaseUpdateToVersion72 implements DatabaseUpdate {
 
     @Override
     public int getVersion() {
-        return VERSION;
+        return 72;
     }
 }

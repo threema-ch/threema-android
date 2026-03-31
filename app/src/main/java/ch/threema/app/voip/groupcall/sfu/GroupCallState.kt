@@ -2,6 +2,7 @@ package ch.threema.app.voip.groupcall.sfu
 
 import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.base.utils.generateRandomProtobufPadding
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.groupcall.CallState
 
 data class GroupCallState(
@@ -44,7 +45,7 @@ data class GroupCallState(
         ): NormalParticipantDescription {
             return SimpleNormalParticipantDescription(
                 id,
-                participant.threema.identity,
+                Identity(participant.threema.identity),
                 participant.threema.nickname,
             )
         }
@@ -71,7 +72,7 @@ data class GroupCallState(
 
             if (it is NormalParticipantDescription) {
                 val threema = CallState.Participant.Normal.newBuilder()
-                    .setIdentity(it.identity)
+                    .setIdentity(it.identity.value)
                     .setNickname(it.nickname)
                     .build()
                 participant.threema = threema

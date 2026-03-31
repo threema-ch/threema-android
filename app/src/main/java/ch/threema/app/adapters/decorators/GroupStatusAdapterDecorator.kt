@@ -5,6 +5,8 @@ import ch.threema.app.R
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.UserService
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder
+import ch.threema.app.utils.LinkifyUtil
+import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.data.status.GroupStatusDataModel
 import ch.threema.storage.models.data.status.GroupStatusDataModel.GroupStatusType.CREATED
@@ -23,19 +25,29 @@ import ch.threema.storage.models.data.status.GroupStatusDataModel.GroupStatusTyp
 import ch.threema.storage.models.data.status.GroupStatusDataModel.GroupStatusType.VOTES_COMPLETE
 
 class GroupStatusAdapterDecorator(
-    context: Context,
     messageModel: AbstractMessageModel,
+    chatAdapterDecoratorListener: ChatAdapterDecoratorListener,
+    linkifyListener: LinkifyUtil.LinkifyListener,
     helper: Helper?,
-) : ChatAdapterDecorator(context, messageModel, helper) {
-    override fun configureChatMessage(holder: ComposeMessageHolder, position: Int) {
+) : ChatAdapterDecorator(messageModel, chatAdapterDecoratorListener, linkifyListener, helper) {
+    override fun configureChatMessage(holder: ComposeMessageHolder, context: Context, position: Int) {
         val statusDataModel = messageModel.groupStatusData ?: return
-        val statusText = getStatusText(statusDataModel, userService, contactService, context)
-        if (showHide(holder.bodyTextView, !statusText.isNullOrEmpty())) {
+        val statusText = getStatusText(
+            statusDataModel = statusDataModel,
+            userService = userService,
+            contactService = contactService,
+            contactNameFormat = helper.preferenceService.getContactNameFormat(),
+            context = context,
+        )
+        if (showHide(holder.bodyTextView, statusText.isNotEmpty())) {
             holder.bodyTextView.text = statusText
         }
-        setOnClickListener({
-            // no action on onClick
-        }, holder.messageBlockView)
+        setOnClickListener(
+            {
+                // no action on onClick
+            },
+            holder.messageBlockView,
+        )
     }
 
     companion object {
@@ -46,6 +58,7 @@ class GroupStatusAdapterDecorator(
             statusDataModel: GroupStatusDataModel,
             userService: UserService?,
             contactService: ContactService?,
+            contactNameFormat: ContactNameFormat,
             context: Context,
         ): String {
             val identity = statusDataModel.identity ?: return ""
@@ -53,18 +66,19 @@ class GroupStatusAdapterDecorator(
             if (userService?.isMe(identity) == true) return context.getString(R.string.me_myself_and_i)
             if (contactService == null) return identity
             val contactModel = contactService.getByIdentity(identity) ?: return identity
-            val contactMessageReceiver =
-                contactService.createReceiver(contactModel) ?: return identity
-            return contactMessageReceiver.displayName ?: identity
+            val contactMessageReceiver = contactService.createReceiver(contactModel)
+            return contactMessageReceiver.getDisplayName(contactNameFormat)
         }
 
+        @JvmStatic
         fun getStatusText(
             statusDataModel: GroupStatusDataModel,
             userService: UserService?,
             contactService: ContactService?,
+            contactNameFormat: ContactNameFormat,
             context: Context,
         ): String {
-            val displayName = getDisplayName(statusDataModel, userService, contactService, context)
+            val displayName = getDisplayName(statusDataModel, userService, contactService, contactNameFormat, context)
             val ballotName = statusDataModel.ballotName ?: ""
             val newGroupName = statusDataModel.newGroupName ?: ""
             return when (statusDataModel.statusType) {

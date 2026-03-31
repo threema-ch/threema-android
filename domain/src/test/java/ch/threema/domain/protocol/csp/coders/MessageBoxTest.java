@@ -4,7 +4,6 @@ import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.models.MessageId;
 
-import org.apache.commons.io.output.NullOutputStream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -61,7 +60,12 @@ public class MessageBoxTest {
         // Ensure BoxedMessage objects are Serializable
         assertDoesNotThrow(() -> {
             MessageBox testMessage = getTestMessage();
-            ObjectOutputStream oos = new ObjectOutputStream(new NullOutputStream());
+            ObjectOutputStream oos = new ObjectOutputStream(new OutputStream() {
+                @Override
+                public void write(int b) {
+                    // ignore
+                }
+            });
             oos.writeObject(testMessage);
             oos.close();
         });

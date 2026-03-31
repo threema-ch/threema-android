@@ -3,6 +3,7 @@ package ch.threema.storage.factories;
 import android.content.ContentValues;
 import android.database.Cursor;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -13,7 +14,8 @@ import androidx.annotation.Nullable;
 import ch.threema.app.services.MessageService;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -23,8 +25,8 @@ import ch.threema.storage.models.MessageType;
 public class DistributionListMessageModelFactory extends AbstractMessageModelFactory {
     private static final Logger logger = getThreemaLogger("DistributionListMessageModelFactory");
 
-    public DistributionListMessageModelFactory(DatabaseService databaseService) {
-        super(databaseService, DistributionListMessageModel.TABLE);
+    public DistributionListMessageModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, DistributionListMessageModel.TABLE);
     }
 
     public List<DistributionListMessageModel> getAll() {
@@ -240,51 +242,54 @@ public class DistributionListMessageModelFactory extends AbstractMessageModelFac
         return null;
     }
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `" + DistributionListMessageModel.TABLE + "`" +
-                "(" +
-                "`" + DistributionListMessageModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT ," +
-                "`" + DistributionListMessageModel.COLUMN_UID + "` VARCHAR ," +
-                "`" + DistributionListMessageModel.COLUMN_API_MESSAGE_ID + "` VARCHAR ," +
-                "`" + DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID + "` INTEGER NOT NULL ," +
-                "`" + DistributionListMessageModel.COLUMN_IDENTITY + "` VARCHAR ," +
-                "`" + DistributionListMessageModel.COLUMN_OUTBOX + "` SMALLINT ," +
-                "`" + DistributionListMessageModel.COLUMN_TYPE + "` INTEGER ," +
-                "`" + DistributionListMessageModel.COLUMN_CORRELATION_ID + "` VARCHAR ," +
-                "`" + DistributionListMessageModel.COLUMN_BODY + "` VARCHAR ," +
-                "`" + DistributionListMessageModel.COLUMN_CAPTION + "` VARCHAR ," +
-                "`" + DistributionListMessageModel.COLUMN_IS_READ + "` SMALLINT ," +
-                "`" + DistributionListMessageModel.COLUMN_IS_SAVED + "` SMALLINT ," +
-                "`" + DistributionListMessageModel.COLUMN_IS_QUEUED + "` TINYINT ," +
-                "`" + DistributionListMessageModel.COLUMN_STATE + "` VARCHAR ," +
-                "`" + DistributionListMessageModel.COLUMN_POSTED_AT + "` BIGINT ," +
-                "`" + DistributionListMessageModel.COLUMN_CREATED_AT + "` BIGINT ," +
-                "`" + DistributionListMessageModel.COLUMN_MODIFIED_AT + "` BIGINT ," +
-                "`" + DistributionListMessageModel.COLUMN_IS_STATUS_MESSAGE + "` SMALLINT ," +
-                "`" + DistributionListMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + "` VARCHAR ," +
-                "`" + DistributionListMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE + "` TINYINT ," +
-                "`" + DistributionListMessageModel.COLUMN_MESSAGE_FLAGS + "` INT ," +
-                "`" + DistributionListMessageModel.COLUMN_DELIVERED_AT + "` DATETIME ," +
-                "`" + DistributionListMessageModel.COLUMN_READ_AT + "` DATETIME ," +
-                "`" + DistributionListMessageModel.COLUMN_FORWARD_SECURITY_MODE + "` TINYINT DEFAULT 0 ," +
-                "`" + DistributionListMessageModel.COLUMN_DISPLAY_TAGS + "` TINYINT DEFAULT 0 ," +
-                "`" + DistributionListMessageModel.COLUMN_EDITED_AT + "` DATETIME ," +
-                "`" + DistributionListMessageModel.COLUMN_DELETED_AT + "` DATETIME );",
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE `" + DistributionListMessageModel.TABLE + "`" +
+                    "(" +
+                    "`" + DistributionListMessageModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT ," +
+                    "`" + DistributionListMessageModel.COLUMN_UID + "` VARCHAR ," +
+                    "`" + DistributionListMessageModel.COLUMN_API_MESSAGE_ID + "` VARCHAR ," +
+                    "`" + DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID + "` INTEGER NOT NULL ," +
+                    "`" + DistributionListMessageModel.COLUMN_IDENTITY + "` VARCHAR ," +
+                    "`" + DistributionListMessageModel.COLUMN_OUTBOX + "` SMALLINT ," +
+                    "`" + DistributionListMessageModel.COLUMN_TYPE + "` INTEGER ," +
+                    "`" + DistributionListMessageModel.COLUMN_CORRELATION_ID + "` VARCHAR ," +
+                    "`" + DistributionListMessageModel.COLUMN_BODY + "` VARCHAR ," +
+                    "`" + DistributionListMessageModel.COLUMN_CAPTION + "` VARCHAR ," +
+                    "`" + DistributionListMessageModel.COLUMN_IS_READ + "` SMALLINT ," +
+                    "`" + DistributionListMessageModel.COLUMN_IS_SAVED + "` SMALLINT ," +
+                    "`" + DistributionListMessageModel.COLUMN_IS_QUEUED + "` TINYINT ," +
+                    "`" + DistributionListMessageModel.COLUMN_STATE + "` VARCHAR ," +
+                    "`" + DistributionListMessageModel.COLUMN_POSTED_AT + "` BIGINT ," +
+                    "`" + DistributionListMessageModel.COLUMN_CREATED_AT + "` BIGINT ," +
+                    "`" + DistributionListMessageModel.COLUMN_MODIFIED_AT + "` BIGINT ," +
+                    "`" + DistributionListMessageModel.COLUMN_IS_STATUS_MESSAGE + "` SMALLINT ," +
+                    "`" + DistributionListMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + "` VARCHAR ," +
+                    "`" + DistributionListMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE + "` TINYINT ," +
+                    "`" + DistributionListMessageModel.COLUMN_MESSAGE_FLAGS + "` INT ," +
+                    "`" + DistributionListMessageModel.COLUMN_DELIVERED_AT + "` DATETIME ," +
+                    "`" + DistributionListMessageModel.COLUMN_READ_AT + "` DATETIME ," +
+                    "`" + DistributionListMessageModel.COLUMN_FORWARD_SECURITY_MODE + "` TINYINT DEFAULT 0 ," +
+                    "`" + DistributionListMessageModel.COLUMN_DISPLAY_TAGS + "` TINYINT DEFAULT 0 ," +
+                    "`" + DistributionListMessageModel.COLUMN_EDITED_AT + "` DATETIME ," +
+                    "`" + DistributionListMessageModel.COLUMN_DELETED_AT + "` DATETIME );",
 
-            //indices
-            "CREATE INDEX `distributionListDistributionListIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID + "` )",
-            "CREATE INDEX `distribution_list_message_outbox_idx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_OUTBOX + "` )",
-            "CREATE INDEX `distributionListMessageIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_API_MESSAGE_ID + "` )",
-            "CREATE INDEX `distributionListMessageUidIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_UID + "` )",
-            "CREATE INDEX `distribution_list_message_identity_idx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_IDENTITY + "` )",
-            "CREATE INDEX `distributionListCorrelationIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_CORRELATION_ID + "` )",
-            "CREATE INDEX `distribution_list_message_state_idx` ON `" + DistributionListMessageModel.TABLE
-                + "`(`" + AbstractMessageModel.COLUMN_TYPE
-                + "`, `" + AbstractMessageModel.COLUMN_STATE
-                + "`, `" + AbstractMessageModel.COLUMN_OUTBOX
-                + "`)",
-        };
+                // indices
+                "CREATE INDEX `distributionListDistributionListIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID + "` )",
+                "CREATE INDEX `distribution_list_message_outbox_idx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_OUTBOX + "` )",
+                "CREATE INDEX `distributionListMessageIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_API_MESSAGE_ID + "` )",
+                "CREATE INDEX `distributionListMessageUidIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_UID + "` )",
+                "CREATE INDEX `distribution_list_message_identity_idx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_IDENTITY + "` )",
+                "CREATE INDEX `distributionListCorrelationIdIdx` ON `" + DistributionListMessageModel.TABLE + "` ( `" + DistributionListMessageModel.COLUMN_CORRELATION_ID + "` )",
+                "CREATE INDEX `distribution_list_message_state_idx` ON `" + DistributionListMessageModel.TABLE
+                    + "`(`" + AbstractMessageModel.COLUMN_TYPE
+                    + "`, `" + AbstractMessageModel.COLUMN_STATE
+                    + "`, `" + AbstractMessageModel.COLUMN_OUTBOX
+                    + "`)",
+            };
+        }
     }
 }

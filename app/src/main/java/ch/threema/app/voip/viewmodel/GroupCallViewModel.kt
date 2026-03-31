@@ -7,18 +7,20 @@ import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
 import androidx.lifecycle.*
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.notification.NotificationService
 import ch.threema.app.utils.AudioDevice
 import ch.threema.app.utils.BitmapUtil
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.DispatcherProvider
 import ch.threema.app.utils.GroupCallUtil
 import ch.threema.app.voip.CallAudioManager
 import ch.threema.app.voip.groupcall.*
 import ch.threema.app.voip.groupcall.sfu.*
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.storage.models.GroupModel
+import ch.threema.data.datatypes.LocalGroupId
+import ch.threema.data.datatypes.localGroupId
+import ch.threema.storage.models.group.GroupModelOld
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.take
 import org.webrtc.EglBase
@@ -31,6 +33,7 @@ class GroupCallViewModel(
     private val groupService: GroupService,
     private val groupCallManager: GroupCallManager,
     private val notificationService: NotificationService,
+    private val dispatcherProvider: DispatcherProvider,
 ) : ViewModel(),
     GroupCallObserver {
 
@@ -139,7 +142,7 @@ class GroupCallViewModel(
             call?.let {
                 GroupCallUtil.getRunningSince(
                     call = call,
-                    context = ThreemaApplication.getAppContext(),
+                    context = appContext,
                 )
             },
         )
@@ -173,7 +176,9 @@ class GroupCallViewModel(
     @UiThread
     fun leaveCall() {
         if (joinJob?.isCompleted == true) {
-            viewModelScope.launch { callController.leave() }
+            viewModelScope.launch {
+                callController.leave()
+            }
         } else {
             joinJob?.cancel()
             logger.info("Join call aborted")
@@ -212,7 +217,7 @@ class GroupCallViewModel(
     }
 
     @WorkerThread
-    private suspend fun ensureNoCallsInOtherGroup(groupModel: GroupModel) {
+    private suspend fun ensureNoCallsInOtherGroup(groupModel: GroupModelOld) {
         if (!groupCallManager.hasJoinedCall(groupModel.localGroupId)) {
             if (groupCallManager.hasJoinedCall()) {
                 val groupCallController = groupCallManager.getCurrentGroupCallController()
@@ -224,7 +229,7 @@ class GroupCallViewModel(
     }
 
     @WorkerThread
-    private suspend fun joinOrCreateCall(groupModel: GroupModel, intention: GroupCallIntention) =
+    private suspend fun joinOrCreateCall(groupModel: GroupModelOld, intention: GroupCallIntention) =
         when (intention) {
             GroupCallIntention.JOIN -> groupCallManager.joinCall(
                 localGroupId = groupModel.localGroupId,
@@ -239,7 +244,7 @@ class GroupCallViewModel(
         connectingState.postValue(ConnectingState.COMPLETED)
         audioManager = groupCallManager.getAudioManager()
         callRunning.postValue(true)
-        withContext(Dispatchers.Main) {
+        withContext(dispatcherProvider.main) {
             initialiseValues()
         }
     }
@@ -282,7 +287,7 @@ class GroupCallViewModel(
     }
 
     @UiThread
-    private fun mapGroupModelLiveData(): LiveData<GroupModel?> {
+    private fun mapGroupModelLiveData(): LiveData<GroupModelOld?> {
         val distinctGroupId = groupId.distinctUntilChanged()
         return distinctGroupId.map(this::getGroupModel)
     }
@@ -290,9 +295,9 @@ class GroupCallViewModel(
     @UiThread
     private fun mapAvatar(): LiveData<Bitmap?> {
         return group.switchMap {
-            liveData(Dispatchers.Default) {
+            liveData(dispatcherProvider.worker) {
                 val avatar = groupService.getAvatar(it, true, false)
-                emit(BitmapUtil.blurBitmap(avatar, ThreemaApplication.getAppContext()))
+                emit(BitmapUtil.blurBitmap(avatar, appContext))
             }
         }
     }
@@ -430,13 +435,13 @@ class GroupCallViewModel(
     private fun mapTitle() = group.map(this::getTitle)
 
     @UiThread
-    private fun getTitle(groupModel: GroupModel?) = groupModel?.name ?: ""
+    private fun getTitle(groupModel: GroupModelOld?) = groupModel?.name ?: ""
 
     @UiThread
     private fun mapSubTitle() = participantsCount.map { count ->
         when {
             count > 0 -> ConfigUtils.getSafeQuantityString(
-                ThreemaApplication.getAppContext(),
+                appContext,
                 R.plurals.n_participants_in_call,
                 count,
                 count,

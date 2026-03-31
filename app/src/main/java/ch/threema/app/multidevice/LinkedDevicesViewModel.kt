@@ -8,7 +8,6 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.unlinking.DropDeviceResult
 import ch.threema.app.multidevice.unlinking.DropDevicesIntent
@@ -45,7 +44,7 @@ class LinkedDevicesViewModel(
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
-    private val isMultiDeviceEnabled = MutableStateFlow(ConfigUtils.isMultiDeviceEnabled(ThreemaApplication.getAppContext()))
+    private val isMultiDeviceEnabled = MutableStateFlow(ConfigUtils.isMultiDeviceEnabled())
 
     val isLinkDeviceButtonEnabled: StateFlow<Boolean> =
         combineStates(isMultiDeviceEnabled, viewState, isLoading) { isMultiDeviceEnabled, state, isLoading ->
@@ -73,7 +72,7 @@ class LinkedDevicesViewModel(
     }
 
     fun updateLinkDeviceButtonEnabled() {
-        isMultiDeviceEnabled.value = ConfigUtils.isMultiDeviceEnabled(ThreemaApplication.getAppContext())
+        isMultiDeviceEnabled.value = ConfigUtils.isMultiDeviceEnabled()
     }
 
     fun updateDeviceList() {

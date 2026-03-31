@@ -20,7 +20,6 @@ import android.text.format.Formatter;
 import android.webkit.MimeTypeMap;
 import android.widget.Toast;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -56,6 +55,7 @@ import ch.threema.storage.models.data.media.FileDataModel;
 import static ch.threema.app.AppConstants.MAX_BLOB_SIZE;
 import static ch.threema.app.filepicker.FilePickerActivity.INTENT_DATA_DEFAULT_PATH;
 import static ch.threema.app.utils.StreamUtilKt.getFromUri;
+import static ch.threema.common.JavaCompat.copyStream;
 
 public class FileUtil {
     private static final Logger logger = getThreemaLogger("FileUtil");
@@ -567,7 +567,7 @@ public class FileUtil {
         try (InputStream inputStream = contentResolver.openInputStream(source);
              OutputStream outputStream = new FileOutputStream(dest)) {
             if (inputStream != null) {
-                IOUtils.copy(inputStream, outputStream);
+                copyStream(inputStream, outputStream);
                 return true;
             }
         } catch (Exception e) {

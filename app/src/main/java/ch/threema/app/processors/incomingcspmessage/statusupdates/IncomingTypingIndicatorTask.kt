@@ -6,6 +6,7 @@ import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
+import ch.threema.domain.types.IdentityString
 
 class IncomingTypingIndicatorTask(
     message: TypingIndicatorMessage,
@@ -20,8 +21,9 @@ class IncomingTypingIndicatorTask(
     override suspend fun executeMessageStepsFromSync() = processIncomingTypingIndicator()
 
     private fun processIncomingTypingIndicator(): ReceiveStepsResult {
-        if (contactService.getByIdentity(message.fromIdentity) != null) {
-            contactService.setIsTyping(message.fromIdentity, message.isTyping)
+        val fromIdentity: IdentityString = message.fromIdentity ?: return ReceiveStepsResult.DISCARD
+        if (contactService.getByIdentity(fromIdentity) != null) {
+            contactService.setIsTyping(fromIdentity, message.isTyping)
             return ReceiveStepsResult.SUCCESS
         }
         return ReceiveStepsResult.DISCARD

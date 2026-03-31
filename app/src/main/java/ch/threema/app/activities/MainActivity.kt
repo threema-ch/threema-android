@@ -1,6 +1,5 @@
 package ch.threema.app.activities
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
@@ -56,7 +55,7 @@ class MainActivity : ThreemaAppCompatActivity() {
     }
 
     private fun continueToHomeActivity() {
-        val intent = Intent(context, HomeActivity::class.java)
+        val intent = HomeActivity.createIntent(context)
         startActivity(intent)
         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out)
         finish()

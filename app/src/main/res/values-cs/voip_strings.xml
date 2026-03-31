@@ -53,14 +53,18 @@
     <string name="voip_prefs_video_codec_no_h264hip">Zakázat H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Softwarové kodeky</string>
     <string name="voip_connection_failed">Nezdařilo se navázat spojení</string>
-    <string name="voip_connection_lost">Spojení bylo ztraceno</string>
+    <string name="voip_call_disconnected">Hovor odpojen</string>
     <string name="prefs_voip_reject_incoming_calls_title">Odmítat mobilní hovory</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Odmítat příchozí mobilní hovory, pokud již probíhá hovor Threema.</string>
     <string name="voip_contact_not_found">Pod tímto číslem nebyl nalezen žádný Threema kontakt.</string>
     <string name="voip_another_pstn_call">Hovor nelze zahájit. Stále probíhá běžný telefonní hovor.</string>
     <string name="voip_call_status_off_hours">Hovor mimo pracovní dobu</string>
     <string name="voip_peer_video_disabled">Videohovory jsou u protistrany zakázány.</string>
-    <string name="voip_reject_channel_name">Změna stavu hovoru</string>
+    <string name="voip_error_processing_call_anser">Během přijímání hovoru došlo k chybě</string>
+    <string name="voip_error_peer_connection">Chyba během připojení peeru</string>
+    <string name="voip_error_determine_common_video_quality_profile">Nepodařilo se určit běžný profil kvality videa</string>
+    <string name="voip_audio_focus_lost">Bylo ztraceno zaměření na zvuk</string>
+    <string name="voip_could_not_initialize">Nepodařilo se zahájit hovor</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Diagnostika WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Spuštění tohoto nástroje vám umožní hledat zdroj problémů s nastavením spojení hlasového hovoru</string>
@@ -71,13 +75,9 @@
     <string name="voip_webrtc_debug_copied">Zkopírováno do schránky.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Zkopírovat do schránky</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">Všichni členové skupiny obdrželi oznámení</string>
-    <string name="voip_gc_notification_channel_description">Skupinové hovory</string>
-    <string name="voip_gc_notification_title">Skupinový hovor</string>
     <string name="voip_gc_notification_call_started">%1$s zahájil(a) skupinový hovor ve skupině %2$s</string>
     <string name="voip_gc_notification_call_started_generic">%1$s zahájil(a) skupinový hovor</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Vy jste zahájil(a) skupinový hovor</string>
-    <string name="voip_gc_dismiss_call">Ignorovat</string>
     <string name="voip_gc_join_call">Připojit se</string>
     <string name="voip_gc_ongoing_call">Probíhající skupinový hovor</string>
     <string name="voip_gc_waiting_for_participants">Čeká se na účastníky</string>

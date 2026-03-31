@@ -76,7 +76,7 @@ class ReferralActivity : ThreemaActivity() {
         logScreenVisibility(logger)
     }
 
-    val viewModel by viewModel<ReferralViewModel>()
+    private val viewModel by viewModel<ReferralViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,7 +91,7 @@ class ReferralActivity : ThreemaActivity() {
 
             ThreemaTheme {
                 ReferralScreenContent(
-                    onClickedBack = {
+                    onClickBack = {
                         finish()
                     },
                     onClickShareInvitationLink = {
@@ -132,7 +132,7 @@ class ReferralActivity : ThreemaActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ReferralScreenContent(
-    onClickedBack: () -> Unit,
+    onClickBack: () -> Unit,
     onClickShareInvitationLink: () -> Unit,
     onClickViewTos: () -> Unit,
 ) {
@@ -157,7 +157,7 @@ private fun ReferralScreenContent(
                 },
                 navigationIcon = {
                     IconButton(
-                        onClick = onClickedBack,
+                        onClick = onClickBack,
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_arrow_back_24),
@@ -353,7 +353,7 @@ private fun ExplanationItem(
 private fun ReferralScreenContent_Preview() {
     ThreemaThemePreview {
         ReferralScreenContent(
-            onClickedBack = {},
+            onClickBack = {},
             onClickShareInvitationLink = {},
             onClickViewTos = {},
         )
@@ -367,7 +367,7 @@ private fun ReferralScreenContent_Preview_DynamicColors() {
         shouldUseDynamicColors = true,
     ) {
         ReferralScreenContent(
-            onClickedBack = {},
+            onClickBack = {},
             onClickShareInvitationLink = {},
             onClickViewTos = {},
         )

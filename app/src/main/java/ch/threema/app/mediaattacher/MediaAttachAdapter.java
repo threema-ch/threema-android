@@ -191,7 +191,7 @@ public class MediaAttachAdapter extends RecyclerView.Adapter<MediaAttachAdapter.
                     .into(imageView);
 
             } catch (RejectedExecutionException e) {
-                logger.error("thumbnail task failed " + e);
+                logger.error("thumbnail task failed", e);
             }
         }
     }

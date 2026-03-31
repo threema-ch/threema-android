@@ -8,13 +8,12 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceStore
-import ch.threema.common.now
+import ch.threema.common.emptyByteArray
 import ch.threema.common.plus
 import ch.threema.data.datatypes.AndroidContactLookupInfo
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
-import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.storage.DatabaseBackend
 import ch.threema.domain.models.ContactSyncState
 import ch.threema.domain.models.IdentityState
@@ -23,18 +22,19 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.QueueSendCompleteListener
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkObject
 import io.mockk.unmockkObject
 import java.time.Instant
-import kotlin.random.Random
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -48,30 +48,31 @@ import kotlin.test.fail
 import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import testdata.TestData
 
 /**
  * Track calls to the contact listener.
  */
 private class ContactListenerTracker {
-    val onNew = mutableListOf<Identity>()
-    val onModified = mutableListOf<Identity>()
-    val onAvatarChanged = mutableListOf<Identity>()
-    val onRemoved = mutableListOf<Identity>()
+    val onNew = mutableListOf<IdentityString>()
+    val onModified = mutableListOf<IdentityString>()
+    val onAvatarChanged = mutableListOf<IdentityString>()
+    val onRemoved = mutableListOf<IdentityString>()
 
     val listener = object : ContactListener {
-        override fun onNew(identity: Identity) {
+        override fun onNew(identity: IdentityString) {
             onNew.add(identity)
         }
 
-        override fun onModified(identity: Identity) {
+        override fun onModified(identity: IdentityString) {
             onModified.add(identity)
         }
 
-        override fun onAvatarChanged(identity: Identity) {
+        override fun onAvatarChanged(identity: IdentityString) {
             onAvatarChanged.add(identity)
         }
 
-        override fun onRemoved(identity: Identity) {
+        override fun onRemoved(identity: IdentityString) {
             onRemoved.add(identity)
         }
     }
@@ -114,50 +115,12 @@ class ContactModelTest {
         every { it.taskManager } returns taskManager
         every { it.multiDeviceManager } returns multiDeviceManagerMock
         every { it.nonceFactory } returns nonceFactory
+        every { it.identityStore } returns mockk<IdentityStore> {
+            every { getIdentityString() } returns TestData.Identities.ME.value
+        }
     }
-    private val contactModelRepository = ContactModelRepository(
-        ModelTypeCache(),
-        databaseBackendMock,
-        coreServiceManagerMock,
-    )
 
     private lateinit var contactListenerTracker: ContactListenerTracker
-
-    private fun createTestContact(isRestored: Boolean = false): ContactModel {
-        val identity = "TESTTEST"
-        return ContactModel(
-            identity,
-            ContactModelData(
-                identity = identity,
-                publicKey = Random.nextBytes(32),
-                createdAt = now(),
-                firstName = "Test",
-                lastName = "Contact",
-                nickname = null,
-                idColor = IdColor(13),
-                verificationLevel = VerificationLevel.FULLY_VERIFIED,
-                workVerificationLevel = WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
-                identityType = IdentityType.NORMAL,
-                acquaintanceLevel = AcquaintanceLevel.DIRECT,
-                activityState = IdentityState.ACTIVE,
-                syncState = ContactSyncState.INITIAL,
-                featureMask = 7uL,
-                readReceiptPolicy = ReadReceiptPolicy.DONT_SEND,
-                typingIndicatorPolicy = TypingIndicatorPolicy.SEND,
-                isArchived = false,
-                androidContactLookupInfo = null,
-                localAvatarExpires = null,
-                isRestored = isRestored,
-                profilePictureBlobId = null,
-                jobTitle = null,
-                department = null,
-                notificationTriggerPolicyOverride = null,
-            ),
-            databaseBackendMock,
-            contactModelRepository,
-            coreServiceManagerMock,
-        )
-    }
 
     @BeforeTest
     fun beforeEach() {
@@ -182,20 +145,16 @@ class ContactModelTest {
      */
     @Test
     fun testConstruction() {
-        val now = now()
-        val publicKey = Random.nextBytes(32)
-        val createdAt = now
-        val localAvatarExpires = now
-        val identity = "TESTTEST"
+        val now = TestData.utcDate(2025, 10, 25, 15, 30, 10)
         val contact = ContactModel(
-            identity,
-            ContactModelData(
-                identity = identity,
-                publicKey = publicKey,
-                createdAt = createdAt,
-                firstName = "Test",
-                lastName = "Contact",
-                nickname = null,
+            identity = TestData.Identities.OTHER_1.value,
+            data = ContactModelData(
+                identity = TestData.Identities.OTHER_1.value,
+                publicKey = TestData.publicKeyAllZeros,
+                createdAt = now,
+                firstName = "Firstname",
+                lastName = "Lastname",
+                nickname = "Nick",
                 idColor = IdColor(13),
                 verificationLevel = VerificationLevel.FULLY_VERIFIED,
                 workVerificationLevel = WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED,
@@ -208,44 +167,45 @@ class ContactModelTest {
                 typingIndicatorPolicy = TypingIndicatorPolicy.DONT_SEND,
                 isArchived = false,
                 androidContactLookupInfo = null,
-                localAvatarExpires = localAvatarExpires,
+                localAvatarExpires = now,
                 isRestored = true,
                 profilePictureBlobId = byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8),
                 jobTitle = null,
                 department = null,
                 notificationTriggerPolicyOverride = null,
             ),
-            databaseBackendMock,
-            contactModelRepository,
-            coreServiceManagerMock,
+            databaseBackend = databaseBackendMock,
+            coreServiceManager = coreServiceManagerMock,
         )
 
-        val value = contact.data!!
-        assertEquals("TESTTEST", value.identity)
-        assertEquals(publicKey, value.publicKey)
-        assertEquals(createdAt, value.createdAt)
-        assertEquals("Test", value.firstName)
-        assertEquals("Contact", value.lastName)
-        assertNull(value.nickname)
-        assertEquals(IdColor(13), value.idColor)
-        assertEquals(VerificationLevel.FULLY_VERIFIED, value.verificationLevel)
-        assertEquals(WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED, value.workVerificationLevel)
-        assertEquals(IdentityType.NORMAL, value.identityType)
-        assertEquals(AcquaintanceLevel.DIRECT, value.acquaintanceLevel)
-        assertEquals(IdentityState.ACTIVE, value.activityState)
-        assertEquals(ContactSyncState.INITIAL, value.syncState)
-        assertEquals(7uL, value.featureMask)
-        assertEquals(ReadReceiptPolicy.SEND, value.readReceiptPolicy)
-        assertEquals(TypingIndicatorPolicy.DONT_SEND, value.typingIndicatorPolicy)
-        assertNull(value.androidContactLookupInfo)
-        assertEquals(localAvatarExpires, value.localAvatarExpires)
-        assertTrue { value.isRestored }
-        assertContentEquals(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8), value.profilePictureBlobId)
+        val contactModelData = contact.data!!
+        assertEquals(TestData.Identities.OTHER_1.value, contactModelData.identity)
+        assertEquals(TestData.publicKeyAllZeros, contactModelData.publicKey)
+        assertEquals(now, contactModelData.createdAt)
+        assertEquals("Firstname", contactModelData.firstName)
+        assertEquals("Lastname", contactModelData.lastName)
+        assertEquals("Nick", contactModelData.nickname)
+        assertEquals(IdColor(13), contactModelData.idColor)
+        assertEquals(VerificationLevel.FULLY_VERIFIED, contactModelData.verificationLevel)
+        assertEquals(WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED, contactModelData.workVerificationLevel)
+        assertEquals(IdentityType.NORMAL, contactModelData.identityType)
+        assertEquals(AcquaintanceLevel.DIRECT, contactModelData.acquaintanceLevel)
+        assertEquals(IdentityState.ACTIVE, contactModelData.activityState)
+        assertEquals(ContactSyncState.INITIAL, contactModelData.syncState)
+        assertEquals(7uL, contactModelData.featureMask)
+        assertEquals(ReadReceiptPolicy.SEND, contactModelData.readReceiptPolicy)
+        assertEquals(TypingIndicatorPolicy.DONT_SEND, contactModelData.typingIndicatorPolicy)
+        assertNull(contactModelData.androidContactLookupInfo)
+        assertEquals(now, contactModelData.localAvatarExpires)
+        assertTrue { contactModelData.isRestored }
+        assertContentEquals(byteArrayOf(1, 2, 3, 4, 5, 6, 7, 8), contactModelData.profilePictureBlobId)
     }
 
     @Test
     fun testSetNickname() {
-        val contact = createTestContact()
+        val contact = TestData.createContactModel(
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
         assertEquals(null, contact.data!!.nickname)
         assertEquals(0, contactListenerTracker.onModified.size)
 
@@ -273,101 +233,121 @@ class ContactModelTest {
     @Test
     fun testSetNameFromLocal() {
         assertChangeFromLocal(
-            createTestContact(),
-            { c -> c.setNameFromLocal("First", "Last") },
-            { c -> "First" == c.data!!.firstName && "Last" == c.data!!.lastName },
-            ReflectContactSyncUpdateTask.ReflectNameUpdate::class.java,
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setNameFromLocal("First", "Last") },
+            checkDataChanged = { contactModel -> "First" == contactModel.data!!.firstName && "Last" == contactModel.data!!.lastName },
+            expectedTaskReflectType = ReflectContactSyncUpdateTask.ReflectNameUpdate::class.java,
         )
     }
 
     @Test
     fun testSetNameFromSync() {
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setFirstNameFromSync("First") },
-            { c -> "First" == c.data!!.firstName },
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setFirstNameFromSync("First") },
+            checkDataChanged = { contactModel -> "First" == contactModel.data!!.firstName },
         )
         contactListenerTracker.onModified.clear()
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setLastNameFromSync("Last") },
-            { c -> "Last" == c.data!!.lastName },
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setLastNameFromSync("Last") },
+            checkDataChanged = { contactModel -> "Last" == contactModel.data!!.lastName },
         )
     }
 
     @Test
     fun testNicknameFromSync() {
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setNicknameFromSync("NewNickname") },
-            { c -> "NewNickname" == c.data!!.nickname },
+            contactModel = TestData.createContactModel(identity = Identity("TESTTEST")),
+            performChange = { contactModel -> contactModel.setNicknameFromSync("NewNickname") },
+            checkDataChanged = { contactModel -> "NewNickname" == contactModel.data!!.nickname },
         )
     }
 
     @Test
     fun testVerificationLevelFromLocal() {
         assertChangeFromLocal(
-            createTestContact(),
-            { c -> c.setVerificationLevelFromLocal(VerificationLevel.SERVER_VERIFIED) },
-            { c -> VerificationLevel.SERVER_VERIFIED == c.data!!.verificationLevel },
-            ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class.java,
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setVerificationLevelFromLocal(VerificationLevel.SERVER_VERIFIED) },
+            checkDataChanged = { contactModel -> VerificationLevel.SERVER_VERIFIED == contactModel.data!!.verificationLevel },
+            expectedTaskReflectType = ReflectContactSyncUpdateTask.ReflectVerificationLevelUpdate::class.java,
         )
     }
 
     @Test
     fun testVerificationLevelFromSync() {
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setVerificationLevelFromSync(VerificationLevel.SERVER_VERIFIED) },
-            { c -> VerificationLevel.SERVER_VERIFIED == c.data!!.verificationLevel },
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setVerificationLevelFromSync(VerificationLevel.SERVER_VERIFIED) },
+            checkDataChanged = { contactModel -> VerificationLevel.SERVER_VERIFIED == contactModel.data!!.verificationLevel },
         )
     }
 
     @Test
     fun testWorkVerificationLevelFromLocal() {
         assertChangeFromLocal(
-            createTestContact(),
-            { c -> c.setWorkVerificationLevelFromLocal(WorkVerificationLevel.NONE) },
-            { c -> WorkVerificationLevel.NONE == c.data!!.workVerificationLevel },
-            ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate::class.java,
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setWorkVerificationLevelFromLocal(WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED) },
+            checkDataChanged = { contactModel -> WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED == contactModel.data!!.workVerificationLevel },
+            expectedTaskReflectType = ReflectContactSyncUpdateTask.ReflectWorkVerificationLevelUpdate::class.java,
         )
     }
 
     @Test
     fun testWorkVerificationLevelFromSync() {
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setWorkVerificationLevelFromSync(WorkVerificationLevel.NONE) },
-            { c -> WorkVerificationLevel.NONE == c.data!!.workVerificationLevel },
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setWorkVerificationLevelFromSync(WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED) },
+            checkDataChanged = { contactModel -> WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED == contactModel.data!!.workVerificationLevel },
         )
     }
 
     @Test
     fun testIdentityTypeFromLocal() {
         assertChangeFromLocal(
-            createTestContact(),
-            { c -> c.setIdentityTypeFromLocal(IdentityType.WORK) },
-            { c -> IdentityType.WORK == c.data!!.identityType },
-            ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate::class.java,
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setIdentityTypeFromLocal(IdentityType.WORK) },
+            checkDataChanged = { contactModel -> IdentityType.WORK == contactModel.data!!.identityType },
+            expectedTaskReflectType = ReflectContactSyncUpdateTask.ReflectIdentityTypeUpdate::class.java,
         )
     }
 
     @Test
     fun testIdentityTypeFromSync() {
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setIdentityTypeFromSync(IdentityType.WORK) },
-            { c -> IdentityType.WORK == c.data!!.identityType },
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setIdentityTypeFromSync(IdentityType.WORK) },
+            checkDataChanged = { contactModel -> IdentityType.WORK == contactModel.data!!.identityType },
         )
     }
 
     @Test
     fun testAcquaintanceLevelFromLocal() {
         assertChangeFromLocal(
-            createTestContact(),
-            { c -> c.setAcquaintanceLevelFromLocal(AcquaintanceLevel.GROUP) },
-            { c -> AcquaintanceLevel.GROUP == c.data!!.acquaintanceLevel },
-            ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate::class.java,
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setAcquaintanceLevelFromLocal(AcquaintanceLevel.GROUP) },
+            checkDataChanged = { contactModel -> AcquaintanceLevel.GROUP == contactModel.data!!.acquaintanceLevel },
+            expectedTaskReflectType = ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate::class.java,
             shouldTriggerModifyListener = false,
         )
     }
@@ -375,9 +355,11 @@ class ContactModelTest {
     @Test
     fun testAcquaintanceLevelFromSync() {
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setAcquaintanceLevelFromSync(AcquaintanceLevel.GROUP) },
-            { c -> AcquaintanceLevel.GROUP == c.data!!.acquaintanceLevel },
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setAcquaintanceLevelFromSync(AcquaintanceLevel.GROUP) },
+            checkDataChanged = { contactModel -> AcquaintanceLevel.GROUP == contactModel.data!!.acquaintanceLevel },
             shouldTriggerModifyListener = false,
         )
     }
@@ -385,47 +367,57 @@ class ContactModelTest {
     @Test
     fun testActivityStateFromLocal() {
         assertChangeFromLocal(
-            createTestContact(),
-            { c -> c.setActivityStateFromLocal(IdentityState.INVALID) },
-            { c -> IdentityState.INVALID == c.data!!.activityState },
-            ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class.java,
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setActivityStateFromLocal(IdentityState.INVALID) },
+            checkDataChanged = { contactModel -> IdentityState.INVALID == contactModel.data!!.activityState },
+            expectedTaskReflectType = ReflectContactSyncUpdateTask.ReflectActivityStateUpdate::class.java,
         )
     }
 
     @Test
     fun testActivityStateFromSync() {
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setActivityStateFromSync(IdentityState.INVALID) },
-            { c -> IdentityState.INVALID == c.data!!.activityState },
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setActivityStateFromSync(IdentityState.INVALID) },
+            checkDataChanged = { contactModel -> IdentityState.INVALID == contactModel.data!!.activityState },
         )
     }
 
     @Test
     fun testFeatureMaskFromLocal() {
         assertChangeFromLocal(
-            createTestContact(),
-            { c -> c.setFeatureMaskFromLocal(12) },
-            { c -> 12 == c.data!!.featureMask.toInt() },
-            ReflectContactSyncUpdateTask.ReflectFeatureMaskUpdate::class.java,
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setFeatureMaskFromLocal(12) },
+            checkDataChanged = { contactModel -> 12 == contactModel.data!!.featureMask.toInt() },
+            expectedTaskReflectType = ReflectContactSyncUpdateTask.ReflectFeatureMaskUpdate::class.java,
         )
     }
 
     @Test
     fun testFeatureMaskFromSync() {
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setFeatureMaskFromSync(12u) },
-            { c -> 12 == c.data!!.featureMask.toInt() },
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setFeatureMaskFromSync(12u) },
+            checkDataChanged = { contactModel -> 12 == contactModel.data!!.featureMask.toInt() },
         )
     }
 
     @Test
     fun testSyncStateFromSync() {
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setSyncStateFromSync(ContactSyncState.CUSTOM) },
-            { c -> ContactSyncState.CUSTOM == c.data!!.syncState },
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setSyncStateFromSync(ContactSyncState.CUSTOM) },
+            checkDataChanged = { contactModel -> ContactSyncState.CUSTOM == contactModel.data!!.syncState },
             shouldTriggerModifyListener = false,
         )
     }
@@ -433,71 +425,59 @@ class ContactModelTest {
     @Test
     fun testReadReceiptPolicyFromLocal() {
         assertChangeFromLocal(
-            createTestContact(),
-            { c -> c.setReadReceiptPolicyFromLocal(ReadReceiptPolicy.DEFAULT) },
-            { c -> ReadReceiptPolicy.DEFAULT == c.data!!.readReceiptPolicy },
-            ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class.java,
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setReadReceiptPolicyFromLocal(ReadReceiptPolicy.DONT_SEND) },
+            checkDataChanged = { contactModel -> ReadReceiptPolicy.DONT_SEND == contactModel.data!!.readReceiptPolicy },
+            expectedTaskReflectType = ReflectContactSyncUpdateTask.ReflectReadReceiptPolicyUpdate::class.java,
         )
     }
 
     @Test
     fun testReadReceiptPolicyFromSync() {
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setReadReceiptPolicyFromSync(ReadReceiptPolicy.DEFAULT) },
-            { c -> ReadReceiptPolicy.DEFAULT == c.data!!.readReceiptPolicy },
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setReadReceiptPolicyFromSync(ReadReceiptPolicy.DONT_SEND) },
+            checkDataChanged = { contactModel -> ReadReceiptPolicy.DONT_SEND == contactModel.data!!.readReceiptPolicy },
         )
     }
 
     @Test
     fun testTypingIndicatorPolicyFromLocal() {
         assertChangeFromLocal(
-            createTestContact(),
-            { c -> c.setTypingIndicatorPolicyFromLocal(TypingIndicatorPolicy.DONT_SEND) },
-            { c -> TypingIndicatorPolicy.DONT_SEND == c.data!!.typingIndicatorPolicy },
-            ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class.java,
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setTypingIndicatorPolicyFromLocal(TypingIndicatorPolicy.DONT_SEND) },
+            checkDataChanged = { contactModel -> TypingIndicatorPolicy.DONT_SEND == contactModel.data!!.typingIndicatorPolicy },
+            expectedTaskReflectType = ReflectContactSyncUpdateTask.ReflectTypingIndicatorPolicyUpdate::class.java,
         )
     }
 
     @Test
     fun testTypingIndicatorPolicyFromSync() {
         assertChangeFromSync(
-            createTestContact(),
-            { c -> c.setTypingIndicatorPolicyFromSync(TypingIndicatorPolicy.DONT_SEND) },
-            { c -> TypingIndicatorPolicy.DONT_SEND == c.data!!.typingIndicatorPolicy },
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setTypingIndicatorPolicyFromSync(TypingIndicatorPolicy.DONT_SEND) },
+            checkDataChanged = { contactModel -> TypingIndicatorPolicy.DONT_SEND == contactModel.data!!.typingIndicatorPolicy },
         )
     }
 
     @Test
-    fun testDisplayName() {
-        val contact = createTestContact()
-        contact.setNicknameFromSync("nicky")
-
-        contact.setNameFromLocal("Test", "Contact")
-        assertEquals("Test Contact", contact.data!!.getDisplayName())
-
-        contact.setNameFromLocal("", "Lastname")
-        assertEquals("Lastname", contact.data!!.getDisplayName())
-
-        contact.setNameFromLocal("", "")
-        assertEquals("~nicky", contact.data!!.getDisplayName())
-
-        contact.setNicknameFromSync(null)
-        assertEquals(contact.data!!.identity, contact.data!!.getDisplayName())
-
-        contact.setNicknameFromSync(contact.data!!.identity)
-        assertEquals(contact.data!!.identity, contact.data!!.getDisplayName())
-    }
-
-    @Test
     fun testConstructorValidateIdentity() {
-        val data = createTestContact().data!!.copy(identity = "AAAAAAAA")
-        assertFailsWith<AssertionError> {
+        val data = TestData.createContactModel(
+            coreServiceManagerMock = coreServiceManagerMock,
+        ).data!!.copy(identity = "AAAAAAAA")
+        assertFailsWith<IllegalArgumentException> {
             ContactModel(
                 identity = "BBBBBBBB",
                 data = data,
                 databaseBackend = databaseBackendMock,
-                contactModelRepository = contactModelRepository,
                 coreServiceManager = coreServiceManagerMock,
             )
         }
@@ -505,7 +485,9 @@ class ContactModelTest {
 
     @Test
     fun testAndroidContactLookupKey() {
-        val contact = createTestContact()
+        val contact = TestData.createContactModel(
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
 
         assertEquals(0, contactListenerTracker.onModified.size)
 
@@ -531,7 +513,9 @@ class ContactModelTest {
 
     @Test
     fun testLocalAvatarExpires() {
-        val contact = createTestContact()
+        val contact = TestData.createContactModel(
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
 
         // Initially null
         assertNull(contact.data!!.androidContactLookupInfo)
@@ -556,7 +540,10 @@ class ContactModelTest {
 
     @Test
     fun testClearIsRestored() {
-        val contact = createTestContact(isRestored = true)
+        val contact = TestData.createContactModel(
+            isRestored = true,
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
 
         // Initially true
         assertTrue { contact.data!!.isRestored }
@@ -574,7 +561,9 @@ class ContactModelTest {
 
     @Test
     fun testSetProfilePictureBlobId() {
-        val contact = createTestContact()
+        val contact = TestData.createContactModel(
+            coreServiceManagerMock = coreServiceManagerMock,
+        )
         assertEquals(null, contact.data!!.profilePictureBlobId)
         assertEquals(0, contactListenerTracker.onModified.size)
 
@@ -595,8 +584,8 @@ class ContactModelTest {
         assertEquals(1, contactListenerTracker.onModified.size)
 
         // Blob ID can be set to an empty array or to null
-        contact.setProfilePictureBlobId(byteArrayOf())
-        assertContentEquals(byteArrayOf(), contact.data!!.profilePictureBlobId)
+        contact.setProfilePictureBlobId(emptyByteArray())
+        assertContentEquals(emptyByteArray(), contact.data!!.profilePictureBlobId)
         assertEquals(2, contactListenerTracker.onModified.size)
         contact.setProfilePictureBlobId(null)
         assertNull(contact.data!!.profilePictureBlobId)
@@ -613,8 +602,8 @@ class ContactModelTest {
 
     private fun assertChangeFromLocal(
         contactModel: ContactModel,
-        performChange: (c: ContactModel) -> Unit,
-        checkDataChanged: (c: ContactModel) -> Boolean,
+        performChange: (contactModel: ContactModel) -> Unit,
+        checkDataChanged: (contactModel: ContactModel) -> Boolean,
         expectedTaskReflectType: Class<*>,
         shouldTriggerModifyListener: Boolean = true,
     ) {
@@ -655,8 +644,8 @@ class ContactModelTest {
 
     private fun assertChangeFromSync(
         contactModel: ContactModel,
-        performChange: (c: ContactModel) -> Unit,
-        checkDataChanged: (c: ContactModel) -> Boolean,
+        performChange: (contactModel: ContactModel) -> Unit,
+        checkDataChanged: (contactModel: ContactModel) -> Boolean,
         shouldTriggerModifyListener: Boolean = true,
     ) {
         // Check that the data is not yet updated, listener count is zero, and no task is scheduled

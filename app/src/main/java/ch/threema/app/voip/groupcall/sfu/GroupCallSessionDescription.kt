@@ -87,24 +87,6 @@ private val CAMERA_CODECS = mapOf(
     ),
 )
 
-private val MICROPHONE_HEADER_EXTENSIONS = mapOf(
-    1u to "urn:ietf:params:rtp-hdrext:sdes:mid",
-    4u to "http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time",
-    5u to "http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01",
-    // TODO(SE-257): Disabled until we can use cryptex
-    // 10u to "urn:ietf:params:rtp-hdrext:ssrc-audio-level",
-)
-
-private val CAMERA_HEADER_EXTENSIONS = mapOf(
-    1u to "urn:ietf:params:rtp-hdrext:sdes:mid",
-    2u to "urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id",
-    3u to "urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id",
-    4u to "http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time",
-    5u to "http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01",
-    11u to "urn:3gpp:video-orientation",
-    12u to "urn:ietf:params:rtp-hdrext:toffset",
-)
-
 enum class ScalabilityMode(val temporalLayers: Int) {
     L1T3(3),
 }
@@ -207,7 +189,7 @@ internal class GroupCallSessionDescription(
                 type = DirectionType.LOCAL,
                 kind = MediaKind.AUDIO,
                 active = true,
-                extensions = MICROPHONE_HEADER_EXTENSIONS,
+                extensions = init.parameters.rtpHeaderExtensionIds.microphone,
                 codecs = MICROPHONE_CODECS,
                 mid = mids.microphone,
             )
@@ -216,7 +198,7 @@ internal class GroupCallSessionDescription(
                 type = DirectionType.LOCAL,
                 kind = MediaKind.VIDEO,
                 active = true,
-                extensions = CAMERA_HEADER_EXTENSIONS,
+                extensions = init.parameters.rtpHeaderExtensionIds.cameraAndScreen,
                 codecs = CAMERA_CODECS,
                 mid = mids.camera,
                 simulcast = CAMERA_SEND_ENCODINGS,
@@ -241,7 +223,7 @@ internal class GroupCallSessionDescription(
                 type = DirectionType.REMOTE,
                 kind = MediaKind.AUDIO,
                 active = active,
-                extensions = MICROPHONE_HEADER_EXTENSIONS,
+                extensions = init.parameters.rtpHeaderExtensionIds.microphone,
                 codecs = MICROPHONE_CODECS,
                 mid = mids.microphone,
             )
@@ -250,7 +232,7 @@ internal class GroupCallSessionDescription(
                 type = DirectionType.REMOTE,
                 kind = MediaKind.VIDEO,
                 active = active,
-                extensions = CAMERA_HEADER_EXTENSIONS,
+                extensions = init.parameters.rtpHeaderExtensionIds.cameraAndScreen,
                 codecs = CAMERA_CODECS,
                 mid = mids.camera,
             )

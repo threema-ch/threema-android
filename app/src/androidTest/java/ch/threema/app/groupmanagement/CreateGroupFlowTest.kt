@@ -2,9 +2,10 @@ package ch.threema.app.groupmanagement
 
 import android.text.format.DateUtils
 import ch.threema.app.DangerousTest
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.groupflows.GroupCreateProperties
 import ch.threema.app.groupflows.GroupFlowResult
+import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.tasks.GroupCreateTask
 import ch.threema.app.tasks.ReflectGroupSyncCreateTask
 import ch.threema.app.testutils.TestHelpers
@@ -19,12 +20,13 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.UserState
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
+import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,13 +37,19 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlinx.coroutines.test.runTest
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.core.module.Module
+import org.koin.dsl.module
 
 /**
  * This test asserts that the corresponding tasks have been scheduled when running the create group
  * flow.
  */
 @DangerousTest
-class CreateGroupFlowTest : GroupFlowTest() {
+class CreateGroupFlowTest : GroupFlowTest(), KoinComponent {
+    private val appRestrictions: AppRestrictions by inject()
+
     private val myContact: TestContact = TestHelpers.TEST_CONTACT
 
     private val initialContactModelData = ContactModelData(
@@ -69,6 +77,14 @@ class CreateGroupFlowTest : GroupFlowTest() {
         department = null,
         notificationTriggerPolicyOverride = null,
     )
+
+    private lateinit var taskManager: ControlledTaskManager
+    private lateinit var multiDeviceManager: MultiDeviceManager
+
+    override fun getInstrumentationTestModule(): Module = module {
+        factory<TaskManager> { taskManager }
+        factory<MultiDeviceManager> { multiDeviceManager }
+    }
 
     @BeforeTest
     fun setup() {
@@ -169,7 +185,7 @@ class CreateGroupFlowTest : GroupFlowTest() {
 
         // act
         val groupFlowResult: GroupFlowResult = groupFlowDispatcher.runCreateGroupFlow(
-            ThreemaApplication.getAppContext(),
+            appRestrictions,
             GroupCreateProperties(
                 name = "Test",
                 profilePicture = null,
@@ -217,7 +233,12 @@ class CreateGroupFlowTest : GroupFlowTest() {
         }
 
         // Prepare task manager and group flow dispatcher
-        val taskManager = ControlledTaskManager(scheduledTaskAssertions)
+        taskManager = ControlledTaskManager(scheduledTaskAssertions)
+        multiDeviceManager = if (reflectionExpectation.setupConfig == SetupConfig.MULTI_DEVICE_ENABLED) {
+            testMultiDeviceManagerEnabled
+        } else {
+            testMultiDeviceManagerDisabled
+        }
         val groupFlowDispatcher = getGroupFlowDispatcher(
             reflectionExpectation.setupConfig,
             taskManager,
@@ -226,13 +247,13 @@ class CreateGroupFlowTest : GroupFlowTest() {
 
         // Run create group flow
         val groupFlowResult: GroupFlowResult = groupFlowDispatcher.runCreateGroupFlow(
-            ThreemaApplication.getAppContext(),
+            appRestrictions,
             groupCreateProperties,
         ).await()
 
         // Assert that all expected tasks have been scheduled
         assert(taskManager.pendingTaskAssertions.isEmpty()) {
-            "There are ${taskManager.pendingTaskAssertions} pending task assertions left"
+            "There are ${taskManager.pendingTaskAssertions.size} pending task assertions left"
         }
 
         return groupFlowResult

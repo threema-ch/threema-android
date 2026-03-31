@@ -22,7 +22,7 @@ import ch.threema.domain.protocol.csp.messages.ballot.BallotVoteInterface;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
@@ -52,7 +52,7 @@ public interface BallotService {
     ) throws NotAllowedException;
 
     BallotModel create(
-        GroupModel groupModel,
+        GroupModelOld groupModel,
         String description,
         BallotModel.State state,
         BallotModel.Assessment assessment,
@@ -87,7 +87,7 @@ public interface BallotService {
     @Nullable
     BallotModel get(int ballotId);
 
-    BallotModel get(String id, String creator);
+    BallotModel get(@NonNull String id, @Nullable String creator);
 
     List<BallotModel> getBallots(BallotFilter filter) throws NotAllowedException;
 
@@ -99,7 +99,6 @@ public interface BallotService {
      * Create / Update ballot from createMessage
      *
      * @param createMessage BallotCreateMessage received from server
-     * @return BallotUpdateResult
      * @throws ThreemaException if an error occurred during processing
      */
     @NonNull

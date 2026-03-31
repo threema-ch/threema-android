@@ -1,25 +1,9 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.ThreemaApplication
-import ch.threema.base.crypto.NaCl
-import ch.threema.data.datatypes.IdColor
-import ch.threema.data.models.ContactModelData
-import ch.threema.data.models.GroupIdentity
-import ch.threema.data.models.GroupModelData
-import ch.threema.domain.models.ContactSyncState
-import ch.threema.domain.models.IdentityState
-import ch.threema.domain.models.IdentityType
-import ch.threema.domain.models.ReadReceiptPolicy
-import ch.threema.domain.models.TypingIndicatorPolicy
-import ch.threema.domain.models.VerificationLevel
-import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.storage.models.ContactModel
-import java.util.Date
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertNotNull
 import kotlin.reflect.KClass
 import kotlin.test.Test
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 
 /**
@@ -29,8 +13,6 @@ import kotlinx.serialization.json.Json
  * representation will be dropped.
  */
 class PersistableTasksTest {
-    private val serviceManager = ThreemaApplication.requireServiceManager()
-
     @Test
     fun testContactDeliveryReceiptMessageTask() {
         assertValidEncoding(
@@ -203,9 +185,6 @@ class PersistableTasksTest {
 
     @Test
     fun testDeleteAndTerminateFSSessionsTask() {
-        // Add the contact '01234567' so that creating the tasks works
-        addTestData()
-
         assertValidEncoding(
             DeleteAndTerminateFSSessionsTask::class,
             """{"type":"ch.threema.app.tasks.DeleteAndTerminateFSSessionsTask.DeleteAndTerminateFSSessionsTaskData",""" +
@@ -500,9 +479,6 @@ class PersistableTasksTest {
 
     @Test
     fun testOnFSFeatureMaskDowngradedTask() {
-        // Add the contact '01234567' so that creating the tasks works
-        addTestData()
-
         assertValidEncoding(
             OnFSFeatureMaskDowngradedTask::class,
             """{"type":"ch.threema.app.tasks.OnFSFeatureMaskDowngradedTask.OnFSFeatureMaskDowngradedData","identity":"01234567"}""",
@@ -763,7 +739,6 @@ class PersistableTasksTest {
 
     @Test
     fun testGroupNotificationTriggerPolicyOverrideUpdate() {
-        addTestData()
         assertValidEncoding(
             ReflectGroupSyncUpdateTask.ReflectNotificationTriggerPolicyOverrideUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectGroupSyncUpdateTask.ReflectNotificationTriggerPolicyOverrideUpdate.""" +
@@ -784,7 +759,6 @@ class PersistableTasksTest {
 
     @Test
     fun testReflectGroupConversationCategoryUpdate() {
-        addTestData()
         assertValidEncoding(
             expectedTaskClass = ReflectGroupSyncUpdateTask.ReflectGroupConversationCategoryUpdateTask::class,
             encodedTask = "{\"type\":\"ch.threema.app.tasks.ReflectGroupSyncUpdateTask.ReflectGroupConversationCategoryUpdateTask" +
@@ -804,7 +778,6 @@ class PersistableTasksTest {
 
     @Test
     fun testReflectGroupConversationVisibilityArchiveUpdate() {
-        addTestData()
         assertValidEncoding(
             ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityArchiveUpdate::class,
             "{\"type\":\"ch.threema.app.tasks.ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityArchiveUpdate" +
@@ -824,7 +797,6 @@ class PersistableTasksTest {
 
     @Test
     fun testReflectGroupConversationVisibilityPinnedUpdate() {
-        addTestData()
         assertValidEncoding(
             ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityPinnedUpdate::class,
             "{\"type\":\"ch.threema.app.tasks.ReflectGroupSyncUpdateTask.ReflectGroupConversationVisibilityPinnedUpdate" +
@@ -866,71 +838,8 @@ class PersistableTasksTest {
         )
     }
 
-    private fun addTestData() = runBlocking {
-        val identity = "01234567"
-        if (serviceManager.modelRepositories.contacts.getByIdentity(identity) != null) {
-            // If the contact already exists, we do not add it again
-            return@runBlocking
-        }
-
-        val keyPair = NaCl.generateKeypair()
-        serviceManager.identityStore.storeIdentity(
-            identity = identity,
-            serverGroup = "",
-            privateKey = keyPair.privateKey,
-        )
-
-        serviceManager.modelRepositories.contacts.createFromLocal(
-            ContactModelData(
-                identity = identity,
-                publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES),
-                createdAt = Date(42),
-                firstName = "0123",
-                lastName = "4567",
-                nickname = "01",
-                verificationLevel = VerificationLevel.SERVER_VERIFIED,
-                workVerificationLevel = WorkVerificationLevel.NONE,
-                identityType = IdentityType.NORMAL,
-                acquaintanceLevel = ContactModel.AcquaintanceLevel.DIRECT,
-                activityState = IdentityState.ACTIVE,
-                syncState = ContactSyncState.INITIAL,
-                featureMask = 0u,
-                typingIndicatorPolicy = TypingIndicatorPolicy.DEFAULT,
-                readReceiptPolicy = ReadReceiptPolicy.DEFAULT,
-                isArchived = false,
-                androidContactLookupInfo = null,
-                localAvatarExpires = null,
-                isRestored = false,
-                profilePictureBlobId = null,
-                jobTitle = null,
-                department = null,
-                notificationTriggerPolicyOverride = null,
-            ),
-        )
-
-        serviceManager.modelRepositories.groups.persistNewGroup(
-            GroupModelData(
-                groupIdentity = GroupIdentity(
-                    creatorIdentity = identity,
-                    groupId = 6361180283070237492,
-                ),
-                name = null,
-                createdAt = Date(),
-                synchronizedAt = null,
-                lastUpdate = null,
-                isArchived = false,
-                precomputedIdColor = IdColor.invalid(),
-                groupDescription = null,
-                groupDescriptionChangedAt = null,
-                otherMembers = setOf(identity),
-                userState = ch.threema.storage.models.GroupModel.UserState.MEMBER,
-                notificationTriggerPolicyOverride = null,
-            ),
-        )
-    }
-
     private fun assertValidEncoding(expectedTaskClass: KClass<*>, encodedTask: String) {
-        val decodedTask = Json.decodeFromString<SerializableTaskData>(encodedTask).createTask(serviceManager)
+        val decodedTask = Json.decodeFromString<SerializableTaskData>(encodedTask).createTask()
         assertNotNull(decodedTask)
         assertEquals(expectedTaskClass, decodedTask::class)
     }

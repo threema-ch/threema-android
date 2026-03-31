@@ -8,6 +8,7 @@ val messageDetailsFeatureModule = module {
         MessageDetailsViewModel(
             messageService = get(),
             emojiReactionsRepository = get(),
+            preferenceService = get(),
             messageId = parameters[0],
             messageType = parameters[1],
         )

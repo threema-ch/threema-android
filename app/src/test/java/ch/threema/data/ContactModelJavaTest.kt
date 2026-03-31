@@ -4,9 +4,9 @@ import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.common.now
 import ch.threema.data.datatypes.AndroidContactLookupInfo
+import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData.Companion.javaCreate
-import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.storage.DatabaseBackend
 import ch.threema.domain.models.ContactSyncState
 import ch.threema.domain.models.IdentityState
@@ -15,6 +15,7 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.storage.models.ContactModel
 import io.mockk.every
@@ -27,17 +28,19 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import testdata.TestData
 
 class ContactModelJavaTest {
     private val databaseBackendMock = mockk<DatabaseBackend>()
-    private val coreServiceManagerMock = mockk<CoreServiceManager>()
-    private val contactModelRepository = ContactModelRepository(
-        ModelTypeCache(),
-        databaseBackendMock,
-        coreServiceManagerMock,
-    )
     private val multiDeviceManagerMock = mockk<MultiDeviceManager>()
     private val taskManagerMock = mockk<TaskManager>()
+    private val coreServiceManagerMock = mockk<CoreServiceManager> {
+        every { multiDeviceManager } returns multiDeviceManagerMock
+        every { taskManager } returns taskManagerMock
+        every { identityStore } returns mockk<IdentityStore> {
+            every { getIdentityString() } returns TestData.Identities.ME.value
+        }
+    }
 
     @BeforeTest
     fun init() {
@@ -83,7 +86,6 @@ class ContactModelJavaTest {
                 notificationTriggerPolicyOverride = null,
             ),
             databaseBackendMock,
-            contactModelRepository,
             coreServiceManagerMock,
         )
 
@@ -127,7 +129,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.FIRSTNAME_LASTNAME)
 
         // assert
         assertEquals("Firstname", contactListItemTextTopLeft)
@@ -147,7 +149,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(false)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.LASTNAME_FIRSTNAME)
 
         // assert
         assertEquals("Firstname", contactListItemTextTopLeft)
@@ -167,7 +169,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.FIRSTNAME_LASTNAME)
 
         // assert
         assertEquals("Lastname", contactListItemTextTopLeft)
@@ -187,7 +189,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(false)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.LASTNAME_FIRSTNAME)
 
         // assert
         assertEquals("Lastname", contactListItemTextTopLeft)
@@ -207,7 +209,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.FIRSTNAME_LASTNAME)
 
         // assert
         assertEquals("Firstname Lastname", contactListItemTextTopLeft)
@@ -227,7 +229,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(false)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.LASTNAME_FIRSTNAME)
 
         // assert
         assertEquals("Lastname Firstname", contactListItemTextTopLeft)
@@ -247,7 +249,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.FIRSTNAME_LASTNAME)
 
         // assert
         assertEquals("Firstname Lastname", contactListItemTextTopLeft)
@@ -267,7 +269,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(false)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.LASTNAME_FIRSTNAME)
 
         // assert
         assertEquals("Lastname Firstname", contactListItemTextTopLeft)
@@ -287,7 +289,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("Nickname")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.FIRSTNAME_LASTNAME)
 
         // assert
         assertEquals("Firstname Lastname", contactListItemTextTopLeft)
@@ -308,7 +310,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("Nickname")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.FIRSTNAME_LASTNAME)
 
         // assert
         assertEquals("~Nickname", contactListItemTextTopLeft)
@@ -328,7 +330,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("Nickname")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.FIRSTNAME_LASTNAME)
 
         // assert
         assertEquals("~Nickname", contactListItemTextTopLeft)
@@ -348,7 +350,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("   Nickname   ")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.FIRSTNAME_LASTNAME)
 
         // assert
         assertEquals("~Nickname", contactListItemTextTopLeft)
@@ -368,7 +370,7 @@ class ContactModelJavaTest {
         javaContactModel.setPublicNickName("  ")
 
         // act
-        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(true)
+        val contactListItemTextTopLeft = javaContactModel.getContactListItemTextTopLeft(ContactNameFormat.FIRSTNAME_LASTNAME)
 
         // assert
         assertEquals(identity, contactListItemTextTopLeft)

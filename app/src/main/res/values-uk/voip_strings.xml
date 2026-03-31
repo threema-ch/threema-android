@@ -53,14 +53,18 @@
     <string name="voip_prefs_video_codec_no_h264hip">Вимкнути H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Програмні кодеки</string>
     <string name="voip_connection_failed">Не вдалося встановити з\'єднання</string>
-    <string name="voip_connection_lost">З\'єднання втрачено</string>
+    <string name="voip_call_disconnected">Виклик розірвано</string>
     <string name="prefs_voip_reject_incoming_calls_title">Відхиляти телефонні виклики</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Відхиляти вхідні дзвінки на телефон, коли триває виклик Threema</string>
     <string name="voip_contact_not_found">Контакта Threema за цим номером не знайдено.</string>
     <string name="voip_another_pstn_call">Неможливо почати виклик Threema, поки триває звичайний телефонний виклик.</string>
     <string name="voip_call_status_off_hours">Виклик у неробочий час</string>
     <string name="voip_peer_video_disabled">Контакт вимкнув відеовиклики.</string>
-    <string name="voip_reject_channel_name">Зміна стану виклику</string>
+    <string name="voip_error_processing_call_anser">Під час відповіді на виклик сталася помилка</string>
+    <string name="voip_error_peer_connection">Помилка з\'єднання з вузлом</string>
+    <string name="voip_error_determine_common_video_quality_profile">Не вдалось визначити типовий профіль якості відео</string>
+    <string name="voip_audio_focus_lost">Втрачено доступ до відтворення аудіо</string>
+    <string name="voip_could_not_initialize">Не вдалось розпочати виклик</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Діагностика WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Скористайтеся цим інструментом, щоб виявити проблеми зі з\'єднанням під час голосового виклику</string>
@@ -71,13 +75,9 @@
     <string name="voip_webrtc_debug_copied">Скопійовано в буфер обміну.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Копіювати в буфер обміну</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">Усіх учасників групи сповіщено</string>
-    <string name="voip_gc_notification_channel_description">Групові виклики</string>
-    <string name="voip_gc_notification_title">Груповий виклик</string>
     <string name="voip_gc_notification_call_started">Контакт \"%1$s\" почав груповий виклик у групі \"%2$s\"</string>
     <string name="voip_gc_notification_call_started_generic">Контакт \"%1$s\" почав груповий виклик</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Ви почали груповий виклик</string>
-    <string name="voip_gc_dismiss_call">Ігнорувати</string>
     <string name="voip_gc_join_call">Приєднатися</string>
     <string name="voip_gc_ongoing_call">Триває груповий виклик</string>
     <string name="voip_gc_waiting_for_participants">Очікування на учасників</string>

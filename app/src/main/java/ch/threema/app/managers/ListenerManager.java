@@ -1,12 +1,12 @@
 package ch.threema.app.managers;
 
-
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.listeners.AppIconListener;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.listeners.BallotVoteListener;
@@ -31,6 +31,7 @@ import ch.threema.app.listeners.ServerMessageListener;
 import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.listeners.ThreemaSafeListener;
 import ch.threema.app.listeners.VoipCallListener;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 public class ListenerManager {
@@ -76,19 +77,19 @@ public class ListenerManager {
             if (handleListener != null && this.enabled) {
                 // Since a handler might modify the array of listeners, there's the danger
                 // of a ConcurrentModificationException or a deadlock.
-                // Therefore we iterate over a copy of the listeners, to avoid that problem.
+                // Therefore, we iterate over a copy of the listeners, to avoid that problem.
                 final List<T> listenersCopy;
                 synchronized (this.listeners) {
                     listenersCopy = new ArrayList<>(this.listeners);
                 }
 
                 // Run the handle method on every listener
-                for (T listener : listenersCopy) {
+                for (final @Nullable T listener : listenersCopy) {
                     if (listener != null) {
                         try {
                             handleListener.handle(listener);
-                        } catch (Exception x) {
-                            logger.error("cannot handle event", x);
+                        } catch (Exception e) {
+                            logger.error("Failed to handle listener event", e);
                         }
                     }
                 }
@@ -128,6 +129,10 @@ public class ListenerManager {
         public boolean isEnabled() {
             return this.enabled;
         }
+
+        public int size() {
+            return listeners.size();
+        }
     }
 
     public static final TypedListenerManager<ConversationListener> conversationListeners = new TypedListenerManager<>();
@@ -148,7 +153,7 @@ public class ListenerManager {
     public static final TypedListenerManager<ProfileListener> profileListeners = new TypedListenerManager<>();
     public static final TypedListenerManager<VoipCallListener> voipCallListeners = new TypedListenerManager<>();
     public static final TypedListenerManager<ThreemaSafeListener> threemaSafeListeners = new TypedListenerManager<>();
-    public static final TypedListenerManager<ChatListener> chatListener = new TypedListenerManager<>();
+    public static final TypedListenerManager<ChatListener> chatListeners = new TypedListenerManager<>();
     public static final TypedListenerManager<MessagePlayerListener> messagePlayerListener = new TypedListenerManager<>();
     public static final TypedListenerManager<NewSyncedContactsListener> newSyncedContactListener = new TypedListenerManager<>();
     public static final TypedListenerManager<QRCodeScanListener> qrCodeScanListener = new TypedListenerManager<>();

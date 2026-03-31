@@ -2,7 +2,7 @@ package ch.threema.app.voip.groupcall.sfu
 
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData
-import ch.threema.storage.models.GroupModel
+import ch.threema.storage.models.group.GroupModelOld
 import io.mockk.every
 import io.mockk.mockk
 import kotlin.test.Test
@@ -122,7 +122,7 @@ private fun createCallId(): CallId {
     val groupId = mockk<GroupId>()
     every { groupId.groupId } returns GROUP_ID
 
-    val group = mockk<GroupModel>()
+    val group = mockk<GroupModelOld>()
     every { group.apiGroupId } returns groupId
     every { group.creatorIdentity } returns GROUP_CREATOR_IDENTITY
 

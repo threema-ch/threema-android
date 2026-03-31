@@ -4,7 +4,7 @@ import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.NaCl
 import ch.threema.common.secureContentEquals
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.libthreema.IdentityBackupData
 import ch.threema.libthreema.IdentityBackupException
 import ch.threema.libthreema.decryptIdentityBackup
@@ -87,7 +87,7 @@ object IdentityBackup {
      * help avoid mixing up password and threema identity.
      */
     data class PlainBackupData(
-        val threemaId: Identity,
+        val threemaId: IdentityString,
         val clientKey: ByteArray,
     ) {
         fun toIdentityBackupData() = IdentityBackupData(

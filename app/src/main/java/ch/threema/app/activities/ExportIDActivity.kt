@@ -68,13 +68,13 @@ class ExportIDActivity : AppCompatActivity(), PasswordEntryDialogClickListener {
         dialogFragment.show(supportFragmentManager, DIALOG_TAG_SET_ID_BACKUP_PW)
     }
 
-    override fun onYes(tag: String, text: String, isChecked: Boolean, data: Any?) {
+    override fun onYes(tag: String?, text: String, isChecked: Boolean, data: Any?) {
         when (tag) {
             DIALOG_TAG_SET_ID_BACKUP_PW -> createIDBackup(text)
         }
     }
 
-    override fun onNo(tag: String) {
+    override fun onNo(tag: String?) {
         finish()
     }
 

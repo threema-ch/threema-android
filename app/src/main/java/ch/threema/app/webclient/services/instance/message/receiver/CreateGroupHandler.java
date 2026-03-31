@@ -1,5 +1,6 @@
 package ch.threema.app.webclient.services.instance.message.receiver;
 
+import org.koin.java.KoinJavaComponent;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
@@ -17,10 +18,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.groupflows.GroupFlowResult;
 import ch.threema.app.groupflows.GroupCreateProperties;
 import ch.threema.app.profilepicture.CheckedProfilePicture;
+import ch.threema.app.restrictions.AppRestrictions;
 import ch.threema.app.services.GroupFlowDispatcher;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.utils.RuntimeUtil;
@@ -31,8 +32,11 @@ import ch.threema.app.webclient.exceptions.ConversionException;
 import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.CoroutinesExtensionKt;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
-import ch.threema.storage.models.GroupModel;
+
+import ch.threema.data.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
@@ -109,7 +113,7 @@ public class CreateGroupHandler extends MessageReceiver {
         // Create group
         try {
             Deferred<GroupFlowResult> createGroupFlowResultDeferred = groupFlowDispatcher.runCreateGroupFlow(
-                ThreemaApplication.getAppContext(),
+                KoinJavaComponent.get(AppRestrictions.class),
                 new GroupCreateProperties(
                     name != null ? name : "",
                     CheckedProfilePicture.getOrConvertFromBytes(avatar),
@@ -129,8 +133,8 @@ public class CreateGroupHandler extends MessageReceiver {
                 groupFlowResult -> {
                     RuntimeUtil.runOnWorkerThread(() -> {
                         if (groupFlowResult instanceof GroupFlowResult.Success) {
-                            final @NonNull ch.threema.data.models.GroupModel createdGroupModel = ((GroupFlowResult.Success) groupFlowResult).getGroupModel();
-                            final @Nullable GroupModel oldGroupModel = groupService.getByGroupIdentity(createdGroupModel.getGroupIdentity());
+                            final @NonNull GroupModel createdGroupModel = ((GroupFlowResult.Success) groupFlowResult).getGroupModel();
+                            final @Nullable GroupModelOld oldGroupModel = groupService.getByGroupIdentity(createdGroupModel.getGroupIdentity());
                             if (oldGroupModel != null) {
                                 success(temporaryId, oldGroupModel);
                             } else {
@@ -148,7 +152,7 @@ public class CreateGroupHandler extends MessageReceiver {
         }
     }
 
-    private void success(String temporaryId, @NonNull GroupModel group) {
+    private void success(String temporaryId, @NonNull GroupModelOld group) {
         logger.debug("Respond create group success");
         try {
             this.send(this.dispatcher,

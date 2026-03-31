@@ -137,9 +137,8 @@ public class ConversationUpdateHandler extends MessageUpdater {
 
         @Override
         @AnyThread
-        public void onModified(@NonNull ConversationModel modifiedConversationModel, @Nullable Integer oldPosition) {
+        public void onModified(@NonNull ConversationModel modifiedConversationModel) {
             logger.info("Conversation modified, sending update to Threema Web (conversation={})", modifiedConversationModel.getUid());
-            logger.info("Move item from: {} to {}", oldPosition, modifiedConversationModel.getPosition());
             // Notify webclient in background thread
             handler.post(() -> ConversationUpdateHandler.this.respond(modifiedConversationModel, ARGUMENT_MODE_MODIFIED));
         }

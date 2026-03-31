@@ -5,14 +5,13 @@ import android.os.Bundle
 import androidx.annotation.StringRes
 import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.services.ProfilePictureRecipientsService
 import ch.threema.app.tasks.ReflectUserProfileShareWithAllowListSyncTask
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.equalsIgnoreOrder
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel
 import org.koin.android.ext.android.inject
 
@@ -38,7 +37,7 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
 
     override fun initData(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
-            val selectedIdentities: Array<Identity>? = profilePictureRecipientsService.all
+            val selectedIdentities: Array<IdentityString>? = profilePictureRecipientsService.all
             if (!selectedIdentities.isNullOrEmpty()) {
                 preselectedIdentities = ArrayList(listOf(*selectedIdentities))
             }
@@ -48,8 +47,8 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
     }
 
     override fun menuNext(selectedContacts: List<ContactModel?>) {
-        val oldAllowedIdentities: Array<Identity> = profilePictureRecipientsService.all
-        val newAllowedIdentities: Array<Identity> = selectedContacts
+        val oldAllowedIdentities: Array<IdentityString> = profilePictureRecipientsService.all
+        val newAllowedIdentities: Array<IdentityString> = selectedContacts
             .mapNotNull { contactModel -> contactModel?.identity }
             .toTypedArray<String>()
         profilePictureRecipientsService.replaceAll(newAllowedIdentities)
@@ -60,7 +59,6 @@ class ProfilePicRecipientsActivity : MemberChooseActivity() {
             taskManager.schedule(
                 ReflectUserProfileShareWithAllowListSyncTask(
                     allowedIdentities = newAllowedIdentities.toSet(),
-                    serviceManager = ThreemaApplication.requireServiceManager(),
                 ),
             )
         }

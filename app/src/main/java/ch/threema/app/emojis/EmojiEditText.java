@@ -17,31 +17,26 @@ import ch.threema.base.utils.Utils;
 
 public class EmojiEditText extends ThreemaEditText {
 
-    protected Context appContext;
     protected CharSequence hint;
     private String currentText;
     private int maxByteSize;
 
     public EmojiEditText(Context context) {
         super(context);
-
-        init2(context);
+        init2();
     }
 
     public EmojiEditText(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
-
-        init2(context);
+        init2();
     }
 
     public EmojiEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        init2(context);
+        init2();
     }
 
-    private void init2(Context context) {
-        this.appContext = context.getApplicationContext();
+    private void init2() {
         this.hint = getHint();
         this.currentText = "";
         this.maxByteSize = 0;
@@ -54,7 +49,6 @@ public class EmojiEditText extends ThreemaEditText {
     /**
      * Add our EmojiFilter as the first item to the array of existing InputFilters
      *
-     * @param originalFilters
      * @return Array of filters
      */
     private InputFilter[] appendEmojiFilter(@Nullable InputFilter[] originalFilters) {
@@ -73,8 +67,6 @@ public class EmojiEditText extends ThreemaEditText {
 
     /**
      * Add single emoji at the current cursor position
-     *
-     * @param emojiCodeString
      */
     public void addEmoji(String emojiCodeString) {
         final int start = getSelectionStart();
@@ -92,8 +84,6 @@ public class EmojiEditText extends ThreemaEditText {
 
     /**
      * Callback called by invalidateSelf of EmojiDrawable
-     *
-     * @param drawable
      */
     @Override
     public void invalidateDrawable(@NonNull Drawable drawable) {

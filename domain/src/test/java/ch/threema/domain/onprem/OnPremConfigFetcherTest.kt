@@ -10,9 +10,12 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import java.time.Instant
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 import okhttp3.HttpUrl.Companion.toHttpUrl
@@ -22,10 +25,15 @@ import okio.IOException
 import org.json.JSONObject
 
 class OnPremConfigFetcherTest {
-    private val onPremConfigStoreMock = mockk<OnPremConfigStore>(relaxed = true)
+    private lateinit var onPremConfigStoreMock: OnPremConfigStore
+
+    @BeforeTest
+    fun setUp() {
+        onPremConfigStoreMock = mockk<OnPremConfigStore>(relaxed = true)
+    }
 
     @Test
-    fun `config is fetched`() {
+    fun `config is fetched and stored`() {
         val timeProvider = TestTimeProvider()
         val serverConfigParameters = serverParameters
         val onPremConfigJsonObjectMock = mockk<JSONObject>()
@@ -40,7 +48,8 @@ class OnPremConfigFetcherTest {
             every { parse(onPremConfigJsonObjectMock, createdAt = timeProvider.get()) } returns mockOnPremConfig()
         }
         val fetcher = OnPremConfigFetcher(
-            okHttpClient = okHttpClientMock,
+            pinnedOkHttpClient = okHttpClientMock,
+            unpinnedOkHttpClient = mockk(),
             onPremConfigVerifier = onPremConfigVerifierMock,
             onPremConfigParser = onPremConfigParserMock,
             onPremConfigStore = onPremConfigStoreMock,
@@ -48,15 +57,18 @@ class OnPremConfigFetcherTest {
             timeProvider = timeProvider,
         )
 
-        fetcher.fetch()
+        fetcher.getOrFetch()
 
         verify(exactly = 1) {
             okHttpClientMock.newCall(
                 match { request ->
-                    request.url == serverConfigParameters.url.toHttpUrl() &&
+                    request.url == serverConfigParameters.oppfUrl.toHttpUrl() &&
                         request.header("Authorization") == BASIC_AUTH_HEADER_VALUE
                 },
             )
+        }
+        verify(exactly = 1) {
+            onPremConfigStoreMock.store(any())
         }
     }
 
@@ -76,18 +88,60 @@ class OnPremConfigFetcherTest {
             every { parse(onPremConfigJsonObjectMock, createdAt = any()) } returns config
         }
         val fetcher = OnPremConfigFetcher(
-            okHttpClient = okHttpClientMock,
+            pinnedOkHttpClient = okHttpClientMock,
+            unpinnedOkHttpClient = mockk(),
             onPremConfigVerifier = onPremConfigVerifierMock,
             onPremConfigParser = onPremConfigParserMock,
             onPremConfigStore = onPremConfigStoreMock,
             serverParameters = serverParameters,
             timeProvider = timeProvider,
         )
-        fetcher.fetch()
+        fetcher.getOrFetch()
 
         timeProvider.advanceBy(5.minutes - 1.seconds)
 
-        fetcher.fetch()
+        fetcher.getOrFetch()
+
+        verify(exactly = 1) { okHttpClientMock.newCall(any()) }
+    }
+
+    @Test
+    fun `cached config is returned if it is valid`() {
+        val timeProvider = TestTimeProvider()
+        val config = mockOnPremConfig(validUntil = timeProvider.get() + 5.minutes)
+        val onPremConfigJsonObjectMock = mockk<JSONObject>()
+        val responseBody = "response-body"
+        val okHttpClientMock = mockOkHttpClient { request ->
+            request.respondWith(responseBody)
+        }
+        val onPremConfigVerifierMock = mockk<OnPremConfigVerifier> {
+            every { verify(responseBody) } returns onPremConfigJsonObjectMock
+        }
+        val onPremConfigParserMock = mockk<OnPremConfigParser> {
+            every { parse(onPremConfigJsonObjectMock, createdAt = any()) } returns config
+        }
+        val fetcher = OnPremConfigFetcher(
+            pinnedOkHttpClient = okHttpClientMock,
+            unpinnedOkHttpClient = mockk(),
+            onPremConfigVerifier = onPremConfigVerifierMock,
+            onPremConfigParser = onPremConfigParserMock,
+            onPremConfigStore = onPremConfigStoreMock,
+            serverParameters = serverParameters,
+            timeProvider = timeProvider,
+        )
+        assertNull(fetcher.getCached())
+
+        fetcher.getOrFetch()
+
+        assertNotNull(fetcher.getCached())
+
+        timeProvider.advanceBy(5.minutes - 1.seconds)
+
+        assertNotNull(fetcher.getCached())
+
+        timeProvider.advanceBy(2.seconds)
+
+        assertNull(fetcher.getCached())
 
         verify(exactly = 1) { okHttpClientMock.newCall(any()) }
     }
@@ -108,18 +162,19 @@ class OnPremConfigFetcherTest {
             every { parse(onPremConfigJsonObjectMock, createdAt = any()) } returns config
         }
         val fetcher = OnPremConfigFetcher(
-            okHttpClient = okHttpClientMock,
+            pinnedOkHttpClient = okHttpClientMock,
+            unpinnedOkHttpClient = mockk(),
             onPremConfigVerifier = onPremConfigVerifier,
             onPremConfigParser = onPremConfigParser,
             onPremConfigStore = onPremConfigStoreMock,
             serverParameters = serverParameters,
             timeProvider = timeProvider,
         )
-        fetcher.fetch()
+        fetcher.getOrFetch()
 
         timeProvider.advanceBy(5.minutes + 1.seconds)
 
-        fetcher.fetch()
+        fetcher.getOrFetch()
 
         verify(exactly = 2) { okHttpClientMock.newCall(any()) }
     }
@@ -130,7 +185,8 @@ class OnPremConfigFetcherTest {
             request.respondWith(code = 500)
         }
         val fetcher = OnPremConfigFetcher(
-            okHttpClient = okHttpClientMock,
+            pinnedOkHttpClient = okHttpClientMock,
+            unpinnedOkHttpClient = mockk(),
             onPremConfigVerifier = mockk(),
             onPremConfigParser = mockk(),
             onPremConfigStore = onPremConfigStoreMock,
@@ -139,7 +195,7 @@ class OnPremConfigFetcherTest {
         )
 
         assertFailsWith<ThreemaException> {
-            fetcher.fetch()
+            fetcher.getOrFetch()
         }
     }
 
@@ -150,21 +206,22 @@ class OnPremConfigFetcherTest {
             request.respondWith(code = 401)
         }
         val fetcher = OnPremConfigFetcher(
-            okHttpClient = okHttpClientMock,
+            pinnedOkHttpClient = okHttpClientMock,
+            unpinnedOkHttpClient = mockk(),
             onPremConfigVerifier = mockk(),
             onPremConfigParser = mockk(),
             onPremConfigStore = onPremConfigStoreMock,
             serverParameters = serverParameters,
             timeProvider = timeProvider,
         )
-        assertFailsWith<ThreemaException> {
-            fetcher.fetch()
+        assertFailsWith<UnauthorizedFetchException> {
+            fetcher.getOrFetch()
         }
 
         timeProvider.advanceBy(3.minutes - 1.seconds)
 
         assertFailsWith<UnauthorizedFetchException> {
-            fetcher.fetch()
+            fetcher.getOrFetch()
         }
     }
 
@@ -179,7 +236,8 @@ class OnPremConfigFetcherTest {
             responseMock
         }
         val fetcher = OnPremConfigFetcher(
-            okHttpClient = okHttpClientMock,
+            pinnedOkHttpClient = okHttpClientMock,
+            unpinnedOkHttpClient = mockk(),
             onPremConfigVerifier = mockk(relaxed = true),
             onPremConfigParser = mockk {
                 every { parse(any(), createdAt = any()) } returns mockOnPremConfig()
@@ -189,7 +247,7 @@ class OnPremConfigFetcherTest {
             timeProvider = timeProvider,
         )
         assertFailsWith<ThreemaException> {
-            fetcher.fetch()
+            fetcher.getOrFetch()
         }
 
         every { responseMock.isSuccessful } returns true
@@ -198,7 +256,7 @@ class OnPremConfigFetcherTest {
         }
         timeProvider.advanceBy(3.minutes + 1.seconds)
 
-        fetcher.fetch()
+        fetcher.getOrFetch()
     }
 
     @Test
@@ -212,7 +270,8 @@ class OnPremConfigFetcherTest {
             responseMock
         }
         val fetcher = OnPremConfigFetcher(
-            okHttpClient = okHttpClientMock,
+            pinnedOkHttpClient = okHttpClientMock,
+            unpinnedOkHttpClient = mockk(),
             onPremConfigVerifier = mockk(relaxed = true),
             onPremConfigParser = mockk {
                 every { parse(any(), createdAt = any()) } returns mockOnPremConfig()
@@ -222,7 +281,7 @@ class OnPremConfigFetcherTest {
             timeProvider = timeProvider,
         )
         assertFailsWith<ThreemaException> {
-            fetcher.fetch()
+            fetcher.getOrFetch()
         }
 
         every { responseMock.isSuccessful } returns true
@@ -230,7 +289,7 @@ class OnPremConfigFetcherTest {
             every { string() } returns "mock-response"
         }
 
-        fetcher.fetch()
+        fetcher.getOrFetch()
     }
 
     @Test
@@ -239,7 +298,8 @@ class OnPremConfigFetcherTest {
             throw IOException()
         }
         val fetcher = OnPremConfigFetcher(
-            okHttpClient = okHttpClientMock,
+            pinnedOkHttpClient = okHttpClientMock,
+            unpinnedOkHttpClient = mockk(),
             onPremConfigVerifier = mockk(),
             onPremConfigParser = mockk(),
             onPremConfigStore = onPremConfigStoreMock,
@@ -247,7 +307,7 @@ class OnPremConfigFetcherTest {
             timeProvider = TestTimeProvider(),
         )
         val exception = assertFailsWith<ThreemaException> {
-            fetcher.fetch()
+            fetcher.getOrFetch()
         }
         assert(exception.cause is IOException)
     }
@@ -259,7 +319,8 @@ class OnPremConfigFetcherTest {
             request.respondWith("response-body")
         }
         val fetcher = OnPremConfigFetcher(
-            okHttpClient = okHttpClientMock,
+            pinnedOkHttpClient = okHttpClientMock,
+            unpinnedOkHttpClient = mockk(),
             onPremConfigVerifier = mockk(relaxed = true),
             onPremConfigParser = mockk {
                 every { parse(any(), createdAt = timeProvider.get()) } returns mockOnPremConfig(licenseValidUntil = timeProvider.get() - 1.seconds)
@@ -270,9 +331,102 @@ class OnPremConfigFetcherTest {
         )
 
         val exception = assertFailsWith<ThreemaException> {
-            fetcher.fetch()
+            fetcher.getOrFetch()
         }
         assertContains(exception.message!!, "license has expired")
+    }
+
+    @Test
+    fun `config is fetched from fallback url, cached and stored`() {
+        val timeProvider = TestTimeProvider()
+        val serverConfigParameters = serverParameters
+        val onPremConfigJsonObjectMock = mockk<JSONObject>()
+        val responseBody = "response-body"
+        val okHttpClientMock = mockOkHttpClient { request ->
+            request.respondWith(responseBody)
+        }
+        val onPremConfigVerifierMock = mockk<OnPremConfigVerifier> {
+            every { verify(responseBody) } returns onPremConfigJsonObjectMock
+        }
+        val onPremConfigParserMock = mockk<OnPremConfigParser> {
+            every { parse(onPremConfigJsonObjectMock, createdAt = timeProvider.get()) } returns mockOnPremConfig()
+        }
+        val fetcher = OnPremConfigFetcher(
+            pinnedOkHttpClient = mockk(),
+            unpinnedOkHttpClient = okHttpClientMock,
+            onPremConfigVerifier = onPremConfigVerifierMock,
+            onPremConfigParser = onPremConfigParserMock,
+            onPremConfigStore = onPremConfigStoreMock,
+            serverParameters = serverConfigParameters,
+            timeProvider = timeProvider,
+        )
+
+        assertNotNull(fetcher.fetchFallback())
+        assertNotNull(fetcher.getCached())
+
+        verify(exactly = 1) {
+            okHttpClientMock.newCall(
+                match { request ->
+                    request.url == serverConfigParameters.oppfFallbackUrl.toHttpUrl() &&
+                        request.header("Authorization") == null
+                },
+            )
+        }
+        verify(exactly = 1) {
+            onPremConfigStoreMock.store(any())
+        }
+    }
+
+    @Test
+    fun `config is fetched from fallback url only once even when called multiple times in short succession`() {
+        val timeProvider = TestTimeProvider()
+        val serverConfigParameters = serverParameters
+        val onPremConfigJsonObjectMock = mockk<JSONObject>()
+        val responseBody = "response-body"
+        val okHttpClientMock = mockOkHttpClient { request ->
+            request.respondWith(responseBody)
+        }
+        val onPremConfigVerifierMock = mockk<OnPremConfigVerifier> {
+            every { verify(responseBody) } returns onPremConfigJsonObjectMock
+        }
+        val onPremConfigParserMock = mockk<OnPremConfigParser> {
+            every { parse(onPremConfigJsonObjectMock, createdAt = any()) } returns mockOnPremConfig()
+        }
+        val fetcher = OnPremConfigFetcher(
+            pinnedOkHttpClient = mockk(),
+            unpinnedOkHttpClient = okHttpClientMock,
+            onPremConfigVerifier = onPremConfigVerifierMock,
+            onPremConfigParser = onPremConfigParserMock,
+            onPremConfigStore = onPremConfigStoreMock,
+            serverParameters = serverConfigParameters,
+            timeProvider = timeProvider,
+        )
+
+        fetcher.fetchFallback()
+        timeProvider.advanceBy(1.seconds)
+        fetcher.fetchFallback()
+        timeProvider.advanceBy(1.seconds)
+        fetcher.fetchFallback()
+
+        verify(exactly = 1) {
+            okHttpClientMock.newCall(any())
+        }
+        verify(exactly = 1) {
+            onPremConfigStoreMock.store(any())
+        }
+
+        timeProvider.advanceBy(10.seconds)
+        fetcher.fetchFallback()
+        timeProvider.advanceBy(1.seconds)
+        fetcher.fetchFallback()
+        timeProvider.advanceBy(1.seconds)
+
+        verify(exactly = 2) {
+            okHttpClientMock.newCall(any())
+        }
+        verify(exactly = 2) {
+            onPremConfigStoreMock.store(any())
+        }
     }
 
     private fun mockOnPremConfig(
@@ -288,7 +442,7 @@ class OnPremConfigFetcherTest {
 
     companion object {
         private val serverParameters = OnPremServerConfigParameters(
-            url = "https://example.com/",
+            oppfUrl = "https://example.com/config.oppf",
             username = "username",
             password = "password",
         )

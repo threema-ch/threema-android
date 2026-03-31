@@ -10,8 +10,8 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
-import java8.util.concurrent.CompletableFuture;
-import java8.util.function.Function;
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 /**
  * A flow-controlled (sender side) data channel that allows to queue an

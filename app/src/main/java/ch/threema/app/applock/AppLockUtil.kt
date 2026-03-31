@@ -21,77 +21,76 @@ import kotlin.coroutines.suspendCoroutine
 
 private val logger = getThreemaLogger("AppLockUtil")
 
-class AppLockUtil(
-    private val appContext: Context,
-) {
+class AppLockUtil(private val appContext: Context) {
+
+    /**
+     *  Returns `true` if at least one device lock method (pin, pattern, face, fingerprint, ...) is currently configured.
+     */
     fun hasDeviceLock(): Boolean =
         appContext.getSystemService<KeyguardManager>()?.isDeviceSecure == true
 
-    fun checkBiometrics(): BiometricsState {
+    fun getBiometricsAuthenticatorState(): BiometricsState {
         if (ActivityCompat.checkSelfPermission(appContext, Manifest.permission.USE_BIOMETRIC) != PackageManager.PERMISSION_GRANTED) {
             logger.info("Biometrics permission not granted")
             return BiometricsState.NO_PERMISSION
         }
         val biometricManager = BiometricManager.from(appContext)
-        val canAuthenticate = biometricManager.canAuthenticate(BIOMETRIC_WEAK)
-        if (canAuthenticate != BiometricManager.BIOMETRIC_SUCCESS) {
-            logger.info("Biometrics unavailable ({})", canAuthenticate)
+        val authenticationStatus: Int = biometricManager.canAuthenticate(BIOMETRIC_WEAK)
+        if (authenticationStatus != BiometricManager.BIOMETRIC_SUCCESS) {
+            logger.info("Biometrics unavailable ({})", authenticationStatus)
         }
-        return when (canAuthenticate) {
+        return when (authenticationStatus) {
             BiometricManager.BIOMETRIC_SUCCESS -> BiometricsState.AVAILABLE
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE,
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE,
-            -> BiometricsState.NO_HARDWARE
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> BiometricsState.NOT_ENROLLED
+            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE, BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> BiometricsState.NO_HARDWARE
+            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> BiometricsState.NONE_ENROLLED
             else -> BiometricsState.OTHER
         }
     }
 
     suspend fun authenticate(activity: FragmentActivity, title: String, subtitle: String, authType: AuthType): AuthenticationResult {
+        if (!hasDeviceLock()) {
+            logger.warn("No device lock configured")
+            // While the biometric prompt callback offers the error codes ERROR_NO_DEVICE_CREDENTIAL or ERROR_NO_BIOMETRICS, we noticed that in some
+            // cases the onAuthenticationError function was never called. So we check this here before launching the prompt in an invalid state
+            return AuthenticationResult.Error.MissingDeviceLock
+        }
         logger.info("Trying to authenticate with authType={}", authType)
         val executor = ContextCompat.getMainExecutor(activity)
-        val authenticators = when (authType) {
-            AuthType.ANY -> {
-                when (checkBiometrics()) {
-                    BiometricsState.AVAILABLE -> DEVICE_CREDENTIAL or BIOMETRIC_WEAK
-                    else -> getDeviceCredentialAuthenticatorCompat()
-                }
-            }
-            AuthType.BIOMETRIC -> when (checkBiometrics()) {
-                BiometricsState.AVAILABLE -> BIOMETRIC_WEAK
-                else -> {
-                    logger.warn("Biometrics not available, fallback to credentials")
-                    getDeviceCredentialAuthenticatorCompat()
-                }
-            }
-        }
+        val authenticators: Int = getEffectiveAuthenticators(
+            desiredAuthType = authType,
+        )
+
         return suspendCoroutine { continuation ->
             val prompt = BiometricPrompt(
                 activity,
                 executor,
                 object : BiometricPrompt.AuthenticationCallback() {
                     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-                        logger.info("successfully authenticated (auth type={})", result.authenticationType)
+                        logger.info("Successfully authenticated (auth type={})", result.authenticationType)
                         continuation.resume(AuthenticationResult.Success)
                     }
 
                     override fun onAuthenticationFailed() {
-                        logger.info("biometric authentication failed")
+                        logger.info("Authentication failed")
                     }
 
                     override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                        when (errorCode) {
+                        val result = when (errorCode) {
                             BiometricPrompt.ERROR_USER_CANCELED,
                             BiometricPrompt.ERROR_NEGATIVE_BUTTON,
                             -> {
-                                logger.info("user cancelled authentication")
-                                continuation.resume(AuthenticationResult.CancelledByUser)
+                                logger.info("User cancelled the authentication")
+                                AuthenticationResult.CancelledByUser
                             }
                             else -> {
-                                logger.warn("authentication error (code={}, string={})", errorCode, errString)
-                                continuation.resume(AuthenticationResult.SystemError(errString.toString(), errorCode))
+                                logger.error("Authentication error (code={}, string={})", errorCode, errString)
+                                AuthenticationResult.Error.Other(
+                                    message = errString,
+                                    code = errorCode,
+                                )
                             }
                         }
+                        continuation.resume(result)
                     }
                 },
             )
@@ -111,6 +110,25 @@ class AppLockUtil(
         }
     }
 
+    private fun getEffectiveAuthenticators(desiredAuthType: AuthType): Int {
+        val biometricsAuthenticatorState: BiometricsState = getBiometricsAuthenticatorState()
+        return when (desiredAuthType) {
+            AuthType.ANY ->
+                if (biometricsAuthenticatorState == BiometricsState.AVAILABLE) {
+                    DEVICE_CREDENTIAL or BIOMETRIC_WEAK
+                } else {
+                    getDeviceCredentialAuthenticatorCompat()
+                }
+            AuthType.BIOMETRIC ->
+                if (biometricsAuthenticatorState == BiometricsState.AVAILABLE) {
+                    BIOMETRIC_WEAK
+                } else {
+                    logger.warn("Biometrics not available, fallback to credentials")
+                    getDeviceCredentialAuthenticatorCompat()
+                }
+        }
+    }
+
     private fun getDeviceCredentialAuthenticatorCompat(): Int {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             DEVICE_CREDENTIAL
@@ -123,7 +141,7 @@ class AppLockUtil(
     enum class BiometricsState {
         NO_PERMISSION,
         NO_HARDWARE,
-        NOT_ENROLLED,
+        NONE_ENROLLED,
         AVAILABLE,
         OTHER,
     }
@@ -133,11 +151,16 @@ class AppLockUtil(
         BIOMETRIC,
     }
 
-    sealed class AuthenticationResult {
-        data object Success : AuthenticationResult()
+    sealed interface AuthenticationResult {
+        data object Success : AuthenticationResult
 
-        data object CancelledByUser : AuthenticationResult()
+        data object CancelledByUser : AuthenticationResult
 
-        data class SystemError(val errorMessage: String, val code: Int) : AuthenticationResult()
+        sealed interface Error : AuthenticationResult {
+
+            data object MissingDeviceLock : Error
+
+            data class Other(val message: CharSequence, val code: Int) : Error
+        }
     }
 }

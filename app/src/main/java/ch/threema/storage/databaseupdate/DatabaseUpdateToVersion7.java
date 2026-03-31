@@ -16,15 +16,15 @@ import java.util.UUID;
 import static ch.threema.storage.databaseupdate.DatabaseUpdateExtensionsKt.fieldExists;
 
 public class DatabaseUpdateToVersion7 implements DatabaseUpdate {
-    private final Context context;
     private final SQLiteDatabase sqLiteDatabase;
+    private final Context appContext;
 
     public DatabaseUpdateToVersion7(
-        Context context,
-        SQLiteDatabase sqLiteDatabase
+        SQLiteDatabase sqLiteDatabase,
+        Context appContext
     ) {
-        this.context = context;
         this.sqLiteDatabase = sqLiteDatabase;
+        this.appContext = appContext;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class DatabaseUpdateToVersion7 implements DatabaseUpdate {
             }
         };
 
-        File appPath = new File(context.getExternalFilesDir(null), "data");
+        File appPath = new File(appContext.getExternalFilesDir(null), "data");
 
         HashMap<Integer, List<File>> fileIndex = new HashMap<Integer, List<File>>();
         for (String path : new String[]{Environment.getExternalStorageDirectory() + "/.threema", Environment.getExternalStorageDirectory() + "/Threema/.threema"}) {

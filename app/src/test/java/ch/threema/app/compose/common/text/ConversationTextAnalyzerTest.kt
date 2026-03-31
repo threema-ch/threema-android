@@ -1,12 +1,19 @@
 package ch.threema.app.compose.common.text
 
+import ch.threema.android.ResourceIdString
+import ch.threema.app.R
 import ch.threema.app.compose.common.text.conversation.ConversationTextAnalyzer
 import ch.threema.app.compose.common.text.conversation.ConversationTextAnalyzer.Result
+import ch.threema.app.services.ContactService
+import ch.threema.data.datatypes.ContactNameFormat
+import ch.threema.data.datatypes.MentionNameData
 import ch.threema.domain.types.Identity
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+import testdata.TestData
 
 class ConversationTextAnalyzerTest {
 
@@ -118,7 +125,7 @@ class ConversationTextAnalyzerTest {
     @Test
     fun `finds single mention if no other content exists`() {
         // arrange
-        val rawInput = "@[0123ABCD]"
+        val rawInput = "@[${TestData.Identities.OTHER_1}]"
 
         // act
         val result = ConversationTextAnalyzer.analyze(
@@ -128,14 +135,14 @@ class ConversationTextAnalyzerTest {
 
         // assert
         assertAnalyzeResult(result, itemCount = 1) {
-            assertMention(startsAtIndex = 0, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 0, forIdentity = TestData.Identities.OTHER_1)
         }
     }
 
     @Test
     fun `finds mentions if no other content exists`() {
         // arrange
-        val rawInput = "@[0123ABCD]@[3210DCBA]@[@@@@@@@@]"
+        val rawInput = "@[${TestData.Identities.OTHER_1}]@[${TestData.Identities.OTHER_2}]@[${ContactService.ALL_USERS_PLACEHOLDER_ID}]"
 
         // act
         val result = ConversationTextAnalyzer.analyze(
@@ -145,16 +152,18 @@ class ConversationTextAnalyzerTest {
 
         // assert
         assertAnalyzeResult(result, itemCount = 3) {
-            assertMention(startsAtIndex = 0, forIdentity = "0123ABCD")
-            assertMention(startsAtIndex = 11, forIdentity = "3210DCBA")
-            assertMention(startsAtIndex = 22, forIdentity = "@@@@@@@@")
+            assertMention(startsAtIndex = 0, forIdentity = TestData.Identities.OTHER_1)
+            assertMention(startsAtIndex = 11, forIdentity = TestData.Identities.OTHER_2)
+            assertMention(startsAtIndex = 22, forIdentity = Identity(ContactService.ALL_USERS_PLACEHOLDER_ID))
         }
     }
 
     @Test
     fun `finds mentions if no other content besides spaces exists`() {
         // arrange
-        val rawInput = " @[0123ABCD]  @[3210DCBA]  @[@@@@@@@@]  @[*0123456]"
+        val rawInput =
+            " @[${TestData.Identities.OTHER_1}]  @[${TestData.Identities.OTHER_2}]  @[${ContactService.ALL_USERS_PLACEHOLDER_ID}]  " +
+                "@[${TestData.Identities.BROADCAST}]"
 
         // act
         val result = ConversationTextAnalyzer.analyze(
@@ -164,10 +173,10 @@ class ConversationTextAnalyzerTest {
 
         // assert
         assertAnalyzeResult(result, itemCount = 4) {
-            assertMention(startsAtIndex = 1, forIdentity = "0123ABCD")
-            assertMention(startsAtIndex = 14, forIdentity = "3210DCBA")
-            assertMention(startsAtIndex = 27, forIdentity = "@@@@@@@@")
-            assertMention(startsAtIndex = 40, forIdentity = "*0123456")
+            assertMention(startsAtIndex = 1, forIdentity = TestData.Identities.OTHER_1)
+            assertMention(startsAtIndex = 14, forIdentity = TestData.Identities.OTHER_2)
+            assertMention(startsAtIndex = 27, forIdentity = Identity(ContactService.ALL_USERS_PLACEHOLDER_ID))
+            assertMention(startsAtIndex = 40, forIdentity = TestData.Identities.BROADCAST)
         }
     }
 
@@ -175,7 +184,7 @@ class ConversationTextAnalyzerTest {
     fun `finds mention and ignores other invalid`() {
         // arrange
         // the "@[@@@@@@@@@]" contains one "@" too much
-        val rawInput = "@[0123ABCD], @[SHORT] and @[@@@@@@@@@] could you please send me the file?"
+        val rawInput = "@[${TestData.Identities.OTHER_1}], @[SHORT] and @[@@@@@@@@@] could you please send me the file?"
 
         // act
         val result = ConversationTextAnalyzer.analyze(
@@ -185,14 +194,15 @@ class ConversationTextAnalyzerTest {
 
         // assert
         assertAnalyzeResult(result, itemCount = 1) {
-            assertMention(startsAtIndex = 0, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 0, forIdentity = TestData.Identities.OTHER_1)
         }
     }
 
     @Test
     fun `finds all mention types in between text`() {
         // arrange
-        val rawInput = "Text @[0123ABCD] text @[@@@@@@@@] text @[*0123456] Prefix"
+        val rawInput = "Text @[${TestData.Identities.OTHER_1}] text @[${ContactService.ALL_USERS_PLACEHOLDER_ID}] text " +
+            "@[${TestData.Identities.BROADCAST}] Prefix"
 
         // act
         val result = ConversationTextAnalyzer.analyze(
@@ -202,9 +212,9 @@ class ConversationTextAnalyzerTest {
 
         // assert
         assertAnalyzeResult(result, itemCount = 3) {
-            assertMention(startsAtIndex = 5, forIdentity = "0123ABCD")
-            assertMention(startsAtIndex = 22, forIdentity = "@@@@@@@@")
-            assertMention(startsAtIndex = 39, forIdentity = "*0123456")
+            assertMention(startsAtIndex = 5, forIdentity = TestData.Identities.OTHER_1)
+            assertMention(startsAtIndex = 22, forIdentity = Identity(ContactService.ALL_USERS_PLACEHOLDER_ID))
+            assertMention(startsAtIndex = 39, forIdentity = TestData.Identities.BROADCAST)
         }
     }
 
@@ -226,7 +236,7 @@ class ConversationTextAnalyzerTest {
     @Test
     fun `finds emoji and mention`() {
         // arrange
-        val rawInput = "Start \uD83C\uDF36 mid @[0123ABCD] end."
+        val rawInput = "Start \uD83C\uDF36 mid @[${TestData.Identities.OTHER_1}] end."
 
         // act
         val result: Result = ConversationTextAnalyzer.analyze(
@@ -237,14 +247,14 @@ class ConversationTextAnalyzerTest {
         // assert
         assertAnalyzeResult(result, itemCount = 2) {
             assertEmoji(startsAtIndex = 6, ofLength = 2)
-            assertMention(startsAtIndex = 13, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 13, forIdentity = TestData.Identities.OTHER_1)
         }
     }
 
     @Test
     fun `finds mention and emoji`() {
         // arrange
-        val rawInput = "Start @[0123ABCD] mid \uD83C\uDF36 end."
+        val rawInput = "Start @[${TestData.Identities.OTHER_1}] mid \uD83C\uDF36 end."
 
         // act
         val result: Result = ConversationTextAnalyzer.analyze(
@@ -254,7 +264,7 @@ class ConversationTextAnalyzerTest {
 
         // assert
         assertAnalyzeResult(result, itemCount = 2) {
-            assertMention(startsAtIndex = 6, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 6, forIdentity = TestData.Identities.OTHER_1)
             assertEmoji(startsAtIndex = 22, ofLength = 2)
         }
     }
@@ -262,9 +272,9 @@ class ConversationTextAnalyzerTest {
     @Test
     fun `finds multiple mentions and emojis`() {
         // arrange
-        // Start ❤ @[0123ABCD] emojis here: 💚 🌶 and more mentions here @[0123ABCD] @[0123ABCD] ending it with 💚.
-        val rawInput = "Start \u2764 @[0123ABCD] emojis here: \uD83D\uDC9A \uD83C\uDF36 and more " +
-            "mentions here @[0123ABCD] @[0123ABCD] ending it with \uD83D\uDC9A."
+        // Start ❤ @[11111111] emojis here: 💚 🌶 and more mentions here @[11111111] @[11111111] ending it with 💚.
+        val rawInput = "Start \u2764 @[${TestData.Identities.OTHER_1}] emojis here: \uD83D\uDC9A \uD83C\uDF36 and more " +
+            "mentions here @[${TestData.Identities.OTHER_1}] @[${TestData.Identities.OTHER_1}] ending it with \uD83D\uDC9A."
 
         // act
         val result: Result = ConversationTextAnalyzer.analyze(
@@ -275,11 +285,11 @@ class ConversationTextAnalyzerTest {
         // assert
         assertAnalyzeResult(result, itemCount = 7) {
             assertEmoji(startsAtIndex = 6, ofLength = 1)
-            assertMention(startsAtIndex = 8, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 8, forIdentity = TestData.Identities.OTHER_1)
             assertEmoji(startsAtIndex = 33, ofLength = 2)
             assertEmoji(startsAtIndex = 36, ofLength = 2)
-            assertMention(startsAtIndex = 62, forIdentity = "0123ABCD")
-            assertMention(startsAtIndex = 74, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 62, forIdentity = TestData.Identities.OTHER_1)
+            assertMention(startsAtIndex = 74, forIdentity = TestData.Identities.OTHER_1)
             assertEmoji(startsAtIndex = 101, ofLength = 2)
         }
     }
@@ -287,8 +297,9 @@ class ConversationTextAnalyzerTest {
     @Test
     fun `finds mentions and emojis tucked together`() {
         // arrange
-        // Start @[0123ABCD]🌶@[0123ABCD]🌶🌶@[0123ABCD]@[0123ABCD] end.
-        val rawInput = "Start @[0123ABCD]\uD83C\uDF36@[0123ABCD]\uD83C\uDF36\uD83C\uDF36@[0123ABCD]@[0123ABCD] end."
+        // Start @[11111111]🌶@[11111111]🌶🌶@[11111111]@[11111111] end.
+        val rawInput = "Start @[${TestData.Identities.OTHER_1}]\uD83C\uDF36@[${TestData.Identities.OTHER_1}]\uD83C\uDF36\uD83C\uDF36" +
+            "@[${TestData.Identities.OTHER_1}]@[${TestData.Identities.OTHER_1}] end."
 
         // act
         val result: Result = ConversationTextAnalyzer.analyze(
@@ -298,20 +309,20 @@ class ConversationTextAnalyzerTest {
 
         // assert
         assertAnalyzeResult(result, itemCount = 7) {
-            assertMention(startsAtIndex = 6, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 6, forIdentity = TestData.Identities.OTHER_1)
             assertEmoji(startsAtIndex = 17, ofLength = 2)
-            assertMention(startsAtIndex = 19, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 19, forIdentity = TestData.Identities.OTHER_1)
             assertEmoji(startsAtIndex = 30, ofLength = 2)
             assertEmoji(startsAtIndex = 32, ofLength = 2)
-            assertMention(startsAtIndex = 34, forIdentity = "0123ABCD")
-            assertMention(startsAtIndex = 45, forIdentity = "0123ABCD")
+            assertMention(startsAtIndex = 34, forIdentity = TestData.Identities.OTHER_1)
+            assertMention(startsAtIndex = 45, forIdentity = TestData.Identities.OTHER_1)
         }
     }
 
     @Test
     fun `skips mentions if disabled`() {
         // arrange
-        val rawInput = "Start \uD83C\uDF36 mid @[0123ABCD] end."
+        val rawInput = "Start \uD83C\uDF36 mid @[${TestData.Identities.OTHER_1}] end."
 
         // act
         val result: Result = ConversationTextAnalyzer.analyze(
@@ -322,6 +333,263 @@ class ConversationTextAnalyzerTest {
         // assert
         assertAnalyzeResult(result, itemCount = 1) {
             assertEmoji(startsAtIndex = 6, ofLength = 2)
+        }
+    }
+
+    private val mentionNameData = listOf(
+        MentionNameData.Me(
+            identity = TestData.Identities.ME,
+            nickname = "nickname_me",
+        ),
+        MentionNameData.Contact(
+            identity = TestData.Identities.OTHER_1,
+            firstname = "firstname_other_01",
+            lastname = "lastname_other_01",
+            nickname = "nickname_other_01",
+        ),
+        MentionNameData.Contact(
+            identity = TestData.Identities.OTHER_2,
+            firstname = "firstname_other_02",
+            lastname = "lastname_other_02",
+            nickname = "nickname_other_02",
+        ),
+        MentionNameData.Contact(
+            identity = TestData.Identities.OTHER_3,
+            firstname = "firstname_other_03",
+            lastname = "lastname_other_03",
+            nickname = "nickname_other_03",
+        ),
+        MentionNameData.Contact(
+            identity = TestData.Identities.BROADCAST,
+            firstname = "firstname_broadcast",
+            lastname = "lastname_broadcast",
+            nickname = "nickname_broadcast",
+        ),
+    )
+
+    @Test
+    fun `findResolvableMentionNames should find one mention name`() {
+        // arrange
+        val input = "Start @[${TestData.Identities.OTHER_1}] end."
+
+        // act
+        val result = ConversationTextAnalyzer.findResolvableMentionNames(
+            input = input,
+            mentionNameData = mentionNameData,
+            contactNameFormat = ContactNameFormat.DEFAULT,
+        )
+
+        // assert
+        assertEquals(1, result.size)
+        assertTrue(result.containsKey(TestData.Identities.OTHER_1))
+    }
+
+    @Test
+    fun `findResolvableMentionNames should find my own mention name`() {
+        // arrange
+        val input = "Start @[${TestData.Identities.ME}] end."
+
+        // act
+        val result = ConversationTextAnalyzer.findResolvableMentionNames(
+            input = input,
+            mentionNameData = mentionNameData,
+            contactNameFormat = ContactNameFormat.DEFAULT,
+        )
+
+        // assert
+        assertEquals(1, result.size)
+        assertTrue(result.containsKey(TestData.Identities.ME))
+    }
+
+    @Test
+    fun `findResolvableMentionNames should find mention all`() {
+        // arrange
+        val input = "Start @[${ContactService.ALL_USERS_PLACEHOLDER_ID}] end."
+
+        // act
+        val result = ConversationTextAnalyzer.findResolvableMentionNames(
+            input = input,
+            mentionNameData = mentionNameData,
+            contactNameFormat = ContactNameFormat.DEFAULT,
+        )
+
+        // assert
+        assertEquals(
+            mapOf(
+                Identity(ContactService.ALL_USERS_PLACEHOLDER_ID) to ResourceIdString(R.string.all),
+            ),
+            result,
+        )
+    }
+
+    @Test
+    fun `findResolvableMentionNames should find broadcast mention`() {
+        // arrange
+        val input = "Start @[${TestData.Identities.BROADCAST}] end."
+
+        // act
+        val result = ConversationTextAnalyzer.findResolvableMentionNames(
+            input = input,
+            mentionNameData = mentionNameData,
+            contactNameFormat = ContactNameFormat.DEFAULT,
+        )
+
+        // assert
+        assertEquals(1, result.size)
+        assertTrue(result.containsKey(TestData.Identities.BROADCAST))
+    }
+
+    @Test
+    fun `findResolvableMentionNames find mention but can not resolve the name`() {
+        // arrange
+        val input = "Start @[${TestData.Identities.OTHER_4}] end."
+
+        // act
+        val result = ConversationTextAnalyzer.findResolvableMentionNames(
+            input = input,
+            mentionNameData = mentionNameData,
+            contactNameFormat = ContactNameFormat.DEFAULT,
+        )
+
+        // assert
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun `findResolvableMentionNames finds multiple mentions`() {
+        // arrange
+        val input = "Start @[${TestData.Identities.OTHER_4}] mid @[${TestData.Identities.OTHER_2}]@[${TestData.Identities.OTHER_1}]" +
+            "@[${ContactService.ALL_USERS_PLACEHOLDER_ID}] mid @[${TestData.Identities.ME}]."
+
+        // act
+        val result = ConversationTextAnalyzer.findResolvableMentionNames(
+            input = input,
+            mentionNameData = mentionNameData,
+            contactNameFormat = ContactNameFormat.DEFAULT,
+        )
+
+        // assert
+
+        assertEquals(4, result.size)
+        assertTrue(result.containsKey(TestData.Identities.OTHER_2))
+        assertTrue(result.containsKey(TestData.Identities.OTHER_1))
+        assertTrue(result.containsKey(Identity(ContactService.ALL_USERS_PLACEHOLDER_ID)))
+        assertTrue(result.containsKey(TestData.Identities.ME))
+    }
+
+    @Test
+    fun `findResolvableMentionNames returns distinct results`() {
+        // arrange
+        val input = "Start @[${TestData.Identities.OTHER_2}]@[${TestData.Identities.OTHER_2}] end."
+
+        // act
+        val result = ConversationTextAnalyzer.findResolvableMentionNames(
+            input = input,
+            mentionNameData = mentionNameData,
+            contactNameFormat = ContactNameFormat.DEFAULT,
+        )
+
+        // assert
+        assertEquals(1, result.size)
+        assertTrue(result.containsKey(TestData.Identities.OTHER_2))
+    }
+
+    @Test
+    fun `findResolvableMentionNames should not find any mention 01`() {
+        // arrange
+        val input = "   "
+
+        // act
+        val result = ConversationTextAnalyzer.findResolvableMentionNames(
+            input = input,
+            mentionNameData = mentionNameData,
+            contactNameFormat = ContactNameFormat.DEFAULT,
+        )
+
+        // assert
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun `findResolvableMentionNames should not find any mention 02`() {
+        // arrange
+        val input = "Start end."
+
+        // act
+        val result = ConversationTextAnalyzer.findResolvableMentionNames(
+            input = input,
+            mentionNameData = mentionNameData,
+            contactNameFormat = ContactNameFormat.DEFAULT,
+        )
+
+        // assert
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun `findResolvableMentionNames should not find any mention 03`() {
+        // arrange
+        val input = "@[invalid_id] @[${TestData.Identities.OTHER_4} end."
+
+        // act
+        val result = ConversationTextAnalyzer.findResolvableMentionNames(
+            input = input,
+            mentionNameData = mentionNameData,
+            contactNameFormat = ContactNameFormat.DEFAULT,
+        )
+
+        // assert
+        assertTrue(result.isEmpty())
+    }
+
+    @Test
+    fun `findResolvableMentionNames works with emojis`() {
+        // arrange
+        // Start 🏔 🏔 @[$TestData.Identities.OTHER_1_2] 🏔 end🏔.
+        val input = "Start \uD83C\uDFD4 \uD83C\uDFD4@[${TestData.Identities.OTHER_2}]\uD83C\uDFD4 end\uD83C\uDFD4."
+
+        // act
+        val result = ConversationTextAnalyzer.findResolvableMentionNames(
+            input = input,
+            mentionNameData = mentionNameData,
+            contactNameFormat = ContactNameFormat.DEFAULT,
+        )
+
+        // assert
+        assertEquals(1, result.size)
+        assertTrue(result.containsKey(TestData.Identities.OTHER_2))
+    }
+
+    @Test
+    fun `findResolvableMentionNames finds mention in between markup`() {
+        // arrange
+        val input = listOf(
+            "Word *bold @[${TestData.Identities.OTHER_1}]* word.",
+            "Word *@[${TestData.Identities.OTHER_1}] bold* word.",
+            "Word _italic @[${TestData.Identities.OTHER_1}]_ word.",
+            "Word _@[${TestData.Identities.OTHER_1}] italic_ word.",
+            "Word ~strikethrough @[${TestData.Identities.OTHER_1}]~ word.",
+            "Word ~@[${TestData.Identities.OTHER_1}] strikethrough~ word.",
+            "Word *_bold-italic @[${TestData.Identities.OTHER_1}]_* word.",
+            "Word *_@[${TestData.Identities.OTHER_1}] bold-italic _* word.",
+            "Word *_~@[${TestData.Identities.OTHER_1}]~_* word.",
+            "Word @[${TestData.Identities.OTHER_1}] word *@[${TestData.Identities.OTHER_1}]* word _@[${TestData.Identities.OTHER_1}]_ word " +
+                "~@[${TestData.Identities.OTHER_1}]~ word.",
+        )
+
+        // act
+        val results = input.map { input ->
+            ConversationTextAnalyzer.findResolvableMentionNames(
+                input = input,
+                mentionNameData = mentionNameData,
+                contactNameFormat = ContactNameFormat.DEFAULT,
+            )
+        }
+
+        // assert
+        results.forEach { result ->
+            assertEquals(1, result.size)
+            assertTrue(result.containsKey(TestData.Identities.OTHER_1))
         }
     }
 

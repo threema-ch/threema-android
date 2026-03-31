@@ -32,9 +32,11 @@ import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.tasks.OnFSFeatureMaskDowngradedTask;
-import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.models.WorkVerificationLevel;
@@ -289,13 +291,17 @@ public class ContactUtil {
         return null;
     }
 
-    public static String joinDisplayNames(@Nullable Context context, @Nullable List<ContactModel> contacts) {
+    public static String joinDisplayNames(
+        @Nullable Context context,
+        @Nullable List<ContactModel> contacts,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
         if (contacts == null) {
             return "";
         }
 
         List<String> contactNames = contacts.stream()
-            .map(contact -> NameUtil.getDisplayNameOrNickname(contact, true))
+            .map(contact -> NameUtil.getContactDisplayNameOrNickname(contact, true, contactNameFormat))
             .collect(Collectors.toList());
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && context != null) {
@@ -326,19 +332,8 @@ public class ContactUtil {
             return;
         }
 
-        try {
-            serviceManager.getTaskManager().schedule(
-                new OnFSFeatureMaskDowngradedTask(
-                    contactModel,
-                    serviceManager.getContactService(),
-                    serviceManager.getMessageService(),
-                    serviceManager.getDHSessionStore(),
-                    serviceManager.getIdentityStore(),
-                    serviceManager.getForwardSecurityMessageProcessor()
-                )
-            );
-        } catch (ThreemaException e) {
-            logger.error("Could not schedule fs feature mask downgraded task");
-        }
+        serviceManager.getTaskManager().schedule(
+            new OnFSFeatureMaskDowngradedTask(contactModel.getIdentity())
+        );
     }
 }

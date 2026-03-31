@@ -11,8 +11,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.base.utils.Base32;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.models.GroupModel;
 import ch.threema.domain.models.Contact;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 public class GroupUtil {
 
@@ -28,7 +30,7 @@ public class GroupUtil {
      *
      * @see <a href="https://broadcast.threema.ch/en/faq#central-groups">What are centrally managed group chats?</a>
      */
-    public static boolean shouldSendMessagesToCreator(@NonNull GroupModel groupModel) {
+    public static boolean shouldSendMessagesToCreator(@NonNull GroupModelOld groupModel) {
         return shouldSendMessagesToCreator(groupModel.getCreatorIdentity(), groupModel.getName());
     }
 
@@ -47,7 +49,7 @@ public class GroupUtil {
     }
 
     @Deprecated
-    public static int getUniqueId(@Nullable GroupModel groupModel) {
+    public static int getUniqueId(@Nullable GroupModelOld groupModel) {
         if (groupModel == null) {
             return 0;
         }
@@ -55,7 +57,7 @@ public class GroupUtil {
     }
 
     @Deprecated
-    public static int getUniqueId(@Nullable ch.threema.data.models.GroupModel groupModel) {
+    public static int getUniqueId(@Nullable GroupModel groupModel) {
         if (groupModel == null) {
             return 0;
         }
@@ -63,7 +65,7 @@ public class GroupUtil {
     }
 
     @NonNull
-    public static String getUniqueIdString(@Nullable GroupModel groupModel) {
+    public static String getUniqueIdString(@Nullable GroupModelOld groupModel) {
         if (groupModel != null) {
             return getUniqueIdString(groupModel.getId());
         }
@@ -71,7 +73,7 @@ public class GroupUtil {
     }
 
     @NonNull
-    public static String getUniqueIdString(@Nullable ch.threema.data.models.GroupModel groupModel) {
+    public static String getUniqueIdString(@Nullable GroupModel groupModel) {
         if (groupModel != null) {
             return getUniqueIdString(groupModel.getDatabaseId());
         }

@@ -1,33 +1,26 @@
 package ch.threema.app.systemupdates.updates;
 
-import org.slf4j.Logger;
+import org.koin.java.KoinJavaComponent;
 
-import androidx.annotation.NonNull;
-import ch.threema.app.managers.ServiceManager;
-import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.preference.service.SynchronizedSettingsService;
 import ch.threema.app.services.SynchronizeContactsService;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
-import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
+import kotlin.Lazy;
 
 public class SystemUpdateToVersion14 implements SystemUpdate {
-    private static final Logger logger = getThreemaLogger("SystemUpdateToVersion14");
 
-    private @NonNull final ServiceManager serviceManager;
-
-    public SystemUpdateToVersion14(@NonNull ServiceManager serviceManager) {
-        this.serviceManager = serviceManager;
-    }
+    private final Lazy<SynchronizeContactsService> synchronizeContactsServiceLazy = KoinJavaComponent.inject(SynchronizeContactsService.class);
+    private final Lazy<SynchronizedSettingsService> synchronizedSettingsServiceLazy = KoinJavaComponent.inject(SynchronizedSettingsService.class);
 
     @Override
     public void run() {
         //check if auto sync is enabled
-        PreferenceService preferenceService = serviceManager.getPreferenceService();
-        if (preferenceService.isSyncContacts()) {
+        SynchronizedSettingsService synchronizedSettingsService = synchronizedSettingsServiceLazy.getValue();
+        if (synchronizedSettingsService.isSyncContacts()) {
             //disable sync
             final SynchronizeContactsService synchronizeContactService;
             try {
-                synchronizeContactService = serviceManager.getSynchronizeContactsService();
-            } catch (MasterKeyLockedException e) {
+                synchronizeContactService = synchronizeContactsServiceLazy.getValue();
+            } catch (Exception e) {
                 throw new RuntimeException("Failed to get synchronize contacts service", e);
             }
             synchronizeContactService.disableSyncFromLocal(new Runnable() {
@@ -41,6 +34,6 @@ public class SystemUpdateToVersion14 implements SystemUpdate {
 
     @Override
     public int getVersion() {
-        return 13;
+        return 14;
     }
 }

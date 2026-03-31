@@ -1,8 +1,6 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.groupflows.GroupChanges
-import ch.threema.app.managers.ServiceManager
-import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.profilepicture.GroupProfilePictureUploader.GroupProfilePictureUploadResult
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationTagService
@@ -15,8 +13,8 @@ import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
-import ch.threema.data.models.ModelDeletedException
 import ch.threema.data.repositories.ContactModelRepository
+import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -24,7 +22,7 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncUpdate
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.blob
 import ch.threema.protobuf.d2d.MdD2D.GroupSync.Update.MemberStateChange
@@ -39,14 +37,23 @@ import ch.threema.protobuf.unit
 import ch.threema.storage.models.ConversationTag
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("ReflectGroupSyncUpdateTask")
 
 abstract class ReflectGroupSyncUpdateBaseTask<TransactionResult, TaskResult>(
-    protected val groupModel: GroupModel,
-    private val nonceFactory: NonceFactory,
-    multiDeviceManager: MultiDeviceManager,
-) : ReflectGroupSyncTask<TransactionResult, TaskResult>(multiDeviceManager) {
+    protected val groupIdentity: GroupIdentity,
+) : ReflectGroupSyncTask<TransactionResult, TaskResult>(), KoinComponent {
+    private val nonceFactory: NonceFactory by inject()
+    protected val fileService: FileService by inject()
+    protected val groupModelRepository: GroupModelRepository by inject()
+
+    protected val groupModel: GroupModel by lazy {
+        groupModelRepository.getByGroupIdentity(groupIdentity)
+            ?: throw IllegalStateException("Group has been deleted and this update task is not necessary anymore")
+    }
+
     /**
      * The task type. This is just used for debugging.
      */
@@ -107,13 +114,9 @@ abstract class ReflectGroupSyncUpdateBaseTask<TransactionResult, TaskResult>(
  * manager as it must be run immediately inside another task.
  */
 abstract class ReflectGroupSyncUpdateImmediateTask(
-    groupModel: GroupModel,
-    nonceFactory: NonceFactory,
-    multiDeviceManager: MultiDeviceManager,
+    groupIdentity: GroupIdentity,
 ) : ReflectGroupSyncUpdateBaseTask<Unit, Unit>(
-    groupModel,
-    nonceFactory,
-    multiDeviceManager,
+    groupIdentity = groupIdentity,
 ) {
     suspend fun reflect(handle: ActiveTaskCodec): ReflectionResult<Unit> {
         return runTransaction(handle)
@@ -150,13 +153,9 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
      * This reflection task can be used to reflect that the user has been kicked.
      */
     class ReflectUserKicked(
-        groupModel: GroupModel,
-        nonceFactory: NonceFactory,
-        multiDeviceManager: MultiDeviceManager,
+        groupIdentity: GroupIdentity,
     ) : ReflectGroupSyncUpdateImmediateTask(
-        groupModel,
-        nonceFactory,
-        multiDeviceManager,
+        groupIdentity = groupIdentity,
     ) {
         override val type = "ReflectUserKicked"
 
@@ -171,14 +170,10 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
     }
 
     class ReflectMemberLeft(
-        private val leftMemberIdentity: Identity,
-        groupModel: GroupModel,
-        nonceFactory: NonceFactory,
-        multiDeviceManager: MultiDeviceManager,
+        private val leftMemberIdentity: IdentityString,
+        groupIdentity: GroupIdentity,
     ) : ReflectGroupSyncUpdateImmediateTask(
-        groupModel,
-        nonceFactory,
-        multiDeviceManager,
+        groupIdentity = groupIdentity,
     ) {
         override val type = "ReflectMemberLeft"
 
@@ -210,13 +205,9 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
 
     class ReflectGroupName(
         private val newGroupName: String,
-        groupModel: GroupModel,
-        nonceFactory: NonceFactory,
-        multiDeviceManager: MultiDeviceManager,
+        groupIdentity: GroupIdentity,
     ) : ReflectGroupSyncUpdateImmediateTask(
-        groupModel,
-        nonceFactory,
-        multiDeviceManager,
+        groupIdentity = groupIdentity,
     ) {
         override val type = "ReflectGroupName"
 
@@ -236,15 +227,10 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
         private val blobId: ByteArray,
         private val encryptionKey: ByteArray,
         private val blobNonce: ByteArray,
-        groupModel: GroupModel,
+        groupIdentity: GroupIdentity,
         private val profilePictureBlob: ByteArray,
-        private val fileService: FileService,
-        nonceFactory: NonceFactory,
-        multiDeviceManager: MultiDeviceManager,
     ) : ReflectGroupSyncUpdateImmediateTask(
-        groupModel,
-        nonceFactory,
-        multiDeviceManager,
+        groupIdentity = groupIdentity,
     ) {
         override val type = "ReflectGroupDeleteProfilePicture"
 
@@ -270,14 +256,9 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
     }
 
     class ReflectGroupDeleteProfilePicture(
-        groupModel: GroupModel,
-        private val fileService: FileService,
-        nonceFactory: NonceFactory,
-        multiDeviceManager: MultiDeviceManager,
+        groupIdentity: GroupIdentity,
     ) : ReflectGroupSyncUpdateImmediateTask(
-        groupModel,
-        nonceFactory,
-        multiDeviceManager,
+        groupIdentity = groupIdentity,
     ) {
         override val type = "ReflectGroupDeleteProfilePicture"
 
@@ -298,13 +279,9 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
 }
 
 abstract class ReflectGroupSyncUpdateTask(
-    groupModel: GroupModel,
-    multiDeviceManager: MultiDeviceManager,
-    nonceFactory: NonceFactory,
+    groupIdentity: GroupIdentity,
 ) : ReflectGroupSyncUpdateBaseTask<Unit, Unit>(
-    groupModel = groupModel,
-    nonceFactory = nonceFactory,
-    multiDeviceManager = multiDeviceManager,
+    groupIdentity = groupIdentity,
 ),
     ActiveTask<Unit>,
     PersistableTask {
@@ -349,13 +326,9 @@ abstract class ReflectGroupSyncUpdateTask(
 
     class ReflectNotificationTriggerPolicyOverrideUpdate(
         private val newNotificationTriggerPolicyOverride: NotificationTriggerPolicyOverride,
-        groupModel: GroupModel,
-        nonceFactory: NonceFactory,
-        multiDeviceManager: MultiDeviceManager,
+        groupIdentity: GroupIdentity,
     ) : ReflectGroupSyncUpdateTask(
-        groupModel = groupModel,
-        nonceFactory = nonceFactory,
-        multiDeviceManager = multiDeviceManager,
+        groupIdentity = groupIdentity,
     ) {
         override val type: String = "ReflectNotificationTriggerPolicyOverrideUpdate"
 
@@ -396,20 +369,11 @@ abstract class ReflectGroupSyncUpdateTask(
             private val newNotificationTriggerPolicyOverride: NotificationTriggerPolicyOverride,
             private val groupIdentity: GroupIdentity,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
-                val groupModel =
-                    serviceManager.modelRepositories.groups.getByGroupIdentity(groupIdentity)
-                        ?: throw ModelDeletedException(
-                            modelName = "GroupModel",
-                            methodName = "ReflectNotificationTriggerPolicyOverrideUpdateData.createTask",
-                        )
-                return ReflectNotificationTriggerPolicyOverrideUpdate(
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectNotificationTriggerPolicyOverrideUpdate(
                     newNotificationTriggerPolicyOverride = newNotificationTriggerPolicyOverride,
-                    groupModel = groupModel,
-                    nonceFactory = serviceManager.nonceFactory,
-                    multiDeviceManager = serviceManager.multiDeviceManager,
+                    groupIdentity = groupIdentity,
                 )
-            }
         }
     }
 
@@ -418,12 +382,14 @@ abstract class ReflectGroupSyncUpdateTask(
      * the group model.
      */
     class ReflectGroupConversationCategoryUpdateTask(
-        groupModel: GroupModel,
+        groupIdentity: GroupIdentity,
         private val isPrivateChat: Boolean,
-        nonceFactory: NonceFactory,
-        private val conversationCategoryService: ConversationCategoryService,
-        multiDeviceManager: MultiDeviceManager,
-    ) : ReflectGroupSyncUpdateTask(groupModel, multiDeviceManager, nonceFactory) {
+    ) : ReflectGroupSyncUpdateTask(
+        groupIdentity = groupIdentity,
+    ),
+        KoinComponent {
+        private val conversationCategoryService: ConversationCategoryService by inject()
+
         override val type: String = "ReflectGroupConversationCategoryUpdateTask"
 
         override fun isChangeValid(currentData: GroupModelData): Boolean {
@@ -451,19 +417,10 @@ abstract class ReflectGroupSyncUpdateTask(
             private val groupIdentity: GroupIdentity,
             private val isPrivateChat: Boolean,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
-                val groupModel =
-                    serviceManager.modelRepositories.groups.getByGroupIdentity(groupIdentity)
-                        ?: throw ModelDeletedException(
-                            modelName = "GroupModel",
-                            methodName = "ReflectGroupConversationCategoryData.createTask",
-                        )
+            override fun createTask(): Task<*, TaskCodec> {
                 return ReflectGroupConversationCategoryUpdateTask(
-                    groupModel = groupModel,
+                    groupIdentity = groupIdentity,
                     isPrivateChat = isPrivateChat,
-                    nonceFactory = serviceManager.nonceFactory,
-                    conversationCategoryService = serviceManager.conversationCategoryService,
-                    multiDeviceManager = serviceManager.multiDeviceManager,
                 )
             }
         }
@@ -476,13 +433,9 @@ abstract class ReflectGroupSyncUpdateTask(
      */
     class ReflectGroupConversationVisibilityArchiveUpdate(
         private val isArchived: Boolean,
-        groupModel: GroupModel,
-        nonceFactory: NonceFactory,
-        multiDeviceManager: MultiDeviceManager,
+        groupIdentity: GroupIdentity,
     ) : ReflectGroupSyncUpdateTask(
-        groupModel = groupModel,
-        nonceFactory = nonceFactory,
-        multiDeviceManager = multiDeviceManager,
+        groupIdentity = groupIdentity,
     ) {
         override val type: String = "ReflectGroupConversationVisibilityArchiveUpdate"
 
@@ -508,20 +461,11 @@ abstract class ReflectGroupSyncUpdateTask(
             private val isArchived: Boolean,
             private val groupIdentity: GroupIdentity,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
-                val groupModel =
-                    serviceManager.modelRepositories.groups.getByGroupIdentity(groupIdentity)
-                        ?: throw ModelDeletedException(
-                            modelName = "GroupModel",
-                            methodName = "ReflectGroupConversationVisibilityArchiveUpdateData.createTask",
-                        )
-                return ReflectGroupConversationVisibilityArchiveUpdate(
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectGroupConversationVisibilityArchiveUpdate(
                     isArchived = isArchived,
-                    groupModel = groupModel,
-                    nonceFactory = serviceManager.nonceFactory,
-                    multiDeviceManager = serviceManager.multiDeviceManager,
+                    groupIdentity = groupIdentity,
                 )
-            }
         }
     }
 
@@ -532,15 +476,13 @@ abstract class ReflectGroupSyncUpdateTask(
      */
     class ReflectGroupConversationVisibilityPinnedUpdate(
         private val isPinned: Boolean,
-        groupModel: GroupModel,
-        private val conversationTagService: ConversationTagService,
-        nonceFactory: NonceFactory,
-        multiDeviceManager: MultiDeviceManager,
+        groupIdentity: GroupIdentity,
     ) : ReflectGroupSyncUpdateTask(
-        groupModel = groupModel,
-        nonceFactory = nonceFactory,
-        multiDeviceManager = multiDeviceManager,
-    ) {
+        groupIdentity = groupIdentity,
+    ),
+        KoinComponent {
+        private val conversationTagService: ConversationTagService by inject()
+
         override val type: String = "ReflectGroupConversationVisibilityPinnedUpdate"
 
         override fun isChangeValid(currentData: GroupModelData): Boolean =
@@ -568,19 +510,10 @@ abstract class ReflectGroupSyncUpdateTask(
             private val isPinned: Boolean,
             private val groupIdentity: GroupIdentity,
         ) : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
-                val groupModel =
-                    serviceManager.modelRepositories.groups.getByGroupIdentity(groupIdentity)
-                        ?: throw ModelDeletedException(
-                            modelName = "GroupModel",
-                            methodName = "ReflectGroupConversationVisibilityPinnedUpdateData.createTask",
-                        )
+            override fun createTask(): Task<*, TaskCodec> {
                 return ReflectGroupConversationVisibilityPinnedUpdate(
                     isPinned = isPinned,
-                    groupModel = groupModel,
-                    conversationTagService = serviceManager.conversationTagService,
-                    nonceFactory = serviceManager.nonceFactory,
-                    multiDeviceManager = serviceManager.multiDeviceManager,
+                    groupIdentity = groupIdentity,
                 )
             }
         }
@@ -588,13 +521,9 @@ abstract class ReflectGroupSyncUpdateTask(
 }
 
 abstract class ReflectGroupSyncUpdateFromLocal<T, U>(
-    groupModel: GroupModel,
-    nonceFactory: NonceFactory,
-    multiDeviceManager: MultiDeviceManager,
+    groupIdentity: GroupIdentity,
 ) : ReflectGroupSyncUpdateBaseTask<T, ReflectionResult<U>>(
-    groupModel,
-    nonceFactory,
-    multiDeviceManager,
+    groupIdentity = groupIdentity,
 ),
     ActiveTask<ReflectionResult<U>> {
     override suspend fun invoke(handle: ActiveTaskCodec): ReflectionResult<U> {
@@ -618,15 +547,13 @@ class ReflectLocalGroupUpdate(
     private val removeMembers: Set<String>,
     private val profilePictureChange: GroupChanges.ProfilePictureChange,
     private val uploadGroupProfilePicture: (GroupChanges.ProfilePictureChange) -> GroupProfilePictureUploadResult?,
-    groupModel: GroupModel,
-    nonceFactory: NonceFactory,
-    private val contactModelRepository: ContactModelRepository,
-    multiDeviceManager: MultiDeviceManager,
+    groupIdentity: GroupIdentity,
 ) : ReflectGroupSyncUpdateFromLocal<GroupProfilePictureUploadResult?, GroupProfilePictureUploadResult?>(
-    groupModel,
-    nonceFactory,
-    multiDeviceManager,
-) {
+    groupIdentity = groupIdentity,
+),
+    KoinComponent {
+    private val contactModelRepository: ContactModelRepository by inject()
+
     override val type = "ReflectGroupLocalUpdate"
 
     private var groupProfilePictureUploadResultSuccess: GroupProfilePictureUploadResult.Success? = null
@@ -641,8 +568,7 @@ class ReflectLocalGroupUpdate(
             throw IllegalStateException("Group model data cannot be null at this point")
         }
 
-        val updatedMembers = groupModelData.otherMembers + addMembers - removeMembers -
-            groupModelData.groupIdentity.creatorIdentity
+        val updatedMembers = groupModelData.otherMembers + addMembers - removeMembers
 
         return group {
             groupIdentity = this@ReflectLocalGroupUpdate.groupModel.groupIdentity.toProtobuf()
@@ -708,13 +634,9 @@ class ReflectLocalGroupUpdate(
 }
 
 class ReflectLocalGroupLeaveOrDisband(
-    groupModel: GroupModel,
-    nonceFactory: NonceFactory,
-    multiDeviceManager: MultiDeviceManager,
+    groupIdentity: GroupIdentity,
 ) : ReflectGroupSyncUpdateFromLocal<Unit, Unit>(
-    groupModel,
-    nonceFactory,
-    multiDeviceManager,
+    groupIdentity = groupIdentity,
 ) {
     override val type = "ReflectLocalGroupLeave"
 

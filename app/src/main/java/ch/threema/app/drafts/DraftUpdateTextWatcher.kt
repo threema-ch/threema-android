@@ -5,14 +5,14 @@ import android.os.Looper
 import ch.threema.android.postDelayed
 import ch.threema.app.ui.SimpleTextWatcher
 import ch.threema.domain.models.MessageId
-import ch.threema.domain.types.ConversationUniqueId
+import ch.threema.domain.types.ConversationUID
 import kotlin.time.Duration.Companion.milliseconds
 
 class DraftUpdateTextWatcher
 @JvmOverloads
 constructor(
     private val draftManager: DraftManager,
-    private val conversationUniqueId: ConversationUniqueId,
+    private val conversationUID: ConversationUID,
     private val getText: () -> String?,
     private val getQuotedMessageId: () -> MessageId? = { null },
 ) : SimpleTextWatcher() {
@@ -20,7 +20,7 @@ constructor(
 
     private val persistRunnable = Runnable {
         draftManager.set(
-            conversationUniqueId = conversationUniqueId,
+            conversationUID = conversationUID,
             text = getText(),
             quotedMessageId = getQuotedMessageId(),
         )

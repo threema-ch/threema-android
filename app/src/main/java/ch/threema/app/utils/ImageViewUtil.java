@@ -26,41 +26,37 @@ public class ImageViewUtil {
     private static float cornerRadius = 0F;
 
     public static void showRoundedBitmapOrImagePlaceholder(
-        @NonNull Context context,
-        @Nullable View blockView,
-        @Nullable ImageView imageView,
+        @NonNull View blockView,
+        @NonNull ImageView imageView,
         @Nullable Bitmap bitmap,
         int width
     ) {
-        if (blockView != null && imageView != null) {
-            ViewGroup.LayoutParams params = blockView.getLayoutParams();
-            params.width = width;
-            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            blockView.setLayoutParams(params);
+        Context context = blockView.getContext();
+        ViewGroup.LayoutParams params = blockView.getLayoutParams();
+        params.width = width;
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        blockView.setLayoutParams(params);
 
-            Bitmap bitmapOrPlaceholder = bitmap == null
-                ? getPlaceholderImage(context, width, R.drawable.ic_image_outline)
-                : bitmap;
+        Bitmap bitmapOrPlaceholder = bitmap == null
+            ? getPlaceholderImage(context, width, R.drawable.ic_image_outline)
+            : bitmap;
 
-            RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory
-                .create(context.getResources(), bitmapOrPlaceholder);
-            roundedBitmapDrawable.setCornerRadius(getCornerRadius(context));
+        RoundedBitmapDrawable roundedBitmapDrawable = RoundedBitmapDrawableFactory
+            .create(context.getResources(), bitmapOrPlaceholder);
+        roundedBitmapDrawable.setCornerRadius(getCornerRadius(context));
 
-            if (bitmapOrPlaceholder != null) {
-                showBitmap(imageView, bitmapOrPlaceholder, roundedBitmapDrawable, width);
-            }
+        if (bitmapOrPlaceholder != null) {
+            showBitmap(imageView, bitmapOrPlaceholder, roundedBitmapDrawable, width);
         }
     }
 
     public static void showBitmapOrImagePlaceholder(
-        @NonNull Context context,
-        @Nullable View blockView,
-        @Nullable ImageView imageView,
+        @NonNull View blockView,
+        @NonNull ImageView imageView,
         @Nullable Bitmap bitmap,
         int width
     ) {
         showBitmapOrPlaceholder(
-            context,
             blockView,
             imageView,
             bitmap,
@@ -70,14 +66,12 @@ public class ImageViewUtil {
     }
 
     public static void showBitmapOrMoviePlaceholder(
-        @NonNull Context context,
-        @Nullable View blockView,
-        @Nullable ImageView imageView,
+        @NonNull View blockView,
+        @NonNull ImageView imageView,
         @Nullable Bitmap bitmap,
         int width
     ) {
         showBitmapOrPlaceholder(
-            context,
             blockView,
             imageView,
             bitmap,
@@ -87,26 +81,24 @@ public class ImageViewUtil {
     }
 
     public static void showBitmapOrPlaceholder(
-        @NonNull Context context,
-        @Nullable View blockView,
-        @Nullable ImageView imageView,
+        @NonNull View blockView,
+        @NonNull ImageView imageView,
         @Nullable Bitmap bitmap,
         @DrawableRes int drawableId,
         int width
     ) {
-        if (blockView != null && imageView != null) {
-            ViewGroup.LayoutParams params = blockView.getLayoutParams();
-            params.width = width;
-            params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            blockView.setLayoutParams(params);
+        Context context = blockView.getContext();
+        ViewGroup.LayoutParams params = blockView.getLayoutParams();
+        params.width = width;
+        params.height = ViewGroup.LayoutParams.WRAP_CONTENT;
+        blockView.setLayoutParams(params);
 
-            Bitmap bitmapOrPlaceholder = bitmap == null
-                ? getPlaceholderImage(context, width, drawableId)
-                : bitmap;
+        Bitmap bitmapOrPlaceholder = bitmap == null
+            ? getPlaceholderImage(context, width, drawableId)
+            : bitmap;
 
-            if (bitmapOrPlaceholder != null) {
-                showBitmap(imageView, bitmapOrPlaceholder, null, width);
-            }
+        if (bitmapOrPlaceholder != null) {
+            showBitmap(imageView, bitmapOrPlaceholder, null, width);
         }
     }
 
@@ -146,7 +138,7 @@ public class ImageViewUtil {
     }
 
     private static void showBitmap(ImageView imageView, Bitmap bitmap, Drawable drawable, int width) {
-        if (TestUtil.required(imageView, bitmap)) {
+        if (imageView != null && bitmap != null) {
             ViewGroup.LayoutParams params = imageView.getLayoutParams();
             params.width = width;
             params.height = (int) ((float) width / bitmap.getWidth() * bitmap.getHeight());

@@ -87,7 +87,8 @@ class EditSendContactViewModel : ViewModel() {
             if (createFormattedName(
                     vCard,
                     extractor,
-                ) == "" && vCard.formattedName?.value ?: "" != ""
+                ) == "" &&
+                vCard.formattedName?.value ?: "" != ""
             ) {
                 formattedName.postValue(vCard.formattedName)
             } else {

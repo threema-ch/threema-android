@@ -21,12 +21,12 @@ import ch.threema.app.GlobalAppState;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.backuprestore.csv.BackupService;
 import ch.threema.app.backuprestore.csv.RestoreService;
+import ch.threema.app.exceptions.NoIdentityException;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.receivers.AlarmManagerBroadcastReceiver;
 import ch.threema.app.utils.IntentDataUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.taskmanager.TaskManager;
-import java8.util.stream.StreamSupport;
 
 /**
  * @see LifetimeService
@@ -155,6 +155,9 @@ public class LifetimeServiceImpl implements LifetimeService {
         // Start connection
         try {
             ThreemaApplication.getServiceManager().startConnection();
+        } catch (NoIdentityException e) {
+            logger.info("ensureConnection: not starting, no identity found");
+            return;
         } catch (Exception e) {
             logger.error("ensureConnection: startConnection failed", e);
             return;
@@ -226,7 +229,7 @@ public class LifetimeServiceImpl implements LifetimeService {
      */
     private synchronized void cleanupConnection() {
         boolean interrupted = false;
-        long unpausableSlots = StreamSupport.stream(this.connectionSlots.values())
+        long unpausableSlots = this.connectionSlots.values().stream()
             .filter(slot -> slot.unpauseable)
             .count();
 

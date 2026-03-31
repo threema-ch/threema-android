@@ -9,15 +9,14 @@ import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.urls.AppRatingUrl
 import ch.threema.domain.protocol.urls.BlobUrl
-import ch.threema.domain.protocol.urls.DeviceGroupUrl
 import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
+import ch.threema.domain.protocol.urls.MediatorUrl
 
 class OnPremServerAddressProvider(
     private val fetcherProvider: FetcherProvider,
 ) : ServerAddressProvider {
     fun interface FetcherProvider {
-        @Throws(ThreemaException::class)
         fun getFetcher(): OnPremConfigFetcher
     }
 
@@ -103,7 +102,7 @@ class OnPremServerAddressProvider(
     }
 
     @Throws(ThreemaException::class)
-    override fun getMediatorUrl(): DeviceGroupUrl =
+    override fun getMediatorUrl(): MediatorUrl =
         fetchMediatorConfig().url
 
     @Throws(ThreemaException::class)
@@ -112,7 +111,13 @@ class OnPremServerAddressProvider(
     }
 
     @Throws(ThreemaException::class)
-    private fun fetch(): OnPremConfig = fetcherProvider.getFetcher().fetch()
+    private fun fetch(): OnPremConfig =
+        try {
+            fetcherProvider.getFetcher()
+        } catch (e: IllegalStateException) {
+            throw ThreemaException("Failed to fetch on prem config", e)
+        }
+            .getOrFetch()
 
     @Throws(ThreemaException::class)
     private fun fetchMediatorConfig(): OnPremConfigMediator =

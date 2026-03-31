@@ -1,33 +1,44 @@
 package ch.threema.app.processors.incomingcspmessage.groupcontrol
 
 import ch.threema.app.managers.ServiceManager
+import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
-import ch.threema.app.protocol.Contact
-import ch.threema.app.protocol.Init
-import ch.threema.app.protocol.Invalid
-import ch.threema.app.protocol.SpecialContact
-import ch.threema.app.protocol.UserContact
-import ch.threema.app.protocol.runValidContactsLookupSteps
+import ch.threema.app.protocolsteps.Contact
+import ch.threema.app.protocolsteps.Init
+import ch.threema.app.protocolsteps.Invalid
+import ch.threema.app.protocolsteps.SpecialContact
+import ch.threema.app.protocolsteps.UserContact
+import ch.threema.app.protocolsteps.ValidContactsLookupSteps
+import ch.threema.app.services.ConversationCategoryService
+import ch.threema.app.services.ConversationService
+import ch.threema.app.services.GroupService
+import ch.threema.app.services.RingtoneService
+import ch.threema.app.services.UserService
 import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
 import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.tasks.toFullSyncContact
 import ch.threema.app.tasks.toGroupSync
-import ch.threema.app.voip.groupcall.localGroupId
+import ch.threema.app.voip.groupcall.GroupCallManager
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
+import ch.threema.data.datatypes.localGroupId
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.data.repositories.ContactCreateException
+import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.repositories.ContactReflectException
 import ch.threema.data.repositories.ContactStoreException
 import ch.threema.data.repositories.GroupCreateException
+import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.data.repositories.InvalidContactException
 import ch.threema.data.repositories.UnexpectedContactException
 import ch.threema.domain.models.IdentityState
+import ch.threema.domain.models.UserState
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
@@ -37,7 +48,7 @@ import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.domain.taskmanager.getEncryptedContactSyncCreate
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncCreate
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncUpdate
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.MdD2D.GroupSync.Update.MemberStateChange
 import ch.threema.protobuf.d2d.sync.MdD2DSync
@@ -45,7 +56,9 @@ import ch.threema.protobuf.d2d.sync.group
 import ch.threema.protobuf.groupIdentity
 import ch.threema.protobuf.identities
 import ch.threema.storage.models.ContactModel
-import ch.threema.storage.models.GroupModel.UserState
+import java.util.Collections
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("IncomingGroupSetupTask")
 
@@ -53,23 +66,23 @@ class IncomingGroupSetupTask(
     message: GroupSetupMessage,
     triggerSource: TriggerSource,
     serviceManager: ServiceManager,
-) : IncomingCspMessageSubTask<GroupSetupMessage>(message, triggerSource, serviceManager) {
+) : IncomingCspMessageSubTask<GroupSetupMessage>(message, triggerSource, serviceManager), KoinComponent {
     // Services
-    private val userService by lazy { serviceManager.userService }
-    private val groupService by lazy { serviceManager.groupService }
-    private val groupCallManager by lazy { serviceManager.groupCallManager }
-    private val contactStore by lazy { serviceManager.contactStore }
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
-    private val apiConnector by lazy { serviceManager.apiConnector }
-    private val licenseService by lazy { serviceManager.licenseService }
-    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
-    private val conversationService by lazy { serviceManager.conversationService }
-    private val conversationCategoryService by lazy { serviceManager.conversationCategoryService }
-    private val ringtoneService by lazy { serviceManager.ringtoneService }
+    private val userService: UserService by inject()
+    private val groupService: GroupService by inject()
+    private val groupCallManager: GroupCallManager by inject()
+    private val nonceFactory: NonceFactory by inject()
+    private val multiDeviceManager: MultiDeviceManager by inject()
+    private val conversationService: ConversationService by inject()
+    private val conversationCategoryService: ConversationCategoryService by inject()
+    private val ringtoneService: RingtoneService by inject()
 
     // Repositories
-    private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
-    private val groupModelRepository by lazy { serviceManager.modelRepositories.groups }
+    private val contactModelRepository: ContactModelRepository by inject()
+    private val groupModelRepository: GroupModelRepository by inject()
+
+    // Steps
+    private val validContactsLookupSteps: ValidContactsLookupSteps by inject()
 
     // Properties
     private val myIdentity by lazy { userService.identity!! }
@@ -90,6 +103,8 @@ class IncomingGroupSetupTask(
     }
 
     override suspend fun executeMessageStepsFromRemote(handle: ActiveTaskCodec): ReceiveStepsResult {
+        logger.info("Processing incoming group-setup message for group with id {}", message.apiGroupId)
+
         // Let members be the given member list. Remove all duplicate entries from members.
         // Remove the sender from members if present.
         val senderIdentity = message.fromIdentity
@@ -102,6 +117,12 @@ class IncomingGroupSetupTask(
         if (group != null && !hasChange(members, group)) {
             logger.info("There is no change contained in the group-setup message")
             return ReceiveStepsResult.DISCARD
+        }
+
+        if (group == null) {
+            logger.info("Group does not yet exist")
+        } else {
+            logger.info("Group exists and changes are detected")
         }
 
         // Determine whether the user will be part of the group or not
@@ -139,7 +160,7 @@ class IncomingGroupSetupTask(
     }
 
     private suspend fun handleSetupContainingUser(
-        senderIdentity: Identity,
+        senderIdentity: IdentityString,
         members: Set<String>,
         group: GroupModel?,
         handle: ActiveTaskCodec,
@@ -169,25 +190,19 @@ class IncomingGroupSetupTask(
         group: GroupModel?,
         handle: ActiveTaskCodec,
     ): GroupChanges {
-        val validMembersLookupResult = runValidContactsLookupSteps(
-            members,
-            myIdentity,
-            contactStore,
-            contactModelRepository,
-            licenseService,
-            apiConnector,
-        ).filter { (_, contactOrInit) ->
-            when (contactOrInit) {
-                // Invalid contacts cannot be part of a group
-                is Invalid -> false
-                // The user itself is not added to the member list
-                is UserContact -> false
-                // Do not include contacts that are present but not valid
-                is Contact -> contactOrInit.contactModel.data?.activityState != IdentityState.INVALID
-                is Init -> true
-                is SpecialContact -> true
+        val validMembersLookupResult = validContactsLookupSteps.run(identities = members)
+            .filter { (_, contactOrInit) ->
+                when (contactOrInit) {
+                    // Invalid contacts cannot be part of a group
+                    is Invalid -> false
+                    // The user itself is not added to the member list
+                    is UserContact -> false
+                    // Do not include contacts that are present but not valid
+                    is Contact -> contactOrInit.contactModel.data?.activityState != IdentityState.INVALID
+                    is Init -> true
+                    is SpecialContact -> true
+                }
             }
-        }
 
         val newContactModelData = validMembersLookupResult.asSequence()
             .filter { it.key != myIdentity }
@@ -214,15 +229,14 @@ class IncomingGroupSetupTask(
                 isArchived = false,
                 groupDescription = null,
                 groupDescriptionChangedAt = null,
-                otherMembers = validMembers + groupIdentity.creatorIdentity,
+                otherMembers = Collections.unmodifiableSet(validMembers),
                 userState = UserState.MEMBER,
                 notificationTriggerPolicyOverride = null,
             )
             newGroupModelData.reflectAsNewGroupIfMdEnabled(handle)
             NewGroup(newContactModelData, newGroupModelData)
         } else {
-            val currentMembers =
-                groupModelData.otherMembers - groupModelData.groupIdentity.creatorIdentity
+            val currentMembers = groupModelData.otherMembers
             val addedMembers = validMembers - currentMembers
             val removedMembers = currentMembers - validMembers
 
@@ -292,9 +306,7 @@ class IncomingGroupSetupTask(
 
         if (multiDeviceManager.isMultiDeviceActive) {
             val reflectionResult = ReflectGroupSyncUpdateImmediateTask.ReflectUserKicked(
-                group,
-                nonceFactory,
-                multiDeviceManager,
+                groupIdentity = group.groupIdentity,
             ).reflect(handle)
             when (reflectionResult) {
                 is ReflectionResult.Failed -> {

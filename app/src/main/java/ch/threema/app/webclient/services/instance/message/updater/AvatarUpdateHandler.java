@@ -19,7 +19,7 @@ import ch.threema.app.webclient.services.instance.MessageUpdater;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 /**
  * Notify Threema Web about changes to avatars.
@@ -92,7 +92,7 @@ public class AvatarUpdateHandler extends MessageUpdater {
     /**
      * Update a group avatar.
      */
-    private void update(GroupModel group) {
+    private void update(GroupModelOld group) {
         this.update(new Utils.ModelWrapper(group));
     }
 
@@ -136,7 +136,7 @@ public class AvatarUpdateHandler extends MessageUpdater {
         @Override
         public void onUpdatePhoto(@NonNull GroupIdentity groupIdentity) {
             logger.debug("Group Listener: onUpdatePhoto");
-            GroupModel groupModel = groupService.getByGroupIdentity(groupIdentity);
+            GroupModelOld groupModel = groupService.getByGroupIdentity(groupIdentity);
             if (groupModel == null) {
                 logger.error("Group model is null");
                 return;

@@ -14,6 +14,7 @@ import ch.threema.app.home.HomeActivity
 import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.notifications.NotificationIDs
 import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.SynchronizedSettingsService
 import ch.threema.app.services.UserService
 import ch.threema.app.utils.IntentDataUtil
 import ch.threema.base.utils.getThreemaLogger
@@ -32,6 +33,7 @@ class AutostartWorker(
 
     private val masterKeyManager: MasterKeyManager by inject()
     private val preferenceService: PreferenceService by inject()
+    private val synchronizedSettingsService: SynchronizedSettingsService by inject()
     private val userService: UserService by inject()
 
     @SuppressLint("MissingPermission")
@@ -48,12 +50,7 @@ class AutostartWorker(
                 .setContentText(context.getString(R.string.master_key_locked_notify_description))
                 .setTicker(context.getString(R.string.master_key_locked))
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
-            val notificationIntent = IntentDataUtil.createActionIntentHideAfterUnlock(
-                Intent(
-                    context,
-                    HomeActivity::class.java,
-                ),
-            )
+            val notificationIntent = IntentDataUtil.createActionIntentHideAfterUnlock(HomeActivity.createIntent(context))
             notificationIntent.flags =
                 Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             val pendingIntent = PendingIntent.getActivity(
@@ -73,10 +70,10 @@ class AutostartWorker(
             ?: return Result.retry()
 
         // reset feature level
-        preferenceService.transmittedFeatureMask = 0
+        preferenceService.setTransmittedFeatureMask(0)
 
         // auto fix failed sync account
-        if (preferenceService.isSyncContacts) {
+        if (synchronizedSettingsService.isSyncContacts()) {
             if (!userService.checkAccount()) {
                 // create account
                 userService.getAccount(true)

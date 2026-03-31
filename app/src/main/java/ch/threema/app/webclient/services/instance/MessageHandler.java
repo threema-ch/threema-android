@@ -176,9 +176,6 @@ abstract public class MessageHandler {
 
     /**
      * Get a string value, if the value is null a blank string will be returned
-     *
-     * @param value
-     * @return
      */
     @AnyThread
     protected String getValueString(Value value) {

@@ -13,7 +13,6 @@ import ch.threema.app.services.GroupService;
 import ch.threema.app.services.LifetimeService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.notification.NotificationService;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.data.repositories.ContactModelRepository;
@@ -39,17 +38,6 @@ public abstract class ActionBroadcastReceiver extends BroadcastReceiver {
 
     public ActionBroadcastReceiver() {
         this.instantiate();
-    }
-
-    protected boolean checkInstances() {
-        return TestUtil.required(
-            this.messageService,
-            this.lifetimeService,
-            this.notificationService,
-            this.contactService,
-            this.distributionListService,
-            this.groupService
-        );
     }
 
     protected void instantiate() {

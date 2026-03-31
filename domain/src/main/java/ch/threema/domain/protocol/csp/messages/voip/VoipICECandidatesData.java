@@ -127,7 +127,7 @@ public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> i
 
                 final String candidateString = JSONUtil.getStringOrNull(o, KEY_CANDIDATE);
                 if (candidateString == null) {
-                    logger.error("Bad Candidate: " + KEY_CANDIDATE + " must be defined");
+                    logger.error("Bad Candidate: {} must be defined", KEY_CANDIDATE);
                     throw new BadMessageException("TM062");
                 } else {
                     candidate.candidate = candidateString;
@@ -210,7 +210,7 @@ public class VoipICECandidatesData extends VoipCallData<VoipICECandidatesData> i
 
             final JSONArray candidates = o.getJSONArray(KEY_CANDIDATES);
             if (candidates.length() == 0) {
-                logger.error("Bad VoipICECandidatesData: " + KEY_CANDIDATES + " may not be empty");
+                logger.error("Bad VoipICECandidatesData: {} may not be empty", KEY_CANDIDATES);
                 throw new BadMessageException("TM062");
             }
             candidatesData.candidates = new Candidate[candidates.length()];

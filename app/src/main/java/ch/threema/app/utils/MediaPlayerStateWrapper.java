@@ -5,15 +5,14 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.Build;
 
 import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.EnumSet;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 /**
@@ -28,13 +27,11 @@ public class MediaPlayerStateWrapper {
 
     private final MediaPlayer mediaPlayer;
     private State currentState;
-    private final MediaPlayerStateWrapper stateWrapper;
-    private StateListener stateListener;
+    private CompletionListener completionListener;
 
     public MediaPlayerStateWrapper() {
-        stateWrapper = this;
         mediaPlayer = new MediaPlayer();
-        stateListener = null;
+        completionListener = null;
         currentState = State.IDLE;
         mediaPlayer.setOnPreparedListener(onPreparedListener);
         mediaPlayer.setOnCompletionListener(onCompletionListener);
@@ -119,8 +116,7 @@ public class MediaPlayerStateWrapper {
 
     public void stop() {
         logger.debug("stop()");
-        if (EnumSet.of(State.PREPARED, State.STARTED, State.STOPPED, State.PAUSED, State.PLAYBACK_COMPLETE).contains(
-            currentState)) {
+        if (EnumSet.of(State.PREPARED, State.STARTED, State.STOPPED, State.PAUSED, State.PLAYBACK_COMPLETE).contains(currentState)) {
             mediaPlayer.stop();
             currentState = State.STOPPED;
         }
@@ -157,9 +153,6 @@ public class MediaPlayerStateWrapper {
             logger.debug("on prepared");
             if (EnumSet.of(State.PREPARING).contains(currentState)) {
                 currentState = State.PREPARED;
-                if (stateListener != null) {
-                    stateListener.onPrepared(mp);
-                }
             }
         }
     };
@@ -170,8 +163,8 @@ public class MediaPlayerStateWrapper {
         public void onCompletion(MediaPlayer mp) {
             logger.debug("on completion");
             currentState = State.PLAYBACK_COMPLETE;
-            if (stateListener != null) {
-                stateListener.onCompletion(mp);
+            if (completionListener != null && mp != null) {
+                completionListener.onCompletion(mp);
             }
         }
     };
@@ -181,7 +174,6 @@ public class MediaPlayerStateWrapper {
         @Override
         public void onBufferingUpdate(MediaPlayer mp, int percent) {
             logger.debug("on buffering update");
-            stateWrapper.onBufferingUpdate(mp, percent);
         }
     };
 
@@ -191,41 +183,21 @@ public class MediaPlayerStateWrapper {
         public boolean onError(MediaPlayer mp, int what, int extra) {
             logger.debug("on error");
             currentState = State.ERROR;
-            stateWrapper.onError(mp, what, extra);
             return false;
         }
     };
 
-    private MediaPlayer.OnInfoListener onInfoListener = new MediaPlayer.OnInfoListener() {
-
-        @Override
-        public boolean onInfo(MediaPlayer mp, int what, int extra) {
-            logger.debug("on info");
-            stateWrapper.onInfo(mp, what, extra);
-            return false;
-        }
+    private MediaPlayer.OnInfoListener onInfoListener = (mp, what, extra) -> {
+        logger.debug("on info");
+        return false;
     };
 
-
-    public void onBufferingUpdate(MediaPlayer mp, int percent) {
+    public interface CompletionListener {
+        void onCompletion(@NonNull MediaPlayer mp);
     }
 
-    boolean onError(MediaPlayer mp, int what, int extra) {
-        return false;
-    }
-
-    public boolean onInfo(MediaPlayer mp, int what, int extra) {
-        return false;
-    }
-
-    public interface StateListener {
-        void onCompletion(MediaPlayer mp);
-
-        void onPrepared(MediaPlayer mp);
-    }
-
-    public void setStateListener(StateListener listener) {
-        stateListener = listener;
+    public void setCompletionListener(CompletionListener listener) {
+        completionListener = listener;
     }
 
     /* OTHER STUFF */
@@ -239,8 +211,7 @@ public class MediaPlayerStateWrapper {
 
     public int getDuration() {
         // Prepared, Started, Paused, Stopped, PlaybackCompleted
-        if (EnumSet.of(State.PREPARED, State.STARTED, State.PAUSED, State.STOPPED, State.PLAYBACK_COMPLETE).contains(
-            currentState)) {
+        if (EnumSet.of(State.PREPARED, State.STARTED, State.PAUSED, State.STOPPED, State.PLAYBACK_COMPLETE).contains(currentState)) {
             return mediaPlayer.getDuration();
         } else {
             return 100;

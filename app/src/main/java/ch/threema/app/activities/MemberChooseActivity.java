@@ -33,6 +33,8 @@ import com.google.android.material.search.SearchBar;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
 
+import org.koin.java.KoinJavaComponent;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ import java.util.Set;
 import ch.threema.android.ActivityExtensionsKt;
 import ch.threema.app.R;
 import ch.threema.app.adapters.FilterableListAdapter;
+import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.fragments.MemberListFragment;
 import ch.threema.app.fragments.UserMemberListFragment;
 import ch.threema.app.fragments.WorkUserMemberListFragment;
@@ -55,6 +58,8 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.SnackbarUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.storage.models.ContactModel;
+
+import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 
 abstract public class MemberChooseActivity extends ThreemaToolbarActivity implements SearchView.OnQueryTextListener, MemberListFragment.SelectionListener {
     private final static int FRAGMENT_USERS = 0;
@@ -72,6 +77,9 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
     protected final static int MODE_PROFILE_PIC_RECIPIENTS = 4;
     private static final String BUNDLE_QUERY_TEXT = "query";
 
+    @NonNull
+    protected final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
+
     private MemberChoosePagerAdapter memberChoosePagerAdapter;
     private MenuItem searchMenuItem;
     private ThreemaSearchView searchView;
@@ -86,6 +94,18 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
     private SearchBar searchBar;
     private ExtendedFloatingActionButton floatingActionButton;
     private String queryText;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (!isSessionScopeReady()) {
+            finish();
+            return;
+        }
+        if (savedInstanceState != null) {
+            queryText = savedInstanceState.getString(BUNDLE_QUERY_TEXT, null);
+        }
+    }
 
     @Override
     public boolean onQueryTextSubmit(String query) {
@@ -258,15 +278,6 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
                 }
             }
         });
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (savedInstanceState != null) {
-            queryText = savedInstanceState.getString(BUNDLE_QUERY_TEXT, null);
-        }
     }
 
     @Override
@@ -482,7 +493,13 @@ abstract public class MemberChooseActivity extends ThreemaToolbarActivity implem
             if (builder.length() > 0) {
                 builder.append(", ");
             }
-            builder.append(NameUtil.getDisplayNameOrNickname(contactModel, true));
+            builder.append(
+                NameUtil.getContactDisplayNameOrNickname(
+                    contactModel,
+                    true,
+                    dependencies.getPreferenceService().getContactNameFormat()
+                )
+            );
         }
         return builder.toString();
     }

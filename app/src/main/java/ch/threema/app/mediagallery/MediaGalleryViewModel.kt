@@ -27,8 +27,7 @@ class MediaGalleryViewModel(
     }
 
     private fun initializeSelectedContentTypes() {
-        val storedSelectedContentTypes = BooleanArray(SELECTABLE_CONTENT_TYPES.size)
-        preferenceService.getMediaGalleryContentTypes(storedSelectedContentTypes)
+        val storedSelectedContentTypes = preferenceService.getMediaGalleryContentTypes()
         val selectedContentTypes: MutableSet<Int> = mutableSetOf()
         storedSelectedContentTypes.forEachIndexed { index, isSelected ->
             if (isSelected) {

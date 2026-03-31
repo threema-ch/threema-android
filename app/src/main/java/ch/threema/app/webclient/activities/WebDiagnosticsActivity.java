@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkInfo;
@@ -79,7 +80,9 @@ import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.webclient.utils.DefaultNoopPeerConnectionObserver;
 import ch.threema.app.webclient.utils.DefaultNoopWebSocketListener;
 import ch.threema.app.webclient.webrtc.PeerConnectionWrapper;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.data.models.ContactModel;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -295,41 +298,43 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
             this.backgroundExecutor = new BackgroundExecutor();
         }
 
-        backgroundExecutor.execute(new SendToSupportBackgroundTask(
-            dependencies.getUserService().getIdentity(),
-            dependencies.getApiConnector(),
-            dependencies.getContactModelRepository(),
-            this
-        ) {
-            @Override
-            @NonNull
-            public SendToSupportResult onSupportAvailable(@NonNull ContactModel contactModel) {
-                MessageReceiver<?> messageReceiver = dependencies.getContactService().createReceiver(contactModel);
-                try {
-                    dependencies.getMessageService().sendText(clipboardString +
-                        "\n---\n" +
-                        caption +
-                        "\n---\n" +
-                        ConfigUtils.getSupportDeviceInfo() + "\n" +
-                        "Threema " + ConfigUtils.getAppVersion() + "\n" +
-                        dependencies.getUserService().getIdentity(), messageReceiver);
-                    finish();
-                    return SendToSupportResult.SUCCESS;
-                } catch (Exception e) {
-                    logger.error("Exception", e);
+        backgroundExecutor.execute(
+            new SendToSupportBackgroundTask(
+                dependencies.getUserService().getIdentity(),
+                dependencies.getApiConnector(),
+                dependencies.getContactModelRepository(),
+                dependencies.getAppRestrictions()
+            ) {
+                @Override
+                @NonNull
+                public SendToSupportResult onSupportAvailable(@NonNull ContactModel contactModel) {
+                    MessageReceiver<?> messageReceiver = dependencies.getContactService().createReceiver(contactModel);
+                    try {
+                        dependencies.getMessageService().sendText(clipboardString +
+                            "\n---\n" +
+                            caption +
+                            "\n---\n" +
+                            ConfigUtils.getSupportDeviceInfo() + "\n" +
+                            "Threema " + ConfigUtils.getAppVersion() + "\n" +
+                            dependencies.getUserService().getIdentity(), messageReceiver);
+                        finish();
+                        return SendToSupportResult.SUCCESS;
+                    } catch (Exception e) {
+                        logger.error("Exception", e);
+                    }
+                    return SendToSupportResult.FAILED;
                 }
-                return SendToSupportResult.FAILED;
-            }
 
-            @Override
-            public void onFinished(SendToSupportResult result) {
-                if (result == SendToSupportResult.SUCCESS) {
-                    Toast.makeText(WebDiagnosticsActivity.this, R.string.message_sent, Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(WebDiagnosticsActivity.this, R.string.an_error_occurred, Toast.LENGTH_LONG).show();
+                @Override
+                public void onFinished(SendToSupportResult result) {
+                    if (result == SendToSupportResult.SUCCESS) {
+                        Toast.makeText(WebDiagnosticsActivity.this, R.string.message_sent, Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(WebDiagnosticsActivity.this, R.string.an_error_occurred, Toast.LENGTH_LONG).show();
+                    }
                 }
             }
-        });
+        );
     }
 
     @UiThread
@@ -472,7 +477,7 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
 
         // Create WebSocket
         final String url = WS_BASE_URL + "/" + WS_PATH;
-        logger.info("Connecting to " + url);
+        logger.info("Connecting to {}", url);
         try {
             this.ws = new WebSocketFactory()
                 .setConnectionTimeout(WS_CONNECT_TIMEOUT_MS)
@@ -934,5 +939,10 @@ public class WebDiagnosticsActivity extends ThreemaToolbarActivity implements Te
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context) {
+        return new Intent(context, WebDiagnosticsActivity.class);
     }
 }

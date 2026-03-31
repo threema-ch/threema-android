@@ -53,14 +53,18 @@
     <string name="voip_prefs_video_codec_no_h264hip">H264-HiP\'yi devre dışı bırak</string>
     <string name="voip_prefs_video_codec_sw">Yazılım kodlayıcıları</string>
     <string name="voip_connection_failed">Bağlantı kurulamadı</string>
-    <string name="voip_connection_lost">Bağlantı koptu</string>
+    <string name="voip_call_disconnected">Arama bağlantısı kesildi</string>
     <string name="prefs_voip_reject_incoming_calls_title">Mobil aramaları reddet</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Bir Threema Araması etkinken gelen cep telefonu aramalarını reddet.</string>
     <string name="voip_contact_not_found">Bu numara için Threema kontağı bulunamadı.</string>
     <string name="voip_another_pstn_call">Arama başlatılamıyor. Normal bir telefon görüşmesi hala aktif.</string>
     <string name="voip_call_status_off_hours">Mesai dışı arama</string>
     <string name="voip_peer_video_disabled">Görüntülü aramalar karşı taraf tarafından devre dışı bırakıldı.</string>
-    <string name="voip_reject_channel_name">Çağrı durumu değişikliği</string>
+    <string name="voip_error_processing_call_anser">Çağrı yanıtı işlenirken bir hata oluştu.</string>
+    <string name="voip_error_peer_connection">Eş bağlantı hatası</string>
+    <string name="voip_error_determine_common_video_quality_profile">Ortak video kalitesi profili belirlenemedi.</string>
+    <string name="voip_audio_focus_lost">Ses Odağı kayboldu</string>
+    <string name="voip_could_not_initialize">Çağrı başlatılamadı</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC Tanılama</string>
     <string name="voip_prefs_webrtc_debug_summary">Sesli arama yapmak ile ilgili sorunları tanımlamak ve gidermek için bu aracı başlatın</string>
@@ -71,13 +75,9 @@
     <string name="voip_webrtc_debug_copied">Panoya kopyalama işlemi tamamlandı.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Panoya kopyala</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">Tüm grup üyeleri bilgilendirildi</string>
-    <string name="voip_gc_notification_channel_description">Grup çağrıları</string>
-    <string name="voip_gc_notification_title">Grup araması</string>
     <string name="voip_gc_notification_call_started">%1$s, %2$s içinde bir grup araması başlattı</string>
     <string name="voip_gc_notification_call_started_generic">%1$s bir grup araması başlattı</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Bir grup araması başlattınız</string>
-    <string name="voip_gc_dismiss_call">Yoksay</string>
     <string name="voip_gc_join_call">Katıl</string>
     <string name="voip_gc_ongoing_call">Devam eden grup araması</string>
     <string name="voip_gc_waiting_for_participants">Katılımcılar bekleniyor</string>

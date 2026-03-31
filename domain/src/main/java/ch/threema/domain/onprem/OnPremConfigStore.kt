@@ -1,5 +1,7 @@
 package ch.threema.domain.onprem
 
+import ch.threema.base.ThreemaException
+import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.TimeProvider
 import ch.threema.common.lastLine
 import ch.threema.common.withoutLastLine
@@ -9,15 +11,21 @@ import java.time.Instant
 import org.json.JSONException
 import org.json.JSONObject
 
+private val logger = getThreemaLogger("OnPremConfigStore")
+
 /**
- * Stores the OnPrem configuration in a persistent way, which enables the following case:
+ * Stores the OnPrem configuration into a file (together with the time at which it was stored), such that
+ * the OnPrem config is also available in situations where the OPPF can not be fetched from the server.
+ * This enables the following case:
  * - the config is used to read the work server base URL when the Remote Secrets feature is enabled.
  *   This is **critical** as it is not possible to fetch a new config from the server until the master key is unlocked.
+ * - the config is used to enforce on-prem specific certificate pinning
  */
 class OnPremConfigStore(
     baseDirectory: File,
     private val timeProvider: TimeProvider,
     private val onPremConfigParser: OnPremConfigParser,
+    private val onPremConfigVerifier: OnPremConfigVerifier,
 ) {
     private val storeFile = File(baseDirectory, STORE_FILE)
 
@@ -35,44 +43,43 @@ class OnPremConfigStore(
             return null
         }
         return onPremConfigParser.parse(
-            obj = deserializeConfigJson(storedData)
+            obj = deserializeConfig(storedData.withoutLastLine())
                 ?: return null,
-            createdAt = deserializeCreatedAt(storedData)
+            createdAt = deserializeCreatedAt(storedData.lastLine())
                 ?: return null,
         )
     }
 
-    private fun deserializeConfigJson(data: String) =
+    private fun deserializeConfig(data: String): JSONObject? =
         try {
-            JSONObject(data.withoutLastLine())
-        } catch (_: JSONException) {
-            null
+            onPremConfigVerifier.verify(data)
+        } catch (e: ThreemaException) {
+            logger.warn("Failed to read or validate stored on-prem config", e)
+
+            // TODO(ANDR-4431): The file used to just contain the plain JSON of the OPPF without the signature. To deal with old files,
+            //  we here fall back to trying to read the file's contents as JSON. This fallback should eventually be removed and null
+            //  returned directly.
+            try {
+                JSONObject(data)
+            } catch (_: JSONException) {
+                null
+            }
         }
 
     private fun deserializeCreatedAt(data: String) =
-        data.lastLine()
-            .toLongOrNull()
-            ?.let(Instant::ofEpochMilli)
+        data.toLongOrNull()?.let(Instant::ofEpochMilli)
 
     @Throws(IOException::class)
-    fun store(config: JSONObject) {
-        storeFile.writeText(serialize(config, createdAt = timeProvider.get()))
+    fun store(oppfString: String) {
+        storeFile.writeText(serialize(oppfString, createdAt = timeProvider.get()))
     }
 
-    private fun serialize(config: JSONObject, createdAt: Instant) =
+    private fun serialize(oppfString: String, createdAt: Instant) =
         buildString {
-            append(config.toString())
+            append(oppfString)
             append("\n")
             append(createdAt.toEpochMilli())
         }
-
-    /**
-     * Clears the store.
-     * This should only be called when deleting the identity, as it may not always be possible to fetch the config again.
-     */
-    fun reset() {
-        storeFile.delete()
-    }
 
     companion object {
         private const val STORE_FILE = "onprem_config"

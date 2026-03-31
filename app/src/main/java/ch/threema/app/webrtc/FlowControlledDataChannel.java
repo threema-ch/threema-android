@@ -3,12 +3,12 @@ package ch.threema.app.webrtc;
 import org.saltyrtc.tasks.webrtc.exceptions.IllegalStateError;
 import org.slf4j.Logger;
 import org.webrtc.DataChannel;
-
+import java.util.concurrent.CompletableFuture;
 import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.logging.ThreemaLogger;
-import java8.util.concurrent.CompletableFuture;
+
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 
 /**

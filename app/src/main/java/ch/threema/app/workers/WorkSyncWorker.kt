@@ -4,21 +4,21 @@ import android.content.Context
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
-import androidx.work.Constraints
 import androidx.work.CoroutineWorker
-import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.ForegroundInfo
 import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.PeriodicWorkRequest
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import ch.threema.android.buildOneTimeWorkRequest
+import ch.threema.android.buildPeriodicWorkRequest
+import ch.threema.android.setConstraints
+import ch.threema.android.setInputData
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
 import ch.threema.app.asynctasks.AddOrUpdateWorkContactBackgroundTask
@@ -27,6 +27,7 @@ import ch.threema.app.notifications.NotificationChannels
 import ch.threema.app.notifications.NotificationIDs
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.restrictions.AppRestrictionService
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.routines.UpdateAppLogoRoutine
 import ch.threema.app.routines.UpdateWorkInfoRoutine
 import ch.threema.app.services.ContactService
@@ -47,7 +48,7 @@ import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.work.WorkData
 import ch.threema.domain.stores.IdentityStore
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import okhttp3.OkHttpClient
 import org.koin.core.component.KoinComponent
@@ -70,6 +71,7 @@ class WorkSyncWorker(
     private val userService: UserService by inject()
     private val identityStore: IdentityStore by inject()
     private val contactModelRepository: ContactModelRepository by inject()
+    private val appRestrictions: AppRestrictions by inject()
 
     companion object {
         private const val EXTRA_FORCE_UPDATE = "FORCE_UPDATE"
@@ -81,7 +83,7 @@ class WorkSyncWorker(
             }
 
             val schedulePeriodMs =
-                WorkManagerUtil.normalizeSchedulePeriod(preferenceService.workSyncCheckInterval)
+                WorkManagerUtil.normalizeSchedulePeriod(preferenceService.getWorkSyncCheckInterval())
             logger.info("Scheduling periodic work sync. Schedule period: {} ms", schedulePeriodMs)
 
             try {
@@ -122,39 +124,29 @@ class WorkSyncWorker(
         private fun buildOneTimeWorkRequest(
             forceUpdate: Boolean,
             tag: String?,
-        ): OneTimeWorkRequest {
-            val data = Data.Builder()
-                .putBoolean(EXTRA_FORCE_UPDATE, forceUpdate)
-                .build()
-
-            val builder = OneTimeWorkRequestBuilder<WorkSyncWorker>()
-                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                .apply { setInputData(data) }
-
-            tag?.let {
-                builder.addTag(tag)
+        ): OneTimeWorkRequest =
+            buildOneTimeWorkRequest<WorkSyncWorker> {
+                setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                setInputData {
+                    putBoolean(EXTRA_FORCE_UPDATE, forceUpdate)
+                }
+                if (tag != null) {
+                    addTag(tag)
+                }
             }
 
-            return builder.build()
-        }
-
-        private fun buildPeriodicWorkRequest(schedulePeriodMs: Long): PeriodicWorkRequest {
-            val data = Data.Builder()
-                .putBoolean(EXTRA_FORCE_UPDATE, false)
-                .build()
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
-
-            return PeriodicWorkRequestBuilder<WorkSyncWorker>(
-                schedulePeriodMs,
-                TimeUnit.MILLISECONDS,
-            )
-                .setConstraints(constraints)
-                .addTag(schedulePeriodMs.toString())
-                .apply { setInputData(data) }
-                .build()
-        }
+        private fun buildPeriodicWorkRequest(schedulePeriodMs: Long): PeriodicWorkRequest =
+            buildPeriodicWorkRequest<WorkSyncWorker>(
+                repeatInterval = schedulePeriodMs.milliseconds,
+            ) {
+                setConstraints {
+                    setRequiredNetworkType(NetworkType.CONNECTED)
+                }
+                addTag(schedulePeriodMs.toString())
+                setInputData {
+                    putBoolean(EXTRA_FORCE_UPDATE, false)
+                }
+            }
 
         /**
          * Start a one time work sync request. Existing work will be [ExistingWorkPolicy.REPLACE]d.
@@ -316,15 +308,13 @@ class WorkSyncWorker(
             ),
             "UpdateAppIcon",
         ).start()
-        preferenceService.customSupportUrl = workData.supportUrl
+        preferenceService.setCustomSupportUrl(workData.supportUrl)
         // Save the Mini-MDM Parameters to a local file
         AppRestrictionService.getInstance()
             .storeWorkMDMSettings(workData.mdm)
 
         // update work info
         UpdateWorkInfoRoutine(
-            /* context = */
-            context,
             /* apiConnector = */
             apiConnector,
             /* identityStore = */
@@ -333,14 +323,16 @@ class WorkSyncWorker(
             null,
             /* licenseService = */
             licenseService,
+            /* appRestrictions */
+            appRestrictions,
         ).run()
-        preferenceService.workDirectoryEnabled = workData.directory.enabled
-        preferenceService.workDirectoryCategories = workData.directory.categories
-        preferenceService.workOrganization = workData.organization
-        logger.trace("CheckInterval = " + workData.checkInterval)
+        preferenceService.setWorkDirectoryEnabled(workData.directory.enabled)
+        preferenceService.setWorkDirectoryCategories(workData.directory.categories)
+        preferenceService.setWorkOrganization(workData.organization)
+        logger.trace("CheckInterval = {}", workData.checkInterval)
         if (workData.checkInterval > 0) {
             // schedule next interval
-            preferenceService.workSyncCheckInterval = workData.checkInterval
+            preferenceService.setWorkSyncCheckInterval(workData.checkInterval)
         }
 
         notificationService.cancelWorkSyncProgress()

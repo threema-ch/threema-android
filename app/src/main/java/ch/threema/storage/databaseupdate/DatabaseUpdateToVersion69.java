@@ -5,7 +5,6 @@ import net.zetetic.database.sqlcipher.SQLiteDatabase;
 import java.util.stream.Stream;
 
 public class DatabaseUpdateToVersion69 implements DatabaseUpdate {
-    public static final int VERSION = 69;
 
     private final SQLiteDatabase sqLiteDatabase;
 
@@ -71,6 +70,6 @@ public class DatabaseUpdateToVersion69 implements DatabaseUpdate {
 
     @Override
     public int getVersion() {
-        return VERSION;
+        return 69;
     }
 }

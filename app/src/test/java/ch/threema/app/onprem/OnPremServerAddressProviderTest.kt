@@ -13,9 +13,9 @@ import ch.threema.domain.onprem.OnPremConfigSafe
 import ch.threema.domain.onprem.OnPremConfigWeb
 import ch.threema.domain.onprem.OnPremConfigWork
 import ch.threema.domain.protocol.urls.BlobUrl
-import ch.threema.domain.protocol.urls.DeviceGroupUrl
 import ch.threema.domain.protocol.urls.MapPoiAroundUrl
 import ch.threema.domain.protocol.urls.MapPoiNamesUrl
+import ch.threema.domain.protocol.urls.MediatorUrl
 import io.mockk.every
 import io.mockk.mockk
 import java.time.Instant
@@ -66,7 +66,7 @@ class OnPremServerAddressProviderTest {
             overrideSaltyRtcPort = 0,
         ),
         mediator = OnPremConfigMediator(
-            url = DeviceGroupUrl("https://mediator.threemaonprem.initrode.com/"),
+            url = MediatorUrl("https://mediator.threemaonprem.initrode.com/"),
             blob = OnPremConfigBlob(
                 uploadUrl = "https://mediator.threemaonprem.initrode.com/blob/upload",
                 downloadUrl = BlobUrl("https://mediator.threemaonprem.initrode.com/blob/{blobId}"),
@@ -83,7 +83,7 @@ class OnPremServerAddressProviderTest {
     @BeforeTest
     fun setUp() {
         onPremConfigFetcher = mockk {
-            every { fetch() } returns onPremConfig
+            every { getOrFetch() } returns onPremConfig
         }
         fetcherProvider = OnPremServerAddressProvider.FetcherProvider { onPremConfigFetcher }
         serverAddressProvider = OnPremServerAddressProvider(fetcherProvider)
@@ -221,7 +221,7 @@ class OnPremServerAddressProviderTest {
     @Test
     fun `test mediator url`() {
         assertEquals(
-            DeviceGroupUrl("https://mediator.threemaonprem.initrode.com/"),
+            MediatorUrl("https://mediator.threemaonprem.initrode.com/"),
             serverAddressProvider.getMediatorUrl(),
         )
     }
@@ -229,7 +229,7 @@ class OnPremServerAddressProviderTest {
     @Test
     fun `test mediator url when no mediator config available`() {
         onPremConfigFetcher = mockk {
-            every { fetch() } returns onPremConfig.copy(
+            every { getOrFetch() } returns onPremConfig.copy(
                 mediator = null,
             )
         }
@@ -258,7 +258,7 @@ class OnPremServerAddressProviderTest {
     @Ignore("disabled until fallback is removed") // TODO(ANDR-3805)
     fun `test maps style url when maps config not available`() {
         onPremConfigFetcher = mockk {
-            every { fetch() } returns onPremConfig.copy(
+            every { getOrFetch() } returns onPremConfig.copy(
                 maps = null,
             )
         }
@@ -278,7 +278,7 @@ class OnPremServerAddressProviderTest {
     @Ignore("disabled until fallback is removed") // TODO(ANDR-3805)
     fun `test maps POI names url when maps config not available`() {
         onPremConfigFetcher = mockk {
-            every { fetch() } returns onPremConfig.copy(
+            every { getOrFetch() } returns onPremConfig.copy(
                 maps = null,
             )
         }
@@ -298,7 +298,7 @@ class OnPremServerAddressProviderTest {
     @Ignore("disabled until fallback is removed") // TODO(ANDR-3805)
     fun `test maps POI around url when maps config not available`() {
         onPremConfigFetcher = mockk {
-            every { fetch() } returns onPremConfig.copy(
+            every { getOrFetch() } returns onPremConfig.copy(
                 maps = null,
             )
         }

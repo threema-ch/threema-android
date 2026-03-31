@@ -1,5 +1,6 @@
 package ch.threema.app.preference
 
+import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -7,9 +8,11 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
+import ch.threema.android.buildActivityIntent
+import ch.threema.android.getSerializable
 import ch.threema.app.R
 import ch.threema.app.activities.ThreemaToolbarActivity
-import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.SynchronizedSettingsService
 import ch.threema.app.services.LockAppService
 import ch.threema.app.startup.finishAndRestartLaterIfNotReady
 import ch.threema.app.utils.ConfigUtils
@@ -26,9 +29,11 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
     }
 
     private val lockAppService: LockAppService by inject()
-    private val preferenceService: PreferenceService by inject()
+    private val synchronizedSettingsService: SynchronizedSettingsService by inject()
 
-    private val settingsSummaryFragment = SettingsSummaryFragment()
+    private val settingsSummaryFragment by lazy {
+        SettingsSummaryFragment()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,26 +42,17 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
         }
 
         // hide contents in app switcher and inhibit screenshots
-        ConfigUtils.setScreenshotsAllowed(this, preferenceService, lockAppService)
+        ConfigUtils.applyScreenshotPolicy(this, synchronizedSettingsService, lockAppService)
 
         if (isTabletLayout() && ConfigUtils.isTheDarkSide(this)) {
             findViewById<View>(R.id.settings_separator).visibility = View.INVISIBLE
         }
 
         if (savedInstanceState == null) {
-            when {
-                intent.extras?.get(EXTRA_SHOW_NOTIFICATION_FRAGMENT) == true -> showSpecificSettings(
-                    SettingsNotificationsFragment(),
-                )
-
-                intent.extras?.get(EXTRA_SHOW_MEDIA_FRAGMENT) == true -> showSpecificSettings(
-                    SettingsMediaFragment(),
-                )
-
-                intent.extras?.get(EXTRA_SHOW_SECURITY_FRAGMENT) == true -> showSpecificSettings(
-                    SettingsSecurityFragment(),
-                )
-
+            when (intent.getSerializable<InitialScreen>(EXTRA_INITIAL_SCREEN)) {
+                InitialScreen.MEDIA -> showSpecificSettings(SettingsMediaFragment())
+                InitialScreen.NOTIFICATIONS -> showSpecificSettings(SettingsNotificationsFragment())
+                InitialScreen.SECURITY -> showSpecificSettings(SettingsSecurityFragment())
                 else -> showDefaultSettings()
             }
         } else if (isTabletLayout()) {
@@ -172,9 +168,24 @@ class SettingsActivity : ThreemaToolbarActivity(), PreferenceFragmentCompat.OnPr
         supportActionBar?.setTitle(title)
     }
 
+    enum class InitialScreen {
+        MEDIA,
+        NOTIFICATIONS,
+        SECURITY,
+    }
+
     companion object {
-        const val EXTRA_SHOW_NOTIFICATION_FRAGMENT = "extra_show_notification_fragment"
-        const val EXTRA_SHOW_MEDIA_FRAGMENT = "extra_show_media_fragment"
-        const val EXTRA_SHOW_SECURITY_FRAGMENT = "extra_show_security_fragment"
+        @JvmStatic
+        @JvmOverloads
+        fun createIntent(
+            context: Context,
+            initialScreen: InitialScreen? = null,
+        ) = buildActivityIntent<SettingsActivity>(context) {
+            if (initialScreen != null) {
+                putExtra(EXTRA_INITIAL_SCREEN, initialScreen)
+            }
+        }
+
+        const val EXTRA_INITIAL_SCREEN = "extra_initial_screen"
     }
 }

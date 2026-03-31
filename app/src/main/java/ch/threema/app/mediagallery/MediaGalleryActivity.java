@@ -57,14 +57,13 @@ import ch.threema.app.dialogs.CancelableHorizontalProgressDialog;
 import ch.threema.app.dialogs.ExpandableTextEntryDialog;
 import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
-import ch.threema.app.fragments.ComposeMessageFragment;
+import ch.threema.app.fragments.composemessage.ComposeMessageFragment;
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
 import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.EmptyView;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.MediaGridItemDecoration;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
@@ -79,7 +78,7 @@ import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.data.MessageContentsType;
 import me.zhanghai.android.fastscroll.FastScroller;
 import me.zhanghai.android.fastscroll.FastScrollerBuilder;
@@ -307,7 +306,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
         if (intent.hasExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID)) {
             var groupService = dependencies.getGroupService();
             long groupId = intent.getLongExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, 0L);
-            GroupModel groupModel = groupService.getById(groupId);
+            GroupModelOld groupModel = groupService.getById(groupId);
             messageReceiver = groupService.createReceiver(groupModel);
             actionBarTitle = groupModel.getName();
         } else if (intent.hasExtra(AppConstants.INTENT_DATA_DISTRIBUTION_LIST_ID)) {
@@ -327,9 +326,8 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
             var contactService = dependencies.getContactService();
             ContactModel contactModel = contactService.getByIdentity(identity);
             messageReceiver = contactService.createReceiver(contactModel);
-            actionBarTitle = NameUtil.getDisplayNameOrNickname(contactModel, true);
+            actionBarTitle = NameUtil.getContactDisplayNameOrNickname(contactModel, true, dependencies.getPreferenceService().getContactNameFormat());
         }
-
 
         String type = IntentDataUtil.getAbstractMessageType(intent);
         int id = IntentDataUtil.getAbstractMessageId(intent);
@@ -537,7 +535,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
         reallyDiscardMessages(new CopyOnWriteArrayList<>((ArrayList<AbstractMessageModel>) data));
     }
 
@@ -605,7 +603,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
      * @return true if the items can be shared, false otherwise
      */
     private boolean selectedItemsCanBeShared() {
-        if (AppRestrictionUtil.isShareMediaDisabled(MediaGalleryActivity.this)) {
+        if (dependencies.getAppRestrictions().isShareMediaDisabled()) {
             return false;
         }
         if (mediaGalleryAdapter.getCheckedItemsCount() > ComposeMessageFragment.MAX_FORWARDABLE_ITEMS) {
@@ -623,7 +621,7 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
         @Override
         public boolean onCreateActionMode(ActionMode mode, Menu menu) {
             mode.getMenuInflater().inflate(R.menu.action_media_gallery, menu);
-            if (AppRestrictionUtil.isShareMediaDisabled(MediaGalleryActivity.this)) {
+            if (dependencies.getAppRestrictions().isShareMediaDisabled()) {
                 menu.findItem(R.id.menu_message_save).setVisible(false);
             }
             return true;
@@ -725,5 +723,4 @@ public class MediaGalleryActivity extends ThreemaToolbarActivity implements
             }
         }
     }
-
 }

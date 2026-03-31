@@ -15,10 +15,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import ch.threema.app.R;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
 import ch.threema.app.exceptions.NotAllowedException;
 import ch.threema.app.listeners.BallotListener;
 import ch.threema.app.listeners.BallotVoteListener;
@@ -54,7 +53,7 @@ import ch.threema.storage.factories.GroupBallotModelFactory;
 import ch.threema.storage.factories.IdentityBallotModelFactory;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.ballot.BallotChoiceModel;
 import ch.threema.storage.models.ballot.BallotModel;
 import ch.threema.storage.models.ballot.BallotVoteModel;
@@ -96,7 +95,7 @@ public class BallotServiceImpl implements BallotService {
 
     @Override
     public BallotModel create(
-        GroupModel groupModel,
+        GroupModelOld groupModel,
         String description,
         BallotModel.State state,
         BallotModel.Assessment assessment,
@@ -411,7 +410,7 @@ public class BallotServiceImpl implements BallotService {
         }
 
         if (createMessage instanceof GroupPollSetupMessage) {
-            GroupModel groupModel;
+            GroupModelOld groupModel;
             groupModel = this.groupService.getByGroupMessage((GroupPollSetupMessage) createMessage);
             if (groupModel == null) {
                 throw new ThreemaException("invalid group");
@@ -514,17 +513,14 @@ public class BallotServiceImpl implements BallotService {
     }
 
     @Override
-    public BallotModel get(String id, String creator) {
-        if (TestUtil.isEmptyOrNull(id, creator)) {
+    public BallotModel get(@NonNull String id, @Nullable String creator) {
+        if (id.isEmpty() && (creator == null || creator.isEmpty())) {
             return null;
         }
 
         BallotModel model = this.getFromCache(id, creator);
         if (model == null) {
-            model = this.databaseService.getBallotModelFactory().getByApiBallotIdAndIdentity(
-                id,
-                creator
-            );
+            model = this.databaseService.getBallotModelFactory().getByApiBallotIdAndIdentity(id, creator);
 
             this.cache(model);
         }
@@ -652,7 +648,7 @@ public class BallotServiceImpl implements BallotService {
                 if (link != null) {
                     switch (link.getType()) {
                         case GROUP:
-                            GroupModel groupModel = this.getGroupModel(link);
+                            GroupModelOld groupModel = this.getGroupModel(link);
                             if (groupModel != null) {
                                 return this.groupService.getGroupMemberIdentities(this.getGroupModel(link));
                             }
@@ -751,7 +747,7 @@ public class BallotServiceImpl implements BallotService {
 
         this.checkAccess();
 
-        if (!TestUtil.required(messageReceiver, ballotModel)) {
+        if (messageReceiver == null || ballotModel == null) {
             return result;
         }
 
@@ -841,19 +837,15 @@ public class BallotServiceImpl implements BallotService {
             choice.setName(c.getName());
             choice.setOrder(c.getOrder());
 
-            if ((isClosing || receivingIdentities != null) && TestUtil.required(voteModels, votersPositions)) {
-
-                for (BallotVoteModel v : Functional.filter(voteModels, new IPredicateNonNull<BallotVoteModel>() {
-                    @Override
-                    public boolean apply(@NonNull BallotVoteModel type) {
-                        return type.getBallotChoiceId() == c.getId();
-                    }
-                })) {
-                    int pos = votersPositions.get(v.getVotingIdentity());
-                    if (pos >= 0) {
-                        choice.addResult(pos, v.getChoice());
-                    }
-                }
+            if ((isClosing || receivingIdentities != null) && voteModels != null) {
+                voteModels.stream()
+                    .filter(model -> model.getBallotChoiceId() == c.getId())
+                    .forEach(model -> {
+                        int pos = votersPositions.get(model.getVotingIdentity());
+                        if (pos >= 0) {
+                            choice.addResult(pos, model.getChoice());
+                        }
+                    });
 
             }
             ballotData.getChoiceList().add(choice);
@@ -1016,7 +1008,7 @@ public class BallotServiceImpl implements BallotService {
     public boolean belongsToMe(Integer ballotModelId, MessageReceiver messageReceiver) throws NotAllowedException {
         BallotModel ballotModel = this.get(ballotModelId);
 
-        if (!TestUtil.required(ballotModel, messageReceiver)) {
+        if (ballotModel == null || messageReceiver == null) {
             return false;
         }
 
@@ -1044,7 +1036,7 @@ public class BallotServiceImpl implements BallotService {
     ) throws NotAllowedException {
         BallotModel ballotModel = this.get(ballotModelId);
 
-        if (!TestUtil.required(ballotModel, voting)) {
+        if (ballotModel == null || voting == null) {
             return new BallotVoteResult(false);
         }
 
@@ -1170,11 +1162,17 @@ public class BallotServiceImpl implements BallotService {
 
         for (final BallotVote apiVoteModel : voteMessage.getVotes()) {
             // Check if the choice correct
-            final BallotChoiceModel ballotChoiceModel = Functional.select(choices, type -> type.getApiBallotChoiceId() == apiVoteModel.getId());
+            final BallotChoiceModel ballotChoiceModel = choices.stream()
+                .filter(model -> model.getApiBallotChoiceId() == apiVoteModel.getId())
+                .findFirst()
+                .orElse(null);
 
             if (ballotChoiceModel != null) {
                 // Cool, correct choice
-                BallotVoteModel ballotVoteModel = Functional.select(existingVotes, type -> type.getBallotChoiceId() == ballotChoiceModel.getId());
+                BallotVoteModel ballotVoteModel = existingVotes.stream()
+                    .filter(model -> model.getBallotChoiceId() == ballotChoiceModel.getId())
+                    .findFirst()
+                    .orElse(null);
 
                 if (ballotVoteModel == null) {
                     // Ok, a new vote
@@ -1244,7 +1242,7 @@ public class BallotServiceImpl implements BallotService {
     }
 
 
-    private GroupModel getGroupModel(LinkBallotModel link) {
+    private GroupModelOld getGroupModel(LinkBallotModel link) {
         if (link.getType() != LinkBallotModel.Type.GROUP) {
             return null;
         }
@@ -1314,7 +1312,7 @@ public class BallotServiceImpl implements BallotService {
         if (link != null) {
             switch (link.getType()) {
                 case GROUP:
-                    GroupModel groupModel = this.getGroupModel(link);
+                    GroupModelOld groupModel = this.getGroupModel(link);
                     return this.groupService.createReceiver(groupModel);
                 case CONTACT:
                     ContactModel contactModel = this.getContactModel(link);
@@ -1368,7 +1366,7 @@ public class BallotServiceImpl implements BallotService {
      *
      * @return success
      */
-    private boolean link(GroupModel groupModel, BallotModel ballotModel) {
+    private boolean link(GroupModelOld groupModel, BallotModel ballotModel) {
         GroupBallotModelFactory groupBallotModelFactory = this.databaseService.getGroupBallotModelFactory();
         if (groupBallotModelFactory.getByGroupIdAndBallotId(
             groupModel.getId(),
@@ -1457,13 +1455,20 @@ public class BallotServiceImpl implements BallotService {
 
     private BallotModel getFromCache(final String apiId, final String creator) {
         synchronized (this.ballotModelCache) {
-            return Functional.select(this.ballotModelCache, new IPredicateNonNull<BallotModel>() {
-                @Override
-                public boolean apply(@NonNull BallotModel type) {
-                    return TestUtil.compare(type.getApiBallotId(), apiId)
-                        && TestUtil.compare(type.getCreatorIdentity(), creator);
-                }
-            });
+            return select(this.ballotModelCache, type ->
+                TestUtil.compare(type.getApiBallotId(), apiId) && TestUtil.compare(type.getCreatorIdentity(), creator)
+            );
         }
+    }
+
+    private static <T> T select(SparseArray<T> target, Predicate<T> predicate) {
+        for (int n = 0; n < target.size(); n++) {
+            int key = target.keyAt(n);
+            T object = target.get(key);
+            if (object != null && predicate.test(object)) {
+                return object;
+            }
+        }
+        return null;
     }
 }

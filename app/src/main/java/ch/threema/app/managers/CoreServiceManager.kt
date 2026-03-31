@@ -9,6 +9,7 @@ import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
 import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskManager
+import ch.threema.storage.DatabaseProvider
 import ch.threema.storage.DatabaseService
 
 /**
@@ -26,6 +27,8 @@ interface CoreServiceManager {
      * The database service.
      */
     val databaseService: DatabaseService
+
+    val databaseProvider: DatabaseProvider
 
     /**
      * The preference store

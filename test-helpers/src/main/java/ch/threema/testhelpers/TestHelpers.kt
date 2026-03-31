@@ -1,17 +1,10 @@
 package ch.threema.testhelpers
 
 import app.cash.turbine.TurbineTestContext
-import ch.threema.common.DispatcherProvider
 import ch.threema.common.models.CryptographicByteArray
 import java.io.File
 import kotlin.random.Random
 import kotlin.test.assertEquals
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.TestDispatcher
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 
 /**
  * Generate an array of length `length` and fill it using a non-cryptographically-secure
@@ -53,27 +46,6 @@ fun Any.loadResourceAsBytes(file: String): ByteArray =
 
 suspend fun <T> TurbineTestContext<T>.expectItem(expected: T) {
     assertEquals(expected, awaitItem())
-}
-
-fun TestScope.testDispatcherProvider(): DispatcherProvider {
-    val testDispatcher: TestDispatcher = StandardTestDispatcher(testScheduler)
-    return object : DispatcherProvider {
-        override val worker: CoroutineDispatcher
-            get() = testDispatcher
-        override val io: CoroutineDispatcher
-            get() = testDispatcher
-    }
-}
-
-@OptIn(ExperimentalCoroutinesApi::class)
-fun TestScope.unconfinedTestDispatcherProvider(): DispatcherProvider {
-    val testDispatcher: TestDispatcher = UnconfinedTestDispatcher(testScheduler)
-    return object : DispatcherProvider {
-        override val worker: CoroutineDispatcher
-            get() = testDispatcher
-        override val io: CoroutineDispatcher
-            get() = testDispatcher
-    }
 }
 
 fun createTempDirectory(prefix: String = "test"): File {

@@ -19,7 +19,6 @@ import android.util.Size
 import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraInfo
 import androidx.camera.core.CameraInfoUnavailableException
@@ -45,39 +44,42 @@ import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.getSystemService
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.util.Consumer
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.asFlow
+import androidx.lifecycle.lifecycleScope
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import ch.threema.android.postDelayed
+import ch.threema.android.showToast
 import ch.threema.app.AppConstants
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.camera.CameraActivity.KEY_EVENT_ACTION
 import ch.threema.app.camera.CameraActivity.KEY_EVENT_EXTRA
 import ch.threema.app.camera.ShutterButtonView.ShutterButtonListener
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.ui.LessObnoxiousMediaActionSound
-import ch.threema.app.ui.postDelayed
 import ch.threema.app.utils.ConfigUtils
+import ch.threema.app.utils.DispatcherProvider
 import ch.threema.app.utils.LocaleUtil
 import ch.threema.app.utils.RuntimeUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.consume
 import com.google.android.material.progressindicator.CircularProgressIndicator
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.math.floor
-import kotlin.math.min
 import kotlin.time.Duration.Companion.milliseconds
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.takeWhile
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 private val logger = getThreemaLogger("CameraFragment")
@@ -86,6 +88,9 @@ class CameraFragment : Fragment() {
     init {
         logScreenVisibility(logger)
     }
+
+    private val preferenceService: PreferenceService by inject()
+    private val dispatcherProvider: DispatcherProvider by inject()
 
     private val viewModel: CameraViewModel by viewModel()
 
@@ -107,7 +112,6 @@ class CameraFragment : Fragment() {
     private var timerView: TimerView? = null
     private var windowInsets: WindowInsetsCompat? = null
     private var mediaActionSound: LessObnoxiousMediaActionSound? = null
-    private var preferenceService: PreferenceService? = null
     private var recordingMode: Int = RECORDING_MODE_IMAGE
 
     private lateinit var scaleGestureDetector: ScaleGestureDetector
@@ -118,7 +122,7 @@ class CameraFragment : Fragment() {
     private var targetHeight = CameraConfig.getDefaultImageSize()
 
     private val displayManager by lazy {
-        requireContext().getSystemService(Context.DISPLAY_SERVICE) as DisplayManager
+        requireContext().getSystemService<DisplayManager>()
     }
 
     /** Blocking camera operations are performed using this executor */
@@ -158,15 +162,12 @@ class CameraFragment : Fragment() {
      */
     private val scaleGestureListener =
         object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            override fun onScale(detector: ScaleGestureDetector): Boolean {
+            override fun onScale(detector: ScaleGestureDetector) = consume {
                 val zoomState: ZoomState = camera?.cameraInfo?.zoomState?.value ?: return false
-                var clampedRatio: Float =
-                    zoomState.zoomRatio * speedUpZoomBy2X(detector.scaleFactor)
+                var clampedRatio: Float = zoomState.zoomRatio * speedUpZoomBy2X(detector.scaleFactor)
                 // Clamp the ratio with the zoom range.
-                clampedRatio = clampedRatio.coerceAtLeast(zoomState.minZoomRatio)
-                    .coerceAtMost(zoomState.maxZoomRatio)
+                clampedRatio = clampedRatio.coerceIn(minimumValue = zoomState.minZoomRatio, maximumValue = zoomState.maxZoomRatio)
                 camera?.cameraControl?.setZoomRatio(clampedRatio)
-                return true
             }
         }
 
@@ -190,9 +191,9 @@ class CameraFragment : Fragment() {
                         },
                     )
                 } else {
-                    previewView?.visibility = View.GONE
+                    previewView?.isVisible = false
                     container?.findViewById<ConstraintLayout?>(R.id.camera_ui_container)
-                        ?.visibility = View.GONE
+                        ?.isVisible = false
                     cameraCallback?.onVideoReady()
                 }
             }
@@ -218,16 +219,15 @@ class CameraFragment : Fragment() {
 
         // Unregister the broadcast receivers and listeners
         broadcastManager.unregisterReceiver(volumeButtonReceiver)
-        displayManager.unregisterDisplayListener(displayListener)
+        displayManager?.unregisterDisplayListener(displayListener)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        return inflater.inflate(R.layout.camerax_fragment_camera, container, false)
-    }
+    ): View =
+        inflater.inflate(R.layout.camerax_fragment_camera, container, false)
 
     @SuppressLint("MissingPermission")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -243,7 +243,7 @@ class CameraFragment : Fragment() {
         broadcastManager.registerReceiver(volumeButtonReceiver, filter)
 
         // Every time the orientation of device changes, update rotation for use cases
-        displayManager.registerDisplayListener(displayListener, null)
+        displayManager?.registerDisplayListener(displayListener, null)
 
         container = view as ConstraintLayout
         ViewCompat.setOnApplyWindowInsetsListener(container!!) { _, insets ->
@@ -256,7 +256,7 @@ class CameraFragment : Fragment() {
             insets
         }
 
-        previewView = container!!.findViewById(R.id.camera_view) as PreviewView
+        previewView = container!!.findViewById(R.id.camera_view)!!
         if (previewView == null) {
             activity?.finish()
             return
@@ -300,7 +300,6 @@ class CameraFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        preferenceService = ThreemaApplication.getServiceManager()?.preferenceService
         mediaActionSound = LessObnoxiousMediaActionSound()
         mediaActionSound?.load(LessObnoxiousMediaActionSound.SHUTTER_CLICK)
         scaleGestureDetector = ScaleGestureDetector(requireContext(), scaleGestureListener)
@@ -364,7 +363,7 @@ class CameraFragment : Fragment() {
                 if (hasBackCamera()) {
                     viewModel.lensFacing = CameraSelector.LENS_FACING_BACK
                 } else {
-                    Toast.makeText(context, R.string.no_camera_installed, Toast.LENGTH_SHORT).show()
+                    showToast(R.string.no_camera_installed)
                     logger.info("Back and front camera are unavailable")
                     activity?.finish()
                 }
@@ -399,7 +398,7 @@ class CameraFragment : Fragment() {
         val targetAspectRatio = if (isDisplayPortrait) ASPECT_RATIO_9_16 else ASPECT_RATIO_16_9
 
         val cameraProvider = cameraProvider
-            ?: throw IllegalStateException("Camera initialization failed.")
+            ?: error("Camera initialization failed.")
 
         val previewHeight = (previewView!!.measuredWidth / targetAspectRatio.toFloat()).toInt()
 
@@ -416,7 +415,7 @@ class CameraFragment : Fragment() {
             isDisplayPortrait,
         )
 
-        if (ConfigUtils.supportsVideoCapture() && recordingMode == RECORDING_MODE_VIDEO) {
+        if (recordingMode == RECORDING_MODE_VIDEO) {
             prepareVideoRecording(cameraProvider)
             imageCapture = null
         } else {
@@ -433,7 +432,7 @@ class CameraFragment : Fragment() {
         }
 
         // Attach the viewfinder's surface provider to preview use case
-        preview?.setSurfaceProvider(previewView!!.surfaceProvider)
+        preview?.surfaceProvider = previewView!!.surfaceProvider
         observeCameraState(camera?.cameraInfo!!)
 
         return true
@@ -474,8 +473,9 @@ class CameraFragment : Fragment() {
         targetAspectRatio: Rational,
         rotation: Int,
     ): Boolean {
-        val cameraSelector =
-            CameraSelector.Builder().requireLensFacing(viewModel.lensFacing).build()
+        val cameraSelector = CameraSelector.Builder()
+            .requireLensFacing(viewModel.lensFacing)
+            .build()
 
         // ImageCapture
         // Adjust the captured image resolution according to the view size and the target width.
@@ -488,14 +488,12 @@ class CameraFragment : Fragment() {
         } else if (targetWidth < targetHeight) {
             width = targetWidth
             height = (targetWidth.toFloat() / targetAspectRatio.toFloat()).toInt()
+        } else if (isDisplayPortrait) {
+            width = (targetHeight.toFloat() * targetAspectRatio.toFloat()).toInt()
+            height = targetHeight
         } else {
-            if (isDisplayPortrait) {
-                width = (targetHeight.toFloat() * targetAspectRatio.toFloat()).toInt()
-                height = targetHeight
-            } else {
-                width = targetWidth
-                height = (targetWidth.toFloat() / targetAspectRatio.toFloat()).toInt()
-            }
+            width = targetWidth
+            height = (targetWidth.toFloat() / targetAspectRatio.toFloat()).toInt()
         }
 
         imageCapture = ImageCapture.Builder()
@@ -517,7 +515,7 @@ class CameraFragment : Fragment() {
     }
 
     private fun restoreFlashMode() {
-        var flashModeOrdinal = preferenceService?.cameraFlashMode ?: 0
+        var flashModeOrdinal = preferenceService.getCameraFlashMode()
         if (flashModeOrdinal > 0) {
             flashModeOrdinal--
             if (hasFlash()) {
@@ -533,16 +531,14 @@ class CameraFragment : Fragment() {
                 if (hasFlash()) {
                     @FlashMode val flashMode: Int = imageCapture?.flashMode ?: ImageCapture.FLASH_MODE_AUTO
                     it.post {
-                        it.visibility = View.VISIBLE
+                        it.isVisible = true
                         when (flashMode) {
                             ImageCapture.FLASH_MODE_AUTO -> {
                                 it.setImageResource(R.drawable.ic_flash_auto_outline)
                             }
-
                             ImageCapture.FLASH_MODE_ON -> {
                                 it.setImageResource(R.drawable.ic_flash_on_outline)
                             }
-
                             ImageCapture.FLASH_MODE_OFF -> {
                                 it.setImageResource(R.drawable.ic_flash_off_outline)
                             }
@@ -553,7 +549,7 @@ class CameraFragment : Fragment() {
             } catch (exc: java.lang.IllegalStateException) {
                 logger.error("Unable to get flash state", exc)
             }
-            it.visibility = View.GONE
+            it.isVisible = false
         }
     }
 
@@ -562,9 +558,8 @@ class CameraFragment : Fragment() {
      * Note: The camera will be initialized in CameraView's onMeasure(). If this method is called before tha camera is set up, it will return false.
      * @return true if current camera has a flash unit, false otherwise or in case of error
      */
-    private fun hasFlash(): Boolean {
-        return camera?.cameraInfo?.hasFlashUnit() ?: false
-    }
+    private fun hasFlash(): Boolean =
+        camera?.cameraInfo?.hasFlashUnit() ?: false
 
     private fun observeCameraState(cameraInfo: CameraInfo) {
         cameraInfo.cameraState.observe(viewLifecycleOwner) { cameraState ->
@@ -574,22 +569,18 @@ class CameraFragment : Fragment() {
                         // Ask the user to close other camera apps
                         logger.debug("CameraState: Pending Open")
                     }
-
                     CameraState.Type.OPENING -> {
                         // Show the Camera UI
                         logger.debug("CameraState: Opening")
                     }
-
                     CameraState.Type.OPEN -> {
                         // Setup Camera resources and begin processing
                         logger.debug("CameraState: Open")
                     }
-
                     CameraState.Type.CLOSING -> {
                         // Close camera UI
                         logger.debug("CameraState: Closing")
                     }
-
                     CameraState.Type.CLOSED -> {
                         // Free camera resources
                         logger.debug("CameraState: Closed")
@@ -602,66 +593,42 @@ class CameraFragment : Fragment() {
                     // Open errors
                     CameraState.ERROR_STREAM_CONFIG -> {
                         // Make sure to setup the use cases properly
-                        Toast.makeText(
-                            context,
-                            "Stream config error",
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        // TODO(ANDR-4447): Toast messages should be localized
+                        showToast("Stream config error")
                     }
                     // Opening errors
                     CameraState.ERROR_CAMERA_IN_USE -> {
                         // Close the camera or ask user to close another camera app that's using the
                         // camera
-                        Toast.makeText(
-                            context,
-                            "Camera in use",
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        // TODO(ANDR-4447): Toast messages should be localized
+                        showToast("Camera in use")
                     }
-
                     CameraState.ERROR_MAX_CAMERAS_IN_USE -> {
                         // Close another open camera in the app, or ask the user to close another
                         // camera app that's using the camera
-                        Toast.makeText(
-                            context,
-                            "Max cameras in use",
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        // TODO(ANDR-4447): Toast messages should be localized
+                        showToast("Max cameras in use")
                     }
-
                     CameraState.ERROR_OTHER_RECOVERABLE_ERROR -> {
-                        Toast.makeText(
-                            context,
-                            "Other recoverable error",
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        // TODO(ANDR-4447): Toast messages should be localized
+                        showToast("Other recoverable error")
                     }
                     // Closing errors
                     CameraState.ERROR_CAMERA_DISABLED -> {
                         // Ask the user to enable the device's cameras
-                        Toast.makeText(
-                            context,
-                            "Camera disabled",
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        // TODO(ANDR-4447): Toast messages should be localized
+                        showToast("Camera disabled")
                     }
-
                     CameraState.ERROR_CAMERA_FATAL_ERROR -> {
                         // Ask the user to reboot the device to restore camera function
-                        Toast.makeText(
-                            context,
-                            "Fatal error",
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        // TODO(ANDR-4447): Toast messages should be localized
+                        showToast("Fatal error")
                     }
                     // Closed errors
                     CameraState.ERROR_DO_NOT_DISTURB_MODE_ENABLED -> {
                         // Ask the user to disable the "Do Not Disturb" mode, then reopen the camera
-                        Toast.makeText(
-                            context,
-                            "Do not disturb mode enabled",
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                        // TODO(ANDR-4447): Toast messages should be localized
+                        showToast("Do not disturb mode enabled")
                     }
                 }
             }
@@ -760,8 +727,7 @@ class CameraFragment : Fragment() {
 
                     val metadata = ImageCapture.Metadata().apply {
                         // Mirror image when using the front camera
-                        isReversedHorizontal =
-                            viewModel.lensFacing == CameraSelector.LENS_FACING_FRONT
+                        isReversedHorizontal = viewModel.lensFacing == CameraSelector.LENS_FACING_FRONT
                     }
 
                     // Create output options object which contains file + metadata
@@ -793,7 +759,7 @@ class CameraFragment : Fragment() {
                                             it.postDelayed(50.milliseconds) {
                                                 if (isAdded && !isDetached) {
                                                     it.foreground = null
-                                                    progressBar?.visibility = View.VISIBLE
+                                                    progressBar?.isVisible = true
                                                 }
                                             }
                                             mediaActionSound?.play(LessObnoxiousMediaActionSound.SHUTTER_CLICK)
@@ -814,21 +780,17 @@ class CameraFragment : Fragment() {
         })
 
         val shutterExplainText = controls.findViewById<TextView>(R.id.shutter_explain)
-        shutterExplainText?.visibility = when (cameraConfiguration?.videoEnable) {
-            true -> View.VISIBLE
-            null, false -> View.GONE
-        }
+        shutterExplainText?.isVisible = cameraConfiguration?.videoEnable == true
 
         controls.findViewById<View>(R.id.flash_switch_button).setOnClickListener { switchFlash() }
 
         // Setup for button used to switch cameras
-        val cameraSwitchButton = controls.findViewById<ImageView>(R.id.camera_switch_button)
-        cameraSwitchButton?.let {
+        controls.findViewById<ImageView>(R.id.camera_switch_button)?.let { cameraSwitchButton ->
             // Disable the button until the camera is set up
-            it.isEnabled = false
+            cameraSwitchButton.isEnabled = false
 
             // Listener for button used to switch cameras. Only called if the button is enabled
-            it.setOnClickListener {
+            cameraSwitchButton.setOnClickListener {
                 viewModel.lensFacing = if (viewModel.lensFacing == CameraSelector.LENS_FACING_FRONT) {
                     CameraSelector.LENS_FACING_BACK
                 } else {
@@ -856,15 +818,12 @@ class CameraFragment : Fragment() {
         rebindUseCases(RECORDING_MODE_VIDEO)
 
         startVideoRecording()
-        val explain = container!!.findViewById<View>(R.id.shutter_explain)
-        if (explain != null) {
-            explain.visibility = View.GONE
-        }
+        container!!.findViewById<View>(R.id.shutter_explain)?.isVisible = false
 
         val controls = controlsContainer!!.findViewById<View>(R.id.controls)
 
-        controls.findViewById<View>(R.id.camera_switch_button).visibility = View.GONE
-        controls.findViewById<View>(R.id.flash_switch_button).visibility = View.GONE
+        controls.findViewById<View>(R.id.camera_switch_button).isVisible = false
+        controls.findViewById<View>(R.id.flash_switch_button).isVisible = false
     }
 
     /** Enabled or disabled a button to switch cameras depending on the available cameras */
@@ -873,30 +832,28 @@ class CameraFragment : Fragment() {
             controlsContainer!!.findViewById<ImageView>(R.id.camera_switch_button)
         try {
             cameraSwitchButton?.isEnabled = hasBackCamera() && hasFrontCamera()
-        } catch (exception: CameraInfoUnavailableException) {
+        } catch (_: CameraInfoUnavailableException) {
             cameraSwitchButton?.isEnabled = false
         }
     }
 
     /** Returns true if the device has an available back camera. False otherwise */
-    private fun hasBackCamera(): Boolean {
-        return try {
+    private fun hasBackCamera(): Boolean =
+        try {
             cameraProvider?.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA) ?: false
         } catch (e: Exception) {
             logger.error("Failed to check for presence of back camera", e)
             false
         }
-    }
 
     /** Returns true if the device has an available front camera. False otherwise */
-    private fun hasFrontCamera(): Boolean {
-        return try {
-            return cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) ?: false
+    private fun hasFrontCamera(): Boolean =
+        try {
+            cameraProvider?.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA) ?: false
         } catch (e: Exception) {
             logger.error("Failed to check for presence of front camera", e)
             false
         }
-    }
 
     private fun switchFlash() {
         @FlashMode var flashMode: Int = imageCapture?.flashMode ?: ImageCapture.FLASH_MODE_OFF
@@ -914,7 +871,7 @@ class CameraFragment : Fragment() {
             }
         }
         imageCapture?.flashMode = flashMode
-        preferenceService?.cameraFlashMode = flashMode + 1
+        preferenceService.setCameraFlashMode(flashMode + 1)
         updateFlashButton()
     }
 
@@ -955,16 +912,16 @@ class CameraFragment : Fragment() {
             pendingRecording?.withAudioEnabled()
         }
 
-        CoroutineScope(Dispatchers.Default).launch {
+        lifecycleScope.launch(dispatcherProvider.worker) {
             // Wait until camera is open
             camera?.cameraInfo?.cameraState?.asFlow()
-                ?.takeWhile { it.type != CameraState.Type.OPEN }?.collect {}
+                ?.first { it.type == CameraState.Type.OPEN }
 
             // Add some delay so that the camera can adjust the brightness
             delay(400)
 
             // Start the timer and the recording
-            RuntimeUtil.runOnUiThread {
+            launch(dispatcherProvider.main) {
                 timerView?.start(durationSeconds * DateUtils.SECOND_IN_MILLIS) { _: Long -> stopVideoRecording() }
             }
             try {
@@ -985,28 +942,22 @@ class CameraFragment : Fragment() {
         try {
             // enableTorch() may crash with IllegalStateException
             camera?.cameraControl?.enableTorch(false)
-        } catch (e: java.lang.Exception) {
+        } catch (_: Exception) {
             // ignore this
         }
         try {
             videoRecording?.stop()
-        } catch (e: java.lang.Exception) {
-            logger.error("Exception", e)
+        } catch (e: Exception) {
+            logger.error("Failed to stop video recording", e)
         }
     }
 
-    private fun speedUpZoomBy2X(scaleFactor: Float): Float {
-        return if (scaleFactor > 1f) {
+    private fun speedUpZoomBy2X(scaleFactor: Float): Float =
+        if (scaleFactor > 1f) {
             1.0f + (scaleFactor - 1.0f) * 2
         } else {
             1.0f - (1.0f - scaleFactor) * 2
         }
-    }
-
-    private fun setTargetResolution(width: Int, height: Int) {
-        targetHeight = min(height, CameraConfig.getDefaultImageSize())
-        targetWidth = min(width, CameraConfig.getDefaultImageSize())
-    }
 
     private fun restart() {
         requireActivity().recreate()

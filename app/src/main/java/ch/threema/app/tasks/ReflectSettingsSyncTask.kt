@@ -1,8 +1,8 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.SynchronizedSettingsService
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ExcludedSyncIdentitiesService
 import ch.threema.base.crypto.NonceFactory
@@ -19,6 +19,8 @@ import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
 import ch.threema.protobuf.d2d.sync.settings
 import ch.threema.protobuf.identities
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("ReflectSettingsSyncTask")
 
@@ -28,10 +30,14 @@ private val logger = getThreemaLogger("ReflectSettingsSyncTask")
  * currently applied setting. This is due to the preference system mechanism in android that does
  * not allow us to delay the change of settings in the UI by waiting for network communication.
  */
-abstract class ReflectSettingsSyncTask(
-    protected val multiDeviceManager: MultiDeviceManager,
-    private val nonceFactory: NonceFactory,
-) : ActiveTask<Unit> {
+abstract class ReflectSettingsSyncTask() : ActiveTask<Unit>, KoinComponent {
+    protected val blockedIdentitiesService: BlockedIdentitiesService by inject()
+    protected val excludedSyncIdentitiesService: ExcludedSyncIdentitiesService by inject()
+    protected val multiDeviceManager: MultiDeviceManager by inject()
+    private val nonceFactory: NonceFactory by inject()
+    protected val preferenceService: PreferenceService by inject()
+    protected val synchronizedSettingsService: SynchronizedSettingsService by inject()
+
     private val mdProperties by lazy { multiDeviceManager.propertiesProvider.get() }
 
     protected abstract fun getSettings(): Settings
@@ -68,13 +74,8 @@ abstract class ReflectSettingsSyncTask(
      * completion.
      */
     class ReflectMultipleSettingsSyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
         private val settingsCreators: List<(Settings.Builder) -> Unit>,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ) {
+    ) : ReflectSettingsSyncTask() {
         override val type = "ReflectMultipleSettingsSyncUpdate"
 
         override fun getSettings(): Settings {
@@ -88,294 +89,168 @@ abstract class ReflectSettingsSyncTask(
         }
     }
 
-    class ReflectContactSyncPolicySyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val preferenceService: PreferenceService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
-        PersistableTask {
+    class ReflectContactSyncPolicySyncUpdate() : ReflectSettingsSyncTask(), PersistableTask {
         override val type = "ReflectContactSyncPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
-            contactSyncPolicy = preferenceService.contactSyncPolicySetting.getContactSyncPolicy()
+            contactSyncPolicy = synchronizedSettingsService.getContactSyncPolicySetting().getContactSyncPolicy()
         }
 
         override fun serialize(): SerializableTaskData = ReflectContactSyncPolicySyncUpdateData
 
         @Serializable
         data object ReflectContactSyncPolicySyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectContactSyncPolicySyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    preferenceService = serviceManager.preferenceService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectContactSyncPolicySyncUpdate()
         }
     }
 
-    class ReflectUnknownContactPolicySyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val preferenceService: PreferenceService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
-        PersistableTask {
+    class ReflectUnknownContactPolicySyncUpdate() : ReflectSettingsSyncTask(), PersistableTask {
         override val type = "ReflectUnknownContactPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
-            unknownContactPolicy = preferenceService.unknownContactPolicySetting.getUnknownContactPolicy()
+            unknownContactPolicy = synchronizedSettingsService.getUnknownContactPolicySetting().getUnknownContactPolicy()
         }
 
         override fun serialize(): SerializableTaskData = ReflectUnknownContactPolicySyncUpdateData
 
         @Serializable
         data object ReflectUnknownContactPolicySyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectUnknownContactPolicySyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    preferenceService = serviceManager.preferenceService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectUnknownContactPolicySyncUpdate()
         }
     }
 
-    class ReflectReadReceiptPolicySyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val preferenceService: PreferenceService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
-        PersistableTask {
+    class ReflectReadReceiptPolicySyncUpdate() : ReflectSettingsSyncTask(), PersistableTask {
         override val type = "ReflectReadReceiptPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
-            readReceiptPolicy = preferenceService.readReceiptPolicySetting.getReadReceiptPolicy()
+            readReceiptPolicy = synchronizedSettingsService.getReadReceiptPolicySetting().getReadReceiptPolicy()
         }
 
         override fun serialize(): SerializableTaskData = ReadReceiptPolicySyncUpdateData
 
         @Serializable
         data object ReadReceiptPolicySyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectReadReceiptPolicySyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    preferenceService = serviceManager.preferenceService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectReadReceiptPolicySyncUpdate()
         }
     }
 
-    class ReflectTypingIndicatorPolicySyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val preferenceService: PreferenceService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
-        PersistableTask {
+    class ReflectTypingIndicatorPolicySyncUpdate() : ReflectSettingsSyncTask(), PersistableTask {
         override val type = "ReflectTypingIndicatorPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
-            typingIndicatorPolicy = preferenceService.typingIndicatorPolicySetting.getTypingIndicatorPolicy()
+            typingIndicatorPolicy = synchronizedSettingsService.getTypingIndicatorPolicySetting().getTypingIndicatorPolicy()
         }
 
         override fun serialize(): SerializableTaskData = ReflectTypingIndicatorPolicySyncUpdateData
 
         @Serializable
         data object ReflectTypingIndicatorPolicySyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectTypingIndicatorPolicySyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    preferenceService = serviceManager.preferenceService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectTypingIndicatorPolicySyncUpdate()
         }
     }
 
-    class ReflectO2oCallPolicySyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val preferenceService: PreferenceService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
-        PersistableTask {
+    class ReflectO2oCallPolicySyncUpdate() : ReflectSettingsSyncTask(), PersistableTask {
         override val type = "ReflectO2oCallPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
-            o2OCallPolicy = preferenceService.o2oCallPolicySetting.getO2oCallPolicy()
+            o2OCallPolicy = synchronizedSettingsService.getO2oCallPolicySetting().getO2oCallPolicy()
         }
 
         override fun serialize(): SerializableTaskData = ReflectO2oCallPolicySyncUpdateData
 
         @Serializable
         data object ReflectO2oCallPolicySyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectO2oCallPolicySyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    preferenceService = serviceManager.preferenceService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectO2oCallPolicySyncUpdate()
         }
     }
 
-    class ReflectO2oCallConnectionPolicySyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val preferenceService: PreferenceService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
-        PersistableTask {
+    class ReflectO2oCallConnectionPolicySyncUpdate() : ReflectSettingsSyncTask(), PersistableTask {
         override val type = "ReflectO2oCallConnectionPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
-            o2OCallConnectionPolicy = preferenceService.o2oCallConnectionPolicySetting.getO2oCallConnectionPolicy()
+            o2OCallConnectionPolicy = synchronizedSettingsService.getO2oCallConnectionPolicySetting().getO2oCallConnectionPolicy()
         }
 
         override fun serialize(): SerializableTaskData = ReflectO2oCallConnectionPolicySyncUpdateData
 
         @Serializable
         data object ReflectO2oCallConnectionPolicySyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectO2oCallConnectionPolicySyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    preferenceService = serviceManager.preferenceService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectO2oCallConnectionPolicySyncUpdate()
         }
     }
 
-    class ReflectO2oCallVideoPolicySyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val preferenceService: PreferenceService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
-        PersistableTask {
+    class ReflectO2oCallVideoPolicySyncUpdate() : ReflectSettingsSyncTask(), PersistableTask {
         override val type = "ReflectO2oCallVideoPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
-            o2OCallVideoPolicy = preferenceService.o2oCallVideoPolicySetting.getO2oCallVideoPolicy()
+            o2OCallVideoPolicy = synchronizedSettingsService.getO2oCallVideoPolicySetting().getO2oCallVideoPolicy()
         }
 
         override fun serialize(): SerializableTaskData = ReflectO2oCallVideoPolicySyncUpdateData
 
         @Serializable
         data object ReflectO2oCallVideoPolicySyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectO2oCallVideoPolicySyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    preferenceService = serviceManager.preferenceService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectO2oCallVideoPolicySyncUpdate()
         }
     }
 
-    class ReflectGroupCallPolicySyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val preferenceService: PreferenceService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
-        PersistableTask {
+    class ReflectGroupCallPolicySyncUpdate() : ReflectSettingsSyncTask(), PersistableTask {
         override val type = "ReflectGroupCallPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
-            groupCallPolicy = preferenceService.groupCallPolicySetting.getGroupCallPolicy()
+            groupCallPolicy = synchronizedSettingsService.getGroupCallPolicySetting().getGroupCallPolicy()
         }
 
         override fun serialize(): SerializableTaskData = ReflectGroupCallPolicySyncUpdateData
 
         @Serializable
         data object ReflectGroupCallPolicySyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectGroupCallPolicySyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    preferenceService = serviceManager.preferenceService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectGroupCallPolicySyncUpdate()
         }
     }
 
-    class ReflectScreenshotPolicySyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val preferenceService: PreferenceService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
-        PersistableTask {
+    class ReflectScreenshotPolicySyncUpdate() : ReflectSettingsSyncTask(), PersistableTask {
         override val type = "ReflectScreenshotPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
-            screenshotPolicy = preferenceService.screenshotPolicySetting.getScreenshotPolicy()
+            screenshotPolicy = synchronizedSettingsService.getScreenshotPolicySetting().getScreenshotPolicy()
         }
 
         override fun serialize(): SerializableTaskData = ReflectScreenshotPolicySyncUpdateData
 
         @Serializable
         data object ReflectScreenshotPolicySyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectScreenshotPolicySyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    preferenceService = serviceManager.preferenceService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectScreenshotPolicySyncUpdate()
         }
     }
 
-    class ReflectKeyboardDataCollectionPolicySyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val preferenceService: PreferenceService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
-        PersistableTask {
+    class ReflectKeyboardDataCollectionPolicySyncUpdate() : ReflectSettingsSyncTask(), PersistableTask {
         override val type = "ReflectKeyboardDataCollectionPolicySyncUpdate"
 
         override fun getSettings(): Settings = settings {
-            keyboardDataCollectionPolicy = preferenceService.keyboardDataCollectionPolicySetting.getKeyboardDataCollectionPolicy()
+            keyboardDataCollectionPolicy = synchronizedSettingsService.getKeyboardDataCollectionPolicySetting().getKeyboardDataCollectionPolicy()
         }
 
         override fun serialize(): SerializableTaskData = ReflectKeyboardDataCollectionPolicySyncUpdateData
 
         @Serializable
         data object ReflectKeyboardDataCollectionPolicySyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectKeyboardDataCollectionPolicySyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    preferenceService = serviceManager.preferenceService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectKeyboardDataCollectionPolicySyncUpdate()
         }
     }
 
-    class ReflectBlockedIdentitiesSyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val blockedIdentitiesService: BlockedIdentitiesService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
+    class ReflectBlockedIdentitiesSyncUpdate() :
+        ReflectSettingsSyncTask(),
         PersistableTask {
         override val type = "ReflectBlockedIdentitiesSyncUpdate"
 
@@ -390,24 +265,12 @@ abstract class ReflectSettingsSyncTask(
 
         @Serializable
         data object ReflectBlockedIdentitiesSyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectBlockedIdentitiesSyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    blockedIdentitiesService = serviceManager.blockedIdentitiesService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectBlockedIdentitiesSyncUpdate()
         }
     }
 
-    class ReflectExcludeFromSyncIdentitiesSyncUpdate(
-        multiDeviceManager: MultiDeviceManager,
-        nonceFactory: NonceFactory,
-        private val excludedSyncIdentitiesService: ExcludedSyncIdentitiesService,
-    ) : ReflectSettingsSyncTask(
-        multiDeviceManager = multiDeviceManager,
-        nonceFactory = nonceFactory,
-    ),
-        PersistableTask {
+    class ReflectExcludeFromSyncIdentitiesSyncUpdate() : ReflectSettingsSyncTask(), PersistableTask {
         override val type = "ReflectExcludeFromSyncIdentitiesUpdate"
 
         override fun getSettings(): Settings = settings {
@@ -421,12 +284,8 @@ abstract class ReflectSettingsSyncTask(
 
         @Serializable
         data object ReflectExcludeFromSyncIdentitiesSyncUpdateData : SerializableTaskData {
-            override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-                ReflectExcludeFromSyncIdentitiesSyncUpdate(
-                    multiDeviceManager = serviceManager.multiDeviceManager,
-                    nonceFactory = serviceManager.nonceFactory,
-                    excludedSyncIdentitiesService = serviceManager.excludedSyncIdentitiesService,
-                )
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectExcludeFromSyncIdentitiesSyncUpdate()
         }
     }
 }

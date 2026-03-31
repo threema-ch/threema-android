@@ -24,7 +24,7 @@ class HomeViewModel(
             return
         }
         checkMultiDeviceGroupJob = viewModelScope.launch {
-            val lastMultiDeviceGroupCheckTime = preferenceService.lastMultiDeviceGroupCheckTimestamp
+            val lastMultiDeviceGroupCheckTime = preferenceService.getLastMultiDeviceGroupCheckTimestamp()
             if (lastMultiDeviceGroupCheckTime != null && timeProvider.get() - lastMultiDeviceGroupCheckTime < minimumTimeBetweenDeviceGroupCheck) {
                 return@launch
             }

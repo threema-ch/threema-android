@@ -1,8 +1,10 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
+import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
+import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
@@ -13,16 +15,17 @@ import ch.threema.domain.taskmanager.getEncryptedUserProfileSyncUpdate
 import ch.threema.protobuf.d2d.MdD2D
 import ch.threema.protobuf.d2d.sync.userProfile
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("ReflectUserProfileNicknameSyncTask")
 
 class ReflectUserProfileNicknameSyncTask(
     private val newNickname: String,
-    serviceManager: ServiceManager,
-) : ActiveTask<Unit>, PersistableTask {
-    private val identityStore by lazy { serviceManager.identityStore }
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
-    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
+) : ActiveTask<Unit>, PersistableTask, KoinComponent {
+    private val identityStore: IdentityStore by inject()
+    private val nonceFactory: NonceFactory by inject()
+    private val multiDeviceManager: MultiDeviceManager by inject()
     private val mdProperties by lazy { multiDeviceManager.propertiesProvider.get() }
 
     override val type: String = "ReflectUserProfileNicknameSyncTask"
@@ -67,10 +70,9 @@ class ReflectUserProfileNicknameSyncTask(
     data class ReflectUserProfileNicknameSyncTaskData(
         private val newNickname: String,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             ReflectUserProfileNicknameSyncTask(
                 newNickname = newNickname,
-                serviceManager = serviceManager,
             )
     }
 }

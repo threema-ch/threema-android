@@ -2,14 +2,15 @@ package ch.threema.app.webrtc
 
 import android.annotation.SuppressLint
 import androidx.annotation.AnyThread
+import ch.threema.android.createDelayedExecutor
 import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.base.utils.getThreemaLogger
 import java.nio.ByteBuffer
 import java.util.concurrent.CancellationException
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.locks.ReentrantLock
-import java8.util.concurrent.CompletableFuture
 import kotlin.concurrent.withLock
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CompletableDeferred
 import org.webrtc.*
 import org.webrtc.CameraVideoCapturer
@@ -302,7 +303,7 @@ internal class PeerConnectionObserver(
         cancelIceFailedTimer()
         iceFailedSignal = CompletableFuture.supplyAsync<Unit>({
             throw Error("ICE remained disconnected for 10 seconds")
-        }, CompletableFuture.delayedExecutor(10, TimeUnit.SECONDS))
+        }, createDelayedExecutor(10.seconds))
             .exceptionally { error ->
                 when (error) {
                     is CancellationException -> {

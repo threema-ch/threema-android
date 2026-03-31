@@ -53,14 +53,12 @@
     <string name="voip_prefs_video_codec_no_h264hip">Отключить H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Программные кодеки</string>
     <string name="voip_connection_failed">Невозможно установить соединение.</string>
-    <string name="voip_connection_lost">Соединение утеряно</string>
     <string name="prefs_voip_reject_incoming_calls_title">Отклонять звонки с мобильных</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Отклонять входящие звонки с мобильных телефонов, когда совершается звонок Threema.</string>
     <string name="voip_contact_not_found">По этому номеру не найден контакт Threema.</string>
     <string name="voip_another_pstn_call">Невозможно начать звонок. Выполняется обычный телефонный звонок.</string>
     <string name="voip_call_status_off_hours">Звонок в нерабочее время</string>
     <string name="voip_peer_video_disabled">Видеозвонки отключены собеседником.</string>
-    <string name="voip_reject_channel_name">Изменение состояния звонка</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Диагностика WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Запустите это средство для отладки неполадок с настройкой соединения для голосовой связи</string>
@@ -71,13 +69,9 @@
     <string name="voip_webrtc_debug_copied">Данные скопированы в буфер обмена.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Копировать в буфер обмена</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">Все члены группы уведомлены</string>
-    <string name="voip_gc_notification_channel_description">Групповые звонки</string>
-    <string name="voip_gc_notification_title">Групповой звонок</string>
     <string name="voip_gc_notification_call_started">Пользователь %1$s начал групповой звонок в %2$s</string>
     <string name="voip_gc_notification_call_started_generic">Пользователь %1$s начал групповой звонок</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Вы начали групповой звонок</string>
-    <string name="voip_gc_dismiss_call">Игнорировать</string>
     <string name="voip_gc_join_call">Участвовать</string>
     <string name="voip_gc_ongoing_call">Текущий групповой звонок</string>
     <string name="voip_gc_waiting_for_participants">Ожидание участников</string>

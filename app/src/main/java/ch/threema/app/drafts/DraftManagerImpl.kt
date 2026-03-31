@@ -4,10 +4,11 @@ import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.utils.DispatcherProvider
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
-import ch.threema.domain.types.ConversationUniqueId
+import ch.threema.domain.types.ConversationUID
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -19,18 +20,20 @@ class DraftManagerImpl(
     private val preferenceService: PreferenceService,
     dispatcherProvider: DispatcherProvider,
 ) : DraftManager {
-    private val messageDraftsFlow = MutableStateFlow(mapOf<ConversationUniqueId, MessageDraft>())
+    private val messageDraftsFlow = MutableStateFlow(mapOf<ConversationUID, MessageDraft>())
     private val coroutineScope = CoroutineScope(dispatcherProvider.worker)
+
+    override val drafts: StateFlow<Map<ConversationUID, MessageDraft>> = messageDraftsFlow
 
     fun init() {
         try {
-            val messages = preferenceService.messageDrafts
-            val quotes = preferenceService.quoteDrafts
+            val messages = preferenceService.getMessageDrafts() ?: emptyMap()
+            val quotes = preferenceService.getQuoteDrafts() ?: emptyMap()
 
             messageDraftsFlow.value = messages
                 .mapValues { (conversationUniqueId, text) ->
                     MessageDraft(
-                        text = text,
+                        text = text ?: "",
                         quotedMessageId = quotes[conversationUniqueId]?.let(MessageId::fromString),
                     )
                 }
@@ -61,27 +64,27 @@ class DraftManagerImpl(
                 .filterValues { quoteApiMessageId ->
                     quoteApiMessageId != null
                 }
-            preferenceService.messageDrafts = texts
-            preferenceService.quoteDrafts = quotes
+            preferenceService.setMessageDrafts(texts)
+            preferenceService.setQuoteDrafts(quotes)
         } catch (e: Exception) {
             logger.error("Failed to persist drafts", e)
         }
     }
 
-    override fun get(conversationUniqueId: ConversationUniqueId): MessageDraft? =
-        messageDraftsFlow.value[conversationUniqueId]
+    override fun get(conversationUID: ConversationUID): MessageDraft? =
+        messageDraftsFlow.value[conversationUID]
 
-    override fun remove(conversationUniqueId: ConversationUniqueId) {
-        set(conversationUniqueId, text = null)
+    override fun remove(conversationUID: ConversationUID) {
+        set(conversationUID, text = null)
     }
 
-    override fun set(conversationUniqueId: ConversationUniqueId, text: String?, quotedMessageId: MessageId?) {
+    override fun set(conversationUID: ConversationUID, text: String?, quotedMessageId: MessageId?) {
         messageDraftsFlow.update { messageDrafts ->
             if (text.isNullOrBlank()) {
-                messageDrafts.minus(conversationUniqueId)
+                messageDrafts.minus(conversationUID)
             } else {
                 messageDrafts.plus(
-                    conversationUniqueId to MessageDraft(
+                    conversationUID to MessageDraft(
                         text = text,
                         quotedMessageId = quotedMessageId,
                     ),

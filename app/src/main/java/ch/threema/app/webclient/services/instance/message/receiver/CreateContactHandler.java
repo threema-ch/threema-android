@@ -1,5 +1,6 @@
 package ch.threema.app.webclient.services.instance.message.receiver;
 
+import org.koin.java.KoinJavaComponent;
 import org.msgpack.core.MessagePackException;
 import org.msgpack.value.Value;
 import org.slf4j.Logger;
@@ -13,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringDef;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy;
 import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask;
 import ch.threema.app.asynctasks.ContactResult;
@@ -23,6 +23,8 @@ import ch.threema.app.asynctasks.PolicyViolation;
 import ch.threema.app.exceptions.EntryAlreadyExistsException;
 import ch.threema.app.exceptions.InvalidEntryException;
 import ch.threema.app.exceptions.PolicyViolationException;
+import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.restrictions.AppRestrictions;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.webclient.Protocol;
@@ -44,6 +46,7 @@ public class CreateContactHandler extends MessageReceiver {
     private final MessageDispatcher dispatcher;
     private final ContactService contactService;
     private final UserService userService;
+    private final PreferenceService preferenceService;
     private final APIConnector apiConnector;
     private final ContactModelRepository contactModelRepository;
 
@@ -61,6 +64,7 @@ public class CreateContactHandler extends MessageReceiver {
         MessageDispatcher dispatcher,
         ContactService contactService,
         @NonNull UserService userService,
+        @NonNull PreferenceService preferenceService,
         @NonNull APIConnector apiConnector,
         @NonNull ContactModelRepository contactModelRepository
     ) {
@@ -68,6 +72,7 @@ public class CreateContactHandler extends MessageReceiver {
         this.dispatcher = dispatcher;
         this.contactService = contactService;
         this.userService = userService;
+        this.preferenceService = preferenceService;
         this.apiConnector = apiConnector;
         this.contactModelRepository = contactModelRepository;
     }
@@ -120,7 +125,7 @@ public class CreateContactHandler extends MessageReceiver {
         try {
             this.send(this.dispatcher,
                 new MsgpackObjectBuilder()
-                    .put(Protocol.SUB_TYPE_RECEIVER, Contact.convert(contact)),
+                    .put(Protocol.SUB_TYPE_RECEIVER, Contact.convert(contact, preferenceService.getContactNameFormat())),
                 new MsgpackObjectBuilder()
                     .put(Protocol.ARGUMENT_SUCCESS, true)
                     .put(Protocol.ARGUMENT_IDENTITY, threemaId)
@@ -159,7 +164,7 @@ public class CreateContactHandler extends MessageReceiver {
             apiConnector,
             contactModelRepository,
             AddContactRestrictionPolicy.CHECK,
-            ThreemaApplication.getAppContext(),
+            KoinJavaComponent.get(AppRestrictions.class),
             null
         ).runSynchronously();
 

@@ -48,6 +48,7 @@ import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.lang.ref.WeakReference;
@@ -86,8 +87,9 @@ import ch.threema.app.listeners.SynchronizeContactsListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.MessageReceiver;
+import ch.threema.app.preference.service.SynchronizedSettingsService;
 import ch.threema.app.routines.SynchronizeContactsRoutine;
-import ch.threema.app.services.AvatarCacheService;
+import ch.threema.app.services.avatarcache.AvatarCacheService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.LockAppService;
 import ch.threema.app.preference.service.PreferenceService;
@@ -114,11 +116,15 @@ import ch.threema.app.utils.executor.BackgroundExecutor;
 import ch.threema.app.workers.ContactUpdateWorker;
 import ch.threema.app.workers.WorkSyncWorker;
 import ch.threema.base.ThreemaException;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
+import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
 
 /**
@@ -178,6 +184,8 @@ public class ContactsSectionFragment
     private ContactService contactService;
     @Nullable
     private PreferenceService preferenceService;
+    @Nullable
+    private SynchronizedSettingsService synchronizedSettingsService;
     private LockAppService lockAppService;
 
     private final BackgroundExecutor backgroundExecutor = new BackgroundExecutor();
@@ -282,7 +290,7 @@ public class ContactsSectionFragment
     private final ResumePauseHandler.RunIfActive runIfActiveUpdatePullToRefresh = new ResumePauseHandler.RunIfActive() {
         @Override
         public void runOnUiThread() {
-            if (TestUtil.required(swipeRefreshLayout, preferenceService)) {
+            if (swipeRefreshLayout != null && preferenceService != null) {
                 swipeRefreshLayout.setEnabled(true);
             }
         }
@@ -323,14 +331,21 @@ public class ContactsSectionFragment
         }
 
         @Override
-        public void onNameFormatChanged() {
+        public void onNameFormatChanged(@NonNull ContactNameFormat nameFormat) {
             if (resumePauseHandler != null) {
                 resumePauseHandler.runOnActive(RUN_ON_ACTIVE_REFRESH_LIST, runIfActiveUpdateList);
             }
         }
 
         @Override
-        public void onAvatarSettingChanged() {
+        public void onIsDefaultContactPictureColoredChanged(boolean isColored) {
+            if (resumePauseHandler != null) {
+                resumePauseHandler.runOnActive(RUN_ON_ACTIVE_REFRESH_LIST, runIfActiveUpdateList);
+            }
+        }
+
+        @Override
+        public void onShowContactDefinedAvatarsChanged(boolean shouldShow) {
             if (resumePauseHandler != null) {
                 resumePauseHandler.runOnActive(RUN_ON_ACTIVE_REFRESH_LIST, runIfActiveUpdateList);
             }
@@ -341,11 +356,6 @@ public class ContactsSectionFragment
             if (resumePauseHandler != null) {
                 resumePauseHandler.runOnActive(RUN_ON_ACTIVE_REFRESH_LIST, runIfActiveUpdateList);
             }
-        }
-
-        @Override
-        public void onNotificationSettingChanged(String uid) {
-
         }
     };
 
@@ -386,7 +396,7 @@ public class ContactsSectionFragment
         @Override
         public void onChanged(String key, Object value) {
             if (isAdded() && !isDetached()) {
-                if (preferenceService != null && preferenceService.getContactSyncPolicySetting().preferenceKey.equals(key)) {
+                if (synchronizedSettingsService != null && synchronizedSettingsService.getContactSyncPolicySetting().preferenceKey.equals(key)) {
                     if (resumePauseHandler != null) {
                         resumePauseHandler.runOnActive(RUN_ON_ACTIVE_REFRESH_PULL_TO_REFRESH, runIfActiveUpdatePullToRefresh);
                     }
@@ -514,7 +524,7 @@ public class ContactsSectionFragment
 
     @Override
     public void onHiddenChanged(boolean hidden) {
-        logger.debug("onHiddenChanged: " + hidden);
+        logger.debug("onHiddenChanged: {}", hidden);
         if (hidden) {
             if (actionMode != null) {
                 actionMode.finish();
@@ -757,12 +767,11 @@ public class ContactsSectionFragment
     }
 
     protected boolean checkInstances() {
-        return TestUtil.required(
-            this.serviceManager,
-            this.contactListener,
-            this.preferenceService,
-            this.synchronizeContactsService,
-            this.lockAppService);
+        return serviceManager != null
+            && preferenceService != null
+            && synchronizedSettingsService != null
+            && synchronizeContactsService != null
+            && lockAppService != null;
     }
 
     protected void instantiate() {
@@ -772,6 +781,7 @@ public class ContactsSectionFragment
             try {
                 this.contactService = this.serviceManager.getContactService();
                 this.preferenceService = this.serviceManager.getPreferenceService();
+                this.synchronizedSettingsService = this.serviceManager.getSynchronizedSettingsService();
                 this.synchronizeContactsService = this.serviceManager.getSynchronizeContactsService();
                 this.lockAppService = this.serviceManager.getLockAppService();
             } catch (MasterKeyLockedException e) {
@@ -1020,7 +1030,7 @@ public class ContactsSectionFragment
         }
         EmptyView emptyView = (EmptyView) listView.getEmptyView();
         emptyView.setup(
-            preferenceService != null && preferenceService.isSyncContacts()
+            synchronizedSettingsService != null && synchronizedSettingsService.isSyncContacts()
                 ? R.string.no_contacts_sync_on
                 : R.string.no_contacts
         );
@@ -1067,7 +1077,7 @@ public class ContactsSectionFragment
         } catch (IllegalStateException ignored) {
         }
 
-        if (this.preferenceService.isSyncContacts() && ConfigUtils.requestContactPermissions(getActivity(), this, PERMISSION_REQUEST_REFRESH_CONTACTS)) {
+        if (this.synchronizedSettingsService.isSyncContacts() && ConfigUtils.requestContactPermissions(getActivity(), this, PERMISSION_REQUEST_REFRESH_CONTACTS)) {
             if (this.synchronizeContactsService != null) {
                 // we force a contact sync even if the grace time has not yet been reached
                 preferenceService.setTimeOfLastContactSync(null);
@@ -1174,9 +1184,18 @@ public class ContactsSectionFragment
         return true;
     }
 
+    @NonNull
+    private ContactNameFormat getContactNameFormatDefault() {
+        @NonNull ContactNameFormat contactNameFormat = ContactNameFormat.DEFAULT;
+        if (preferenceService != null) {
+            contactNameFormat = preferenceService.getContactNameFormat();
+        }
+        return contactNameFormat;
+    }
+
     @Override
     public void onRecentlyAddedClick(ContactModel contactModel) {
-        String contactName = NameUtil.getDisplayNameOrNickname(contactModel, true);
+        final @NonNull String contactName = NameUtil.getContactDisplayNameOrNickname(contactModel, true, getContactNameFormatDefault());
 
         ArrayList<SelectorDialogItem> items = new ArrayList<>();
         ArrayList<Integer> tags = new ArrayList<>();
@@ -1219,15 +1238,13 @@ public class ContactsSectionFragment
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           @NonNull String permissions[], @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_REFRESH_CONTACTS:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    this.onRefresh();
-                } else if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
-                    ConfigUtils.showPermissionRationale(getContext(), getView(), R.string.permission_contacts_sync_required);
-                }
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == PERMISSION_REQUEST_REFRESH_CONTACTS) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                this.onRefresh();
+            } else if (!shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS)) {
+                ConfigUtils.showPermissionRationale(getContext(), getView(), R.string.permission_contacts_sync_required);
+            }
         }
     }
 
@@ -1251,7 +1268,7 @@ public class ContactsSectionFragment
     }
 
     private boolean showExcludeFromContactSync(Set<ContactModel> contacts) {
-        if (preferenceService == null || !preferenceService.isSyncContacts()) {
+        if (synchronizedSettingsService == null || !synchronizedSettingsService.isSyncContacts()) {
             return false;
         }
 
@@ -1323,7 +1340,7 @@ public class ContactsSectionFragment
             serviceManager.getExcludedSyncIdentitiesService(),
             serviceManager.getDHSessionStore(),
             serviceManager.getNotificationService(),
-            serviceManager.getDatabaseService()
+            KoinJavaComponent.get(ContactModelFactory.class)
         );
 
         return new DialogMarkContactAsDeletedBackgroundTask(
@@ -1444,8 +1461,16 @@ public class ContactsSectionFragment
                 break;
             case SELECTOR_TAG_REPORT_SPAM:
                 logger.info("Showing report for spam dialog");
-                TextWithCheckboxDialog sdialog = TextWithCheckboxDialog.newInstance(requireContext().getString(R.string.spam_report_dialog_title, NameUtil.getDisplayNameOrNickname(contactModel, true)), R.string.spam_report_dialog_explain,
-                    R.string.spam_report_dialog_block_checkbox, R.string.spam_report_short, R.string.cancel);
+                TextWithCheckboxDialog sdialog = TextWithCheckboxDialog.newInstance(
+                    requireContext().getString(
+                        R.string.spam_report_dialog_title,
+                        NameUtil.getContactDisplayNameOrNickname(contactModel, true, getContactNameFormatDefault())
+                    ),
+                    R.string.spam_report_dialog_explain,
+                    R.string.spam_report_dialog_block_checkbox,
+                    R.string.spam_report_short,
+                    R.string.cancel
+                );
                 sdialog.setData(contactModel);
                 sdialog.setTargetFragment(this, 0);
                 sdialog.show(getParentFragmentManager(), DIALOG_TAG_REPORT_SPAM);
@@ -1528,17 +1553,13 @@ public class ContactsSectionFragment
      * Callbacks from GenericAlertDialog
      */
     @Override
-    public void onYes(String tag, Object data) {
-        switch (tag) {
-            case DIALOG_TAG_REALLY_DELETE_CONTACTS:
-                try {
-                    reallyDeleteContacts((Set<ContactModel>) data, false);
-                } catch (ThreemaException e) {
-                    logger.error("Could not delete contacts", e);
-                }
-                break;
-            default:
-                break;
+    public void onYes(@Nullable String tag, @Nullable Object data) {
+        if (tag != null && tag.equals(DIALOG_TAG_REALLY_DELETE_CONTACTS) && data != null) {
+            try {
+                reallyDeleteContacts((Set<ContactModel>) data, false);
+            } catch (ThreemaException e) {
+                logger.error("Could not delete contacts", e);
+            }
         }
     }
 }

@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import ch.threema.app.R;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.ui.AvatarListItemUtil;
 import ch.threema.app.ui.AvatarView;
@@ -25,22 +26,24 @@ import ch.threema.app.utils.AdapterUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.TextExtensionsKt;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 public class GroupListAdapter extends FilterableListAdapter {
     private final Context context;
-    private List<GroupModel> values;
-    private List<GroupModel> ovalues;
+    private List<GroupModelOld> values;
+    private List<GroupModelOld> ovalues;
     private GroupListFilter groupListFilter;
     private final GroupService groupService;
+    private final PreferenceService preferenceService;
     private final FilterResultsListener filterResultsListener;
 
 
     public GroupListAdapter(
         Context context,
-        List<GroupModel> values,
+        List<GroupModelOld> values,
         List<Integer> checkedItems,
         GroupService groupService,
+        PreferenceService preferenceService,
         FilterResultsListener filterResultsListener
     ) {
         super(context, R.layout.item_group_list, (List<Object>) (Object) values);
@@ -49,6 +52,7 @@ public class GroupListAdapter extends FilterableListAdapter {
         this.values = values;
         this.ovalues = values;
         this.groupService = groupService;
+        this.preferenceService = preferenceService;
         this.filterResultsListener = filterResultsListener;
 
         if (checkedItems != null && !checkedItems.isEmpty()) {
@@ -79,21 +83,18 @@ public class GroupListAdapter extends FilterableListAdapter {
             holder.avatarView = avatarView;
 
             itemView.setTag(holder);
-            itemView.setOnCheckedChangeListener(new CheckableConstraintLayout.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CheckableConstraintLayout checkableView, boolean isChecked) {
-                    if (isChecked) {
-                        checkedItems.add(((GroupListHolder) checkableView.getTag()).originalPosition);
-                    } else {
-                        checkedItems.remove(((GroupListHolder) checkableView.getTag()).originalPosition);
-                    }
+            itemView.setOnCheckedChangeListener((checkableView, isChecked) -> {
+                if (isChecked) {
+                    checkedItems.add(((GroupListHolder) checkableView.getTag()).originalPosition);
+                } else {
+                    checkedItems.remove(((GroupListHolder) checkableView.getTag()).originalPosition);
                 }
             });
         } else {
             holder = (GroupListHolder) itemView.getTag();
         }
 
-        final GroupModel groupModel = values.get(position);
+        final GroupModelOld groupModel = values.get(position);
         holder.originalPosition = ovalues.indexOf(groupModel);
 
         String filterString = null;
@@ -103,7 +104,7 @@ public class GroupListAdapter extends FilterableListAdapter {
 
         holder.nameView.setText(
             TextExtensionsKt.highlightMatches(
-                NameUtil.getDisplayName(groupModel, this.groupService),
+                NameUtil.getGroupDisplayName(groupModel, this.groupService, preferenceService.getContactNameFormat()),
                 context,
                 filterString,
                 false,
@@ -151,11 +152,17 @@ public class GroupListAdapter extends FilterableListAdapter {
                 results.count = ovalues.size();
             } else {
                 // perform filtering
-                List<GroupModel> nGroupList = new ArrayList<GroupModel>();
+                List<GroupModelOld> nGroupList = new ArrayList<GroupModelOld>();
                 filterString = constraint.toString();
 
-                for (GroupModel groupModel : ovalues) {
-                    if (NameUtil.getDisplayName(groupModel, groupService).toUpperCase().contains(filterString.toUpperCase())) {
+                for (GroupModelOld groupModel : ovalues) {
+                    if (
+                        NameUtil.getGroupDisplayName(
+                            groupModel,
+                            groupService,
+                            preferenceService.getContactNameFormat()
+                        ).toUpperCase().contains(filterString.toUpperCase())
+                    ) {
                         nGroupList.add(groupModel);
                     }
                 }
@@ -167,7 +174,7 @@ public class GroupListAdapter extends FilterableListAdapter {
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            values = (List<GroupModel>) results.values;
+            values = (List<GroupModelOld>) results.values;
             if (filterResultsListener != null) {
                 filterResultsListener.onResultsAvailable(TestUtil.isBlankOrNull(constraint) ? 0 : results.count);
             }
@@ -193,9 +200,9 @@ public class GroupListAdapter extends FilterableListAdapter {
     }
 
     @Override
-    public HashSet<GroupModel> getCheckedItems() {
-        HashSet<GroupModel> groups = new HashSet<>();
-        GroupModel groupModel;
+    public HashSet<GroupModelOld> getCheckedItems() {
+        HashSet<GroupModelOld> groups = new HashSet<>();
+        GroupModelOld groupModel;
 
         for (int position : checkedItems) {
             groupModel = ovalues.get(position);
@@ -207,7 +214,7 @@ public class GroupListAdapter extends FilterableListAdapter {
     }
 
     @Override
-    public GroupModel getClickedItem(View v) {
+    public GroupModelOld getClickedItem(View v) {
         return ovalues.get(((GroupListHolder) v.getTag()).originalPosition);
     }
 }

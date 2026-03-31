@@ -76,9 +76,8 @@ public class ClientInfoRequestHandler extends MessageReceiver {
     }
 
     private void respond() {
-        // Get the "current" Push Token from application
         String currentPushToken = this.preferenceService.getPushToken();
-        if (currentPushToken.isEmpty()) {
+        if (currentPushToken != null && currentPushToken.isEmpty()) {
             currentPushToken = null;
         }
         try {

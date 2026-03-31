@@ -140,7 +140,7 @@ public class IconUtil {
                 }
             }
 
-            logger.debug("Thumbnail image id: " + imageId);
+            logger.debug("Thumbnail image id: {}", imageId);
 
             if (imageId > 0) {
                 // may throw java.lang.SecurityException

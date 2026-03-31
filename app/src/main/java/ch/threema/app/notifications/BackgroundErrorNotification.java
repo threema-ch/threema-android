@@ -1,7 +1,5 @@
 package ch.threema.app.notifications;
 
-import static ch.threema.app.preference.SettingsAdvancedOptionsFragment.THREEMA_SUPPORT_IDENTITY;
-
 import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -20,6 +18,8 @@ import ch.threema.app.R;
 import ch.threema.app.receivers.SendTextToContactBroadcastReceiver;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.LocaleUtil;
+
+import static ch.threema.app.AppConstants.THREEMA_SUPPORT_IDENTITY;
 
 public class BackgroundErrorNotification {
 

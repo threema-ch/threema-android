@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <resources xmlns:tools="http://schemas.android.com/tools">
 
     <style name="AppTheme" parent="AppBaseTheme" />
@@ -121,8 +120,11 @@
         <item name="snackbarButtonStyle">@style/Threema.Snackbar.ButtonStyle</item>
         <item name="snackbarTextViewStyle">@style/Threema.Snackbar.TextViewStyle</item>
         <item name="materialSearchBarStyle">@style/Threema.SearchBar.Style</item>
-        <item name="floatingActionButtonPrimaryStyle">@style/Threema.FloatingActionButton.Primary</item>
-        <item name="extendedFloatingActionButtonPrimaryStyle">@style/Threema.ExtendedFloatingActionButton.Primary</item>
+        <item name="floatingActionButtonPrimaryStyle">@style/Threema.FloatingActionButton.Primary
+        </item>
+        <item name="extendedFloatingActionButtonPrimaryStyle">
+            @style/Threema.ExtendedFloatingActionButton.Primary
+        </item>
 
         <!-- Action mode & Action bar -->
         <item name="actionModeStyle">@style/Threema.ActionMode</item>
@@ -155,6 +157,17 @@
         <item name="emoji_picker_hint">@color/emoji_picker_hint</item>
         <item name="emoji_search_background">@color/emoji_search_background</item>
         <item name="emoji_search_stroke">@color/emoji_search_stroke</item>
+
+        <!-- message bubbles -->
+        <item name="colorMessageBubbleSendContainer">?attr/colorPrimaryContainer</item>
+        <item name="colorOnMessageBubbleSendContainer">?attr/colorOnPrimaryContainer</item>
+        <item name="colorMessageBubbleSendContainerSelected">?attr/colorPrimary</item>
+        <item name="colorOnMessageBubbleSendContainerSelected">?attr/colorOnPrimary</item>
+        <item name="colorMessageBubbleReceiveContainer">?attr/colorSurfaceContainer</item>
+        <item name="colorOnMessageBubbleReceiveContainer">?attr/colorOnSurface</item>
+        <item name="colorMessageBubbleReceiveContainerSelected">?attr/colorPrimary</item>
+        <item name="colorOnMessageBubbleReceiveContainerSelected">?attr/colorOnPrimary</item>
+
     </style>
 
     <style name="Theme.Threema.WithToolbar" parent="AppBaseTheme">
@@ -167,10 +180,6 @@
         <item name="windowNoTitle">true</item>
 
         <item name="actionModeStyle">@style/Threema.ActionMode.StarredMessages</item>
-    </style>
-
-    <style name="Theme.Threema.WithToolbar.NoAnim" parent="Theme.Threema.WithToolbar">
-        <item name="android:windowAnimationStyle">@style/Threema.Animation.None</item>
     </style>
 
     <style name="Theme.Threema.Settings" parent="Theme.Threema.WithToolbar">

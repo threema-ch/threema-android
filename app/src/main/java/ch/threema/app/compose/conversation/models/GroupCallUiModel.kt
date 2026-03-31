@@ -1,9 +1,9 @@
 package ch.threema.app.compose.conversation.models
 
 import androidx.compose.runtime.Immutable
-import ch.threema.app.voip.groupcall.LocalGroupId
 import ch.threema.app.voip.groupcall.sfu.CallId
 import ch.threema.common.now
+import ch.threema.data.datatypes.LocalGroupId
 import ch.threema.domain.types.TimestampUTC
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds

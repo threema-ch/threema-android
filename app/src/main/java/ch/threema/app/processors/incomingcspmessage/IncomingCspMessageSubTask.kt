@@ -9,7 +9,6 @@ import ch.threema.app.processors.incomingcspmessage.calls.IncomingCallRingingTas
 import ch.threema.app.processors.incomingcspmessage.contactcontrol.IncomingContactRequestProfilePictureTask
 import ch.threema.app.processors.incomingcspmessage.contactcontrol.IncomingDeleteProfilePictureTask
 import ch.threema.app.processors.incomingcspmessage.contactcontrol.IncomingSetProfilePictureTask
-import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactAudioMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactConversationMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactDeleteMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactEditMessageTask
@@ -19,7 +18,6 @@ import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContact
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactPollSetupTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactPollVoteTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactReactionMessageTask
-import ch.threema.app.processors.incomingcspmessage.conversation.IncomingContactVideoMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupConversationMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupDeleteMessageTask
 import ch.threema.app.processors.incomingcspmessage.conversation.IncomingGroupEditMessageTask
@@ -42,7 +40,6 @@ import ch.threema.app.processors.incomingcspmessage.statusupdates.IncomingTyping
 import ch.threema.app.tasks.ActiveComposableTask
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
-import ch.threema.domain.protocol.csp.messages.AudioMessage
 import ch.threema.domain.protocol.csp.messages.ContactRequestProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.DeleteMessage
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
@@ -63,7 +60,6 @@ import ch.threema.domain.protocol.csp.messages.ImageMessage
 import ch.threema.domain.protocol.csp.messages.ReactionMessage
 import ch.threema.domain.protocol.csp.messages.SetProfilePictureMessage
 import ch.threema.domain.protocol.csp.messages.TypingIndicatorMessage
-import ch.threema.domain.protocol.csp.messages.VideoMessage
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollSetupMessage
 import ch.threema.domain.protocol.csp.messages.ballot.GroupPollVoteMessage
 import ch.threema.domain.protocol.csp.messages.ballot.PollSetupMessage
@@ -141,8 +137,6 @@ fun getSubTaskFromMessage(
 
     // Check if deprecated message
     is ImageMessage -> IncomingContactImageMessageTask(message, triggerSource, serviceManager)
-    is VideoMessage -> IncomingContactVideoMessageTask(message, triggerSource, serviceManager)
-    is AudioMessage -> IncomingContactAudioMessageTask(message, triggerSource, serviceManager)
 
     // Check if message is a status update
     is TypingIndicatorMessage -> IncomingTypingIndicatorTask(message, triggerSource, serviceManager)

@@ -8,4 +8,4 @@
     android:previewImage="@drawable/widget"
     android:initialLayout="@layout/widget_messages"
     android:resizeMode="horizontal|vertical"
-    android:widgetCategory="home_screen|keyguard"></appwidget-provider>
+    android:widgetCategory="home_screen|keyguard" />

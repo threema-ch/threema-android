@@ -53,14 +53,18 @@
     <string name="voip_prefs_video_codec_no_h264hip">H264-HiP uitschakelen</string>
     <string name="voip_prefs_video_codec_sw">Software-codecs</string>
     <string name="voip_connection_failed">Er kon geen verbinding worden gemaakt.</string>
-    <string name="voip_connection_lost">Verbinding verbroken</string>
+    <string name="voip_call_disconnected">Gesprek verbroken</string>
     <string name="prefs_voip_reject_incoming_calls_title">Mobiele oproepen afwijzen</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Mobiele oproepen afwijzen wanneer een Threema-oproep actief is.</string>
     <string name="voip_contact_not_found">Geen Threema-contactpersoon gevonden voor dit nummer</string>
     <string name="voip_another_pstn_call">Kon oproep niet initiëren. Er is nog een normale oproep actief.</string>
     <string name="voip_call_status_off_hours">Oproep kantooruren</string>
     <string name="voip_peer_video_disabled">Video-oproepen zijn door de andere partij uitgeschakeld.</string>
-    <string name="voip_reject_channel_name">Wijziging gespreksstatus</string>
+    <string name="voip_error_processing_call_anser">Er is een fout opgetreden tijdens het verwerken van het gesprek.</string>
+    <string name="voip_error_peer_connection">Peerverbindingsfout</string>
+    <string name="voip_error_determine_common_video_quality_profile">Kon geen algemeen profiel van videokwaliteit vaststellen</string>
+    <string name="voip_audio_focus_lost">Audiofocus verloren</string>
+    <string name="voip_could_not_initialize">Kon het gesprek niet initialiseren</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC Diagnostics</string>
     <string name="voip_prefs_webrtc_debug_summary">Gebruik dit hulpprogramma om problemen met het instellen van verbindingen voor oproepen op te lossen</string>
@@ -71,13 +75,9 @@
     <string name="voip_webrtc_debug_copied">Gekopieerd naar klembord</string>
     <string name="voip_webrtc_debug_copy_clipboard">Kopiëren naar klembord</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">Alle groepsleden zijn op de hoogte gebracht</string>
-    <string name="voip_gc_notification_channel_description">Groepsgesprekken</string>
-    <string name="voip_gc_notification_title">Groepsgesprek</string>
     <string name="voip_gc_notification_call_started">%1$s is een groepsgesprek begonnen in %2$s</string>
     <string name="voip_gc_notification_call_started_generic">%1$s is een groepsgesprek begonnen</string>
     <string name="voip_gc_notification_call_started_generic_outbox">U bent een groepsgesprek begonnen</string>
-    <string name="voip_gc_dismiss_call">Negeren</string>
     <string name="voip_gc_join_call">Deelnemen</string>
     <string name="voip_gc_ongoing_call">Lopend groepsgesprek</string>
     <string name="voip_gc_waiting_for_participants">Wachten op deelnemers</string>

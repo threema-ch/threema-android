@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.messagereceiver.MessageReceiver.MessageReceiverType
 import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage
@@ -9,16 +8,15 @@ import ch.threema.domain.protocol.csp.messages.location.LocationMessageData
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import kotlinx.serialization.Serializable
 
 class OutgoingLocationMessageTask(
     private val messageModelId: Int,
     @MessageReceiverType
     private val receiverType: Int,
-    private val recipientIdentities: Set<Identity>,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+    private val recipientIdentities: Set<IdentityString>,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingLocationMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -94,14 +92,13 @@ class OutgoingLocationMessageTask(
         private val messageModelId: Int,
         @MessageReceiverType
         private val receiverType: Int,
-        private val recipientIdentities: Set<Identity>,
+        private val recipientIdentities: Set<IdentityString>,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingLocationMessageTask(
-                messageModelId,
-                receiverType,
-                recipientIdentities,
-                serviceManager,
+                messageModelId = messageModelId,
+                receiverType = receiverType,
+                recipientIdentities = recipientIdentities,
             )
     }
 }

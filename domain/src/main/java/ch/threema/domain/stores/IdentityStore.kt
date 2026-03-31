@@ -3,6 +3,8 @@ package ch.threema.domain.stores
 import ch.threema.base.SessionScoped
 import ch.threema.base.ThreemaException
 import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
+import ch.threema.domain.types.toIdentityOrNull
 
 @SessionScoped
 interface IdentityStore {
@@ -35,7 +37,9 @@ interface IdentityStore {
      */
     fun calcSharedSecret(publicKey: ByteArray): ByteArray
 
-    fun getIdentity(): Identity?
+    fun getIdentity(): Identity? = getIdentityString()?.toIdentityOrNull()
+
+    fun getIdentityString(): IdentityString?
 
     fun getServerGroup(): String?
 

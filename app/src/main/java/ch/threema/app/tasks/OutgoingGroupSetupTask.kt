@@ -1,22 +1,20 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import kotlinx.serialization.Serializable
 
 class OutgoingGroupSetupTask(
     override val groupId: GroupId,
-    override val creatorIdentity: Identity,
-    private val memberIdentities: Set<Identity>,
-    override val recipientIdentities: Set<Identity>,
+    override val creatorIdentity: IdentityString,
+    private val memberIdentities: Set<IdentityString>,
+    override val recipientIdentities: Set<IdentityString>,
     messageId: MessageId?,
-    serviceManager: ServiceManager,
-) : OutgoingCspGroupControlMessageTask(serviceManager) {
+) : OutgoingCspGroupControlMessageTask() {
     override val type: String = "OutgoingGroupSetupTask"
 
     override val messageId = messageId ?: MessageId.random()
@@ -27,29 +25,28 @@ class OutgoingGroupSetupTask(
 
     override fun serialize(): SerializableTaskData =
         OutgoingGroupSetupData(
-            groupId.groupId,
-            creatorIdentity,
-            memberIdentities,
-            recipientIdentities,
-            messageId.messageId,
+            groupId = groupId.groupId,
+            creatorIdentity = creatorIdentity,
+            memberIdentities = memberIdentities,
+            receiverIdentities = recipientIdentities,
+            messageId = messageId.messageId,
         )
 
     @Serializable
     class OutgoingGroupSetupData(
         private val groupId: ByteArray,
-        private val creatorIdentity: Identity,
-        private val memberIdentities: Set<Identity>,
-        private val receiverIdentities: Set<Identity>,
+        private val creatorIdentity: IdentityString,
+        private val memberIdentities: Set<IdentityString>,
+        private val receiverIdentities: Set<IdentityString>,
         private val messageId: ByteArray,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingGroupSetupTask(
-                GroupId(groupId),
-                creatorIdentity,
-                memberIdentities,
-                receiverIdentities,
-                MessageId(messageId),
-                serviceManager,
+                groupId = GroupId(groupId),
+                creatorIdentity = creatorIdentity,
+                memberIdentities = memberIdentities,
+                recipientIdentities = receiverIdentities,
+                messageId = MessageId(messageId),
             )
     }
 }

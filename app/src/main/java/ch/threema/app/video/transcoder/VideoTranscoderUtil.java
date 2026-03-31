@@ -4,7 +4,6 @@ import android.content.Context;
 import android.media.MediaFormat;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-import android.os.Build;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;

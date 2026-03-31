@@ -104,7 +104,3 @@ annotation class PreviewThreemaFoldable
 @PreviewThreemaTablet
 @PreviewThreemaFoldable
 annotation class PreviewThreemaAll
-
-@Preview
-@Preview(uiMode = UI_MODE_NIGHT_YES)
-annotation class PreviewLightAndDarkMode

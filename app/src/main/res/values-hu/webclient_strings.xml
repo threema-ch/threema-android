@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="webclient_qr_scan_error">QR-kód érvénytelen</string>
     <string name="webclient_init_session">Új munkamenet kezdése</string>
     <string name="webclient_sessions_really_delete">Biztos, hogy törölni szeretné ezt a Threema webes munkamenetet?</string>
     <string name="webclient_last_usage">Utoljára használva: %s</string>

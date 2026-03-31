@@ -9,7 +9,7 @@ import ch.threema.localcrypto.models.RemoteSecretAuthenticationToken
 import ch.threema.localcrypto.models.RemoteSecretClientParameters
 import ch.threema.localcrypto.models.RemoteSecretCreationResult
 import ch.threema.localcrypto.models.RemoteSecretParameters
-import ch.threema.localcrypto.models.RemoteSecretProtectionCheckResult
+import ch.threema.localcrypto.models.RemoteSecretProtectionInstruction
 import java.io.IOException
 
 class RemoteSecretManagerImpl(
@@ -19,13 +19,13 @@ class RemoteSecretManagerImpl(
     private val getWorkServerBaseUrl: () -> String,
 ) : RemoteSecretManager {
 
-    override fun checkRemoteSecretProtection(lockData: MasterKeyState.WithRemoteSecret?): RemoteSecretProtectionCheckResult {
+    override fun checkRemoteSecretProtection(lockData: MasterKeyState.WithRemoteSecret?): RemoteSecretProtectionInstruction {
         val shouldUseRemoteSecretProtection = shouldUseRemoteSecretProtection()
         val usesRemoteSecretProtection = lockData != null
         return when {
-            shouldUseRemoteSecretProtection && !usesRemoteSecretProtection -> RemoteSecretProtectionCheckResult.SHOULD_ACTIVATE
-            !shouldUseRemoteSecretProtection && usesRemoteSecretProtection -> RemoteSecretProtectionCheckResult.SHOULD_DEACTIVATE
-            else -> RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED
+            shouldUseRemoteSecretProtection && !usesRemoteSecretProtection -> RemoteSecretProtectionInstruction.SHOULD_ACTIVATE
+            !shouldUseRemoteSecretProtection && usesRemoteSecretProtection -> RemoteSecretProtectionInstruction.SHOULD_DEACTIVATE
+            else -> RemoteSecretProtectionInstruction.NO_CHANGE_NEEDED
         }
     }
 

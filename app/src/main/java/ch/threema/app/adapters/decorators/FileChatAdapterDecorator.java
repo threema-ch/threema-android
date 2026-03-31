@@ -1,18 +1,14 @@
 package ch.threema.app.adapters.decorators;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.format.Formatter;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.io.File;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.preference.service.PreferenceService;
@@ -24,6 +20,7 @@ import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.FileUtil;
 import ch.threema.app.utils.IconUtil;
 import ch.threema.app.utils.ImageViewUtil;
+import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
@@ -37,31 +34,45 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 
     private static final String LISTENER_TAG = "FileChatDecorator";
 
-    private final Context context;
-    private FileDataModel fileData;
-    private FileMessagePlayer fileMessagePlayer;
+    public interface DownloadAlertDialogListener {
+        void showPrepareDownloadDialog(Runnable onConfirmed);
+    }
 
-    public FileChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
-        super(context, messageModel, helper);
-        this.context = context;
+    @NonNull
+    private final DownloadAlertDialogListener downloadAlertDialogListener;
+
+    @NonNull
+    private final MessagePlayerFactory messagePlayerFactory;
+
+    public FileChatAdapterDecorator(
+        AbstractMessageModel messageModel,
+        @NonNull ChatAdapterDecoratorListener chatAdapterDecoratorListener,
+        @NonNull LinkifyUtil.LinkifyListener linkifyListener,
+        @NonNull DownloadAlertDialogListener downloadAlertDialogListener,
+        @NonNull MessagePlayerFactory messagePlayerFactory,
+        Helper helper
+    ) {
+        super(messageModel, chatAdapterDecoratorListener, linkifyListener, helper);
+        this.downloadAlertDialogListener = downloadAlertDialogListener;
+        this.messagePlayerFactory = messagePlayerFactory;
     }
 
     @Override
-    protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-        fileMessagePlayer = (FileMessagePlayer) getMessagePlayerService().createPlayer(getMessageModel(), (Activity) context, helper.getMessageReceiver(), null);
+    protected void configureChatMessage(final ComposeMessageHolder holder, Context context, final int position) {
+        FileMessagePlayer fileMessagePlayer = (FileMessagePlayer) messagePlayerFactory.create(getMessageModel(), null);
 
         holder.messagePlayer = fileMessagePlayer;
 
-        fileData = getMessageModel().getFileData();
+        FileDataModel fileData = getMessageModel().getFileData();
 
-        setThumbnail(holder, false);
+        setThumbnail(holder, fileData, false);
 
         RuntimeUtil.runOnUiThread(() -> {
             setupResendStatus(holder);
             setControllerState(holder, fileData);
         });
 
-        setControllerClickListener(holder);
+        setControllerClickListener(fileMessagePlayer, fileData, holder);
         setOnClickListener(view -> {
             if (
                 getMessageModel().getState() != MessageState.FS_KEY_MISMATCH &&
@@ -71,41 +82,50 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
             }
         }, holder.messageBlockView);
 
-        configureFileMessagePlayer(holder, position);
+        configureFileMessagePlayer(fileMessagePlayer, holder, fileData, context, position);
         configureBodyText(holder, fileData.getCaption());
-        configureTertiaryText(holder);
-        configureSecondaryText(holder);
-        configureSizeText(holder);
-        configureDateView(holder);
+        configureTertiaryText(holder, fileData);
+        configureSecondaryText(holder, fileData);
+        configureSizeText(holder, fileData);
+        configureDateView(holder, fileData);
     }
 
-    private void configureDateView(@NonNull ComposeMessageHolder holder) {
+    private void configureDateView(
+        @NonNull ComposeMessageHolder holder,
+        @NonNull FileDataModel fileData
+    ) {
         if (holder.dateView != null) {
             setDatePrefix(
-                FileUtil.getFileMessageDatePrefix(getContext(),
+                FileUtil.getFileMessageDatePrefix(holder.dateView.getContext(),
                     getMessageModel(),
-                    FileUtil.isImageFile(fileData) ? getContext().getString(R.string.image_placeholder) : null)
+                    FileUtil.isImageFile(fileData) ? holder.dateView.getContext().getString(R.string.image_placeholder) : null)
             );
         }
     }
 
-    private void configureSizeText(@NonNull ComposeMessageHolder holder) {
+    private void configureSizeText(
+        @NonNull ComposeMessageHolder holder,
+        @NonNull FileDataModel fileData
+    ) {
         showHide(holder.size, true);
         if (holder.size != null) {
             long size = fileData.getFileSize();
             if (size > 0) {
-                holder.size.setText(Formatter.formatShortFileSize(getContext(), fileData.getFileSize()));
+                holder.size.setText(Formatter.formatShortFileSize(holder.size.getContext(), fileData.getFileSize()));
             }
         }
     }
 
-    private void configureSecondaryText(@NonNull ComposeMessageHolder holder) {
+    private void configureSecondaryText(
+        @NonNull ComposeMessageHolder holder,
+        @NonNull FileDataModel fileData
+    ) {
         showHide(holder.secondaryTextView, true);
         if (holder.secondaryTextView != null) {
             String mimeString = fileData.getMimeType();
             if (holder.secondaryTextView != null) {
                 if (!TestUtil.isEmptyOrNull(mimeString)) {
-                    holder.secondaryTextView.setText(MimeUtil.getMimeDescription(context, fileData.getMimeType()));
+                    holder.secondaryTextView.setText(MimeUtil.getMimeDescription(holder.secondaryTextView.getContext(), fileData.getMimeType()));
                 } else {
                     holder.secondaryTextView.setText("");
                 }
@@ -113,24 +133,34 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
         }
     }
 
-    private void configureTertiaryText(@NonNull ComposeMessageHolder holder) {
+    private void configureTertiaryText(
+        @NonNull ComposeMessageHolder holder,
+        @NonNull FileDataModel fileData
+    ) {
         showHide(holder.tertiaryTextView, true);
         if (holder.tertiaryTextView != null) {
             String fileName = fileData.getFileName();
             if (!TestUtil.isEmptyOrNull(fileName)) {
-                holder.tertiaryTextView.setText(highlightMatches(fileName, filterString));
+                holder.tertiaryTextView.setText(highlightMatches(holder.tertiaryTextView.getContext(), fileName, filterString));
             } else {
                 holder.tertiaryTextView.setText(R.string.no_filename);
             }
         }
     }
 
-    private void configureFileMessagePlayer(@NonNull ComposeMessageHolder holder, int position) {
+    private void configureFileMessagePlayer(
+        @NonNull FileMessagePlayer fileMessagePlayer,
+        @NonNull ComposeMessageHolder holder,
+        @NonNull FileDataModel fileData,
+        Context context,
+        int position
+    ) {
+        Context applicationContext = context.getApplicationContext();
         fileMessagePlayer
             .addListener(LISTENER_TAG, new MessagePlayer.PlaybackListener() {
                 @Override
                 public void onPlay(AbstractMessageModel messageModel, boolean autoPlay) {
-                    invalidate(holder, position);
+                    invalidate(holder, context, position);
                 }
 
                 @Override
@@ -157,7 +187,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
                         if (!success) {
                             holder.controller.setReadyToDownload();
                             if (!TestUtil.isEmptyOrNull(message)) {
-                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                                Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show();
                             }
                         } else {
                             holder.controller.setHidden();
@@ -189,12 +219,12 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
                                 holder.controller.setHidden();
                             } else {
                                 holder.controller.setNeutral();
-                                setThumbnail(holder, false);
+                                setThumbnail(holder, fileData, false);
                             }
                         } else {
                             holder.controller.setReadyToDownload();
                             if (!TestUtil.isEmptyOrNull(message)) {
-                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                                Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -202,7 +232,11 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
             });
     }
 
-    private void setControllerClickListener(@NonNull ComposeMessageHolder holder) {
+    private void setControllerClickListener(
+        @NonNull FileMessagePlayer fileMessagePlayer,
+        @NonNull FileDataModel fileData,
+        @NonNull ComposeMessageHolder holder
+    ) {
         if (holder.controller != null) {
             holder.controller.setOnClickListener(new DebouncedOnClickListener(500) {
                 @Override
@@ -235,22 +269,17 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
     }
 
     private void prepareDownload(final FileDataModel fileData, final FileMessagePlayer fileMessagePlayer) {
-        if (TestUtil.required(fileData, fileMessagePlayer)) {
+        if (fileData != null && fileMessagePlayer != null) {
             if (fileData.isDownloaded()) {
                 fileMessagePlayer.open();
             } else {
                 final PreferenceService preferenceService = getPreferenceService();
 
                 if (preferenceService != null && !preferenceService.getFileSendInfoShown()) {
-                    new MaterialAlertDialogBuilder(getContext())
-                        .setTitle(R.string.download)
-                        .setMessage(R.string.send_as_files_warning)
-                        .setNegativeButton(R.string.cancel, null)
-                        .setPositiveButton(R.string.ok, (dialog, id) -> {
-                            preferenceService.setFileSendInfoShown(true);
-                            fileMessagePlayer.open();
-                        })
-                        .show();
+                    downloadAlertDialogListener.showPrepareDownloadDialog(() -> {
+                        preferenceService.setFileSendInfoShown(true);
+                        fileMessagePlayer.open();
+                    });
                 } else {
                     fileMessagePlayer.open();
                 }
@@ -258,7 +287,11 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
         }
     }
 
-    private void setThumbnail(ComposeMessageHolder holder, final boolean updateBitmap) {
+    private void setThumbnail(
+        ComposeMessageHolder holder,
+        FileDataModel fileData,
+        final boolean updateBitmap
+    ) {
         Bitmap thumbnail = null;
         try {
             thumbnail = getFileService().getMessageThumbnailBitmap(getMessageModel(),
@@ -269,7 +302,6 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
 
         if (FileUtil.isImageFile(fileData) && (fileData.getRenderingType() == FileData.RENDERING_STICKER || fileData.getRenderingType() == FileData.RENDERING_MEDIA)) {
             ImageViewUtil.showRoundedBitmapOrImagePlaceholder(
-                getContext(),
                 holder.contentView,
                 holder.attachmentImage,
                 thumbnail,
@@ -279,7 +311,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
             if (holder.attachmentImage != null) {
                 boolean hasDrawable = holder.attachmentImage.getDrawable() != null;
                 holder.attachmentImage.setVisibility(hasDrawable ? View.VISIBLE : View.GONE);
-                holder.attachmentImage.setContentDescription(getContext().getString(R.string.image_placeholder));
+                holder.attachmentImage.setContentDescription(holder.attachmentImage.getContext().getString(R.string.image_placeholder));
             }
 
             if (fileData.getRenderingType() == FileData.RENDERING_STICKER) {
@@ -307,7 +339,10 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
         }
     }
 
-    private void setControllerState(@NonNull ComposeMessageHolder holder, @NonNull FileDataModel fileData) {
+    private void setControllerState(
+        @NonNull ComposeMessageHolder holder,
+        @NonNull FileDataModel fileData
+    ) {
         @Nullable final MessageState state = getMessageModel().getState();
         if (fileData.isDownloaded()) {
             if (!usesUploadProgress(state)) {
@@ -345,7 +380,7 @@ public class FileChatAdapterDecorator extends ChatAdapterDecorator {
                 }
                 break;
             case PENDING:
-                setThumbnail(holder, true);
+                setThumbnail(holder, fileData, true);
                 // fallthrough
             case SENDING:
             case UPLOADING:

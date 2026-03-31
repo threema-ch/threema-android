@@ -31,7 +31,7 @@ import java.util.List;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.SendMediaActivity;
-import ch.threema.app.fragments.ComposeMessageFragment;
+import ch.threema.app.fragments.composemessage.ComposeMessageFragment;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.MediaItem;

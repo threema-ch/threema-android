@@ -1,17 +1,80 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/gallery_background">
+
+    <LinearLayout
+        android:id="@+id/message_info_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/grid_unit_x2">
+
+        <ImageView
+            android:id="@+id/mime_category_image"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no"
+            android:src="@drawable/ic_doc_audio"
+            app:tint="?attr/colorSecondary" />
+
+        <TextView
+            android:id="@+id/filename"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/grid_unit_x2"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingHorizontal="@dimen/grid_unit_x2"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="?attr/colorOnBackground"
+            tools:text="another_day_in_paradise.mp3"
+            tools:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/mime_category_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/grid_unit_x2"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?attr/colorOnBackground"
+            tools:text="Audio file"
+            tools:textColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/empty_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/grid_unit_x4"
+            android:gravity="center_horizontal"
+            android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+            android:textColor="?attr/colorOnBackground"
+            android:visibility="gone"
+            tools:text="@string/media_file_not_found"
+            tools:textColor="@android:color/white"
+            tools:visibility="visible" />
+
+    </LinearLayout>
 
     <androidx.media3.ui.PlayerView
         android:id="@+id/audio_view"
-        app:surface_type="none"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:controller_layout_id="@layout/exo_player_control_view_standard" />
+        app:artwork_display_mode="off"
+        app:controller_layout_id="@layout/exo_player_control_view_standard"
+        app:shutter_background_color="@android:color/transparent"
+        app:surface_type="none"
+        tools:visibility="gone" />
 
     <com.google.android.material.progressindicator.CircularProgressIndicator
         android:id="@+id/progress_bar"
@@ -19,19 +82,6 @@
         android:layout_height="48dp"
         android:layout_gravity="center"
         android:indeterminate="true"
-        android:visibility="gone" />
-
-    <TextView
-        android:id="@+id/empty_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:gravity="center_horizontal"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:fontFamily="sans-serif-light"
-        android:textColor="@android:color/white"
-        android:textSize="18sp"
         android:visibility="gone" />
 
 </FrameLayout>

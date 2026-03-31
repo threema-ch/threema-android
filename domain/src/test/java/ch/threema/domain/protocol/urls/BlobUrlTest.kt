@@ -1,5 +1,6 @@
 package ch.threema.domain.protocol.urls
 
+import ch.threema.common.emptyByteArray
 import ch.threema.domain.protocol.csp.ProtocolDefines.BLOB_ID_LEN
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -20,7 +21,7 @@ class BlobUrlTest {
         val blobUrl = BlobUrl("https://ds-blobp-{blobIdPrefix}.test.threema.ch/download/{blobId}/")
 
         assertFailsWith<IllegalArgumentException> {
-            blobUrl.get(blobId = ByteArray(0))
+            blobUrl.get(blobId = emptyByteArray())
         }
     }
 

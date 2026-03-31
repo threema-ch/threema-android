@@ -363,12 +363,13 @@
 //       previous PCMK.
 // 5. Send `pending-pcmk` to all authenticated participants via a _rekey_
 //    message.
-// 6. Schedule a task to run the following steps after 2s:
-//   1. Apply `pending-pcmk` for media encryption. This means that
-//      `pending-pcmk` now replaces the _applied_ PCMK and is no longer
-//      _pending_.
-//   2. If `pending-pcmk` is marked as _stale_, run the parent steps from the
-//      beginning.
+// 6. Schedule a volatile task bound to the call to run the following steps
+//    after 2s:
+//    1. Apply `pending-pcmk` for media encryption. This means that
+//       `pending-pcmk` now replaces the _applied_ PCMK and is no longer
+//       _pending_.
+//    2. If `pending-pcmk` is marked as _stale_, run the parent steps from the
+//       beginning.
 //
 // When a participant receives a _rekey_ message from another participant.
 //
@@ -459,6 +460,14 @@ message CallState {
 
   // Information for each participant of the group call.
   map<uint32, Participant> participants = 4;
+}
+
+// Supported feature (to be used as a bitmask).
+enum SupportedFeature {
+  // Base feature support (always present).
+  BASE = 0x0000;
+  // Support for screen sharing.
+  SCREEN_SHARE = 0x0001;
 }
 
 // Request payloads sent to the SFU as part of an HTTP request.
@@ -623,6 +632,37 @@ message SfuHttpResponse {
     // Note: This is the authentication anchor for the WebRTC connection towards
     //       the SFU.
     bytes dtls_fingerprint = 7;
+
+    // RTP header extension ID mapping.
+    //
+    // Note: The same ID is applied for header extensions used for both microphone and
+    // camera/screen.
+    message RtpHeaderExtensionIds {
+      // urn:ietf:params:rtp-hdrext:sdes:mid
+      uint32 mid = 1;
+
+      // urn:ietf:params:rtp-hdrext:sdes:rtp-stream-id
+      uint32 rtp_stream_id = 2;
+
+      // urn:ietf:params:rtp-hdrext:sdes:repaired-rtp-stream-id
+      uint32 repaired_rtp_stream_id = 3;
+
+      // http://www.webrtc.org/experiments/rtp-hdrext/abs-send-time
+      uint32 absolute_send_time = 4;
+
+      // http://www.ietf.org/id/draft-holmer-rmcat-transport-wide-cc-extensions-01
+      uint32 transport_wide_congestion_control_01 = 5;
+
+      // urn:3gpp:video-orientation
+      uint32 video_orientation = 6;
+
+      // urn:ietf:params:rtp-hdrext:toffset
+      uint32 time_offset = 7;
+    }
+    RtpHeaderExtensionIds rtp_header_extension_ids = 9;
+
+    // Supported features bitmask (see `SupportedFeature`).
+    uint64 supported_features = 8;
   }
 }
 
@@ -814,6 +854,9 @@ message ParticipantToSfu {
   }
 
   // Subscribe or unsubscribe to a participant's screen feed.
+  //
+  // Availability: If the SFU announced support for
+  // `SupportedFeature.SCREEN_SHARE`.
   //
   // When receiving this message:
   //

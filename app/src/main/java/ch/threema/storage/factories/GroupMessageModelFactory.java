@@ -18,21 +18,23 @@ import ch.threema.app.utils.JsonUtil;
 import ch.threema.domain.models.MessageId;
 import ch.threema.storage.ChunkedSequence;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
+import ch.threema.storage.models.group.GroupMessageModel;
 import ch.threema.data.models.GroupModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
+import ch.threema.storage.models.group.GroupModelOld;
 import kotlin.ranges.LongProgression;
 
 import static ch.threema.storage.models.data.DisplayTag.DISPLAY_TAG_STARRED;
 
 public class GroupMessageModelFactory extends AbstractMessageModelFactory {
-    public GroupMessageModelFactory(DatabaseService databaseService) {
-        super(databaseService, GroupMessageModel.TABLE);
+    public GroupMessageModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, GroupMessageModel.TABLE);
     }
 
     public List<GroupMessageModel> getAll() {
@@ -143,7 +145,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
             if (text == null) {
                 return convertAbstractList(getReadableDatabase().rawQuery(
                     "SELECT * FROM " + GroupMessageModel.TABLE + " m" +
-                        " INNER JOIN " + ch.threema.storage.models.GroupModel.TABLE + " g ON g.id = m.groupId" +
+                        " INNER JOIN " + GroupModelOld.TABLE + " g ON g.id = m.groupId" +
                         " WHERE g.isArchived = 0" +
                         " AND m.isStatusMessage = 0" +
                         displayClause +
@@ -154,7 +156,7 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
 
             return convertAbstractList(getReadableDatabase().rawQuery(
                 "SELECT * FROM " + GroupMessageModel.TABLE + " m" +
-                    " INNER JOIN " + ch.threema.storage.models.GroupModel.TABLE + " g ON g.id = m.groupId" +
+                    " INNER JOIN " + GroupModelOld.TABLE + " g ON g.id = m.groupId" +
                     " WHERE g.isArchived = 0" +
                     " AND ( ( m.body LIKE ? " +
                     " AND m.type IN (" +
@@ -442,52 +444,55 @@ public class GroupMessageModelFactory extends AbstractMessageModelFactory {
         contentValues.put(GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES, groupMessageStates);
     }
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `" + GroupMessageModel.TABLE + "`" +
-                "(" +
-                "`" + GroupMessageModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT , " +
-                "`" + GroupMessageModel.COLUMN_UID + "` VARCHAR , " +
-                "`" + GroupMessageModel.COLUMN_API_MESSAGE_ID + "` VARCHAR , " +
-                "`" + GroupMessageModel.COLUMN_GROUP_ID + "` INTEGER NOT NULL , " +
-                "`" + GroupMessageModel.COLUMN_IDENTITY + "` VARCHAR , " +
-                "`" + GroupMessageModel.COLUMN_OUTBOX + "` SMALLINT , " +
-                "`" + GroupMessageModel.COLUMN_TYPE + "` INTEGER ," +
-                "`" + GroupMessageModel.COLUMN_CORRELATION_ID + "` VARCHAR ," +
-                "`" + GroupMessageModel.COLUMN_BODY + "` VARCHAR ," +
-                "`" + GroupMessageModel.COLUMN_CAPTION + "` VARCHAR ," +
-                "`" + GroupMessageModel.COLUMN_IS_READ + "` SMALLINT ," +
-                "`" + GroupMessageModel.COLUMN_IS_SAVED + "` SMALLINT ," +
-                "`" + GroupMessageModel.COLUMN_IS_QUEUED + "` TINYINT ," +
-                "`" + GroupMessageModel.COLUMN_STATE + "` VARCHAR , " +
-                "`" + GroupMessageModel.COLUMN_POSTED_AT + "` BIGINT , " +
-                "`" + GroupMessageModel.COLUMN_CREATED_AT + "` BIGINT , " +
-                "`" + GroupMessageModel.COLUMN_MODIFIED_AT + "` BIGINT , " +
-                "`" + GroupMessageModel.COLUMN_IS_STATUS_MESSAGE + "` SMALLINT ," +
-                "`" + GroupMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + "` VARCHAR ," +
-                "`" + GroupMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE + "` TINYINT ," +
-                "`" + GroupMessageModel.COLUMN_MESSAGE_FLAGS + "` INT ," +
-                "`" + GroupMessageModel.COLUMN_DELIVERED_AT + "` DATETIME ," +
-                "`" + GroupMessageModel.COLUMN_READ_AT + "` DATETIME ," +
-                "`" + GroupMessageModel.COLUMN_FORWARD_SECURITY_MODE + "` TINYINT DEFAULT 0 ," +
-                "`" + GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES + "` VARCHAR ," +
-                "`" + GroupMessageModel.COLUMN_DISPLAY_TAGS + "` TINYINT DEFAULT 0 ," +
-                "`" + GroupMessageModel.COLUMN_EDITED_AT + "` DATETIME ," +
-                "`" + GroupMessageModel.COLUMN_DELETED_AT + "` DATETIME );",
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE `" + GroupMessageModel.TABLE + "`" +
+                    "(" +
+                    "`" + GroupMessageModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT , " +
+                    "`" + GroupMessageModel.COLUMN_UID + "` VARCHAR , " +
+                    "`" + GroupMessageModel.COLUMN_API_MESSAGE_ID + "` VARCHAR , " +
+                    "`" + GroupMessageModel.COLUMN_GROUP_ID + "` INTEGER NOT NULL , " +
+                    "`" + GroupMessageModel.COLUMN_IDENTITY + "` VARCHAR , " +
+                    "`" + GroupMessageModel.COLUMN_OUTBOX + "` SMALLINT , " +
+                    "`" + GroupMessageModel.COLUMN_TYPE + "` INTEGER ," +
+                    "`" + GroupMessageModel.COLUMN_CORRELATION_ID + "` VARCHAR ," +
+                    "`" + GroupMessageModel.COLUMN_BODY + "` VARCHAR ," +
+                    "`" + GroupMessageModel.COLUMN_CAPTION + "` VARCHAR ," +
+                    "`" + GroupMessageModel.COLUMN_IS_READ + "` SMALLINT ," +
+                    "`" + GroupMessageModel.COLUMN_IS_SAVED + "` SMALLINT ," +
+                    "`" + GroupMessageModel.COLUMN_IS_QUEUED + "` TINYINT ," +
+                    "`" + GroupMessageModel.COLUMN_STATE + "` VARCHAR , " +
+                    "`" + GroupMessageModel.COLUMN_POSTED_AT + "` BIGINT , " +
+                    "`" + GroupMessageModel.COLUMN_CREATED_AT + "` BIGINT , " +
+                    "`" + GroupMessageModel.COLUMN_MODIFIED_AT + "` BIGINT , " +
+                    "`" + GroupMessageModel.COLUMN_IS_STATUS_MESSAGE + "` SMALLINT ," +
+                    "`" + GroupMessageModel.COLUMN_QUOTED_MESSAGE_API_MESSAGE_ID + "` VARCHAR ," +
+                    "`" + GroupMessageModel.COLUMN_MESSAGE_CONTENTS_TYPE + "` TINYINT ," +
+                    "`" + GroupMessageModel.COLUMN_MESSAGE_FLAGS + "` INT ," +
+                    "`" + GroupMessageModel.COLUMN_DELIVERED_AT + "` DATETIME ," +
+                    "`" + GroupMessageModel.COLUMN_READ_AT + "` DATETIME ," +
+                    "`" + GroupMessageModel.COLUMN_FORWARD_SECURITY_MODE + "` TINYINT DEFAULT 0 ," +
+                    "`" + GroupMessageModel.COLUMN_GROUP_MESSAGE_STATES + "` VARCHAR ," +
+                    "`" + GroupMessageModel.COLUMN_DISPLAY_TAGS + "` TINYINT DEFAULT 0 ," +
+                    "`" + GroupMessageModel.COLUMN_EDITED_AT + "` DATETIME ," +
+                    "`" + GroupMessageModel.COLUMN_DELETED_AT + "` DATETIME );",
 
-            //indices
-            "CREATE INDEX `group_message_uid_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_UID + "` )",
-            "CREATE INDEX `m_group_message_outbox_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_OUTBOX + "` );",
-            "CREATE INDEX `m_group_message_identity_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_IDENTITY + "` );",
-            "CREATE INDEX `m_group_message_groupId_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_GROUP_ID + "` );",
-            "CREATE INDEX `groupMessageApiMessageIdIdx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_API_MESSAGE_ID + "` );",
-            "CREATE INDEX `groupMessageCorrelationIdIdx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_CORRELATION_ID + "` );",
-            "CREATE INDEX `group_message_state_idx` ON `" + GroupMessageModel.TABLE
-                + "`(`" + AbstractMessageModel.COLUMN_TYPE
-                + "`, `" + AbstractMessageModel.COLUMN_STATE
-                + "`, `" + AbstractMessageModel.COLUMN_OUTBOX
-                + "`)",
-        };
+                // indices
+                "CREATE INDEX `group_message_uid_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_UID + "` )",
+                "CREATE INDEX `m_group_message_outbox_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_OUTBOX + "` );",
+                "CREATE INDEX `m_group_message_identity_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_IDENTITY + "` );",
+                "CREATE INDEX `m_group_message_groupId_idx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_GROUP_ID + "` );",
+                "CREATE INDEX `groupMessageApiMessageIdIdx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_API_MESSAGE_ID + "` );",
+                "CREATE INDEX `groupMessageCorrelationIdIdx` ON `" + GroupMessageModel.TABLE + "` ( `" + GroupMessageModel.COLUMN_CORRELATION_ID + "` );",
+                "CREATE INDEX `group_message_state_idx` ON `" + GroupMessageModel.TABLE
+                    + "`(`" + AbstractMessageModel.COLUMN_TYPE
+                    + "`, `" + AbstractMessageModel.COLUMN_STATE
+                    + "`, `" + AbstractMessageModel.COLUMN_OUTBOX
+                    + "`)",
+            };
+        }
     }
 }

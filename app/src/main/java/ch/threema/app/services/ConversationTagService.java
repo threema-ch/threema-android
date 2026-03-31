@@ -25,13 +25,24 @@ public interface ConversationTagService {
 
     /**
      * Remove the given tag of the conversation with the provided conversation uid.
+     *
+     * @return True if the tag was removed and false if it never existed before.
      */
-    void removeTag(@NonNull String conversationUid, @NonNull ConversationTag tag, @NonNull TriggerSource triggerSource);
+    boolean removeTag(@NonNull String conversationUid, @NonNull ConversationTag tag, @NonNull TriggerSource triggerSource);
+
+    /**
+     * Tag the conversation with the given {@link ConversationTag}.
+     *
+     * @return True if the tag was newly created and false if the tag was already present.
+     */
+    boolean addTag(@NonNull String conversationUid, @NonNull ConversationTag tag, @NonNull TriggerSource triggerSource);
 
     /**
      * Toggle the {@link ConversationTag} of the {@link ConversationModel}
+     *
+     * @return {@code true} if the {@code conversation} is tagged after the toggle operation, {@code false} otherwise.
      */
-    void toggle(@Nullable ConversationModel conversation, @NonNull ConversationTag tag, boolean silent, @NonNull TriggerSource triggerSource);
+    boolean toggle(@NonNull ConversationModel conversation, @NonNull ConversationTag tag, @NonNull TriggerSource triggerSource);
 
     /**
      * Return true, if the {@link ConversationModel} is tagged with {@link ConversationTag}

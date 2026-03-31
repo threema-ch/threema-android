@@ -4058,9 +4058,6 @@ public class ExifInterface {
      * Threema-added
      * Returns the value of the specified tag assuming it's a UTF-8 string or {@code null} if there
      * is no such tag in the image file.
-     *
-     * @param tag
-     * @return
      */
     @Nullable
     public String getUTF8StringAttribute(@NonNull String tag) {
@@ -4091,12 +4088,12 @@ public class ExifInterface {
                 // Convert the rational values to the custom formats for backwards compatibility.
                 if (attribute.format != IFD_FORMAT_URATIONAL
                     && attribute.format != IFD_FORMAT_SRATIONAL) {
-                    logger.warn("GPS Timestamp format is not rational. format=" + attribute.format);
+                    logger.warn("GPS Timestamp format is not rational. format={}", attribute.format);
                     return null;
                 }
                 Rational[] array = (Rational[]) attribute.getValue(mExifByteOrder);
                 if (array == null || array.length != 3) {
-                    logger.warn("Invalid GPS Timestamp array. array=" + Arrays.toString(array));
+                    logger.warn("Invalid GPS Timestamp array. array={}", Arrays.toString(array));
                     return null;
                 }
                 return String.format("%02d:%02d:%02d",
@@ -4157,7 +4154,7 @@ public class ExifInterface {
                 // Validate
                 if (value.length() != DATETIME_VALUE_STRING_LENGTH
                     || (!isPrimaryFormat && !isSecondaryFormat)) {
-                    logger.warn("Invalid value for " + tag + " : " + value);
+                    logger.warn("Invalid value for {} : {}", tag, value);
                     return;
                 }
                 // If datetime value has secondary format (e.g. 2020-01-01 00:00:00), convert it to
@@ -4183,7 +4180,7 @@ public class ExifInterface {
             if (tag.equals(TAG_GPS_TIMESTAMP)) {
                 Matcher m = GPS_TIMESTAMP_PATTERN.matcher(value);
                 if (!m.find()) {
-                    logger.warn("Invalid value for " + tag + " : " + value);
+                    logger.warn("Invalid value for {} : {}", tag, value);
                     return;
                 }
                 value = Integer.parseInt(m.group(1)) + "/1," + Integer.parseInt(m.group(2)) + "/1,"
@@ -4193,7 +4190,7 @@ public class ExifInterface {
                     double doubleValue = Double.parseDouble(value);
                     value = new Rational(doubleValue).toString();
                 } catch (NumberFormatException e) {
-                    logger.warn("Invalid value for " + tag + " : " + value);
+                    logger.warn("Invalid value for {} : {}", tag, value);
                     return;
                 }
             }
@@ -4222,13 +4219,14 @@ public class ExifInterface {
                     dataFormat = exifTag.primaryFormat;
                 } else {
                     if (DEBUG) {
-                        logger.debug("Given tag (" + tag
-                            + ") value didn't match with one of expected "
-                            + "formats: " + IFD_FORMAT_NAMES[exifTag.primaryFormat]
-                            + (exifTag.secondaryFormat == -1 ? "" : ", "
-                            + IFD_FORMAT_NAMES[exifTag.secondaryFormat]) + " (guess: "
-                            + IFD_FORMAT_NAMES[guess.first] + (guess.second == -1 ? "" : ", "
-                            + IFD_FORMAT_NAMES[guess.second]) + ")");
+                        logger.debug(
+                            "Given tag ({}) value didn't match with one of expected formats: {}{} (guess: {}{})",
+                            tag,
+                            IFD_FORMAT_NAMES[exifTag.primaryFormat],
+                            exifTag.secondaryFormat == -1 ? "" : ", " + IFD_FORMAT_NAMES[exifTag.secondaryFormat],
+                            IFD_FORMAT_NAMES[guess.first],
+                            guess.second == -1 ? "" : ", " + IFD_FORMAT_NAMES[guess.second]
+                        );
                     }
                     continue;
                 }
@@ -4308,7 +4306,7 @@ public class ExifInterface {
                     }
                     default:
                         if (DEBUG) {
-                            logger.debug("Data format isn't one of expected formats: " + dataFormat);
+                            logger.debug("Data format isn't one of expected formats: {}", dataFormat);
                         }
                         continue;
                 }
@@ -4441,11 +4439,10 @@ public class ExifInterface {
     // Prints out attributes for debugging.
     private void printAttributes() {
         for (int i = 0; i < mAttributes.length; ++i) {
-            logger.debug("The size of tag group[" + i + "]: " + mAttributes[i].size());
+            logger.debug("The size of tag group[{}]: {}", i, mAttributes[i].size());
             for (Map.Entry<String, ExifAttribute> entry : mAttributes[i].entrySet()) {
                 final ExifAttribute tagValue = entry.getValue();
-                logger.debug("tagName: " + entry.getKey() + ", tagType: " + tagValue.toString()
-                    + ", tagValue: '" + tagValue.getStringValue(mExifByteOrder) + "'");
+                logger.debug("tagName: {}, tagType: {}, tagValue: '{}'", entry.getKey(), tagValue, tagValue.getStringValue(mExifByteOrder));
             }
         }
     }
@@ -4786,7 +4783,7 @@ public class ExifInterface {
         throws IOException {
         // See JPEG File Interchange Format Specification, "JFIF Specification"
         if (DEBUG) {
-            logger.debug("getJpegAttributes starting with: " + in);
+            logger.debug("getJpegAttributes starting with: {}", in);
         }
         // JPEG uses Big Endian by default. See https://people.cs.umass.edu/~verts/cs32/endian.html
         in.setByteOrder(BIG_ENDIAN);
@@ -4810,7 +4807,7 @@ public class ExifInterface {
             ++bytesRead;
             marker = in.readByte();
             if (DEBUG) {
-                logger.debug("Found JPEG segment indicator: " + Integer.toHexString(marker & 0xff));
+                logger.debug("Found JPEG segment indicator: {}", Integer.toHexString(marker & 0xff));
             }
             ++bytesRead;
 
@@ -4822,8 +4819,7 @@ public class ExifInterface {
             int length = in.readUnsignedShort() - 2;
             bytesRead += 2;
             if (DEBUG) {
-                logger.debug("JPEG segment: " + Integer.toHexString(marker & 0xff) + " (length: "
-                    + (length + 2) + ")");
+                logger.debug("JPEG segment: {} (length: {})", Integer.toHexString(marker & 0xff), (length + 2));
             }
             if (length < 0) {
                 throw new IOException("Invalid length");
@@ -4966,7 +4962,7 @@ public class ExifInterface {
      */
     private void getRafAttributes(ByteOrderedDataInputStream in) throws IOException {
         if (DEBUG) {
-            logger.debug("getRafAttributes starting with: " + in);
+            logger.debug("getRafAttributes starting with: {}", in);
         }
         // Retrieve offset & length values
         in.skipFully(RAF_OFFSET_TO_JPEG_IMAGE_OFFSET);
@@ -4995,7 +4991,7 @@ public class ExifInterface {
         in.setByteOrder(BIG_ENDIAN);
         int numberOfDirectoryEntry = in.readInt();
         if (DEBUG) {
-            logger.debug("numberOfDirectoryEntry: " + numberOfDirectoryEntry);
+            logger.debug("numberOfDirectoryEntry: {}", numberOfDirectoryEntry);
         }
         // CFA stores some metadata about the RAW image. Since CFA uses proprietary tags, can only
         // find and retrieve image size information tags, while skipping others.
@@ -5013,7 +5009,7 @@ public class ExifInterface {
                 mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_LENGTH, imageLengthAttribute);
                 mAttributes[IFD_TYPE_PRIMARY].put(TAG_IMAGE_WIDTH, imageWidthAttribute);
                 if (DEBUG) {
-                    logger.debug("Updated to length: " + imageLength + ", width: " + imageWidth);
+                    logger.debug("Updated to length: {}, width: {}", imageLength, imageWidth);
                 }
                 return;
             }
@@ -5183,7 +5179,7 @@ public class ExifInterface {
                 }
 
                 if (DEBUG) {
-                    logger.debug("Heif meta: " + width + "x" + height + ", rotation " + rotation);
+                    logger.debug("Heif meta: {}x{}, rotation {}", width, height, rotation);
                 }
             } catch (RuntimeException e) {
                 throw new UnsupportedOperationException("Failed to read EXIF from HEIF file. "
@@ -5317,7 +5313,7 @@ public class ExifInterface {
     // See https://libopenraw.freedesktop.org/wiki/Panasonic_RAW/ and piex.cc Rw2GetPreviewData()
     private void getRw2Attributes(SeekableByteOrderedDataInputStream in) throws IOException {
         if (DEBUG) {
-            logger.debug("getRw2Attributes starting with: " + in);
+            logger.debug("getRw2Attributes starting with: {}", in);
         }
         // Retrieve primary image data
         getRawAttributes(in);
@@ -5346,7 +5342,7 @@ public class ExifInterface {
     // PNG contains the EXIF data as a Special-Purpose Chunk
     private void getPngAttributes(ByteOrderedDataInputStream in) throws IOException {
         if (DEBUG) {
-            logger.debug("getPngAttributes starting with: " + in);
+            logger.debug("getPngAttributes starting with: {}", in);
         }
         // PNG uses Big Endian by default.
         // See PNG (Portable Network Graphics) Specification, Version 1.2,
@@ -5428,7 +5424,7 @@ public class ExifInterface {
     // https://developers.google.com/speed/webp/docs/riff_container
     private void getWebpAttributes(ByteOrderedDataInputStream in) throws IOException {
         if (DEBUG) {
-            logger.debug("getWebpAttributes starting with: " + in);
+            logger.debug("getWebpAttributes starting with: {}", in);
         }
         // WebP uses little-endian by default.
         // See Section "Terminology & Basics"
@@ -5511,10 +5507,6 @@ public class ExifInterface {
     private void saveJpegAttributes(InputStream inputStream, OutputStream outputStream, boolean stripExif)
         throws IOException {
         // See JPEG File Interchange Format Specification, "JFIF Specification"
-        if (DEBUG) {
-            logger.debug("saveJpegAttributes starting with (inputStream: " + inputStream
-                + ", outputStream: " + outputStream + ")");
-        }
         ByteOrderedDataInputStream dataInputStream = new ByteOrderedDataInputStream(inputStream);
         ByteOrderedDataOutputStream dataOutputStream =
             new ByteOrderedDataOutputStream(outputStream, BIG_ENDIAN);
@@ -5730,7 +5722,7 @@ public class ExifInterface {
         // See TIFF 6.0 Section 2: TIFF Structure, Figure 1.
         short numberOfDirectoryEntry = dataInputStream.readShort();
         if (DEBUG) {
-            logger.debug("numberOfDirectoryEntry: " + numberOfDirectoryEntry);
+            logger.debug("numberOfDirectoryEntry: {}", numberOfDirectoryEntry);
         }
         if (numberOfDirectoryEntry <= 0) {
             // Return if the size of entries is negative.
@@ -5749,26 +5741,33 @@ public class ExifInterface {
             ExifTag tag = sExifTagMapsForReading[ifdType].get(tagNumber);
 
             if (DEBUG) {
-                logger.debug(String.format("ifdType: %d, tagNumber: %d, tagName: %s, dataFormat: %d, "
-                        + "numberOfComponents: %d", ifdType, tagNumber,
-                    tag != null ? tag.name : null, dataFormat, numberOfComponents));
+                logger.debug(
+                    "ifdType: {}, tagNumber: {}, tagName: {}, dataFormat: {}, numberOfComponents: {}",
+                    ifdType,
+                    tagNumber,
+                    tag != null ? tag.name : null,
+                    dataFormat,
+                    numberOfComponents
+                );
             }
 
             long byteCount = 0;
             boolean valid = false;
             if (tag == null) {
                 if (DEBUG) {
-                    logger.debug("Skip the tag entry since tag number is not defined: " + tagNumber);
+                    logger.debug("Skip the tag entry since tag number is not defined: {}", tagNumber);
                 }
             } else if (dataFormat <= 0 || dataFormat >= IFD_FORMAT_BYTES_PER_FORMAT.length) {
                 if (DEBUG) {
-                    logger.debug("Skip the tag entry since data format is invalid: " + dataFormat);
+                    logger.debug("Skip the tag entry since data format is invalid: {}", dataFormat);
                 }
             } else if (!tag.isFormatCompatible(dataFormat)) {
                 if (DEBUG) {
-                    logger.debug("Skip the tag entry since data format ("
-                        + IFD_FORMAT_NAMES[dataFormat] + ") is unexpected for tag: "
-                        + tag.name);
+                    logger.debug(
+                        "Skip the tag entry since data format ({}) is unexpected for tag: {}",
+                        IFD_FORMAT_NAMES[dataFormat],
+                        tag.name
+                );
                 }
             } else {
                 if (dataFormat == IFD_FORMAT_UNDEFINED) {
@@ -5777,8 +5776,7 @@ public class ExifInterface {
                 byteCount = (long) numberOfComponents * IFD_FORMAT_BYTES_PER_FORMAT[dataFormat];
                 if (byteCount < 0 || byteCount > Integer.MAX_VALUE) {
                     if (DEBUG) {
-                        logger.debug("Skip the tag entry since the number of components is invalid: "
-                            + numberOfComponents);
+                        logger.debug("Skip the tag entry since the number of components is invalid: {}", numberOfComponents);
                     }
                 } else {
                     valid = true;
@@ -5794,7 +5792,7 @@ public class ExifInterface {
             if (byteCount > 4) {
                 int offset = dataInputStream.readInt();
                 if (DEBUG) {
-                    logger.debug("seek to data offset: " + offset);
+                    logger.debug("seek to data offset: {}", offset);
                 }
                 if (mMimeType == IMAGE_TYPE_ORF) {
                     if (TAG_MAKER_NOTE.equals(tag.name)) {
@@ -5826,7 +5824,7 @@ public class ExifInterface {
             // Recursively parse IFD when a IFD pointer tag appears.
             Integer nextIfdType = sExifPointerTagMap.get(tagNumber);
             if (DEBUG) {
-                logger.debug("nextIfdType: " + nextIfdType + " byteCount: " + byteCount);
+                logger.debug("nextIfdType: {} byteCount: {}", nextIfdType, byteCount);
             }
 
             if (nextIfdType != null) {
@@ -5856,7 +5854,7 @@ public class ExifInterface {
                     }
                 }
                 if (DEBUG) {
-                    logger.debug(String.format("Offset: %d, tagName: %s", offset, tag.name));
+                    logger.debug("Offset: {}, tagName: {}", offset, tag.name);
                 }
 
                 // Check if the next IFD offset
@@ -5870,8 +5868,11 @@ public class ExifInterface {
                         readImageFileDirectory(dataInputStream, nextIfdType);
                     } else {
                         if (DEBUG) {
-                            logger.debug("Skip jump into the IFD since it has already been read: "
-                                + "IfdType " + nextIfdType + " (at " + offset + ")");
+                            logger.debug(
+                                "Skip jump into the IFD since it has already been read: IfdType {} (at {})",
+                                nextIfdType,
+                                offset
+                            );
                         }
                     }
                 } else {
@@ -5921,7 +5922,7 @@ public class ExifInterface {
 
         int nextIfdOffset = dataInputStream.readInt();
         if (DEBUG) {
-            logger.debug(String.format("nextIfdOffset: %d", nextIfdOffset));
+            logger.debug("nextIfdOffset: {}", nextIfdOffset);
         }
         // Check if the next IFD offset
         // 1. Is a non-negative value, and
@@ -6047,8 +6048,7 @@ public class ExifInterface {
                 mThumbnailLength = thumbnailLength;
             }
             if (DEBUG) {
-                logger.debug("Setting thumbnail attributes with offset: " + thumbnailOffset
-                    + ", length: " + thumbnailLength);
+                logger.debug("Setting thumbnail attributes with offset: {}, length: {}", thumbnailOffset, thumbnailLength);
             }
         }
     }
@@ -6112,7 +6112,7 @@ public class ExifInterface {
                 try {
                     in.skipFully(bytesToSkip);
                 } catch (EOFException e) {
-                    logger.debug("Failed to skip " + bytesToSkip + " bytes.");
+                    logger.debug("Failed to skip {} bytes.", bytesToSkip);
                     return;
                 }
                 bytesRead += bytesToSkip;
@@ -6121,7 +6121,7 @@ public class ExifInterface {
                 try {
                     in.readFully(stripBytes);
                 } catch (EOFException e) {
-                    logger.debug("Failed to read " + stripByteCount + " bytes.");
+                    logger.debug("Failed to read {} bytes.", stripByteCount);
                     return;
                 }
                 bytesRead += stripByteCount;
@@ -6269,8 +6269,7 @@ public class ExifInterface {
                 Rational[] defaultCropSizeValue =
                     (Rational[]) defaultCropSizeAttribute.getValue(mExifByteOrder);
                 if (defaultCropSizeValue == null || defaultCropSizeValue.length != 2) {
-                    logger.warn("Invalid crop size values. cropSize="
-                        + Arrays.toString(defaultCropSizeValue));
+                    logger.warn("Invalid crop size values. cropSize={}", Arrays.toString(defaultCropSizeValue));
                     return;
                 }
                 defaultCropSizeXAttribute =
@@ -6281,8 +6280,7 @@ public class ExifInterface {
                 int[] defaultCropSizeValue =
                     (int[]) defaultCropSizeAttribute.getValue(mExifByteOrder);
                 if (defaultCropSizeValue == null || defaultCropSizeValue.length != 2) {
-                    logger.warn("Invalid crop size values. cropSize="
-                        + Arrays.toString(defaultCropSizeValue));
+                    logger.warn("Invalid crop size values. cropSize={}", Arrays.toString(defaultCropSizeValue));
                     return;
                 }
                 defaultCropSizeXAttribute =
@@ -6419,9 +6417,14 @@ public class ExifInterface {
         }
         if (DEBUG) {
             for (int i = 0; i < EXIF_TAGS.length; ++i) {
-                logger.debug(String.format("index: %d, offsets: %d, tag count: %d, data sizes: %d, "
-                        + "total size: %d", i, ifdOffsets[i], mAttributes[i].size(),
-                    ifdDataSizes[i], totalSize));
+                logger.debug(
+                    "index: {}, offsets: {}, tag count: {}, data sizes: {}, total size: {}",
+                    i,
+                    ifdOffsets[i],
+                    mAttributes[i].size(),
+                    ifdDataSizes[i],
+                    totalSize
+                );
             }
         }
 

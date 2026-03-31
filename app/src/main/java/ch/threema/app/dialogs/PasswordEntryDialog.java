@@ -16,6 +16,7 @@ import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDialog;
@@ -28,6 +29,7 @@ import com.google.android.material.textfield.TextInputLayout;
 
 import org.slf4j.Logger;
 
+import androidx.fragment.app.Fragment;
 import ch.threema.app.R;
 import ch.threema.app.ui.SimpleTextWatcher;
 import ch.threema.app.utils.DialogUtil;
@@ -40,7 +42,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
     private static final Logger logger = getThreemaLogger("PasswordEntryDialog");
     private static final String DIALOG_TAG_CONFIRM_CHECKBOX = "dtcc";
 
-    protected PasswordEntryDialogClickListener callback;
+    protected @Nullable PasswordEntryDialogClickListener callback;
     protected Activity activity;
     protected AlertDialog alertDialog;
     protected boolean isLinkify = false;
@@ -54,12 +56,20 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
         PIN_PASSPHRASE
     }
 
-    public static PasswordEntryDialog newInstance(@StringRes int title, @StringRes int message,
-                                                  @StringRes int hint,
-                                                  @StringRes int positive, @StringRes int negative,
-                                                  int minLength, int maxLength,
-                                                  int confirmHint, int inputType, int checkboxText,
-                                                  ForgotHintType showForgotPwHint) {
+    @NonNull
+    public static PasswordEntryDialog newInstance(
+        @StringRes int title,
+        @StringRes int message,
+        @StringRes int hint,
+        @StringRes int positive,
+        @StringRes int negative,
+        int minLength,
+        int maxLength,
+        int confirmHint,
+        int inputType,
+        int checkboxText,
+        ForgotHintType showForgotPwHint
+    ) {
         PasswordEntryDialog dialog = new PasswordEntryDialog();
         Bundle args = new Bundle();
         args.putInt("title", title);
@@ -78,11 +88,20 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
         return dialog;
     }
 
-    public static PasswordEntryDialog newInstance(@StringRes int title, @StringRes int message,
-                                                  @StringRes int hint,
-                                                  @StringRes int positive, @StringRes int negative,
-                                                  int minLength, int maxLength, int confirmHint,
-                                                  int inputType, int checkboxText, int checkboxConfirmText) {
+    @NonNull
+    public static PasswordEntryDialog newInstance(
+        @StringRes int title,
+        @StringRes int message,
+        @StringRes int hint,
+        @StringRes int positive,
+        @StringRes int negative,
+        int minLength,
+        int maxLength,
+        int confirmHint,
+        int inputType,
+        int checkboxText,
+        int checkboxConfirmText
+    ) {
         PasswordEntryDialog dialog = new PasswordEntryDialog();
         Bundle args = new Bundle();
         args.putInt("title", title);
@@ -102,19 +121,18 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
     }
 
     @Override
-    public void onNo(String tag, Object data) {
+    public void onNo(@Nullable String tag, @Nullable Object data) {
         checkBox.setChecked(false);
     }
 
     public interface PasswordEntryDialogClickListener {
-        void onYes(String tag, String text, boolean isChecked, Object data);
+        void onYes(@Nullable String tag, @NonNull String text, boolean isChecked, @Nullable Object data);
 
-        default void onNo(String tag) {
-
+        default void onNo(@Nullable String tag) {
         }
     }
 
@@ -123,19 +141,25 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
 
-        try {
-            callback = (PasswordEntryDialogClickListener) getTargetFragment();
-        } catch (ClassCastException e) {
-            //
+        if (callback != null) {
+            return;
         }
 
-        // called from an activity rather than a fragment
-        if (callback == null) {
-            if (!(activity instanceof PasswordEntryDialogClickListener)) {
-                throw new ClassCastException("Calling fragment must implement TextEntryDialogClickListener interface");
-            }
+        // Check if the target fragment implements our callback
+        final @Nullable Fragment targetFragment = getTargetFragment();
+        if (targetFragment instanceof PasswordEntryDialogClickListener) {
+            callback = (PasswordEntryDialogClickListener) targetFragment;
+            return;
+        }
+
+        // Check if the activity implements our callback
+        if (activity instanceof PasswordEntryDialogClickListener) {
             callback = (PasswordEntryDialogClickListener) activity;
         }
+    }
+
+    public void setCallback(@Nullable PasswordEntryDialogClickListener passwordEntryDialogClickListener) {
+        this.callback = passwordEntryDialogClickListener;
     }
 
     @Override
@@ -263,7 +287,7 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
             }
         }
 
-        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getActivity());
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireActivity());
 
         if (title != 0) {
             builder.setTitle(title);
@@ -271,14 +295,31 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 
         builder.setView(dialogView);
 
-        builder.setPositiveButton(getString(positive), (dialog, whichButton) -> {
-            if (checkboxText != 0) {
-                callback.onYes(tag, editText1.getText().toString(), checkBox.isChecked(), object);
-            } else {
-                callback.onYes(tag, editText1.getText().toString(), false, object);
+        builder.setPositiveButton(
+            getString(positive),
+            (dialog, whichButton) -> {
+                if (callback == null) {
+                    return;
+                }
+                final @Nullable Editable editable = editText1.getText();
+                if (editable == null) {
+                    return;
+                }
+                if (checkboxText != 0) {
+                    callback.onYes(tag, editable.toString(), checkBox.isChecked(), object);
+                } else {
+                    callback.onYes(tag, editable.toString(), false, object);
+                }
             }
-        });
-        builder.setNegativeButton(getString(negative), (dialog, whichButton) -> callback.onNo(tag));
+        );
+        builder.setNegativeButton(
+            getString(negative),
+            (dialog, whichButton) -> {
+                if (callback != null) {
+                    callback.onNo(tag);
+                }
+            }
+        );
 
         builder.setBackgroundInsetTop(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
         builder.setBackgroundInsetBottom(getResources().getDimensionPixelSize(R.dimen.dialog_inset_top_bottom));
@@ -293,7 +334,9 @@ public class PasswordEntryDialog extends ThreemaDialogFragment implements Generi
 
     @Override
     public void onCancel(@NonNull DialogInterface dialogInterface) {
-        callback.onNo(this.getTag());
+        if (callback != null) {
+            callback.onNo(this.getTag());
+        }
     }
 
     @Override

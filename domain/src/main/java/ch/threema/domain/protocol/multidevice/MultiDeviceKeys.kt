@@ -4,6 +4,7 @@ import ch.threema.base.ThreemaException
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.Nonce
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.common.emptyByteArray
 import ch.threema.common.generateRandomBytes
 import ch.threema.common.secureRandom
 import ch.threema.domain.protocol.connection.data.D2dMessage
@@ -42,7 +43,7 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
                     key = key,
                     personal = BLAKE_2B_PERSONAL.encodeToByteArray(),
                     salt = salt.encodeToByteArray(),
-                    data = byteArrayOf(),
+                    data = emptyByteArray(),
                 )
             } catch (cryptoException: CryptoException.InvalidParameter) {
                 logger.error("Failed to compute blake2b hash", cryptoException)

@@ -369,8 +369,6 @@ public class MarkupParser {
 
     /**
      * Add text markup to given SpannableStringBuilder
-     *
-     * @param builder
      */
     public void markify(SpannableStringBuilder builder) {
         try {

@@ -1,10 +1,7 @@
 package ch.threema.app.systemupdates.updates
 
-import android.content.Context
-import ch.threema.app.R
 import ch.threema.app.stores.EncryptedPreferenceStore
 import ch.threema.app.stores.PreferenceStore
-import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 /**
@@ -12,16 +9,13 @@ import org.koin.core.component.inject
  * removed from the plain text store. This migrate-upon-read logic no longer exists, therefore now this system update exists
  * to ensure that users, who may not have had their credentials migrated yet, won't lose them.
  */
-class SystemUpdateToVersion118 : SystemUpdate, KoinComponent {
+class SystemUpdateToVersion118 : SystemUpdate {
 
-    private val appContext: Context by inject()
     private val preferenceStore: PreferenceStore by inject()
     private val encryptedPreferenceStore: EncryptedPreferenceStore by inject()
 
     override fun run() {
-        KEY_IDS.forEach { keyId ->
-            migrate(appContext.getString(keyId))
-        }
+        KEYS.forEach(::migrate)
     }
 
     private fun migrate(key: String) {
@@ -34,17 +28,15 @@ class SystemUpdateToVersion118 : SystemUpdate, KoinComponent {
         preferenceStore.remove(key)
     }
 
-    override fun getVersion() = VERSION
+    override val version = 118
 
     override fun getDescription() = "ensure credentials are encrypted"
 
     companion object {
-        const val VERSION = 118
-
-        private val KEY_IDS = arrayOf(
-            R.string.preferences__license_username,
-            R.string.preferences__license_password,
-            R.string.preferences__onprem_server,
+        private val KEYS = arrayOf(
+            "pref_license_username",
+            "pref_license_password",
+            "pref_onprem_server",
         )
     }
 }

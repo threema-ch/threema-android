@@ -6,6 +6,7 @@ import ch.threema.common.toCryptographicByteArray
 import ch.threema.domain.libthreema.LibthreemaHttpClient
 import ch.threema.domain.models.UserCredentials
 import ch.threema.domain.models.WorkClientInfo
+import ch.threema.domain.types.Identity
 import ch.threema.libthreema.HttpsMethod
 import ch.threema.libthreema.HttpsRequest
 import ch.threema.libthreema.HttpsResponse
@@ -55,8 +56,7 @@ class RemoteSecretClientTest {
         }
         val client = RemoteSecretClient(
             clientInfo = CLIENT_INFO,
-            httpClientWithOnPremCertPinning = httpClientMock,
-            httpClientWithoutOnPremCertPinning = httpClientMock,
+            httpClient = httpClientMock,
         )
         val monitor = client.createRemoteSecretLoop(
             baseUrl = WORK_URL,
@@ -83,7 +83,7 @@ class RemoteSecretClientTest {
                 if (request.url == "${WORK_URL}api-client/v1/remote-secret" && request.method == HttpsMethod.PUT) {
                     assertTrue(USERNAME in body)
                     assertTrue(PASSWORD in body)
-                    assertTrue(IDENTITY in body)
+                    assertTrue(IDENTITY.value in body)
                     HttpsResult.Response(
                         v1 = HttpsResponse(
                             status = 200.toUShort(),
@@ -107,8 +107,7 @@ class RemoteSecretClientTest {
         }
         val client = RemoteSecretClient(
             clientInfo = CLIENT_INFO,
-            httpClientWithOnPremCertPinning = httpClientMock,
-            httpClientWithoutOnPremCertPinning = mockk(),
+            httpClient = httpClientMock,
         )
 
         val result = client.createRemoteSecret(
@@ -132,8 +131,7 @@ class RemoteSecretClientTest {
         }
         val client = RemoteSecretClient(
             clientInfo = CLIENT_INFO,
-            httpClientWithOnPremCertPinning = httpClientMock,
-            httpClientWithoutOnPremCertPinning = mockk(),
+            httpClient = httpClientMock,
         )
 
         assertFailsWith<InvalidCredentialsException> {
@@ -152,7 +150,7 @@ class RemoteSecretClientTest {
                 if (request.url == "${WORK_URL}api-client/v1/remote-secret" && request.method == HttpsMethod.DELETE) {
                     assertTrue(USERNAME in body)
                     assertTrue(PASSWORD in body)
-                    assertTrue(IDENTITY in body)
+                    assertTrue(IDENTITY.value in body)
                     HttpsResult.Response(
                         v1 = HttpsResponse(
                             status = 200.toUShort(),
@@ -171,8 +169,7 @@ class RemoteSecretClientTest {
         }
         val client = RemoteSecretClient(
             clientInfo = CLIENT_INFO,
-            httpClientWithOnPremCertPinning = httpClientMock,
-            httpClientWithoutOnPremCertPinning = mockk(),
+            httpClient = httpClientMock,
         )
 
         client.deleteRemoteSecret(
@@ -189,7 +186,7 @@ class RemoteSecretClientTest {
             osVersion = "999",
             workFlavor = WorkClientInfo.WorkFlavor.ON_PREM,
         )
-        private const val IDENTITY = "01234567"
+        private val IDENTITY = Identity("01234567")
         private const val USERNAME = "Testy McTestface"
         private const val PASSWORD = "Password1"
         private val CLIENT_PARAMETERS = RemoteSecretClientParameters(

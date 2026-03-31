@@ -2,13 +2,13 @@ package ch.threema.app.workers
 
 import android.content.Context
 import androidx.annotation.WorkerThread
-import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import ch.threema.android.buildPeriodicWorkRequest
+import ch.threema.android.setConstraints
 import ch.threema.app.di.awaitAppFullyReady
 import ch.threema.app.services.ApiService
 import ch.threema.app.services.ContactService
@@ -27,9 +27,8 @@ import ch.threema.common.plus
 import ch.threema.data.models.ContactModel
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.io.IOException
-import java.util.concurrent.TimeUnit
 import kotlin.jvm.Throws
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
@@ -169,7 +168,7 @@ class GatewayProfilePicturesWorker(
         }
     }
 
-    private fun createRequest(identity: Identity) =
+    private fun createRequest(identity: IdentityString) =
         buildRequest {
             get()
             url(apiService.getAvatarURL(identity))
@@ -183,16 +182,13 @@ class GatewayProfilePicturesWorker(
         private val EXPIRY_TOLERANCE = REFRESH_INTERVAL / 2
 
         fun schedulePeriodicSync(context: Context) {
-            val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build()
-
-            val periodicWorkRequest = PeriodicWorkRequestBuilder<GatewayProfilePicturesWorker>(
-                repeatInterval = REFRESH_INTERVAL.inWholeHours,
-                repeatIntervalTimeUnit = TimeUnit.HOURS,
-            )
-                .setConstraints(constraints)
-                .build()
+            val periodicWorkRequest = buildPeriodicWorkRequest<GatewayProfilePicturesWorker>(
+                repeatInterval = REFRESH_INTERVAL,
+            ) {
+                setConstraints {
+                    setRequiredNetworkType(NetworkType.CONNECTED)
+                }
+            }
 
             WorkManager
                 .getInstance(context)

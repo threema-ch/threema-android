@@ -2,7 +2,6 @@ package ch.threema.app.activities.referral
 
 import ch.threema.app.framework.BaseViewModel
 import ch.threema.app.stores.IdentityProvider
-import ch.threema.domain.types.Identity
 
 class ReferralViewModel(
     private val identityProvider: IdentityProvider,
@@ -11,7 +10,7 @@ class ReferralViewModel(
     override fun initialize() = runInitialization { }
 
     fun onClickShareInvitationLink() = runAction {
-        val ownIdentity: Identity? = identityProvider.getIdentity()
+        val ownIdentity = identityProvider.getIdentity()
         emitEvent(
             if (ownIdentity != null) {
                 ReferralScreenEvent.ShareInvitationLink(ownIdentity)

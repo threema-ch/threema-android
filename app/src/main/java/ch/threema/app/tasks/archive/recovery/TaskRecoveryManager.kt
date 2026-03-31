@@ -1,6 +1,5 @@
 package ch.threema.app.tasks.archive.recovery
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 
@@ -12,5 +11,5 @@ fun interface TaskRecoveryManager {
     /**
      * Try to recover an old encoding of a task that could not be decoded. If this succeeds, a task is returned. If it still fails, null is returned.
      */
-    fun recoverTask(encodedTask: String, serviceManager: ServiceManager): Task<*, TaskCodec>?
+    fun recoverTask(encodedTask: String): Task<*, TaskCodec>?
 }

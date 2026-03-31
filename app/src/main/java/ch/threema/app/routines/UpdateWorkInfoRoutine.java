@@ -2,19 +2,19 @@ package ch.threema.app.routines;
 
 import android.content.Context;
 
+import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.restrictions.AppRestrictionService;
+import ch.threema.app.restrictions.AppRestrictions;
 import ch.threema.app.services.DeviceService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.services.license.LicenseServiceUser;
 import ch.threema.domain.models.UserCredentials;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.api.APIConnector;
@@ -35,11 +35,9 @@ public class UpdateWorkInfoRoutine implements Runnable {
     @NonNull
     private final LicenseService<?> licenseService;
     @NonNull
-    private final Context context;
+    private final AppRestrictions appRestrictions;
 
     public UpdateWorkInfoRoutine(
-        @NonNull
-        Context context,
         @NonNull
         APIConnector apiConnector,
         @NonNull
@@ -47,13 +45,15 @@ public class UpdateWorkInfoRoutine implements Runnable {
         @Nullable
         DeviceService deviceService,
         @NonNull
-        LicenseService<?> licenseService
+        LicenseService<?> licenseService,
+        @NonNull
+        AppRestrictions appRestrictions
     ) {
-        this.context = context;
         this.apiConnector = apiConnector;
         this.identityStore = identityStore;
         this.deviceService = deviceService;
         this.licenseService = licenseService;
+        this.appRestrictions = appRestrictions;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class UpdateWorkInfoRoutine implements Runnable {
             logger.info("Update work info");
 
             UserCredentials userCredentials = ((LicenseServiceUser) this.licenseService).loadCredentials();
-            boolean hasIdentity = identityStore.getIdentity() != null;
+            boolean hasIdentity = identityStore.getIdentityString() != null;
 
             if (userCredentials == null && hasIdentity) {
                 // In case we have no credentials but an identity, we should log an error and abort
@@ -87,30 +87,12 @@ public class UpdateWorkInfoRoutine implements Runnable {
             }
 
             try {
-                String mdmFirstName = AppRestrictionUtil.getStringRestriction(this.context.getString(
-                    R.string.restriction__firstname
-                ));
-
-                String mdmLastName = AppRestrictionUtil.getStringRestriction(this.context.getString(
-                    R.string.restriction__lastname
-                ));
-
-                String mdmJobTitle = AppRestrictionUtil.getStringRestriction(this.context.getString(
-                    R.string.restriction__job_title
-                ));
-
-                String mdmDepartment = AppRestrictionUtil.getStringRestriction(this.context.getString(
-                    R.string.restriction__department
-                ));
-
-                String mdmCSI = AppRestrictionUtil.getStringRestriction(this.context.getString(
-                    R.string.restriction__csi
-                ));
-
-                String mdmCategory = AppRestrictionUtil.getStringRestriction(this.context.getString(
-                    R.string.restriction__category
-                ));
-
+                String mdmFirstName = appRestrictions.getFirstName();
+                String mdmLastName = appRestrictions.getLastName();
+                String mdmJobTitle = appRestrictions.getJobTitle();
+                String mdmDepartment = appRestrictions.getDepartment();
+                String mdmCSI = appRestrictions.getCsi();
+                String mdmCategory = appRestrictions.getCategory();
                 if (this.apiConnector.updateWorkInfo(
                     userCredentials.username,
                     userCredentials.password,
@@ -160,11 +142,11 @@ public class UpdateWorkInfoRoutine implements Runnable {
             return null;
         }
         return new UpdateWorkInfoRoutine(
-            serviceManager.getContext(),
             serviceManager.getAPIConnector(),
             serviceManager.getIdentityStore(),
             serviceManager.getDeviceService(),
-            serviceManager.getLicenseService()
+            serviceManager.getLicenseService(),
+            KoinJavaComponent.get(AppRestrictions.class)
         );
     }
 }

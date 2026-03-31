@@ -8,8 +8,9 @@ import org.slf4j.Logger;
 import java.io.StringReader;
 import java.io.StringWriter;
 
-import ch.threema.app.utils.LogUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import androidx.annotation.NonNull;
 import ch.threema.storage.models.data.MessageDataInterface;
 
 public class BallotDataModel implements MessageDataInterface {
@@ -99,7 +100,8 @@ public class BallotDataModel implements MessageDataInterface {
     /**
      * Do not use this in new code. It only exists to handle places where a [BallotDataModel] needs to be returned and `null` is not allowed.
      */
-    @Deprecated()
+    @NonNull
+    @Deprecated
     public static BallotDataModel createEmpty() {
         return new BallotDataModel();
     }

@@ -20,11 +20,15 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.app.ui.models.MessageViewElement;
 import ch.threema.base.utils.Utils;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
+import ch.threema.storage.models.group.GroupMessageModel;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.MessageContentsType;
 
@@ -62,12 +66,20 @@ public class QuoteUtil {
         @NonNull Context context,
         @NonNull MessageService messageService,
         @NonNull UserService userService,
-        @NonNull FileService fileService
+        @NonNull FileService fileService,
+        @NonNull ContactNameFormat contactNameFormat
     ) {
         if (messageModel.getQuotedMessageId() != null) {
             return extractQuoteV2(
-                messageModel, messageReceiver, includeMessageModel, thumbnailCache,
-                context, messageService, userService, fileService
+                messageModel,
+                messageReceiver,
+                includeMessageModel,
+                thumbnailCache,
+                context,
+                messageService,
+                userService,
+                fileService,
+                contactNameFormat
             );
         } else {
             String text = messageModel.getBody();
@@ -122,7 +134,8 @@ public class QuoteUtil {
         @NonNull Context context,
         @NonNull MessageService messageService,
         @NonNull UserService userService,
-        @NonNull FileService fileService
+        @NonNull FileService fileService,
+        @NonNull ContactNameFormat contactNameFormat
     ) {
         final String quotedMessageId = messageModel.getQuotedMessageId();
         final String bodyText = messageModel.getBody();
@@ -149,7 +162,7 @@ public class QuoteUtil {
             }
 
             if (receiverMatch) {
-                final MessageUtil.MessageViewElement viewElement = MessageUtil.getViewElement(context, quotedMessageModel);
+                final @NonNull MessageViewElement viewElement = MessageUtil.getViewElement(context, quotedMessageModel, contactNameFormat);
                 final String identity = quotedMessageModel.isOutbox() ? userService.getIdentity() : quotedMessageModel.getIdentity();
                 final @NonNull String quotedText = TestUtil.isEmptyOrNull(viewElement.text) ? (viewElement.placeholder != null ? viewElement.placeholder : "") : viewElement.text;
                 final @DrawableRes Integer icon = viewElement.icon;
@@ -263,24 +276,37 @@ public class QuoteUtil {
      * get body text of a message containing a quote
      * this is safe to call on message models without a quote
      *
-     * @param messageModel
      * @param substituteAndTruncate if true, result is truncated at MAX_QUOTE_CONTENTS_LENGTH and ellipsis is added.
      *                              if no body text is present, alternative text sources such as captions or file names are considered
      * @return body text
      */
     @Nullable
-    public static String getMessageBody(AbstractMessageModel messageModel, boolean substituteAndTruncate) {
+    public static String getMessageBody(
+        @Nullable MessageType messageType,
+        @Nullable String messageBody,
+        @Nullable String messageCaption,
+        @Nullable Boolean isOutbox,
+        boolean substituteAndTruncate,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
         String text;
-        if (messageModel.getType() == MessageType.TEXT) {
-            text = messageModel.getBody();
+        if (messageType == MessageType.TEXT) {
+            text = messageBody;
         } else {
-            text = messageModel.getCaption();
+            text = messageCaption;
         }
 
         if (substituteAndTruncate && TestUtil.isEmptyOrNull(text)) {
-            text = messageModel.getCaption();
+            text = messageCaption;
             if (TestUtil.isEmptyOrNull(text)) {
-                MessageUtil.MessageViewElement viewElement = MessageUtil.getViewElement(ThreemaApplication.getAppContext(), messageModel);
+                MessageViewElement viewElement = MessageUtil.getViewElement(
+                    ThreemaApplication.getAppContext(),
+                    messageType,
+                    messageBody,
+                    messageCaption,
+                    isOutbox,
+                    contactNameFormat
+                );
                 text = viewElement.text;
                 if (text == null) {
                     text = viewElement.placeholder;
@@ -290,7 +316,7 @@ public class QuoteUtil {
 
         if (text != null) {
             if (QuoteUtil.isQuoteV1(text)) {
-                @Nullable var body = messageModel.getBody();
+                @Nullable var body = messageBody;
                 if (body != null) {
                     Matcher match = bodyMatchPattern.matcher(body);
                     try {
@@ -325,7 +351,6 @@ public class QuoteUtil {
     /**
      * Check if the supplied message can be quoted
      *
-     * @param messageModel
      * @return true if the message can be quoted, false otherwise
      */
     public static boolean isQuoteable(@NonNull AbstractMessageModel messageModel) {
@@ -353,15 +378,9 @@ public class QuoteUtil {
 
     /**
      * Append quoting to text
-     *
-     * @param text
-     * @param quoteIdentity
-     * @param quoteText
-     * @return
      */
     public static String quote(String text, @Nullable String quoteIdentity, @Nullable String quoteText, @NonNull AbstractMessageModel messageModel) {
-        //do not quote if identity or quoting text is empty or null
-        if (TestUtil.isEmptyOrNull(quoteIdentity, quoteText)) {
+        if (quoteIdentity == null || quoteIdentity.isEmpty() || quoteText == null || quoteText.isEmpty()) {
             return text;
         }
 

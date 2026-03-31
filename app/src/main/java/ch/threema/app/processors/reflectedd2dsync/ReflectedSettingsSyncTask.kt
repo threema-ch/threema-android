@@ -1,6 +1,6 @@
 package ch.threema.app.processors.reflectedd2dsync
 
-import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.SynchronizedSettingsService
 import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ExcludedSyncIdentitiesService
 import ch.threema.base.utils.getThreemaLogger
@@ -12,7 +12,7 @@ private val logger = getThreemaLogger("ReflectedSettingsSyncTask")
 
 class ReflectedSettingsSyncTask(
     private val settingsSync: SettingsSync,
-    private val preferenceService: PreferenceService,
+    private val synchronizedSettingsService: SynchronizedSettingsService,
     private val blockedIdentitiesService: BlockedIdentitiesService,
     private val excludedSyncIdentitiesService: ExcludedSyncIdentitiesService,
 ) {
@@ -51,28 +51,28 @@ class ReflectedSettingsSyncTask(
         if (settings.hasContactSyncPolicy()) {
             logger.info("Applying contact sync policy")
             // Note that this only enables the setting. The actual contact synchronisation may not be activated by this.
-            preferenceService.contactSyncPolicySetting.setFromSync(settings.contactSyncPolicy)
+            synchronizedSettingsService.getContactSyncPolicySetting().setFromSync(settings.contactSyncPolicy)
         }
     }
 
     private fun applyUnknownContactPolicy(settings: Settings) {
         if (settings.hasUnknownContactPolicy()) {
             logger.info("Applying updated unknown contact policy")
-            preferenceService.unknownContactPolicySetting.setFromSync(settings.unknownContactPolicy)
+            synchronizedSettingsService.getUnknownContactPolicySetting().setFromSync(settings.unknownContactPolicy)
         }
     }
 
     private fun applyReadReceiptPolicy(settings: Settings) {
         if (settings.hasReadReceiptPolicy()) {
             logger.info("Applying read receipt policy")
-            preferenceService.readReceiptPolicySetting.setFromSync(settings.readReceiptPolicy)
+            synchronizedSettingsService.getReadReceiptPolicySetting().setFromSync(settings.readReceiptPolicy)
         }
     }
 
     private fun applyTypingIndicatorPolicy(settings: Settings) {
         if (settings.hasTypingIndicatorPolicy()) {
             logger.info("Applying typing indicator policy")
-            preferenceService.typingIndicatorPolicySetting.setFromSync(settings.typingIndicatorPolicy)
+            synchronizedSettingsService.getTypingIndicatorPolicySetting().setFromSync(settings.typingIndicatorPolicy)
         }
     }
 
@@ -80,21 +80,21 @@ class ReflectedSettingsSyncTask(
         if (settings.hasO2OCallPolicy()) {
             logger.info("Applying 1:1 call policy")
             // Note that this only persists the preference. This does not stop a currently running call.
-            preferenceService.o2oCallPolicySetting.setFromSync(settings.o2OCallPolicy)
+            synchronizedSettingsService.getO2oCallPolicySetting().setFromSync(settings.o2OCallPolicy)
         }
     }
 
     private fun applyO2oCallConnectionPolicy(settings: Settings) {
         if (settings.hasO2OCallConnectionPolicy()) {
             logger.info("Applying 1:1 call connection policy")
-            preferenceService.o2oCallConnectionPolicySetting.setFromSync(settings.o2OCallConnectionPolicy)
+            synchronizedSettingsService.getO2oCallConnectionPolicySetting().setFromSync(settings.o2OCallConnectionPolicy)
         }
     }
 
     private fun applyO2oCallVideoPolicy(settings: Settings) {
         if (settings.hasO2OCallVideoPolicy()) {
             logger.info("Applying 1:1 call video policy")
-            preferenceService.o2oCallVideoPolicySetting.setFromSync(settings.o2OCallVideoPolicy)
+            synchronizedSettingsService.getO2oCallVideoPolicySetting().setFromSync(settings.o2OCallVideoPolicy)
         }
     }
 
@@ -102,21 +102,21 @@ class ReflectedSettingsSyncTask(
         if (settings.hasGroupCallPolicy()) {
             logger.info("Applying group call policy")
             // Note that this only persists the preference. This does not stop a currently running group call.
-            preferenceService.groupCallPolicySetting.setFromSync(settings.groupCallPolicy)
+            synchronizedSettingsService.getGroupCallPolicySetting().setFromSync(settings.groupCallPolicy)
         }
     }
 
     private fun applyScreenshotPolicy(settings: Settings) {
         if (settings.hasScreenshotPolicy()) {
             logger.info("Applying screenshot policy")
-            preferenceService.screenshotPolicySetting.setFromSync(settings.screenshotPolicy)
+            synchronizedSettingsService.getScreenshotPolicySetting().setFromSync(settings.screenshotPolicy)
         }
     }
 
     private fun applyKeyboardDataCollectionPolicy(settings: Settings) {
         if (settings.hasKeyboardDataCollectionPolicy()) {
             logger.info("Applying keyboard data collection policy")
-            preferenceService.keyboardDataCollectionPolicySetting.setFromSync(settings.keyboardDataCollectionPolicy)
+            synchronizedSettingsService.getKeyboardDataCollectionPolicySetting().setFromSync(settings.keyboardDataCollectionPolicy)
         }
     }
 

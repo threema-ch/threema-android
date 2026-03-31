@@ -144,7 +144,7 @@ public class ComposeEditText extends EmojiEditText implements MentionSelectorPop
         this.setImeOptions(getImeOptions() | (EditorInfo.IME_ACTION_SEND & ~EditorInfo.IME_FLAG_NO_FULLSCREEN));
         this.setRawInputType(preferenceService.isEnterToSend() ?
             InputType.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES | EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT |
-                (preferenceService.getEmojiStyle() == PreferenceService.EmojiStyle_ANDROID ? EditorInfo.TYPE_TEXT_VARIATION_SHORT_MESSAGE : 0) :
+                (preferenceService.getEmojiStyle() == PreferenceService.EMOJI_STYLE_ANDROID ? EditorInfo.TYPE_TEXT_VARIATION_SHORT_MESSAGE : 0) :
             InputType.TYPE_CLASS_TEXT | EditorInfo.TYPE_TEXT_FLAG_CAP_SENTENCES | EditorInfo.TYPE_TEXT_FLAG_AUTO_CORRECT | EditorInfo.TYPE_TEXT_FLAG_MULTI_LINE);
 
         setFilters(appendMentionFilter(this.getFilters()));
@@ -158,7 +158,6 @@ public class ComposeEditText extends EmojiEditText implements MentionSelectorPop
     /**
      * Add our MentionFilter as the first item to the array of existing InputFilters
      *
-     * @param originalFilters
      * @return Array of filters
      */
     private InputFilter[] appendMentionFilter(@Nullable InputFilter[] originalFilters) {
@@ -177,8 +176,6 @@ public class ComposeEditText extends EmojiEditText implements MentionSelectorPop
 
     /**
      * Add mention at the current cursor position
-     *
-     * @param identity
      */
     public void addMention(String identity) {
         final int start = getSelectionStart();

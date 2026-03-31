@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 
@@ -28,7 +29,8 @@ import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.utils.BitmapUtil;
 import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.TestUtil;
+import ch.threema.storage.models.AbstractMessageModel;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -61,7 +63,7 @@ public class ImageViewFragment extends MediaViewFragment {
 
     @Override
     protected void showThumbnail(@NonNull Drawable thumbnail) {
-        if (TestUtil.required(imageViewReference.get(), thumbnail)) {
+        if (imageViewReference.get() != null) {
             previewViewReference.get().setVisibility(View.VISIBLE);
             previewViewReference.get().setImageDrawable(thumbnail);
             imageViewReference.get().setVisibility(View.INVISIBLE);
@@ -73,23 +75,22 @@ public class ImageViewFragment extends MediaViewFragment {
     }
 
     @Override
-    protected void created(Bundle savedInstanceState) {
+    protected void created(@Nullable Bundle savedInstanceState, @NonNull ViewGroup rootView) {
         SubsamplingScaleImageView.setPreferredBitmapConfig(Bitmap.Config.ARGB_8888);
 
-        if (rootViewReference != null && rootViewReference.get() != null) {
-            imageViewReference = new WeakReference<>(rootViewReference.get().findViewById(R.id.subsampling_image));
-            previewViewReference = new WeakReference<>(rootViewReference.get().findViewById(R.id.preview_image));
+        imageViewReference = new WeakReference<>(rootView.findViewById(R.id.subsampling_image));
+        previewViewReference = new WeakReference<>(rootView.findViewById(R.id.preview_image));
 
-            imageViewReference.get().setMaxScale(8);
-            imageViewReference.get().setDoubleTapZoomStyle(SubsamplingScaleImageView.ZOOM_FOCUS_CENTER);
-            imageViewReference.get().setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    showUi(uiVisibilityStatus);
-                    uiVisibilityStatus = !uiVisibilityStatus;
-                }
-            });
-            imageViewReference.get().setOnImageEventListener(new SubsamplingScaleImageView.OnImageEventListener() {
+        imageViewReference.get().setMaxScale(8);
+        imageViewReference.get().setDoubleTapZoomStyle(SubsamplingScaleImageView.ZOOM_FOCUS_CENTER);
+        imageViewReference.get().setOnClickListener(
+            view -> {
+                showUi(uiVisibilityStatus);
+                uiVisibilityStatus = !uiVisibilityStatus;
+            }
+        );
+        imageViewReference.get().setOnImageEventListener(
+            new SubsamplingScaleImageView.OnImageEventListener() {
                 @Override
                 public void onReady() {
                 }
@@ -114,8 +115,8 @@ public class ImageViewFragment extends MediaViewFragment {
                 @Override
                 public void onPreviewReleased() {
                 }
-            });
-        }
+            }
+        );
     }
 
     @Override
@@ -142,20 +143,22 @@ public class ImageViewFragment extends MediaViewFragment {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-
-        if (this.rootViewReference != null && this.rootViewReference.get() != null) {
-            this.rootViewReference.get().getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+        if (getRootViewReference() == null) {
+            return;
+        }
+        getRootViewReference().getViewTreeObserver().addOnGlobalLayoutListener(
+            new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
-                    if (rootViewReference != null && rootViewReference.get() != null) {
-                        rootViewReference.get().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+                    if (getRootViewReference() != null) {
+                        getRootViewReference().getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         if (imageViewReference != null && imageViewReference.get() != null) {
                             imageViewReference.get().resetScaleAndCenter();
                         }
                     }
                 }
-            });
-        }
+            }
+        );
     }
 
     /**
@@ -189,7 +192,7 @@ public class ImageViewFragment extends MediaViewFragment {
             imageViewReference.get().setVisibility(View.VISIBLE);
 
             BitmapUtil.ExifOrientation exifOrientation = BitmapUtil.getExifOrientation(requireContext(), Uri.fromFile(file));
-            logger.debug("Orientation = " + exifOrientation);
+            logger.debug("Orientation = {}", exifOrientation);
             int rotation = (int) exifOrientation.getRotation();
 
             if (exifOrientation.getFlip() != BitmapUtil.FLIP_NONE) {

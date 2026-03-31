@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import ch.threema.app.R;
 import ch.threema.app.glide.AvatarOptions;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.GroupService;
 import ch.threema.app.services.UserService;
@@ -26,6 +27,7 @@ public class MentionSelectorAdapter extends AbstractRecyclerAdapter<ContactModel
     private final UserService userService;
     private final ContactService contactService;
     private final GroupService groupService;
+    private final PreferenceService preferenceService;
     private final GroupModel groupModel;
     private OnClickListener onClickListener;
     private final Context context;
@@ -44,11 +46,19 @@ public class MentionSelectorAdapter extends AbstractRecyclerAdapter<ContactModel
         }
     }
 
-    public MentionSelectorAdapter(Context context, UserService userService, ContactService contactService, GroupService groupService, GroupModel groupModel) {
+    public MentionSelectorAdapter(
+        Context context,
+        UserService userService,
+        ContactService contactService,
+        GroupService groupService,
+        PreferenceService preferenceService,
+        GroupModel groupModel
+    ) {
         this.context = context;
         this.userService = userService;
         this.contactService = contactService;
         this.groupService = groupService;
+        this.preferenceService = preferenceService;
         this.groupModel = groupModel;
     }
 
@@ -66,7 +76,7 @@ public class MentionSelectorAdapter extends AbstractRecyclerAdapter<ContactModel
         final ContactModel contactModel = getEntity(position);
         Bitmap avatar;
 
-        final String name = NameUtil.getQuoteName(contactModel, this.userService);
+        final String name = NameUtil.getQuoteName(contactModel, this.userService, preferenceService.getContactNameFormat());
         itemHolder.nameView.setText(name);
 
         if (contactModel.getIdentity().equals(ContactService.ALL_USERS_PLACEHOLDER_ID)) {

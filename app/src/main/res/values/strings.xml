@@ -5,7 +5,6 @@
     <string name="title_section1">Chats</string>
     <string name="title_compose_message">Start chat</string>
     <string name="title_choose_recipient">Select Recipients</string>
-    <string name="title_keyfingerprint">Key Fingerprint</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="title_mythreemaid">My ${app_name_short} ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -63,9 +62,6 @@
     <string name="prefs_notification_light">Notification light</string>
     <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_notification_light">Use color LED (if available) for incoming messages</string>
-    <string name="prefs_sum_light">White</string>
-    <string name="prefs_title_wallpaper">Select wallpaper</string>
-    <string name="prefs_sum_wallpaper">Select Image for background</string>
     <string name="prefs_title_wallpaper_switch">Wallpaper</string>
     <string name="prefs_title_enter">Enter to send</string>
     <string name="prefs_sum_enter_on">Enter key immediately sends message</string>
@@ -127,11 +123,14 @@
     <string name="scan_successful">The ID has been successfully scanned and the contact is now verified.</string>
     <string name="scan_duplicate">This ID has already been scanned and verified.</string>
     <string name="linked_email">Email</string>
+    <!-- Pattern for displaying the user's email address on the My Profile screen. %1$s is a placeholder for the email address, %2$s is a placeholder for the verification state (e.g. "pending") -->
+    <string name="linked_email_pattern">%1$s (%2$s)</string>
     <string name="linked_mobile">Mobile Number</string>
+    <!-- Pattern for displaying the user's mobile phone number on the My Profile screen. %1$s is a placeholder for the phone number, %2$s is a placeholder for the verification state (e.g. "pending") -->
+    <string name="linked_mobile_pattern">%1$s (%2$s)</string>
     <string name="public_nickname">Nickname</string>
     <string name="share_via">Share via…</string>
     <string name="share_subject">%s conversation</string>
-    <string name="message_delete_undo">Undo</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="mobile_already_linked">Your ${app_name_short} ID is already linked to this mobile number</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -144,7 +143,6 @@
     <string name="image_placeholder">Image</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="invalid_threema_id">Invalid ${app_name_short} ID</string>
-    <string name="contact_already_exists">Contact already exists</string>
     <string name="close">Close</string>
     <string name="creating_contact">Adding new contact</string>
     <string name="creating_contact_successful">Contact successfully added</string>
@@ -160,7 +158,6 @@
     <string name="verify_failed_summary">Verifying your mobile number failed. Please make sure the number you entered is
         correct and you are connected to your mobile network before trying again.</string>
     <string name="verify_failed_not_linked">Verifying your mobile number failed. The verification process has been aborted.</string>
-    <string name="check_incoming_sms">Checking for incoming SMS</string>
     <string name="backup_title">Export ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_sum">Export your ${app_name_short} ID</string>
@@ -240,7 +237,6 @@
     <string name="acknowledge">Agree</string>
     <string name="decline">Disagree</string>
     <string name="forward_message">Forward message</string>
-    <string name="file_is_not_a_image">Selected file is not an image</string>
     <string name="connection_error">Connection error, please try again later.</string>
     <string name="me_myself_and_i">Me</string>
     <string name="really_forward">Forward to “%1$s”?</string>
@@ -248,10 +244,8 @@
     <string name="ringtone_none">Silent</string>
     <string name="no_camera_installed">No usable camera available</string>
     <string name="save_message_action">Save</string>
-    <string name="file_is_not_a_video">Selected file is not a video</string>
     <string name="masterkey_is_unlocked">Master key is unlocked</string>
     <string name="file_too_large">File is larger than the maximum of %1$d MB</string>
-    <string name="deleting_thread">Deleting chat</string>
     <string name="enter_serial_body"><![CDATA[Please enter your shop license key. You can <a href="https://shop.threema.ch/">purchase</a> a license or <a href="https://shop.threema.ch/retrieve_keys">retrieve</a> your keys in case you already purchased a license previously.]]></string>
     <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_enter_serial_body">Please enter the ${app_name_short} credentials provided by your company.</string>
@@ -259,8 +253,6 @@
     <string name="enter_serial_title">Unlock ${app_name}</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="serial_required_want_exit">The license key is invalid. Would you like to try again or quit ${app_name}?</string>
-    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
-    <string name="work_serial_required_want_exit">License is invalid. Would you like to try again or quit ${app_name}?</string>
     <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Checking license</string>
     <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
@@ -273,7 +265,6 @@
     <string name="not_now">Remind me later</string>
     <string name="preparing_messages">Preparing messages</string>
     <string name="select_emoji">emojis</string>
-    <string name="search_contact">Search contact</string>
     <string name="push_reset_title">Push token reset</string>
     <string name="push_reset_text">The push token has been reset</string>
     <string name="emoji_recent">Recent</string>
@@ -319,7 +310,6 @@
     <string name="set_pin_again_summary">Enter PIN again</string>
     <string name="set_pin_hint">PIN</string>
     <string name="title_addgroup">New group</string>
-    <string name="search_group">Search Group</string>
     <string name="updating_system">Updating system</string>
     <string name="title_select_contacts">Select members</string>
     <string name="pin_invalid_not_set">PIN invalid. Not set.</string>
@@ -342,8 +332,6 @@
     <string name="backup_delete_confirm">Backup file deleted</string>
     <string name="message_log_title">Message details</string>
     <string name="state_read">read</string>
-    <string name="state_ack">agreed</string>
-    <string name="state_dec">disagreed</string>
     <string name="state_delivered">delivered</string>
     <string name="state_sending">sending</string>
     <string name="state_pending">pending</string>
@@ -354,10 +342,8 @@
     <string name="state_dialog_modified">Updated</string>
     <string name="state_dialog_edited">Edited</string>
     <string name="state_dialog_deleted">Deleted</string>
-    <string name="state_dialog_status">Status</string>
     <string name="title_tab_recent">Recents</string>
     <string name="no_recent_conversations">No chats found</string>
-    <string name="save_changes">Save</string>
     <string name="creating_group">Creating group</string>
     <string name="updating_group">Updating group</string>
     <string name="leaving_group">Leaving group</string>
@@ -372,11 +358,6 @@
     <string name="status_group_member_kicked">“%1$s” has been removed from the group.</string>
     <string name="can_not_send_no_group_members">You cannot send a message to an empty group</string>
     <string name="you_are_not_a_member_of_this_group">You are not a member of this group</string>
-    <string name="can_not_delete_not_valid">Cannot remove an invalid object</string>
-    <string name="can_not_delete_contact_until_in_group">The contact is still a member or creator of a group
-        conversation and therefore cannot be deleted. Leave or delete all groups that include this contact and try
-        again.</string>
-    <string name="can_not_delete_contact">Can’t remove contact</string>
     <string name="title_public_nickname">Nickname</string>
     <string name="prefs_sum_excluded_sync_identities">The IDs listed here will be ignored when synchronizing contacts</string>
     <string name="prefs_title_excluded_sync_identities">Exclusion list</string>
@@ -393,9 +374,7 @@
     <string name="yes">Yes</string>
     <string name="deleting_contact">Deleting contact</string>
     <string name="prefs_contact_soring">Sorting</string>
-    <string name="prefs_sum_contact_soring">Set the sorting order of entries in the contact list</string>
     <string name="prefs_contact_format">View contact names</string>
-    <string name="prefs_sum_contact_format">Set the contact name format</string>
     <string name="prefs_contact_list_title">Contact List</string>
     <string name="prefs_default_contact_picture_colored">Default contact pictures</string>
     <string name="prefs_show_inactive_contacts">Show inactive IDs</string>
@@ -412,20 +391,8 @@
     <string name="contact_format_last_name_first_name">Last-Name First-Name</string>
     <string name="block_contact">Block contact</string>
     <string name="unblock_contact">Unblock contact</string>
-    <string name="one_unread_message">1 unread Message</string>
-    <string name="really_unlink_contact_title">Unlink contact</string>
-    <string name="really_unlink_contact">Do you really want to unlink this contact?</string>
-    <string name="do_unlink_contact">Unlink Contact</string>
-    <string name="do_choose_other_contact">Choose another contact</string>
-    <string name="touch_to_link">(none)</string>
-    <string name="prefs_validate_contacts">Validate contacts links</string>
-    <string name="prefs_validate_contacts_loading">Validating Contacts Links</string>
-    <string name="prefs_title_fullscreen_ime">Fullscreen keyboard</string>
-    <string name="prefs_sum_fullscreen_ime_on">The keyboard covers the application if your device is in landscape mode</string>
-    <string name="prefs_sum_fullscreen_ime_off">Display a preview of the chat above the keyboard if there’s room</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="add_acount_from_within_threema">Manage your ${app_name_short} ID from within ${app_name_short}.</string>
-    <string name="save_image">Save Image</string>
     <string name="share_image">Share Image</string>
     <string name="view_in_gallery">View in Gallery</string>
     <string name="token_register_failed">Failed to update push token, please try again later.</string>
@@ -467,8 +434,6 @@
         select screens</string>
     <string name="media_gallery">Media gallery</string>
     <string name="media_file_not_found">Could not open media file. It was deleted or not downloaded from the server.</string>
-    <string name="no_media_found">No %s were found in this chat.</string>
-    <string name="media_gallery_all">Everything</string>
     <string name="media_gallery_pictures">Pictures</string>
     <string name="media_gallery_videos">Videos</string>
     <string name="group_membership_title">Member of these groups</string>
@@ -490,7 +455,6 @@
     <string name="contact_not_found">No such contact</string>
     <string name="contact_now_blocked">Contact blocked</string>
     <string name="contact_now_unblocked">Contact unblocked</string>
-    <string name="sending_images">Sending images</string>
     <string name="share_conversation_body">A modern ZIP tool with AES support is needed in order to unzip the file, e.g.
         http://www.7-zip.org or https://itunes.apple.com/us/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">The chat will be sent as an encrypted zip file. Please choose a password:</string>
@@ -528,8 +492,6 @@
     <string name="ballot_result_final">Final result</string>
     <string name="invalid_cannot_send">You cannot send messages to an invalid contact</string>
     <string name="ballot_answer_count_error">Please enter at least two answers for a poll.</string>
-    <string name="ballot_one_contact_not_supported">Warning: %1$s will not be able to participate in your poll.</string>
-    <string name="ballot_x_contact_not_supported">Warning: %1$d contacts will not be able to participate in your poll.</string>
     <string name="contact_state_inactive">Inactive</string>
     <string name="contact_state_invalid">Invalid</string>
     <string name="back">Back</string>
@@ -537,6 +499,7 @@
     <string name="wearable_reply_label">Reply to %s</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="push_disable_text">If you continue, “${app_name_short} Push” will be used instead of the system’s push service. This helps reducing your digital footprint but requires that your phone is configured in a way to allow the app to run in the background. You may want to contact your device manufacturer’s support for assistance with the configuration if the corresponding options cannot be found in the device settings.</string>
+    <string name="debug_log_enabled_recently_warning">If you’re having a specific problem, please try to reproduce it before sending us the debug log file. This will help us investigate the issue more effectively. Thank you.</string>
     <string name="ballot_intermediate_results_show">Show intermediate results</string>
     <string name="converting_video">Processing video</string>
     <string name="video_size_small">High (less data)</string>
@@ -579,8 +542,6 @@
     <string name="no_activity_for_mime_type">No app found to open this file.</string>
     <string name="no_activity_for_intent">No app found.</string>
     <string name="open_from">Open from</string>
-    <string name="file_one_contact_not_supported">%1$s cannot receive files.</string>
-    <string name="file_x_contact_not_supported">Warning: %1$d contacts cannot receive your file.</string>
     <string name="mime_android_apk">Android package</string>
     <string name="mime_audio">Audio file</string>
     <string name="mime_certificate">Digital certificate</string>
@@ -676,7 +637,6 @@
     <string name="notifications_until">Until %s</string>
     <string name="notifications_mute">Muted</string>
     <string name="notifications_choose_sound">Choose sound</string>
-    <string name="error_video_conversion">Error converting video.</string>
     <string name="confirm_your_pin">Confirm your PIN</string>
     <string name="too_many_incorrect_attempts">Too many incorrect attempts. Try again in %s seconds.</string>
     <string name="no_lockscreen_set">No system screen lock set.</string>
@@ -726,10 +686,6 @@
         your public key. Only the owner of the private key and nobody else is able to decrypt these messages.</string>
     <string name="new_wizard_info_id">You also created a key pair. The public key has been securely transmitted to our
         servers. The private key never leaves your device. This ensures that nobody else can read your messages.</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_sync_contacts">If you enable this option, ${app_name_short} one-way encrypts (hashes) email addresses and phone numbers
-        before sending them to the server to look for matching contacts. We do not store any
-        addressbook data.</string>
     <string name="new_wizard_info_sync_contacts_dialog">Contact sync can help you find your contacts automatically. If you agree, phone numbers and email addresses from your phone book will be encrypted before being sent to our server to look for matching contacts. Absolutely no data will be stored or shared.\n\nWould you like to enable contact sync?</string>
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">By providing your phone number and email address, ${app_name_short} can help your contacts find you automatically if they have you in their phone’s address book. The data will be stored in a one-way encrypted (hashed) form on our server. You can simply skip this step, if you would like to use ${app_name} completely anonymously.</string>
@@ -766,9 +722,7 @@
     <string name="action_leave_and_delete_group">Leave and delete group</string>
     <string name="action_dissolve_and_delete_group">Dissolve and delete group</string>
     <string name="delete_my_group_message">Do you really want to delete this group completely? All messages will be removed and remaining members can no longer use the group.</string>
-    <string name="error_out_of_memory">Not enough memory to complete this action</string>
     <string name="configure">Configure</string>
-    <string name="file_is_not_audio">Not an audio file</string>
     <string name="disabled_by_policy">Some settings have been disabled by the administrator</string>
     <string name="select_all">Select all</string>
     <string name="deleting_messages">Deleting messages</string>
@@ -851,7 +805,6 @@
     <string name="text">Text</string>
     <string name="undo">Undo</string>
     <string name="android_backup_date">Last backup</string>
-    <string name="check_now">Check Now</string>
     <string name="discard">Discard</string>
     <string name="android_backup_restart_threema">Hold on. The app will be restarted in a few seconds.</string>
     <string name="battery_optimizations_title">Disable Battery Optimizations</string>
@@ -888,6 +841,7 @@
     <string name="play">Play</string>
     <string name="pause">Pause</string>
     <string name="retry">Retry</string>
+    <string name="voice_message">Voice message</string>
     <string name="voice_message_record">Record voice message</string>
     <string name="open_navdrawer">Open navigation drawer</string>
     <string name="profile_picture">Profile Picture</string>
@@ -902,7 +856,6 @@
     <string name="menu_send_profilpic">Add as profile pic recipient</string>
     <string name="menu_send_profilpic_off">Remove as profile pic recipient</string>
     <string name="menu_send_profilpic_now">Send profile picture now</string>
-    <string name="profile_picture_sent">Profile picture sent</string>
     <string name="sending_messages">Sending…</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">Saving large media files to a local ZIP backup may exceed the CPU and memory capacity of your device and can take a very long time. ${app_name} will not send or receive messages while the backup is running. Continue anyway?</string>
@@ -937,11 +890,7 @@
     <string name="italic">Italic</string>
     <string name="bold">Bold</string>
     <string name="shortcut_choice_title">Create a shortcut for a…</string>
-    <string name="prefs_title_device_info">Device Information</string>
     <string name="notifications_disabled_title">Notifications disabled</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="notifications_disabled_text">Notifications for ${app_name} have been disabled in the system settings. You will not be notified about new messages.</string>
-    <string name="notifications_disabled_settings">Edit system settings</string>
     <string name="error_attaching_files">Error adding attachments.</string>
     <string name="prefs_fix_powermanager_problems">Disable power restrictions</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -991,21 +940,18 @@
     <string name="passphrase_service_name">Passphrase Service</string>
     <string name="passphrase_service_description">Notification when passphrase is unlocked</string>
     <string name="webclient_service_description">Notification when Web/Desktop session is active</string>
-    <string name="prefs_title_accept_privacy_policy">Accept Privacy Policy</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="privacy_policy_explain">${app_name} protects your privacy more rigorously than any other messenger. Find out more in our %1$s.</string>
-    <string name="privacy_policy_check_confirm">To use %s, please accept the Privacy Policy.\n\n(Requirement as per EU regulation 2016/679)</string>
     <string name="prefs_title_incognito_keyboard">Request incognito keyboard</string>
     <string name="prefs_sum_incognito_keyboard">Disable data collection for personalized suggestions (if supported by keyboard)</string>
-    <string name="tooltip_mentions">Type the @ character on the keyboard to directly address or mention a member of this group.</string>
-    <string name="tooltip_imagepaint">Get creative! Tap on the magic wand button to scribble or to add stickers and text to your pictures before sending.</string>
     <string name="call_ongoing">Ongoing call</string>
     <string name="ballot_received_votes">Number of votes received: %1$d/%2$d</string>
     <string name="quote_not_found">Quoted message not found</string>
     <string name="ballot_secret">secret</string>
     <string name="password_too_short_generic">Password too short</string>
     <string name="passwords_dont_match">Passwords don’t match</string>
-    <string name="test_unsuccessful">Test unsuccessful</string>
+    <!-- Error message shown when setting up a custom server for the Threema Safe feature. %s is a placeholder for the details of the error. -->
+    <string name="threema_safe_test_unsuccessful">Test unsuccessful: %s</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="preparing_threema_safe">Preparing ${app_name_short} Safe</string>
     <string name="disable_powermanager_title">Power restrictions</string>
@@ -1056,9 +1002,6 @@
     <string name="add_group_members">Add more members</string>
     <string name="contact_add_confirm">Would you like to add the new contact “%1$s” to your contact list?</string>
     <string name="password_bad">Weak password</string>
-    <string name="prefs_fix_background_data">Enable Background Data</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="prefs_fix_background_data_desc">To receive messages when ${app_name} is in the background please enable both Background data and Unrestricted data usage</string>
     <string name="prefs_fix_device">Fix device configuration problems</string>
     <string name="safe_successful">Successful</string>
     <string name="safe_unsuccessful">Failed</string>
@@ -1070,7 +1013,6 @@
     <string name="safe_retention">Backup retention</string>
     <string name="safe_result">Backup result</string>
     <string name="number_of_days">%d days</string>
-    <string name="backup_other_restore_options">Other restore options</string>
     <string name="safe_size">Backup size</string>
     <string name="backup_version_mismatch">The version of this backup is higher than the supported version. Please update to the latest version of this app.</string>
     <string name="safe_restore_failed">Restore failed</string>
@@ -1101,7 +1043,6 @@
     <string name="delete_group_message">Do you want to leave this group and delete it completely? All messages will be removed.</string>
     <string name="delete_left_group_message">Do you really want to delete this group? All messages will be removed.</string>
     <string name="chats">Chats</string>
-    <string name="notification_setting_ignored">ANY CHANGES WILL BE IGNORED!</string>
     <string name="notification_channel_alerts">Warnings and Errors</string>
     <string name="notification_channel_notices">Notices</string>
     <string name="chat_updates">Chat updates</string>
@@ -1109,7 +1050,6 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="tooltip_export_id">Tap here to share or print your encrypted ${app_name_short} ID now</string>
     <string name="downloading">Downloading</string>
-    <string name="today">Today</string>
     <string name="restore_data_cancelled">Restore canceled</string>
     <string name="safe_change_password">Change Password</string>
     <string name="safe_configure_choose_password_title">Choose a password</string>
@@ -1119,7 +1059,6 @@
     <string name="safe_password_updated">The ${app_name_short} Safe password has been updated.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_activated">${app_name_short} Safe is now activated.</string>
-    <string name="restore_zip_invalid_file">Backup file invalid.</string>
     <string name="push_token_cleared">The push token has been cleared</string>
     <string name="insert_date">Insert date</string>
     <string name="add_answer">Add answer</string>
@@ -1128,11 +1067,7 @@
     <string name="voip_disabled">${app_name_short} calls are disabled</string>
     <string name="hide_chat_enter_message_explain">This chat is marked as a private chat. To enter it, please set up access protection first.</string>
     <string name="unknown">Unknown</string>
-    <string name="miui_notification_title">Important notice about notifications on MIUI</string>
-    <string name="miui_notification_body">MIUI 10 disables sound and lights for all newly created notification channels by default (except for some apps deemed “important” by Xiaomi). You will have to explicitly enable them for each channel in your phone’s app-specific notification settings screen. Contact your phone’s manufacturer for more information.</string>
-    <string name="miui12_notification_body">MIUI disables sound, lights and floating notifications for all apps by default (except for some very popular apps deemed “important” by Xiaomi). You will have to manually enable these settings in your phone’s app-specific notification settings screen and repeat this procedure after each app update. Contact Xiaomi for more information.</string>
     <string name="dont_show_again">Don’t show again</string>
-    <string name="miui_notification_prefs">MIUI settings</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_upload_successful">${app_name_short} Safe backup successfully uploaded</string>
     <string name="time_remaining">%s remaining</string>
@@ -1143,7 +1078,6 @@
     <string name="about_screen_remote_secrets_activated">Activated</string>
     <string name="lock_option_biometric">Biometric</string>
     <string name="biometric_enter_authentication">To unlock, please authenticate</string>
-    <string name="biometric_authentication_failed">Authentication failed</string>
     <string name="biometric_authentication_successful">Successfully authenticated</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_safe_forced_explain">Your administrator enabled ${app_name_short} Safe for your device.</string>
@@ -1152,8 +1086,6 @@
     <string name="work_select_categories">Select categories</string>
     <string name="my_profile">My Profile</string>
     <string name="message_too_long">Message too long. Cannot send.</string>
-    <string name="database_migration_no_space">Database migration failed: Not enough space left on device.</string>
-    <string name="advanced_options">Advanced options</string>
     <string name="url_warning_body">The hostname of the link you’re about to open is suspicious:\n\nDisplayed Hostname: <b>%s</b>\nReal hostname: <b>%s</b>\n\nThis could be an attempt to trick you into opening a site pretending to be something else.\n\nWould you like to continue anyway?</string>
     <string name="url_warning_title">Phishing warning</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1169,8 +1101,6 @@
     <string name="lp_or_select_nearby">Or choose a nearby place</string>
     <string name="lp_use_this_location">Send this location?</string>
     <string name="lp_search_place">Enter city</string>
-    <string name="lp_no_nearby_places_found">No nearby places found</string>
-    <string name="select_directory_for_backup">Save here</string>
     <string name="data_backup_headline">Create a data backup to save all your data, including chats and media.</string>
     <string name="data_backup_save_path">Backup path</string>
     <string name="change">Change</string>
@@ -1205,14 +1135,13 @@
         ]]>
     </string>
     <string name="tap_to_start">Tap here to start %s now.</string>
+    <string name="notification_title_restart">Restart required</string>
     <string name="two_years">2 years</string>
-    <string name="invalid_backup_path">Invalid backup path</string>
     <string name="backup_data_no_permission">Cannot write to this directory. Please choose another one.</string>
     <string name="prefs_sum_show_unread_badge">Show badges in bottom navigation tabs</string>
     <string name="prefs_title_show_unread_badge">Badges</string>
     <string name="open_myid_popup">Open quick access popup window</string>
     <string name="logo">Logo / Scroll to top</string>
-    <string name="quote_subj_end">End quote</string>
     <string name="quote_subj">Quote</string>
     <string name="duration">Duration</string>
     <string name="seconds">Seconds</string>
@@ -1236,8 +1165,6 @@
     <string name="restore_data_backup_explain">To restore a data backup, first delete your ${app_name_short} ID from the “My Profile” screen.\n\nWhen the app restarts, choose “Restore from backup”, “Other restore options”, “Data Backup” and then select the data backup file you want to restore.</string>
     <string name="audio_focus_loss_complete">Call disconnected due to complete audio focus loss.</string>
     <string name="tap_for_picture_hold_for_video">Tap for picture, hold for video</string>
-    <string name="sending_media">Sending media</string>
-    <string name="permission_record_video_audio_required">To record a video, please allow access to the microphone</string>
     <string name="media_files">Files</string>
     <string name="auto_download_limit_explain">Videos and files larger than %s will always be downloaded on demand</string>
     <string name="quoted_message_deleted">Quoted message is no longer available</string>
@@ -1254,7 +1181,6 @@
     <string name="work_life_dnd_active">Off-hours active</string>
     <string name="warning">Warning</string>
     <string name="password_remember_warning">Remember what you enter here! Since %s does not save any passwords on servers, we cannot help you out, if you forget your PIN or password.</string>
-    <string name="safe_backup_tap_to_restart">Tap on the system notification shown to restart the app now. If you cannot see the notification, please swipe down your phone’s notification bar.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="send_to_support">Send to ${company_name} Support</string>
     <string name="menu_legal">Legal</string>
@@ -1300,7 +1226,6 @@
     <string name="forward_text">Forward text</string>
     <string name="an_error_occurred_during_send">An error occurred sending one or more messages.</string>
     <string name="state_processing">processing</string>
-    <string name="passphrase_locked">Passphrase is locked</string>
     <string name="selected_media">Your selection</string>
     <string name="attach_gif">Gif</string>
     <string name="attach_gallery">Gallery</string>
@@ -1314,19 +1239,14 @@
     <string name="media_date_unknown">Date unknown</string>
     <string name="max_selectable_media_exceeded">No more than %d objects can be sent at once.</string>
     <string name="error_unable_loading_media_thumb">Error. Media thumbnail could not be loaded</string>
-    <string name="select">Select</string>
     <string name="filter_list">Filter list</string>
     <string name="hint_filter_list">Enter filter text</string>
     <string name="add">Add</string>
-    <string name="threema_message_from">Message from %s</string>
-    <string name="show_text">Show text</string>
     <string name="only_images_or_videos">Only images or videos can be selected</string>
     <string name="media_gallery_gifs">GIFs</string>
     <string name="no_media_found_global">No media found on this device</string>
     <string name="original_file_no_longer_avilable">The original file is no longer accessible. Please re-send the message.</string>
-    <string name="state_transcoding">transcoding</string>
     <string name="importing_files">Importing files</string>
-    <string name="tooltip_image_resolution_hint">Tap here to adjust image resolution.</string>
     <string name="ballot_created_successfully">The poll was successfully created.</string>
     <string name="file_size">File size</string>
     <string name="thirty_days_abbrev">30d</string>
@@ -1337,7 +1257,6 @@
     <string name="brush">Brush</string>
     <string name="pencil">Pencil</string>
     <string name="highlighter">Highlighter</string>
-    <string name="error_detecting_faces">Error while detecting faces</string>
     <string name="no_faces_detected">No faces detected</string>
     <string name="smiley">Smiley</string>
     <string name="blur">Blur</string>
@@ -1352,7 +1271,6 @@
     <string name="note_group_howto">Hint: If you don’t add any group members, messages to this group will stay local. That’s ideal for securely storing notes, media or documents or transferring them to the desktop.</string>
     <string name="mark_unread">Mark as unread</string>
     <string name="mark_read_short">Mark read</string>
-    <string name="unread">Unread</string>
     <string name="missing_app_licence">The app store was unable to validate your purchase. If you use Google Play, please clear the data of the Google Play Store App and reboot your device.</string>
     <string name="set_backup_path">Set backup path</string>
     <string name="set_backup_path_intro">In the following screen please select the folder where data backups should be saved.</string>
@@ -1364,21 +1282,16 @@
     <string name="app_store_error_code">App store error code: %d</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_restore_type"><![CDATA[What kind of backup do you want to restore? <br/><br/> <a href=%s>Learn more about backups in ${app_name_short}</a>]]></string>
-    <string name="data_backup_info">Restore everything incl. chats</string>
     <string name="new_to_threema">New to %s?</string>
     <string name="back_to_threema">Back to %s?</string>
-    <string name="id_backup_info">Only restore your ID</string>
-    <string name="restore_your_id_contacts_and_groups">Restore your ID, contacts and groups</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_backup">${app_name_short} Safe Backup</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Help</a>]]></string>
     <string name="download_failed">Download unsuccessful. Error code: %d</string>
     <string name="edit_answer">Edit answer</string>
     <string name="share_media">Share with another app…</string>
-    <string name="group_image">Group image</string>
     <string name="miui_battery_optimization">Please disable "battery optimization" for %s to perform this task. As Xiaomi does not allow apps to call this settings screen directly, you will have to do this manually in your phone’s settings. Please contact Xiaomi support if you need assistance with disabling battery optimization.</string>
     <string name="forward_captions">Include captions</string>
-    <string name="importing_files_failed">Unable to import backup file. Make sure there’s enough free space on internal memory.</string>
     <string name="label_continue">Continue</string>
     <string name="select_date">Select a date</string>
     <string name="select_time">Select a time</string>
@@ -1392,22 +1305,17 @@
     <string name="prefs_sum_reset_receipts">Reset contact-specific settings for read receipts and typing indicator to default</string>
     <string name="reset_successful">Successfully reset to defaults</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="no_threema_qr_info">This is not a ${app_name_short} specific QR-Code. The decoded content is: </string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Scan the QR code of a contact to verify its identity. To display the code, ask your contact to tap on the profile picture in the upper left corner of the ${app_name_short} home screen.</string>
     <string name="enable_storage_access_for_media">Enable storage access to see pictures and videos on your device</string>
     <string name="select_storage_access_for_media_is_granted">You have given access to a select number of photos and videos.</string>
     <string name="take_me_there">Take me there…</string>
     <string name="manage">Manage</string>
-    <string name="custom">other custom</string>
     <string name="show_public_key">Show public key</string>
     <string name="public_key_for">Public key of %s</string>
     <string name="copied">Copied</string>
     <string name="no_votes_yet">No votes have been cast so far.</string>
     <string name="permission_contacts_sync_required">Please allow access to your contacts in order to be able to sync them.</string>
     <string name="not_voted_user_list">These participants did not vote: %s</string>
-    <string name="contact_update">Updating contact states</string>
-    <string name="invalid_onprem_id">Either this ID doesn’t exist (anymore), or it isn’t compatible with your ID.</string>
     <string name="enable_unknown_sources">Unable to install. Please make sure “Install unknown apps” is enabled for %s.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push">${app_name_short} Push</string>
@@ -1459,14 +1367,11 @@
     <string name="relationTypeSpouse">Spouse</string>
     <string name="contact_property_key">"Key"</string>
     <string name="header_nickname_entry">"Nickname"</string>
-    <string name="contact_picture_content_description">Contact picture</string>
     <string name="prefs_title_use_system_ringtone">Use system ringtone</string>
     <string name="organization_type">Organization</string>
     <string name="permission_bluetooth_connect_required">Enable “Nearby devices” permission to locate connected Bluetooth headsets</string>
     <string name="tooltip_multiple_recipients_title">Multiple recipients</string>
     <string name="tooltip_multiple_recipients_text">Long tap to select multiple recipients to send the same message to.</string>
-    <string name="synchronizing">Synchronizing…</string>
-    <string name="forward_security">Send messages with Perfect Forward Secrecy</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">None</string>
     <string name="clear_forward_security">Reset Perfect Forward Secrecy for this contact</string>
@@ -1512,10 +1417,6 @@
     <string name="unable_to_restore_identity_because">Unable to restore the ID. Reason: %s</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="share_with_app">Share with ${app_name}</string>
-    <string name="read_phone_state_dialog_allow">Grant permission</string>
-    <string name="read_phone_state_dialog_disallow">Continue anyway</string>
-    <string name="read_phone_state_dialog_never_ask_again">Don’t ask again</string>
-    <string name="read_phone_state_dialog_title">Permission needed</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="read_phone_state_dialog_message">To prevent that ${app_name_short} calls interrupt regular calls, the Phone permission is needed. If this permission is not given, an incoming ${app_name_short} call will ring even if there is an ongoing regular call.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1536,7 +1437,6 @@
     <string name="group_no_members">This group does not contain any other members</string>
     <string name="group_call">Group call</string>
     <string name="checking_compatibility">Checking compatibility…</string>
-    <string name="group_call_mic_permission_rationale">To perform group calls, you must allow %s to access the microphone under “permissions”.</string>
     <string name="group_call_mic_permission_description">To perform group calls, you must allow the microphone permission, so that others can hear you.</string>
     <string name="call_mic_permission_description">To perform calls, you must allow the microphone permission, so that others can hear you.</string>
     <string name="group_call_camera_permission_rationale">For other participants to see your picture, you must allow %s to access the camera under “permissions”.</string>
@@ -1558,7 +1458,6 @@
     <string name="forward_security_mode_2dh">Unilateral</string>
     <string name="forward_security_mode_all">Full</string>
     <string name="forward_security_mode_partial">Partial</string>
-    <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) protects a recorded communication from retroactive decryption even if the long-term encryption key is compromised.\n\nThe option can be enabled if the app on both sides supports PFS.</string>
     <string name="group_call_inactivity_left">Group call left due to inactivity</string>
     <string name="missing_permission_external_storage">Unable to copy the file. Try the following steps:\n1. Open the settings app.\n2. Go to “Apps” and choose “Special app access”.\n3. Tap on “All files access“.\n4. Tap on the three dots in the top right corner and choose “Show system“.\n5. Tap on “External Storage“ and ensure “Allow access to manage all files“ is granted.\n6. Try again restoring the backup.</string>
     <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy has been disabled in this chat because your chat partner’s app version doesn’t support it or ${app_name_desktop} 2.0 for Desktop (beta) is used.</string>
@@ -1591,7 +1490,6 @@
     <string name="group_name">Group name</string>
     <string name="star_message">Star message</string>
     <string name="starred_message">Starred message</string>
-    <string name="starred">Starred</string>
     <string name="starred_messages">Starred messages</string>
     <string name="sorting">Sorting</string>
     <string name="sort_by">Sort by…</string>
@@ -1632,7 +1530,6 @@
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
     <string name="md_linked_devices_empty">Before linking a new device, please download and open the latest beta version of [${app_name_desktop} for Desktop].</string>
-    <string name="md_link_device_qr_scan_message">Please scan the qr code</string>
     <string name="directory_request_failed">Directory request failed. Try again.</string>
     <string name="add_shortcut_exists">A shortcut for this target already exists.</string>
     <string name="scan_qr_code">Scan QR Code</string>
@@ -1658,10 +1555,13 @@
     <string name="problemsolver_title_background_data">Background data restricted</string>
     <string name="problemsolver_title_notifications">Notifications disabled</string>
     <string name="problemsolver_title_fullscreen_notifications">Full screen notifications disallowed</string>
+    <string name="problemsolver_title_debug_log_enabled">Logging still enabled</string>
     <string name="problemsolver_explain_fullscreen_notifications">The app is not allowed to display full screen notifications. You may miss incoming calls when the device is locked. To fix this, activate “Allow full screen notifications.”</string>
     <string name="problemsolver_explain_notifications">Notifications are completely disabled for this app. You will not be informed of incoming messages or calls, and the app may not work as expected. To fix this, activate “All notifications.”</string>
     <string name="problemsolver_explain_background_data">The app cannot use mobile data when in the background. You will not be informed of incoming messages unless you actively open the app. To fix this, activate “Background data.”</string>
     <string name="problemsolver_explain_background">The background usage of the app is restricted. You will not receive any notifications, and many features will not work as expected. To fix this, tap on “App battery usage” and select “Unrestricted.”</string>
+    <string name="problemsolver_explain_debug_log_enabled">Some time ago, you have activated the debug log. If you no longer need to log events and network information, consider disabling the log again.</string>
+    <string name="problemsolver_explain_debug_log_force_enabled">${app_name} is currently logging events and network information to a file because you created the file “%s.” If you no longer need logging, consider deleting the file.</string>
     <string name="problemsolver_info_text">The naming of some of the system-setting options mentioned above may vary depending on the Android version and device manufacturer.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">App battery usage set to “optimized”</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1679,7 +1579,6 @@
     <string name="edit_message_not_supported_for_contact">Cannot edit the message because the recipient’s app version does not support this feature.</string>
     <string name="edit_message_not_supported_for_all_group_members">The following group members will not be able to see your edits: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">Cannot edit the message because no group member has an app version that supports this feature.</string>
-    <string name="prefs_notification_settings">Notification settings</string>
     <string name="prefs_notification_settings_summary">Change sound and vibration in system settings dialog</string>
     <string name="new_messages">New messages</string>
     <string name="new_group_messages">New group messages</string>
@@ -1689,11 +1588,26 @@
     <string name="incoming_calls">Incoming calls</string>
     <string name="group_chats">Group chats</string>
     <string name="edit_history_file_no_caption">No caption</string>
-    <string name="device_linking_failed">Device linking failed</string>
-    <string name="device_linking_failed_explain">The device could not be linked. Please try again.\nReason: %s.</string>
-    <string name="qr_code_scan_error">An error occurred while scanning the QR code</string>
-    <string name="verification_failed">Verification failed</string>
-
+    <string name="prefs_title_error_reporting">Error reporting</string>
+    <string name="prefs_send_error_reports">Send anonymous reports</string>
+    <string name="error_reporting_option_never_send">Never</string>
+    <string name="error_reporting_option_always_send">Always</string>
+    <string name="error_reporting_option_always_ask">Ask every time</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_never_send">Never send error reports to ${company_name}</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_always_send">Automatically send error reports to ${company_name} when a critical error is detected</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_always_ask">Ask every time whether to send an error report to ${company_name}</string>
+    <string name="error_detected_dialog_title">Send anonymous report</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="crash_detected_dialog_text">It seems that ${app_name_short} has recently crashed. Would you like to submit an anonymous error report?</string>
+    <string name="crash_detected_dialog_remember_choice">Remember my choice</string>
+    <string name="crash_detected_dialog_send_button">Send</string>
+    <!-- Shown in the advanced settings, shows the user their own Device's uniquely generated ID, which is used for sending error reports -->
+    <string name="prefs_error_reporting_id">Anonymous device ID</string>
+    <!-- The %s is a placeholder for an ID. It must be left as-is. -->
+    <string name="prefs_error_reporting_id_summary">This ID is used to allocate error reports. It is anonymous and not linked to your Threema ID.\n%s</string>
     <string name="md_device_currently_active">Currently active</string>
     <string name="md_device_last_active_at">Last active: %s</string>
     <string name="md_device_version_and_platform_info" translatable="false">%s \u00B7 %s</string>
@@ -1724,9 +1638,6 @@
     <string name="backup_path_selection_documents">Use “Documents” folder</string>
 
     <!-- accessibility -->
-    <string name="cd_ack_icon">agree sent</string>
-    <string name="cd_dec_icon">disagree sent</string>
-    <string name="cd_ack_dec_group_count">by %d group members</string>
     <string name="cd_edited">message was edited</string>
     <string name="cd_created_at">created at %s</string>
     <string name="cd_edited_at">edited at %s</string>
@@ -1788,8 +1699,8 @@
     <string name="device_linking_error_invalid_contact_title">Invalid contact</string>
     <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <string name="device_linking_error_invalid_contact_body">The contact with identity %1$s is stored incorrectly on this device and prevents linking the new device. Please contact support (“Main menu > Help”).</string>
-
-    <string name="device_linking_error_screen_close">Close</string>
+    <string name="device_linking_error_invalid_timestamp_title">Invalid date</string>
+    <string name="device_linking_error_invalid_timestamp_body">An invalid date was encountered. Please contact support (“Main menu > Help”).</string>
 
     <string name="work_directory_title">Company directory</string>
     <!-- Instruction text for the user directory search -->
@@ -1804,10 +1715,11 @@
     <string name="contact_availability_status_available">Available</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Unavailable</string>
-    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
-    <string name="error_preset_onprem_url_mismatch_mdm">The provided server url is invalid. Please contact your administrator.</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">The activation link is invalid. Please contact your administrator.</string>
+
+    <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
+    <string name="export_logs_screen_warning">For privacy reasons, only share the log file with ${company_name}’s support team and only if you are asked to do so.</string>
 
     <string name="work_intro_screen_work_title">HIGHLY SECURE COMMUNICATION FOR BUSINESSES</string>
     <string name="work_intro_screen_work_subtitle">Threema Work is the secure communication solution for companies – end-to-end encrypted, GDPR-compliant, and developed in Switzerland.</string>
@@ -1825,6 +1737,10 @@
     <string name="work_intro_screen_onprem_use_private_hint">If you want to use Threema for private purposes, we recommend the Threema Private app.</string>
     <string name="work_intro_screen_onprem_download_private_button_label">Download now</string>
 
+    <!-- Description of the notification channel which is used when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_notification_channel_description">A persistent notification is shown when ${remote_secret} is active.</string>
+    <!-- Text of the notification which is shown when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_notification_text">${remote_secret} is active. Tap to learn more.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <string name="remote_secrets_blocked_by_admin">Access to this app has been blocked by your administrator.\n\nPlease contact your administrator for more information.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
@@ -1865,6 +1781,12 @@
     <string name="referral_share_invitation_link">Share Invitation Link</string>
     <string name="referral_view_terms_and_conditions">View Terms &amp; Conditions</string>
     <string name="referral_invitation_message_content">Hi, I thought this could be useful for you: Threema Work is an excellent option for secure business communication. Here’s your test link: %1$s</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_title">End call when Bluetooth is disconnected</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_on">The call is ended when the Bluetooth headset is disconnected during a call.</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_off">The call continues when the Bluetooth headset is disconnected during a call. Note: This may prevent the hang-up button on the headset from working.</string>
+
+    <string name="failed_to_load_conversations">Chats could not be loaded.</string>
+    <string name="contact_support">Contact support</string>
 
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>

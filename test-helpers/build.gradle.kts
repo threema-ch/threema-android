@@ -11,17 +11,13 @@ dependencies {
     implementation(libs.mockk)
     implementation(libs.kotlin.test)
     implementation(libs.kotlinx.coroutines.test)
+
     api(libs.turbine)
+    api(platform(libs.okhttp3.bom))
+    api(libs.okhttp3)
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_11
     targetCompatibility = JavaVersion.VERSION_11
-}
-
-dependencies {
-    api(platform(libs.okhttp3.bom))
-    api(libs.okhttp3)
-
-    implementation(libs.mockk)
 }

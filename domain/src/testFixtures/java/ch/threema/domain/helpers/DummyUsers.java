@@ -9,6 +9,7 @@ import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.models.WorkVerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.stores.IdentityStore;
 import ch.threema.libthreema.CryptoException;
@@ -52,7 +53,11 @@ public class DummyUsers {
                 NaCl.derivePublicKey(user.privateKey),
                 featureMask,
                 IdentityState.ACTIVE,
-                IdentityType.NORMAL
+                IdentityType.NORMAL,
+                VerificationLevel.UNVERIFIED,
+                WorkVerificationLevel.NONE,
+                null,
+                null
             );
         } catch (CryptoException e) {
             throw new RuntimeException(e);

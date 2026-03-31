@@ -9,7 +9,7 @@ import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.ContactModel
 import ch.threema.data.repositories.ContactModelRepository
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import org.koin.android.ext.android.inject
 
 private val logger = getThreemaLogger("ContactNotificationsActivity")
@@ -22,7 +22,7 @@ class ContactNotificationsActivity : NotificationsActivity() {
     private val ringtoneService: RingtoneService by inject()
     private val contactModelRepository: ContactModelRepository by inject()
 
-    private val contactIdentity: Identity? by lazy {
+    private val contactIdentity: IdentityString? by lazy {
         intent.getStringExtra(AppConstants.INTENT_DATA_CONTACT)
     }
 

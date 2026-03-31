@@ -36,6 +36,7 @@ import ch.threema.app.dialogs.GenericAlertDialog;
 import ch.threema.app.dialogs.GenericProgressDialog;
 import ch.threema.app.dialogs.PasswordEntryDialog;
 import ch.threema.app.dialogs.SimpleStringAlertDialog;
+import ch.threema.app.files.TempFilesCleanupWorker;
 import ch.threema.app.services.ActivityService;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SpacingValues;
@@ -47,6 +48,8 @@ import ch.threema.app.utils.LocaleUtil;
 import ch.threema.app.utils.MimeUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
+
+import static ch.threema.android.ToastKt.showToast;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
@@ -102,7 +105,9 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 
         initLayout();
 
-        cleanTempDirectories();
+        // Clean the temp directory to ensure that any backup files
+        // from previous restore attempts are deleted.
+        TempFilesCleanupWorker.enqueue(this);
     }
 
     @Override
@@ -162,16 +167,8 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
         });
     }
 
-    private void cleanTempDirectories() {
-        RuntimeUtil.runOnWorkerThread(() -> {
-            // Clean the temp directories to ensure that any backup files
-            // from previous restore attempts are deleted.
-            dependencies.getFileService().cleanTempDirs();
-        });
-    }
-
     private void restoreSafe() {
-        startActivity(new Intent(this, WizardSafeRestoreActivity.class));
+        startActivity(WizardSafeRestoreActivity.createIntent(this));
         overridePendingTransition(R.anim.abc_fade_in, R.anim.abc_fade_out);
     }
 
@@ -231,7 +228,8 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
             }
             return;
         }
-        logger.error(getString(R.string.invalid_backup), this);
+        showToast(this, R.string.invalid_backup);
+        logger.error("Invalid backup");
     }
 
     private void showDisableEnergySaveDialog() {
@@ -272,7 +270,10 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 
     // start generic alert dialog callbacks
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
+        if (tag == null) {
+            return;
+        }
         switch (tag) {
             case DIALOG_TAG_DISABLE_ENERGYSAVE_CONFIRM:
                 logger.info("Showing disable-battery-optimizations settings");
@@ -282,13 +283,15 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
                 startActivityForResult(intent, REQUEST_ID_DISABLE_BATTERY_OPTIMIZATIONS);
                 break;
             case DIALOG_TAG_NO_INTERNET:
-                restoreBackupFile((File) data);
+                if (data != null) {
+                    restoreBackupFile((File) data);
+                }
                 break;
         }
     }
 
     @Override
-    public void onNo(String tag, Object data) {
+    public void onNo(@Nullable String tag, @Nullable Object data) {
         if (dependencies.getThreemaSafeMDMConfig().isRestoreDisabled()) {
             finish();
         }
@@ -297,7 +300,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
 
     // start password dialog callbacks
     @Override
-    public void onYes(String tag, String text, boolean isChecked, Object data) {
+    public void onYes(@Nullable String tag, @NonNull String text, boolean isChecked, Object data) {
         this.backupFile = (File) data;
         this.backupPassword = text;
 
@@ -309,7 +312,7 @@ public class WizardBackupRestoreActivity extends ThreemaAppCompatActivity implem
     }
 
     @Override
-    public void onNo(String tag) {
+    public void onNo(@Nullable String tag) {
         if (dependencies.getThreemaSafeMDMConfig().isRestoreDisabled()) {
             finish();
         }

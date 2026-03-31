@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.IntDef;
@@ -42,7 +41,7 @@ import ch.threema.protobuf.csp.e2e.Reaction;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListMessageModel;
-import ch.threema.storage.models.GroupMessageModel;
+import ch.threema.storage.models.group.GroupMessageModel;
 import ch.threema.storage.models.MessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.MessageType;
@@ -373,9 +372,11 @@ public interface MessageService {
     ) throws Exception;
 
     @WorkerThread
+    @NonNull
     List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver, MessageFilter messageFilter, boolean appendUnreadMessage);
 
     @WorkerThread
+    @NonNull
     List<AbstractMessageModel> getMessagesForReceiver(@NonNull MessageReceiver receiver, MessageFilter messageFilter);
 
     @WorkerThread
@@ -451,7 +452,8 @@ public interface MessageService {
      * @param sortAscending Date sort order of results. true = oldest messages first, false = newest messages first
      * @return A list of matching message models
      */
-    List<AbstractMessageModel> getMessagesForText(String queryString, @MessageService.MessageFilterFlags int filterFlags, boolean sortAscending);
+    @NonNull
+    List<AbstractMessageModel> getMessagesForText(@Nullable String queryString, @MessageService.MessageFilterFlags int filterFlags, boolean sortAscending);
 
 
     /**
@@ -493,7 +495,6 @@ public interface MessageService {
      * Create a message receiver for the specified message model
      *
      * @param messageModel AbstractMessageModel to create a receiver for
-     * @return MessageReceiver
      * @throws ThreemaException in case no MessageReceiver could be created or the AbstractMessageModel is none of the three possible message types
      */
     MessageReceiver getMessageReceiver(AbstractMessageModel messageModel) throws ThreemaException;

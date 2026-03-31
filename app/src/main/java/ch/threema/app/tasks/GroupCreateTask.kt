@@ -1,17 +1,16 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.profilepicture.GroupProfilePictureUploader
 import ch.threema.app.profilepicture.RawProfilePicture
-import ch.threema.app.protocol.ExpectedProfilePictureChange
-import ch.threema.app.protocol.PredefinedMessageIds
-import ch.threema.app.protocol.runActiveGroupUpdateSteps
+import ch.threema.app.protocolsteps.ExpectedProfilePictureChange
+import ch.threema.app.protocolsteps.IdentityBlockedSteps
+import ch.threema.app.protocolsteps.PredefinedMessageIds
+import ch.threema.app.protocolsteps.runActiveGroupUpdateSteps
 import ch.threema.app.services.FileService
 import ch.threema.app.tasks.GroupCreateTask.GroupCreateTaskData.Companion.SerializableExpectedProfilePictureChange
 import ch.threema.app.tasks.GroupCreateTask.GroupCreateTaskData.Companion.SerializablePredefinedMessageIds
 import ch.threema.app.tasks.archive.recovery.TaskRecoveryManager
 import ch.threema.app.utils.OutgoingCspMessageServices
-import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
 import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
@@ -28,6 +27,8 @@ import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.protobuf.d2d.MdD2D
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("GroupCreateTask")
 
@@ -37,13 +38,15 @@ class GroupCreateTask(
     private val members: Set<String>,
     private val groupIdentity: GroupIdentity,
     private val predefinedMessageIds: PredefinedMessageIds,
-    private val outgoingCspMessageServices: OutgoingCspMessageServices,
-    private val groupCallManager: GroupCallManager,
-    private val fileService: FileService,
-    private val groupProfilePictureUploader: GroupProfilePictureUploader,
-    private val groupModelRepository: GroupModelRepository,
-) : ActiveTask<Unit>, PersistableTask {
+) : ActiveTask<Unit>, PersistableTask, KoinComponent {
+    private val outgoingCspMessageServices: OutgoingCspMessageServices by inject()
+    private val groupCallManager: GroupCallManager by inject()
+    private val fileService: FileService by inject()
+    private val groupProfilePictureUploader: GroupProfilePictureUploader by inject()
+    private val groupModelRepository: GroupModelRepository by inject()
+
     private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
+    private val identityBlockedSteps: IdentityBlockedSteps by inject()
 
     override val type = "GroupCreateTask"
 
@@ -92,6 +95,7 @@ class GroupCreateTask(
             groupCallManager = groupCallManager,
             fileService = fileService,
             groupProfilePictureUploader = groupProfilePictureUploader,
+            identityBlockedSteps = identityBlockedSteps,
             handle = handle,
         )
     }
@@ -146,18 +150,13 @@ class GroupCreateTask(
         private val groupIdentity: GroupIdentity,
         private val serializablePredefinedMessageIds: SerializablePredefinedMessageIds,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             GroupCreateTask(
                 name = name,
                 expectedProfilePictureChange = serializableExpectedProfilePictureChange.getExpectedProfilePictureChange(),
                 members = members,
                 groupIdentity = groupIdentity,
                 predefinedMessageIds = serializablePredefinedMessageIds.getPredefinedMessageIds(),
-                outgoingCspMessageServices = serviceManager.getOutgoingCspMessageServices(),
-                groupCallManager = serviceManager.groupCallManager,
-                fileService = serviceManager.fileService,
-                groupProfilePictureUploader = serviceManager.groupProfilePictureUploader,
-                groupModelRepository = serviceManager.modelRepositories.groups,
             )
 
         companion object {

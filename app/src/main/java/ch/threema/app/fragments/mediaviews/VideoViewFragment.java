@@ -25,7 +25,6 @@ import androidx.media3.datasource.DefaultDataSourceFactory;
 import androidx.media3.exoplayer.ExoPlayer;
 import androidx.media3.exoplayer.source.MediaSource;
 import androidx.media3.exoplayer.source.ProgressiveMediaSource;
-import androidx.media3.ui.PlayerControlView;
 import androidx.media3.ui.PlayerView;
 
 import com.alexvasilkov.gestures.GestureController;
@@ -40,9 +39,11 @@ import java.lang.ref.WeakReference;
 
 import ch.threema.app.R;
 import ch.threema.app.activities.MediaViewerActivity;
-import ch.threema.app.utils.ConfigUtils;
-import ch.threema.app.utils.TestUtil;
+import ch.threema.app.ui.InsetSides;
+import ch.threema.app.ui.SpacingValues;
+import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.VideoUtil;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -116,7 +117,7 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
     protected void showThumbnail(@NonNull Drawable thumbnail) {
         logger.debug("showThumbnail");
 
-        if (TestUtil.required(this.previewImageViewRef, this.previewImageViewRef.get(), thumbnail)) {
+        if (previewImageViewRef != null && previewImageViewRef.get() != null) {
             this.previewImageViewRef.get().setImageDrawable(thumbnail);
         }
     }
@@ -138,32 +139,54 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
     }
 
     @Override
-    protected void created(Bundle savedInstanceState) {
+    protected void created(@Nullable Bundle savedInstanceState, @NonNull ViewGroup rootView) {
+        if (this.videoPlayer == null) {
+            return;
+        }
         logger.debug("created");
 
-        if (rootViewReference.get() != null && this.videoPlayer != null) {
-            gestureFrameLayoutRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.video_gesture_frame));
-            gestureFrameLayoutRef.get().getController().getSettings().setMaxZoom(2.5f);
-            gestureFrameLayoutRef.get().getController().addOnStateChangeListener(onGestureStateChangeListener);
+        this.previewImageViewRef = new WeakReference<>(rootView.findViewById(R.id.image));
+        this.progressBarRef = new WeakReference<>(rootView.findViewById(R.id.progress_bar));
+        this.videoViewRef = new WeakReference<>(rootView.findViewById(R.id.video_view));
 
-            this.previewImageViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.image));
+        gestureFrameLayoutRef = new WeakReference<>(rootView.findViewById(R.id.video_gesture_frame));
+        gestureFrameLayoutRef.get().getController().getSettings().setMaxZoom(2.5f);
+        gestureFrameLayoutRef.get().getController().addOnStateChangeListener(onGestureStateChangeListener);
 
-            this.videoViewRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.video_view));
-            this.videoViewRef.get().setControllerVisibilityListener((PlayerControlView.VisibilityListener) visibility ->
-                VideoViewFragment.this.showUi(visibility == View.VISIBLE)
-            );
-            this.videoViewRef.get().setVisibility(View.GONE);
-            this.videoViewRef.get().setPlayer(this.videoPlayer);
-            this.videoViewRef.get().setControllerHideOnTouch(true);
-            this.videoViewRef.get().setControllerShowTimeoutMs(MediaViewerActivity.ACTIONBAR_TIMEOUT);
-            this.videoViewRef.get().setControllerAutoShow(true);
+        this.videoViewRef.get().setControllerVisibilityListener((PlayerView.ControllerVisibilityListener) visibility ->
+            VideoViewFragment.this.showUi(visibility == View.VISIBLE)
+        );
+        this.videoViewRef.get().setVisibility(View.GONE);
+        this.videoViewRef.get().setPlayer(this.videoPlayer);
+        this.videoViewRef.get().setControllerHideOnTouch(true);
+        this.videoViewRef.get().setControllerShowTimeoutMs(MediaViewerActivity.ACTIONBAR_TIMEOUT);
+        this.videoViewRef.get().setControllerAutoShow(true);
 
-            logger.debug("View Type: {}", (this.videoViewRef.get().getVideoSurfaceView() instanceof TextureView ? "Texture" : "Surface"));
+        logger.debug("View Type: {}", (this.videoViewRef.get().getVideoSurfaceView() instanceof TextureView ? "Texture" : "Surface"));
 
-            ConfigUtils.adjustExoPlayerControllerMargins(requireContext(), this.videoViewRef.get());
+        handleExoPlayerControllerViewInsets(this.videoViewRef.get());
+    }
 
-            this.progressBarRef = new WeakReference<>(rootViewReference.get().findViewById(R.id.progress_bar));
-        }
+    private void handleExoPlayerControllerViewInsets(@NonNull PlayerView playerView) {
+        ViewExtensionsKt.applyDeviceInsetsAsPadding(
+            playerView.findViewById(R.id.exo_center_controls),
+            InsetSides.horizontal(),
+            SpacingValues.all(R.dimen.exo_styled_controls_padding)
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            playerView.findViewById(R.id.exo_bottom_bar),
+            InsetSides.lbr()
+        );
+        ViewExtensionsKt.applyDeviceInsetsAsMargin(
+            playerView.findViewById(R.id.exo_progress),
+            InsetSides.lbr(),
+            new SpacingValues(
+                null,
+                null,
+                R.dimen.exo_styled_progress_margin_bottom,
+                null
+            )
+        );
     }
 
     @Override
@@ -216,13 +239,13 @@ public class VideoViewFragment extends MediaViewFragment implements Player.Liste
         }
     }
 
-    protected void showBrokenImage() {
-        logger.debug("showBrokenImage");
-
+    @Override
+    protected void showFileNotFoundContent() {
+        logger.debug("showFileNotFoundContent");
         if (this.progressBarRef.get() != null) {
             this.progressBarRef.get().setVisibility(View.GONE);
         }
-        super.showBrokenImage();
+        super.showFileNotFoundContent();
     }
 
     @Override

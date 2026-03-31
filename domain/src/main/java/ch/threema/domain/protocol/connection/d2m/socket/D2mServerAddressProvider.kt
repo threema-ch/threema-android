@@ -3,7 +3,7 @@ package ch.threema.domain.protocol.connection.d2m.socket
 import ch.threema.common.toHexString
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.protobuf.d2m.MdD2M
-import com.google.protobuf.ByteString
+import com.google.protobuf.kotlin.toByteString
 
 class D2mServerAddressProvider(
     private val serverAddressProvider: ServerAddressProvider,
@@ -14,12 +14,13 @@ class D2mServerAddressProvider(
         val mediatorUrl = serverAddressProvider.getMediatorUrl().get(dgid)
 
         val clientUrlInfo = MdD2M.ClientUrlInfo.newBuilder()
-            .setDeviceGroupId(ByteString.copyFrom(dgid))
+            .setDeviceGroupId(dgid.toByteString())
             .setServerGroup(serverGroup)
             .build()
             .toByteArray()
             .toHexString()
 
-        return "$mediatorUrl/$clientUrlInfo"
+        // mediatorUrl is guaranteed to end with a `/` character
+        return mediatorUrl + clientUrlInfo
     }
 }

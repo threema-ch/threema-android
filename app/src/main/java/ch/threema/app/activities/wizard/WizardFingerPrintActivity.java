@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import java.time.Instant;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.R;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.GenericAlertDialog;
@@ -153,8 +154,8 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity
     }
 
     @Override
-    public void onYes(String tag, Object data) {
-        if (tag.equals(DIALOG_TAG_CREATE_ERROR)) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
+        if (tag != null && tag.equals(DIALOG_TAG_CREATE_ERROR)) {
             // check again for a valid license and try to create identity
             StoreLicenseCheck.checkLicense(this, dependencies.getUserService());
             createIdentity((byte[]) data);
@@ -162,7 +163,7 @@ public class WizardFingerPrintActivity extends WizardBackgroundActivity
     }
 
     @Override
-    public void onNo(String tag, Object data) {
+    public void onNo(@Nullable String tag, @Nullable Object data) {
         finish();
     }
 

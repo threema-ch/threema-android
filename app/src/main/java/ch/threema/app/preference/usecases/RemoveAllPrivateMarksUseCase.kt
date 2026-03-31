@@ -31,7 +31,7 @@ class RemoveAllPrivateMarksUseCase(
             }
         }
         if (hadPrivateConversations) {
-            preferenceService.isPrivateChatsHidden = false
+            preferenceService.setArePrivateChatsHidden(false)
             widgetUpdater.updateWidgets()
             listenerProvider.conversationListeners.handle(ConversationListener::onModifiedAll)
         }

@@ -1,13 +1,13 @@
 package ch.threema.app.webclient.converter
 
 import ch.threema.data.models.EmojiReactionData
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.time.Instant
 
 data class ReactionBucket(
     val reaction: String,
     val mostRecentReactedAt: Instant,
-    val identities: List<Identity>,
+    val identities: List<IdentityString>,
 ) {
     companion object {
         @JvmStatic

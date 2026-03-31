@@ -10,8 +10,11 @@ import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.messages.GroupNameMessage
-import ch.threema.domain.types.Identity
-import junit.framework.TestCase.*
+import ch.threema.domain.types.IdentityString
+import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertFalse
+import junit.framework.TestCase.assertTrue
+import junit.framework.TestCase.fail
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
@@ -34,11 +37,10 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
      */
     @Test
     fun testValidGroupRename() = runTest {
-        // Start home activity and navigate to chat section
-        val activityScenario = startScenario()
-
         // Assert initial groups
-        assertGroupConversations(activityScenario, initialGroups)
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         // Create group rename message
         val groupARenamed =
@@ -53,10 +55,10 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
         val renameTracker = GroupRenameTracker(groupARenamed).apply { start() }
 
         val message = createEncryptedRenameMessage(
-            groupARenamed.groupName,
-            groupARenamed.groupCreator.identity,
-            groupARenamed.apiGroupId,
-            groupARenamed.groupCreator,
+            newGroupName = groupARenamed.groupName,
+            groupCreatorIdentity = groupARenamed.groupCreator.identity,
+            apiGroupId = groupARenamed.apiGroupId,
+            fromContact = groupARenamed.groupCreator,
         )
 
         // Process the group rename message
@@ -67,7 +69,9 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
         renameTracker.stop()
 
         // Assert that the group name change has been processed
-        assertGroupConversations(activityScenario, initialGroups.replace(groupA, groupARenamed))
+        assertGroupConversations(
+            expectedGroups = initialGroups.replace(groupA, groupARenamed),
+        )
     }
 
     /**
@@ -76,11 +80,10 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
      */
     @Test
     fun testInvalidGroupRenameSender() = runTest {
-        // Start home activity and navigate to chat section
-        val activityScenario = startScenario()
-
         // Assert initial groups
-        assertGroupConversations(activityScenario, initialGroups)
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         // Create group rename message (from wrong sender)
         val groupARenamed =
@@ -109,7 +112,9 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
         renameTracker.assertNoRename()
         renameTracker.stop()
 
-        assertGroupConversations(activityScenario, initialGroups)
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
     }
 
     override fun testCommonGroupReceiveStepUnknownGroupUserCreator() {
@@ -118,7 +123,9 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
     }
 
     override fun testCommonGroupReceiveStepUnknownGroupUserNotCreator() {
-        runWithoutGroupRename { super.testCommonGroupReceiveStepUnknownGroupUserNotCreator() }
+        runWithoutGroupRename {
+            super.testCommonGroupReceiveStepUnknownGroupUserNotCreator()
+        }
     }
 
     override fun testCommonGroupReceiveStepLeftGroupUserCreator() {
@@ -128,7 +135,9 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
     }
 
     override fun testCommonGroupReceiveStepLeftGroupUserNotCreator() {
-        runWithoutGroupRename { super.testCommonGroupReceiveStepLeftGroupUserNotCreator() }
+        runWithoutGroupRename {
+            super.testCommonGroupReceiveStepLeftGroupUserNotCreator()
+        }
     }
 
     override fun testCommonGroupReceiveStepSenderNotMemberUserCreator() {
@@ -152,7 +161,7 @@ class IncomingGroupNameTest : GroupConversationListTest<GroupNameMessage>() {
 
     private fun createEncryptedRenameMessage(
         newGroupName: String,
-        groupCreatorIdentity: Identity,
+        groupCreatorIdentity: IdentityString,
         apiGroupId: GroupId,
         fromContact: TestContact,
     ) = GroupNameMessage().apply {

@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.ContactService.ProfilePictureUploadData
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationService
@@ -35,9 +34,9 @@ import ch.threema.protobuf.unit
 import ch.threema.storage.models.ContactModel
 import com.google.protobuf.kotlin.toByteString
 
-abstract class ReflectContactSyncTask<TransactionResult, TaskResult>(
-    multiDeviceManager: MultiDeviceManager,
-) : ReflectSyncTask<TransactionResult, TaskResult>(multiDeviceManager, CONTACT_SYNC) {
+abstract class ReflectContactSyncTask<TransactionResult, TaskResult>() : ReflectSyncTask<TransactionResult, TaskResult>(
+    transactionScope = CONTACT_SYNC,
+) {
     protected suspend fun reflectContactSync(handle: ActiveTaskCodec): TaskResult {
         return reflectSync(handle)
     }

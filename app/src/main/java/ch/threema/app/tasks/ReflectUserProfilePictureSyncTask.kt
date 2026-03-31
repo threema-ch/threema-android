@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.UserService
 import ch.threema.base.crypto.NonceFactory
@@ -23,6 +22,8 @@ import ch.threema.protobuf.unit
 import ch.threema.storage.models.ContactModel
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("ReflectUserProfilePictureSyncTask")
 
@@ -33,11 +34,11 @@ private val logger = getThreemaLogger("ReflectUserProfilePictureSyncTask")
  * approach is its simplicity and the fact that this task can be scheduled and run without causing
  * any damage.
  */
-class ReflectUserProfilePictureSyncTask(
-    private val userService: UserService,
-    private val nonceFactory: NonceFactory,
-    private val multiDeviceManager: MultiDeviceManager,
-) : ActiveTask<Unit>, PersistableTask {
+class ReflectUserProfilePictureSyncTask() : ActiveTask<Unit>, PersistableTask, KoinComponent {
+    private val multiDeviceManager: MultiDeviceManager by inject()
+    private val nonceFactory: NonceFactory by inject()
+    private val userService: UserService by inject()
+
     private val mdProperties by lazy { multiDeviceManager.propertiesProvider.get() }
 
     override val type = "ReflectUserProfilePictureSyncTask"
@@ -86,11 +87,7 @@ class ReflectUserProfilePictureSyncTask(
 
     @Serializable
     data object ReflectUserProfilePictureSyncTaskData : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
-            ReflectUserProfilePictureSyncTask(
-                serviceManager.userService,
-                serviceManager.nonceFactory,
-                serviceManager.multiDeviceManager,
-            )
+        override fun createTask(): Task<*, TaskCodec> =
+            ReflectUserProfilePictureSyncTask()
     }
 }

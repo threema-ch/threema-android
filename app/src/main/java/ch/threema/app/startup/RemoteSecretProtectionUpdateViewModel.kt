@@ -11,11 +11,12 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.toCryptographicByteArray
 import ch.threema.domain.models.UserCredentials
 import ch.threema.domain.protocol.ServerAddressProvider
+import ch.threema.domain.types.toIdentityOrNull
 import ch.threema.localcrypto.MasterKeyManager
 import ch.threema.localcrypto.exceptions.InvalidCredentialsException
 import ch.threema.localcrypto.exceptions.PassphraseRequiredException
 import ch.threema.localcrypto.models.RemoteSecretClientParameters
-import ch.threema.localcrypto.models.RemoteSecretProtectionCheckResult
+import ch.threema.localcrypto.models.RemoteSecretProtectionInstruction
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 
@@ -32,10 +33,10 @@ class RemoteSecretProtectionUpdateViewModel(
     private var isRunning = false
 
     override fun initialize() = runInitialization {
-        val updateType = when (masterKeyManager.getRemoteSecretProtectionState()) {
-            RemoteSecretProtectionCheckResult.SHOULD_ACTIVATE -> RemoteSecretUpdateType.ACTIVATING
-            RemoteSecretProtectionCheckResult.SHOULD_DEACTIVATE -> RemoteSecretUpdateType.DEACTIVATING
-            RemoteSecretProtectionCheckResult.NO_CHANGE_NEEDED,
+        val updateType = when (masterKeyManager.getRemoteSecretProtectionInstruction()) {
+            RemoteSecretProtectionInstruction.SHOULD_ACTIVATE -> RemoteSecretUpdateType.ACTIVATING
+            RemoteSecretProtectionInstruction.SHOULD_DEACTIVATE -> RemoteSecretUpdateType.DEACTIVATING
+            RemoteSecretProtectionInstruction.NO_CHANGE_NEEDED,
             null,
             -> {
                 emitEvent(RemoteSecretProtectionUpdateViewModelEvent.Done)
@@ -94,9 +95,10 @@ class RemoteSecretProtectionUpdateViewModel(
     private fun getRemoteSecretClientParameters(): RemoteSecretClientParameters =
         RemoteSecretClientParameters(
             workServerBaseUrl = serverAddressProvider
-                .getWorkServerUrl(preferenceService.isIpv6Preferred)
+                .getWorkServerUrl(preferenceService.isIpv6Preferred())
                 ?: error("No work server URL found"),
             userIdentity = userService.identity
+                ?.toIdentityOrNull()
                 ?: error("No user identity found"),
             clientKey = userService.privateKey
                 ?.toCryptographicByteArray()
@@ -105,7 +107,7 @@ class RemoteSecretProtectionUpdateViewModel(
                 ?: error("No user credentials found"),
         )
 
-    fun onDismissedDialog() = runAction {
+    fun onDismissDialog() = runAction {
         updateViewState {
             copy(status = RemoteSecretUpdateStatus.IDLE)
         }

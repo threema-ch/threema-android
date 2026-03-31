@@ -285,7 +285,8 @@ internal class ConnectionCtx(
                 // Initial mapping: Set direction to activate correctly
                 logger.trace(
                     "Activating local transceiver (kind='{}', mid='{}')",
-                    transceiver.mediaType.name, transceiver.mid,
+                    transceiver.mediaType.name,
+                    transceiver.mid,
                 )
                 transceiver.direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
 

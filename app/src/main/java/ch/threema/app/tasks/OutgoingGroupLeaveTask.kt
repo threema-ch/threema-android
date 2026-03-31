@@ -1,17 +1,17 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.groupflows.LeaveGroupFlow
-import ch.threema.app.managers.ServiceManager
+import ch.threema.app.protocolsteps.IdentityBlockedSteps
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices
-import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.app.utils.toBasicContacts
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.models.UserState
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.taskmanager.ActiveTask
@@ -21,11 +21,12 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.createTransaction
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.storage.models.GroupModel
 import java.util.Date
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("OutgoingGroupLeaveTask")
 
@@ -37,12 +38,13 @@ private val logger = getThreemaLogger("OutgoingGroupLeaveTask")
 class OutgoingGroupLeaveTask(
     private val groupIdentity: GroupIdentity,
     private val messageId: MessageId,
-    private val memberIdentities: Set<Identity>,
-    private val groupModelRepository: GroupModelRepository,
-    private val apiConnector: APIConnector,
-    private val outgoingCspMessageServices: OutgoingCspMessageServices,
-) : ActiveTask<Unit>, PersistableTask {
+    private val memberIdentities: Set<IdentityString>,
+) : ActiveTask<Unit>, PersistableTask, KoinComponent {
+    private val apiConnector: APIConnector by inject()
+    private val groupModelRepository: GroupModelRepository by inject()
     private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
+    private val outgoingCspMessageServices: OutgoingCspMessageServices by inject()
+    private val identityBlockedSteps: IdentityBlockedSteps by inject()
 
     override val type = "GroupLeaveTask"
 
@@ -69,7 +71,7 @@ class OutgoingGroupLeaveTask(
                 val groupModelData = groupModelRepository.getByGroupIdentity(groupIdentity)?.data
                 if (groupModelData != null) {
                     // If the group exists, then the user state must be left
-                    groupModelData.userState == GroupModel.UserState.LEFT
+                    groupModelData.userState == UserState.LEFT
                 } else {
                     // It is fine if the group does not exist
                     true
@@ -88,7 +90,7 @@ class OutgoingGroupLeaveTask(
         ).toSet()
 
         handle.runBundledMessagesSendSteps(
-            OutgoingCspMessageHandle(
+            outgoingCspMessageHandle = OutgoingCspMessageHandle(
                 receivers,
                 OutgoingCspGroupMessageCreator(
                     messageId,
@@ -98,7 +100,8 @@ class OutgoingGroupLeaveTask(
                     GroupLeaveMessage()
                 },
             ),
-            outgoingCspMessageServices,
+            services = outgoingCspMessageServices,
+            identityBlockedSteps = identityBlockedSteps,
         )
     }
 
@@ -112,16 +115,13 @@ class OutgoingGroupLeaveTask(
     class OutgoingGroupLeaveTaskData(
         private val groupIdentity: GroupIdentity,
         private val messageId: ByteArray,
-        private val memberIdentities: Set<Identity>,
+        private val memberIdentities: Set<IdentityString>,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingGroupLeaveTask(
-                groupIdentity,
-                MessageId(messageId),
-                memberIdentities,
-                serviceManager.modelRepositories.groups,
-                serviceManager.apiConnector,
-                serviceManager.getOutgoingCspMessageServices(),
+                groupIdentity = groupIdentity,
+                messageId = MessageId(messageId),
+                memberIdentities = memberIdentities,
             )
     }
 }

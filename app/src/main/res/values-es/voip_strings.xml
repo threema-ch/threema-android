@@ -53,14 +53,18 @@
     <string name="voip_prefs_video_codec_no_h264hip">Deshabilitar H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Códecs de software</string>
     <string name="voip_connection_failed">No se ha podido establecer la conexión.</string>
-    <string name="voip_connection_lost">Conexión perdida</string>
+    <string name="voip_call_disconnected">Llamada desconectada</string>
     <string name="prefs_voip_reject_incoming_calls_title">Rechazar llamadas del móvil</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Rechazar llamadas entrantes del móvil cuando Threema Voz está activo.</string>
     <string name="voip_contact_not_found">Este número no es de ningún contacto Threema.</string>
     <string name="voip_another_pstn_call">No se puede iniciar la llamada porque hay una llamada normal en curso.</string>
     <string name="voip_call_status_off_hours">Llamada fuera de horario</string>
     <string name="voip_peer_video_disabled">La otra parte ha desactivado las videollamadas</string>
-    <string name="voip_reject_channel_name">Cambio en el estado de la llamada</string>
+    <string name="voip_error_processing_call_anser">Se produjo un error al procesar la respuesta a la llamada</string>
+    <string name="voip_error_peer_connection">Error de conexión entre pares</string>
+    <string name="voip_error_determine_common_video_quality_profile">No se pudo determinar el perfil de calidad de vídeo común</string>
+    <string name="voip_audio_focus_lost">Se ha perdido el enfoque de audio</string>
+    <string name="voip_could_not_initialize">No se pudo inicializar la llamada</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Diagnóstico de WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Inicia esta herramienta para depurar problemas al establecer una conexión de llamada de voz.</string>
@@ -71,13 +75,9 @@
     <string name="voip_webrtc_debug_copied">Copiar al portapapeles completado.</string>
     <string name="voip_webrtc_debug_copy_clipboard">Copiar al portapapeles</string>
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">Se ha notificado a todos los miembros del grupo</string>
-    <string name="voip_gc_notification_channel_description">Llamadas grupales</string>
-    <string name="voip_gc_notification_title">Llamada grupal</string>
     <string name="voip_gc_notification_call_started">%1$s ha iniciado una llamada grupal en %2$s</string>
     <string name="voip_gc_notification_call_started_generic">%1$s ha iniciado una llamada grupal</string>
     <string name="voip_gc_notification_call_started_generic_outbox">Has iniciado una llamada grupal</string>
-    <string name="voip_gc_dismiss_call">Ignorar</string>
     <string name="voip_gc_join_call">Unirme</string>
     <string name="voip_gc_ongoing_call">Llamada grupal en curso</string>
     <string name="voip_gc_waiting_for_participants">Esperando a los participantes</string>

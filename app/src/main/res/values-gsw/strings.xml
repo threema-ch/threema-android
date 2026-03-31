@@ -5,7 +5,6 @@
     <string name="title_section1">Chats</string>
     <string name="title_compose_message">Chat starte</string>
     <string name="title_choose_recipient">Empfänger uswähle</string>
-    <string name="title_keyfingerprint">Schlüssel-Fingerabdruck</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="title_mythreemaid">Mini ${app_name_short}-ID</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -63,9 +62,6 @@
     <string name="prefs_notification_light">Benachrichtigungsliecht</string>
     <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_sum_notification_light">Farbigi LED für iigehendi Nachrichte bruuche (falls vorhande)</string>
-    <string name="prefs_sum_light">Wiiss</string>
-    <string name="prefs_title_wallpaper">Hindergrundbild uswähle</string>
-    <string name="prefs_sum_wallpaper">Bild fürde Hindergrund usläse</string>
     <string name="prefs_title_wallpaper_switch">Hindergrundbild</string>
     <string name="prefs_title_enter">Direkt verschicke</string>
     <string name="prefs_sum_enter_on">Iigabetaste verschickt d’Nachricht sofort</string>
@@ -125,11 +121,14 @@
     <string name="scan_successful">Die ID isch erfolgriich gscannt worde. De Kontakt isch jetzt verifiziert.</string>
     <string name="scan_duplicate">Die ID isch scho gscannt und verifiziert worde.</string>
     <string name="linked_email">E-Mail</string>
+    <!-- Pattern for displaying the user's email address on the My Profile screen. %1$s is a placeholder for the email address, %2$s is a placeholder for the verification state (e.g. "pending") -->
+    <string name="linked_email_pattern">%1$s (%2$s)</string>
     <string name="linked_mobile">Handynummere</string>
+    <!-- Pattern for displaying the user's mobile phone number on the My Profile screen. %1$s is a placeholder for the phone number, %2$s is a placeholder for the verification state (e.g. "pending") -->
+    <string name="linked_mobile_pattern">%1$s (%2$s)</string>
     <string name="public_nickname">Nickname</string>
     <string name="share_via">Teile über…</string>
     <string name="share_subject">%s-Chat</string>
-    <string name="message_delete_undo">Rückgängig</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="mobile_already_linked">Ihri ${app_name_short}-ID isch scho mit dere Handynummere verchnüpft</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -142,7 +141,6 @@
     <string name="image_placeholder">Bild</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="invalid_threema_id">Ungültigi ${app_name_short}-ID</string>
-    <string name="contact_already_exists">Kontakt existiert scho</string>
     <string name="close">Schlüsse</string>
     <string name="creating_contact">Neue Kontakt dezue tue</string>
     <string name="creating_contact_successful">Kontakt erfolgriich dezue taa</string>
@@ -157,7 +155,6 @@
     <string name="verify_failed">Fehlgschlage</string>
     <string name="verify_failed_summary">D’Prüefig vode Handynummere isch fehlgschlage. Bitte stelled Sie sicher, dass d’Nummere stimmt und Sie mitem Mobilfunknetz verbunde sind, bevor Sie’s nomal versueched.</string>
     <string name="verify_failed_not_linked">D’Prüefig vode Handynummere isch nöd möglich, wil de Prozäss vo Ihne abbroche worde isch.</string>
-    <string name="check_incoming_sms">Warte uf iigehends SMS</string>
     <string name="backup_title">ID exportiere</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_sum">Exportiered Sie Ihri ${app_name_short}-ID</string>
@@ -232,7 +229,6 @@
     <string name="acknowledge">Bestätige</string>
     <string name="decline">Ablehne</string>
     <string name="forward_message">Wiiterleite</string>
-    <string name="file_is_not_a_image">Di usgwählti Datei isch kei Bilddatei.</string>
     <string name="connection_error">Verbindigsfehler, bitte versueched Sie’s spöter nomal.</string>
     <string name="me_myself_and_i">Ich</string>
     <string name="really_forward">Wiiterleite a «%1$s»?</string>
@@ -240,10 +236,8 @@
     <string name="ringtone_none">Stumm</string>
     <string name="no_camera_installed">Kei geeigneti Kamera verfüegbar</string>
     <string name="save_message_action">Speichere</string>
-    <string name="file_is_not_a_video">Usgwählti Datei isch keis Video</string>
     <string name="masterkey_is_unlocked">Hauptschlüssel isch entsperrt</string>
     <string name="file_too_large">D’Datei isch grösser als die erlaubte %1$d MB</string>
-    <string name="deleting_thread">Chat wird glöscht</string>
     <string name="enter_serial_body"><![CDATA[Bitte gebed Sie Ihre Shop-Lizänzschlüssel ii. Sie chönd e Lizänz <a href="https://shop.threema.ch/">chaufe</a> oder en Schlüssel für e scho kaufti Lizänz <a href="https://shop.threema.ch/retrieve_keys">wiederherstelle</a>.]]></string>
     <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_enter_serial_body">Gebed Sie Ihri ${app_name_short}-Zuegangsdate ii, wo Sie vo Ihrem Unternehme übercho händ.</string>
@@ -251,8 +245,6 @@
     <string name="enter_serial_title">${app_name} freischalte</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="serial_required_want_exit">De Lizänzschlüssel isch ungültig. Wänd Sie’s nomal versueche oder ${app_name} verlaa?</string>
-    <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
-    <string name="work_serial_required_want_exit">De Lizänzschlüssel isch ungültig. Wänd Sie’s nomal versueche oder ${app_name} zuetue?</string>
     <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
     <string name="checking_serial">Lizänz wird überprüeft</string>
     <!-- Message shown on progress dialog that shows while the credentials that the user entered are being checked for their validity -->
@@ -265,7 +257,6 @@
     <string name="not_now">Spöter erinnere</string>
     <string name="preparing_messages">Nachrichte zämestelle</string>
     <string name="select_emoji">Emojis</string>
-    <string name="search_contact">Kontakt sueche</string>
     <string name="push_reset_title">Push-Token zruggsetze</string>
     <string name="push_reset_text">S’Push-Token isch zrugggsetzt worde</string>
     <string name="emoji_recent">Zletscht</string>
@@ -308,7 +299,6 @@
     <string name="set_pin_again_summary">PIN wiederhole</string>
     <string name="set_pin_hint">PIN</string>
     <string name="title_addgroup">Neui Gruppe</string>
-    <string name="search_group">Gruppe sueche</string>
     <string name="updating_system">System-Update</string>
     <string name="title_select_contacts">Mitglieder uswähle</string>
     <string name="pin_invalid_not_set">PIN ungültig</string>
@@ -331,8 +321,6 @@
     <string name="backup_delete_confirm">Backup-Datei glöscht</string>
     <string name="message_log_title">Nachrichtedetails</string>
     <string name="state_read">gläse</string>
-    <string name="state_ack">bestätigt</string>
-    <string name="state_dec">abglehnt</string>
     <string name="state_delivered">zuegstellt</string>
     <string name="state_sending">wird gschickt</string>
     <string name="state_pending">usstehend</string>
@@ -343,10 +331,8 @@
     <string name="state_dialog_modified">Aktualisiert</string>
     <string name="state_dialog_edited">Bearbeitet</string>
     <string name="state_dialog_deleted">Glöscht</string>
-    <string name="state_dialog_status">Status</string>
     <string name="title_tab_recent">Letschti</string>
     <string name="no_recent_conversations">Kei Chats gfunde</string>
-    <string name="save_changes">Sichere</string>
     <string name="creating_group">Gruppe wird erstellt</string>
     <string name="updating_group">Gruppe aktualisiere</string>
     <string name="leaving_group">Gruppe wird verlaa</string>
@@ -361,9 +347,6 @@
     <string name="status_group_member_kicked">«%1$s» isch usde Gruppe entfernt worde.</string>
     <string name="can_not_send_no_group_members">Es chönd kei Nachrichte ine leeri Gruppe gschickt werde.</string>
     <string name="you_are_not_a_member_of_this_group">Sie sind keis Mitglied vo dere Gruppe.</string>
-    <string name="can_not_delete_not_valid">Es ungültigs Objekt cha nöd entfernt werde</string>
-    <string name="can_not_delete_contact_until_in_group">De Kontakt cha nöd glöscht werde, solang er sich no inere Gruppe befindet</string>
-    <string name="can_not_delete_contact">De Kontakt cha nöd glöscht werde</string>
     <string name="title_public_nickname">Nickname</string>
     <string name="prefs_sum_excluded_sync_identities">Die IDs, wo da ufglischted sind, werded bim Synchronisiere vo Kontäkt ignoriert.</string>
     <string name="prefs_title_excluded_sync_identities">Usschlussliste</string>
@@ -379,9 +362,7 @@
     <string name="yes">Ja</string>
     <string name="deleting_contact">Kontakt wird glöscht</string>
     <string name="prefs_contact_soring">Sortierig</string>
-    <string name="prefs_sum_contact_soring">Iistellig zur Sortierig vode Kontaktliste</string>
     <string name="prefs_contact_format">Kontaktnäme aazeige</string>
-    <string name="prefs_sum_contact_format">Iistellig zude Azeig vo Kontaktnäme</string>
     <string name="prefs_contact_list_title">Kontaktliste</string>
     <string name="prefs_default_contact_picture_colored">Farbigi Kontaktbilder</string>
     <string name="prefs_show_inactive_contacts">Inaktivi IDs aazeige</string>
@@ -397,20 +378,8 @@
     <string name="contact_format_last_name_first_name">Nachname Vorname</string>
     <string name="block_contact">Kontakt blockiere</string>
     <string name="unblock_contact">Kontakt deblockiere</string>
-    <string name="one_unread_message">1 ungläseni Nachricht</string>
-    <string name="really_unlink_contact_title">Verchnüpfig ufhebe</string>
-    <string name="really_unlink_contact">Wänd Sie d’Verchnüpfig zum Adrässbuech-Kontakt würklich ufhebe?</string>
-    <string name="do_unlink_contact">Verchnüpfig ufhebe</string>
-    <string name="do_choose_other_contact">Andere Kontakt wähle</string>
-    <string name="touch_to_link">(keine)</string>
-    <string name="prefs_validate_contacts">Kontaktverbindig überprüefe</string>
-    <string name="prefs_validate_contacts_loading">Kontaktverbindig in Überprüefig</string>
-    <string name="prefs_title_fullscreen_ime">Bildschirmfüllendi Tastatur</string>
-    <string name="prefs_sum_fullscreen_ime_on">D’Tastatur füllt im Querformat de ganz Bildschirm</string>
-    <string name="prefs_sum_fullscreen_ime_off">Oberhalb vode Tastatur wird en Uusschnitt vom Chat aazeigt</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="add_acount_from_within_threema">Verwalted Sie Ihri ${app_name_short}-ID vo de ${app_name_short}-App us.</string>
-    <string name="save_image">Bild speichere</string>
     <string name="share_image">Bild teile</string>
     <string name="view_in_gallery">Ide Galerie aluege</string>
     <string name="token_register_failed">Push-Token hät nöd chöne aktualisiert werde. Bitte versueched Sie’s spöter nomal.</string>
@@ -450,8 +419,6 @@
     <string name="prefs_summary_hide_screenshots">Miniature im App-Switcher verstecke und Screenshots verhindere</string>
     <string name="media_gallery">Medieübersicht</string>
     <string name="media_file_not_found">Mediedatei cha nöd ufgmacht werde. Sie isch glöscht oder nöd vom Server abeglade worde.</string>
-    <string name="no_media_found">I dem Chat sind kei %s gfunde worde.</string>
-    <string name="media_gallery_all">Alles</string>
     <string name="media_gallery_pictures">Bilder</string>
     <string name="media_gallery_videos">Videos</string>
     <string name="group_membership_title">Mitglied i dene Gruppe</string>
@@ -473,7 +440,6 @@
     <string name="contact_not_found">Kontakt nöd gfunde</string>
     <string name="contact_now_blocked">Kontakt blockiert</string>
     <string name="contact_now_unblocked">Kontakt deblockiert</string>
-    <string name="sending_images">Bilder schicke</string>
     <string name="share_conversation_body">Sie bruuched es moderns ZIP-Tool mit AES-Unterstützig, zum die Datei ufzmache, z.B. http://www.7-zip.org oder https://itunes.apple.com/de/app/the-unarchiver/id425424353</string>
     <string name="enter_zip_password_body">De Chat wird als verschlüssleti ZIP-Datei verschickt. Bitte wähled Sie es Passwort:</string>
     <string name="ballot_create">Umfrag erstelle</string>
@@ -509,8 +475,6 @@
     <string name="ballot_result_final">Endresultat</string>
     <string name="invalid_cannot_send">Sie chönd kei Nachrichte anen ungültige Kontakt schicke</string>
     <string name="ballot_answer_count_error">Bitte mindestens zwei Antworte festlegge.</string>
-    <string name="ballot_one_contact_not_supported">Achtung: %1$s cha nonig a Umfrage teilneh.</string>
-    <string name="ballot_x_contact_not_supported">Achtung: %1$d Kontäkt chönd nonig a Umfrage teilneh.</string>
     <string name="contact_state_inactive">Inaktiv</string>
     <string name="contact_state_invalid">Ungültig</string>
     <string name="back">Zrugg</string>
@@ -518,6 +482,7 @@
     <string name="wearable_reply_label">Antwort a %s</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="push_disable_text">Wenn Sie wiitermached, wird «${app_name_short} Push» statt de Push-Dienst vom System bruucht. Das treit dezue bii, Ihre digital Fuessabdruck chliner z’mache, defür muess Ihres Grät so konfiguriert sii, dass d’App im Hindergrund cha usgfüehrt werde. Kontaktiered Sie ggf. de Support vo Ihrem Grätehersteller für Unterstützig bide Konfiguration, falls di entsprächende Optione ide Gräteiistellige nöd uffindbar sind.</string>
+    <string name="debug_log_enabled_recently_warning">Wenn es bestimmts Problem uftaucht, versueched Sie bitte, das z’reproduziere, bevor Sie üs s’Debug-Log schicked. Das hilft üs, s’Problem gezielter z’identifiziere. Merci!</string>
     <string name="ballot_intermediate_results_show">Zwüscheresultat zeige</string>
     <string name="converting_video">Video wird bearbeitet</string>
     <string name="video_size_small">Höch (chliini Datemängi)</string>
@@ -559,8 +524,6 @@
     <string name="no_activity_for_mime_type">Kei passendi App für die Datei gfunde.</string>
     <string name="no_activity_for_intent">Kei passendi App gfunde.</string>
     <string name="open_from">Ufmache vo</string>
-    <string name="file_one_contact_not_supported">%1$s cha no kei Dateie empfange.</string>
-    <string name="file_x_contact_not_supported">Warnig: %1$d Kontäkt chönd kei Dateie empfange.</string>
     <string name="mime_android_apk">Android-Paket</string>
     <string name="mime_audio">Audio-Datei</string>
     <string name="mime_certificate">Digitals Zertifikat</string>
@@ -650,7 +613,6 @@
     <string name="notifications_until">Bis %s</string>
     <string name="notifications_mute">Stumm</string>
     <string name="notifications_choose_sound">Ton wähle</string>
-    <string name="error_video_conversion">Fehler bide Videokonvertierig.</string>
     <string name="confirm_your_pin">PIN bestätige</string>
     <string name="too_many_incorrect_attempts">Zvil fehlerhafti Versüech. Bitte versueched Sie’s i %s Sekunde nomal.</string>
     <string name="no_lockscreen_set">Kei System-Displaysperri festgleit.</string>
@@ -696,8 +658,6 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="new_wizard_info_fingerprint">Dur d’Bewegig vom Finger erzüüged Sie Zuefallsdate (sog. Entropie), wo für d’Erstellig vom Schlüsselpaar gnutzt werded. Das Schlüsselpaar wird mit Ihrere neue ${app_name_short}-ID verbunde. Es bestaht useme <b>öffentliche Schlüssel</b>, wo a Ihri Fründe verteilt wird, und eme <b>private Schlüssel</b>, wo uf Ihrem Grät bliibt. Bi Ihrne Fründe wird de öffentlich Schlüssel gnutzt, zum Nachrichte a Sie z’verschlüssle. Nur de Inhaber vom private Schlüssel und niemer sust cha d’Nachrichte wieder entschlüssle.</string>
     <string name="new_wizard_info_id">Sie händ au es Schlüsselpaar erzüügt. De öffentlich Schlüssel isch sicher a üse Server gschickt worde. De privat Schlüssel verlaht Ihres Grät nie. Das stellt sicher, dass niemer anders Ihri Nachrichte läse cha.</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="new_wizard_info_sync_contacts">Wenn Sie die Option aktiviered, werded E-Mail-Adrässe und Telefonnummere us Ihrem Adrässbuech dur ${app_name_short} einwegverschlüsslet (ghasht), bevor sie zum Kontaktabgliich an Server gschickt werded. Mir speichered kei Adrässbuechdate.</string>
     <string name="new_wizard_info_sync_contacts_dialog">D’Kontakt-Synchronisation hilft Ihne, Ihri Fründe automatisch z’finde. Wenn Sie zuestimmed, werded Handynummere und E-Mail-Adrässe us Ihrem Telefonbuech verschlüsslet a üsere Server gschickt und deet vergliche, zum passendi Kontäkt z’finde. Die Date werded weder gspeicheret no wiitergeh.\n\nWänd Sie d’Kontakt-Synchronisation aktiviere?</string>
     <!-- Instructions shown during the setup wizard. Only used for work builds (i.e., Threema Work or OnPrem). ${app_name_short} is a placeholders for the app's name, it must be kept as-is and should not be translated. -->
     <string name="new_wizard_info_link">Wenn Sie Ihri eigeni Telefonnummere und/oder E-Mail-Adrässe agebed, chan ${app_name_short} Ihrne Kontäkt helfe, Sie automatisch z’finde, wenn Sie i ihrem Adrässbuech iitreit sind. D’Agabe werded für das in einwegverschlüssleter (ghashter) Form uf üsem Server gspeicheret. Sie chönd de Schritt au eifach überspringe, wenn Sie ${app_name} anonym wänd nutze.</string>
@@ -729,9 +689,7 @@
     <string name="action_leave_and_delete_group">Gruppe verlaa und lösche</string>
     <string name="action_dissolve_and_delete_group">Gruppe uflöse und lösche</string>
     <string name="delete_my_group_message">Wänd Sie die Gruppe vollständig lösche? All Nachrichte werded entfernt, und die verbliibende Mitglieder chönd d’Gruppe nüme wiiter nutze.</string>
-    <string name="error_out_of_memory">Zwenig freie Speicher, zum die Aktion durezfüehre</string>
     <string name="configure">Konfiguriere</string>
-    <string name="file_is_not_audio">Kei Audio-Datei</string>
     <string name="disabled_by_policy">Es paar Iistellige sind dur de Administator deaktiviert worde</string>
     <string name="select_all">All uswähle</string>
     <string name="deleting_messages">Nachrichte werded glöscht</string>
@@ -814,7 +772,6 @@
     <string name="text">Text</string>
     <string name="undo">Rückgängig</string>
     <string name="android_backup_date">Letschts Backup</string>
-    <string name="check_now">Jetzt prüefe</string>
     <string name="discard">Verwerfe</string>
     <string name="android_backup_restart_threema">Bitte warte. D’App wird in Chürzi neu gstarted.</string>
     <string name="battery_optimizations_title">Akku-Leistigsoptimierig deaktiviere</string>
@@ -851,6 +808,7 @@
     <string name="play">Abspile</string>
     <string name="pause">Pause</string>
     <string name="retry">Nomal versueche</string>
+    <string name="voice_message">Sprachnachricht</string>
     <string name="voice_message_record">Sprachnachricht ufneh</string>
     <string name="open_navdrawer">Siitemenü ufmache</string>
     <string name="profile_picture">Profilbild</string>
@@ -865,7 +823,6 @@
     <string name="menu_send_profilpic">Als Profilbild-Empfänger dezue tue</string>
     <string name="menu_send_profilpic_off">Als Profilbild-Empfänger entferne</string>
     <string name="menu_send_profilpic_now">Profilbild jetzt schicke</string>
-    <string name="profile_picture_sent">Profilbild isch gschickt worde</string>
     <string name="sending_messages">Wird gschickt…</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_data_media_confirm">S’Sichere vo grosse Mediedateie ines ZIP-Backup cha sehr lang duure und d’Prozessor- und Speicherkapazität vo Ihrem Grät überschriite. Währendem Backup chönd kei ${app_name}-Nachrichte empfange werde. Trotzdem wiitermache?</string>
@@ -900,11 +857,7 @@
     <string name="italic">Kursiv</string>
     <string name="bold">Fett</string>
     <string name="shortcut_choice_title">Verchnüpfig erstelle für…</string>
-    <string name="prefs_title_device_info">Gräte-Info</string>
     <string name="notifications_disabled_title">Benachrichtigunge deaktiviert</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="notifications_disabled_text">Benachrichtigunge für ${app_name} sind im System vollständig deaktiviert worde. Sie werded nöd über neui Nachrichte informiert.</string>
-    <string name="notifications_disabled_settings">System-Iistellige bearbeite</string>
     <string name="error_attaching_files">Fehler bim Aahänke vo Dateie.</string>
     <string name="prefs_fix_powermanager_problems">Hindergrundusfüehrig ermögliche</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -954,21 +907,18 @@
     <string name="passphrase_service_name">Passphrase-Dienst</string>
     <string name="passphrase_service_description">Benachrichtigung, wenn d’Passphrase entsperrt isch</string>
     <string name="webclient_service_description">Benachrichtigung, wenn e Web-/Desktop-Sitzig aktiv isch</string>
-    <string name="prefs_title_accept_privacy_policy">Dateschutzerchlärig akzeptiere</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="privacy_policy_explain">${app_name} schützt Ihri Privatsphäre so konsequänt wie kein andere Messenger. I üsere %1$s erfahred Sie meh.</string>
-    <string name="privacy_policy_check_confirm">Bitte akzeptiered Sie d’Dateschutzerchlärig, zum %s nutze z’chöne.\n\n(Aaforderig gemäss EU-Verordnig 2016/679)</string>
     <string name="prefs_title_incognito_keyboard">Inkognito-Tastatur aafordere</string>
     <string name="prefs_sum_incognito_keyboard">Sammle vo Date für personalisierti Vorschläg deaktiviere (falls vode Tastatur unterstützt)</string>
-    <string name="tooltip_mentions">Tipped Sie ide Tastatur ufs @-Zeiche, zum en Kontakt i dere Gruppe direkt aazspräche oder z’erwähne.</string>
-    <string name="tooltip_imagepaint">Werded Sie kreativ! Tipped Sie ufde Zauberstaab, zum z’chritzle oder vorem Schicke Sticker oder Text zu Ihrne Bilder hinzuezfüege.</string>
     <string name="call_ongoing">Aruef lauft</string>
     <string name="ballot_received_votes">Iigangeni Stimme: %1$d/%2$d</string>
     <string name="quote_not_found">Zitierti Nachricht nöd gfunde</string>
     <string name="ballot_secret">gheim</string>
     <string name="password_too_short_generic">Passwort isch z’churz</string>
     <string name="passwords_dont_match">Kei Übereinstimmig</string>
-    <string name="test_unsuccessful">Test fehlgschlage</string>
+    <!-- Error message shown when setting up a custom server for the Threema Safe feature. %s is a placeholder for the details of the error. -->
+    <string name="threema_safe_test_unsuccessful">Test fehlgschlage: %s</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="preparing_threema_safe">${app_name_short} Safe wird vorbereitet</string>
     <string name="disable_powermanager_title">Akku-Ischränkige</string>
@@ -1019,9 +969,6 @@
     <string name="add_group_members">Wiiteri Mitglieder dezue tue</string>
     <string name="contact_add_confirm">Wänd Sie de neu Kontakt «%1$s» zu Ihrere Kontaktliste dezue tue?</string>
     <string name="password_bad">Unsichers Passwort</string>
-    <string name="prefs_fix_background_data">Hindergrunddate aktiviere</string>
-    <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="prefs_fix_background_data_desc">Demit ${app_name} im Hindergrund cha Nachrichte übercho, aktiviered Sie Hindergrunddate und die unigschränkti Datenutzig</string>
     <string name="prefs_fix_device">Problem vode Grätekonfiguration behebe</string>
     <string name="safe_successful">Erfolgriich</string>
     <string name="safe_unsuccessful">Fehlgschlage</string>
@@ -1033,7 +980,6 @@
     <string name="safe_retention">Speicherduur</string>
     <string name="safe_result">Ergäbnis</string>
     <string name="number_of_days">%d Täg</string>
-    <string name="backup_other_restore_options">Wiiteri Wiederherstelligs-Optione</string>
     <string name="safe_size">Backup-Grössi</string>
     <string name="backup_version_mismatch">D’Version vom Backup isch höcher als vo de App unterstützt. Bitte aktualisiered Sie d’App.</string>
     <string name="safe_restore_failed">Wiederherstelle fehlgschlage</string>
@@ -1064,7 +1010,6 @@
     <string name="delete_group_message">Wänd Sie die Gruppe verlaa und vollständig lösche? All Nachrichte werded entfernt.</string>
     <string name="delete_left_group_message">Wänd Sie die Gruppe vollständig lösche? All Nachrichte werded entfernt.</string>
     <string name="chats">Chats</string>
-    <string name="notification_setting_ignored">ÄNDERIGE WERDED IGNORIERT!</string>
     <string name="notification_channel_alerts">Warnige und Fehlermäldige</string>
     <string name="notification_channel_notices">Hiiwis</string>
     <string name="chat_updates">Chat-Aktualisierige</string>
@@ -1072,7 +1017,6 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="tooltip_export_id">Tipped Sie da, zum Ihri verschlüsslet ${app_name_short}-ID jetzt z’teile oder uszdrucke</string>
     <string name="downloading">Wird abeglade</string>
-    <string name="today">Hüt</string>
     <string name="restore_data_cancelled">Wiederherstelle aaghalte</string>
     <string name="safe_change_password">Passwort ändere</string>
     <string name="safe_configure_choose_password_title">Passwort wähle</string>
@@ -1082,7 +1026,6 @@
     <string name="safe_password_updated">S’${app_name_short} Safe-Passwort isch aktualisiert worde.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="safe_activated">${app_name_short} Safe isch aktiviert worde.</string>
-    <string name="restore_zip_invalid_file">Backup-Datei ungültig.</string>
     <string name="push_token_cleared">S’Push-Token isch entfernt worde</string>
     <string name="insert_date">Datum iifüege</string>
     <string name="add_answer">Antwort ergänze</string>
@@ -1091,11 +1034,7 @@
     <string name="voip_disabled">${app_name_short}-Arüef sind deaktiviert</string>
     <string name="hide_chat_enter_message_explain">De Chat isch als privat markiert. Zum ihn aa z’zeige, legged Sie bitte zerscht en Zuegriffsschutz fest.</string>
     <string name="unknown">Unbekannt</string>
-    <string name="miui_notification_title">Wichtige Hiiwis für MIUI-Nutzer</string>
-    <string name="miui_notification_body">MIUI 10 underbindet standardmässig Tön und LED für neu erstellti Benachrichtigungskanäl (usser für es paar Apps, wo vo Xiaomi als «wichtig» erachtet werded). Sie müend drum die Parameter ide App-spezifische Benachrichtigungsiistellige vo Ihrem Handy für jede Kanal aktiviere. Kontaktiered Sie de Hersteller vo Ihrem Handy für wiiteri Informatione.</string>
-    <string name="miui12_notification_body">MIUI underbindet standardmässig Tön, LED und Popups für neu erstellti Benachrichtigungskanäl (usser für sehr populäri Apps, wo vo Xiaomi als «wichtig» erachtet werded). Sie müend drum die Optione ide App-spezifische Benachrichtigungsiistellige vo Ihrem Handy manuell aktiviere und die Prozedur nach jedem App-Update wiederhole. Kontaktiered Sie de Hersteller vo Ihrem Handy für wiiteri Informatione.</string>
     <string name="dont_show_again">Nüme aazeige</string>
-    <string name="miui_notification_prefs">MIUI-Iistellige</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_upload_successful">${app_name_short} Safe-Backup erfolgriich ufeglade</string>
     <string name="time_remaining">no %s</string>
@@ -1106,7 +1045,6 @@
     <string name="about_screen_remote_secrets_activated">Aktiviert</string>
     <string name="lock_option_biometric">Biometrisch</string>
     <string name="biometric_enter_authentication">Zum Entsperre bitte authentisiere</string>
-    <string name="biometric_authentication_failed">D’Authentisierig isch fehlgschlage</string>
     <string name="biometric_authentication_successful">Sie sind erfolgriich authentisiert worde</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_safe_forced_explain">Ihre Administrator hät ${app_name_short} Safe für Ihres Grät aktiviert.</string>
@@ -1115,8 +1053,6 @@
     <string name="work_select_categories">Kategorie uswähle</string>
     <string name="my_profile">Mis Profil</string>
     <string name="message_too_long">D’Nachricht isch z’lang und cha nöd gschickt werde.</string>
-    <string name="database_migration_no_space">Datebankmigration nöd möglich: Zwenig freie Speicherplatz.</string>
-    <string name="advanced_options">Wiiteri Optione</string>
     <string name="url_warning_body">D’Website, wo Sie wänd ufmache, isch verdächtig: \n\nDe aazeigt Hostname: <b>%s</b> \nDe tatsächlich Hostname:<b>%s</b>\n\nEs chönnt sich um en Versuech handle, Sie uf e gfälschti Website umzleite. \n\nWänd Sie trotzdem wiitermache?</string>
     <string name="url_warning_title">Phishing-Warnig</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1132,8 +1068,6 @@
     <string name="lp_or_select_nearby">Oder wähled Sie en Ort ide Nöchi</string>
     <string name="lp_use_this_location">De Ort schicke?</string>
     <string name="lp_search_place">Ortschaft iigeh</string>
-    <string name="lp_no_nearby_places_found">Kei Ort ide Nöchi gfunde</string>
-    <string name="select_directory_for_backup">Da sichere</string>
     <string name="data_backup_headline">Erstelled Sie es Date-Backup, zum all Date inklusiv Ihri Chats und Medie z’sichere.</string>
     <string name="data_backup_save_path">Sicherigspfad</string>
     <string name="change">Ändere</string>
@@ -1165,14 +1099,13 @@
     <string name="whatsnew_headline"><![CDATA[<p>Ab sofort chönd Sie Ihres Android-Grät mit de neue Desktop-App (Beta) verchnüpfe und d’Multi-Device-Funktion teste.</p>
         <p>Wiiteri Details findet Sie under «Menü > Threema 2.0 für Desktop (Beta)».</p>        ]]></string>
     <string name="tap_to_start">Tipped Sie da, zum %s jetzt z’starte.</string>
+    <string name="notification_title_restart">Neustart erforderlich</string>
     <string name="two_years">2 Jahr</string>
-    <string name="invalid_backup_path">Ungültige Backup-Pfad</string>
     <string name="backup_data_no_permission">Kei Schriibzuegriff uf das Verzeichnis. Bitte wähled Sie es anders.</string>
     <string name="prefs_sum_show_unread_badge">Plakette ide Navigations-Tabs aazeige</string>
     <string name="prefs_title_show_unread_badge">Plakette</string>
     <string name="open_myid_popup">Popup-Fenster für Schnellzuegriff ufmache</string>
     <string name="logo">Logo / Ganz ufe scrolle</string>
-    <string name="quote_subj_end">Zitat Endi</string>
     <string name="quote_subj">Zitat</string>
     <string name="duration">Duur</string>
     <string name="seconds">Sekunde</string>
@@ -1196,8 +1129,6 @@
     <string name="restore_data_backup_explain">Zum es Datebackup wiederherzstelle, lösched Sie zerscht Ihri ${app_name_short}-ID under «Mis Profil».\n\nWenn d’App neu started, wähled Sie «Backup wiederherstelle &gt; Wiiteri Wiederherst.-Optione &gt; Date-Backup» und tipped Sie ide Dateiuswahl ufs gwünschte Datebackup, wo Sie wänd wiederherstelle.</string>
     <string name="audio_focus_loss_complete">Aruef beendet wäg vollständigem Verlust vom Audio-Fokus.</string>
     <string name="tap_for_picture_hold_for_video">Tippe für Foti, hebe für Video</string>
-    <string name="sending_media">Medie werded gschickt</string>
-    <string name="permission_record_video_audio_required">Bitte aktiviered Sie d’Mikrofon-Berächtigung, zum Videos mit Ton ufneh z’chöne</string>
     <string name="media_files">Dateie</string>
     <string name="auto_download_limit_explain">Videos und Dateie mit meh als %s werded immer uf Verlange abeglade</string>
     <string name="quoted_message_deleted">Di zitiert Nachricht isch nüme verfüegbar</string>
@@ -1214,7 +1145,6 @@
     <string name="work_life_dnd_active">Ruheziit aktiv</string>
     <string name="warning">Warnig</string>
     <string name="password_remember_warning">Merked Sie sich, was Sie da iigebed! Wil %s kei Passwörter uf Server speicheret, chönd mir Ihne nöd hälfe, wenn Sie d’PIN oder d’Passphrase vergässe händ.</string>
-    <string name="safe_backup_tap_to_restart">Tipped Sie uf die aazeigt System-Benachrichtigung, zum d’App jetzt neu z’starte. Wenn Sie d’Benachrichtigung nöd gsehnd, ziehnd Sie bitte d’Benachrichtigungsleiste vo Ihrem Handy abe.</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="send_to_support">An ${company_name}-Support schicke</string>
     <string name="menu_legal">Rechtlichs</string>
@@ -1260,7 +1190,6 @@
     <string name="forward_text">Text wiiterleite</string>
     <string name="an_error_occurred_during_send">Bim Versand vo einere oder mehrere Nachrichte isch en Fehler ufträtte.</string>
     <string name="state_processing">wird verarbeitet</string>
-    <string name="passphrase_locked">D’Passphrase isch gsperrt</string>
     <string name="selected_media">Ihri Uswahl</string>
     <string name="attach_gif">GIF</string>
     <string name="attach_gallery">Galerie</string>
@@ -1274,19 +1203,14 @@
     <string name="media_date_unknown">Unbekannts Datum</string>
     <string name="max_selectable_media_exceeded">Es chönd maximal %d Objekt ufs Mal verschickt werde.</string>
     <string name="error_unable_loading_media_thumb">Vorschau cha nöd glade werde</string>
-    <string name="select">Uswähle</string>
     <string name="filter_list">Liste filtere</string>
     <string name="hint_filter_list">Filtertext iigeh</string>
     <string name="add">Dezue tue</string>
-    <string name="threema_message_from">Nachricht vo %s</string>
-    <string name="show_text">Text aazeige</string>
     <string name="only_images_or_videos">Nur Bilder und Videos chönd usgwählt werde</string>
     <string name="media_gallery_gifs">GIFs</string>
     <string name="no_media_found_global">Uf dem Grät sind kei Medie gfunde worde</string>
     <string name="original_file_no_longer_avilable">Kei Zuegriff meh uf d’Original-Datei. Bitte schicked Sie die Nachricht nomal.</string>
-    <string name="state_transcoding">wird transcodiert</string>
     <string name="importing_files">Dateie werded importiert</string>
-    <string name="tooltip_image_resolution_hint">Da tippe, zum d’Bilduflösig indivduell aazpasse.</string>
     <string name="ballot_created_successfully">D’Umfrag isch erfolgriich erstellt worde.</string>
     <string name="file_size">Dateigrössi</string>
     <string name="thirty_days_abbrev">30d</string>
@@ -1297,7 +1221,6 @@
     <string name="brush">Pinsel</string>
     <string name="pencil">Bleistift</string>
     <string name="highlighter">Textmarker</string>
-    <string name="error_detecting_faces">Bide Gsichtserchännig isch en Fehler ufträtte</string>
     <string name="no_faces_detected">Kei Gsichter gfunde</string>
     <string name="smiley">Smiley</string>
     <string name="blur">Verwüsche</string>
@@ -1312,7 +1235,6 @@
     <string name="note_group_howto">Tipp: Wenn Sie kei Mitglieder dezue tüend, bliibed Nachrichte a die Gruppe lokal. Das isch ideal, zum Notize, Medie oder Dokument sicher speichere oder uf de Desktop z’überträge.</string>
     <string name="mark_unread">Als ungläse markiere</string>
     <string name="mark_read_short">Gläse</string>
-    <string name="unread">Ungläse</string>
     <string name="missing_app_licence">De App-Store hät Ihri App-Lizänz nöd chöne überprüefe. Falls Sie Google Play bruuched, lösched Sie d’Date vode Google Play Store-App und started Sie Ihres Handy neu.</string>
     <string name="set_backup_path">Backup-Pfad festlegge</string>
     <string name="set_backup_path_intro">Bitte wähled Sie im folgende Bildschirm de Ordner us, i dem Date-Backups sölled gsicheret werde.</string>
@@ -1324,21 +1246,16 @@
     <string name="app_store_error_code">App-Store-Fehlercode: %d</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_restore_type"><![CDATA[Weli Art vo Backup wänd Sie wiederherstelle? <br/><br/> <a href=%s>Meh über Backups in ${app_name_short} erfahre</a>]]></string>
-    <string name="data_backup_info">Alles wiederherstelle inkl. Chats</string>
     <string name="new_to_threema">Neu bi %s?</string>
     <string name="back_to_threema">Zrugg bi %s?</string>
-    <string name="id_backup_info">Nur Ihri ID wiederherstelle</string>
-    <string name="restore_your_id_contacts_and_groups">Ihri ID, Kontäkt und Gruppe wiederherstelle</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_safe_backup">${app_name_short} Safe-Backup</string>
     <string name="forgot_your_password"><![CDATA[<a href=%s>Hilfe</a>]]></string>
     <string name="download_failed">Download fehlgschlage. Fehlercode: %d</string>
     <string name="edit_answer">Antwort bearbeite</string>
     <string name="share_media">Mitere andere App teile…</string>
-    <string name="group_image">Gruppebild</string>
     <string name="miui_battery_optimization">Bitte deaktiviered Sie d’Akkuoptimierig für %s, zum die Funktion z’ermögliche. Wils Xiaomi nöd als notwendig erachted, sich a d’Android-Standards z’halte, müend Sie das manuell ide Iistellige vo Ihrem Handy vorneh. Für Unterstützig bide Deaktivierig vode Akkuoptimierig kontaktiered Sie bitte de Xiaomi-Support.</string>
     <string name="forward_captions">Beschriftig mitschicke</string>
-    <string name="importing_files_failed">Importiere vode Backup-Datei fehlgschlage. Stelled Sie sicher, dass gnueg freie Platz im interne Speicher ume isch.</string>
     <string name="label_continue">Wiiter</string>
     <string name="select_date">Datum uswähle</string>
     <string name="select_time">Ziit uswähle</string>
@@ -1352,22 +1269,17 @@
     <string name="prefs_sum_reset_receipts">Kontaktspezifischi Iistellige für Läsebestätigunge und «Mälde, wenn ich tippe» ufde Standard zruggsetze</string>
     <string name="reset_successful">Erfolgriich uf Standardiistellige zrugggsetzt</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="no_threema_qr_info">Das isch kein ${app_name_short}-QR-Code, de decodiert Inhalt isch:</string>
-    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Scanned Sie de QR-Code vomene andere Kontakt, zum ihn z’verifiziere. De QR-Code cha dur Tippe ufs Profilbild obe links im ${app_name_short}-Hauptbildschirm aazeigt werde.</string>
     <string name="enable_storage_access_for_media">Aktiviered Sie de Speicherzuegriff, zum Bilder und Videos uf Ihrem Grät z’gseh</string>
     <string name="select_storage_access_for_media_is_granted">Sie händ Zuegriff uf e Uuswahl a Fotis und Videos geh.</string>
     <string name="take_me_there">Jetzt aktiviere…</string>
     <string name="manage">Verwalte</string>
-    <string name="custom">anderi</string>
     <string name="show_public_key">Öffentliche Schlüssel aazeige</string>
     <string name="public_key_for">Öffentliche Schlüssel vo %s</string>
     <string name="copied">Kopiert</string>
     <string name="no_votes_yet">Bis jetzt sind no kei Stimme abgeh worde.</string>
     <string name="permission_contacts_sync_required">Erlaubed Sie bitte de Zuegriff uf d’Kontäkt, zum sie z’synchronisiere.</string>
     <string name="not_voted_user_list">Die Teilnehmer händ nöd abgstumme: %s</string>
-    <string name="contact_update">Aktualisierig vode Kontakt-Informatione</string>
-    <string name="invalid_onprem_id">Entweder existiert die ID nöd (oder nüme), oder sie isch nöd mit Ihrere ID kompatibel.</string>
     <string name="enable_unknown_sources">Installiere nöd möglich. Bitte aktiviered Sie «Unbekannte Apps installieren» für %s.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="threema_push">${app_name_short} Push</string>
@@ -1419,14 +1331,11 @@
     <string name="relationTypeSpouse">Ehepartner</string>
     <string name="contact_property_key">"Schlüssel"</string>
     <string name="header_nickname_entry">"Spitzname"</string>
-    <string name="contact_picture_content_description">Kontaktbild</string>
     <string name="prefs_title_use_system_ringtone">Systemton bruuche</string>
     <string name="organization_type">Organisation</string>
     <string name="permission_bluetooth_connect_required">Erteiled Sie d’Berächtigung «Geräte in der Nähe», zum verbundeni Bluetooth-Grät z’finde</string>
     <string name="tooltip_multiple_recipients_title">Mehreri Empfänger</string>
     <string name="tooltip_multiple_recipients_text">Lang tippe, zum mehreri Empfänger z’wähle und allne die gliich Nachricht z’schicke.</string>
-    <string name="synchronizing">Synchronisation lauft…</string>
-    <string name="forward_security">Nachrichte mit Perfect Forward Secrecy schicke</string>
     <string name="forward_security_mode">Perfect Forward Secrecy</string>
     <string name="forward_security_mode_none">keine</string>
     <string name="clear_forward_security">Perfect-Forward-Secrecy-Sitzige lösche</string>
@@ -1472,10 +1381,6 @@
     <string name="unable_to_restore_identity_because">D’ID hät nöd chöne wiederhergstellt werde. Grund: %s</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="share_with_app">Mit ${app_name} teile</string>
-    <string name="read_phone_state_dialog_allow">Zuelah</string>
-    <string name="read_phone_state_dialog_disallow">Trotzdem wiitermache</string>
-    <string name="read_phone_state_dialog_never_ask_again">Nüme fröge</string>
-    <string name="read_phone_state_dialog_title">Berächtigung benötigt</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="read_phone_state_dialog_message">Zum verhindere, dass ${app_name_short}-Arüef reguläri Arüef underbrächet, wird d’Telefon-Berächtigung benötigt. Falls die Berächtigung nöd geh isch, wird en ${app_name_short}-Aruef en reguläre Aruef underbräche und umgekehrt.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1496,7 +1401,6 @@
     <string name="group_no_members">Die Gruppe hät kei anderi Mitglieder</string>
     <string name="group_call">Gruppearuef</string>
     <string name="checking_compatibility">D’Kompatibilität wird überprüeft…</string>
-    <string name="group_call_mic_permission_rationale">Zum Gruppearüef mache z’chöne, müend Sie under «Berächtigunge» in %s de Zuegriff ufs Mikrofon erlaube.</string>
     <string name="group_call_mic_permission_description">Zum Gruppearüef nutze z’chöne, wird d’Mikrofon-Berächtigung benötigt, demit die andere Sie chönd ghöre.</string>
     <string name="call_mic_permission_description">Für Arüef wird d’Mikrofon-Berächtigung benötigt, demit Sie ghört werded.</string>
     <string name="group_call_camera_permission_rationale">Demit die andere Teilnehmer Ihres Bild chönd gseh, müend Sie under «Berächtigunge» in %s de Zuegriff uf d’Kamera erlaube.</string>
@@ -1518,7 +1422,6 @@
     <string name="forward_security_mode_2dh">einsiitig</string>
     <string name="forward_security_mode_all">all</string>
     <string name="forward_security_mode_partial">teilwiis</string>
-    <string name="forward_security_explanation">Perfect Forward Secrecy (PFS) schützt e uufzeichneti Kommunikation vor nachträglicher Entschlüsslig au bi Kenntnis vom Langziitschlüssel.\n\nDie Option cha aktiviert werde, wenn d’App uf beide Siite PFS unterstützt.</string>
     <string name="group_call_inactivity_left">Gruppearuef wäge Inaktivität verlaa</string>
     <string name="missing_permission_external_storage">Fehler bim Kopiere vode Datei. Versueched Sie folgendi Schritt:\n1. Mached Sie uf Ihrem Handy d’App «Einstellungen» uf.\n2. Navigiered Sie zu «Apps».\n3. Tipped Sie uf «Zugriff auf alle Dateien».\n4. Tipped Sie uf die drü Pünkt obe und wähled Sie «System Apps anzeigen».\n5. Tipped Sie uf «Externer Speicher» und stelled Sie sicher, dass «Zugriff zum Verwalten aller Dateien zulassen» aktiviert isch.\n6. Versueched Sie nomal, s’Date-Backup wiederherzstelle.</string>
     <string name="forward_security_downgraded_status_message">Perfect Forward Secrecy isch i dem Chat deaktiviert worde, wil d’App-Version vom Chatpartner das nöd unterstützt oder ${app_name_desktop} 2.0 für Desktop (Beta) gnutzt wird.</string>
@@ -1551,7 +1454,6 @@
     <string name="group_name">Name vode Gruppe</string>
     <string name="star_message">Mit Sterndli markiere</string>
     <string name="starred_message">Sterndli-Nachricht</string>
-    <string name="starred">Mit Sterndli</string>
     <string name="starred_messages">Sterndli-Nachrichte</string>
     <string name="sorting">Sortierig</string>
     <string name="sort_by">Sortiere nach…</string>
@@ -1592,7 +1494,6 @@
     <!-- The part of this text that is surrounded by the square brackets will be clickable by the user and lead them to the download page for the desktop client -->
     <!-- The text in [square brackets] must be translated, and the brackets must be kept around the translation. ${app_name_desktop} is a placeholder for the app's name and must NOT be translated -->
     <string name="md_linked_devices_empty">Bevor Sie es neus Grät verchnüpfed, laded Sie bitte di aktuell Beta-Version vo [${app_name_desktop} für Desktop] abe und mached Sie die uf.</string>
-    <string name="md_link_device_qr_scan_message">Bitte scanned Sie de QR-Code</string>
     <string name="directory_request_failed">Verzeichnis-Abfrag fehlgschlage. Versueched Sie’s nomal.</string>
     <string name="add_shortcut_exists">E Verchnüpfig für das Ziil existiert scho.</string>
     <string name="scan_qr_code">QR-Code scanne</string>
@@ -1618,10 +1519,13 @@
     <string name="problemsolver_title_background_data">Hindergrunddate deaktiviert</string>
     <string name="problemsolver_title_notifications">Benachrichtigunge deaktiviert</string>
     <string name="problemsolver_title_fullscreen_notifications">Vollbild-Benachrichtigunge deaktiviert</string>
+    <string name="problemsolver_title_debug_log_enabled">Debug-Log wiiterhin aktiviert</string>
     <string name="problemsolver_explain_fullscreen_notifications">D’App dörf kei Vollbild-Benachrichtigunge aazeige. Dur das verpassed Sie möglicherwiis iigehendi Arüef, wenn s’Handy gsperrt isch. Zum das z’behebe, aktiviered Sie d’Option «Vollbildbenachrichtigungen von dieser App erlauben».</string>
     <string name="problemsolver_explain_notifications">Benachrichtigunge sind vollständig deaktiviert. Sie werded nöd über neui Nachrichte oder Arüef informiert, was zur Folg hät, dass d’App möglicherwiis nöd wie erwarted funktioniert. Zum das z’behebe, aktiviered Sie d’Option «Alle Benachrichtigungen».</string>
     <string name="problemsolver_explain_background_data">D’Nutzig vo mobile Date im Hindergrund isch deaktiviert. Sie werded nöd über neui Nachrichte oder Arüef informiert, usser wenn Sie d’App aktiv ufmached. Zum das z’behebe, aktiviered Sie d’Option «Hintergrunddaten».</string>
     <string name="problemsolver_explain_background">D’Nutzig vode App im Hindergrund isch igschränkt. Dur das chömed Sie kei Benachrichtigunge über, und d’App funktioniert nur teilwiis oder nöd wie erwarted. Zum das z’behebe, tipped Sie uf «Akkunutzung der App» und wähled Sie «Uneingeschränkt».</string>
+    <string name="problemsolver_explain_debug_log_enabled">Sie händ voreme Wiili s’Debug-Log aktiviert. Wenn Sie Ereignis und Netzwerchinfos nüme müend logge, isch empfohle, s’Log wider z’deaktiviere.</string>
+    <string name="problemsolver_explain_debug_log_force_enabled">${app_name} loggt im Moment Ereignis und Netzwerchinfos inere Datei, wil Sie d’Datei «%s» erstellt händ. Wenn Sie s’Logging nüme bruched, chönd Sie die Datei lösche.</string>
     <string name="problemsolver_info_text">D’Bezeichige vo es paar vode gnännte Optione ide Systemiistellige chönd je nach Android-Version und Grätehersteller variiere.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Akkunutzig vode App «optimiert»</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1639,7 +1543,6 @@
     <string name="edit_message_not_supported_for_contact">D’Nachricht cha nöd bearbeitet werde, wil d’App-Version vom Empfänger die Funktion nöd understützt.</string>
     <string name="edit_message_not_supported_for_all_group_members">Di folgende Gruppemitglieder werded Ihri Änderige nöd gseh: %1$s</string>
     <string name="edit_message_not_supported_for_any_group_members">D’Nachricht cha nöd bearbeitet werde, wil keis Gruppemitglied en App-Version hät, wo die Funktion understützt.</string>
-    <string name="prefs_notification_settings">Benachrichtigungsiistellige</string>
     <string name="prefs_notification_settings_summary">Ton und Vibration im Systemdialog aapasse</string>
     <string name="new_messages">Neui Nachrichte</string>
     <string name="new_group_messages">Neui Gruppe-Nachrichte</string>
@@ -1649,10 +1552,26 @@
     <string name="incoming_calls">Iigehendi Aarüef</string>
     <string name="group_chats">Gruppechats</string>
     <string name="edit_history_file_no_caption">Kei Bildunderschrift</string>
-    <string name="device_linking_failed">Verchnüpfig fehlgschlage</string>
-    <string name="device_linking_failed_explain">S’Grät hät nöd chöne verchnüpft werde. Bitte versueched Sie’s nomal.\nGrund: %s.</string>
-    <string name="qr_code_scan_error">Bim Scanne vom QR-Code isch en Fehler ufträtte</string>
-    <string name="verification_failed">Überprüefig fehlgschlage</string>
+    <string name="prefs_title_error_reporting">Fehlerbricht</string>
+    <string name="prefs_send_error_reports">Anonyme Bricht schicke</string>
+    <string name="error_reporting_option_never_send">Nie</string>
+    <string name="error_reporting_option_always_send">Immer</string>
+    <string name="error_reporting_option_always_ask">Jedes Mal fröge</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_never_send">Nie Fehlerbricht a ${company_name} schicke</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_always_send">Fehlerbricht automatisch a ${company_name} schicke, wenn en kritische Fehler erkännt wird</string>
+    <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_always_ask">Jedes Mal fröge, öb en Fehlerbricht a ${company_name} gschickt werde söll</string>
+    <string name="error_detected_dialog_title">Anonyme Bricht schicke</string>
+    <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="crash_detected_dialog_text">${app_name_short} schiint erscht gad abgstürzt z’sii. Wennd Sie en anonyme Fehlerbricht schicke?</string>
+    <string name="crash_detected_dialog_remember_choice">Mini Uswahl speichere</string>
+    <string name="crash_detected_dialog_send_button">Schicke</string>
+    <!-- Shown in the advanced settings, shows the user their own Device's uniquely generated ID, which is used for sending error reports -->
+    <string name="prefs_error_reporting_id">Anonymi Gräte-ID</string>
+    <!-- The %s is a placeholder for an ID. It must be left as-is. -->
+    <string name="prefs_error_reporting_id_summary">Die ID wird zur Zueordnig vo Fehlerbricht bruucht. Sie isch anonym und nöd mit Ihrere Threema-ID verchnüpft.\n%s</string>
     <string name="md_device_currently_active">Grad aktiv</string>
     <string name="md_device_last_active_at">Zletscht aktiv: %s</string>
     <plurals name="md_max_device_slots_reached_info">
@@ -1677,9 +1596,6 @@
     <!-- Button label on dialog when configuring a backup, shown on dialog that lets the user choose how they want to select the backup folder. This option lets them bypass the file picker and use the default Documents folder instead -->
     <string name="backup_path_selection_documents">De «Dokumente»-Ordner wähle</string>
     <!-- accessibility -->
-    <string name="cd_ack_icon">Nachricht bestätigt</string>
-    <string name="cd_dec_icon">Nachricht abglehnt</string>
-    <string name="cd_ack_dec_group_count">vo %d Gruppemitglieder</string>
     <string name="cd_edited">d’Nachricht isch bearbeitet worde</string>
     <string name="cd_created_at">erstellt am %s</string>
     <string name="cd_edited_at">bearbeitet am %s</string>
@@ -1738,7 +1654,8 @@
     <string name="device_linking_error_invalid_contact_title">Ungültige Kontakt</string>
     <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <string name="device_linking_error_invalid_contact_body">De Kontakt mit de ID %1$s isch ungültig abgspeicheret, drum cha s’Grät nöd verchnüpft werde. Wändet Sie sich bitte an Support («Hauptmenü &gt; Hilfe»).</string>
-    <string name="device_linking_error_screen_close">Schlüsse</string>
+    <string name="device_linking_error_invalid_timestamp_title">Ungültigs Datum</string>
+    <string name="device_linking_error_invalid_timestamp_body">Es ungültigs Datum verhinderet d’Verchnüpfig. Wändet Sie sich bitte an Support («Hauptmenü &gt; Hilfe»).</string>
     <string name="work_directory_title">Unternehmensverzeichnis</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Im Verzeichnis sueche</string>
@@ -1750,10 +1667,10 @@
     <string name="contact_availability_status_available">Verfüegbar</string>
     <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
     <string name="contact_availability_status_unavailable">Nöd verfüegbar</string>
-    <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by mdm. -->
-    <string name="error_preset_onprem_url_mismatch_mdm">D’Server-URL isch ungültig. Bitte kontaktiered Sie Ihre Administrator.</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">De Aktivierigslink isch ungültig. Bitte kontaktiered Sie Ihre Administrator.</string>
+    <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
+    <string name="export_logs_screen_warning">Teiled Sie die Logdatei uns Dateschutzgründ nume mitem ${company_name}-Support, und nume dänn, wenn Sie dezue ufgforderet werded.</string>
     <string name="work_intro_screen_work_title">HOCHSICHERI KOMMUNIKATION FÜR UNDERNEHME</string>
     <string name="work_intro_screen_work_subtitle">Threema Work isch di sicher Kommunikationslösig für Undernehme – Ändi-zu-Ändi-verschlüsslet, DSGVO-konform und ide Schwiiz entwicklet.</string>
     <string name="work_intro_screen_work_sign_in_button_label">Jetzt amälde</string>
@@ -1768,6 +1685,10 @@
     <string name="work_intro_screen_onprem_learn_more_button_label">Meh erfahre</string>
     <string name="work_intro_screen_onprem_use_private_hint">Wenn Sie Threema privat bruuche wennd, empfehled mir d’Threema Private-App.</string>
     <string name="work_intro_screen_onprem_download_private_button_label">Jetzt abelade</string>
+    <!-- Description of the notification channel which is used when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_notification_channel_description">Wenn ${remote_secret} aktiv isch, wird e duurhafti Benachrichtigung aazeigt.</string>
+    <!-- Text of the notification which is shown when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_notification_text">${remote_secret} isch aktiv. Tipped Sie da für meh Infos.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <string name="remote_secrets_blocked_by_admin">De Zuegriff uf die App isch vo Ihrem Administrator gsperrt worde.\n\nBitte wändet Sie sich a Ihre Administrator.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
@@ -1807,6 +1728,11 @@
     <string name="referral_share_invitation_link">Iiladigslink teile</string>
     <string name="referral_view_terms_and_conditions">AGB aluege</string>
     <string name="referral_invitation_message_content">Hoi, das chönnt für dich no interessant sii: Threema Work isch e hervorragendi Lösig für sicheri Gschäftskommunikation. Da isch din Testlink: %1$s</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_title">Aruef beände, wenn Bluetooth trännt wird</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_on">De Aruef wird beändet, wenn s’Bluetooth-Headset während eme Aruef trännt wird.</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_off">De Aruef wird wiitergfüehrt, wenn s’Bluetooth-Headset während eme Aruef trännt wird. Hiiwis: Als Folg funktioniert d’Uflegg-Taste vom Headset möglicherwiis nüme.</string>
+    <string name="failed_to_load_conversations">Chats händ nöd chöne glade werde.</string>
+    <string name="contact_support">Support kontaktiere</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontäkt</item>

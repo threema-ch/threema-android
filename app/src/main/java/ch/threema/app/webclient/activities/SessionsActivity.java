@@ -57,13 +57,11 @@ import ch.threema.app.ui.EmptyRecyclerView;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.SelectorDialogItem;
 import ch.threema.app.ui.SilentSwitchCompat;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.ui.SpacingValues;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.DialogUtil;
 import ch.threema.app.utils.IntentDataUtil;
-import ch.threema.app.utils.LogUtil;
 import ch.threema.app.utils.PowermanagerUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
@@ -80,6 +78,8 @@ import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.app.webclient.state.WebClientSessionState;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
+
+import static ch.threema.android.ToastKt.showToast;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.WebClientSessionModel;
 import kotlin.Unit;
@@ -279,7 +279,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
             return;
         }
 
-        if (ConfigUtils.isWorkRestricted() && AppRestrictionUtil.isWebDisabled(this)) {
+        if (dependencies.getAppRestrictions().isWebDisabled()) {
             final String msg = getString(R.string.webclient_cannot_restore) + ": "
                 + getString(R.string.webclient_disabled);
             Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
@@ -382,7 +382,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
         viewModel = ViewModelCompat.getViewModel(this, SessionsViewModel.class);
 
         multiDeviceBannerComposeView = this.findViewById(R.id.multi_device_banner_compose);
-        if (ConfigUtils.isMultiDeviceEnabled(this)) {
+        if (ConfigUtils.isMultiDeviceEnabled()) {
             ComposeJavaBridge.INSTANCE.setMultiDeviceBanner(
                 multiDeviceBannerComposeView,
                 () -> {
@@ -638,7 +638,10 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
+        if (tag == null) {
+            return;
+        }
         switch (tag) {
             case DIALOG_TAG_REALLY_DELETE_SESSION:
                 if (data instanceof WebClientSessionModel) {
@@ -672,7 +675,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
                 if (model.getId() == modelId) {
                     model.setLabel(text);
                     // UGH!
-                    if (dependencies.getDatabaseService().getWebClientSessionModelFactory().createOrUpdate(model)) {
+                    if (dependencies.getWebClientSessionModelFactory().createOrUpdate(model)) {
                         WebClientListenerManager.sessionListener.handle(new ListenerManager.HandleListener<>() {
                             @Override
                             @UiThread
@@ -797,7 +800,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
 
         // Ensure that session does not already exist
         final WebClientSessionModel sessionModel =
-            dependencies.getDatabaseService().getWebClientSessionModelFactory().getByKey(qrCodeResult.key);
+            dependencies.getWebClientSessionModelFactory().getByKey(qrCodeResult.key);
         if (sessionModel != null) {
             // We scanned the QR code of a session that already exists! Something's wrong.
             logger.error("Session already exists");
@@ -811,12 +814,13 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
         }
 
         // Success! Start new session.
-        logger.info("Start new session aftger successfull QR code scan");
+        logger.info("Start new session after successful QR code scan");
         try {
             this.vibrate();
             this.start(qrCodeResult);
         } catch (IllegalArgumentException e) {
-            LogUtil.exception(e, this);
+            logger.error("Failed to start session from QR result", e);
+            showToast(this, R.string.an_error_occurred);
         }
 
         this.updateView();
@@ -850,7 +854,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
         // MDM constraints
         if (ConfigUtils.isWorkRestricted()) {
             // Threema Web may be disabled
-            if (AppRestrictionUtil.isWebDisabled(this)) {
+            if (dependencies.getAppRestrictions().isWebDisabled()) {
                 final String msg = getString(R.string.webclient_cannot_restore) + ": "
                     + getString(R.string.webclient_disabled);
                 Toast.makeText(this, msg, Toast.LENGTH_LONG).show();
@@ -875,8 +879,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
             }
 
             // Signaling hosts may be constrained
-            if (ConfigUtils.isWorkRestricted() &&
-                !AppRestrictionUtil.isWebHostAllowed(this, saltyRtcHost)) {
+            if (!dependencies.getAppRestrictions().isWebHostAllowed(saltyRtcHost)) {
                 final SimpleStringAlertDialog dialog = SimpleStringAlertDialog.newInstance(
                     R.string.webclient_cannot_start,
                     R.string.webclient_constrained_by_mdm
@@ -897,7 +900,8 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
                 null
             );
         } catch (HandshakeException | InvalidKeyException | ThreemaException x) {
-            LogUtil.exception(x, this);
+            logger.error("Failed to start session", x);
+            showToast(this, R.string.an_error_occurred);
         }
     }
 
@@ -966,7 +970,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
      */
     private void cleanupWebclientSessions() {
         final List<WebClientSessionModel> models =
-            dependencies.getDatabaseService().getWebClientSessionModelFactory().getAll();
+            dependencies.getWebClientSessionModelFactory().getAll();
         final long now = System.currentTimeMillis() / 1000;
         for (WebClientSessionModel model : models) {
             // Ignore persistent sessions
@@ -994,7 +998,7 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
             }
 
             if (remove) {
-                dependencies.getDatabaseService().getWebClientSessionModelFactory().delete(model);
+                dependencies.getWebClientSessionModelFactory().delete(model);
             }
         }
     }
@@ -1012,5 +1016,10 @@ public class SessionsActivity extends ThreemaToolbarActivity implements
                 }
             }
         }
+    }
+
+    @NonNull
+    public static Intent createIntent(@NonNull Context context) {
+        return new Intent(context, SessionsActivity.class);
     }
 }

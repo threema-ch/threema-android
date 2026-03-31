@@ -36,21 +36,24 @@ import ch.threema.app.compose.message.MessageDetailsListBox
 import ch.threema.app.compose.message.MessageTimestampsListBox
 import ch.threema.app.compose.theme.ThreemaTheme
 import ch.threema.app.compose.theme.dimens.GridUnit
+import ch.threema.app.dialogs.BottomSheetGridDialog
+import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.dialogs.GenericAlertDialog.DialogClickListener
 import ch.threema.app.listeners.EditMessageListener
 import ch.threema.app.listeners.MessageDeletedForAllListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.ui.BottomSheetItem
 import ch.threema.app.ui.CustomTextSelectionCallback
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.IntentDataUtil
+import ch.threema.app.utils.LinkConfirmationListener.Companion.DIALOG_TAG_CONFIRM_LINK
 import ch.threema.app.utils.LinkifyUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageType
 import com.google.android.material.appbar.MaterialToolbar
-import kotlin.getValue
 import org.koin.android.ext.android.inject
 import org.koin.androidx.compose.koinViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -58,7 +61,7 @@ import org.koin.core.parameter.parametersOf
 
 private val logger = getThreemaLogger("MessageDetailsActivity")
 
-class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
+class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener, LinkifyUtil.LinkifyListener {
     init {
         logScreenVisibility(logger)
     }
@@ -157,7 +160,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
     }
 
     override fun initActivity(savedInstanceState: Bundle?): Boolean {
-        theme.applyStyle(preferenceService.fontStyle, true)
+        theme.applyStyle(preferenceService.getFontStyle(), true)
 
         if (!super.initActivity(savedInstanceState)) {
             return false
@@ -171,6 +174,20 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
 
         return true
     }
+
+    override fun onLinkNeedsConfirmation(warning: String, uri: Uri) {
+        val dialog = GenericAlertDialog.newInstance(R.string.url_warning_title, warning, R.string.ok, R.string.cancel)
+        dialog.setData(uri)
+        dialog.show(supportFragmentManager, DIALOG_TAG_CONFIRM_LINK)
+    }
+
+    override fun showBottomSheetGridDialog(items: ArrayList<BottomSheetItem?>?) {
+        val dialog = BottomSheetGridDialog.newInstance(R.string.add_contact_in, items)
+        dialog.setCallback { tag: String?, data: String? -> LinkifyUtil.launchAddContactActivity(this, tag, data) }
+        dialog.show(supportFragmentManager, "bsh")
+    }
+
+    override fun shouldHandleLinkClick() = true
 
     private fun initScreenContent() {
         val editHistoryComposeView = findViewById<ComposeView>(R.id.message_details_compose_view)
@@ -197,6 +214,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                         editHistoryUiState = editHistoryUiState,
                         isOutbox = messageModel.isOutbox,
                         shouldMarkupText = uiState.shouldMarkupText,
+                        linkifyListener = this,
                         headerContent = {
                             when (messageModel.type) {
                                 MessageType.TEXT,
@@ -210,6 +228,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                                     CompleteMessageBubble(
                                         message = messageModel,
                                         shouldMarkupText = uiState.shouldMarkupText,
+                                        linkifyListener = this@MessageDetailsActivity,
                                         isTextSelectable = true,
                                         textSelectionCallback = textSelectionCallback,
                                     )
@@ -243,6 +262,7 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
                                 if (preferenceService.showMessageDebugInfo()) {
                                     SpacerVertical(height = GridUnit.x2)
                                     MessageDebugInfoBox(
+                                        type = messageModel.type,
                                         rowId = messageModel.id,
                                         uid = messageModel.uid,
                                         isOutbox = messageModel.isOutbox,
@@ -282,10 +302,10 @@ class MessageDetailsActivity : ThreemaToolbarActivity(), DialogClickListener {
         super.onDestroy()
     }
 
-    override fun onYes(tag: String, data: Any?) {
-        if (LinkifyUtil.DIALOG_TAG_CONFIRM_LINK == tag) {
+    override fun onYes(tag: String?, data: Any?) {
+        if (DIALOG_TAG_CONFIRM_LINK == tag) {
             logger.info("Opening of link confirmed")
-            LinkifyUtil.getInstance().openLink(data as Uri, null, this)
+            LinkifyUtil.getInstance().openLink(data as Uri, this, this)
         }
     }
 

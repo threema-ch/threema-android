@@ -187,10 +187,6 @@ public class BallotData {
         return this;
     }
 
-    /**
-     * @param identity
-     * @return
-     */
     public int addParticipant(String identity) {
         for (int pos = 0; pos < this.participants.size(); pos++) {
             if (identity.equals(this.participants.get(pos))) {

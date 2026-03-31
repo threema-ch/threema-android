@@ -11,7 +11,6 @@ object AutoDeleteUtil {
      * @param d2 second date
      * @return Time difference in days. Fractions of days are truncated
      */
-    @JvmStatic
     fun getDifferenceDays(d1: Date?, d2: Date?): Long {
         if (d1 != null && d2 != null) {
             val diff = d2.time - d1.time
@@ -25,7 +24,6 @@ object AutoDeleteUtil {
      * @param days Number of days to validate
      * @return Validated number of days
      */
-    @JvmStatic
     fun validateKeepMessageDays(days: Int): Int {
         return when {
             days <= ProtocolDefines.AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE -> ProtocolDefines.AUTO_DELETE_KEEP_MESSAGES_DAYS_OFF_VALUE

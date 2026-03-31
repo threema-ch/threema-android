@@ -14,11 +14,13 @@ import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
+import androidx.lifecycle.lifecycleScope
 import ch.threema.android.buildActivityIntent
 import ch.threema.android.buildIntent
 import ch.threema.app.R
 import ch.threema.app.activities.DisableBatteryOptimizationsActivity
 import ch.threema.app.activities.ThreemaToolbarActivity
+import ch.threema.app.logging.DebugLogHelper
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.ui.InsetSides
 import ch.threema.app.ui.SpacingValues
@@ -26,7 +28,9 @@ import ch.threema.app.ui.applyDeviceInsetsAsPadding
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
 import java.time.Instant
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 
 private val logger = getThreemaLogger("ProblemSolverActivity")
@@ -38,6 +42,7 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
 
     private val getProblemsUseCase: GetProblemsUseCase by inject()
     private val preferenceService: PreferenceService by inject()
+    private val debugLogHelper: DebugLogHelper by inject()
 
     override fun getLayoutResource() = R.layout.activity_problemsolver
 
@@ -67,17 +72,22 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
     }
 
     private fun updateViews() {
-        val problemsParentLayout = findViewById<LinearLayout>(R.id.problems_parent) ?: return
-        val problems = getProblemsUseCase.run()
-        if (problems.isEmpty()) {
-            finish()
-            return
+        lifecycleScope.launch {
+            val problems = getProblemsUseCase.call()
+            if (problems.isEmpty()) {
+                finish()
+                return@launch
+            }
+            updateViews(problems)
         }
+    }
 
+    private fun updateViews(problems: List<Problem>) {
+        val problemsParentLayout = findViewById<LinearLayout>(R.id.problems_parent) ?: return
         val introText = findViewById<TextView>(R.id.intro_text)
         val infoText = findViewById<View>(R.id.info_text)
         val infoIcon = findViewById<View>(R.id.info_icon)
-        if (problems.any { it.isSolvable }) {
+        if (problems.any { it.solutionType == SolutionType.ToSettings }) {
             introText.isVisible = true
             introText.text = getString(R.string.problemsolver_intro, getString(R.string.app_name))
             infoText.isVisible = true
@@ -101,11 +111,22 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
         itemLayout.findViewById<TextView>(R.id.item_title).text = getString(problem.titleRes)
         itemLayout.findViewById<TextView>(R.id.item_explain).text = problem.explanation.get(this)
 
-        with(itemLayout.findViewById<View>(R.id.solve_button)) {
-            if (problem.isSolvable) {
-                setOnClickListener { onSolveButtonClicked(problem) }
-            } else {
+        with(itemLayout.findViewById<MaterialButton>(R.id.solve_button)) {
+            val solutionType = problem.solutionType
+            if (solutionType == null) {
                 isVisible = false
+                return@with
+            }
+            setOnClickListener { onSolveButtonClicked(problem) }
+            when (problem.solutionType) {
+                SolutionType.ToSettings -> {
+                    setText(R.string.problemsolver_to_settings)
+                    setIconResource(R.drawable.ic_settings_outline_24dp)
+                }
+                is SolutionType.InstantAction -> {
+                    setText(problem.solutionType.label)
+                    setIconResource(R.drawable.ic_check)
+                }
             }
         }
 
@@ -131,6 +152,9 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
                 val intent = buildSettingsIntent(Settings.ACTION_IGNORE_BACKGROUND_DATA_RESTRICTIONS_SETTINGS)
                 startActivity(intent)
             }
+            Problem.DEBUG_LOG_STILL_ENABLED -> {
+                debugLogHelper.setEnabled(false)
+            }
             Problem.NOTIFICATIONS_DISABLED -> {
                 val intent = buildIntent {
                     @SuppressLint("InlinedApi")
@@ -150,6 +174,7 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
             }
             Problem.THREEMA_PUSH_BATTERY_OPTIMIZATION,
             Problem.WEBCLIENT_BATTERY_OPTIMIZATION,
+            Problem.REMOTE_SECRET_BATTERY_OPTIMIZATION,
             -> if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
                 val intent = buildActivityIntent<DisableBatteryOptimizationsActivity>(this) {
                     putExtra(
@@ -164,7 +189,9 @@ class ProblemSolverActivity : ThreemaToolbarActivity() {
                 val intent = buildSettingsIntent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 startActivity(intent)
             }
+            Problem.DEBUG_LOG_FORCE_ENABLED -> Unit
         }
+        updateViews()
     }
 
     private fun buildSettingsIntent(action: String): Intent =

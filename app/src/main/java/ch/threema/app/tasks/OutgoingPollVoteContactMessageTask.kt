@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.ballot.BallotId
 import ch.threema.domain.protocol.csp.messages.ballot.BallotVote
@@ -8,7 +7,7 @@ import ch.threema.domain.protocol.csp.messages.ballot.PollVoteMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.util.Date
 import kotlinx.serialization.Serializable
 
@@ -17,9 +16,8 @@ class OutgoingPollVoteContactMessageTask(
     private val ballotId: BallotId,
     private val ballotCreator: String,
     private val ballotVotes: Array<BallotVote>,
-    private val toIdentity: Identity,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+    private val toIdentity: IdentityString,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingPollVoteContactMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -50,18 +48,17 @@ class OutgoingPollVoteContactMessageTask(
         private val ballotId: ByteArray,
         private val ballotCreator: String,
         private val ballotVotes: List<Pair<Int, Int>>,
-        private val toIdentity: Identity,
+        private val toIdentity: IdentityString,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingPollVoteContactMessageTask(
-                MessageId.fromString(messageId),
-                BallotId(ballotId),
-                ballotCreator,
-                ballotVotes.map {
+                messageId = MessageId.fromString(messageId),
+                ballotId = BallotId(ballotId),
+                ballotCreator = ballotCreator,
+                ballotVotes = ballotVotes.map {
                     BallotVote(it.first, it.second)
                 }.toTypedArray(),
-                toIdentity,
-                serviceManager,
+                toIdentity = toIdentity,
             )
     }
 }

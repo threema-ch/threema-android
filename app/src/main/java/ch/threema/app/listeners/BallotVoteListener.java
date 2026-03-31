@@ -15,9 +15,6 @@ public interface BallotVoteListener {
 
     /**
      * return true, if the event have to be handled!
-     *
-     * @param ballotModel
-     * @return
      */
     @AnyThread
     boolean handle(final BallotModel ballotModel);

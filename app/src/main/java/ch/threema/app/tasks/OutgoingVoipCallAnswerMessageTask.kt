@@ -1,20 +1,15 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.common.now
-import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerData
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallAnswerMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 
 class OutgoingVoipCallAnswerMessageTask(
     private val voipCallAnswerData: VoipCallAnswerData,
-    private val toIdentity: Identity,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
-    private val voipStateService by lazy { serviceManager.voipStateService }
-
+    private val toIdentity: IdentityString,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingVoipCallAnswerMessageTask"
 
     override val shortLogInfo: String = "cid=${voipCallAnswerData.callId}"
@@ -29,7 +24,7 @@ class OutgoingVoipCallAnswerMessageTask(
             message = message,
             messageModel = null,
             toIdentity = toIdentity,
-            messageId = MessageId.random(),
+            messageId = message.messageId,
             createdAt = now(),
             handle = handle,
         )

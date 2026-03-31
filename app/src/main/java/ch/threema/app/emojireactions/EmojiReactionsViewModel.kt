@@ -26,10 +26,12 @@ class EmojiReactionsViewModel(
         )
     }
 
-    override suspend fun onActive() = runAction {
-        emojiReactionsModel?.dataFlow?.collect { reactions ->
-            updateViewState {
-                copy(emojiReactions = reactions ?: emptyList())
+    override suspend fun onActive() {
+        runAction {
+            emojiReactionsModel?.dataFlow?.collect { reactions ->
+                updateViewState {
+                    copy(emojiReactions = reactions ?: emptyList())
+                }
             }
         }
     }

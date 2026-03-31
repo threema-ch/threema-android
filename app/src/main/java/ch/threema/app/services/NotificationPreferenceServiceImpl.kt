@@ -9,7 +9,7 @@ import ch.threema.app.R
 import ch.threema.app.stores.PreferenceStore
 
 class NotificationPreferenceServiceImpl(
-    private val context: Context,
+    private val appContext: Context,
     private val preferenceStore: PreferenceStore,
 ) : NotificationPreferenceService {
     override fun isMasterKeyNewMessageNotifications(): Boolean =
@@ -89,7 +89,7 @@ class NotificationPreferenceServiceImpl(
         preferenceStore.getBoolean(getKeyName(R.string.preferences__disable_smart_replies), false)
 
     private fun getKeyName(@StringRes resourceId: Int): String =
-        context.getString(resourceId)
+        appContext.getString(resourceId)
 
     private fun PreferenceStore.getRingtoneUri(@StringRes ringtoneKey: Int): Uri? =
         getString(getKeyName(ringtoneKey))

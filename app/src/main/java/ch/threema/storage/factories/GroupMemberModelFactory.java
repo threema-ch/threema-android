@@ -8,17 +8,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import androidx.annotation.NonNull;
 import ch.threema.data.datatypes.IdColor;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupMemberModel;
+import ch.threema.storage.models.group.GroupMemberModel;
 
 public class GroupMemberModelFactory extends ModelFactory {
 
-    public GroupMemberModelFactory(DatabaseService databaseService) {
-        super(databaseService, GroupMemberModel.TABLE);
+    public GroupMemberModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, GroupMemberModel.TABLE);
     }
 
     public GroupMemberModel getByGroupIdAndIdentity(int groupId, String identity) {
@@ -41,20 +43,6 @@ public class GroupMemberModelFactory extends ModelFactory {
             null,
             null,
             null));
-    }
-
-    /**
-     * This does not include the user itself. If the user is part of the group, the total number of
-     * members is the value returned by this method + 1.
-     */
-    public long countMembersWithoutUser(int groupId) {
-        return DatabaseUtil.count(getReadableDatabase().rawQuery(
-            "SELECT COUNT(*) FROM " + this.getTableName()
-                + " WHERE " + GroupMemberModel.COLUMN_GROUP_ID + "=?",
-            new String[]{
-                String.valueOf(groupId)
-            }
-        ));
     }
 
     private GroupMemberModel convert(Cursor cursor) {
@@ -102,10 +90,8 @@ public class GroupMemberModelFactory extends ModelFactory {
             );
 
             if (cursor != null) {
-                try {
+                try (cursor) {
                     insert = !cursor.moveToNext();
-                } finally {
-                    cursor.close();
                 }
             }
         }
@@ -234,20 +220,13 @@ public class GroupMemberModelFactory extends ModelFactory {
             args);
     }
 
-    public int deleteByGroupIdAndIdentity(int groupId, String identity) {
-        return getWritableDatabase().delete(this.getTableName(),
-            GroupMemberModel.COLUMN_GROUP_ID + "=?"
-                + " AND " + GroupMemberModel.COLUMN_IDENTITY + "=?",
-            new String[]{
-                String.valueOf(groupId),
-                identity
-            });
-    }
-
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `group_member` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `identity` VARCHAR , `groupId` INTEGER)"
-        };
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String [] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE `group_member` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `identity` VARCHAR , `groupId` INTEGER)"
+            };
+        }
     }
 }

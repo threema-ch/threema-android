@@ -1,17 +1,17 @@
 package ch.threema.app.tasks
 
 import ch.threema.app.groupflows.DisbandGroupFlow
-import ch.threema.app.managers.ServiceManager
+import ch.threema.app.protocolsteps.IdentityBlockedSteps
 import ch.threema.app.utils.OutgoingCspGroupMessageCreator
 import ch.threema.app.utils.OutgoingCspMessageHandle
 import ch.threema.app.utils.OutgoingCspMessageServices
-import ch.threema.app.utils.OutgoingCspMessageServices.Companion.getOutgoingCspMessageServices
 import ch.threema.app.utils.runBundledMessagesSendSteps
 import ch.threema.app.utils.toBasicContacts
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.models.MessageId
+import ch.threema.domain.models.UserState
 import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
 import ch.threema.domain.taskmanager.ActiveTask
@@ -22,9 +22,10 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.storage.models.GroupModel
 import java.util.Date
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("OutgoingGroupDisbandTask")
 
@@ -37,13 +38,14 @@ class OutgoingGroupDisbandTask(
     private val groupIdentity: GroupIdentity,
     private val members: Set<String>,
     private val messageId: MessageId,
-    private val groupModelRepository: GroupModelRepository,
-    private val apiConnector: APIConnector,
-    private val outgoingCspMessageServices: OutgoingCspMessageServices,
-) : ActiveTask<Unit>, PersistableTask {
-    override val type = "OutgoingGroupDisbandTask"
-
+) : ActiveTask<Unit>, PersistableTask, KoinComponent {
+    private val outgoingCspMessageServices: OutgoingCspMessageServices by inject()
     private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
+    private val groupModelRepository: GroupModelRepository by inject()
+    private val apiConnector: APIConnector by inject()
+    private val identityBlockedSteps: IdentityBlockedSteps by inject()
+
+    override val type = "OutgoingGroupDisbandTask"
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
         if (multiDeviceManager.isMultiDeviceActive) {
@@ -68,7 +70,7 @@ class OutgoingGroupDisbandTask(
                 val groupModelData = groupModelRepository.getByGroupIdentity(groupIdentity)?.data
                 if (groupModelData != null) {
                     // If the group exists, then the user state must be left
-                    val isLeft = groupModelData.userState == GroupModel.UserState.LEFT
+                    val isLeft = groupModelData.userState == UserState.LEFT
 
                     if (!isLeft) {
                         logger.error("A major group state inconsistency detected: group must be left")
@@ -93,7 +95,7 @@ class OutgoingGroupDisbandTask(
         ).toSet()
 
         handle.runBundledMessagesSendSteps(
-            OutgoingCspMessageHandle(
+            outgoingCspMessageHandle = OutgoingCspMessageHandle(
                 receivers,
                 OutgoingCspGroupMessageCreator(
                     messageId,
@@ -105,7 +107,8 @@ class OutgoingGroupDisbandTask(
                     }
                 },
             ),
-            outgoingCspMessageServices,
+            services = outgoingCspMessageServices,
+            identityBlockedSteps = identityBlockedSteps,
         )
     }
 
@@ -118,14 +121,11 @@ class OutgoingGroupDisbandTask(
         private val members: Set<String>,
         private val messageId: ByteArray,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingGroupDisbandTask(
                 groupIdentity,
                 members,
                 MessageId(messageId),
-                serviceManager.modelRepositories.groups,
-                serviceManager.apiConnector,
-                serviceManager.getOutgoingCspMessageServices(),
             )
     }
 }

@@ -5,7 +5,7 @@ import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.csp.e2e.fs.Version
 import ch.threema.protobuf.d2d.MdD2D
 import java.io.ByteArrayOutputStream
@@ -18,7 +18,7 @@ private val logger = getThreemaLogger("GroupPollSetupMessage")
  */
 class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
     override var ballotId: BallotId? = null
-    override var ballotCreatorIdentity: Identity? = null
+    override var ballotCreatorIdentity: IdentityString? = null
     override var ballotData: BallotData? = null
 
     // this is only used for debugging
@@ -70,7 +70,7 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
         @JvmStatic
         fun fromReflected(
             message: MdD2D.IncomingMessage,
-            fromIdentity: Identity,
+            fromIdentity: IdentityString,
         ): GroupPollSetupMessage = fromByteArray(
             data = message.body.toByteArray(),
             fromIdentity = fromIdentity,
@@ -81,7 +81,7 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
         @JvmStatic
         fun fromReflected(
             message: MdD2D.OutgoingMessage,
-            fromIdentity: Identity,
+            fromIdentity: IdentityString,
         ): GroupPollSetupMessage = fromByteArray(
             data = message.body.toByteArray(),
             fromIdentity = fromIdentity,
@@ -91,7 +91,7 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
 
         @JvmStatic
         @Throws(BadMessageException::class)
-        fun fromByteArray(data: ByteArray, fromIdentity: Identity): GroupPollSetupMessage =
+        fun fromByteArray(data: ByteArray, fromIdentity: IdentityString): GroupPollSetupMessage =
             fromByteArray(
                 data = data,
                 offset = 0,
@@ -115,7 +115,7 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
             data: ByteArray,
             offset: Int,
             length: Int,
-            fromIdentity: Identity,
+            fromIdentity: IdentityString,
         ): GroupPollSetupMessage {
             if (length < 1) {
                 throw BadMessageException("Bad length ($length) for poll setup message")

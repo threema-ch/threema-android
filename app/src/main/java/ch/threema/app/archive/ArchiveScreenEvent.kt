@@ -1,6 +1,7 @@
 package ch.threema.app.archive
 
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.GroupDatabaseId
+import ch.threema.domain.types.IdentityString
 
 sealed interface ArchiveScreenEvent {
     data object ConversationsUnarchived : ArchiveScreenEvent
@@ -12,7 +13,7 @@ sealed interface ArchiveScreenEvent {
     ) : ArchiveScreenEvent
 
     data class OpenGroupConversation(
-        val groupDbId: Int,
+        val groupDatabaseId: GroupDatabaseId,
     ) : ArchiveScreenEvent
 
     data class OpenDistributionListConversation(
@@ -20,6 +21,6 @@ sealed interface ArchiveScreenEvent {
     ) : ArchiveScreenEvent
 
     data class OpenOneToOneConversation(
-        val identity: Identity,
+        val identity: IdentityString,
     ) : ArchiveScreenEvent
 }

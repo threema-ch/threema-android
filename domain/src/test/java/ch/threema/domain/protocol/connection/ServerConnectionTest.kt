@@ -2,6 +2,7 @@ package ch.threema.domain.protocol.connection
 
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.NonceCounter
+import ch.threema.common.emptyByteArray
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.libthreema.blake2bMac256
 import java.io.ByteArrayInputStream
@@ -180,12 +181,12 @@ internal abstract class ServerConnectionTest {
             key = ss1 + ss2,
             personal = "3ma-csp".encodeToByteArray(),
             salt = "v2".encodeToByteArray(),
-            data = byteArrayOf(),
+            data = emptyByteArray(),
         )
         val expectedVouch = blake2bMac256(
             key = vouchKey,
-            personal = byteArrayOf(),
-            salt = byteArrayOf(),
+            personal = emptyByteArray(),
+            salt = emptyByteArray(),
             data = sck + tckPublic,
         )
         val vouch = decryptedLoginStream.readNBytes(32)
@@ -237,9 +238,9 @@ internal abstract class ServerConnectionTest {
     private fun observeConnectionStates(connection: ServerConnection): List<ConnectionState> {
         val connectionStates = mutableListOf<ConnectionState>()
         connection.addConnectionStateListener { connectionState ->
-            connectionStates.add(
-                connectionState,
-            )
+            if (connectionState != null) {
+                connectionStates.add(connectionState)
+            }
         }
         return connectionStates
     }

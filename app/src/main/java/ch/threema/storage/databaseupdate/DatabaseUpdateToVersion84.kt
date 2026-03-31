@@ -13,9 +13,5 @@ internal class DatabaseUpdateToVersion84(
 
     override fun getDescription() = "remove forward security enabled field"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 84
-    }
+    override val version = 84
 }

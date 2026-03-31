@@ -4,7 +4,6 @@ import androidx.annotation.AnyThread;
 import androidx.annotation.NonNull;
 import ch.threema.app.services.GroupService;
 import ch.threema.data.models.GroupIdentity;
-import ch.threema.storage.models.GroupModel;
 
 public interface GroupListener {
     @AnyThread

@@ -18,12 +18,12 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.UserState
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import ch.threema.storage.models.GroupModel.UserState
 import java.util.Date
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -82,6 +82,7 @@ class DisbandGroupFlowTest : GroupFlowTest() {
     private val initialGroupModelData = myInitialGroupModelData.copy(
         groupIdentity = GroupIdentity(initialContactData.identity, 43),
         name = "ExistingGroup",
+        otherMembers = emptySet(),
     )
 
     private val myInitialLeftGroupModelData = myInitialGroupModelData.copy(

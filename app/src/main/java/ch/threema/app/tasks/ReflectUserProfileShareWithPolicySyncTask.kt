@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy.Policy
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
@@ -22,10 +21,8 @@ import kotlinx.serialization.Serializable
  */
 class ReflectUserProfileShareWithPolicySyncTask(
     newPolicy: Policy,
-    serviceManager: ServiceManager,
 ) : ReflectUserProfileShareWithPolicySyncTaskBase(
     newPolicy = newPolicy,
-    serviceManager = serviceManager,
 ) {
     override val type = "ReflectUserProfileShareWithPolicySyncTask"
 
@@ -54,10 +51,9 @@ class ReflectUserProfileShareWithPolicySyncTask(
     data class ReflectUserProfileShareWithPolicySyncTaskData(
         val newPolicy: Policy,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> {
+        override fun createTask(): Task<*, TaskCodec> {
             return ReflectUserProfileShareWithPolicySyncTask(
                 newPolicy = newPolicy,
-                serviceManager = serviceManager,
             )
         }
     }

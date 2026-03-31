@@ -1,18 +1,19 @@
 package ch.threema.app.systemupdates.updates
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.profilepicture.CheckedProfilePicture
 import ch.threema.app.profilepicture.RawProfilePicture
+import ch.threema.app.services.UserService
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.TriggerSource
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("SystemUpdateToVersion112")
 
-class SystemUpdateToVersion112(private val serviceManager: ServiceManager) : SystemUpdate {
+class SystemUpdateToVersion112 : SystemUpdate {
+
+    private val userService: UserService by inject()
 
     override fun run() {
-        val userService = serviceManager.userService
-
         val userProfilePicture = userService.userProfilePicture
         if (userProfilePicture == null) {
             logger.info("No user profile picture is set. Aborting migration.")
@@ -42,11 +43,7 @@ class SystemUpdateToVersion112(private val serviceManager: ServiceManager) : Sys
         }
     }
 
-    override fun getVersion() = VERSION
+    override val version = 112
 
     override fun getDescription() = "convert user profile picture to jpeg"
-
-    companion object {
-        const val VERSION = 112
-    }
 }

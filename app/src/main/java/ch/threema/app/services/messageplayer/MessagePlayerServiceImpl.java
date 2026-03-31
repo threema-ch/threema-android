@@ -11,6 +11,7 @@ import com.google.common.util.concurrent.ListenableFuture;
 
 import org.slf4j.Logger;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -57,9 +58,14 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
     }
 
     @Override
-    public MessagePlayer createPlayer(AbstractMessageModel messageModel, Activity activity, MessageReceiver<?> messageReceiver, ListenableFuture<MediaController> mediaControllerFuture) {
+    public MessagePlayer createPlayer(
+        AbstractMessageModel messageModel,
+        @Nullable WeakReference<Activity> activityWeakReference,
+        MessageReceiver<?> messageReceiver,
+        @Nullable ListenableFuture<MediaController> mediaControllerFuture
+    ) {
         int key = messageModel.getId();
-        MessagePlayer o = null;
+        MessagePlayer o;
 
         synchronized (this.messagePlayers) {
             o = this.messagePlayers.get(key);
@@ -128,7 +134,7 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
                         );
                     }
                 }
-                logger.debug("creating new player " + key);
+                logger.debug("creating new player {}", key);
             } else {
                 // make sure data model is updated as its status may have changed after the player has been created
                 if (messageModel.getType() == MessageType.VOICEMESSAGE) {
@@ -142,11 +148,14 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
                 logger.debug("recycling existing player {}", key);
             }
             if (o != null) {
-                if (activity != null) {
-                    if (o.isReceiverMatch(messageReceiver)) {
-                        o.setCurrentActivity(activity, messageReceiver);
-                    } else {
-                        o.release();
+                if (activityWeakReference != null) {
+                    Activity activity = activityWeakReference.get();
+                    if (activity != null) {
+                        if (o.isReceiverMatch(messageReceiver)) {
+                            o.setCurrentActivity(activity, messageReceiver);
+                        } else {
+                            o.release();
+                        }
                     }
                 }
                 this.messagePlayers.put(key, o);
@@ -157,7 +166,7 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
                 @Override
                 public void onPlay(AbstractMessageModel messageModel, boolean autoPlay) {
                     //call stop other players first!
-                    logger.debug("onPlay autoPlay = " + autoPlay);
+                    logger.debug("onPlay autoPlay = {}", autoPlay);
 
                     if (!autoPlay) {
                         stopOtherPlayers(messageModel);
@@ -205,12 +214,12 @@ public class MessagePlayerServiceImpl implements MessagePlayerService {
                 mp.stop();
                 if (mp.release()) {
                     iterator.remove();
-                    logger.debug("Releasing player " + pair.getKey());
+                    logger.debug("Releasing player {}", pair.getKey());
                 } else {
                     // remove ties to activity
                     mp.setCurrentActivity(null, null);
                     mp.removeListeners();
-                    logger.debug("Keep downloading player " + pair.getKey());
+                    logger.debug("Keep downloading player {}", pair.getKey());
                 }
             }
         }

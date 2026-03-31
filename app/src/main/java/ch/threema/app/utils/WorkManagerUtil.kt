@@ -55,7 +55,7 @@ object WorkManagerUtil {
                 }
             }
         } catch (e: Exception) {
-            logger.info("WorkManager Exception")
+            logger.info("WorkManager Exception", e)
             workManager.cancelUniqueWork(uniqueWorkName)
             true
         }

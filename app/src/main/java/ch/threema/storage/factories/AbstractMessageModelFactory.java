@@ -20,7 +20,7 @@ import ch.threema.app.utils.TestUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.AbstractMessageModel;
@@ -35,8 +35,8 @@ import ch.threema.storage.models.data.media.VideoDataModel;
 abstract class AbstractMessageModelFactory extends ModelFactory {
     private static final Logger logger = getThreemaLogger("AbstractMessageModelFactory");
 
-    AbstractMessageModelFactory(DatabaseService databaseService, String tableName) {
-        super(databaseService, tableName);
+    AbstractMessageModelFactory(DatabaseProvider databaseProvider, String tableName) {
+        super(databaseProvider, tableName);
     }
 
     void convert(final AbstractMessageModel messageModel, CursorHelper cursorFactory) {
@@ -77,8 +77,8 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
                 if (!TestUtil.isEmptyOrNull(stateString)) {
                     try {
                         messageModel.setState(MessageState.valueOf(stateString));
-                    } catch (IllegalArgumentException x) {
-                        logger.error("Invalid message state " + stateString + " - ignore", x);
+                    } catch (IllegalArgumentException e) {
+                        logger.error("Invalid message state {} - ignore", stateString, e);
                     }
                 }
 
@@ -221,7 +221,7 @@ abstract class AbstractMessageModelFactory extends ModelFactory {
             );
 
             if (updated > 0) {
-                logger.info(updated + " messages in sending status were updated to sendfailed.");
+                logger.info("{} messages in sending status were updated to sendfailed.", updated);
             }
         } catch (Exception e) {
             logger.error("Exception", e);

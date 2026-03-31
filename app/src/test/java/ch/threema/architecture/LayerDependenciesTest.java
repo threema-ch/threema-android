@@ -16,18 +16,18 @@ import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
 import ch.threema.app.messagereceiver.MessageReceiver;
-import ch.threema.app.utils.FileHandlingZipOutputStream;
+import ch.threema.app.stores.IdentityProvider;
 import ch.threema.app.utils.ListReader;
-import ch.threema.app.utils.RuntimeUtil;
-import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.HandlerExecutor;
 import ch.threema.data.models.GroupModel;
-import ch.threema.logging.LoggerManager;
+import ch.threema.data.repositories.ModelRepositories;
+import ch.threema.data.storage.SqliteDatabaseBackend;
+import ch.threema.logging.LogBackendFactoryImpl;
 import ch.threema.logging.backend.DebugLogFileBackend;
-import ch.threema.logging.backend.DebugToasterBackend;
 import ch.threema.storage.DatabaseNonceStore;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.BallotModelFactory;
+import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.factories.GroupMessageModelFactory;
 import ch.threema.storage.factories.RejectedGroupMessageFactory;
 import ch.threema.storage.models.ConversationModel;
@@ -45,8 +45,7 @@ import static ch.threema.architecture.ArchitectureDefinitions.getLayeredArchitec
 import static com.tngtech.archunit.core.domain.properties.HasName.Predicates.nameMatching;
 
 @RunWith(ArchUnitRunner.class)
-@AnalyzeClasses(packages = THREEMA_ROOT_PACKAGE, importOptions =
-    {ArchitectureTestUtils.DoNotIncludeAndroidTests.class})
+@AnalyzeClasses(packages = THREEMA_ROOT_PACKAGE, importOptions = {ArchitectureTestUtils.DoNotIncludeAndroidTests.class})
 public class LayerDependenciesTest {
     @ArchTest
     public static final ArchRule appLayerAccess = getLayeredArchitecture()
@@ -117,15 +116,18 @@ public class LayerDependenciesTest {
         .ignoreDependency(BallotModelFactory.class, GroupMessageReceiver.class)
         .ignoreDependency(BallotModelFactory.class, MessageReceiver.class)
         .ignoreDependency(FileDataModel.class, ListReader.class)
-        .ignoreDependency(LoggerManager.class, BuildConfig.class)
-        .ignoreDependency(LoggerManager.class, BuildFlavor.class)
-        .ignoreDependency(LoggerManager.class, BuildFlavor.Companion.getClass())
-        .ignoreDependency(LoggerManager.class, ThreemaApplication.class)
-        .ignoreDependency(LoggerManager.class, TestUtil.class)
-        .ignoreDependency(DebugToasterBackend.class, RuntimeUtil.class)
+        .ignoreDependency(LogBackendFactoryImpl.class, BuildConfig.class)
+        .ignoreDependency(LogBackendFactoryImpl.class, BuildFlavor.class)
+        .ignoreDependency(LogBackendFactoryImpl.class, BuildFlavor.Companion.class)
+        .ignoreDependency(LogBackendFactoryImpl.class, ThreemaApplication.class)
+        .ignoreDependency(LogBackendFactoryImpl.class, ThreemaApplication.Companion.class)
+        .ignoreDependency(DebugLogFileBackend.Companion.class, HandlerExecutor.class)
         .ignoreDependency(DebugLogFileBackend.class, HandlerExecutor.class)
-        .ignoreDependency(DebugLogFileBackend.class, FileHandlingZipOutputStream.class)
-        .ignoreDependency(DebugLogFileBackend.class, ThreemaApplication.class); // TODO(ANDR-1439): Refactor
+        .ignoreDependency(ModelRepositories.class, IdentityProvider.class)
+        .ignoreDependency(SqliteDatabaseBackend.class, IdentityProvider.class)
+        .ignoreDependency(DatabaseService.class, IdentityProvider.class)
+        .ignoreDependency(ContactModelFactory.class, IdentityProvider.class)
+        .ignoreDependency(nameMatching("ch\\.threema\\.storage\\.StorageModuleKt.*"), nameMatching("ch\\.threema\\.app\\.stores\\.IdentityProvider"));
 
     @ArchTest
     public static final ArchRule dataLayerAccess = getLayeredArchitecture()

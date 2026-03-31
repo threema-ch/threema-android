@@ -17,7 +17,8 @@ internal class ReflectedOutgoingReactionTask(
     type = Common.CspE2eMessageType.REACTION,
     serviceManager = serviceManager,
 ) {
-    private val messageService by lazy { serviceManager.messageService }
+    private val messageService = serviceManager.messageService
+    private val userService = serviceManager.userService
 
     override fun processOutgoingMessage() {
         val targetMessage: AbstractMessageModel = runCommonReactionMessageReceiveSteps(
@@ -34,7 +35,7 @@ internal class ReflectedOutgoingReactionTask(
             /* targetMessage = */
             targetMessage,
             /* senderIdentity = */
-            contactService.me.identity,
+            userService.identity!!,
             /* actionCase = */
             message.data.actionCase,
             /* emojiSequence = */

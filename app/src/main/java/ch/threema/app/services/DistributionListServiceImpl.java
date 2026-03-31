@@ -22,12 +22,16 @@ import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.DistributionListMessageReceiver;
+import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.services.avatarcache.AvatarCacheService;
 import ch.threema.app.utils.ConversationUtil;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base32;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.models.ContactModel;
@@ -44,24 +48,33 @@ public class DistributionListServiceImpl implements DistributionListService {
     private final DatabaseService databaseService;
     private final ContactService contactService;
     private final @NonNull ConversationTagService conversationTagService;
+    private final @NonNull PreferenceService preferenceService;
 
     public DistributionListServiceImpl(
         Context context,
         AvatarCacheService avatarCacheService,
         DatabaseService databaseService,
         ContactService contactService,
-        @NonNull ConversationTagService conversationTagService
+        @NonNull ConversationTagService conversationTagService,
+        @NonNull PreferenceService preferenceService
     ) {
         this.context = context;
         this.avatarCacheService = avatarCacheService;
         this.databaseService = databaseService;
         this.contactService = contactService;
         this.conversationTagService = conversationTagService;
+        this.preferenceService = preferenceService;
     }
 
     @Override
+    @Nullable
     public DistributionListModel getById(long id) {
         return this.databaseService.getDistributionListModelFactory().getById(id);
+    }
+
+    @NonNull
+    public List<DistributionListModel> getByIds(@NonNull List<Long> ids) {
+        return this.databaseService.getDistributionListModelFactory().getByIds(ids);
     }
 
     @Override
@@ -121,22 +134,26 @@ public class DistributionListServiceImpl implements DistributionListService {
 
     @Nullable
     @Override
-    public Bitmap getAvatar(@Nullable DistributionListModel model, @Nullable AvatarOptions options) {
-        return avatarCacheService.getDistributionListAvatarLow(model);
+    public Bitmap getAvatar(@Nullable Long distributionListId, @Nullable AvatarOptions options) {
+        return avatarCacheService.getDistributionListAvatarLow(distributionListId);
     }
 
     @Override
     public void loadAvatarIntoImage(
-        @NonNull DistributionListModel model,
+        @NonNull Long distributionListId,
         @NonNull ImageView imageView,
         @NonNull AvatarOptions options,
         @NonNull RequestManager requestManager
     ) {
-        avatarCacheService.loadDistributionListAvatarIntoImage(model, imageView, options, requestManager);
+        avatarCacheService.loadDistributionListAvatarIntoImage(distributionListId, imageView, options, requestManager);
     }
 
     @Override
-    public @ColorInt int getAvatarColor(@Nullable DistributionListModel distributionList) {
+    public @ColorInt int getAvatarColor(@Nullable Long distributionListId) {
+        if (distributionListId == null) {
+            return IdColor.invalid().getThemedColor(context);
+        }
+        final @Nullable DistributionListModel distributionList = getById(distributionListId);
         if (distributionList != null) {
             return distributionList.getIdColor().getThemedColor(context);
         }
@@ -291,18 +308,31 @@ public class DistributionListServiceImpl implements DistributionListService {
             if (builder.length() > 0) {
                 builder.append(", ");
             }
-            builder.append(NameUtil.getDisplayNameOrNickname(contactModel, true));
+            builder.append(NameUtil.getContactDisplayNameOrNickname(contactModel, true, preferenceService.getContactNameFormat()));
         }
         return builder.toString();
     }
 
     @Override
-    public DistributionListMessageReceiver createReceiver(DistributionListModel distributionListModel) {
+    @Nullable
+    public DistributionListMessageReceiver createReceiver(long distributionListId) {
+        final @Nullable DistributionListModel distributionListModel = getById(distributionListId);
+        if (distributionListModel != null) {
+            return createReceiver(distributionListModel);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    @NonNull
+    public DistributionListMessageReceiver createReceiver(@NonNull DistributionListModel distributionListModel) {
         return new DistributionListMessageReceiver(
             this.databaseService,
             this.contactService,
             distributionListModel,
-            this);
+            this
+        );
     }
 
     @Override

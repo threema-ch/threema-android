@@ -1,14 +1,15 @@
 package ch.threema.app.contacts
 
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import ch.threema.KoinTestRule
 import ch.threema.app.TestCoreServiceManager
 import ch.threema.app.TestMultiDeviceManager
 import ch.threema.app.TestTaskManager
 import ch.threema.app.ThreemaApplication
+import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.processors.reflectedd2dsync.ReflectedContactSyncTask
-import ch.threema.app.utils.AppVersionProvider
+import ch.threema.app.stores.IdentityProvider
 import ch.threema.base.crypto.NaCl
-import ch.threema.data.TestDatabaseService
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -22,6 +23,8 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
+import ch.threema.domain.stores.IdentityStore
+import ch.threema.domain.types.Identity
 import ch.threema.protobuf.d2d.ContactSyncKt.create
 import ch.threema.protobuf.d2d.ContactSyncKt.update
 import ch.threema.protobuf.d2d.contactSync
@@ -34,8 +37,11 @@ import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.ReadReceiptPolicyOverride
 import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.TypingIndicatorPolicyOverride
 import ch.threema.protobuf.d2d.sync.contact
 import ch.threema.protobuf.unit
+import ch.threema.storage.TestDatabaseProvider
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import com.google.protobuf.kotlin.toByteString
+import io.mockk.every
+import io.mockk.mockk
 import java.util.Date
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -45,11 +51,13 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.runBlocking
+import org.junit.Rule
 import org.junit.runner.RunWith
+import org.koin.dsl.module
 
 @RunWith(AndroidJUnit4::class)
 class ReflectedContactSyncTaskTest {
-    private lateinit var databaseService: TestDatabaseService
+    private lateinit var databaseProvider: TestDatabaseProvider
     private lateinit var taskCodec: TransactionAckTaskCodec
     private lateinit var coreServiceManager: TestCoreServiceManager
     private lateinit var contactModelRepository: ContactModelRepository
@@ -81,23 +89,39 @@ class ReflectedContactSyncTaskTest {
         notificationTriggerPolicyOverride = null,
     )
 
+    private val instrumentedTestModule = module {
+        factory<MultiDeviceManager> { coreServiceManager.multiDeviceManager }
+    }
+
+    @get:Rule
+    val koinTestRule = KoinTestRule(
+        modules = listOf(instrumentedTestModule),
+    )
+
     @BeforeTest
     fun before() {
-        databaseService = TestDatabaseService()
+        databaseProvider = TestDatabaseProvider()
         taskCodec = TransactionAckTaskCodec()
-        val serviceManager = ThreemaApplication.requireServiceManager()
+        val myIdentity = "00000000"
+        val identityProviderMock = mockk<IdentityProvider> {
+            every { getIdentity() } returns Identity(myIdentity)
+            every { getIdentityString() } returns myIdentity
+        }
+        val identityStoreMock = mockk<IdentityStore> {
+            every { getIdentity() } returns Identity(myIdentity)
+            every { getIdentityString() } returns myIdentity
+        }
         coreServiceManager = TestCoreServiceManager(
-            version = AppVersionProvider.appVersion,
-            databaseService = databaseService,
-            preferenceStore = serviceManager.preferenceStore,
-            encryptedPreferenceStore = serviceManager.encryptedPreferenceStore,
+            databaseProvider = databaseProvider,
+            identityProvider = identityProviderMock,
             multiDeviceManager = TestMultiDeviceManager(
                 isMultiDeviceActive = true,
                 isMdDisabledOrSupportsFs = false,
             ),
             taskManager = TestTaskManager(taskCodec),
+            identityStore = identityStoreMock,
         )
-        contactModelRepository = ModelRepositories(coreServiceManager).contacts
+        contactModelRepository = ModelRepositories(coreServiceManager, identityProviderMock).contacts
     }
 
     @Test

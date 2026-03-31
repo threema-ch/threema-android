@@ -5,28 +5,17 @@ import ch.threema.app.BuildFlavor
 import ch.threema.app.di.Qualifiers
 import ch.threema.app.files.AppDirectoryProvider
 import ch.threema.app.onprem.OnPremCertPinning
-import ch.threema.app.restrictions.AppRestrictionUtil
-import ch.threema.app.services.OnPremConfigFetcherProvider
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.utils.ConfigUtils
-import ch.threema.base.ThreemaException
-import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.libthreema.LibthreemaHttpClient
 import ch.threema.domain.models.WorkClientInfo
 import ch.threema.domain.onprem.OnPremConfigStore
-import java.io.IOException
 import java.util.Locale
 import okhttp3.OkHttpClient
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
-import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 import org.koin.dsl.module
-
-private val logger = getThreemaLogger("LocalCryptoFeatureModule")
-
-private val remoteSecretOkHttpClientQualifier = named("remote-secret")
-private val withOnPremCertificatePinningQualifier = named("with-cert-pinning")
-private val withoutOnPremCertificatePinningQualifier = named("without-cert-pinning")
 
 val localCryptoFeatureModule = module {
     singleOf(::MasterKeyManagerImpl) bind MasterKeyManager::class
@@ -42,6 +31,8 @@ val localCryptoFeatureModule = module {
     factoryOf(::Version2MasterKeyCrypto)
     factoryOf(::Version2MasterKeyStorageDecoder)
     factoryOf(::Version2MasterKeyStorageEncoder)
+    factoryOf(::KeyStoreSecretKeyManager)
+    factoryOf(::KeyStoreCrypto)
 
     factory {
         MasterKeyFileProvider(
@@ -49,47 +40,28 @@ val localCryptoFeatureModule = module {
         )
     }
 
-    factory<WorkClientInfo> { getClientInfo() }
-
     factory<MasterKeyStorageManager> {
         val masterKeyFileProvider = get<MasterKeyFileProvider>()
         MasterKeyStorageManager(
-            version2KeyFileManager = Version2MasterKeyFileManager(
-                keyFile = masterKeyFileProvider.getVersion2MasterKeyFile(),
-                encoder = get(),
-                decoder = get(),
-            ),
+            version2KeyFileManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                Version2MasterKeyFileManagerImpl(
+                    keyFile = masterKeyFileProvider.getVersion2KeyStoreProtectedMasterKeyFile(),
+                    unencryptedKeyFile = masterKeyFileProvider.getVersion2UnencryptedMasterKeyFile(),
+                    encoder = get(),
+                    decoder = get(),
+                    keyStoreCrypto = get(),
+                )
+            } else {
+                Version2MasterKeyFileManagerAndroid7Impl(
+                    legacyKeyFile = masterKeyFileProvider.getVersion2UnencryptedMasterKeyFile(),
+                    encoder = get(),
+                    decoder = get(),
+                )
+            },
             version1KeyFileManager = Version1MasterKeyFileManager(
                 keyFile = masterKeyFileProvider.getVersion1MasterKeyFile(),
             ),
             storageStateConverter = get(),
-        )
-    }
-
-    factory<OkHttpClient>(remoteSecretOkHttpClientQualifier) {
-        getOkHttpClientWithCertificatePinning(
-            baseOkHttpClient = get(qualifier = Qualifiers.okHttpBase),
-            onPremConfigStore = getOrNull(),
-            getOnPremConfigFetcherProvider = {
-                getOrNull<OnPremConfigFetcherProvider>()
-            },
-        )
-    }
-    factory<LibthreemaHttpClient>(withOnPremCertificatePinningQualifier) {
-        LibthreemaHttpClient(
-            okHttpClient = get(remoteSecretOkHttpClientQualifier),
-        )
-    }
-    factory<LibthreemaHttpClient>(withoutOnPremCertificatePinningQualifier) {
-        LibthreemaHttpClient(
-            okHttpClient = get(qualifier = Qualifiers.okHttpBase),
-        )
-    }
-    factory<RemoteSecretClient> {
-        RemoteSecretClient(
-            clientInfo = getClientInfo(),
-            httpClientWithOnPremCertPinning = get(withOnPremCertificatePinningQualifier),
-            httpClientWithoutOnPremCertPinning = get(withoutOnPremCertificatePinningQualifier),
         )
     }
 
@@ -99,7 +71,7 @@ val localCryptoFeatureModule = module {
                 remoteSecretClient = get(),
                 remoteSecretMonitor = get(),
                 shouldUseRemoteSecretProtection = {
-                    AppRestrictionUtil.shouldEnableRemoteSecret(get())
+                    get<AppRestrictions>().isRemoteSecretEnabled()
                 },
                 getWorkServerBaseUrl = {
                     getWorkServerBaseUrl(get())
@@ -109,41 +81,30 @@ val localCryptoFeatureModule = module {
             NoOpRemoteSecretManagerImpl()
         }
     }
-}
 
-// TODO(ANDR-4184): Refactor and re-think certificate pinning
-private fun getOkHttpClientWithCertificatePinning(
-    baseOkHttpClient: OkHttpClient,
-    onPremConfigStore: OnPremConfigStore?,
-    getOnPremConfigFetcherProvider: () -> OnPremConfigFetcherProvider?,
-): OkHttpClient =
-    if (onPremConfigStore != null) {
-        OnPremCertPinning.createClientWithCertPinning(
-            baseClient = baseOkHttpClient,
-            getOnPremConfigDomains = {
-                val config = onPremConfigStore.get()
-                    ?: run {
-                        logger.warn("No stored OPPF found, trying to fetch it")
-                        val onPremConfigFetcherProvider = getOnPremConfigFetcherProvider()
-                            ?: throw IOException("cannot enforce certificate pinning, no OnPremConfigFetcherProvider available to fetch OPPF")
-                        try {
-                            onPremConfigFetcherProvider.getOnPremConfigFetcher().fetch()
-                        } catch (e: ThreemaException) {
-                            throw IOException("cannot enforce certificate pinning, failed to fetch OPPF", e)
-                        }
-                    }
-                config.domains
-            },
-        )
-    } else {
-        baseOkHttpClient
+    if (ConfigUtils.isOnPremBuild()) {
+        factory<WorkClientInfo> { getWorkClientInfo() }
+        factory {
+            RemoteSecretClient(
+                clientInfo = get(),
+                httpClient = LibthreemaHttpClient(
+                    // here we need to use the best-effort OkHttp client, as we might end up in a situation where
+                    // the certificate pins of the stored OPPF are no longer valid, and we can only recover from this
+                    // by fetching the OPPF from the fallback URL.
+                    okHttpClient = OnPremCertPinning.createOkHttpClientWithoutRegularOppfFetching(
+                        baseClient = get<OkHttpClient>(qualifier = Qualifiers.okHttpBase),
+                    ),
+                ),
+            )
+        }
     }
+}
 
 private fun getWorkServerBaseUrl(onPremConfigStore: OnPremConfigStore?): String =
     onPremConfigStore?.get()?.work?.url
-        ?: throw IOException("cannot monitor remote secret, no stored OPPF found")
+        ?: error("cannot monitor remote secret, no stored OPPF found")
 
-private fun getClientInfo(): WorkClientInfo =
+private fun getWorkClientInfo(): WorkClientInfo =
     WorkClientInfo(
         appVersion = ConfigUtils.getAppVersion(),
         appLocale = Locale.getDefault().toString(),

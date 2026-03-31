@@ -3,13 +3,13 @@ package ch.threema.app.webclient.services;
 import android.content.Context;
 import android.widget.Toast;
 
+import org.koin.java.KoinJavaComponent;
 import org.saltyrtc.client.crypto.CryptoException;
 import org.slf4j.Logger;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Queue;
 
 import androidx.annotation.AnyThread;
@@ -21,9 +21,8 @@ import androidx.annotation.WorkerThread;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.managers.ListenerManager;
-import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.restrictions.AppRestrictions;
 import ch.threema.app.services.notification.NotificationService;
-import ch.threema.app.restrictions.AppRestrictionUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.webclient.Protocol;
@@ -33,6 +32,9 @@ import ch.threema.app.webclient.manager.WebClientServiceManager;
 import ch.threema.app.webclient.services.instance.DisconnectContext;
 import ch.threema.app.webclient.services.instance.SessionInstanceService;
 import ch.threema.base.ThreemaException;
+
+import static ch.threema.app.ThreemaApplication.getServiceManager;
+import static ch.threema.app.ThreemaApplication.requireServiceManager;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
@@ -62,10 +64,6 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
     @Nullable
     private static SessionWakeUpService instance = null;
 
-    // Service manager
-    @Nullable
-    private ServiceManager serviceManager = null;
-
     // Queue of pending wakeups. Do not access this directly, use getPendingWakeUps instead.
     private final Queue<PendingWakeup> pendingWakeUps = new ArrayDeque<>();
 
@@ -76,11 +74,6 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
             instance = new SessionWakeUpServiceImpl();
         }
         return instance;
-    }
-
-    @AnyThread
-    public synchronized static void clear() {
-        instance = null;
     }
 
     @AnyThread
@@ -97,10 +90,7 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
 
     @AnyThread
     private synchronized boolean isAvailable() {
-        if (this.serviceManager == null) {
-            this.serviceManager = ThreemaApplication.getServiceManager();
-        }
-        return this.serviceManager != null;
+        return getServiceManager() != null;
     }
 
     /**
@@ -117,7 +107,7 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
         if (!isAvailable()) {
             throw new ThreemaException("Service manager unavailable");
         }
-        return Objects.requireNonNull(serviceManager).getWebClientServiceManager().getSessionService();
+        return requireServiceManager().getWebClientServiceManager().getSessionService();
     }
 
     @Override
@@ -149,12 +139,12 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
         // Ensure the web client service manager is available
         final WebClientServiceManager manager;
         try {
-            manager = Objects.requireNonNull(this.serviceManager).getWebClientServiceManager();
+            manager = requireServiceManager().getWebClientServiceManager();
         } catch (ThreemaException error) {
             logger.error("Cannot access web client service manager", error);
             return;
         }
-        if (this.serviceManager == null) {
+        if (getServiceManager() == null) {
             logger.error("Cannot resume or schedule wakeup, web client service manager unavailable");
             return;
         }
@@ -291,7 +281,8 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
         // MDM constraints
         if (ConfigUtils.isWorkRestricted()) {
             final String hostname = webClientInstanceService.getModel().getSaltyRtcHost();
-            if (!AppRestrictionUtil.isWebHostAllowed(this.getContext(), hostname)) {
+            AppRestrictions appRestrictions = KoinJavaComponent.get(AppRestrictions.class);
+            if (!appRestrictions.isWebHostAllowed(hostname)) {
                 return StartResult.HOST_CONSTRAINED_BY_MDM;
             }
         }
@@ -321,7 +312,7 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
         // Ensure the web client service manager is available
         final WebClientServiceManager manager;
         try {
-            manager = Objects.requireNonNull(this.serviceManager).getWebClientServiceManager();
+            manager = requireServiceManager().getWebClientServiceManager();
         } catch (ThreemaException error) {
             logger.error("Cannot access web client service manager", error);
             return;
@@ -382,7 +373,8 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
                 // Check MDM constraints
                 if (ConfigUtils.isWorkRestricted()) {
                     final String hostname = webClientInstanceService.getModel().getSaltyRtcHost();
-                    if (!AppRestrictionUtil.isWebHostAllowed(this.getContext(), hostname)) {
+                    AppRestrictions appRestrictions = KoinJavaComponent.get(AppRestrictions.class);
+                    if (!appRestrictions.isWebHostAllowed(hostname)) {
                         logger.warn("Cannot wake up session {}, disabled by administrator", pending.publicKeySha256String);
                         continue;
                     }
@@ -419,11 +411,9 @@ public class SessionWakeUpServiceImpl implements SessionWakeUpService {
     }
 
     private void showWarningNotification(@StringRes int message) {
-        NotificationService notificationService = Objects.requireNonNull(this.serviceManager).getNotificationService();
-        if (notificationService != null) {
-            final String msg = this.getContext().getString(R.string.webclient_cannot_restore) + ": "
-                + this.getContext().getString(message);
-            notificationService.showWebclientResumeFailed(msg);
-        }
+        NotificationService notificationService = requireServiceManager().getNotificationService();
+        final String msg = this.getContext().getString(R.string.webclient_cannot_restore) + ": "
+            + this.getContext().getString(message);
+        notificationService.showWebclientResumeFailed(msg);
     }
 }

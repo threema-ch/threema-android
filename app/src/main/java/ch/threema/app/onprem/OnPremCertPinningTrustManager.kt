@@ -6,7 +6,7 @@ import ch.threema.common.secureContentEquals
 import ch.threema.domain.onprem.OnPremConfigDomainRuleMatchMode
 import ch.threema.domain.onprem.OnPremConfigDomainRuleSpkiAlgorithm
 import ch.threema.domain.onprem.OnPremConfigDomains
-import java.security.MessageDigest
+import ch.threema.libthreema.sha256
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import javax.net.ssl.X509TrustManager
@@ -45,7 +45,7 @@ class OnPremCertPinningTrustManager(
                     certificate.getPublicKeyFingerprintFor(spki.algorithm).secureContentEquals(Base64.decode(spki.value))
                 }
                 if (matchesCertificate == false) {
-                    throw CertificateException("Certificate did not match any cert pinning rules for $hostname")
+                    throw OnPremCertificateException(hostname)
                 }
             }
         }
@@ -53,15 +53,8 @@ class OnPremCertPinningTrustManager(
 
     private fun X509Certificate.getPublicKeyFingerprintFor(algorithm: OnPremConfigDomainRuleSpkiAlgorithm): ByteArray =
         when (algorithm) {
-            OnPremConfigDomainRuleSpkiAlgorithm.SHA256 -> getPublicKeyFingerprintFor("sha-256")
+            OnPremConfigDomainRuleSpkiAlgorithm.SHA256 -> sha256(publicKey.encoded)
         }
-
-    private fun X509Certificate.getPublicKeyFingerprintFor(algorithm: String): ByteArray =
-        MessageDigest.getInstance(algorithm)
-            .apply {
-                update(publicKey.encoded)
-            }
-            .digest()
 
     override fun getAcceptedIssuers(): Array<X509Certificate> =
         delegate.getAcceptedIssuers()

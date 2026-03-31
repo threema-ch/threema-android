@@ -16,8 +16,8 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 
 import androidx.core.content.ContextCompat;
-import ch.threema.app.utils.BatteryStatusUtil;
 import ch.threema.app.webclient.manager.WebClientListenerManager;
+import ch.threema.app.webclient.utils.BatteryStatusUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.WebClientSessionModel;
 

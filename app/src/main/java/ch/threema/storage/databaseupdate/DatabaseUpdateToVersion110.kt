@@ -3,7 +3,7 @@ package ch.threema.storage.databaseupdate
 import android.database.Cursor
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import net.zetetic.database.sqlcipher.SQLiteDatabase
 
 private val logger = getThreemaLogger("DatabaseUpdateToVersion110")
@@ -55,7 +55,7 @@ class DatabaseUpdateToVersion110(
         }
     }
 
-    private fun Cursor.toIdentities(): Set<Identity> {
+    private fun Cursor.toIdentities(): Set<IdentityString> {
         val identities = mutableSetOf<String>()
         val identityColumnIndex = getColumnIndexOrThrow("identity")
         while (moveToNext()) {
@@ -64,16 +64,12 @@ class DatabaseUpdateToVersion110(
         return identities
     }
 
-    private fun hasOneToOneMessages(identity: Identity): Boolean {
+    private fun hasOneToOneMessages(identity: IdentityString): Boolean {
         val cursor = sqLiteDatabase.query("SELECT EXISTS(SELECT 1 FROM message WHERE identity = ?)", arrayOf(identity))
         return cursor.moveToFirst() && cursor.getInt(0) == 1
     }
 
-    override fun getVersion() = VERSION
+    override val version = 110
 
     override fun getDescription() = "remove invalid contacts that have no public key and no messages"
-
-    companion object {
-        const val VERSION = 110
-    }
 }

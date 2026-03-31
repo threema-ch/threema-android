@@ -25,6 +25,7 @@ object GridUnit {
     val x8 = GRID_BASE.dp * 8 // 64
     val x9 = GRID_BASE.dp * 9 // 72
     val x10 = GRID_BASE.dp * 10 // 80
+    val x15 = GRID_BASE.dp * 15 // 120
 }
 
 /**

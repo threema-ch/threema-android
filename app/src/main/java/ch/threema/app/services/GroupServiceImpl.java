@@ -21,6 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.ColorInt;
@@ -32,29 +33,35 @@ import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.activities.GroupDetailActivity;
-import ch.threema.app.collections.Functional;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.GroupMessageReceiver;
+import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.services.avatarcache.AvatarCacheService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.tasks.OutgoingGroupSyncRequestTask;
 import ch.threema.app.utils.ConversationUtil;
 import ch.threema.app.utils.GroupFeatureSupport;
 import ch.threema.app.utils.GroupUtil;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.data.datatypes.IdColor;
 import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.data.models.GroupIdentity;
+import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.models.ModelDeletedException;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.data.repositories.GroupModelRepository;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
+import ch.threema.domain.models.UserState;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage;
 import ch.threema.domain.taskmanager.TaskManager;
@@ -64,9 +71,9 @@ import ch.threema.storage.DatabaseService;
 import ch.threema.storage.factories.GroupMessageModelFactory;
 import ch.threema.storage.factories.RejectedGroupMessageFactory;
 import ch.threema.storage.models.ContactModel;
-import ch.threema.storage.models.GroupMemberModel;
-import ch.threema.storage.models.GroupMessageModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupMemberModel;
+import ch.threema.storage.models.group.GroupMessageModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.access.Access;
 import ch.threema.storage.models.access.GroupAccessModel;
@@ -89,6 +96,7 @@ public class GroupServiceImpl implements GroupService {
     private final @NonNull ConversationCategoryService conversationCategoryService;
     private final @NonNull RingtoneService ringtoneService;
     private final @NonNull ConversationTagService conversationTagService;
+    private final @NonNull PreferenceService preferenceService;
 
     // Model repositories
     @NonNull
@@ -98,7 +106,7 @@ public class GroupServiceImpl implements GroupService {
 
     // TODO(ANDR-3755): Consolidate this cache
     private final SparseArrayCompat<Map<String, IdColor>> groupMemberColorCache;
-    private final SparseArrayCompat<GroupModel> groupModelCache;
+    private final SparseArrayCompat<GroupModelOld> groupModelCache;
     private final SparseArrayCompat<String[]> groupIdentityCache;
     private @Nullable TaskManager taskManager = null;
 
@@ -114,6 +122,7 @@ public class GroupServiceImpl implements GroupService {
         @NonNull ConversationCategoryService conversationCategoryService,
         @NonNull RingtoneService ringtoneService,
         @NonNull ConversationTagService conversationTagService,
+        @NonNull PreferenceService preferenceService,
         @NonNull ContactModelRepository contactModelRepository,
         @NonNull GroupModelRepository groupModelRepository,
         @NonNull ServiceManager serviceManager
@@ -128,6 +137,7 @@ public class GroupServiceImpl implements GroupService {
         this.wallpaperService = wallpaperService;
         this.conversationCategoryService = conversationCategoryService;
         this.ringtoneService = ringtoneService;
+        this.preferenceService = preferenceService;
         this.conversationTagService = conversationTagService;
         this.serviceManager = serviceManager;
 
@@ -141,43 +151,45 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @NonNull
-    public List<GroupModel> getAll() {
+    public List<GroupModelOld> getAll() {
         return this.getAll(null);
     }
 
     @Override
     @NonNull
-    public List<GroupModel> getAll(GroupFilter filter) {
-        List<GroupModel> res = new ArrayList<>(this.databaseService.getGroupModelFactory().filter(filter));
+    public List<GroupModelOld> getAll(GroupFilter filter) {
+        List<GroupModelOld> res = new ArrayList<>(this.databaseService.getGroupModelFactory().filter(filter));
 
         if (filter != null && !filter.includeLeftGroups()) {
-            Iterator<GroupModel> iterator = res.iterator();
+            Iterator<GroupModelOld> iterator = res.iterator();
             while (iterator.hasNext()) {
-                GroupModel groupModel = iterator.next();
+                GroupModelOld groupModel = iterator.next();
                 if (!isGroupMember(groupModel)) {
                     iterator.remove();
                 }
             }
         }
 
-        for (GroupModel m : res) {
+        for (GroupModelOld m : res) {
             this.cache(m);
         }
 
         return res;
     }
 
-    private GroupModel cache(GroupModel groupModel) {
+    /**
+     * Adds the group model to the cache if it is not present yet
+     */
+    @Nullable
+    private GroupModelOld cache(@Nullable GroupModelOld groupModel) {
         if (groupModel == null) {
             return null;
         }
-
         synchronized (this.groupModelCache) {
-            GroupModel existingGroupModel = groupModelCache.get(groupModel.getId());
+            final @Nullable GroupModelOld existingGroupModel = groupModelCache.get(groupModel.getId());
             if (existingGroupModel != null) {
                 return existingGroupModel;
             }
-
             groupModelCache.put(groupModel.getId(), groupModel);
             return groupModel;
         }
@@ -185,7 +197,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void removeGroupBelongings(
-        @NonNull ch.threema.data.models.GroupModel groupModel,
+        @NonNull GroupModel groupModel,
         @NonNull TriggerSource triggerSource
     ) {
         // Obtain some services through service manager
@@ -234,7 +246,7 @@ public class GroupServiceImpl implements GroupService {
         serviceManager.getNotificationService().cancel(messageReceiver);
 
         // Remove conversation
-        GroupModel oldGroupModel = getById((int) groupModel.getDatabaseId());
+        GroupModelOld oldGroupModel = getById((int) groupModel.getDatabaseId());
         if (oldGroupModel != null) {
             conversationService.removeFromCache(oldGroupModel);
         } else {
@@ -250,7 +262,7 @@ public class GroupServiceImpl implements GroupService {
      * Note: This action is not reflected! This should therefore only be used for testing or in
      * situations where the change does not need to be reflected.
      */
-    private void remove(@NonNull final GroupModel groupModel) {
+    private void remove(@NonNull final GroupModelOld groupModel) {
         // Obtain some services through service manager
         //
         // Note: We cannot put these services in the constructor due to circular dependencies.
@@ -311,7 +323,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void removeAll() {
-        for (GroupModel g : this.getAll()) {
+        for (GroupModelOld g : this.getAll()) {
             this.remove(g);
         }
         //remove last request sync table
@@ -323,23 +335,23 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @Nullable
-    public GroupModel getByGroupMessage(@NonNull final AbstractGroupMessage message) {
+    public GroupModelOld getByGroupMessage(@NonNull final AbstractGroupMessage message) {
         return getByApiGroupIdAndCreator(message.getApiGroupId(), message.getGroupCreator());
     }
 
     @Override
     public void scheduleSyncRequest(@NonNull String groupCreator, @NonNull GroupId groupId) {
         getTaskManager().schedule(new OutgoingGroupSyncRequestTask(
-                groupId, groupCreator, null, serviceManager
+                groupId, groupCreator, null
             )
         );
     }
 
     @Override
     @Nullable
-    public GroupModel getByApiGroupIdAndCreator(@NonNull GroupId apiGroupId, @NonNull String creatorIdentity) {
+    public GroupModelOld getByApiGroupIdAndCreator(@NonNull GroupId apiGroupId, @NonNull String creatorIdentity) {
         synchronized (this.groupModelCache) {
-            @Nullable GroupModel model = Functional.select(
+            @Nullable GroupModelOld model = select(
                 this.groupModelCache,
                 type -> apiGroupId.toString().equals(type.getApiGroupId().toString()) && creatorIdentity.equals(type.getCreatorIdentity())
             );
@@ -360,9 +372,20 @@ public class GroupServiceImpl implements GroupService {
         }
     }
 
+    private static <T> T select(SparseArrayCompat<T> target, Predicate<T> predicate) {
+        for (int n = 0; n < target.size(); n++) {
+            int key = target.keyAt(n);
+            T object = target.get(key);
+            if (object != null && predicate.test(object)) {
+                return object;
+            }
+        }
+        return null;
+    }
+
     @Nullable
     @Override
-    public GroupModel getByGroupIdentity(@NonNull GroupIdentity groupIdentity) {
+    public GroupModelOld getByGroupIdentity(@NonNull GroupIdentity groupIdentity) {
         return getByApiGroupIdAndCreator(
             new GroupId(groupIdentity.getGroupId()),
             groupIdentity.getCreatorIdentity()
@@ -371,7 +394,15 @@ public class GroupServiceImpl implements GroupService {
 
     @NonNull
     @Override
-    public Intent getGroupDetailIntent(@NonNull GroupModel groupModel, @NonNull Activity activity) {
+    public Intent getGroupDetailIntent(long groupDatabaseId, @NonNull Activity activity) {
+        Intent intent = new Intent(activity, GroupDetailActivity.class);
+        intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupDatabaseId);
+        return intent;
+    }
+
+    @NonNull
+    @Override
+    public Intent getGroupDetailIntent(@NonNull GroupModelOld groupModel, @NonNull Activity activity) {
         Intent intent = new Intent(activity, GroupDetailActivity.class);
         intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, (long) groupModel.getId());
         return intent;
@@ -379,16 +410,16 @@ public class GroupServiceImpl implements GroupService {
 
     @NonNull
     @Override
-    public Intent getGroupDetailIntent(@NonNull ch.threema.data.models.GroupModel groupModel, @NonNull Activity activity) {
+    public Intent getGroupDetailIntent(@NonNull GroupModel groupModel, @NonNull Activity activity) {
         Intent intent = new Intent(activity, GroupDetailActivity.class);
         intent.putExtra(AppConstants.INTENT_DATA_GROUP_DATABASE_ID, groupModel.getDatabaseId());
         return intent;
     }
 
     @Override
-    public @Nullable GroupModel getById(int groupId) {
+    public @Nullable GroupModelOld getById(int groupId) {
         synchronized (this.groupModelCache) {
-            GroupModel existingGroupModel = groupModelCache.get(groupId);
+            GroupModelOld existingGroupModel = groupModelCache.get(groupId);
             if (existingGroupModel != null) {
                 return existingGroupModel;
             }
@@ -397,7 +428,43 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void runRejectedMessagesRefreshSteps(@NonNull ch.threema.data.models.GroupModel groupModel) {
+    @NonNull
+    public List<GroupModelOld> getByIds(@NonNull List<Integer> groupIds) {
+        final @NonNull List<GroupModelOld> results = new ArrayList<>();
+        if (groupIds.isEmpty()) {
+            return results;
+        }
+
+        synchronized (groupModelCache) {
+            final @NonNull List<Integer> groupIdsMissingInCache = new ArrayList<>();
+
+            // try to find all in cache
+            for (Integer groupId : groupIds) {
+                final @Nullable GroupModelOld groupModel = groupModelCache.get(groupId);
+                if (groupModel != null) {
+                    results.add(groupModel);
+                } else {
+                    groupIdsMissingInCache.add(groupId);
+                }
+            }
+
+            // happy case: all were found in cache
+            if (groupIdsMissingInCache.isEmpty()) {
+                return results;
+            }
+
+            // try to read all missing models from database
+            final @NonNull List<GroupModelOld> groupModelsFromDb = databaseService.getGroupModelFactory().getByIds(groupIdsMissingInCache);
+            results.addAll(groupModelsFromDb);
+            for (GroupModelOld groupModel : groupModelsFromDb) {
+                groupModelCache.put(groupModel.getId(), groupModel);
+            }
+        }
+        return results;
+    }
+
+    @Override
+    public void runRejectedMessagesRefreshSteps(@NonNull GroupModel groupModel) {
         RejectedGroupMessageFactory rejectedGroupMessageFactory = databaseService.getRejectedGroupMessageFactory();
         GroupMessageModelFactory groupMessageModelFactory = databaseService.getGroupMessageModelFactory();
         List<GroupMessageModel> updatedMessages;
@@ -414,7 +481,7 @@ public class GroupServiceImpl implements GroupService {
             // have rejected a message in this group. Message models that do not have any rejecting
             // member anymore after this cleanup will be updated.
             updatedMessages = new ArrayList<>();
-            Set<String> members = data.otherMembers;
+            Set<String> members = groupModel.getRecipients();
 
             List<GroupMessageModel> allRejectedMessages = groupMessageModelFactory.getAllRejectedMessagesInGroup(groupModel);
             for (GroupMessageModel rejectedMessage : allRejectedMessages) {
@@ -473,7 +540,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void removeFromCache(@NonNull GroupIdentity groupIdentity) {
-        GroupModel groupModel = getByGroupIdentity(groupIdentity);
+        GroupModelOld groupModel = getByGroupIdentity(groupIdentity);
         if (groupModel != null) {
             resetCache(groupModel.getId());
         }
@@ -494,7 +561,7 @@ public class GroupServiceImpl implements GroupService {
 
     @NonNull
     @Override
-    public Set<String> getMembersWithoutUser(@NonNull GroupModel groupModel) {
+    public Set<String> getMembersWithoutUser(@NonNull GroupModelOld groupModel) {
         Set<String> otherMembers = new HashSet<>(Arrays.asList(getGroupMemberIdentities(groupModel)));
         otherMembers.remove(userService.getIdentity());
         return otherMembers;
@@ -502,47 +569,34 @@ public class GroupServiceImpl implements GroupService {
 
     @NonNull
     @Override
-    public String[] getGroupMemberIdentities(@NonNull GroupModel groupModel) {
-        synchronized (this.groupIdentityCache) {
-            String[] existingIdentities = this.groupIdentityCache.get(groupModel.getId());
-            if (existingIdentities != null) {
-                return existingIdentities;
-            }
-
-            List<GroupMemberModel> memberModels = this.getGroupMemberModels(groupModel);
-            boolean isGroupMember = isGroupMember(groupModel);
-
-            String[] res;
-            int arrayIndexOffset;
-            if (isGroupMember) {
-                res = new String[memberModels.size() + 1];
-                arrayIndexOffset = 1;
-                // Include the user in the array if it is a member. Note that this is required as the
-                // user is never stored as a group member.
-                res[0] = userService.getIdentity();
-            } else {
-                res = new String[memberModels.size()];
-                arrayIndexOffset = 0;
-            }
-
-            for (int i = 0; i < memberModels.size(); i++) {
-                res[i + arrayIndexOffset] = memberModels.get(i).getIdentity();
-            }
-
-            this.groupIdentityCache.put(groupModel.getId(), res);
-            return res;
+    public String[] getGroupMemberIdentities(@NonNull GroupModelOld oldGroupModel) {
+        GroupModel groupModel = groupModelRepository.getByGroupIdentity(oldGroupModel.getGroupIdentity());
+        if (groupModel == null) {
+            return new String[]{};
         }
+        GroupModelData groupModelData = groupModel.getData();
+        if (groupModelData == null) {
+            return new String[]{};
+        }
+        String myIdentity = userService.getIdentity();
+        if (myIdentity == null) {
+            logger.error("Cannot get group member identities if no identity is available");
+            return new String[]{};
+        }
+
+        Set<String> identities = groupModelData.getAllMembers(myIdentity);
+        return identities.toArray(new String[]{});
     }
 
     @Override
-    public boolean isGroupMember(@NonNull GroupModel groupModel) {
-        return groupModel.getUserState() == GroupModel.UserState.MEMBER;
+    public boolean isGroupMember(@NonNull GroupModelOld groupModel) {
+        return groupModel.getUserState() == UserState.MEMBER;
     }
 
     @Override
-    public boolean isGroupMember(@NonNull GroupModel groupModel, @Nullable String identity) {
+    public boolean isGroupMember(@NonNull GroupModelOld groupModel, @Nullable String identity) {
         if (!TestUtil.isEmptyOrNull(identity)) {
-            if (userService.getIdentity().equals(identity)) {
+            if (identity.equals(userService.getIdentity())) {
                 return isGroupMember(groupModel);
             }
 
@@ -559,7 +613,7 @@ public class GroupServiceImpl implements GroupService {
      * Get the group member models of the given group. Note that the user is not part of this list.
      */
     @NonNull
-    private List<GroupMemberModel> getGroupMemberModels(@NonNull GroupModel groupModel) {
+    private List<GroupMemberModel> getGroupMemberModels(@NonNull GroupModelOld groupModel) {
         List<GroupMemberModel> groupMemberModels = databaseService
             .getGroupMemberModelFactory()
             .getByGroupId(groupModel.getId());
@@ -578,38 +632,46 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @NonNull
-    public Collection<ContactModel> getMembers(@NonNull GroupModel groupModel) {
-        return this.contactService.getByIdentities(this.getGroupMemberIdentities(groupModel));
+    public Collection<ContactModel> getMembers(@NonNull GroupModelOld groupModel) {
+        return this.contactService.getByIdentities(
+            Arrays.asList(getGroupMemberIdentities(groupModel))
+        );
     }
 
     @Override
     @NonNull
     public Collection<ContactModel> getMembers(@NonNull GroupModelData groupModelData) {
         LinkedList<String> members = new LinkedList<>(groupModelData.otherMembers);
+        String myIdentity = userService.getIdentity();
         if (groupModelData.isMember()) {
-            members.addFirst(userService.getIdentity());
+            members.addFirst(myIdentity);
+        }
+        String creatorIdentity = groupModelData.groupIdentity.getCreatorIdentity();
+        if (!creatorIdentity.equals(myIdentity)) {
+            members.add(creatorIdentity);
         }
         return this.contactService.getByIdentities(new ArrayList<>(members));
     }
 
     @Override
     @NonNull
-    public String getMembersString(@Nullable GroupModel groupModel) {
+    public String getMembersString(@Nullable GroupModelOld groupModel) {
         if (groupModel == null) {
             return "";
         }
         // Add display names or nickname of members
         Collection<ContactModel> contacts = this.getMembers(groupModel);
         List<String> names = new ArrayList<>(contacts.size());
-        for (ContactModel c : contacts) {
-            names.add(NameUtil.getDisplayNameOrNickname(c, true));
+        final @NonNull ContactNameFormat contactNameFormat = preferenceService.getContactNameFormat();
+        for (ContactModel contactModel : contacts) {
+            names.add(NameUtil.getContactDisplayNameOrNickname(contactModel, true, contactNameFormat));
         }
         return TextUtils.join(", ", names);
     }
 
     @NonNull
     @Override
-    public String getMembersString(@Nullable ch.threema.data.models.GroupModel groupModel) {
+    public String getMembersString(@Nullable GroupModel groupModel) {
         if (groupModel == null) {
             return "";
         }
@@ -623,20 +685,32 @@ public class GroupServiceImpl implements GroupService {
         // Add display names or nickname of members
         Collection<ContactModel> contacts = this.getMembers(groupModelData);
         List<String> names = new ArrayList<>(contacts.size());
-        for (ContactModel contact : contacts) {
-            names.add(NameUtil.getDisplayNameOrNickname(contact, true));
+        final @NonNull ContactNameFormat contactNameFormat = preferenceService.getContactNameFormat();
+        for (ContactModel contactModel : contacts) {
+            names.add(NameUtil.getContactDisplayNameOrNickname(contactModel, true, contactNameFormat));
         }
         return TextUtils.join(", ", names);
     }
 
     @Override
+    @Nullable
+    public GroupMessageReceiver createReceiver(@NonNull GroupIdentity groupIdentity) {
+        final @Nullable GroupModelOld groupModel = getByGroupIdentity(groupIdentity);
+        if (groupModel != null) {
+            return createReceiver(groupModel);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
     @NonNull
-    public GroupMessageReceiver createReceiver(@NonNull GroupModel groupModel) {
+    public GroupMessageReceiver createReceiver(@NonNull GroupModelOld groupModel) {
         return new GroupMessageReceiver(
             groupModel,
             this,
             this.databaseService,
-            this.contactService,
+            this.userService,
             this.contactModelRepository,
             this.groupModelRepository,
             this.serviceManager
@@ -645,9 +719,9 @@ public class GroupServiceImpl implements GroupService {
 
     @Nullable
     @Override
-    public GroupMessageReceiver createReceiver(@NonNull ch.threema.data.models.GroupModel groupModel) {
+    public GroupMessageReceiver createReceiver(@NonNull GroupModel groupModel) {
         GroupIdentity groupIdentity = groupModel.getGroupIdentity();
-        GroupModel legacyGroupModel = getByApiGroupIdAndCreator(
+        GroupModelOld legacyGroupModel = getByApiGroupIdAndCreator(
             new GroupId(groupIdentity.getGroupId()),
             groupIdentity.getCreatorIdentity()
         );
@@ -661,7 +735,7 @@ public class GroupServiceImpl implements GroupService {
     @AnyThread
     @Nullable
     @Override
-    public Bitmap getAvatar(@Nullable GroupModel groupModel, @NonNull AvatarOptions options) {
+    public Bitmap getAvatar(@Nullable GroupModelOld groupModel, @NonNull AvatarOptions options) {
         if (groupModel == null) {
             return null;
         }
@@ -674,16 +748,16 @@ public class GroupServiceImpl implements GroupService {
             return null;
         }
 
-        return avatarCacheService.getGroupAvatar(groupModel, options);
+        return avatarCacheService.getGroupAvatar(groupModel.getGroupIdentity(), options);
     }
 
     @Nullable
     @Override
-    public Bitmap getAvatar(@Nullable ch.threema.data.models.GroupModel groupModel, @NonNull AvatarOptions options) {
+    public Bitmap getAvatar(@Nullable GroupModel groupModel, @NonNull AvatarOptions options) {
         if (groupModel == null) {
             return null;
         }
-        GroupModel oldGroupModel = getByGroupIdentity(groupModel.getGroupIdentity());
+        GroupModelOld oldGroupModel = getByGroupIdentity(groupModel.getGroupIdentity());
         if (oldGroupModel == null) {
             logger.error("Could not get group avatar because the old group model could not be found");
             return null;
@@ -692,13 +766,27 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public int getGroupProfilePictureColor(@Nullable GroupModel groupModel) {
+        if (groupModel == null) {
+            return IdColor.invalid().getThemedColor(this.context);
+        }
+
+        GroupModelData groupModelData = groupModel.getData();
+        if (groupModelData == null) {
+            return IdColor.invalid().getThemedColor(this.context);
+        }
+
+        return groupModelData.getIdColor().getThemedColor(context);
+    }
+
+    @Override
     public void loadAvatarIntoImageView(
-        @NonNull ch.threema.data.models.GroupModel groupModel,
+        @NonNull GroupModel groupModel,
         @NonNull ImageView imageView,
         @NonNull AvatarOptions options,
         @NonNull RequestManager requestManager
     ) {
-        GroupModel oldGroupModel = getByGroupIdentity(groupModel.getGroupIdentity());
+        GroupModelOld oldGroupModel = getByGroupIdentity(groupModel.getGroupIdentity());
         if (oldGroupModel == null) {
             logger.error("Could load group avatar because the old group model could not be found");
             return;
@@ -709,57 +797,68 @@ public class GroupServiceImpl implements GroupService {
     @AnyThread
     @Override
     public void loadAvatarIntoImage(
-        @NonNull GroupModel groupModel,
+        @NonNull GroupModelOld groupModel,
         @NonNull ImageView imageView,
         @NonNull AvatarOptions options,
         @NonNull RequestManager requestManager
     ) {
-        avatarCacheService.loadGroupAvatarIntoImage(groupModel, imageView, options, requestManager);
+        avatarCacheService.loadGroupAvatarIntoImage(groupModel.getGroupIdentity(), imageView, options, requestManager);
     }
 
     @Override
-    public @ColorInt int getAvatarColor(@Nullable GroupModel group) {
+    public @ColorInt int getAvatarColor(@Nullable GroupModelOld group) {
         return group != null
             ? group.getIdColor().getThemedColor(context)
             : IdColor.invalid().getThemedColor(this.context);
     }
 
     @Override
-    public boolean isGroupCreator(GroupModel groupModel) {
+    public boolean isGroupCreator(GroupModelOld groupModel) {
         return groupModel != null
             && this.userService.getIdentity() != null
             && this.userService.isMe(groupModel.getCreatorIdentity());
     }
 
     @Override
-    public int countMembers(@NonNull GroupModel groupModel) {
-        synchronized (this.groupIdentityCache) {
-            String[] existingIdentities = this.groupIdentityCache.get(groupModel.getId());
-            if (existingIdentities != null) {
-                return existingIdentities.length;
-            }
+    public int countMembers(@NonNull GroupModelOld oldGroupModel) {
+        GroupModel groupModel = groupModelRepository.getByGroupIdentity(oldGroupModel.getGroupIdentity());
+        if (groupModel == null) {
+            return 0;
         }
-        int userMemberCount = groupModel.getUserState() == GroupModel.UserState.MEMBER ? 1 : 0;
-        return (int) this.databaseService.getGroupMemberModelFactory().countMembersWithoutUser(groupModel.getId()) + userMemberCount;
+        GroupModelData groupModelData = groupModel.getData();
+        if (groupModelData == null) {
+            return 0;
+        }
+
+        String myIdentity = userService.getIdentity();
+        if (myIdentity == null) {
+            logger.error("Cannot determine group member count if no identity exists.");
+            return 0;
+        }
+
+        return groupModelData.getAllMembers(myIdentity).size();
     }
 
     @Override
-    public boolean isNotesGroup(@NonNull GroupModel groupModel) {
+    public boolean isNotesGroup(@NonNull GroupModelOld groupModel) {
         return
             isGroupCreator(groupModel) &&
                 countMembers(groupModel) == 1;
     }
 
     @Override
-    public int countMembersWithoutUser(@NonNull GroupModel groupModel) {
-        return (int) this.databaseService
-            .getGroupMemberModelFactory()
-            .countMembersWithoutUser(groupModel.getId());
+    public int countMembersWithoutUser(@NonNull GroupModelOld oldGroupModel) {
+        GroupModel groupModel = groupModelRepository.getByGroupIdentity(oldGroupModel.getGroupIdentity());
+        if (groupModel == null) {
+            return 0;
+        }
+
+        return groupModel.getRecipients().size();
     }
 
     @Override
     @NonNull
-    public Map<String, IdColor> getGroupMemberIDColors(@NonNull ch.threema.data.models.GroupModel model) {
+    public Map<String, IdColor> getGroupMemberIDColors(@NonNull GroupModel model) {
         long groupDatabaseId = model.getDatabaseId();
         Map<String, IdColor> colors = this.groupMemberColorCache.get((int) groupDatabaseId);
         if (colors == null || colors.isEmpty()) {
@@ -772,43 +871,43 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     @NonNull
-    public List<GroupModel> getGroupsByIdentity(@Nullable String identity) {
-        List<GroupModel> groupModels = new ArrayList<>();
-        if (TestUtil.isEmptyOrNull(identity) || !TestUtil.required(this.databaseService, this.groupModelCache)) {
-            return groupModels;
+    public List<GroupModelOld> getGroupsByIdentity(@Nullable String identity) {
+        final @NonNull List<GroupModelOld> results = new ArrayList<>();
+        if (identity == null || identity.isEmpty() || groupModelCache == null) {
+            return results;
         }
 
         identity = identity.toUpperCase();
 
-        List<Integer> res = this.databaseService.getGroupMemberModelFactory().getGroupIdsByIdentity(
-            identity);
+        final @NonNull List<Integer> groupIds = this.databaseService.getGroupMemberModelFactory().getGroupIdsByIdentity(identity);
+        final @NonNull List<Integer> groupIdsMissingInCache = new ArrayList<>();
 
-        List<Integer> groupIds = new ArrayList<>();
         synchronized (this.groupModelCache) {
-            for (int id : res) {
-                GroupModel existingGroupModel = this.groupModelCache.get(id);
-                if (existingGroupModel == null) {
-                    groupIds.add(id);
+            for (int groupId : groupIds) {
+                final @Nullable GroupModelOld groupModelCached = this.groupModelCache.get(groupId);
+                if (groupModelCached != null) {
+                    results.add(groupModelCached);
                 } else {
-                    groupModels.add(existingGroupModel);
+                    groupIdsMissingInCache.add(groupId);
                 }
             }
         }
 
-        if (!groupIds.isEmpty()) {
-            List<GroupModel> groups = this.databaseService.getGroupModelFactory().getInId(
-                groupIds);
-
-            for (GroupModel gm : groups) {
-                groupModels.add(this.cache(gm));
+        if (!groupIdsMissingInCache.isEmpty()) {
+            final @NonNull List<GroupModelOld> groups = this.databaseService.getGroupModelFactory().getByIds(groupIdsMissingInCache);
+            for (GroupModelOld groupModel : groups) {
+                final @Nullable GroupModelOld groupModelCached = cache(groupModel);
+                if (groupModelCached != null) {
+                    results.add(groupModelCached);
+                }
             }
         }
 
-        return groupModels;
+        return results;
     }
 
     @Override
-    public GroupAccessModel getAccess(@Nullable GroupModel groupModel, boolean allowEmpty) {
+    public GroupAccessModel getAccess(@Nullable GroupModelOld groupModel, boolean allowEmpty) {
         GroupAccessModel groupAccessModel = new GroupAccessModel();
         if (groupModel != null) {
             // Don't allow to send and receive messages in left groups
@@ -846,7 +945,7 @@ public class GroupServiceImpl implements GroupService {
         boolean isArchived,
         @NonNull TriggerSource triggerSource
     ) {
-        ch.threema.data.models.GroupModel groupModel = groupModelRepository
+        GroupModel groupModel = groupModelRepository
             .getByCreatorIdentityAndId(groupCreatorIdentity, groupId);
         if (groupModel == null) {
             logger.warn("Cannot set isArchived={} for group because its model is null", isArchived);
@@ -869,7 +968,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public void bumpLastUpdate(@NonNull GroupModel groupModel) {
+    public void bumpLastUpdate(@NonNull GroupModelOld groupModel) {
         GroupIdentity groupIdentity = new GroupIdentity(
             groupModel.getCreatorIdentity(),
             groupModel.getApiGroupId().toLong()
@@ -879,13 +978,13 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public boolean isFull(final GroupModel groupModel) {
+    public boolean isFull(final GroupModelOld groupModel) {
         return this.countMembers(groupModel) >= BuildConfig.MAX_GROUP_SIZE;
     }
 
     @Override
     public void removeGroupMessageState(@NonNull GroupMessageModel messageModel, @NonNull String identityToRemove) {
-        GroupModel groupModel = getById(messageModel.getGroupId());
+        GroupModelOld groupModel = getById(messageModel.getGroupId());
         if (groupModel != null) {
             if (isGroupMember(groupModel, identityToRemove)) {
                 Map<String, Object> groupMessageStates = messageModel.getGroupMessageStates();

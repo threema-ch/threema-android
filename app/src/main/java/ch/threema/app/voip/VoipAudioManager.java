@@ -26,9 +26,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import ch.threema.app.managers.ListenerManager;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.utils.AudioDevice;
 import ch.threema.app.voip.listeners.VoipAudioManagerListener;
 import ch.threema.app.voip.managers.VoipListenerManager;
+import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.AppRTCUtils;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
@@ -111,16 +113,24 @@ public class VoipAudioManager {
         }
     }
 
-    public static VoipAudioManager create(Context context) {
-        return new VoipAudioManager(context);
+    public static VoipAudioManager create(
+        @NonNull Context context,
+        @NonNull VoipStateService voipStateService,
+        @NonNull PreferenceService preferenceService
+    ) {
+        return new VoipAudioManager(context, voipStateService, preferenceService);
     }
 
-    private VoipAudioManager(Context context) {
+    private VoipAudioManager(
+        @NonNull Context context,
+        @NonNull VoipStateService voipStateService,
+        @NonNull PreferenceService preferenceService
+    ) {
         logger.info("Initializing");
         ThreadUtils.checkIsOnMainThread();
         this.apprtcContext = context;
         this.audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        this.bluetoothManager = VoipBluetoothManager.create(context, this);
+        this.bluetoothManager = VoipBluetoothManager.create(context, this, voipStateService, preferenceService);
         this.wiredHeadsetReceiver = new WiredHeadsetReceiver();
         this.amState = AudioManagerState.UNINITIALIZED;
 
@@ -216,7 +226,7 @@ public class VoipAudioManager {
                         typeOfChange = "AUDIOFOCUS_INVALID";
                         break;
                 }
-                logger.debug("onAudioFocusChange: " + typeOfChange);
+                logger.debug("onAudioFocusChange: {}", typeOfChange);
             }
         };
 
@@ -263,7 +273,7 @@ public class VoipAudioManager {
         logger.debug("stop");
         ThreadUtils.checkIsOnMainThread();
         if (this.amState != AudioManagerState.RUNNING) {
-            logger.error("Trying to stop AudioManager in incorrect state: " + amState);
+            logger.error("Trying to stop AudioManager in incorrect state: {}", amState);
             return;
         }
         this.amState = AudioManagerState.UNINITIALIZED;
@@ -492,7 +502,7 @@ public class VoipAudioManager {
             case NONE:
                 break;
             default:
-                logger.error(": Invalid user selected audio device: " + this.userSelectedAudioDevice);
+                logger.error(": Invalid user selected audio device: {}", this.userSelectedAudioDevice);
         }
 
         // Switch to new device but only if there has been any changes.
@@ -529,9 +539,7 @@ public class VoipAudioManager {
                 && this.userSelectedAudioDevice != AudioDevice.BLUETOOTH);
 
         if (this.audioDevices.contains(AudioDevice.BLUETOOTH)) {
-            logger.debug("Need BT audio: start=" + needBluetoothAudioStart + ", "
-                + "stop=" + needBluetoothAudioStop + ", "
-                + "BT state=" + this.bluetoothManager.getState());
+            logger.debug("Need BT audio: start={}, stop={}, BT state={}", needBluetoothAudioStart, needBluetoothAudioStop, bluetoothManager.getState());
         }
 
         // Start or stop Bluetooth SCO connection given states set earlier.

@@ -1,5 +1,6 @@
 package ch.threema.domain.protocol.csp.messages
 
+import ch.threema.common.emptyByteArray
 import ch.threema.domain.models.MessageId
 import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.testhelpers.willThrow
@@ -56,7 +57,7 @@ class TypingIndicatorMessageTest {
     fun testNegativeOffset() {
         val testBlock = {
             TypingIndicatorMessage.fromByteArray(
-                data = ByteArray(0),
+                data = emptyByteArray(),
                 offset = -1,
                 length = 0,
             )

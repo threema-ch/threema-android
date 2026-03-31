@@ -52,14 +52,21 @@
     <string name="voip_prefs_video_codec_no_h264hip">Disable H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Software codecs</string>
     <string name="voip_connection_failed">Connection could not be established</string>
-    <string name="voip_connection_lost">Connection lost</string>
+    <string name="voip_call_disconnected">Call disconnected</string>
     <string name="prefs_voip_reject_incoming_calls_title">Decline mobile calls</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Decline incoming mobile calls while a Threema Call is active.</string>
     <string name="voip_contact_not_found">No Threema contact found for this number.</string>
     <string name="voip_another_pstn_call">Unable to initiate call. A regular phone call is still active.</string>
     <string name="voip_call_status_off_hours">Off-hours call</string>
     <string name="voip_peer_video_disabled">Video calls have been disabled by the other party.</string>
-    <string name="voip_reject_channel_name">Call state change</string>
+
+    <string name="voip_error_processing_call_anser">An error occurred while processing the call answer</string>
+    <string name="voip_error_peer_connection">Peer connection error</string>
+    <string name="voip_error_determine_common_video_quality_profile">Could not determine common video quality profile</string>
+
+    <string name="voip_audio_focus_lost">Audio Focus lost</string>
+
+    <string name="voip_could_not_initialize">Could not initialize call</string>
 
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">WebRTC Diagnostics</string>
@@ -72,13 +79,9 @@
     <string name="voip_webrtc_debug_copy_clipboard">Copy to clipboard</string>
 
     <!-- Group Calls -->
-    <string name="voip_gc_members_notified">All group members have been notified</string>
-    <string name="voip_gc_notification_channel_description">Group calls</string>
-    <string name="voip_gc_notification_title">Group call</string>
     <string name="voip_gc_notification_call_started">%1$s started a group call in %2$s</string>
     <string name="voip_gc_notification_call_started_generic">%1$s started a group call</string>
     <string name="voip_gc_notification_call_started_generic_outbox">You started a group call</string>
-    <string name="voip_gc_dismiss_call">Ignore</string>
     <string name="voip_gc_join_call">Join</string>
     <string name="voip_gc_ongoing_call">Ongoing group call</string>
     <string name="voip_gc_waiting_for_participants">Waiting for participants</string>

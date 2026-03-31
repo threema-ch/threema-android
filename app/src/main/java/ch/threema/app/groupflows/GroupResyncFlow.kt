@@ -1,6 +1,7 @@
 package ch.threema.app.groupflows
 
 import ch.threema.app.profilepicture.GroupProfilePictureUploader
+import ch.threema.app.protocolsteps.IdentityBlockedSteps
 import ch.threema.app.services.FileService
 import ch.threema.app.services.UserService
 import ch.threema.app.tasks.ActiveGroupStateResyncTask
@@ -30,6 +31,7 @@ class GroupResyncFlow(
     private val groupCallManager: GroupCallManager,
     private val databaseService: DatabaseService,
     private val outgoingCspMessageServices: OutgoingCspMessageServices,
+    private val identityBlockedSteps: IdentityBlockedSteps,
 ) : BackgroundTask<GroupFlowResult> {
     override fun runInBackground(): GroupFlowResult {
         if (!userService.identity.equals(groupModel.groupIdentity.creatorIdentity)) {
@@ -55,6 +57,7 @@ class GroupResyncFlow(
                     groupCallManager,
                     databaseService,
                     outgoingCspMessageServices,
+                    identityBlockedSteps,
                 ),
             ).await()
         }

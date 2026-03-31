@@ -16,9 +16,6 @@ import java.lang.reflect.Method;
 public class ViewUtil {
     /**
      * show the view and return true if exist
-     *
-     * @param view
-     * @return
      */
     public static boolean show(View view) {
         return show(view, true);
@@ -26,9 +23,6 @@ public class ViewUtil {
 
     /**
      * show or hide the view and return true if exist
-     *
-     * @param view
-     * @return
      */
     public static boolean show(View view, boolean show) {
         if (view == null) {
@@ -58,10 +52,6 @@ public class ViewUtil {
 
     /**
      * show a text view and set the text, return true if the view exist
-     *
-     * @param view
-     * @param text
-     * @return
      */
     public static boolean showAndSet(TextView view, String text) {
         if (!show(view)) {
@@ -83,10 +73,6 @@ public class ViewUtil {
 
     /**
      * show a checkbox view and set the check state, return true if the view exist
-     *
-     * @param view
-     * @param checked
-     * @return
      */
     public static boolean showAndSet(CheckBox view, boolean checked) {
         if (!show(view)) {

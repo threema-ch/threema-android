@@ -461,7 +461,6 @@ class AppRestrictionServiceTest {
 
         val serviceManagerMock = mockk<ServiceManager>(relaxed = true) {
             every { encryptedPreferenceStore } returns encryptedPreferenceStoreMock
-            every { context } returns mockContext
         }
         val taskCreatorMock = TaskCreator(serviceManagerMock)
         every { serviceManagerMock.taskCreator } returns taskCreatorMock

@@ -1,6 +1,5 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.base.ThreemaException
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.EditMessageData
@@ -8,7 +7,7 @@ import ch.threema.domain.protocol.csp.messages.GroupEditMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.util.Date
 import kotlinx.serialization.Serializable
 
@@ -17,9 +16,8 @@ class OutgoingGroupEditMessageTask(
     private val messageId: MessageId,
     private val editedText: String,
     private val editedAt: Date,
-    private val recipientIdentities: Set<Identity>,
-    serviceManager: ServiceManager,
-) : OutgoingCspMessageTask(serviceManager) {
+    private val recipientIdentities: Set<IdentityString>,
+) : OutgoingCspMessageTask() {
     override val type: String = "OutgoingGroupEditMessageTask"
 
     override suspend fun runSendingSteps(handle: ActiveTaskCodec) {
@@ -63,16 +61,15 @@ class OutgoingGroupEditMessageTask(
         private val messageId: ByteArray,
         private val editedText: String,
         private val editedAt: Long,
-        private val recipientIdentities: Set<Identity>,
+        private val recipientIdentities: Set<IdentityString>,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutgoingGroupEditMessageTask(
-                messageModelId,
-                MessageId(messageId),
-                editedText,
-                Date(editedAt),
-                recipientIdentities,
-                serviceManager,
+                messageModelId = messageModelId,
+                messageId = MessageId(messageId),
+                editedText = editedText,
+                editedAt = Date(editedAt),
+                recipientIdentities = recipientIdentities,
             )
     }
 }

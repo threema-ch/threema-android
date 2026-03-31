@@ -2,8 +2,6 @@ package ch.threema.app.utils;
 
 import org.slf4j.Logger;
 
-import java.security.SecureRandom;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.app.R;
@@ -13,8 +11,11 @@ import ch.threema.app.stores.EncryptedPreferenceStore;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.base.utils.Utils;
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.factories.ServerMessageModelFactory;
 import ch.threema.storage.models.ServerMessageModel;
+
+import static ch.threema.common.SecureRandomExtensionsKt.generateRandomBytes;
+import static ch.threema.common.SecureRandomExtensionsKt.secureRandom;
 
 public class DeviceCookieManagerImpl implements DeviceCookieManager {
     private static final Logger logger = getThreemaLogger("DeviceCookieManagerImpl");
@@ -24,17 +25,17 @@ public class DeviceCookieManagerImpl implements DeviceCookieManager {
     @NonNull
     private final EncryptedPreferenceStore encryptedPreferenceStore;
     @NonNull
-    private final DatabaseService databaseService;
+    private final ServerMessageModelFactory serverMessageModelFactory;
     @Nullable
     private NotificationService notificationService;
     private boolean skipNextIndication;
 
     public DeviceCookieManagerImpl(
         @NonNull EncryptedPreferenceStore encryptedPreferenceStore,
-        @NonNull DatabaseService databaseService
+        @NonNull ServerMessageModelFactory serverMessageModelFactory
     ) {
         this.encryptedPreferenceStore = encryptedPreferenceStore;
-        this.databaseService = databaseService;
+        this.serverMessageModelFactory = serverMessageModelFactory;
         this.skipNextIndication = false;
     }
 
@@ -53,9 +54,7 @@ public class DeviceCookieManagerImpl implements DeviceCookieManager {
         }
 
         // Generate and store new random device cookie
-        deviceCookie = new byte[DEVICE_COOKIE_SIZE];
-        SecureRandom random = new SecureRandom();
-        random.nextBytes(deviceCookie);
+        deviceCookie = generateRandomBytes(secureRandom(), DEVICE_COOKIE_SIZE);
         encryptedPreferenceStore.save(ThreemaApplication.getAppContext().getString(R.string.preferences__device_cookie), deviceCookie);
 
         logger.info("Generated new device cookie {}...", Utils.byteArrayToHexString(deviceCookie).substring(0, 4));
@@ -79,7 +78,7 @@ public class DeviceCookieManagerImpl implements DeviceCookieManager {
         logger.info("Device cookie change indication received, showing warning message");
 
         ServerMessageModel serverMessageModel = new ServerMessageModel(ThreemaApplication.getAppContext().getString(R.string.rogue_device_warning), ServerMessageModel.TYPE_ALERT);
-        databaseService.getServerMessageModelFactory().storeServerMessageModel(serverMessageModel);
+        serverMessageModelFactory.storeServerMessageModel(serverMessageModel);
 
         if (notificationService == null) {
             logger.error("Could not display device cookie change indication as notification service is null");

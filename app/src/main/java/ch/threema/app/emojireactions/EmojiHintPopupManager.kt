@@ -10,12 +10,12 @@ import androidx.core.content.edit
 import androidx.core.view.children
 import androidx.lifecycle.LifecycleOwner
 import androidx.preference.PreferenceManager
+import ch.threema.android.getBottomCenterLocation
+import ch.threema.android.getLocation
+import ch.threema.android.getTopCenterLocation
 import ch.threema.app.R
 import ch.threema.app.ui.ConversationListView
 import ch.threema.app.ui.TooltipPopup
-import ch.threema.app.ui.getBottomCenterLocation
-import ch.threema.app.ui.getLocation
-import ch.threema.app.ui.getTopCenterLocation
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder
 import kotlin.properties.Delegates
 

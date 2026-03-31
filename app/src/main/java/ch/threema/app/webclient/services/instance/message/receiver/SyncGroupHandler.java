@@ -22,8 +22,10 @@ import ch.threema.app.webclient.services.instance.MessageDispatcher;
 import ch.threema.app.webclient.services.instance.MessageReceiver;
 import ch.threema.base.utils.CoroutinesExtensionKt;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.models.GroupModel;
 import ch.threema.data.repositories.GroupModelRepository;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import kotlin.Unit;
 import kotlinx.coroutines.Deferred;
 
@@ -74,7 +76,7 @@ public class SyncGroupHandler extends MessageReceiver {
         final String temporaryId = args.get(Protocol.ARGUMENT_TEMPORARY_ID).asStringValue().asString();
         final String receiverId = args.get(Protocol.ARGUMENT_RECEIVER_ID).asStringValue().asString();
 
-        final GroupModel group;
+        final GroupModelOld group;
         try {
             group = this.groupService.getById(Integer.valueOf(receiverId));
         } catch (NumberFormatException x) {
@@ -92,7 +94,7 @@ public class SyncGroupHandler extends MessageReceiver {
             return;
         }
 
-        ch.threema.data.models.GroupModel newGroupModel = groupModelRepository.getByCreatorIdentityAndId(group.getCreatorIdentity(), group.getApiGroupId());
+        GroupModel newGroupModel = groupModelRepository.getByCreatorIdentityAndId(group.getCreatorIdentity(), group.getApiGroupId());
         if (newGroupModel == null) {
             logger.error("New group model is null");
             this.failed(temporaryId, Protocol.ERROR_INTERNAL);

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.asynctasks.AddContactRestrictionPolicy
 import ch.threema.app.asynctasks.BasicAddOrUpdateContactBackgroundTask
 import ch.threema.app.asynctasks.ContactAvailable
@@ -23,10 +22,11 @@ import ch.threema.common.generateRandomBytes
 import ch.threema.common.secureRandom
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.types.Identity
-import ch.threema.storage.models.ContactModel
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import org.koin.mp.KoinPlatform
 import org.webrtc.SurfaceViewRenderer
 
 private val logger = getThreemaLogger("P2PHandshake")
@@ -54,7 +54,7 @@ class P2PHandshake private constructor(
     }
 
     private val gcnhak: ByteArray by lazy {
-        val sharedKey = call.dependencies.identityStore.calcSharedSecret(receiverContact.publicKey)
+        val sharedKey = call.dependencies.identityStore.calcSharedSecret(receiverContactOrUser.publicKey)
         CryptoCallUtils.gcBlake2b256(
             key = sharedKey,
             salt = "nha",
@@ -66,7 +66,7 @@ class P2PHandshake private constructor(
     }
 
     private lateinit var receiverP2PContext: RemoteP2PContext
-    private lateinit var receiverContact: ContactModel
+    private lateinit var receiverContactOrUser: ContactOrUser
 
     lateinit var p2pContexts: P2PContexts
 
@@ -166,7 +166,7 @@ class P2PHandshake private constructor(
 
         logger.info("Create Hello from {} to {}", sender.id, receiverId)
         val hello = Handshake.Hello(
-            call.dependencies.identityStore.getIdentity()!!,
+            call.dependencies.identityStore.getIdentityString()!!,
             call.dependencies.identityStore.getPublicNickname(),
             senderP2PContext.pckPublic,
             senderP2PContext.pcck,
@@ -202,7 +202,7 @@ class P2PHandshake private constructor(
     private fun createRemoteParticipant(participantId: ParticipantId): NormalRemoteParticipant {
         GroupCallThreadUtil.assertDispatcherThread()
 
-        return object : NormalRemoteParticipant(participantId, receiverContact) {
+        return object : NormalRemoteParticipant(participantId, receiverContactOrUser) {
             override val type = "NormalRemoteParticipant"
 
             @UiThread
@@ -295,7 +295,7 @@ class P2PHandshake private constructor(
     }
 
     @WorkerThread
-    private fun isGroupMember(identity: Identity): Boolean {
+    private fun isGroupMember(identity: IdentityString): Boolean {
         val groupService = call.dependencies.groupService
         return groupService.getById(call.description.groupId.id)?.let {
             groupService.isGroupMember(it, identity)
@@ -332,7 +332,7 @@ class P2PHandshake private constructor(
         GroupCallThreadUtil.assertDispatcherThread()
 
         try {
-            receiverContact = getOrCreateContact(hello.identity)
+            receiverContactOrUser = getOrCreateContactOrUser(hello.identity)
             val receiverParticipant = createRemoteParticipant(receiverId)
             receiverP2PContext = RemoteP2PContext(receiverParticipant, hello.pck, hello.pcck)
         } catch (e: Exception) {
@@ -341,33 +341,38 @@ class P2PHandshake private constructor(
     }
 
     @WorkerThread
-    private fun getOrCreateContact(identity: Identity): ContactModel {
+    private fun getOrCreateContactOrUser(identity: IdentityString): ContactOrUser {
+        if (call.dependencies.identityStore.getIdentityString() == identity) {
+            return ContactOrUser.User(
+                identity = Identity(call.dependencies.identityStore.getIdentityString()!!),
+                publicKey = call.dependencies.identityStore.getPublicKey()!!,
+                myDisplayName = call.dependencies.userService.displayName,
+            )
+        }
+
         // Check if the contact already exists
-        call.dependencies.contactService.getByIdentity(identity)?.let {
-            return it
+        call.dependencies.contactModelRepository.getByIdentity(identity)?.let { contactModel ->
+            return ContactOrUser.Contact(contactModel)
         }
 
         val result = BasicAddOrUpdateContactBackgroundTask(
             identity = identity,
-            AcquaintanceLevel.GROUP,
-            myIdentity = sender.identity,
-            call.dependencies.apiConnector,
-            call.dependencies.contactModelRepository,
-            AddContactRestrictionPolicy.CHECK,
-            context = ThreemaApplication.getAppContext(),
-            null,
+            acquaintanceLevel = AcquaintanceLevel.GROUP,
+            myIdentity = sender.identity.value,
+            apiConnector = call.dependencies.apiConnector,
+            contactModelRepository = call.dependencies.contactModelRepository,
+            addContactRestrictionPolicy = AddContactRestrictionPolicy.CHECK,
+            appRestrictions = KoinPlatform.getKoin().get(),
+            expectedPublicKey = null,
         ).runSynchronously()
 
         when (result) {
-            is ContactAvailable -> Unit
+            is ContactAvailable -> return ContactOrUser.Contact(result.contactModel)
             is Failed -> {
                 logger.error("Could not create contact: {}", result.message)
                 throw IllegalStateException("Could not create contact")
             }
         }
-
-        return call.dependencies.contactService.getByIdentity(identity)
-            ?: throw IllegalStateException("Contact must exist after creating it")
     }
 
     @WorkerThread
@@ -387,9 +392,8 @@ class P2PHandshake private constructor(
 
     @WorkerThread
     private fun hasValidRepeatedAuthFeatures(auth: Handshake.Auth): Boolean {
-        return auth.pck.contentEquals(senderP2PContext.pckPublic) && auth.pcck.contentEquals(
-            senderP2PContext.pcck,
-        )
+        return auth.pck.contentEquals(senderP2PContext.pckPublic) &&
+            auth.pcck.contentEquals(senderP2PContext.pcck)
     }
 
     @WorkerThread

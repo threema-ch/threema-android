@@ -49,7 +49,9 @@ import ch.threema.app.qrcodes.ContactUrlUtil;
 import ch.threema.app.webclient.services.WebSessionQRCodeParser;
 import ch.threema.app.webclient.services.WebSessionQRCodeParserImpl;
 import ch.threema.base.utils.Base64;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
@@ -206,56 +208,56 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
             return;
         }
 
-        backgroundExecutor.execute(new BasicAddOrUpdateContactBackgroundTask(
-            identity,
-            ContactModel.AcquaintanceLevel.DIRECT,
-            dependencies.getUserService().getIdentity(),
-            dependencies.getApiConnector(),
-            dependencies.getContactModelRepository(),
-            AddContactRestrictionPolicy.CHECK,
-            this,
-            publicKey
-        ) {
-            @Override
-            public void onBefore() {
-                GenericProgressDialog.newInstance(R.string.creating_contact, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_ADD_PROGRESS);
-            }
-
-            @Override
-            public void onFinished(@NonNull ContactResult result) {
-                if (isDestroyed()) {
-                    return;
+        backgroundExecutor.execute(
+            new BasicAddOrUpdateContactBackgroundTask(
+                identity,
+                ContactModel.AcquaintanceLevel.DIRECT,
+                dependencies.getUserService().getIdentity(),
+                dependencies.getApiConnector(),
+                dependencies.getContactModelRepository(),
+                AddContactRestrictionPolicy.CHECK,
+                dependencies.getAppRestrictions(),
+                publicKey
+            ) {
+                @Override
+                public void onBefore() {
+                    GenericProgressDialog.newInstance(R.string.creating_contact, R.string.please_wait).show(getSupportFragmentManager(), DIALOG_TAG_ADD_PROGRESS);
                 }
 
-                DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_ADD_PROGRESS, true);
-
-                if (result instanceof ContactCreated) {
-                    showContactAndFinish(identity, R.string.creating_contact_successful);
-                } else if (result instanceof ContactModified) {
-                    if (((ContactModified) result).getAcquaintanceLevelChanged()) {
-                        showContactAndFinish(identity, R.string.creating_contact_successful);
-                    } else {
-                        showContactAndFinish(identity, R.string.scan_successful);
+                @Override
+                public void onFinished(@NonNull ContactResult result) {
+                    if (isDestroyed()) {
+                        return;
                     }
-                } else if (result instanceof AlreadyVerified) {
-                    showContactAndFinish(identity, R.string.scan_duplicate);
-                } else if (result instanceof ContactExists) {
-                    showContactAndFinish(identity, R.string.identity_already_exists);
-                } else if (result instanceof PolicyViolation) {
-                    Toast.makeText(AddContactActivity.this, R.string.disabled_by_policy_short, Toast.LENGTH_SHORT).show();
-                    finish();
-                } else if (result instanceof Failed) {
-                    GenericAlertDialog.newInstance(
-                        ConfigUtils.isOnPremBuild() ?
-                            R.string.invalid_onprem_id_title :
-                            R.string.title_adduser,
-                        ((Failed) result).getMessage(),
-                        R.string.close,
-                        0
-                    ).show(getSupportFragmentManager(), DIALOG_TAG_ADD_ERROR);
+
+                    DialogUtil.dismissDialog(getSupportFragmentManager(), DIALOG_TAG_ADD_PROGRESS, true);
+
+                    if (result instanceof ContactCreated) {
+                        showContactAndFinish(identity, R.string.creating_contact_successful);
+                    } else if (result instanceof ContactModified) {
+                        if (((ContactModified) result).getAcquaintanceLevelChanged()) {
+                            showContactAndFinish(identity, R.string.creating_contact_successful);
+                        } else {
+                            showContactAndFinish(identity, R.string.scan_successful);
+                        }
+                    } else if (result instanceof AlreadyVerified) {
+                        showContactAndFinish(identity, R.string.scan_duplicate);
+                    } else if (result instanceof ContactExists) {
+                        showContactAndFinish(identity, R.string.identity_already_exists);
+                    } else if (result instanceof PolicyViolation) {
+                        Toast.makeText(AddContactActivity.this, R.string.disabled_by_policy_short, Toast.LENGTH_SHORT).show();
+                        finish();
+                    } else if (result instanceof Failed) {
+                        GenericAlertDialog.newInstance(
+                            ConfigUtils.isOnPremBuild() ? R.string.invalid_onprem_id_title : R.string.title_adduser,
+                            ((Failed) result).message,
+                            R.string.close,
+                            0
+                        ).show(getSupportFragmentManager(), DIALOG_TAG_ADD_ERROR);
+                    }
                 }
             }
-        });
+        );
     }
 
     private void showContactDetail(String id) {
@@ -351,12 +353,12 @@ public class AddContactActivity extends ThreemaActivity implements GenericAlertD
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
         finish();
     }
 
     @Override
-    public void onNo(String tag, Object data) {
+    public void onNo(@Nullable String tag, @Nullable Object data) {
         finish();
     }
 

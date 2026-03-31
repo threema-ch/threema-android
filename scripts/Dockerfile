@@ -1,18 +1,20 @@
-# Dockerfile for an Android compilation image, based on Ubuntu LTS.
+# Dockerfile for an Android compilation image, based on Debian Trixie Slim.
 #
 # NOTE: This docker image automatically accepts the Android SDK licenses. It may only be used
 #       from a wrapper script that explicitly asks the user to accept the license!
 #
 # Arguments:
 #
+# - `JAVA_VERSION`: Set this to the desired Java version (e.g. 21)
 # - `SDK_VERSION`: Set this to the desired Android SDK version (e.g. `35`)
 # - `NDK_VERSION`: Set this to the desired Android NDK version (e.g. `25.2.9519653`)
 # - `BUILD_TOOLS_VERSION`: Set this to the desired build tools version (e.g. `35.0.0`)
 # - `RUST_VERSION`: Set this to the desired Rust version (e.g. `1.80`)
 
-FROM docker.io/ubuntu:24.04
+FROM docker.io/debian:trixie-slim
 
 # Arguments
+ARG JAVA_VERSION=21
 ARG SDK_VERSION=35
 ARG BUILD_TOOLS_VERSION=35.0.0
 ARG NDK_VERSION=28.2.13676358
@@ -22,7 +24,7 @@ ARG RUST_VERSION
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q \
  && apt-get -y -q install --no-install-recommends \
-    build-essential file openjdk-17-jdk git wget unzip rsync vim-nox cpu-checker curl python3 protobuf-compiler \
+    build-essential file "openjdk-${JAVA_VERSION}-jdk" git wget unzip rsync vim-nox cpu-checker curl python3 protobuf-compiler \
  && rm -rf /var/lib/apt/lists/*
 
 # Download Android command line tools

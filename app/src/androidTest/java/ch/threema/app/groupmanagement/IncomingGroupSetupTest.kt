@@ -15,12 +15,12 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
+import ch.threema.domain.models.UserState
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.csp.messages.GroupSetupMessage
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
-import ch.threema.storage.models.GroupModel
 import java.util.Date
 import junit.framework.TestCase
 import kotlin.test.AfterTest
@@ -52,10 +52,10 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
      */
     @Test
     fun testUnknownGroupNotMember() = runTest {
-        val scenario = startScenario()
-
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups, "initial groups")
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         val setupTracker = GroupSetupTracker(
             groupAUnknown,
@@ -75,7 +75,9 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         processMessage(message, groupAUnknown.groupCreator.identityStore)
 
         // Assert that group conversations did not appear, disappear, or change their name
-        assertGroupConversations(scenario, initialGroups, "no changes")
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         // Assert that no message is sent
         assertEquals(0, sentMessagesInsideTask.size)
@@ -92,10 +94,10 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
      */
     @Test
     fun testUnknownEmptyGroup() = runTest {
-        val scenario = startScenario()
-
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups, "epect initial group")
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         val setupTracker = GroupSetupTracker(
             groupAUnknown,
@@ -115,7 +117,9 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         processMessage(message, groupAUnknown.groupCreator.identityStore)
 
         // Assert that group conversations did not appear, disappear, or change their name
-        assertGroupConversations(scenario, initialGroups, "no changes")
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         // Assert that no message is sent
         assertEquals(0, sentMessagesInsideTask.size)
@@ -132,10 +136,10 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
      */
     @Test
     fun testBlocked() = runTest {
-        val scenario = startScenario()
-
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         serviceManager.blockedIdentitiesService.blockIdentity(contactA.identity)
         serviceManager.blockedIdentitiesService.blockIdentity(contactB.identity)
@@ -149,7 +153,6 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
             "Me, 12345678, ABCDEFGH",
             myContact.identity,
         )
-
         testNewGroup(newGroup)
     }
 
@@ -158,15 +161,15 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
      */
     @Test
     fun testKicked() = runTest {
-        val scenario = startScenario()
-
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups, "initial groups")
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         // Assert that the user is a member of groupAB
         val beforeKicked = groupService.getById(groupAB.groupModel.id)
         assertNotNull(beforeKicked)
-        assertEquals(GroupModel.UserState.MEMBER, beforeKicked.userState)
+        assertEquals(UserState.MEMBER, beforeKicked.userState)
         assertTrue(groupService.isGroupMember(beforeKicked))
 
         val setupTracker = GroupSetupTracker(
@@ -191,10 +194,12 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
             GroupIdentity(groupAB.groupCreator.identity, groupAB.apiGroupId.toLong()),
         )
         assertNotNull(afterKicked)
-        assertEquals(GroupModel.UserState.KICKED, afterKicked.data?.userState)
+        assertEquals(UserState.KICKED, afterKicked.data?.userState)
 
         // Assert that group conversations did not appear, disappear, or change their name
-        assertGroupConversations(scenario, initialGroups, "no changes")
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         // Assert that no message is sent
         assertEquals(0, sentMessagesInsideTask.size)
@@ -211,10 +216,10 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
      */
     @Test
     fun testMembersChanged() = runTest {
-        val scenario = startScenario()
-
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         val setupTracker = GroupSetupTracker(
             groupAB,
@@ -235,7 +240,9 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         processMessage(message, groupAB.groupCreator.identityStore)
 
         // Assert that group conversations did not appear, disappear, or change their name
-        assertGroupConversations(scenario, initialGroups, "no changes")
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         // Assert that no message is sent
         assertEquals(0, sentMessagesInsideTask.size)
@@ -270,10 +277,10 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
      */
     @Test
     fun testRemoveJoin() = runTest {
-        val scenario = startScenario()
-
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups, "initial groups")
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         val setupTracker = GroupSetupTracker(
             groupAB,
@@ -314,10 +321,10 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
 
     @Test
     fun testGroupContainingInvalidIDs() = runTest {
-        val scenario = startScenario()
-
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         val invalidMemberId = ",,,,,,,,"
 
@@ -333,13 +340,13 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         )
 
         val setupTracker = GroupSetupTracker(
-            newGroup,
-            myContact.identity,
+            group = newGroup,
+            myIdentity = myContact.identity,
             expectCreate = true,
             expectKick = false,
-            newGroup.members.filter { it.identity != invalidMemberId }
+            newMembers = newGroup.members.filter { it.identity != invalidMemberId }
                 .map { it.identity } + newGroup.groupCreator.identity,
-            emptyList(),
+            kickedMembers = emptyList(),
         )
         setupTracker.start()
 
@@ -349,7 +356,9 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         processMessage(message, newGroup.groupCreator.identityStore)
 
         // Assert that the new group appears in the list
-        assertGroupConversations(scenario, listOf(newGroup) + initialGroups)
+        assertGroupConversations(
+            expectedGroups = listOf(newGroup) + initialGroups,
+        )
 
         // Assert that no message is sent
         assertEquals(0, sentMessagesInsideTask.size)
@@ -363,10 +372,10 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
 
     @Test
     fun testGroupContainingRevokedButKnownContact() = runTest {
-        val scenario = startScenario()
-
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups)
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         // Add a revoked contact
         serviceManager.modelRepositories.contacts.createFromLocal(revokedContactModelData)
@@ -403,7 +412,9 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         processMessage(message, newGroup.groupCreator.identityStore)
 
         // Assert that the new group appears in the list
-        assertGroupConversations(scenario, listOf(newGroup) + initialGroups)
+        assertGroupConversations(
+            expectedGroups = listOf(newGroup) + initialGroups,
+        )
 
         // Assert that no message is sent
         assertEquals(0, sentMessagesInsideTask.size)
@@ -430,10 +441,10 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
             )?.data,
         )
 
-        val scenario = startScenario()
-
         // Assert initial group conversations
-        assertGroupConversations(scenario, initialGroups, "initial groups")
+        assertGroupConversations(
+            expectedGroups = initialGroups,
+        )
 
         val setupTracker = GroupSetupTracker(
             newGroup,
@@ -472,17 +483,11 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
             newGroup.groupCreator.identity,
         )
         assertNotNull(group!!)
-        val expectedMemberCount = newGroup.members.size
-        // Assert that there is one more member than member models (as the user is not stored into
-        // the database).
+        val expectedMemberCount = newGroup.members.size + 1
+        // Assert that there are two more members than member models (as the user and the creator is not stored into the database).
         assertEquals(
             expectedMemberCount,
-            serviceManager.databaseService.groupMemberModelFactory.getByGroupId(group.id).size + 1,
-        )
-        assertEquals(
-            expectedMemberCount,
-            serviceManager.databaseService.groupMemberModelFactory.countMembersWithoutUser(group.id)
-                .toInt() + 1,
+            serviceManager.databaseService.groupMemberModelFactory.getByGroupId(group.id).size + 2,
         )
 
         // Assert that the group service returns the member lists including the user
@@ -493,7 +498,9 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         assertEquals(expectedMemberCount, groupService.countMembersWithoutUser(group) + 1)
 
         // Assert that the new group appears in the list
-        assertGroupConversations(scenario, listOf(newGroup) + initialGroups)
+        assertGroupConversations(
+            expectedGroups = listOf(newGroup) + initialGroups,
+        )
     }
 
     private fun createGroupSetupMessage(testGroup: TestGroup) = GroupSetupMessage()
@@ -510,7 +517,7 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
 
     private class GroupSetupTracker(
         private val group: TestGroup?,
-        private val myIdentity: Identity,
+        private val myIdentity: IdentityString,
         private val expectCreate: Boolean,
         private val expectKick: Boolean,
         private val newMembers: List<String>,

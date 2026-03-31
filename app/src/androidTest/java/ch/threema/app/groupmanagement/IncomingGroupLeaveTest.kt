@@ -1,10 +1,8 @@
 package ch.threema.app.groupmanagement
 
-import androidx.test.core.app.launchActivity
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import ch.threema.app.DangerousTest
-import ch.threema.app.home.HomeActivity
 import ch.threema.app.listeners.GroupListener
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.testutils.TestHelpers.TestContact
@@ -12,7 +10,7 @@ import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.protocol.csp.messages.GroupLeaveMessage
 import ch.threema.domain.protocol.csp.messages.GroupSyncRequestMessage
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertTrue
@@ -46,21 +44,12 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
     }
 
     /**
-     * Test that the creator of a group cannot leave the group.
-     */
-    @Test
-    fun testLeaveFromCreator() = runTest {
-        assertUnsuccessfulLeave(groupA, contactA)
-        assertUnsuccessfulLeave(groupB, contactB)
-    }
-
-    /**
      * Test that a leave message of an unknown group (where I am the owner) is discarded (and does
      * not change anything).
      */
     @Test
     fun testLeaveOfMyNonExistingGroup() = runTest {
-        assertUnsuccessfulLeave(myUnknownGroup, contactA, emptyList())
+        assertUnsuccessfulLeave(myUnknownGroup, contactA, emptySet())
     }
 
     /**
@@ -69,7 +58,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
      */
     @Test
     fun testLeaveOfNonExistingGroup() = runTest {
-        assertUnsuccessfulLeave(groupAUnknown, contactB, emptyList(), true)
+        assertUnsuccessfulLeave(groupAUnknown, contactB, emptySet(), true)
     }
 
     /**
@@ -96,7 +85,10 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
      */
     @Test
     fun testLeaveOfNonMember() = runTest {
-        assertUnsuccessfulLeave(groupA, contactB)
+        assertUnsuccessfulLeave(
+            group = groupA,
+            contact = contactB,
+        )
     }
 
     @AfterTest
@@ -135,13 +127,13 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
         contact: TestContact,
         expectStateChange: Boolean = false,
     ) {
-        launchActivity<HomeActivity>()
-
         serviceManager.groupService.resetCache(group.groupModel.id)
+        val groupIdentity = GroupIdentity(group.groupCreator.identity, group.apiGroupId.toLong())
+        val previousMemberCount = serviceManager.groupService.countMembers(group.groupModel)
 
         assertEquals(
-            group.members.map { it.identity },
-            serviceManager.groupService.getGroupMemberIdentities(group.groupModel).toList(),
+            group.members.map { it.identity } - myContact.identity,
+            serviceManager.modelRepositories.groups.getByGroupIdentity(groupIdentity)?.data?.otherMembers?.toList(),
         )
 
         val leaveTracker = GroupLeaveTracker(group, contact.identity, expectStateChange)
@@ -157,12 +149,12 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
         serviceManager.groupService.resetCache(group.groupModel.id)
 
         assertEquals(
-            group.members.size - 1,
+            previousMemberCount - 1,
             serviceManager.groupService.countMembers(group.groupModel),
         )
         assertEquals(
-            group.members.map { it.identity }.filter { it != contact.identity },
-            serviceManager.groupService.getGroupMemberIdentities(group.groupModel).toList(),
+            group.members.map { it.identity } - myContact.identity - contact.identity,
+            serviceManager.modelRepositories.groups.getByGroupIdentity(groupIdentity)?.data?.otherMembers?.toList(),
         )
 
         // Assert that no message has been sent as a response to a group leave
@@ -172,12 +164,10 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
     private suspend fun assertUnsuccessfulLeave(
         group: TestGroup,
         contact: TestContact,
-        expectedMembers: List<String>? = null,
+        expectedMembers: Set<String>? = null,
         shouldSendSyncRequest: Boolean = false,
     ) {
-        launchActivity<HomeActivity>()
-
-        val expectedMemberList = expectedMembers ?: group.members.map { it.identity }
+        val expectedMemberList = expectedMembers ?: (setOf(group.groupCreator.identity) + group.members.map { it.identity })
 
         serviceManager.groupService.resetCache(group.groupModel.id)
 
@@ -220,9 +210,10 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
             toIdentity = myContact.identity
         }
 
-    private fun assertGroupIdentities(expectedMemberList: List<String>, group: TestGroup) {
+    private fun assertGroupIdentities(expectedMemberList: Set<String>, group: TestGroup) {
         if (serviceManager.groupService.getByApiGroupIdAndCreator(
-                group.apiGroupId, group.groupCreator.identity,
+                group.apiGroupId,
+                group.groupCreator.identity,
             ) != null
         ) {
             // We check the expected members if the group is available in the database. If there is
@@ -230,7 +221,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
             // retrieve a group model.
             assertEquals(
                 expectedMemberList,
-                serviceManager.groupService.getGroupMemberIdentities(group.groupModel).toList(),
+                serviceManager.groupService.getGroupMemberIdentities(group.groupModel).toSet(),
             )
         }
     }
@@ -242,7 +233,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
             ) != null
         ) {
             // We only check the expected members if the group is available in the database.
-            // Otherwise the check does not make sense as we would not be able to retrieve a group
+            // Otherwise, the check does not make sense as we would not be able to retrieve a group
             // model.
             assertEquals(
                 expectedMemberCount,
@@ -253,7 +244,7 @@ class IncomingGroupLeaveTest : GroupControlTest<GroupLeaveMessage>() {
 
     private class GroupLeaveTracker(
         private val group: TestGroup?,
-        private val leavingIdentity: Identity?,
+        private val leavingIdentity: IdentityString?,
         private val expectStateChange: Boolean = false,
     ) {
         private var memberHasLeft = false

@@ -5,11 +5,11 @@ import ch.threema.app.routines.SynchronizeContactsRoutine;
 
 public interface SynchronizeContactsListener {
     @AnyThread
-    void onStarted(SynchronizeContactsRoutine startedRoutine);
+    default void onStarted(SynchronizeContactsRoutine startedRoutine) {}
 
     @AnyThread
-    void onFinished(SynchronizeContactsRoutine finishedRoutine);
+    default void onFinished(SynchronizeContactsRoutine finishedRoutine) {}
 
     @AnyThread
-    void onError(SynchronizeContactsRoutine finishedRoutine);
+    default void onError(SynchronizeContactsRoutine finishedRoutine) {}
 }

@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import ch.threema.localcrypto.MasterKeyTestData.MASTER_KEY
 import ch.threema.localcrypto.models.MasterKeyState
 import ch.threema.localcrypto.models.RemoteSecretParameters
+import ch.threema.localcrypto.models.RemoteSecretProtectionState
 import ch.threema.testhelpers.assertSuspendsForever
 import ch.threema.testhelpers.expectItem
 import io.mockk.mockk
@@ -15,6 +16,7 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 
 class MasterKeyLockStateHolderTest {
@@ -183,4 +185,40 @@ class MasterKeyLockStateHolderTest {
 
         assertEquals(withRemoteSecretMock, masterKeyLockStateHolder.awaitRemoteSecretLockState().remoteSecretLockData)
     }
+
+    @Test
+    fun `remote secret protection is ACTIVE if key is locked with remote secret`() = runTest {
+        val masterKeyLockStateHolder = MasterKeyLockStateHolder()
+
+        val parametersMock = mockk<RemoteSecretParameters>()
+        masterKeyLockStateHolder.setLockedWithRemoteSecret(
+            lockData = MasterKeyState.WithRemoteSecret(
+                parameters = parametersMock,
+                encryptedData = mockk(),
+            ),
+        )
+        assertEquals(RemoteSecretProtectionState.ACTIVE, masterKeyLockStateHolder.getRemoteSecretProtectionState())
+    }
+
+    @Test
+    fun `remote secret protection is INACTIVE if key is unlocked without remote secret lock data`() = runTest {
+        val masterKeyLockStateHolder = MasterKeyLockStateHolder()
+
+        masterKeyLockStateHolder.setUnlocked(mockk(), remoteSecretLockData = null)
+        assertEquals(RemoteSecretProtectionState.INACTIVE, masterKeyLockStateHolder.getRemoteSecretProtectionState())
+    }
+
+    @Test
+    fun `remote secret protection is ACTIVE if key is unlocked with remote secret lock data`() = runTest {
+        val masterKeyLockStateHolder = MasterKeyLockStateHolder()
+
+        val withRemoteSecret = MasterKeyState.WithRemoteSecret(
+            parameters = mockk(),
+            encryptedData = mockk(),
+        )
+        masterKeyLockStateHolder.setUnlocked(mockk(), remoteSecretLockData = withRemoteSecret)
+        assertEquals(RemoteSecretProtectionState.ACTIVE, masterKeyLockStateHolder.getRemoteSecretProtectionState())
+    }
+
+    private suspend fun MasterKeyLockStateHolder.getRemoteSecretProtectionState(): RemoteSecretProtectionState = remoteSecretProtectionFlow.first()
 }

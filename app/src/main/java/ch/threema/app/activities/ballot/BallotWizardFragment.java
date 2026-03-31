@@ -13,8 +13,6 @@ abstract class BallotWizardFragment extends Fragment {
 
     /**
      * cast activity to ballotActivity
-     *
-     * @return
      */
     public BallotWizardActivity getBallotActivity() {
         if (this.ballotWizardActivity == null) {

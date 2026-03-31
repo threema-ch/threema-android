@@ -59,8 +59,7 @@ public class AudioSelectorButton extends AppCompatImageView implements View.OnCl
         @Override
         public void onAudioDeviceChanged(@Nullable final AudioDevice audioDevice,
                                          @NonNull final HashSet<AudioDevice> availableAudioDevices) {
-            logger.debug("Audio devices changed, selected=" + selectedAudioDevice
-                + ", available=" + availableAudioDevices);
+            logger.debug("Audio devices changed, selected={}, available={}", selectedAudioDevice, availableAudioDevices);
 
             selectedAudioDevice = audioDevice;
 

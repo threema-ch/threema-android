@@ -296,12 +296,12 @@ public class BackupThreemaSafeFragment extends Fragment implements GenericAlertD
     }
 
     @Override
-    public void onYes(String tag, Object data) {
+    public void onYes(@Nullable String tag, @Nullable Object data) {
         disableSafe();
     }
 
     @Override
-    public void onNo(String tag, Object data) {
+    public void onNo(@Nullable String tag, @Nullable Object data) {
         enableSwitch.setCheckedSilent(preferenceService.getThreemaSafeEnabled());
     }
 

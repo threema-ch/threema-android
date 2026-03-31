@@ -34,8 +34,12 @@ class AppDirectoryProvider(
     val legacyUserFilesDirectory: File
         get() = File(context.getExternalFilesDir(null), "data")
 
-    val internalTempDirectory: File
-        get() = createIfNeeded(File(context.filesDir, "tmp"))
+    /**
+     * Directory used for temporary files. All files in this directory will be automatically deleted after a while.
+     * Can be used for the share dialog.
+     */
+    val cacheDirectory: File
+        get() = context.cacheDir
 
     private fun createIfNeeded(directory: File): File {
         if (!directory.exists()) {

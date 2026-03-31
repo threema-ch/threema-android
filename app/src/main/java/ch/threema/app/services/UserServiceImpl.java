@@ -7,6 +7,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.provider.ContactsContract;
 
+import ch.threema.app.preference.service.SynchronizedSettingsService;
 import ch.threema.app.profilepicture.CheckedProfilePicture;
 import ch.threema.app.profilepicture.ProfilePicture;
 import ch.threema.app.profilepicture.RawProfilePicture;
@@ -17,22 +18,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.app.BuildFlavor;
 import ch.threema.app.R;
-import ch.threema.app.ThreemaApplication;
-import ch.threema.app.collections.Functional;
 import ch.threema.app.listeners.SMSVerificationListener;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.multidevice.MultiDeviceManager;
@@ -69,6 +64,9 @@ import ch.threema.storage.models.ContactModel;
 
 import static ch.threema.app.AppConstants.PHONE_LINKED_PLACEHOLDER;
 import static ch.threema.common.JavaCompat.readBytes;
+import static ch.threema.common.OkHttpExtensionsKt.isHttpAuthError;
+import static ch.threema.common.SecureRandomExtensionsKt.generateRandomBytes;
+import static ch.threema.common.SecureRandomExtensionsKt.secureRandom;
 
 /**
  * This service class handle all user actions (db/identity....)
@@ -92,6 +90,8 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     private final LocaleService localeService;
     @NonNull
     private final PreferenceService preferenceService;
+    @NonNull
+    private final SynchronizedSettingsService synchronizedSettingsService;
     @NonNull
     private final TaskManager taskManager;
     @NonNull
@@ -118,6 +118,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         @NonNull FileService fileService,
         @NonNull IdentityStore identityStore,
         @NonNull PreferenceService preferenceService,
+        @NonNull SynchronizedSettingsService synchronizedSettingsService,
         @NonNull TaskManager taskManager,
         @NonNull TaskCreator taskCreator,
         @NonNull MultiDeviceManager multiDeviceManager,
@@ -131,6 +132,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         this.apiService = apiService;
         this.fileService = fileService;
         this.preferenceService = preferenceService;
+        this.synchronizedSettingsService = synchronizedSettingsService;
         this.taskCreator = taskCreator;
         this.taskManager = taskManager;
         this.multiDeviceManager = multiDeviceManager;
@@ -181,13 +183,16 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
             AccountManager accountManager = AccountManager.get(this.context);
 
             try {
-                this.account = Functional.select(new HashSet<>(Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))), type -> true);
+                Account[] accounts = accountManager.getAccountsByType(context.getPackageName());
+                if (accounts.length > 0) {
+                    this.account = accounts[0];
+                }
             } catch (SecurityException e) {
                 logger.error("Could not get account", e);
             }
 
             //if sync enabled, create one!
-            if (this.account == null && (createIfNotExists || this.preferenceService.isSyncContacts())) {
+            if (this.account == null && (createIfNotExists || synchronizedSettingsService.isSyncContacts())) {
                 this.account = new Account(context.getString(R.string.app_name), context.getString(R.string.package_name));
                 // This method requires the caller to have the same UID as the added account's authenticator.
                 try {
@@ -209,7 +214,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     @Override
     public boolean checkAccount() {
         AccountManager accountManager = AccountManager.get(this.context);
-        return Functional.select(new HashSet<>(Arrays.asList(accountManager.getAccountsByType(context.getPackageName()))), type -> true) != null;
+        return accountManager.getAccountsByType(context.getPackageName()).length != 0;
     }
 
     @Override
@@ -255,7 +260,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     @Override
     @Nullable
     public String getIdentity() {
-        return this.identityStore.getIdentity();
+        return this.identityStore.getIdentityString();
     }
 
     @Override
@@ -343,10 +348,9 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
-    public Date linkWithMobileNumber(String number, @NonNull TriggerSource triggerSource) throws Exception {
+    public void linkWithMobileNumber(String number, @NonNull TriggerSource triggerSource) throws Exception {
         boolean aPhoneNumberHasBeenLinked = getMobileLinkingState() == LinkingState_LINKED;
 
-        Date linkWithMobileTime = new Date();
         String normalizedMobileNo = this.localeService.getNormalizedPhoneNumber(number);
 
         if (normalizedMobileNo != null && normalizedMobileNo.startsWith("+")) {
@@ -378,8 +382,6 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
         }
 
         ListenerManager.smsVerificationListeners.handle(SMSVerificationListener::onVerificationStarted);
-
-        return linkWithMobileTime;
     }
 
     @Override
@@ -546,12 +548,17 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
             && triggerSource != TriggerSource.SYNC) {
             taskManager.schedule(
                 new ReflectUserProfileNicknameSyncTask(
-                    publicNicknameTruncated,
-                    ThreemaApplication.requireServiceManager()
+                    publicNicknameTruncated
                 )
             );
         }
         return publicNicknameTruncated;
+    }
+
+    @NonNull
+    @Override
+    public String getDisplayName() {
+        return context.getString(R.string.me_myself_and_i);
     }
 
     @Override
@@ -689,11 +696,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     @Nullable
     private ContactService.ProfilePictureUploadData uploadContactPhoto(@NonNull ProfilePicture contactPhoto) {
         ContactService.ProfilePictureUploadData data = new ContactService.ProfilePictureUploadData();
-
-        SecureRandom rnd = new SecureRandom();
-        data.encryptionKey = new byte[NaCl.SYMM_KEY_BYTES];
-        rnd.nextBytes(data.encryptionKey);
-
+        data.encryptionKey = generateRandomBytes(secureRandom(), NaCl.SYMM_KEY_BYTES);
         data.profilePicture = contactPhoto;
         final byte[] imageData;
         try {
@@ -715,8 +718,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
             data.blobId = blobUploader.upload();
         } catch (ThreemaException | IOException e) {
             logger.error("Could not upload contact photo", e);
-
-            if (e instanceof FileNotFoundException && ConfigUtils.isOnPremBuild()) {
+            if (isHttpAuthError(e) && ConfigUtils.isOnPremBuild()) {
                 apiService.invalidateAuthToken();
             }
 
@@ -853,7 +855,7 @@ public class UserServiceImpl implements UserService, CreateIdentityRequestDataIn
     }
 
     @Override
-    public boolean setRevocationKey(String revocationKey) {
+    public boolean setRevocationKey(@NonNull String revocationKey) {
         APIConnector.SetRevocationKeyResult result;
         try {
             result = this.apiConnector.setRevocationKey(this.identityStore, revocationKey);

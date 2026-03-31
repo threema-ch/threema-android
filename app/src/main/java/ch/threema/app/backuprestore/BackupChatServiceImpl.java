@@ -3,16 +3,16 @@ package ch.threema.app.backuprestore;
 import android.content.Context;
 import android.text.format.DateUtils;
 
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.ListIterator;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
+import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.MessageService;
@@ -23,7 +23,10 @@ import ch.threema.app.utils.NameUtil;
 import ch.threema.app.utils.ElapsedTimeFormatter;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.voicemessage.VoiceRecorderActivity;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static ch.threema.common.JavaCompat.stringToInputStream;
+
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.MessageType;
@@ -38,13 +41,21 @@ public class BackupChatServiceImpl implements BackupChatService {
     private final FileService fileService;
     private final MessageService messageService;
     private final ContactService contactService;
+    private final PreferenceService preferenceService;
     private boolean isCanceled;
 
-    public BackupChatServiceImpl(Context context, FileService fileService, MessageService messageService, ContactService contactService) {
+    public BackupChatServiceImpl(
+        Context context,
+        FileService fileService,
+        MessageService messageService,
+        ContactService contactService,
+        PreferenceService preferenceService
+    ) {
         this.context = context;
         this.fileService = fileService;
         this.messageService = messageService;
         this.contactService = contactService;
+        this.preferenceService = preferenceService;
     }
 
     private boolean buildThread(
@@ -78,7 +89,13 @@ public class BackupChatServiceImpl implements BackupChatService {
             String messageLine = "";
 
             if (!conversationModel.isGroupConversation()) {
-                messageLine = m.isOutbox() ? this.context.getString(R.string.me_myself_and_i) : NameUtil.getDisplayNameOrNickname(this.contactService.getByIdentity(m.getIdentity()), true);
+                messageLine = m.isOutbox()
+                    ? this.context.getString(R.string.me_myself_and_i)
+                    : NameUtil.getContactDisplayNameOrNickname(
+                        this.contactService.getByIdentity(m.getIdentity()),
+                        true,
+                        preferenceService.getContactNameFormat()
+                    );
                 messageLine += ": ";
             }
 
@@ -102,7 +119,7 @@ public class BackupChatServiceImpl implements BackupChatService {
                     case VOICEMESSAGE:
                         AudioDataModel audioDataModel = m.getAudioData();
                         saveMedia = audioDataModel.isDownloaded();
-                        extension = VoiceRecorderActivity.VOICEMESSAGE_FILE_EXTENSION;
+                        extension = VoiceRecorderActivity.VOICE_MESSAGE_FILE_EXTENSION;
                         break;
                     case FILE:
                         FileDataModel fileDataModel = m.getFileData();
@@ -171,12 +188,17 @@ public class BackupChatServiceImpl implements BackupChatService {
     }
 
     @Override
-    public boolean backupChatToZip(final ConversationModel conversationModel, final File outputFile, final String password, boolean includeMedia) {
+    public boolean backupChatToZip(
+        final @NonNull ConversationModel conversationModel,
+        final @NonNull File outputFile,
+        final @NonNull String password,
+        boolean includeMedia
+    ) {
         StringBuilder messageBody = new StringBuilder();
 
         try (final FileHandlingZipOutputStream zipOutputStream = FileHandlingZipOutputStream.initializeZipOutputStream(outputFile, password)) {
             if (buildThread(conversationModel, zipOutputStream, messageBody, includeMedia)) {
-                zipOutputStream.addFileFromInputStream(IOUtils.toInputStream(messageBody, StandardCharsets.UTF_8), "messages.txt", true);
+                zipOutputStream.addFileFromInputStream(stringToInputStream(messageBody.toString()), "messages.txt", true);
             }
             return true;
 

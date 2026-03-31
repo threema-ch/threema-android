@@ -1,6 +1,7 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
+import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
@@ -8,8 +9,10 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.getEncryptedIncomingGroupMessageUpdateReadEnvelope
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("OutboundIncomingGroupMessageUpdateReadTask")
 
@@ -17,15 +20,14 @@ class OutboundIncomingGroupMessageUpdateReadTask(
     private val messageIds: Set<MessageId>,
     private val timestamp: Long,
     private val groupId: GroupId,
-    private val creatorIdentity: Identity,
-    serviceManager: ServiceManager,
-) : OutboundD2mMessageTask<Unit>, PersistableTask {
-    private val multiDeviceManager by lazy { serviceManager.multiDeviceManager }
+    private val creatorIdentity: IdentityString,
+) : OutboundD2mMessageTask<Unit>, PersistableTask, KoinComponent {
+    private val multiDeviceManager: MultiDeviceManager by inject()
     private val multiDeviceProperties by lazy { multiDeviceManager.propertiesProvider.get() }
     private val deviceId by lazy { multiDeviceProperties.mediatorDeviceId }
     private val multiDeviceKeys by lazy { multiDeviceProperties.keys }
 
-    private val nonceFactory by lazy { serviceManager.nonceFactory }
+    private val nonceFactory: NonceFactory by inject()
 
     override val type: String = "OutboundIncomingGroupMessageUpdateReadTask"
 
@@ -36,12 +38,12 @@ class OutboundIncomingGroupMessageUpdateReadTask(
         }
 
         val encryptedEnvelopeResult = getEncryptedIncomingGroupMessageUpdateReadEnvelope(
-            messageIds,
-            timestamp,
-            creatorIdentity,
-            groupId,
-            deviceId,
-            multiDeviceKeys,
+            messageIds = messageIds,
+            timestamp = timestamp,
+            creatorIdentity = creatorIdentity,
+            groupId = groupId,
+            mediatorDeviceId = deviceId,
+            multiDeviceKeys = multiDeviceKeys,
         )
         handle.reflectAndAwaitAck(
             encryptedEnvelopeResult = encryptedEnvelopeResult,
@@ -51,10 +53,10 @@ class OutboundIncomingGroupMessageUpdateReadTask(
     }
 
     override fun serialize() = OutboundIncomingGroupMessageUpdateReadData(
-        messageIds.map { it.messageId }.toSet(),
-        timestamp,
-        groupId.groupId,
-        creatorIdentity,
+        messageIds = messageIds.map { it.messageId }.toSet(),
+        timestamp = timestamp,
+        groupId = groupId.groupId,
+        creatorIdentity = creatorIdentity,
     )
 
     @Serializable
@@ -62,15 +64,14 @@ class OutboundIncomingGroupMessageUpdateReadTask(
         private val messageIds: Set<ByteArray>,
         private val timestamp: Long,
         private val groupId: ByteArray,
-        private val creatorIdentity: Identity,
+        private val creatorIdentity: IdentityString,
     ) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager): Task<*, TaskCodec> =
+        override fun createTask(): Task<*, TaskCodec> =
             OutboundIncomingGroupMessageUpdateReadTask(
-                messageIds.map { MessageId(it) }.toSet(),
-                timestamp,
-                GroupId(groupId),
-                creatorIdentity,
-                serviceManager,
+                messageIds = messageIds.map { MessageId(it) }.toSet(),
+                timestamp = timestamp,
+                groupId = GroupId(groupId),
+                creatorIdentity = creatorIdentity,
             )
     }
 }

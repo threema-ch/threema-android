@@ -56,6 +56,7 @@ public interface ThreemaSafeService {
 
     byte[] getThreemaSafeEncryptionKey();
 
+    @Nullable
     byte[] getThreemaSafeMasterKey();
 
     ThreemaSafeServerTestResponse testServer(ThreemaSafeServerInfo serverInfo) throws ThreemaException;

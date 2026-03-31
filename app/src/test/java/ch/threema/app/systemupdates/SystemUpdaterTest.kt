@@ -132,7 +132,7 @@ class SystemUpdaterTest {
         val mockUpdate1 = mockkUpdate(version = 14)
         val mockUpdate2 = mockk<SystemUpdate> {
             every { run() } answers { throw RuntimeException("oh oh") }
-            every { getVersion() } returns 16
+            every { version } returns 16
             every { getDescription() } returns null
         }
         val (sharedPreferences, editor) = mockSharedPreferences(oldVersion = 10)
@@ -162,7 +162,7 @@ class SystemUpdaterTest {
     private fun mockkUpdate(version: Int): SystemUpdate =
         mockk {
             every { run() } just runs
-            every { getVersion() } returns version
+            every { this@mockk.version } returns version
             every { getDescription() } returns null
         }
 
@@ -177,7 +177,7 @@ class SystemUpdaterTest {
 
     private fun mockSystemUpdateProvider(oldVersion: Int, newVersion: Int, updates: List<SystemUpdate>): SystemUpdateProvider =
         mockk<SystemUpdateProvider> {
-            every { getVersion() } returns newVersion
+            every { version } returns newVersion
             every { getUpdates(oldVersion = oldVersion) } returns updates
         }
 

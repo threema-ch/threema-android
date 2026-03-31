@@ -1,10 +1,9 @@
 package ch.threema.app.asynctasks
 
-import android.content.Context
 import androidx.annotation.StringRes
 import androidx.annotation.WorkerThread
 import ch.threema.app.R
-import ch.threema.app.restrictions.AppRestrictionUtil
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.getThreemaLogger
@@ -26,7 +25,7 @@ import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.APIConnector.FetchIdentityResult
 import ch.threema.domain.protocol.api.APIConnector.HttpConnectionException
 import ch.threema.domain.protocol.api.APIConnector.NetworkException
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import kotlinx.coroutines.runBlocking
 
@@ -45,17 +44,17 @@ private val logger = getThreemaLogger("AddOrUpdateContactBackgroundTask")
  * is provided and matches).
  *
  * Note that this task can be overridden and the behavior can be adjusted by overwriting [onBefore],
- * [onContactAdded], and [onFinished]. For tasks that do not need to perform any additional
+ * [onContactResult], and [onFinished]. For tasks that do not need to perform any additional
  * background work, the [BasicAddOrUpdateContactBackgroundTask] can be used.
  */
 abstract class AddOrUpdateContactBackgroundTask<T>(
-    protected val identity: Identity,
+    protected val identity: IdentityString,
     protected val acquaintanceLevel: AcquaintanceLevel,
-    private val myIdentity: Identity,
+    private val myIdentity: IdentityString,
     private val apiConnector: APIConnector,
     private val contactModelRepository: ContactModelRepository,
     private val addContactRestrictionPolicy: AddContactRestrictionPolicy,
-    private val context: Context,
+    private val appRestrictions: AppRestrictions,
     private val expectedPublicKey: ByteArray? = null,
 ) : BackgroundTask<T> {
     /**
@@ -87,7 +86,7 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
     final override fun runInBackground(): T {
         val result = checkAndAddNewContact()
 
-        return onContactAdded(result)
+        return onContactResult(result)
     }
 
     /**
@@ -107,57 +106,50 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
      * provided result. Note that this method is run on the executor's background thread. The result
      * of it will be passed to [onFinished].
      */
-    abstract fun onContactAdded(result: ContactResult): T
+    abstract fun onContactResult(result: ContactResult): T
 
     /**
-     * This method is run on the UI thread after [onContactAdded] has been executed. Override this
+     * This method is run on the UI thread after [onContactResult] has been executed. Override this
      * method for making UI changes after the contact has been added and processed.
      */
     open fun onFinished(result: T) = Unit
 
     private fun checkAndAddNewContact(): ContactResult {
         if (identity == myIdentity) {
-            return UserIdentity(context)
+            return UserIdentity
         }
 
         // Update contact if it exists
-        contactModelRepository.getByIdentity(identity)?.let {
-            val data = it.data
-
-            if (data != null) {
-                return updateContact(it, data, expectedPublicKey)
+        contactModelRepository.getByIdentity(identity)?.let { contactModel ->
+            contactModel.data?.let { contactModelData ->
+                return updateContact(
+                    contactModel = contactModel,
+                    currentData = contactModelData,
+                    expectedPublicKey = expectedPublicKey,
+                )
             }
         }
 
         // Only proceed if adding contacts is allowed
-        if (addContactRestrictionPolicy == AddContactRestrictionPolicy.CHECK &&
-            AppRestrictionUtil.isAddContactDisabled(context)
-        ) {
-            return PolicyViolation(context)
+        if (addContactRestrictionPolicy == AddContactRestrictionPolicy.CHECK && appRestrictions.isAddContactDisabled()) {
+            return PolicyViolation
         }
 
         // Fetch the identity
         val result = try {
             apiConnector.fetchIdentity(identity)
-        } catch (e: Exception) {
-            logger.error("Failed to fetch identity", e)
-
-            when (e) {
+        } catch (exception: Exception) {
+            logger.error("Failed to fetch identity", exception)
+            return when (exception) {
                 is HttpConnectionException -> {
-                    return if (e.errorCode == Http.StatusCode.NOT_FOUND) {
-                        InvalidThreemaId(context)
+                    if (exception.errorCode == Http.StatusCode.NOT_FOUND) {
+                        InvalidThreemaId
                     } else {
-                        ConnectionError(context)
+                        ConnectionError
                     }
                 }
-
-                is NetworkException, is ThreemaException -> {
-                    return ConnectionError(context)
-                }
-
-                else -> {
-                    throw e
-                }
+                is NetworkException, is ThreemaException -> ConnectionError
+                else -> throw exception
             }
         }
 
@@ -173,7 +165,7 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
             if (expectedPublicKey.contentEquals(result.publicKey)) {
                 VerificationLevel.FULLY_VERIFIED
             } else {
-                return RemotePublicKeyMismatch(context)
+                return RemotePublicKeyMismatch
             }
         } else {
             VerificationLevel.UNVERIFIED
@@ -217,7 +209,7 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
                 if (existingContact != null) {
                     ContactExists(existingContact)
                 } else {
-                    GenericFailure(context)
+                    GenericFailure
                 }
             }
         }
@@ -241,7 +233,7 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
                     contactVerifiedAgain = true
                 }
             } else {
-                return LocalPublicKeyMismatch(contactModel, context)
+                return LocalPublicKeyMismatch(contactModel)
             }
         }
 
@@ -288,13 +280,13 @@ fun FetchIdentityResult.getIdentityState(): IdentityState = when (state) {
  * [AddOrUpdateContactBackgroundTask] for more information about contact creation.
  */
 open class BasicAddOrUpdateContactBackgroundTask(
-    identity: Identity,
+    identity: IdentityString,
     acquaintanceLevel: AcquaintanceLevel,
-    myIdentity: Identity,
+    myIdentity: IdentityString,
     apiConnector: APIConnector,
     contactModelRepository: ContactModelRepository,
     addContactRestrictionPolicy: AddContactRestrictionPolicy,
-    context: Context,
+    appRestrictions: AppRestrictions,
     expectedPublicKey: ByteArray? = null,
 ) : AddOrUpdateContactBackgroundTask<ContactResult>(
     identity,
@@ -303,10 +295,10 @@ open class BasicAddOrUpdateContactBackgroundTask(
     apiConnector,
     contactModelRepository,
     addContactRestrictionPolicy,
-    context,
+    appRestrictions,
     expectedPublicKey,
 ) {
-    final override fun onContactAdded(result: ContactResult): ContactResult = result
+    final override fun onContactResult(result: ContactResult): ContactResult = result
 }
 
 /**
@@ -345,12 +337,7 @@ sealed interface ContactAvailable : ContactResult {
  * Adding or updating the contact failed. Note that this does not necessarily mean that the contact
  * does not exist. E.g., this result can indicate that the provided public key does not match.
  */
-sealed class Failed(context: Context, @StringRes resId: Int) : ContactResult {
-    /**
-     * A translated error message that can be shown to the user.
-     */
-    val message: String = context.getString(resId)
-}
+sealed class Failed(@StringRes @JvmField val message: Int) : ContactResult
 
 /**
  * The contact has been newly created. The new contact is provided.
@@ -390,39 +377,36 @@ data class AlreadyVerified(override val contactModel: ContactModel) : ContactAva
 /**
  * The locally stored public key of the contact does not match the provided public key.
  */
-class LocalPublicKeyMismatch(
-    override val contactModel: ContactModel,
-    context: Context,
-) : Failed(context, R.string.id_mismatch), ContactAvailable
+class LocalPublicKeyMismatch(override val contactModel: ContactModel) : Failed(R.string.id_mismatch), ContactAvailable
 
 /**
  * The contact did not exist locally and the fetched public key from the threema server does not
  * match the provided public key. This also means, that the contact is not available locally.
  */
-class RemotePublicKeyMismatch(context: Context) : Failed(context, R.string.id_mismatch)
+data object RemotePublicKeyMismatch : Failed(R.string.id_mismatch)
 
 /**
  * The provided identity is invalid and the contact could not be added.
  */
-class InvalidThreemaId(context: Context) : Failed(context, R.string.invalid_threema_id)
+data object InvalidThreemaId : Failed(R.string.invalid_threema_id)
 
 /**
  * The provided identity is the same as the user's identity and therefore the contact could not be
  * added.
  */
-class UserIdentity(context: Context) : Failed(context, R.string.identity_already_exists)
+data object UserIdentity : Failed(R.string.add_contact_failed)
 
 /**
  * The contact could not be added due to a connection error.
  */
-class ConnectionError(context: Context) : Failed(context, R.string.connection_error)
+data object ConnectionError : Failed(R.string.connection_error)
 
 /**
  * A general error occurred while adding the contact.
  */
-class GenericFailure(context: Context) : Failed(context, R.string.add_contact_failed)
+data object GenericFailure : Failed(R.string.add_contact_failed)
 
 /**
  * The contact could not be added since adding contacts is restricted.
  */
-class PolicyViolation(context: Context) : Failed(context, R.string.disabled_by_policy_short)
+data object PolicyViolation : Failed(R.string.disabled_by_policy_short)

@@ -2,15 +2,16 @@ package ch.threema.app.workers
 
 import android.content.Context
 import androidx.annotation.WorkerThread
-import androidx.work.Constraints
 import androidx.work.CoroutineWorker
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
 import androidx.work.Operation
-import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import ch.threema.android.buildOneTimeWorkRequest
+import ch.threema.android.buildPeriodicWorkRequest
+import ch.threema.android.setConstraints
+import ch.threema.android.setInitialDelay
 import ch.threema.app.di.awaitAppFullyReadyWithTimeout
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.preference.service.PreferenceService
@@ -26,7 +27,7 @@ import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.protocol.api.APIConnector
-import java.util.concurrent.TimeUnit
+import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -73,7 +74,7 @@ class ContactUpdateWorker(
         fun schedulePeriodicSync(context: Context, preferenceService: PreferenceService) {
             // We use the sync interval from the previously named IdentityStatesWorker
             val schedulePeriodMs =
-                WorkManagerUtil.normalizeSchedulePeriod(preferenceService.identityStateSyncIntervalS)
+                WorkManagerUtil.normalizeSchedulePeriod(preferenceService.getIdentityStateSyncIntervalS())
 
             logger.info(
                 "Initializing contact update sync. Requested schedule period: {} ms",
@@ -92,19 +93,15 @@ class ContactUpdateWorker(
                     logger.debug("Scheduling new job")
 
                     // Schedule the start of the service according to schedule period
-                    val constraints = Constraints.Builder()
-                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                        .build()
-
-                    val workRequest = PeriodicWorkRequest.Builder(
-                        ContactUpdateWorker::class.java,
-                        schedulePeriodMs,
-                        TimeUnit.MILLISECONDS,
-                    )
-                        .setConstraints(constraints)
-                        .addTag(schedulePeriodMs.toString())
-                        .setInitialDelay(1000, TimeUnit.MILLISECONDS)
-                        .build()
+                    val workRequest = buildPeriodicWorkRequest<ContactUpdateWorker>(
+                        repeatInterval = schedulePeriodMs.milliseconds,
+                    ) {
+                        setConstraints {
+                            setRequiredNetworkType(NetworkType.CONNECTED)
+                        }
+                        addTag(schedulePeriodMs.toString())
+                        setInitialDelay(1.seconds)
+                    }
 
                     workManager.enqueueUniquePeriodicWork(
                         WorkerNames.WORKER_CONTACT_UPDATE_PERIODIC_NAME,
@@ -119,8 +116,7 @@ class ContactUpdateWorker(
 
         @JvmStatic
         fun performOneTimeSync(context: Context) {
-            val workRequest = OneTimeWorkRequest.Builder(ContactUpdateWorker::class.java)
-                .build()
+            val workRequest = buildOneTimeWorkRequest<ContactUpdateWorker>()
             WorkManager.getInstance(context).enqueue(workRequest)
         }
 
@@ -272,7 +268,8 @@ class ContactUpdateWorker(
 
                 // Only update the state if it is a valid state change. Note that changing to null is
                 // not allowed and will not result in any change.
-                if (newState != null && ContactUtil.allowedChangeToState(
+                if (newState != null &&
+                    ContactUtil.allowedChangeToState(
                         data.activityState,
                         newState,
                     )

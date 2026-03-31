@@ -3,6 +3,7 @@ package ch.threema.app.connection
 import android.os.PowerManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.services.ServerAddressProviderService
+import ch.threema.app.startup.AppStartupMonitor
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.connection.ServerConnection
@@ -16,7 +17,7 @@ import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.TaskManager
 import io.mockk.every
 import io.mockk.mockk
-import java8.util.function.Supplier
+import java.util.function.Supplier
 import kotlin.test.Test
 import kotlin.test.assertSame
 import kotlin.test.assertTrue
@@ -84,7 +85,6 @@ class CspD2mDualConnectionSupplierTest {
         val identityStore = mockk<IdentityStore>()
         val version = Version()
         val isIpv6Preferred = true
-        val okhttpClientSupplier = Supplier { mockk<OkHttpClient>() }
         val isTestBuild = false
 
         return CspD2mDualConnectionSupplier(
@@ -97,7 +97,8 @@ class CspD2mDualConnectionSupplierTest {
             identityStore,
             version,
             isIpv6Preferred,
-            okhttpClientSupplier,
+            mockk<OkHttpClient>(),
+            mockk<AppStartupMonitor>(),
             isTestBuild,
         )
     }

@@ -41,6 +41,28 @@ fun InputStream?.contentEquals(byteArray: ByteArray?): Boolean {
     }
 }
 
+/**
+ * Reads the next [size] bytes and copies them into a ByteArray, which is then returned.
+ * @throws IOException If reading fails or if there are not enough bytes.
+ */
+@Throws(IOException::class)
+fun InputStream.readByteArray(size: Int): ByteArray {
+    val byteArray = ByteArray(size)
+    val bytesRead = read(byteArray)
+    if (bytesRead != size) {
+        throw IOException("Expected $size bytes but only $bytesRead were read")
+    }
+    return byteArray
+}
+
+/**
+ * Reads the next [bytes] bytes and interprets them as a UTF-8 string
+ * @throws IOException If reading fails or if there are not enough bytes.
+ */
+@Throws(IOException::class)
+fun InputStream.readUtf8String(bytes: Int): String =
+    String(readByteArray(bytes))
+
 @Throws(IOException::class)
 fun InputStream.readLittleEndianInt(): Int {
     val byte1 = readOrThrow()
@@ -70,4 +92,25 @@ private fun InputStream.readOrThrow(): Int {
         throw EOFException()
     }
     return value
+}
+
+/**
+ * Copies [length] bytes from the input stream into [buffer] at [offset], or fewer if not enough bytes are available.
+ *
+ * @return the number of bytes actually copied
+ * @throws IndexOutOfBoundsException if [buffer] is not large enough to hold the copied bytes
+ */
+@Throws(IOException::class)
+fun InputStream.copyTo(buffer: ByteArray, offset: Int, length: Int): Int {
+    require(length >= 0)
+    var remaining = length
+    while (remaining > 0) {
+        val location = length - remaining
+        val count = read(buffer, offset + location, remaining)
+        if (count == -1) {
+            break
+        }
+        remaining -= count
+    }
+    return length - remaining
 }

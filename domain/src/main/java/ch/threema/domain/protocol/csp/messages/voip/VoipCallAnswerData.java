@@ -102,16 +102,16 @@ public class VoipCallAnswerData extends VoipCallData<VoipCallAnswerData> {
 
                 answerData.sdpType = JSONUtil.getStringOrNull(o, KEY_SDP_TYPE);
                 if (answerData.sdpType == null) {
-                    logger.error("Bad VoipCallAnswerData: " + KEY_SDP_TYPE + " must be defined");
+                    logger.error("Bad VoipCallAnswerData: {} must be defined", KEY_SDP_TYPE);
                     throw new BadMessageException("TM061");
                 } else if (answerData.sdpType.equals("offer")) {
-                    logger.error("Bad VoipCallAnswerData: " + KEY_SDP_TYPE + " may not be \"offer\"");
+                    logger.error("Bad VoipCallAnswerData: {} may not be \"offer\"", KEY_SDP_TYPE);
                     throw new BadMessageException("TM061");
                 }
 
                 answerData.sdp = JSONUtil.getStringOrNull(o, KEY_SDP);
                 if (answerData.sdp == null && !answerData.sdpType.equals("rollback")) {
-                    logger.error("Bad VoipCallAnswerData: " + KEY_SDP + " may only be null if " + KEY_SDP_TYPE + "=rollback");
+                    logger.error("Bad VoipCallAnswerData: {} may only be null if {}=rollback", KEY_SDP, KEY_SDP_TYPE);
                     throw new BadMessageException("TM061");
                 }
 

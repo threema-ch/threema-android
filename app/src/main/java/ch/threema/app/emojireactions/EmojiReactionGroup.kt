@@ -13,7 +13,7 @@ import ch.threema.app.emojireactions.EmojiReactionsButton.OnEmojiReactionButtonC
 import ch.threema.app.messagereceiver.MessageReceiver
 import ch.threema.app.services.UserService
 import ch.threema.data.models.EmojiReactionData
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.AbstractMessageModel
 import kotlin.math.roundToInt
 import org.koin.core.component.KoinComponent
@@ -136,7 +136,7 @@ class EmojiReactionGroup :
         }
     }
 
-    private fun List<EmojiReactionData>.toButtonInfos(ownIdentity: Identity): List<ButtonInfo> =
+    private fun List<EmojiReactionData>.toButtonInfos(ownIdentity: IdentityString): List<ButtonInfo> =
         if (isNotEmpty()) {
             groupingBy { it.emojiSequence }
                 .eachCount()

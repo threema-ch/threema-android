@@ -11,8 +11,8 @@ import android.text.format.DateUtils;
 import android.widget.ImageView;
 
 import com.bumptech.glide.RequestManager;
-import com.google.common.collect.ImmutableSet;
 
+import org.jetbrains.annotations.Unmodifiable;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -29,6 +29,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import androidx.annotation.AnyThread;
@@ -41,28 +42,26 @@ import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
 import ch.threema.app.asynctasks.AddOrUpdateWorkIdentityBackgroundTask;
-import ch.threema.app.collections.Functional;
-import ch.threema.app.collections.IPredicateNonNull;
-import ch.threema.app.debug.AndroidContactSyncLogger;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.messagereceiver.ContactMessageReceiver;
 import ch.threema.app.multidevice.MultiDeviceManager;
+import ch.threema.app.preference.service.SynchronizedSettingsService;
 import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.routines.UpdateFeatureLevelRoutine;
+import ch.threema.app.services.avatarcache.AvatarCacheService;
 import ch.threema.app.services.license.LicenseService;
 import ch.threema.app.stores.DatabaseContactStore;
 import ch.threema.app.tasks.TaskCreator;
-import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
-import ch.threema.app.utils.SynchronizeContactsUtil;
 import ch.threema.base.ThreemaException;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
-import ch.threema.common.Http;
+
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.ModelDeletedException;
 import ch.threema.data.repositories.ContactModelRepository;
@@ -76,23 +75,21 @@ import ch.threema.domain.models.TypingIndicatorPolicy;
 import ch.threema.domain.models.VerificationLevel;
 import ch.threema.domain.protocol.ThreemaFeature;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException;
 import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.taskmanager.ActiveTaskCodec;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
+import ch.threema.storage.DatabaseProvider;
 import ch.threema.storage.DatabaseService;
 import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.factories.ContactModelFactory;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel;
-import ch.threema.storage.models.GroupMemberModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupMemberModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.access.AccessModel;
 import ch.threema.data.datatypes.IdColor;
-import java8.util.function.Consumer;
-import okhttp3.OkHttpClient;
 
 import static ch.threema.app.glide.AvatarOptions.DefaultAvatarPolicy.CUSTOM_AVATAR;
 
@@ -105,11 +102,16 @@ public class ContactServiceImpl implements ContactService {
     private final Context context;
     private final AvatarCacheService avatarCacheService;
     private final DatabaseContactStore contactStore;
+    @NonNull
     private final DatabaseService databaseService;
+    @NonNull
+    private final DatabaseProvider databaseProvider;
     private final UserService userService;
     private final IdentityStore identityStore;
     @NonNull
     private final PreferenceService preferenceService;
+    @NonNull
+    private final SynchronizedSettingsService synchronizedSettingsService;
     // NOTE: The contact model cache will become unnecessary once everything uses the new data
     // layer, since that data layer has caching built-in.
     private final Map<String, ContactModel> contactModelCache;
@@ -117,11 +119,8 @@ public class ContactServiceImpl implements ContactService {
     private final BlockedIdentitiesService blockedIdentitiesService;
     private final ProfilePictureRecipientsService profilePictureRecipientsService;
     private final FileService fileService;
-    private final ApiService apiService;
     private final LicenseService licenseService;
     private final APIConnector apiConnector;
-    @NonNull
-    private final OkHttpClient okHttpClient;
     @NonNull
     private final TaskCreator taskCreator;
     @NonNull
@@ -162,18 +161,18 @@ public class ContactServiceImpl implements ContactService {
         @NonNull Context context,
         DatabaseContactStore contactStore,
         AvatarCacheService avatarCacheService,
-        DatabaseService databaseService,
+        @NonNull DatabaseService databaseService,
+        @NonNull DatabaseProvider databaseProvider,
         UserService userService,
         IdentityStore identityStore,
         @NonNull PreferenceService preferenceService,
+        @NonNull SynchronizedSettingsService synchronizedSettingsService,
         @NonNull BlockedIdentitiesService blockedIdentitiesService,
         ProfilePictureRecipientsService profilePictureRecipientsService,
         FileService fileService,
         CacheService cacheService,
-        ApiService apiService,
         LicenseService licenseService,
         APIConnector apiConnector,
-        @NonNull OkHttpClient okHttpClient,
         @NonNull ContactModelRepository contactModelRepository,
         @NonNull TaskCreator taskCreator,
         @NonNull MultiDeviceManager multiDeviceManager
@@ -183,16 +182,16 @@ public class ContactServiceImpl implements ContactService {
         this.avatarCacheService = avatarCacheService;
         this.contactStore = contactStore;
         this.databaseService = databaseService;
+        this.databaseProvider = databaseProvider;
         this.userService = userService;
         this.identityStore = identityStore;
         this.preferenceService = preferenceService;
+        this.synchronizedSettingsService = synchronizedSettingsService;
         this.blockedIdentitiesService = blockedIdentitiesService;
         this.profilePictureRecipientsService = profilePictureRecipientsService;
         this.fileService = fileService;
-        this.apiService = apiService;
         this.licenseService = licenseService;
         this.apiConnector = apiConnector;
-        this.okHttpClient = okHttpClient;
         this.contactModelRepository = contactModelRepository;
         this.taskCreator = taskCreator;
         this.multiDeviceManager = multiDeviceManager;
@@ -201,9 +200,9 @@ public class ContactServiceImpl implements ContactService {
         this.contactModelCache = cacheService.getContactModelCache();
     }
 
-    @Override
-    @NonNull
-    public ContactModel getMe() {
+    @Nullable
+    @Deprecated
+    private ContactModel getMe() {
         if (this.me == null && this.userService.getIdentity() != null) {
             this.me = ContactModel.create(
                 this.userService.getIdentity(),
@@ -215,7 +214,6 @@ public class ContactServiceImpl implements ContactService {
             this.me.verificationLevel = VerificationLevel.FULLY_VERIFIED;
             this.me.setFeatureMask(-1);
         }
-
         return this.me;
     }
 
@@ -266,17 +264,15 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @NonNull
-    public List<ContactModel> find(Filter filter) {
-        ContactModelFactory contactModelFactory = this.databaseService.getContactModelFactory();
+    public List<ContactModel> find(@Nullable Filter filter) {
+        final @NonNull ContactModelFactory contactModelFactory = this.databaseService.getContactModelFactory();
         // TODO(ANDR-XXXX): move this to database factory!
-        QueryBuilder queryBuilder = new QueryBuilder();
-        List<String> placeholders = new ArrayList<>();
+        final @NonNull QueryBuilder queryBuilder = new QueryBuilder();
+        final @NonNull List<String> placeholders = new ArrayList<>();
 
-        List<ContactModel> result;
         if (filter != null) {
             IdentityState[] filterStates = filter.states();
             if (filterStates != null && filterStates.length > 0) {
-
                 //dirty, add placeholder should be added to makePlaceholders
                 queryBuilder.appendWhere(ContactModel.COLUMN_STATE + " IN (" + DatabaseUtil.makePlaceholders(filterStates.length) + ")");
                 for (IdentityState s : filterStates) {
@@ -289,28 +285,24 @@ public class ContactServiceImpl implements ContactService {
             }
 
             if (!filter.includeMyself()) {
-                queryBuilder.appendWhere(ContactModel.COLUMN_IDENTITY + "!=?");
-                placeholders.add(getMe().getIdentity());
+                String myIdentity = userService.getIdentity();
+                if (myIdentity != null) {
+                    queryBuilder.appendWhere(ContactModel.COLUMN_IDENTITY + "!=?");
+                    placeholders.add(myIdentity);
+                }
             }
 
             if (filter.onlyWithReceiptSettings()) {
                 queryBuilder.appendWhere(ContactModel.COLUMN_TYPING_INDICATORS + " !=0 OR " + ContactModel.COLUMN_READ_RECEIPTS + " !=0");
             }
 
-            result = contactModelFactory.convert
-                (
-                    queryBuilder,
-                    placeholders.toArray(new String[0]),
-                    null
-                );
-        } else {
-            result = contactModelFactory.convert
-                (
-                    queryBuilder,
-                    placeholders.toArray(new String[0]),
-                    null
-                );
         }
+
+        @NonNull List<ContactModel> result = contactModelFactory.convert(
+            queryBuilder,
+            placeholders.toArray(new String[0]),
+            null
+        );
 
         // sort
         final boolean sortOrderFirstName = preferenceService.isContactListSortingFirstName();
@@ -374,73 +366,113 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @Nullable
+    @Deprecated
     public ContactModel getByIdentity(@Nullable String identity) {
         if (identity == null) {
             return null;
         }
 
-        //return me object
-        if (this.getMe() != null && this.getMe().getIdentity().equals(identity)) {
-            return this.me;
+        // return me object
+        final @Nullable ContactModel contactModelMe = getMe();
+        if (contactModelMe != null && contactModelMe.getIdentity().equals(identity)) {
+            return contactModelMe;
         }
 
         synchronized (this.contactModelCache) {
+            // check cache first
             if (this.contactModelCache.containsKey(identity)) {
                 return this.contactModelCache.get(identity);
             }
-        }
-        return this.cache(this.contactStore.getContactForIdentity(identity));
-    }
-
-    private ContactModel cache(ContactModel contactModel) {
-        if (contactModel != null) {
-            this.contactModelCache.put(contactModel.getIdentity(), contactModel);
-        }
-        return contactModel;
-    }
-
-    @Override
-    public List<ContactModel> getByIdentities(String[] identities) {
-        List<ContactModel> models = new ArrayList<>();
-        for (String s : identities) {
-            ContactModel model = this.getByIdentity(s);
-            if (model != null) {
-                models.add(model);
+            // try to read from database
+            final @Nullable ContactModel contactModel = contactStore.getContactForIdentity(identity);
+            if (contactModel != null) {
+                cache(contactModel);
             }
+            return contactModel;
         }
-
-        return models;
     }
 
+    @NonNull
     @Override
-    public List<ContactModel> getByIdentities(List<String> identities) {
-        List<ContactModel> models = new ArrayList<>();
-        for (String s : identities) {
-            ContactModel model = this.getByIdentity(s);
-            if (model != null) {
-                models.add(model);
-            }
+    @Deprecated
+    public List<ContactModel> getByIdentities(@NonNull List<String> identities) {
+        final @NonNull List<ContactModel> results = new ArrayList<>();
+        if (identities.isEmpty()) {
+            return results;
         }
 
-        return models;
+        synchronized (contactModelCache) {
+            final @NonNull List<String> identitiesMissingInCache = new ArrayList<>();
+            final @Nullable ContactModel contactModelMe = getMe();
+
+            // try to find all in cache
+            for (String identity : identities) {
+
+                if (contactModelMe != null && contactModelMe.getIdentity().equals(identity)) {
+                    results.add(contactModelMe);
+                    continue;
+                }
+
+                final @Nullable ContactModel contactModelCached = contactModelCache.get(identity);
+                if (contactModelCached != null) {
+                    results.add(contactModelCached);
+                } else {
+                    identitiesMissingInCache.add(identity);
+                }
+            }
+
+            // happy case: all were found in cache
+            if (identitiesMissingInCache.isEmpty()) {
+                return results;
+            }
+
+            // try to read all missing models from database
+            final @NonNull List<ContactModel> contactModelsFromDb = contactStore.getContactsForIdentities(identitiesMissingInCache);
+            results.addAll(contactModelsFromDb);
+            cacheAll(contactModelsFromDb);
+        }
+
+        return results;
+    }
+
+    /**
+     * Make sure to <b>hold a lock</b> on {@code contactModelCache} while calling this
+     */
+    private void cacheAll(@NonNull List<ContactModel> contactModels) {
+        for (ContactModel contactModel : contactModels) {
+            cache(contactModel);
+        }
+    }
+
+    /**
+     * Make sure to <b>hold a lock</b> on {@code contactModelCache} the cache while calling this
+     */
+    private void cache(@NonNull ContactModel contactModel) {
+        contactModelCache.put(contactModel.getIdentity(), contactModel);
     }
 
     @Override
     @NonNull
     public List<ContactModel> getAllDisplayedWork(@NonNull ContactSelection selection) {
-        return Functional.filter(this.getAllDisplayed(selection), (IPredicateNonNull<ContactModel>) ContactModel::isWorkVerified);
+        return getAllDisplayed(selection)
+            .stream()
+            .filter(ContactModel::isWorkVerified)
+            .collect(Collectors.toList());
     }
 
     @Override
     @NonNull
     public List<ContactModel> getAllWork() {
-        return Functional.filter(this.getAll(), (IPredicateNonNull<ContactModel>) ContactModel::isWorkVerified);
+        return getAll()
+            .stream()
+            .filter(ContactModel::isWorkVerified)
+            .collect(Collectors.toList());
     }
 
     @Override
     public int countIsWork() {
         int count = 0;
-        Cursor c = this.databaseService.getReadableDatabase().rawQuery(
+        Cursor c = this.databaseProvider.getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM contacts " +
                 "WHERE " + ContactModel.COLUMN_IS_WORK + " = 1 " +
                 "AND " + ContactModel.COLUMN_ACQUAINTANCE_LEVEL + " = 0", null);
@@ -456,39 +488,39 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     public List<ContactModel> getCanReceiveProfilePics() {
-        return Functional.filter(
-            this.find(new Filter() {
-                @Override
-                public IdentityState[] states() {
-                    if (preferenceService.showInactiveContacts()) {
-                        return null;
-                    }
-                    return new IdentityState[]{IdentityState.ACTIVE};
-                }
-
-                @Override
-                public Boolean fetchMissingFeatureLevel() {
+        return find(new Filter() {
+            @Override
+            public IdentityState[] states() {
+                if (preferenceService.showInactiveContacts()) {
                     return null;
                 }
+                return new IdentityState[]{IdentityState.ACTIVE};
+            }
 
-                @Override
-                public Boolean includeMyself() {
-                    return false;
-                }
+            @Override
+            public Boolean fetchMissingFeatureLevel() {
+                return null;
+            }
 
-                @Override
-                public Boolean includeHidden() {
-                    return false;
-                }
-            }),
-            (IPredicateNonNull<ContactModel>) type -> !ContactUtil.isEchoEchoOrGatewayContact(type)
-        );
+            @Override
+            public Boolean includeMyself() {
+                return false;
+            }
+
+            @Override
+            public Boolean includeHidden() {
+                return false;
+            }
+        })
+            .stream()
+            .filter(model -> !ContactUtil.isEchoEchoOrGatewayContact(model))
+            .collect(Collectors.toList());
     }
 
     @Override
     @Nullable
     public List<String> getSynchronizedIdentities() {
-        Cursor c = this.databaseService.getReadableDatabase().rawQuery("" +
+        Cursor c = this.databaseProvider.getReadableDatabase().rawQuery("" +
                 "SELECT identity FROM contacts " +
                 "WHERE androidContactId IS NOT NULL AND androidContactId != ?",
             new String[]{""});
@@ -508,7 +540,7 @@ public class ContactServiceImpl implements ContactService {
     @Override
     @Nullable
     public List<String> getIdentitiesByVerificationLevel(VerificationLevel verificationLevel) {
-        Cursor c = this.databaseService.getReadableDatabase().rawQuery("" +
+        Cursor c = this.databaseProvider.getReadableDatabase().rawQuery("" +
                 "SELECT identity FROM contacts " +
                 "WHERE verificationLevel = ?",
             new String[]{String.valueOf(verificationLevel.getCode())});
@@ -526,7 +558,7 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    public void setIsTyping(final String identity, final boolean isTyping) {
+    public void setIsTyping(final @NonNull String identity, final boolean isTyping) {
         // cancel old timer task
         synchronized (typingTimerTasks) {
             TimerTask oldTimerTask = typingTimerTasks.get(identity);
@@ -605,7 +637,7 @@ public class ContactServiceImpl implements ContactService {
                 sendTypingIndicator = false;
                 break;
             default:
-                sendTypingIndicator = preferenceService.isTypingIndicatorEnabled();
+                sendTypingIndicator = synchronizedSettingsService.isTypingIndicatorEnabled();
                 break;
         }
 
@@ -720,7 +752,7 @@ public class ContactServiceImpl implements ContactService {
             return () -> false;
         } else {
             boolean isInGroup = false;
-            Cursor c = this.databaseService.getReadableDatabase().rawQuery(
+            Cursor c = this.databaseProvider.getReadableDatabase().rawQuery(
                 DatabaseUtil.IS_GROUP_MEMBER_QUERY,
                 identity
             );
@@ -842,34 +874,6 @@ public class ContactServiceImpl implements ContactService {
     }
 
     @Override
-    @WorkerThread
-    public boolean updateAllContactNamesFromAndroidContacts() {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-
-        AndroidContactSyncLogger androidContactSyncLogger = new AndroidContactSyncLogger();
-
-        this.contactModelRepository.getAll()
-            .stream()
-            .filter(contactModel -> {
-                ContactModelData contactModelData = contactModel.getData();
-                return contactModelData != null && contactModelData.isLinkedToAndroidContact();
-            })
-            .forEach(contactModel -> {
-                try {
-                    AndroidContactUtil.getInstance().updateNameByAndroidContact(contactModel, androidContactSyncLogger, context);
-                } catch (ThreemaException e) {
-                    logger.error("Unable to update contact name", e);
-                }
-            });
-
-        androidContactSyncLogger.logDuplicates();
-
-        return true;
-    }
-
-    @Override
     public void removeAllSystemContactLinks() {
         this.contactModelRepository.getAll()
             .stream()
@@ -936,12 +940,12 @@ public class ContactServiceImpl implements ContactService {
         return onUserDefinedProfilePictureSet(contactModel);
     }
 
-    private boolean onUserDefinedProfilePictureSet(final ContactModel contactModel) {
+    private boolean onUserDefinedProfilePictureSet(@NonNull final ContactModel contactModel) {
         if (this.userService.isMe(contactModel.getIdentity())) {
             logger.error("The users profile picture must not be set via contact service");
         } else {
             ListenerManager.contactListeners.handle(listener -> listener.onAvatarChanged(contactModel.getIdentity()));
-            ShortcutUtil.updateShareTargetShortcut(createReceiver(contactModel));
+            ShortcutUtil.updateShareTargetShortcut(createReceiver(contactModel), preferenceService.getContactNameFormat());
         }
 
         return true;
@@ -1059,55 +1063,6 @@ public class ContactServiceImpl implements ContactService {
     public void invalidateCache(@NonNull String identity) {
         synchronized (this.contactModelCache) {
             this.contactModelCache.remove(identity);
-        }
-    }
-
-    @Override
-    @WorkerThread
-    public void fetchAndCacheContact(@NonNull String identity) throws APIConnector.HttpConnectionException, APIConnector.NetworkException, MissingPublicKeyException {
-        // Check if the contact is cached or stored locally (or a special contact)
-        if (contactStore.getContactForIdentityIncludingCache(identity) != null) {
-            return;
-        }
-
-        // Check if the identity is a work contact that should be known
-        if (ConfigUtils.isWorkBuild()) {
-            fetchAndCreateWorkContact(identity);
-            if (contactStore.getContactForIdentity(identity) != null) {
-                return;
-            }
-        }
-
-        // Check if contact is known after contact synchronization (if enabled)
-        if (preferenceService.isSyncContacts()) {
-            // Synchronize contact
-            try {
-                SynchronizeContactsUtil.startDirectly(identity);
-            } catch (SecurityException exception) {
-                logger.error("Could not check whether the identity is a known android contact");
-                // We still continue because a missing contacts permission should not prevent
-                // fetching and caching a new contact.
-            }
-
-            // Check again locally
-            if (contactStore.getContactForIdentity(identity) != null) {
-                return;
-            }
-        }
-
-        try {
-            // Otherwise try to fetch the identity
-            BasicContact contactModel = fetchPublicKeyForIdentity(identity);
-            if (contactModel != null) {
-                contactStore.addCachedContact(contactModel);
-            }
-        } catch (APIConnector.HttpConnectionException e) {
-            if (e.getErrorCode() == Http.StatusCode.NOT_FOUND) {
-                logger.warn("Identity fetch for identity '{}' returned 404", identity);
-                throw new MissingPublicKeyException("No public key found");
-            } else {
-                throw e;
-            }
         }
     }
 
@@ -1230,66 +1185,6 @@ public class ContactServiceImpl implements ContactService {
         }
     }
 
-    /**
-     * Fetch a public key for an identity and return it in a contact model.
-     *
-     * @param identity Identity to add a contact for
-     * @return the contact model of the identity in case of success, null otherwise
-     * @throws ch.threema.domain.protocol.api.APIConnector.HttpConnectionException when the identity cannot be fetched
-     * @throws ch.threema.domain.protocol.api.APIConnector.NetworkException        when the identity cannot be fetched
-     */
-    @WorkerThread
-    private @Nullable BasicContact fetchPublicKeyForIdentity(@NonNull String identity) throws APIConnector.HttpConnectionException, APIConnector.NetworkException {
-        ContactModel contactModel = contactStore.getContactForIdentity(identity);
-        if (contactModel != null) {
-            return contactModel.toBasicContact();
-        }
-
-        APIConnector.FetchIdentityResult result;
-        try {
-            result = this.apiConnector.fetchIdentity(identity);
-
-            if (result == null || result.publicKey == null) {
-                return null;
-            }
-        } catch (ThreemaException e) {
-            logger.error("Fetch failed: ", e);
-            throw new APIConnector.NetworkException(e);
-        }
-
-        IdentityType identityType;
-        switch (result.type) {
-            case 0:
-                identityType = IdentityType.NORMAL;
-                break;
-            case 1:
-                identityType = IdentityType.WORK;
-                break;
-            default:
-                logger.warn("Identity fetch returned invalid identity type: {}", result.type);
-                identityType = IdentityType.NORMAL;
-        }
-        IdentityState identityState;
-        if (result.state == IdentityState.ACTIVE.getValue()) {
-            identityState = IdentityState.ACTIVE;
-        } else if (result.state == IdentityState.INACTIVE.getValue()) {
-            identityState = IdentityState.INACTIVE;
-        } else if (result.state == IdentityState.INVALID.getValue()) {
-            identityState = IdentityState.INVALID;
-        } else {
-            logger.warn("Identity fetch returned invalid identity state: {}", result.state);
-            identityState = IdentityState.ACTIVE;
-        }
-
-        return BasicContact.javaCreate(
-            result.identity,
-            result.publicKey,
-            result.featureMask,
-            identityState,
-            identityType
-        );
-    }
-
     @Override
     public void resetAllNotificationTriggerPolicyOverrideFromLocal() {
         contactModelRepository.getAll().stream().forEach(
@@ -1315,11 +1210,11 @@ public class ContactServiceImpl implements ContactService {
             + " SELECT 1 FROM " + GroupMemberModel.TABLE + " AS gm WHERE"
             + " gm." + GroupMemberModel.COLUMN_IDENTITY + " = co." + ContactModel.COLUMN_IDENTITY
             + " ) AND NOT EXISTS ("
-            + " SELECT 1 FROM " + GroupModel.TABLE + " AS g WHERE"
-            + " g." + GroupModel.COLUMN_CREATOR_IDENTITY + " = co." + ContactModel.COLUMN_IDENTITY
+            + " SELECT 1 FROM " + GroupModelOld.TABLE + " AS g WHERE"
+            + " g." + GroupModelOld.COLUMN_CREATOR_IDENTITY + " = co." + ContactModel.COLUMN_IDENTITY
             + " )"
             + ");";
-        final @Nullable Cursor cursor = this.databaseService
+        final @Nullable Cursor cursor = this.databaseProvider
             .getReadableDatabase()
             .rawQuery(query);
         if (cursor == null) {
@@ -1340,7 +1235,9 @@ public class ContactServiceImpl implements ContactService {
 
     @Override
     @NonNull
-    public final ImmutableSet<String> getTypingIdentities() {
-        return ImmutableSet.copyOf(typingIdentities);
+    public final @Unmodifiable Set<String> getTypingIdentities() {
+        synchronized (typingIdentities) {
+            return Set.copyOf(typingIdentities);
+        }
     }
 }

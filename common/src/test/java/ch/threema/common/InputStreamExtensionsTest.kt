@@ -1,8 +1,12 @@
 package ch.threema.common
 
 import java.io.ByteArrayInputStream
+import java.io.IOException
 import java.io.InputStream
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
+import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -63,5 +67,58 @@ class InputStreamExtensionsTest {
 
         // Assert that the comparison succeeds when both the input and the provided bytes are empty
         assertTrue(ByteArrayInputStream(emptyByteArray()).contentEquals(emptyByteArray()))
+    }
+
+    @Test
+    fun `read bytes into a byte array`() {
+        val inputStream = ByteArrayInputStream(byteArrayOf(1, 2, 3, 4, 5, 6))
+        assertContentEquals(byteArrayOf(1, 2, 3), inputStream.readByteArray(3))
+        assertContentEquals(byteArrayOf(4, 5), inputStream.readByteArray(2))
+        assertFailsWith<IOException> {
+            inputStream.readByteArray(2)
+        }
+    }
+
+    @Test
+    fun `read utf8 string`() {
+        val inputStream = ByteArrayInputStream("Hello world".toByteArray())
+        assertEquals("Hello", inputStream.readUtf8String(5))
+        assertEquals(" ", inputStream.readUtf8String(1))
+        assertFailsWith<IOException> {
+            assertEquals(" ", inputStream.readUtf8String(6))
+        }
+    }
+
+    @Test
+    fun `copy bytes from stream to buffer`() {
+        val buffer = ByteArray(6)
+        val count = ByteArrayInputStream(byteArrayOf(1, 2, 3, 4)).copyTo(buffer, offset = 2, length = 3)
+
+        assertContentEquals(
+            byteArrayOf(0, 0, 1, 2, 3, 0),
+            buffer,
+        )
+        assertEquals(3, count)
+    }
+
+    @Test
+    fun `copy bytes from stream to buffer when buffer too short`() {
+        val buffer = ByteArray(2)
+
+        assertFailsWith<IndexOutOfBoundsException> {
+            ByteArrayInputStream(byteArrayOf(1, 2, 3, 4)).copyTo(buffer, offset = 2, length = 3)
+        }
+    }
+
+    @Test
+    fun `copy bytes from stream to buffer when input too short`() {
+        val buffer = ByteArray(6)
+        val count = ByteArrayInputStream(byteArrayOf(1, 2)).copyTo(buffer, offset = 2, length = 3)
+
+        assertContentEquals(
+            byteArrayOf(0, 0, 1, 2, 0, 0),
+            buffer,
+        )
+        assertEquals(2, count)
     }
 }

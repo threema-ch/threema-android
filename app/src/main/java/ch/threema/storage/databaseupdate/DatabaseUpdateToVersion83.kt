@@ -32,9 +32,5 @@ internal class DatabaseUpdateToVersion83(
 
     override fun getDescription() = "add group call start processed at timestamp"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 83
-    }
+    override val version = 83
 }

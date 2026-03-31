@@ -1,7 +1,7 @@
 package ch.threema.app.glide
 
 import android.graphics.Bitmap
-import ch.threema.app.di.injectNonBinding
+import ch.threema.app.di.injectNullableNonBinding
 import ch.threema.app.services.FileService
 import ch.threema.storage.models.AbstractMessageModel
 import com.bumptech.glide.load.Options
@@ -11,7 +11,7 @@ import org.koin.core.component.KoinComponent
 
 class ThumbnailLoader : ModelLoader<AbstractMessageModel, Bitmap>, KoinComponent {
 
-    private val fileService: FileService? by injectNonBinding()
+    private val fileService: FileService? by injectNullableNonBinding()
 
     override fun buildLoadData(
         model: AbstractMessageModel,

@@ -23,9 +23,5 @@ internal class DatabaseUpdateToVersion109(
 
     override fun getDescription() = "remove deleted groups and drop the 'deleted' flag"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 109
-    }
+    override val version = 109
 }

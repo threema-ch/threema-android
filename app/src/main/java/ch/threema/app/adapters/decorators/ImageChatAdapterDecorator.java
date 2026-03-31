@@ -1,60 +1,75 @@
 package ch.threema.app.adapters.decorators;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-
 import org.slf4j.Logger;
 
+import androidx.annotation.NonNull;
 import ch.threema.app.R;
-import ch.threema.app.activities.MediaViewerActivity;
-import ch.threema.app.activities.ThreemaActivity;
 import ch.threema.app.services.messageplayer.MessagePlayer;
 import ch.threema.app.ui.ControllerView;
 import ch.threema.app.ui.DebouncedOnClickListener;
 import ch.threema.app.ui.listitemholder.ComposeMessageHolder;
 import ch.threema.app.utils.ImageViewUtil;
-import ch.threema.app.utils.IntentDataUtil;
+import ch.threema.app.utils.LinkifyUtil;
 import ch.threema.app.utils.MessageUtil;
 import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.TestUtil;
-import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.DistributionListMessageModel;
 import ch.threema.storage.models.MessageState;
 import ch.threema.storage.models.data.media.ImageDataModel;
+
+import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+import static ch.threema.storage.models.MessageState.FS_KEY_MISMATCH;
+import static ch.threema.storage.models.MessageState.SENDFAILED;
 
 public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
     private static final Logger logger = getThreemaLogger("ImageChatAdapterDecorator");
 
     private static final String LISTENER_TAG = "ImageDecorator";
 
-    public ImageChatAdapterDecorator(Context context, AbstractMessageModel messageModel, Helper helper) {
-        super(context, messageModel, helper);
+    public interface ImageListener {
+        void viewImage(AbstractMessageModel model);
+    }
+
+    @NonNull
+    private final MessagePlayerFactory messagePlayerFactory;
+
+    @NonNull
+    private final ImageListener imageListener;
+
+    public ImageChatAdapterDecorator(
+        AbstractMessageModel messageModel,
+        @NonNull ChatAdapterDecoratorListener chatAdapterDecoratorListener,
+        @NonNull LinkifyUtil.LinkifyListener linkifyListener,
+        @NonNull MessagePlayerFactory messagePlayerFactory,
+        @NonNull ImageListener imageListener,
+        Helper helper
+    ) {
+        super(messageModel, chatAdapterDecoratorListener, linkifyListener, helper);
+        this.messagePlayerFactory = messagePlayerFactory;
+        this.imageListener = imageListener;
     }
 
     @Override
-    protected void configureChatMessage(final ComposeMessageHolder holder, final int position) {
-        super.configureChatMessage(holder, position);
+    protected void configureChatMessage(final ComposeMessageHolder holder, Context context, final int position) {
+        super.configureChatMessage(holder, context, position);
 
-        final MessagePlayer imageMessagePlayer = getMessagePlayerService().createPlayer(getMessageModel(),
-            (Activity) getContext(), helper.getMessageReceiver(), null);
+        final MessagePlayer imageMessagePlayer = messagePlayerFactory.create(getMessageModel(), null);
 
         logger.debug("configureChatMessage Image");
 
         holder.messagePlayer = imageMessagePlayer;
 
         setOnClickListener(view -> {
-            if (
-                getMessageModel().getState() != MessageState.FS_KEY_MISMATCH &&
-                    getMessageModel().getState() != MessageState.SENDFAILED
-            ) {
-                viewImage(getMessageModel(), holder.attachmentImage);
+            AbstractMessageModel model = getMessageModel();
+            MessageState state = model.getState();
+            if (state != FS_KEY_MISMATCH && state != SENDFAILED && model.isAvailable()) {
+                imageListener.viewImage(model);
             }
         }, holder.messageBlockView);
 
@@ -62,8 +77,8 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 
         configureThumbnail(holder);
 
-        if (getContext() != null && holder.attachmentImage != null) {
-            holder.attachmentImage.setContentDescription(getContext().getString(R.string.image_placeholder));
+        if (holder.attachmentImage != null) {
+            holder.attachmentImage.setContentDescription(context.getString(R.string.image_placeholder));
         }
 
         RuntimeUtil.runOnUiThread(() -> {
@@ -73,10 +88,14 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
 
         configureBodyText(holder, getMessageModel().getCaption());
 
-        configureMessagePlayer(holder, imageMessagePlayer);
+        configureMessagePlayer(holder, imageMessagePlayer, context.getApplicationContext());
     }
 
-    private void configureMessagePlayer(@NonNull ComposeMessageHolder holder, @NonNull MessagePlayer imageMessagePlayer) {
+    private void configureMessagePlayer(
+        @NonNull ComposeMessageHolder holder,
+        @NonNull MessagePlayer imageMessagePlayer,
+        @NonNull Context applicationContext
+    ) {
         imageMessagePlayer
             // download listener
             .addListener(LISTENER_TAG, new MessagePlayer.DownloadListener() {
@@ -102,8 +121,8 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
                             holder.controller.setHidden();
                         } else {
                             holder.controller.setReadyToDownload();
-                            if (!TestUtil.isEmptyOrNull(message) && getContext() != null) {
-                                Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
+                            if (!TestUtil.isEmptyOrNull(message)) {
+                                Toast.makeText(applicationContext, message, Toast.LENGTH_LONG).show();
                             }
                         }
                     });
@@ -133,7 +152,10 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
                             imageMessagePlayer.open();
                             break;
                         default:
-                            viewImage(getMessageModel(), holder.attachmentImage);
+                            AbstractMessageModel model = getMessageModel();
+                            if (model.isAvailable()) {
+                                imageListener.viewImage(model);
+                            }
                     }
                 }
             });
@@ -151,7 +173,6 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
         }
 
         ImageViewUtil.showBitmapOrImagePlaceholder(
-            getContext(),
             holder.contentView,
             holder.attachmentImage,
             thumbnail,
@@ -163,15 +184,6 @@ public class ImageChatAdapterDecorator extends ChatAdapterDecorator {
             holder.controller.setHidden();
         } else {
             showHide(holder.controller, false);
-        }
-    }
-
-    private void viewImage(final AbstractMessageModel m, final View v) {
-        if (m.isAvailable()) {
-            Intent intent = new Intent(getContext(), MediaViewerActivity.class);
-            IntentDataUtil.append(m, intent);
-            intent.putExtra(MediaViewerActivity.EXTRA_ID_REVERSE_ORDER, true);
-            ((Activity) getContext()).startActivityForResult(intent, ThreemaActivity.ACTIVITY_ID_MEDIA_VIEWER);
         }
     }
 

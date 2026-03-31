@@ -16,8 +16,6 @@ import androidx.core.graphics.drawable.toBitmap
 import ch.threema.app.emojis.EmojiDrawable
 import ch.threema.app.emojis.EmojiManager
 import ch.threema.app.emojis.SpriteCoordinates
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
 
 /**
  *  @param modifier Is the modifier used by the [Image] composable when the emoji was successfully loaded.
@@ -36,15 +34,12 @@ fun AsyncEmojiImage(
 
     val context = LocalContext.current
     LaunchedEffect(spriteCoordinates) {
-        launch {
-            val emojiDrawable: EmojiDrawable? = EmojiManager.getInstance(context).getEmojiDrawableSynchronously(spriteCoordinates)
-            if (isActive) {
-                state = if (emojiDrawable != null) {
-                    AsyncEmojiImageState.Success(emojiDrawable.toBitmap().asImageBitmap())
-                } else {
-                    AsyncEmojiImageState.Failure
-                }
-            }
+        val emojiDrawable = EmojiManager.getInstance(context).getEmojiDrawableAsync(spriteCoordinates)
+        state = try {
+            emojiDrawable.awaitLoaded()
+            AsyncEmojiImageState.Success(emojiDrawable.toBitmap().asImageBitmap())
+        } catch (_: EmojiDrawable.EmojiLoadingException) {
+            AsyncEmojiImageState.Failure
         }
     }
 

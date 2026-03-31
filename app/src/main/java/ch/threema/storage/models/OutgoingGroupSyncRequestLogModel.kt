@@ -1,6 +1,6 @@
 package ch.threema.storage.models
 
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.util.Date
 
 /**
@@ -10,7 +10,7 @@ import java.util.Date
 data class OutgoingGroupSyncRequestLogModel(
     val id: Int,
     val apiGroupId: String,
-    val creatorIdentity: Identity,
+    val creatorIdentity: IdentityString,
     val lastRequest: Date?,
 ) {
 
@@ -23,6 +23,6 @@ data class OutgoingGroupSyncRequestLogModel(
         const val COLUMN_ID: String = "id"
         const val COLUMN_API_GROUP_ID: String = "apiGroupId"
         const val COLUMN_CREATOR_IDENTITY: String = "creatorIdentity"
-        const val COLUMN_LAST_REQUEST: String = "lastRequest"
+        const val COLUMN_LAST_REQUEST: String = "lastRequestAt"
     }
 }

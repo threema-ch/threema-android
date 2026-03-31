@@ -13,9 +13,9 @@ import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
+import ch.threema.storage.models.group.GroupMessageModel
 import java.util.UUID
 
 private val logger = getThreemaLogger("IncomingGroupFileMessageTask")

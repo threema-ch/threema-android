@@ -7,29 +7,33 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.preference.CheckBoxPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.TwoStatePreference
+import ch.threema.android.ToastDuration
+import ch.threema.android.showToast
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.activities.BlockedIdentitiesActivity
 import ch.threema.app.activities.ExcludedSyncIdentitiesActivity
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.dialogs.GenericProgressDialog
 import ch.threema.app.listeners.SynchronizeContactsListener
 import ch.threema.app.managers.ListenerManager
-import ch.threema.app.restrictions.AppRestrictionUtil
+import ch.threema.app.preference.service.PreferenceService
+import ch.threema.app.preference.service.SynchronizedSettingsService
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.routines.SynchronizeContactsRoutine
+import ch.threema.app.services.ContactService
+import ch.threema.app.services.LockAppService
 import ch.threema.app.services.SynchronizeContactsService
 import ch.threema.app.utils.*
 import ch.threema.app.workers.ShareTargetUpdateWorker
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.common.lazy
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException
 import com.google.android.material.snackbar.BaseTransientBottomBar.BaseCallback
 import com.google.android.material.snackbar.Snackbar
+import org.koin.android.ext.android.inject
 
 private val logger = getThreemaLogger("SettingsPrivacyFragment")
 
@@ -40,8 +44,12 @@ class SettingsPrivacyFragment :
         logScreenVisibility(logger)
     }
 
-    private val serviceManager by lazy { ThreemaApplication.requireServiceManager() }
-    private val preferenceService by lazy { serviceManager.preferenceService }
+    private val contactService: ContactService by inject()
+    private val lockAppService: LockAppService by inject()
+    private val synchronizeContactsService: SynchronizeContactsService by inject()
+    private val preferenceService: PreferenceService by inject()
+    private val synchronizedSettingsService: SynchronizedSettingsService by inject()
+    private val appRestrictions: AppRestrictions by inject()
 
     private lateinit var disableScreenshot: CheckBoxPreference
     private var disableScreenshotChecked = false
@@ -49,8 +57,6 @@ class SettingsPrivacyFragment :
     private lateinit var fragmentView: View
 
     private lateinit var contactSyncPreference: TwoStatePreference
-
-    private val synchronizeContactsService: SynchronizeContactsService by lazy { serviceManager.synchronizeContactsService }
 
     private val synchronizeContactsListener: SynchronizeContactsListener =
         object : SynchronizeContactsListener {
@@ -94,10 +100,10 @@ class SettingsPrivacyFragment :
     override fun initializePreferences() {
         super.initializePreferences()
 
-        disableScreenshot = getPref(preferenceService.screenshotPolicySetting.preferenceKey)
+        disableScreenshot = getPref(synchronizedSettingsService.getScreenshotPolicySetting().preferenceKey)
         disableScreenshotChecked = this.disableScreenshot.isChecked
 
-        if (ConfigUtils.getScreenshotsDisabled(preferenceService, serviceManager.lockAppService)) {
+        if (lockAppService.isLockingEnabled) {
             disableScreenshot.isEnabled = false
             disableScreenshot.isSelectable = false
         }
@@ -153,10 +159,7 @@ class SettingsPrivacyFragment :
     }
 
     private fun updateView() {
-        if (!AppRestrictionUtil.hasBooleanRestriction(getString(R.string.restriction__contact_sync)) && !SynchronizeContactsUtil.isRestrictedProfile(
-                activity,
-            )
-        ) {
+        if (appRestrictions.isContactSyncEnabledOrNull() == null && !SynchronizeContactsUtil.isRestrictedProfile(activity)) {
             contactSyncPreference.apply {
                 isEnabled = !synchronizeContactsService.isSynchronizationInProgress
             }
@@ -164,7 +167,7 @@ class SettingsPrivacyFragment :
     }
 
     private fun initContactSyncPref() {
-        contactSyncPreference = getPref(preferenceService.contactSyncPolicySetting.preferenceKey)
+        contactSyncPreference = getPref(synchronizedSettingsService.getContactSyncPolicySetting().preferenceKey)
         contactSyncPreference.summaryOn =
             getString(R.string.prefs_sum_sync_contacts_on, getString(R.string.app_name))
         contactSyncPreference.summaryOff =
@@ -177,9 +180,9 @@ class SettingsPrivacyFragment :
             contactSyncPreference.isSelectable = false
         } else {
             contactSyncPreference.onChange<Boolean> { enabled ->
-                preferenceService.emailSyncHashCode = 0
-                preferenceService.phoneNumberSyncHashCode = 0
-                preferenceService.timeOfLastContactSync = null
+                preferenceService.setEmailSyncHashCode(0)
+                preferenceService.setPhoneNumberSyncHashCode(0)
+                preferenceService.setTimeOfLastContactSync(null)
 
                 // Note that the change here can be triggered from sync. However, as this only happens while the preferences are shown, this is
                 // considered acceptable.
@@ -194,21 +197,16 @@ class SettingsPrivacyFragment :
 
     private fun initWorkRestrictedPrefs() {
         if (ConfigUtils.isWorkRestricted()) {
-            var value =
-                AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__block_unknown))
-            if (value != null) {
-                val blockUnknown: CheckBoxPreference = getPref(preferenceService.unknownContactPolicySetting.preferenceKey)
+            if (appRestrictions.isBlockUnknownOrNull() != null) {
+                val blockUnknown: CheckBoxPreference = getPref(synchronizedSettingsService.getUnknownContactPolicySetting().preferenceKey)
                 blockUnknown.isEnabled = false
                 blockUnknown.isSelectable = false
             }
-            value =
-                AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__disable_screenshots))
-            if (value != null) {
+            if (appRestrictions.isScreenshotsDisabledOrNull() != null) {
                 disableScreenshot.isEnabled = false
                 disableScreenshot.isSelectable = false
             }
-            value =
-                AppRestrictionUtil.getBooleanRestriction(getString(R.string.restriction__contact_sync))
+            val value = appRestrictions.isContactSyncEnabledOrNull()
             if (value != null) {
                 contactSyncPreference.isEnabled = false
                 contactSyncPreference.isSelectable = false
@@ -289,7 +287,8 @@ class SettingsPrivacyFragment :
 
     private fun enableSyncFromLocal() {
         try {
-            if (synchronizeContactsService.enableSyncFromLocal() && ConfigUtils.requestContactPermissions(
+            if (synchronizeContactsService.enableSyncFromLocal() &&
+                ConfigUtils.requestContactPermissions(
                     requireActivity(),
                     this@SettingsPrivacyFragment,
                     PERMISSION_REQUEST_CONTACTS,
@@ -324,14 +323,8 @@ class SettingsPrivacyFragment :
     private fun resetReceipts() {
         Thread(
             {
-                serviceManager.contactService.resetReceiptsSettings()
-                RuntimeUtil.runOnUiThread {
-                    Toast.makeText(
-                        context,
-                        R.string.reset_successful,
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
+                contactService.resetReceiptsSettings()
+                showToast(R.string.reset_successful, ToastDuration.SHORT)
             },
             "ResetReceiptSettings",
         ).start()

@@ -1,5 +1,7 @@
 package ch.threema.app.stores
 
+import ch.threema.common.emptyByteArray
+import ch.threema.domain.types.Identity
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -25,7 +27,7 @@ class IdentityStoreImplTest {
             onNicknameChanged = {},
         )
 
-        assertNull(identityStore.getIdentity())
+        assertNull(identityStore.getIdentityString())
         assertNull(identityStore.getPublicKey())
         assertNull(identityStore.getPrivateKey())
         assertNull(identityStore.getServerGroup())
@@ -35,7 +37,7 @@ class IdentityStoreImplTest {
     @Test
     fun `restoring valid identity`() {
         val identityProviderMock = mockk<MutableIdentityProvider> {
-            every { getIdentity() } returns "01234567"
+            every { getIdentity() } returns Identity("01234567")
         }
         val preferenceStoreMock = mockk<PreferenceStore> {
             every { getString("server_group") } returns "foobar"
@@ -53,7 +55,7 @@ class IdentityStoreImplTest {
             onNicknameChanged = {},
         )
 
-        assertEquals("01234567", identityStore.getIdentity())
+        assertEquals("01234567", identityStore.getIdentityString())
         assertContentEquals(PUBLIC_KEY, identityStore.getPublicKey())
         assertContentEquals(PRIVATE_KEY, identityStore.getPrivateKey())
         assertEquals("foobar", identityStore.getServerGroup())
@@ -63,7 +65,7 @@ class IdentityStoreImplTest {
     @Test
     fun `restoring valid identity with missing private key`() {
         val identityProviderMock = mockk<MutableIdentityProvider> {
-            every { getIdentity() } returns "01234567"
+            every { getIdentity() } returns Identity("01234567")
         }
         val preferenceStoreMock = mockk<PreferenceStore> {
             every { getString("server_group") } returns "foobar"
@@ -71,7 +73,7 @@ class IdentityStoreImplTest {
             every { getString("nickname") } returns "Nick"
         }
         val encryptedPreferenceStoreMock = mockk<EncryptedPreferenceStore> {
-            every { getBytes("private_key") } returns ByteArray(0)
+            every { getBytes("private_key") } returns emptyByteArray()
         }
 
         val identityStore = IdentityStoreImpl(
@@ -87,7 +89,7 @@ class IdentityStoreImplTest {
     @Test
     fun `restoring invalid identity`() {
         val identityProviderMock = mockk<MutableIdentityProvider> {
-            every { getIdentity() } returns "01234567"
+            every { getIdentity() } returns Identity("01234567")
         }
         val preferenceStoreMock = mockk<PreferenceStore> {
             every { getString("server_group") } returns "foobar"
@@ -132,12 +134,12 @@ class IdentityStoreImplTest {
             privateKey = PRIVATE_KEY,
         )
 
-        verify { identityProviderMock.setIdentity("01234567") }
+        verify { identityProviderMock.setIdentity(Identity("01234567")) }
         verify { preferenceStoreMock.save("server_group", "foobar") }
         verify { preferenceStoreMock.save("public_key", PUBLIC_KEY) }
         verify { encryptedPreferenceStoreMock.save("private_key", PRIVATE_KEY) }
         verify { preferenceStoreMock.save("nickname", "01234567") }
-        assertEquals("01234567", identityStore.getIdentity())
+        assertEquals("01234567", identityStore.getIdentityString())
         assertContentEquals(PUBLIC_KEY, identityStore.getPublicKey())
         assertContentEquals(PRIVATE_KEY, identityStore.getPrivateKey())
         assertEquals("foobar", identityStore.getServerGroup())
@@ -172,7 +174,7 @@ class IdentityStoreImplTest {
     @Test
     fun `clearing identity`() {
         val identityProviderMock = mockk<MutableIdentityProvider>(relaxed = true) {
-            every { getIdentity() } returns "01234567"
+            every { getIdentity() } returns Identity("01234567")
         }
         val preferenceStoreMock = mockk<PreferenceStore>(relaxed = true) {
             every { getString("server_group") } returns "foobar"
@@ -194,7 +196,7 @@ class IdentityStoreImplTest {
         verify { identityProviderMock.setIdentity(null) }
         verify { preferenceStoreMock.remove(setOf("public_key", "server_group")) }
         verify { encryptedPreferenceStoreMock.remove("private_key") }
-        assertNull(identityStore.getIdentity())
+        assertNull(identityStore.getIdentityString())
         assertNull(identityStore.getPublicKey())
         assertNull(identityStore.getPrivateKey())
         assertNull(identityStore.getServerGroup())

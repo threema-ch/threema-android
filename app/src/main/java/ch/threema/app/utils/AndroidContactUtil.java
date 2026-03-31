@@ -27,26 +27,21 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresPermission;
 import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
-import androidx.core.util.Pair;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.debug.AndroidContactSyncLogger;
 import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.FileService;
 import ch.threema.app.services.UserService;
-import ch.threema.base.ThreemaException;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.datatypes.AndroidContactLookupInfo;
 
-import static ch.threema.app.androidcontactsync.AndroidContactLookupInfoExtensionsKt.getContactUri;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import static ch.threema.storage.models.ContactModel.DEFAULT_ANDROID_CONTACT_AVATAR_EXPIRY;
 
@@ -73,25 +68,10 @@ public class AndroidContactUtil {
         }
     }
 
-    private static final String[] NAME_PROJECTION = new String[]{
-        ContactsContract.Contacts.DISPLAY_NAME,
-        ContactsContract.Contacts.SORT_KEY_ALTERNATIVE,
-        ContactsContract.Contacts.LOOKUP_KEY
-    };
-
     private static final String[] RAW_CONTACT_PROJECTION = new String[]{
         ContactsContract.RawContacts._ID,
         ContactsContract.RawContacts.CONTACT_ID,
         ContactsContract.RawContacts.SYNC1,
-    };
-
-    private static final String[] STRUCTURED_NAME_FIELDS = new String[]{
-        ContactsContract.CommonDataKinds.StructuredName.PREFIX,
-        ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME,
-        ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME,
-        ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME,
-        ContactsContract.CommonDataKinds.StructuredName.SUFFIX,
-        ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME
     };
 
     private final ContentResolver contentResolver = ThreemaApplication.getAppContext().getContentResolver();
@@ -114,16 +94,6 @@ public class AndroidContactUtil {
         }
     }
 
-    private static class ContactName {
-        final String firstName;
-        final String lastName;
-
-        public ContactName(@Nullable String firstName, @Nullable String lastName) {
-            this.firstName = firstName != null ? firstName.trim() : null;
-            this.lastName = lastName != null ? lastName.trim() : null;
-        }
-    }
-
     /**
      * Return a valid uri to the given contact that can be used to build an intent for the contact app
      * It is safe to call this method if permission to access contacts is not granted - null will be returned in that case
@@ -142,7 +112,7 @@ public class AndroidContactUtil {
         if (data != null) {
             final AndroidContactLookupInfo androidContactLookupInfo = data.androidContactLookupInfo;
             if (androidContactLookupInfo != null) {
-                return getContactUri(androidContactLookupInfo);
+                return androidContactLookupInfo.getContactUri();
             }
         }
         return null;
@@ -202,200 +172,6 @@ public class AndroidContactUtil {
 
         // Note that directly logging the lookup key and the contact uri is ok for debug level.
         logger.debug("Unable to get avatar for {} lookupKey = {} contactUri = {}", contactModel.getIdentity(), androidContactLookupInfo, contactUri);
-    }
-
-    /**
-     * Update the name of this contact according to the name of the Android contact
-     *
-     * @param androidContactSyncLogger this logger can be provided to log duplicate contact names
-     */
-    @RequiresPermission(Manifest.permission.READ_CONTACTS)
-    public void updateNameByAndroidContact(
-        @NonNull ContactModel contactModel,
-        @Nullable AndroidContactSyncLogger androidContactSyncLogger,
-        @NonNull Context context
-    ) throws ThreemaException {
-        ContactModelData data = contactModel.getData();
-        if (data == null) {
-            logger.warn("Contact model data is null");
-            return;
-        }
-        Uri namedContactUri = getAndroidContactUri(contactModel, context);
-        if (namedContactUri == null) {
-            logger.info("Unable to get android contact uri for {} obfuscatedLookupKey = {}", contactModel.getIdentity(), getObfuscatedAndroidContactLookupInfo(data));
-            return;
-        }
-
-        ContactName contactName = getContactName(namedContactUri);
-
-        if (contactName == null) {
-            logger.info("Unable to get contact name for {} obfuscatedLookupKey = {}", contactModel.getIdentity(), getObfuscatedAndroidContactLookupInfo(data));
-            // remove contact link to unresolvable contact
-            contactModel.removeAndroidContactLink();
-            throw new ThreemaException("Unable to get contact name");
-        }
-
-        if (androidContactSyncLogger != null && data.androidContactLookupInfo != null) {
-            AndroidContactLookupInfo androidContactLookupInfo = data.androidContactLookupInfo;
-            androidContactSyncLogger.addSyncedNames(androidContactLookupInfo, contactName.firstName, contactName.lastName);
-        }
-
-        if (!data.firstName.equals(contactName.firstName) || !data.lastName.equals(contactName.lastName)) {
-            logger.info("Updating name of contact. identity={}, obfuscatedLookupKey={}",
-                contactModel.getIdentity(), getObfuscatedAndroidContactLookupInfo(data));
-            contactModel.setNameFromLocal(contactName.firstName, contactName.lastName);
-        }
-    }
-
-    /**
-     * Get the contact name for a system contact specified by the specified Uri
-     * First we will consider the Structured Name of the contact
-     * If the Structured Name is lacking either a first name, a last name, or both, we will fall back to the Display Name
-     * If there's still neither first nor last name available, we will resort to the alternative representation of the full name (for Western names, it is the one using the "last, first" format)
-     *
-     * @param contactUri Uri pointing to the contact
-     * @return ContactName object containing first and last name or null if lookup failed
-     */
-    @RequiresPermission(Manifest.permission.READ_CONTACTS)
-    @Nullable
-    private ContactName getContactName(@NonNull Uri contactUri) {
-        if (this.contentResolver == null) {
-            logger.error("Cannot get contact name as content resolver is null");
-            return null;
-        }
-
-        ContactName contactName = null;
-        try (Cursor nameCursor = this.contentResolver.query(
-            contactUri,
-            NAME_PROJECTION,
-            null,
-            null,
-            null)) {
-
-            if (nameCursor != null && nameCursor.moveToFirst()) {
-                String lookupKey = nameCursor.getString(nameCursor.getColumnIndexOrThrow(ContactsContract.Contacts.LOOKUP_KEY));
-                if (lookupKey == null) {
-                    logger.error("Cannot get contact name as contact lookup key is null");
-                    return null;
-                }
-                logLookupKeyDifference(contactUri, lookupKey);
-
-                contactName = this.getContactNameFromLookupKey(lookupKey);
-
-                // fallback
-                if (contactName.firstName == null && contactName.lastName == null) {
-                    logger.info("Falling back to alternative sort key.");
-                    //lastname, firstname
-                    String alternativeSortKey = nameCursor.getString(nameCursor.getColumnIndexOrThrow(ContactsContract.Contacts.SORT_KEY_ALTERNATIVE));
-
-                    if (!TestUtil.isEmptyOrNull(alternativeSortKey)) {
-                        String[] lastNameFirstName = alternativeSortKey.split(",");
-                        if (lastNameFirstName.length == 2) {
-                            String lastName = lastNameFirstName[0].trim();
-                            String firstName = lastNameFirstName[1].trim();
-
-                            if (!TestUtil.compare(lastName, "") && !TestUtil.compare(firstName, "")) {
-                                contactName = new ContactName(firstName, lastName);
-                            }
-                        }
-                    } else {
-                        // no contact name found
-                        logger.info("No contact name found for lookup key '{}'", lookupKey);
-                        return null;
-                    }
-                } else {
-                    logger.info("Getting structured name for contact was successful");
-                }
-            } else {
-                logger.info("Contact not found");
-            }
-        } catch (IllegalArgumentException e) {
-            logger.error("Could not get name of contact", e);
-        }
-        return contactName;
-    }
-
-    /**
-     * Get the contact name for a system contact specified by contactId
-     * - First we will consider the Structured Name of the contact
-     * - If the Structured Name is lacking either a first name, a last name, or both, we will fall back to the Display Name
-     *
-     * @param lookupKey the lookup key of the Android contact
-     * @return ContactName object containing first and last name
-     */
-    @RequiresPermission(Manifest.permission.READ_CONTACTS)
-    private @NonNull ContactName getContactNameFromLookupKey(@NonNull String lookupKey) {
-        Map<String, String> structure = this.getStructuredNameByLookupKey(lookupKey);
-
-        String firstName = structure.get(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME);
-        String lastName = structure.get(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME);
-
-        String prefix = structure.get(ContactsContract.CommonDataKinds.StructuredName.PREFIX);
-        String middleName = structure.get(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME);
-        String suffix = structure.get(ContactsContract.CommonDataKinds.StructuredName.SUFFIX);
-
-        String displayName = structure.get(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME);
-
-        StringBuilder contactFirstName = new StringBuilder();
-        if (prefix != null && !prefix.isEmpty()) {
-            contactFirstName.append(prefix);
-        }
-        if (firstName != null) {
-            if (contactFirstName.length() > 0) {
-                contactFirstName.append(" ");
-            }
-            contactFirstName.append(firstName);
-        }
-        if (middleName != null && !middleName.isEmpty()) {
-            if (contactFirstName.length() > 0) {
-                contactFirstName.append(' ');
-            }
-            contactFirstName.append(middleName);
-        }
-
-        StringBuilder contactLastName = new StringBuilder();
-        if (lastName != null) {
-            contactLastName.append(lastName);
-        }
-        if (suffix != null && !suffix.isEmpty()) {
-            if (contactLastName.length() > 0) {
-                contactLastName.append(", ");
-            }
-            contactLastName.append(suffix);
-        }
-
-        /* Only use this structured name if we have a first or last name. Otherwise use display name (below) */
-        if (contactFirstName.length() > 0 || contactLastName.length() > 0) {
-            return new ContactName(contactFirstName.toString(), contactLastName.toString());
-        }
-
-        final Pair<String, String> firstLastName = NameUtil.getFirstLastNameFromDisplayName(displayName);
-        return new ContactName(firstLastName.first, firstLastName.second);
-    }
-
-    @RequiresPermission(Manifest.permission.READ_CONTACTS)
-    private @NonNull Map<String, String> getStructuredNameByLookupKey(@NonNull String lookupKey) {
-        Map<String, String> structuredName = new TreeMap<>();
-
-        Cursor cursor = this.contentResolver.query(
-            ContactsContract.Data.CONTENT_URI,
-            STRUCTURED_NAME_FIELDS,
-            ContactsContract.Data.LOOKUP_KEY + " = ? AND " + ContactsContract.Data.MIMETYPE + " = ?",
-            new String[]{lookupKey, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE},
-            null);
-
-        if (cursor != null) {
-            try {
-                if (cursor.moveToFirst()) {
-                    for (int i = 0; i < STRUCTURED_NAME_FIELDS.length; i++) {
-                        structuredName.put(STRUCTURED_NAME_FIELDS[i], cursor.getString(i));
-                    }
-                }
-            } finally {
-                cursor.close();
-            }
-        }
-        return structuredName;
     }
 
     /**
@@ -672,7 +448,7 @@ public class AndroidContactUtil {
             return null;
         }
 
-        long nameSourceRawContactId = getMainRawContact(getContactUri(androidContactLookupInfo));
+        long nameSourceRawContactId = getMainRawContact(androidContactLookupInfo.getContactUri());
         if (nameSourceRawContactId == 0) {
             return null;
         }
@@ -748,38 +524,5 @@ public class AndroidContactUtil {
             return true;
         }
         return false;
-    }
-
-    @Nullable
-    private static String getObfuscatedAndroidContactLookupInfo(@Nullable ContactModelData contactModelData) {
-        if (contactModelData == null) {
-            return null;
-        }
-        if (contactModelData.androidContactLookupInfo != null) {
-            return contactModelData.androidContactLookupInfo.getObfuscatedString();
-        } else {
-            return null;
-        }
-    }
-
-    private void logLookupKeyDifference(@NonNull Uri contactUri, @NonNull String lookupKey) {
-        String path = contactUri.getPath();
-        if (path == null) {
-            logger.warn("No path of contact uri");
-            return;
-        }
-
-        String lookupKeyAndContactIdFromUri = path.replace("/contacts/lookup/", "");
-        int lookupKeySeparationIndex = lookupKeyAndContactIdFromUri.lastIndexOf("/");
-        if (lookupKeySeparationIndex < 0) {
-            logger.warn("No / in lookup key and contact id from uri");
-            return;
-        }
-        String lookupKeyFromUri = lookupKeyAndContactIdFromUri.substring(0, lookupKeySeparationIndex);
-        if (lookupKey.equals(lookupKeyFromUri)) {
-            logger.info("Lookup key of uri matches the queried lookup key");
-        } else {
-            logger.warn("Queried lookup key is different ({} characters vs {} characters)", lookupKey.length(), lookupKeyFromUri.length());
-        }
     }
 }

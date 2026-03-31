@@ -17,8 +17,8 @@ internal class ReflectedOutgoingGroupReactionTask(
     type = Common.CspE2eMessageType.GROUP_REACTION,
     serviceManager = serviceManager,
 ) {
-    private val messageService by lazy { serviceManager.messageService }
-    private val contactService by lazy { serviceManager.contactService }
+    private val messageService = serviceManager.messageService
+    private val userService = serviceManager.userService
 
     override fun processOutgoingMessage() {
         check(outgoingMessage.conversation.hasGroup()) {
@@ -39,7 +39,7 @@ internal class ReflectedOutgoingGroupReactionTask(
             /* targetMessage = */
             targetMessage,
             /* senderIdentity = */
-            contactService.me.identity,
+            userService.identity!!,
             /* actionCase = */
             message.data.actionCase,
             /* emojiSequence = */

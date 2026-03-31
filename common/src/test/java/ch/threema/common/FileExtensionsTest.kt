@@ -1,17 +1,18 @@
 package ch.threema.common
 
+import ch.threema.testhelpers.createTempDirectory
 import java.io.File
-import java.nio.file.Files
+import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 class FileExtensionsTest {
     @Test
     fun `clear a directory recursively`() {
-        val root = Files.createTempDirectory("root").toFile()
-        root.mkdir()
+        val root = createTempDirectory("root")
         val fileA = File(root, "A")
         fileA.createNewFile()
         val fileB = File(root, "B")
@@ -39,8 +40,7 @@ class FileExtensionsTest {
 
     @Test
     fun `clear a directory non-recursively`() {
-        val root = Files.createTempDirectory("root").toFile()
-        root.mkdir()
+        val root = createTempDirectory("root")
         val fileA = File(root, "A")
         fileA.createNewFile()
         val fileB = File(root, "B")
@@ -68,8 +68,7 @@ class FileExtensionsTest {
 
     @Test
     fun `get total size of directory`() {
-        val root = Files.createTempDirectory("root").toFile()
-        root.mkdir()
+        val root = createTempDirectory("root")
         val fileA = File(root, "A")
         fileA.writeText("Hello") // size 5
         val fileB = File(root, "B")
@@ -88,5 +87,34 @@ class FileExtensionsTest {
         val totalSize = root.getTotalSize()
 
         assertEquals(14, totalSize)
+    }
+
+    @Test
+    fun `delete a file securely`() {
+        val file = File.createTempFile("test", "test")
+        assertTrue(file.exists())
+
+        file.deleteSecurely()
+
+        assertFalse(file.exists())
+    }
+
+    @Test
+    fun `delete a file securely that does not exist`() {
+        val file = File.createTempFile("test", "test")
+        file.delete()
+        assertFalse(file.exists())
+
+        file.deleteSecurely()
+        assertFalse(file.exists())
+    }
+
+    @Test
+    fun `cannot delete a directory securely`() {
+        val directory = createTempDirectory("root")
+
+        assertFailsWith<IOException> {
+            directory.deleteSecurely()
+        }
     }
 }

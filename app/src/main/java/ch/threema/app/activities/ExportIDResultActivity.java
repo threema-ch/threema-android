@@ -239,14 +239,21 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            done();
-        } else if (item.getItemId() == R.id.menu_print) {
-            printBitmap(originalQrCode);
-        } else if (item.getItemId() == R.id.menu_backup_share) {
-            shareId();
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                done();
+                return true;
+            case R.id.menu_print:
+                if (originalQrCode != null) {
+                    printBitmap(originalQrCode);
+                }
+                return true;
+            case R.id.menu_backup_share:
+                shareId();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private void shareId() {
@@ -279,9 +286,9 @@ public class ExportIDResultActivity extends ThreemaToolbarActivity implements Ge
     }
 
     @Override
-    public void onYes(String tag, Object data) {
-        Intent upIntent = new Intent(ExportIDResultActivity.this, HomeActivity.class);
-        NavUtils.navigateUpTo(ExportIDResultActivity.this, upIntent);
+    public void onYes(@Nullable String tag, @Nullable Object data) {
+        Intent upIntent = HomeActivity.createIntent(ExportIDResultActivity.this);
+        navigateUpTo(upIntent);
 
         finish();
     }

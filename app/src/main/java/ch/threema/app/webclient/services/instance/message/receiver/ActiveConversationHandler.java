@@ -20,7 +20,7 @@ import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.ConversationTag;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 
 @WorkerThread
 public class ActiveConversationHandler extends MessageReceiver {
@@ -64,7 +64,7 @@ public class ActiveConversationHandler extends MessageReceiver {
                 }
                 break;
             case Receiver.Type.GROUP:
-                GroupModel groupModel = groupService.getById(Integer.valueOf(receiverId));
+                GroupModelOld groupModel = groupService.getById(Integer.valueOf(receiverId));
                 if (groupModel != null) {
                     messageReceiver = groupService.createReceiver(groupModel);
                 }

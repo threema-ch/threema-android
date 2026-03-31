@@ -85,6 +85,7 @@ import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.app.messagereceiver.SendingPermissionValidationResult;
 import ch.threema.app.services.FileService;
 import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.startup.AppStartupAware;
 import ch.threema.app.ui.LongToast;
 import ch.threema.app.ui.MediaItem;
 import ch.threema.app.ui.SingleToast;
@@ -103,22 +104,24 @@ import ch.threema.app.utils.RuntimeUtil;
 import ch.threema.app.utils.ShortcutUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
+
+import static ch.threema.app.startup.AppStartupUtilKt.waitUntilReady;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.protocol.csp.messages.location.Poi;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
+import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.data.LocationDataModel;
 import ch.threema.storage.models.data.MessageContentsType;
-import java8.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletableFuture;
 import kotlin.Lazy;
+import kotlin.Unit;
 
 import static ch.threema.app.activities.SendMediaActivity.MAX_EDITABLE_FILES;
-import static ch.threema.app.fragments.ComposeMessageFragment.MAX_FORWARDABLE_ITEMS;
-import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
+import static ch.threema.app.fragments.composemessage.ComposeMessageFragment.MAX_FORWARDABLE_ITEMS;
 import static ch.threema.app.ui.MediaItem.TYPE_IMAGE;
 import static ch.threema.app.ui.MediaItem.TYPE_LOCATION;
 import static ch.threema.app.ui.MediaItem.TYPE_TEXT;
@@ -129,7 +132,8 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     CancelableHorizontalProgressDialog.ProgressDialogClickListener,
     ExpandableTextEntryDialog.ExpandableTextEntryDialogClickListener,
     TextWithCheckboxDialog.TextWithCheckboxDialogClickListener,
-    SearchView.OnQueryTextListener {
+    SearchView.OnQueryTextListener,
+    AppStartupAware {
 
     private static final Logger logger = getThreemaLogger("RecipientListBaseActivity");
 
@@ -587,11 +591,10 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
                         if (contactModel != null) {
                             prepareComposeIntent(new ArrayList<>(Collections.singletonList(contactModel)), false);
-                            return;
                         } else {
                             finish();
-                            return;
                         }
+                        return;
                     }
                 } else if (action.equals(Intent.ACTION_VIEW)) {
                     // called from action URL
@@ -792,7 +795,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                     dependencies.getApiConnector(),
                     dependencies.getContactModelRepository(),
                     AddContactRestrictionPolicy.CHECK,
-                    RecipientListBaseActivity.this,
+                    dependencies.getAppRestrictions(),
                     null
                 ) {
                     @Override
@@ -862,8 +865,8 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
         if (model instanceof ContactModel) {
             messageReceiver = dependencies.getContactService().createReceiver((ContactModel) model);
-        } else if (model instanceof GroupModel) {
-            messageReceiver = dependencies.getGroupService().createReceiver((GroupModel) model);
+        } else if (model instanceof GroupModelOld) {
+            messageReceiver = dependencies.getGroupService().createReceiver((GroupModelOld) model);
         } else if (model instanceof DistributionListModel) {
             messageReceiver = dependencies.getDistributionListService().createReceiver((DistributionListModel) model);
         }
@@ -991,7 +994,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
             finishAffinity();
         } else {
             // we have to clear the backstack to prevent users from coming back here with the return key
-            Intent upIntent = new Intent(this, HomeActivity.class);
+            Intent upIntent = HomeActivity.createIntent(this);
             TaskStackBuilder.create(this)
                 .addNextIntent(upIntent)
                 .addNextIntent(intent)
@@ -1101,11 +1104,11 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
 
                                 if (originalMessageModel.getMessageContentsType() == MessageContentsType.IMAGE) {
                                     if (originalMessageModel.getFileData().getRenderingType() == FileData.RENDERING_DEFAULT) {
-                                        mediaItem.setImageScale(PreferenceService.ImageScale_SEND_AS_FILE);
+                                        mediaItem.setImageScale(PreferenceService.IMAGE_SCALE_SEND_AS_FILE);
                                     }
                                 } else if (originalMessageModel.getMessageContentsType() == MessageContentsType.VIDEO) {
                                     if (originalMessageModel.getFileData().getRenderingType() == FileData.RENDERING_DEFAULT) {
-                                        mediaItem.setVideoSize(PreferenceService.VideoSize_SEND_AS_FILE);
+                                        mediaItem.setVideoSize(PreferenceService.VIDEO_SIZE_SEND_AS_FILE);
                                     }
                                 } else if (originalMessageModel.getMessageContentsType() == MessageContentsType.VOICE_MESSAGE) {
                                     mediaItem.setDurationMs(
@@ -1172,11 +1175,29 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
                 recipientNameBuilder.append(", ");
             }
             if (recipientModel instanceof ContactModel) {
-                recipientNameBuilder.append(NameUtil.getDisplayNameOrNickname((ContactModel) recipientModel, true));
-            } else if (recipientModel instanceof GroupModel) {
-                recipientNameBuilder.append(NameUtil.getDisplayName((GroupModel) recipientModel, dependencies.getGroupService()));
+                recipientNameBuilder.append(
+                    NameUtil.getContactDisplayNameOrNickname(
+                        (ContactModel) recipientModel,
+                        true,
+                        dependencies.getPreferenceService().getContactNameFormat()
+                    )
+                );
+            } else if (recipientModel instanceof GroupModelOld) {
+                recipientNameBuilder.append(
+                    NameUtil.getGroupDisplayName(
+                        (GroupModelOld) recipientModel,
+                        dependencies.getGroupService(),
+                        dependencies.getPreferenceService().getContactNameFormat()
+                    )
+                );
             } else if (recipientModel instanceof DistributionListModel) {
-                recipientNameBuilder.append(NameUtil.getDisplayName((DistributionListModel) recipientModel, dependencies.getDistributionListService()));
+                recipientNameBuilder.append(
+                    NameUtil.getDistributionListDisplayName(
+                        (DistributionListModel) recipientModel,
+                        dependencies.getDistributionListService(),
+                        dependencies.getPreferenceService().getContactNameFormat()
+                    )
+                );
             }
         }
         return recipientNameBuilder.toString();
@@ -1349,34 +1370,20 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     }
 
     @Override
-    protected void onResume() {
-        logger.debug("onResume");
-        super.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        logger.debug("onPause");
-        super.onPause();
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
-        if (finishAndRestartLaterIfNotReady(this)) {
-            return;
-        }
+
+        // TODO(ANDR-4389): Improve the waiting mechanism
+        waitUntilReady(this, () -> {
+            initActivity(savedInstanceState);
+            handleDeviceInsets();
+            return Unit.INSTANCE;
+        });
 
         if (savedInstanceState != null) {
             queryText = savedInstanceState.getString(BUNDLE_QUERY_TEXT, null);
         }
-    }
-
-    @Override
-    public void onUserInteraction() {
-        logger.debug("onUserInteraction");
-        super.onUserInteraction();
     }
 
     @Override
@@ -1519,10 +1526,10 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
         if (renderingType == FileData.RENDERING_MEDIA) {
             if (type == MediaItem.TYPE_VIDEO) {
                 // do not re-transcode forwarded videos
-                mediaItem.setVideoSize(PreferenceService.VideoSize_ORIGINAL);
+                mediaItem.setVideoSize(PreferenceService.VIDEO_SIZE_ORIGINAL);
             } else if (type == TYPE_IMAGE) {
                 // do not scale forwarded images
-                mediaItem.setImageScale(PreferenceService.ImageScale_ORIGINAL);
+                mediaItem.setImageScale(PreferenceService.IMAGE_SCALE_ORIGINAL);
             } else if (type == MediaItem.TYPE_VOICEMESSAGE) {
                 mediaItem.setDurationMs(durationMs);
             }

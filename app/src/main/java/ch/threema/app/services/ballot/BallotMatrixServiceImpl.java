@@ -166,7 +166,7 @@ public class BallotMatrixServiceImpl implements BallotMatrixService {
 
 
         if (choice == null) {
-            logger.error("choice " + ballotVoteModel.getBallotChoiceId() + " not found, ignore result");
+            logger.error("choice {} not found, ignore result", ballotVoteModel.getBallotChoiceId());
             return this;
         }
 

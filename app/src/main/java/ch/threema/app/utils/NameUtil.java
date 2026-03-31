@@ -8,49 +8,46 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.managers.ServiceManager;
 import ch.threema.app.services.ContactService;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.app.services.GroupService;
-import ch.threema.app.preference.service.PreferenceService;
 import ch.threema.app.services.UserService;
+import ch.threema.data.datatypes.ContactNameFormat;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupModelData;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ContactModel;
 import ch.threema.storage.models.DistributionListModel;
-import ch.threema.storage.models.GroupModel;
-import java8.util.J8Arrays;
-import java8.util.stream.Collectors;
+import ch.threema.storage.models.group.GroupModelOld;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class NameUtil {
-
-    private static PreferenceService preferenceService;
-
-    private static PreferenceService getPreferenceService() {
-        if (NameUtil.preferenceService == null) {
-            ServiceManager serviceManager = ThreemaApplication.getServiceManager();
-            if (serviceManager != null) {
-                NameUtil.preferenceService = serviceManager.getPreferenceService();
-            }
-        }
-
-        return NameUtil.preferenceService;
-    }
 
     private NameUtil() {
         // Don't allow creating an instance of this class
     }
 
-    public static String getDisplayName(
+    /**
+     * Deprecated: See {@code GetGroupDisplayNameUseCase}
+     */
+    @NonNull
+    @Deprecated
+    public static String getGroupDisplayName(
         @NonNull GroupModelData groupModelData,
         @NonNull ContactModelRepository contactModelRepository,
-        @NonNull ContactService contactService
+        @NonNull UserService userService,
+        @NonNull ContactNameFormat contactNameFormat
     ) {
         // Use the name if it is not empty
         if (groupModelData.name != null && !groupModelData.name.isEmpty()) {
             return groupModelData.name;
+        }
+
+        String myIdentity = userService.getIdentity();
+        if (myIdentity == null) {
+            return "";
         }
 
         // List members if the name is empty
@@ -58,7 +55,7 @@ public class NameUtil {
                 ch.threema.data.models.ContactModel contactModel =
                     contactModelRepository.getByIdentity(identity);
                 if (contactModel != null) {
-                    return getDisplayName(contactModel);
+                    return getContactDisplayName(contactModel, contactNameFormat);
                 } else {
                     return identity;
                 }
@@ -66,38 +63,82 @@ public class NameUtil {
             .sorted()
             .collect(java.util.stream.Collectors.joining(", "));
 
-        if (groupModelData.isMember()) {
-            @NonNull String userName = getDisplayName(contactService.getMe());
-            if (!memberList.isBlank()) {
-                return userName + ", " + memberList;
-            } else {
-                return userName;
-            }
+        if (groupModelData.groupIdentity.getCreatorIdentity().equals(myIdentity)) {
+            // If the user is the creator, we prepend it to the list
+            return prependUserToList(userService, memberList);
+        } else if (groupModelData.isMember()) {
+            // If the user is not the creator but a member, we prepend the creator and the user to
+            // the list
+            memberList = prependCreatorToList(
+                contactModelRepository,
+                groupModelData.groupIdentity.getCreatorIdentity(),
+                memberList,
+                contactNameFormat
+            );
+            return prependUserToList(userService, memberList);
+        } else {
+            // If the user is not the creator and not a member, we prepend the creator to the list.
+            return prependCreatorToList(
+                contactModelRepository,
+                groupModelData.groupIdentity.getCreatorIdentity(),
+                memberList,
+                contactNameFormat
+            );
         }
+    }
 
+    @NonNull
+    private static String prependUserToList(@NonNull UserService userService, @NonNull String memberList) {
+        @NonNull String userName = userService.getDisplayName();
         if (!memberList.isBlank()) {
-            return memberList;
+            return userName + ", " + memberList;
+        } else {
+            return userName;
         }
+    }
 
-        // Use group identity if there are no members
-        return groupModelData.groupIdentity.getGroupIdHexString();
+    @NonNull
+    private static String prependCreatorToList(
+        @NonNull ContactModelRepository contactModelRepository,
+        @NonNull String creatorIdentity,
+        @NonNull String memberList,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
+        ch.threema.data.models.ContactModel creatorContactModel = contactModelRepository.getByIdentity(creatorIdentity);
+        String creatorName = creatorContactModel != null
+            ? getContactDisplayName(creatorContactModel, contactNameFormat)
+            : creatorIdentity;
+        if (!memberList.isBlank()) {
+            return creatorName + ", " + memberList;
+        } else {
+            return creatorName;
+        }
     }
 
     /**
      * Return the display name for a group.
+     * <br>
+     * <br>
+     * Deprecated: See {@code GetGroupDisplayNameUseCase}
      */
-    public static String getDisplayName(GroupModel groupModel, GroupService groupService) {
+    @Nullable
+    @Deprecated
+    public static String getGroupDisplayName(
+        @NonNull GroupModelOld groupModel,
+        @NonNull GroupService groupService,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
         if (groupModel.getName() != null && !groupModel.getName().isEmpty()) {
             return groupModel.getName();
         }
 
-        //list members
+        // list members
         StringBuilder name = new StringBuilder();
         for (ContactModel contactModel : groupService.getMembers(groupModel)) {
             if (name.length() > 0) {
                 name.append(", ");
             }
-            name.append(NameUtil.getDisplayName(contactModel));
+            name.append(NameUtil.getContactDisplayName(contactModel, contactNameFormat));
         }
 
         if (name.length() > 0) {
@@ -110,9 +151,15 @@ public class NameUtil {
     /**
      * Return the display name for a distribution list.
      */
-    public static String getDisplayName(DistributionListModel distributionListModel, DistributionListService distributionListService) {
-        if (!TestUtil.isEmptyOrNull(distributionListModel.getName()) || distributionListService == null) {
-            return distributionListModel.getName();
+    @NonNull
+    public static String getDistributionListDisplayName(
+        @NonNull DistributionListModel distributionListModel,
+        @NonNull DistributionListService distributionListService,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
+        final @Nullable String distributionListModelName = distributionListModel.getName();
+        if (distributionListModelName != null && !distributionListModelName.isEmpty()) {
+            return distributionListModelName;
         }
 
         StringBuilder name = new StringBuilder();
@@ -120,7 +167,7 @@ public class NameUtil {
             if (name.length() > 0) {
                 name.append(", ");
             }
-            name.append(NameUtil.getDisplayName(contactModel));
+            name.append(NameUtil.getContactDisplayName(contactModel, contactNameFormat));
         }
 
         if (name.length() > 0) {
@@ -130,65 +177,81 @@ public class NameUtil {
         return String.valueOf(distributionListModel.getId());
     }
 
-    public static String getDisplayNameOrNickname(Context context, AbstractMessageModel messageModel, ContactService contactService) {
-        if (TestUtil.required(context, messageModel)) {
-            ContactModel model;
-
-            if (messageModel.isOutbox()) {
-                model = contactService.getMe();
-            } else {
-                model = contactService.getByIdentity(messageModel.getIdentity());
-            }
-
-            return getDisplayNameOrNickname(model, true);
+    @Nullable
+    public static String getContactDisplayNameOrNickname(
+        @Nullable Context context,
+        @Nullable AbstractMessageModel messageModel,
+        @NonNull ContactService contactService,
+        @NonNull UserService userService,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
+        if (context == null || messageModel == null) {
+            return null;
         }
-        return null;
+        if (messageModel.isOutbox()) {
+            return userService.getDisplayName();
+        } else {
+            return getContactDisplayNameOrNickname(
+                contactService.getByIdentity(messageModel.getIdentity()),
+                true,
+                contactNameFormat
+            );
+        }
     }
 
-    public static String getShortName(String identity, ContactService contactService) {
-        String shortname = null;
-
+    @NonNull
+    public static String getShortName(
+        @NonNull String identity,
+        @Nullable ContactService contactService,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
+        @Nullable String shortname = null;
         if (identity.equals(ContactService.ALL_USERS_PLACEHOLDER_ID)) {
             return ThreemaApplication.getAppContext().getString(R.string.all);
         }
-
         if (contactService != null) {
-            shortname = NameUtil.getShortName(contactService.getByIdentity(identity));
+            shortname = NameUtil.getShortName(contactService.getByIdentity(identity), contactNameFormat);
         }
         return shortname != null ? shortname : identity;
     }
 
     @Nullable
-    public static String getShortName(ContactModel model) {
-        if (model != null) {
-            if (TestUtil.isEmptyOrNull(model.getFirstName())) {
-                if (TestUtil.isEmptyOrNull(model.getLastName())) {
-                    return getFallbackName(model);
-                } else {
-                    return getDisplayName(model);
-                }
-            } else {
-                return model.getFirstName();
-            }
+    public static String getShortName(
+        @Nullable ContactModel contactModel,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
+        if (contactModel == null) {
+            return null;
         }
-        return null;
+        if (TestUtil.isEmptyOrNull(contactModel.getFirstName())) {
+            if (TestUtil.isEmptyOrNull(contactModel.getLastName())) {
+                return getFallbackName(contactModel);
+            } else {
+                return getContactDisplayName(contactModel, contactNameFormat);
+            }
+        } else {
+            return contactModel.getFirstName();
+        }
     }
 
     @Nullable
-    public static String getShortName(Context context, AbstractMessageModel messageModel, ContactService contactService) {
-        if (TestUtil.required(context, messageModel)) {
-            if (messageModel.isOutbox()) {
-                return context.getString(R.string.me_myself_and_i);
-            } else {
-                return getShortName(contactService.getByIdentity(messageModel.getIdentity()));
-            }
+    public static String getShortName(
+        @Nullable Context context,
+        @Nullable AbstractMessageModel messageModel,
+        @NonNull ContactService contactService,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
+        if (context == null || messageModel == null) {
+            return null;
         }
-        return null;
+        return messageModel.isOutbox()
+            ? context.getString(R.string.me_myself_and_i)
+            : getShortName(contactService.getByIdentity(messageModel.getIdentity()), contactNameFormat);
     }
 
-    private static String getFallbackName(ContactModel model) {
-        if (!TestUtil.isEmptyOrNull(model.getPublicNickName()) &&
-            !model.getPublicNickName().equals(model.getIdentity())) {
+    @NonNull
+    private static String getFallbackName(@NonNull ContactModel model) {
+        if (!TestUtil.isEmptyOrNull(model.getPublicNickName()) && !model.getPublicNickName().equals(model.getIdentity())) {
             return "~" + model.getPublicNickName();
         } else {
             return model.getIdentity();
@@ -199,7 +262,10 @@ public class NameUtil {
      * Return the display name for a contact.
      */
     @NonNull
-    public static String getDisplayName(@Nullable ContactModel contactModel) {
+    public static String getContactDisplayName(
+        @Nullable ContactModel contactModel,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
         if (contactModel == null) {
             return "undefined";
         }
@@ -208,14 +274,17 @@ public class NameUtil {
             return "invalid contact";
         }
 
-        String firstName = contactModel.getFirstName();
-        String lastName = contactModel.getLastName();
+        final @Nullable String firstName = contactModel.getFirstName();
+        final @Nullable String lastName = contactModel.getLastName();
 
-        return getDisplayName(contactModel.getIdentity(), firstName, lastName);
+        return getContactDisplayName(contactModel.getIdentity(), firstName, lastName, contactNameFormat);
     }
 
     @NonNull
-    public static String getDisplayName(@Nullable ch.threema.data.models.ContactModel contactModel) {
+    public static String getContactDisplayName(
+        @Nullable ch.threema.data.models.ContactModel contactModel,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
         if (contactModel == null) {
             return "undefined";
         }
@@ -229,71 +298,80 @@ public class NameUtil {
             return "undefined";
         }
 
-        return getDisplayName(data.identity, data.firstName, data.lastName);
+        return getContactDisplayName(data.identity, data.firstName, data.lastName, contactNameFormat);
     }
 
-    public static String getDisplayName(@NonNull String identity, @Nullable String firstName, @Nullable String lastName) {
-        if (TestUtil.isEmptyOrNull(firstName, lastName)) {
+    @NonNull
+    public static String getContactDisplayName(
+        @NonNull String identity,
+        @Nullable String firstName,
+        @Nullable String lastName,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
+        if ((firstName == null || firstName.isEmpty()) && (lastName == null || lastName.isEmpty())) {
             return identity;
         }
 
-        String c = "";
+        @NonNull String displayName = "";
 
-        PreferenceService preferenceService = NameUtil.getPreferenceService();
-        if (preferenceService == null || preferenceService.isContactFormatFirstNameLastName()) {
+        if (contactNameFormat == ContactNameFormat.FIRSTNAME_LASTNAME) {
             if (firstName != null) {
-                c += firstName + " ";
+                displayName += firstName + " ";
             }
-
             if (lastName != null) {
-                c += lastName;
+                displayName += lastName;
             }
-        } else {
+        } else if (contactNameFormat == ContactNameFormat.LASTNAME_FIRSTNAME) {
             if (lastName != null) {
-                c += lastName + " ";
+                displayName += lastName + " ";
             }
-
             if (firstName != null) {
-                c += firstName;
+                displayName += firstName;
             }
         }
 
-        c = c.trim();
-
-        if (TestUtil.isEmptyOrNull(c)) {
-            c = identity.trim();
-        }
-
-        return c;
+        return displayName.trim();
     }
 
     /**
      * Return the display name for a contact, or fall back to the nickname.
      */
     @NonNull
-    public static String getDisplayNameOrNickname(@Nullable ContactModel contactModel, boolean withPrefix) {
-        if (contactModel == null) return "";
-
-        String displayName = NameUtil.getDisplayName(contactModel);
+    public static String getContactDisplayNameOrNickname(
+        @Nullable ContactModel contactModel,
+        boolean nicknameWithPrefix,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
+        if (contactModel == null) {
+            return "";
+        }
+        String displayName = NameUtil.getContactDisplayName(contactModel, contactNameFormat);
         String nickName = contactModel.getPublicNickName();
-
         if (
             displayName.equals(contactModel.getIdentity()) &&
                 nickName != null &&
                 !nickName.isEmpty() &&
                 !displayName.equals(nickName)) {
-            return withPrefix ? "~" + nickName : nickName;
+            return nicknameWithPrefix ? "~" + nickName : nickName;
         } else {
             return displayName;
         }
     }
 
     @NonNull
-    public static String getDisplayNameOrNickname(String identity, ContactService contactService) {
+    public static String getContactDisplayNameOrNickname(
+        @NonNull String identity,
+        @Nullable ContactService contactService,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
         if (contactService == null) {
             return "";
         }
-        String displayName = NameUtil.getDisplayNameOrNickname(contactService.getByIdentity(identity), true);
+        @NonNull String displayName = NameUtil.getContactDisplayNameOrNickname(
+            contactService.getByIdentity(identity),
+            true,
+            contactNameFormat
+        );
         return TextUtils.isEmpty(displayName) ? identity : displayName.substring(0, Math.min(displayName.length(), 24));
     }
 
@@ -301,7 +379,11 @@ public class NameUtil {
      * Return the name used for quotes and mentions.
      */
     @NonNull
-    public static String getQuoteName(@Nullable ContactModel contactModel, @NonNull UserService userService) {
+    public static String getQuoteName(
+        @Nullable ContactModel contactModel,
+        @NonNull UserService userService,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
         if (contactModel == null) {
             return "";
         }
@@ -315,7 +397,7 @@ public class NameUtil {
             }
         }
 
-        return getDisplayNameOrNickname(contactModel, true);
+        return getContactDisplayNameOrNickname(contactModel, true, contactNameFormat);
     }
 
     /**
@@ -324,26 +406,21 @@ public class NameUtil {
      * is returned.
      */
     @NonNull
-    public static String getQuoteName(@Nullable String identity, ContactService contactService, UserService userService) {
+    public static String getQuoteName(
+        @Nullable String identity,
+        @Nullable ContactService contactService,
+        @Nullable UserService userService,
+        @NonNull ContactNameFormat contactNameFormat
+    ) {
         if (contactService == null || userService == null || identity == null) {
-            if (identity != null) {
-                return identity;
-            } else {
-                return "";
-            }
+            return (identity != null) ? identity : "";
         }
-
         if (ContactService.ALL_USERS_PLACEHOLDER_ID.equals(identity)) {
             return ThreemaApplication.getAppContext().getString(R.string.all);
         }
-
-        final ContactModel contactModel = contactService.getByIdentity(identity);
-        String quoteName = getQuoteName(contactModel, userService);
-        if (quoteName.isBlank()) {
-            return identity;
-        } else {
-            return quoteName;
-        }
+        final @Nullable ContactModel contactModel = contactService.getByIdentity(identity);
+        final @NonNull String quoteName = getQuoteName(contactModel, userService, contactNameFormat);
+        return (quoteName.isBlank()) ? identity : quoteName;
     }
 
     /**
@@ -360,7 +437,7 @@ public class NameUtil {
             return new Pair<>("", "");
         }
         final String firstName = parts[0];
-        final String lastName = J8Arrays.stream(parts)
+        final String lastName = Arrays.stream(parts)
             .skip(1)
             .collect(Collectors.joining(" "));
         return new Pair<>(firstName, lastName);

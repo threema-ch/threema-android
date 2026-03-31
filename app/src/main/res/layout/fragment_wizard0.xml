@@ -38,6 +38,8 @@
             android:gravity="center_horizontal"
             android:text="@string/new_wizard_works_like_phone_number" />
 
+        <include layout="@layout/skip_wizard_button" />
+
     </LinearLayout>
 
 </ScrollView>

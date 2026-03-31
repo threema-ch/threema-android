@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.CallSuper;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
@@ -17,7 +16,6 @@ import androidx.preference.PreferenceManager;
 
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
@@ -28,7 +26,7 @@ import java.util.Set;
 import ch.threema.app.R;
 import ch.threema.app.activities.wizard.WizardIntroActivity;
 import ch.threema.app.di.DependencyContainer;
-import ch.threema.app.passphrase.PassphraseUnlockContract;
+import ch.threema.app.startup.AppStartupAware;
 import ch.threema.app.ui.InsetSides;
 import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
@@ -38,11 +36,8 @@ import ch.threema.app.utils.RuntimeUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.protocol.connection.ConnectionState;
 import ch.threema.domain.protocol.connection.ConnectionStateListener;
-import kotlin.Unit;
 
-import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
 import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
-import static ch.threema.app.startup.AppStartupUtilKt.finishAndRestartLaterIfNotReady;
 
 /**
  * Helper class for activities that use the new toolbar
@@ -56,27 +51,6 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
-
-    private final ActivityResultLauncher<Unit> masterKeyUnlockLauncher = registerForActivityResult(
-        PassphraseUnlockContract.INSTANCE,
-        unlocked -> {
-            if (unlocked) {
-                new MaterialAlertDialogBuilder(this)
-                    .setTitle(R.string.master_key_locked)
-                    .setMessage(R.string.master_key_locked_want_exit)
-                    .setPositiveButton(R.string.try_again, (dialog, whichButton) -> launchMasterKeyUnlocker())
-                    .setNegativeButton(R.string.cancel, (dialog, which) -> finish()).show();
-            } else {
-                if (!finishAndRestartLaterIfNotReady(this)) {
-                    recreate();
-                }
-            }
-        }
-    );
-
-    private void launchMasterKeyUnlocker() {
-        masterKeyUnlockLauncher.launch(Unit.INSTANCE);
-    }
 
     @Override
     protected void onResume() {
@@ -97,24 +71,21 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        logger.debug("onCreate");
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         resetKeyboard();
 
         super.onCreate(savedInstanceState);
 
-        if (getMasterKeyManager().isLockedWithPassphrase()) {
-            launchMasterKeyUnlocker();
+        // The license can not be checked if the session scope is not ready, so we potentially skip the check here.
+        // This isn't ideal, but at the latest in the next ThreemaToolbarActivity, another check will be made.
+        if (isSessionScopeReady() && ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
+            startActivity(new Intent(this, EnterSerialActivity.class));
+            finish();
             return;
-        } else {
-            if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
-                startActivity(new Intent(this, EnterSerialActivity.class));
-                finish();
-                return;
-            }
         }
 
-        if (!initActivity(savedInstanceState)) {
+        // TODO(ANDR-4389): Improve app-startup behavior
+        if (!(this instanceof AppStartupAware) && !initActivity(savedInstanceState)) {
             finish();
             return;
         }
@@ -142,8 +113,6 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
      */
     @CallSuper
     protected boolean initActivity(@Nullable Bundle savedInstanceState) {
-        logger.debug("initActivity");
-
         if (!isSessionScopeReady()) {
             return false;
         }
@@ -151,12 +120,14 @@ public abstract class ThreemaToolbarActivity extends ThreemaActivity implements 
         @LayoutRes int layoutResource = getLayoutResource();
 
         if (dependencies.getNotificationPreferenceService().getWizardRunning()) {
-            startActivity(new Intent(this, WizardIntroActivity.class));
+            startActivity(WizardIntroActivity.createIntent(this));
             return false;
         }
 
-        // hide contents in app switcher and inhibit screenshots
-        ConfigUtils.setScreenshotsAllowed(this, dependencies.getPreferenceService(), dependencies.getLockAppService());
+        ConfigUtils.applyScreenshotPolicy(this,
+            dependencies.getSynchronizedSettingsService(),
+            dependencies.getLockAppService()
+        );
 
         if (layoutResource != 0) {
             logger.debug("setContentView");

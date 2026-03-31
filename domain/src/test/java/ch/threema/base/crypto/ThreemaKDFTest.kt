@@ -1,6 +1,7 @@
 package ch.threema.base.crypto
 
 import ch.threema.base.utils.Utils
+import ch.threema.common.emptyByteArray
 import ch.threema.libthreema.blake2bMac256
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -13,7 +14,7 @@ class ThreemaKDFTest {
                 testVector.secretKey,
                 testVector.personal,
                 testVector.salt,
-                byteArrayOf(),
+                emptyByteArray(),
             )
             assertContentEquals(testVector.derived, derived)
         }

@@ -19,6 +19,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 
 private val logger = getThreemaLogger("data.ContactModelRepository")
@@ -36,7 +37,7 @@ class ContactModelRepository(
         // Register an "old" contact listener that updates the "new" models
         ListenerManager.contactListeners.add(
             object : ContactListener {
-                override fun onModified(identity: Identity) {
+                override fun onModified(identity: IdentityString) {
                     synchronized(this@ContactModelRepository) {
                         cache.get(identity)?.refreshFromDb(ContactModelRepositoryToken)
                     }
@@ -66,7 +67,6 @@ class ContactModelRepository(
                         this,
                         coreServiceManager.nonceFactory,
                         createContactLocally,
-                        coreServiceManager.multiDeviceManager,
                     ),
                 ).await()
             } catch (e: TransactionScope.TransactionException) {
@@ -101,7 +101,6 @@ class ContactModelRepository(
                     this,
                     coreServiceManager.nonceFactory,
                     createContactLocally,
-                    coreServiceManager.multiDeviceManager,
                 ).invoke(handle)
             } catch (e: TransactionScope.TransactionException) {
                 logger.error("Could not reflect the contact", e)
@@ -189,8 +188,47 @@ class ContactModelRepository(
      * Return the contact model for the specified identity.
      */
     @Synchronized
-    fun getByIdentity(identity: Identity): ContactModel? = cache.getOrCreate(identity) {
+    fun getByIdentity(identity: IdentityString): ContactModel? = cache.getOrCreate(identity) {
         databaseBackend.getContactByIdentity(identity)?.toModel()
+    }
+
+    @Synchronized
+    fun getByIdentity(identity: Identity): ContactModel? = getByIdentity(identity.value)
+
+    /**
+     * Tries to read the requested contact models from cache first, and adds missing models from database (if existing). If one or all identit(y/ies)
+     * could not be found, there will be no error. In this case the result list will just miss these models.
+     *
+     * **Order:** The result list guarantees to be in the same order as the given set of identities
+     *
+     * **Own user:** Requesting the own users identity will never yield a result for this identity
+     */
+    @Synchronized
+    fun getByIdentities(identities: Set<IdentityString>): List<ContactModel> {
+        // Store results in a map to preserve the input order
+        val resultsMap: MutableMap<IdentityString, ContactModel?> = identities.associateWith { null }.toMutableMap()
+        val cacheMisses = mutableSetOf<IdentityString>()
+        // Try to find all in cache
+        for (identity in identities) {
+            val cachedContactModel: ContactModel? = cache.get(identity)
+            if (cachedContactModel != null) {
+                resultsMap[identity] = cachedContactModel
+            } else {
+                cacheMisses.add(identity)
+            }
+        }
+        // Happy case: All models found in cache
+        if (cacheMisses.isEmpty()) {
+            return resultsMap.values.filterNotNull()
+        }
+        // Search all missing identities in database and add found models to the model cache
+        databaseBackend.getContactsByIdentities(identities = cacheMisses)
+            .map { dbContact -> dbContact.toModel() }
+            .forEach { contactModel ->
+                cache.putIfAbsent(contactModel.identity, contactModel)
+                resultsMap[contactModel.identity] = contactModel
+            }
+        return resultsMap.values.filterNotNull()
     }
 
     /**
@@ -204,10 +242,10 @@ class ContactModelRepository(
     }
 
     @Synchronized
-    fun existsByIdentity(identity: Identity): Boolean =
+    fun existsByIdentity(identity: IdentityString): Boolean =
         (cache.get(identity) ?: databaseBackend.getContactByIdentity(identity)) != null
 
-    private fun notifyDeprecatedListenersOnNew(identity: Identity) {
+    private fun notifyDeprecatedListenersOnNew(identity: IdentityString) {
         ListenerManager.contactListeners.handle { it.onNew(identity) }
     }
 
@@ -215,7 +253,6 @@ class ContactModelRepository(
         identity = this.identity,
         data = ContactModelDataFactory.toDataType(this),
         databaseBackend = databaseBackend,
-        contactModelRepository = this@ContactModelRepository,
         coreServiceManager = coreServiceManager,
     )
 }

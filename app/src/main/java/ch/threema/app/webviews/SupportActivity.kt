@@ -1,6 +1,8 @@
 package ch.threema.app.webviews
 
+import android.content.Context
 import androidx.core.net.toUri
+import ch.threema.android.buildActivityIntent
 import ch.threema.app.R
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.UserService
@@ -37,11 +39,15 @@ class SupportActivity : SimpleWebViewActivity() {
 
     private fun getBaseUrl(): String {
         if (ConfigUtils.isWorkBuild()) {
-            val customSupportUrl = preferenceService.customSupportUrl
-            if (!customSupportUrl.isNullOrEmpty()) {
+            val customSupportUrl = preferenceService.getCustomSupportUrl()
+            if (customSupportUrl != null) {
                 return customSupportUrl
             }
         }
         return getString(R.string.support_url)
+    }
+
+    companion object {
+        fun createIntent(context: Context) = buildActivityIntent<SupportActivity>(context)
     }
 }

@@ -7,16 +7,17 @@ import android.view.View
 import androidx.preference.CheckBoxPreference
 import androidx.preference.DropDownPreference
 import ch.threema.app.R
-import ch.threema.app.ThreemaApplication
 import ch.threema.app.managers.ListenerManager
 import ch.threema.app.preference.service.PreferenceService
-import ch.threema.app.restrictions.AppRestrictionUtil
+import ch.threema.app.preference.service.SynchronizedSettingsService
+import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.app.voip.services.VoipStateService
 import ch.threema.app.voip.util.VoipUtil
 import ch.threema.base.utils.getThreemaLogger
+import org.koin.android.ext.android.inject
 
 private val logger = getThreemaLogger("SettingsCallsFragment")
 
@@ -26,30 +27,21 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
         logScreenVisibility(logger)
     }
 
+    private val groupCallManager: GroupCallManager by inject()
+    private val voipStateService: VoipStateService by inject()
+    private val preferenceService: PreferenceService by inject()
+    private val synchronizedSettingsService: SynchronizedSettingsService by inject()
+    private val appRestrictions: AppRestrictions by inject()
+
     private var fragmentView: View? = null
     private var enableCallReject: CheckBoxPreference? = null
     private lateinit var callEnable: CheckBoxPreference
     private lateinit var groupCallsEnable: CheckBoxPreference
-    private var groupCallManager: GroupCallManager? = null
-    private var voipStateService: VoipStateService? = null
-    private var preferenceService: PreferenceService? = null
 
     override fun initializePreferences() {
         super.initializePreferences()
-
-        try {
-            val serviceManager = ThreemaApplication.requireServiceManager()
-            groupCallManager = serviceManager.groupCallManager
-            voipStateService = serviceManager.voipStateService
-            preferenceService = serviceManager.preferenceService
-        } catch (e: Exception) {
-            logger.error("Could not init dependencies", e)
-        }
-
         initCallPrefListeners()
-
         initWorkRestrictions()
-
         initEnableCallRejectPref()
     }
 
@@ -58,22 +50,17 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
     override fun getPreferenceResource(): Int = R.xml.preference_calls
 
     private fun initCallPrefListeners() {
-        val preferenceService = preferenceService ?: run {
-            logger.error("Cannot initialize preference listeners")
-            return
-        }
-
-        callEnable = getPref(preferenceService.o2oCallPolicySetting.preferenceKey)
+        callEnable = getPref(synchronizedSettingsService.getO2oCallPolicySetting().preferenceKey)
         callEnable.onChange<Boolean> { enabled ->
-            if (!enabled && voipStateService?.callState?.isIdle != true) {
+            if (!enabled && voipStateService.callState?.isIdle != true) {
                 VoipUtil.sendOneToOneCallHangupCommand(requireActivity())
             }
         }
 
-        groupCallsEnable = getPref(preferenceService.groupCallPolicySetting.preferenceKey)
+        groupCallsEnable = getPref(synchronizedSettingsService.getGroupCallPolicySetting().preferenceKey)
         groupCallsEnable.onChange<Boolean> { enabled ->
             if (!enabled) {
-                groupCallManager?.abortCurrentCall()
+                groupCallManager.abortCurrentCall()
             }
             ListenerManager.conversationListeners.handle { it.onModifiedAll() }
         }
@@ -84,17 +71,9 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
             return
         }
 
-        val preferenceService = preferenceService ?: run {
-            logger.error("Cannot init work restrictions as preference service is null")
-            return
-        }
-
-        val disableCalls =
-            AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_calls))
-        var disableVideoCalls =
-            AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_video_calls))
-        var disableGroupCalls =
-            AppRestrictionUtil.getBooleanRestriction(resources.getString(R.string.restriction__disable_group_calls))
+        val disableCalls = appRestrictions.isCallsDisabledOrNull()
+        var disableVideoCalls = appRestrictions.isVideoCallsDisabledOrNull()
+        var disableGroupCalls = appRestrictions.isGroupCallsDisabledOrNull()
 
         if (disableCalls != null) {
             // admin does not want user to tamper with call setting
@@ -107,7 +86,7 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
                 disableGroupCalls = true
             } else {
                 // remove dependency to allow user to manipulate advanced call settings if admin enabled calls
-                val forceTurn: CheckBoxPreference = getPref(preferenceService.o2oCallConnectionPolicySetting.preferenceKey)
+                val forceTurn: CheckBoxPreference = getPref(synchronizedSettingsService.getO2oCallConnectionPolicySetting().preferenceKey)
                 val rejectCalls: CheckBoxPreference =
                     getPref(R.string.preferences__voip_reject_mobile_calls)
 
@@ -116,7 +95,7 @@ class SettingsCallsFragment : ThreemaPreferenceFragment() {
             }
         }
 
-        val videoCallEnable: CheckBoxPreference = getPref(preferenceService.o2oCallVideoPolicySetting.preferenceKey)
+        val videoCallEnable: CheckBoxPreference = getPref(synchronizedSettingsService.getO2oCallVideoPolicySetting().preferenceKey)
         if (disableVideoCalls != null) {
             // admin does not want user to tamper with video call setting
             videoCallEnable.isEnabled = false

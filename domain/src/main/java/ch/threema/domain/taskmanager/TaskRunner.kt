@@ -167,13 +167,17 @@ internal class TaskRunner(
         }
 
         // Acquire the executor semaphore during startup
+        logger.info("Acquiring executor semaphore")
         executorSemaphore.acquire()
+        logger.info("Acquired executor semaphore")
 
         // Stop old executor job in case it has been started while waiting for the executor
         // semaphore
         if (executorJob?.isActive == true) {
             logger.info("Old executor job is still active. Stopping it.")
             stopTaskRunner(null)
+        } else {
+            logger.info("Old executor job already inactive")
         }
 
         this.layer5Codec = layer5Codec
@@ -191,7 +195,7 @@ internal class TaskRunner(
         // Start actually processing the tasks while the executor is active. Do not use the schedule
         // dispatcher. Otherwise multiple tasks can be launched simultaneously.
         executorJob = CoroutineScope(executorCoroutineContext).launch(exceptionHandler) {
-            logger.debug("Executing tasks in coroutine scope {}", this)
+            logger.info("Running tasks")
             while (isActive) {
                 runNextTask()
 

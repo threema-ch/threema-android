@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gallery_background">
@@ -35,29 +36,39 @@
             android:textColor="@android:color/white" />
     </LinearLayout>
 
-    <com.google.android.material.card.MaterialCardView
+    <FrameLayout
         android:id="@+id/caption_container"
-        style="@style/Threema.CardView.MediaViewerCaption"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|center_horizontal"
+        android:layout_gravity="bottom"
         android:paddingHorizontal="@dimen/grid_unit_x2"
+        android:paddingBottom="@dimen/mediaviewer_caption_border_bottom"
         android:visibility="gone"
-        app:contentPaddingBottom="@dimen/mediaviewer_caption_container_padding_vertical"
-        app:contentPaddingTop="@dimen/mediaviewer_caption_container_padding_vertical">
+        tools:visibility="visible">
 
-        <ch.threema.app.emojis.EmojiTextView
-            android:id="@+id/caption"
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Threema.CardView.MediaViewerCaption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:ellipsize="end"
-            android:paddingHorizontal="@dimen/grid_unit_x1"
-            android:text=""
-            android:textColor="@android:color/white"
-            android:textSize="@dimen/mediaviewer_caption_text_size" />
+            android:layout_gravity="center_horizontal">
 
-    </com.google.android.material.card.MaterialCardView>
+            <ch.threema.app.emojis.EmojiTextView
+                android:id="@+id/caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:paddingHorizontal="@dimen/grid_unit_x2"
+                android:paddingVertical="@dimen/mediaviewer_caption_container_padding_vertical"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                android:textColor="?attr/colorOnBackground"
+                tools:text="This is the caption"
+                tools:textColor="@android:color/white" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+
+    </FrameLayout>
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"

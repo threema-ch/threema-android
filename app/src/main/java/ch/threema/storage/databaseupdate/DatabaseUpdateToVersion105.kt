@@ -29,9 +29,5 @@ internal class DatabaseUpdateToVersion105 : DatabaseUpdate {
 
     override fun getDescription() = "empty reaction migration"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 105
-    }
+    override val version = 105
 }

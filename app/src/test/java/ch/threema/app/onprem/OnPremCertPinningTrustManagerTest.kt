@@ -12,6 +12,7 @@ import io.mockk.verify
 import java.security.cert.CertificateException
 import java.security.cert.X509Certificate
 import kotlin.test.Test
+import kotlin.test.assertContains
 import kotlin.test.assertFailsWith
 
 class OnPremCertPinningTrustManagerTest {
@@ -82,7 +83,7 @@ class OnPremCertPinningTrustManagerTest {
     @Test
     fun `delegate's exceptions are propagated for checkServerTrusted`() {
         val delegate = mockk<TrustManagerDelegate> {
-            every { checkServerTrusted(any(), any(), any()) } throws CertificateException()
+            every { checkServerTrusted(any(), any(), any()) } throws OnPremCertificateException("3ma.ch")
         }
         val trustManager = OnPremCertPinningTrustManager(
             getOnPremConfigDomains = mockGetOnPremConfigDomains(),
@@ -90,9 +91,10 @@ class OnPremCertPinningTrustManagerTest {
             delegate = delegate,
         )
 
-        assertFailsWith<CertificateException> {
+        val exception = assertFailsWith<OnPremCertificateException> {
             trustManager.checkServerTrusted(emptyArray<X509Certificate>(), "RSA")
         }
+        assertContains(exception.message, "3ma.ch")
     }
 
     @Test

@@ -1,14 +1,12 @@
 package ch.threema.app.tasks
 
-import ch.threema.app.managers.ServiceManager
 import ch.threema.app.profilepicture.CheckedProfilePicture
 import ch.threema.app.profilepicture.GroupProfilePictureUploader
 import ch.threema.app.profilepicture.GroupProfilePictureUploader.GroupProfilePictureUploadResult
-import ch.threema.app.protocol.ExpectedProfilePictureChange
-import ch.threema.app.protocol.PredefinedMessageIds
+import ch.threema.app.protocolsteps.ExpectedProfilePictureChange
+import ch.threema.app.protocolsteps.PredefinedMessageIds
 import ch.threema.app.services.FileService
 import ch.threema.app.utils.OutgoingCspMessageServices
-import ch.threema.app.voip.groupcall.GroupCallManager
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
@@ -30,6 +28,8 @@ import ch.threema.protobuf.image
 import ch.threema.protobuf.unit
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("ConvertGroupProfilePictureTask")
 
@@ -38,14 +38,13 @@ private val logger = getThreemaLogger("ConvertGroupProfilePictureTask")
  */
 class ConvertGroupProfilePictureTask(
     private val groupIdentity: GroupIdentity,
-    private val fileService: FileService,
-    private val groupProfilePictureUploader: GroupProfilePictureUploader,
-    private val taskManager: TaskManager,
-    private val outgoingCspMessageServices: OutgoingCspMessageServices,
-    private val groupCallManager: GroupCallManager,
-    private val groupModelRepository: GroupModelRepository,
-) : ActiveTask<Unit>, PersistableTask {
-    private val multiDeviceManager = outgoingCspMessageServices.multiDeviceManager
+) : ActiveTask<Unit>, PersistableTask, KoinComponent {
+    private val fileService: FileService by inject()
+    private val groupProfilePictureUploader: GroupProfilePictureUploader by inject()
+    private val taskManager: TaskManager by inject()
+    private val outgoingCspMessageServices: OutgoingCspMessageServices by inject()
+    private val groupModelRepository: GroupModelRepository by inject()
+    private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
 
     override val type = "ConvertGroupProfilePictureTask"
 
@@ -184,11 +183,6 @@ class ConvertGroupProfilePictureTask(
                 removedMembers = emptySet(),
                 groupIdentity = groupModel.groupIdentity,
                 predefinedMessageIds = PredefinedMessageIds.random(),
-                outgoingCspMessageServices = outgoingCspMessageServices,
-                groupCallManager = groupCallManager,
-                fileService = fileService,
-                groupProfilePictureUploader = groupProfilePictureUploader,
-                groupModelRepository = groupModelRepository,
             ),
         )
         logger.info("Scheduled persistent task to run the active group update steps")
@@ -208,30 +202,6 @@ class ConvertGroupProfilePictureTask(
 
     @Serializable
     data class ConvertGroupProfilePictureTaskData(private val groupIdentity: GroupIdentity) : SerializableTaskData {
-        override fun createTask(serviceManager: ServiceManager) = createFromServiceManager(groupIdentity, serviceManager)
-    }
-
-    companion object {
-        fun createFromServiceManager(groupIdentity: GroupIdentity, serviceManager: ServiceManager) = ConvertGroupProfilePictureTask(
-            groupIdentity = groupIdentity,
-            fileService = serviceManager.fileService,
-            groupProfilePictureUploader = serviceManager.groupProfilePictureUploader,
-            taskManager = serviceManager.taskManager,
-            outgoingCspMessageServices = OutgoingCspMessageServices(
-                forwardSecurityMessageProcessor = serviceManager.forwardSecurityMessageProcessor,
-                identityStore = serviceManager.identityStore,
-                userService = serviceManager.userService,
-                contactStore = serviceManager.contactStore,
-                contactService = serviceManager.contactService,
-                contactModelRepository = serviceManager.modelRepositories.contacts,
-                groupService = serviceManager.groupService,
-                nonceFactory = serviceManager.nonceFactory,
-                blockedIdentitiesService = serviceManager.blockedIdentitiesService,
-                preferenceService = serviceManager.preferenceService,
-                multiDeviceManager = serviceManager.multiDeviceManager,
-            ),
-            groupCallManager = serviceManager.groupCallManager,
-            groupModelRepository = serviceManager.modelRepositories.groups,
-        )
+        override fun createTask() = ConvertGroupProfilePictureTask(groupIdentity)
     }
 }

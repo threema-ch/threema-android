@@ -1,10 +1,6 @@
 package ch.threema.localcrypto
 
-import androidx.core.util.AtomicFile
-import ch.threema.android.writeAtomically
 import ch.threema.localcrypto.models.MasterKeyStorageData
-import java.io.DataInputStream
-import java.io.File
 import java.io.IOException
 
 /**
@@ -12,25 +8,12 @@ import java.io.IOException
  * i.e., the file format introduced with the Remote Secrets feature in app version 6.2.0.
  * It follows the specification in "key-storage.proto".
  */
-class Version2MasterKeyFileManager(
-    private val keyFile: File,
-    private val encoder: Version2MasterKeyStorageEncoder,
-    private val decoder: Version2MasterKeyStorageDecoder,
-) {
-    fun keyFileExists() = keyFile.exists()
+interface Version2MasterKeyFileManager {
+    fun keyFileExists(): Boolean
 
     @Throws(IOException::class)
-    fun readKeyFile(): MasterKeyStorageData {
-        val atomicKeyFile = AtomicFile(keyFile)
-        return DataInputStream(atomicKeyFile.openRead()).use { dis ->
-            decoder.decodeOuterKeyStorage(dis)
-        }
-    }
+    fun readKeyFile(): MasterKeyStorageData.Version2
 
     @Throws(IOException::class)
-    fun writeKeyFile(masterKeyStorageData: MasterKeyStorageData.Version2) {
-        keyFile.writeAtomically { outputStream ->
-            encoder.encodeMasterKeyStorageData(masterKeyStorageData).writeTo(outputStream)
-        }
-    }
+    fun writeKeyFile(masterKeyStorageData: MasterKeyStorageData.Version2)
 }

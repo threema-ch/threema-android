@@ -18,6 +18,7 @@ import androidx.core.view.ViewCompat
 import ch.threema.app.R
 import ch.threema.app.cache.ThumbnailCache
 import ch.threema.app.emojis.EmojiMarkupUtil
+import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.FileService
 import ch.threema.app.services.UserService
@@ -25,13 +26,10 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.MessageUtil
 import ch.threema.app.utils.NameUtil
 import ch.threema.app.utils.QuoteUtil
-import ch.threema.base.utils.getThreemaLogger
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.AbstractMessageModel
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputLayout
-
-private val logger = getThreemaLogger("QuotePopup")
 
 @SuppressLint("InflateParams")
 class QuotePopup(
@@ -39,8 +37,10 @@ class QuotePopup(
     private val contactService: ContactService,
     private val userService: UserService,
     private val fileService: FileService,
+    private val preferenceService: PreferenceService,
     private val thumbnailCache: ThumbnailCache<*>,
 ) : MovingPopupWindow(context) {
+
     private val quoteTextView: TextView
     private val quoteIdentityView: TextView
     private val quoteThumbnail: ImageView
@@ -51,15 +51,14 @@ class QuotePopup(
 
     class QuoteInfo {
         var quoteText: String? = null
-        var quoteIdentity: Identity? = null
+        var quoteIdentity: IdentityString? = null
         var messageModel: AbstractMessageModel? = null
     }
 
     val quoteInfo = QuoteInfo()
 
     init {
-        popupLayout = LayoutInflater.from(context)
-            .inflate(R.layout.popup_quote, null, false) as MaterialCardView
+        popupLayout = LayoutInflater.from(context).inflate(R.layout.popup_quote, null, false) as MaterialCardView
         quoteTextView = popupLayout.findViewById(R.id.quote_text_view)
         quoteIdentityView = popupLayout.findViewById(R.id.quote_id_view)
         quoteBar = popupLayout.findViewById(R.id.quote_bar)
@@ -84,8 +83,8 @@ class QuotePopup(
         activity: Activity,
         editText: ComposeEditText,
         textInputLayout: TextInputLayout,
-        messageModel: AbstractMessageModel?,
-        identity: Identity?,
+        messageModel: AbstractMessageModel,
+        identity: IdentityString?,
         barColor: ColorStateList,
         listener: QuotePopupListener?,
     ) {
@@ -118,14 +117,25 @@ class QuotePopup(
                 it.addOnLayoutChangeListener(onLayoutChangeListener)
             }
             adjustCornersToOpenState(textInputLayout, 200)
-        } catch (e: BadTokenException) {
-            //
+        } catch (_: BadTokenException) {
+            // Ignore
         }
         quoteInfo.messageModel = messageModel
-        quoteInfo.quoteText = QuoteUtil.getMessageBody(quoteInfo.messageModel, true)
+        quoteInfo.quoteText = QuoteUtil.getMessageBody(
+            quoteInfo.messageModel?.type,
+            quoteInfo.messageModel?.body,
+            quoteInfo.messageModel?.caption,
+            quoteInfo.messageModel?.isOutbox,
+            true,
+            preferenceService.getContactNameFormat(),
+        )
         quoteInfo.quoteIdentity = identity
-        quoteIdentityView.text =
-            NameUtil.getQuoteName(quoteInfo.quoteIdentity, contactService, userService)
+        quoteIdentityView.text = NameUtil.getQuoteName(
+            quoteInfo.quoteIdentity,
+            contactService,
+            userService,
+            preferenceService.getContactNameFormat(),
+        )
         quoteBar.backgroundTintList = barColor
         quoteTextView.text = EmojiMarkupUtil.getInstance()
             .addTextSpans(activity, quoteInfo.quoteText, quoteTextView, false, false)
@@ -141,10 +151,11 @@ class QuotePopup(
                 quoteThumbnail.setImageBitmap(thumbnail)
                 quoteThumbnail.visibility = View.VISIBLE
             }
-        } catch (ignore: Exception) {
+        } catch (_: Exception) {
+            // Ignore
         }
 
-        val messageViewElement = MessageUtil.getViewElement(context, messageModel)
+        val messageViewElement = MessageUtil.getViewElement(context, messageModel, preferenceService.getContactNameFormat())
         if (messageViewElement.icon != null) {
             quoteTypeImage.setImageResource(messageViewElement.icon)
             quoteTypeImage.visibility = View.VISIBLE

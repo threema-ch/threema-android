@@ -6,7 +6,7 @@ import ch.threema.app.voip.groupcall.sfu.SfuException
 import ch.threema.app.voip.groupcall.sfu.webrtc.ParticipantCallMediaKeyState
 import ch.threema.base.utils.generateRandomProtobufPadding
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.Common
 import ch.threema.protobuf.groupcall.ParticipantToParticipant
 import ch.threema.protobuf.groupcall.ParticipantToSfu
@@ -20,7 +20,7 @@ sealed interface Handshake {
     fun getEnvelopeBytes(): ByteArray
 
     data class Hello(
-        val identity: Identity,
+        val identity: IdentityString,
         val nickname: String,
         val pck: ByteArray,
         val pcck: ByteArray,

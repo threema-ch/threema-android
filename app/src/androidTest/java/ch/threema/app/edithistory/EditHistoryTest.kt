@@ -9,15 +9,20 @@ import ch.threema.app.asynctasks.ContactSyncPolicy
 import ch.threema.app.asynctasks.DeleteContactServices
 import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask
 import ch.threema.app.asynctasks.MarkContactAsDeletedBackgroundTask
+import ch.threema.app.di.injectNonBinding
 import ch.threema.app.groupflows.GroupLeaveIntent
 import ch.threema.app.home.HomeActivity
 import ch.threema.app.processors.MessageProcessorProvider
 import ch.threema.app.services.ContactService
+import ch.threema.app.services.ConversationService
+import ch.threema.app.services.DistributionListService
+import ch.threema.app.services.GroupFlowDispatcher
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.MessageService
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.repositories.ContactModelRepository
+import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.data.storage.EditHistoryDao
 import ch.threema.data.storage.EditHistoryDaoImpl
 import ch.threema.domain.models.MessageId
@@ -29,12 +34,11 @@ import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage
 import ch.threema.domain.protocol.csp.messages.GroupEditMessage
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage
 import ch.threema.domain.protocol.csp.messages.TextMessage
-import ch.threema.storage.DatabaseService
 import ch.threema.storage.factories.GroupMessageModelFactory
 import ch.threema.storage.factories.MessageModelFactory
 import ch.threema.storage.models.AbstractMessageModel
-import ch.threema.storage.models.GroupMessageModel
 import ch.threema.storage.models.MessageModel
+import ch.threema.storage.models.group.GroupMessageModel
 import java.util.Date
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -42,35 +46,40 @@ import kotlin.test.assertNotNull
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.get
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 @DangerousTest
-class EditHistoryTest : MessageProcessorProvider() {
-    private val messageService: MessageService by lazy { serviceManager.messageService }
-    private val contactService: ContactService by lazy { serviceManager.contactService }
-    private val groupService: GroupService by lazy { serviceManager.groupService }
-    private val databaseService: DatabaseService by lazy { serviceManager.databaseService }
-    private val messageModelFactory: MessageModelFactory by lazy { databaseService.messageModelFactory }
-    private val groupMessageModelFactory: GroupMessageModelFactory by lazy { databaseService.groupMessageModelFactory }
-    private val editHistoryDao: EditHistoryDao by lazy { EditHistoryDaoImpl(databaseService) }
-    private val contactModelRepository: ContactModelRepository by lazy { serviceManager.modelRepositories.contacts }
-    private val deleteContactServices: DeleteContactServices by lazy {
-        DeleteContactServices(
-            serviceManager.userService,
-            contactService,
-            serviceManager.conversationService,
-            serviceManager.ringtoneService,
-            serviceManager.conversationCategoryService,
-            serviceManager.profilePicRecipientsService,
-            serviceManager.wallpaperService,
-            serviceManager.fileService,
-            serviceManager.excludedSyncIdentitiesService,
-            serviceManager.dhSessionStore,
-            serviceManager.notificationService,
-            databaseService,
+class EditHistoryTest : MessageProcessorProvider(), KoinComponent {
+    private val groupModelRepository: GroupModelRepository by injectNonBinding()
+    private val groupFlowDispatcher: GroupFlowDispatcher by injectNonBinding()
+    private val conversationService: ConversationService by injectNonBinding()
+    private val distributionListService: DistributionListService by injectNonBinding()
+    private val messageService: MessageService by injectNonBinding()
+    private val contactService: ContactService by injectNonBinding()
+    private val groupService: GroupService by injectNonBinding()
+    private val messageModelFactory: MessageModelFactory by injectNonBinding()
+    private val groupMessageModelFactory: GroupMessageModelFactory by injectNonBinding()
+    private val editHistoryDao: EditHistoryDao
+        get() = EditHistoryDaoImpl(databaseProvider = get())
+    private val contactModelRepository: ContactModelRepository by injectNonBinding()
+    private val deleteContactServices: DeleteContactServices
+        get() = DeleteContactServices(
+            userService = get(),
+            contactService = get(),
+            conversationService = get(),
+            ringtoneService = get(),
+            conversationCategoryService = get(),
+            profilePictureRecipientsService = get(),
+            wallpaperService = get(),
+            fileService = get(),
+            excludedSyncIdentitiesService = get(),
+            dhSessionStore = get(),
+            notificationService = get(),
+            contactModelFactory = get(),
         )
-    }
 
     @Test
     fun testHistoryDeletedOnContactMessageDelete() = runTest {
@@ -279,14 +288,14 @@ class EditHistoryTest : MessageProcessorProvider() {
 
         messageModel.assertHistorySize(1)
 
-        val groupModel = serviceManager.modelRepositories.groups.getByGroupIdentity(
+        val groupModel = groupModelRepository.getByGroupIdentity(
             GroupIdentity(
                 creatorIdentity = groupA.groupCreator.identity,
                 groupId = groupA.apiGroupId.toLong(),
             ),
         )
         assertNotNull(groupModel)
-        serviceManager.groupFlowDispatcher.runLeaveGroupFlow(
+        groupFlowDispatcher.runLeaveGroupFlow(
             intent = GroupLeaveIntent.LEAVE_AND_REMOVE,
             groupModel = groupModel,
         ).await()
@@ -301,10 +310,10 @@ class EditHistoryTest : MessageProcessorProvider() {
         EmptyOrDeleteConversationsAsyncTask(
             mode,
             arrayOf(receiver),
-            serviceManager.conversationService,
-            serviceManager.distributionListService,
-            serviceManager.modelRepositories.groups,
-            serviceManager.groupFlowDispatcher,
+            conversationService,
+            distributionListService,
+            groupModelRepository,
+            groupFlowDispatcher,
             myContact.identity,
             null,
             null,

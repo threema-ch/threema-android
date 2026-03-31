@@ -8,11 +8,13 @@ import androidx.media3.session.MediaController;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import java.lang.ref.WeakReference;
+
 import ch.threema.app.messagereceiver.MessageReceiver;
 import ch.threema.storage.models.AbstractMessageModel;
 
 public interface MessagePlayerService {
-    MessagePlayer createPlayer(AbstractMessageModel m, Activity activity, MessageReceiver<?> messageReceiver, @Nullable ListenableFuture<MediaController> mediaControllerFuture);
+    MessagePlayer createPlayer(AbstractMessageModel m, @Nullable WeakReference<Activity> activityWeakReference, MessageReceiver<?> messageReceiver, @Nullable ListenableFuture<MediaController> mediaControllerFuture);
 
     void release();
 

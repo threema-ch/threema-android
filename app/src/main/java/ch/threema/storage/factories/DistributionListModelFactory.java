@@ -8,91 +8,97 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ch.threema.app.services.DistributionListService;
 import ch.threema.storage.CursorHelper;
-import ch.threema.storage.DatabaseService;
+import ch.threema.storage.DatabaseCreationProvider;
+import ch.threema.storage.DatabaseProvider;
+import ch.threema.storage.DatabaseUtil;
 import ch.threema.storage.QueryBuilder;
 import ch.threema.storage.models.DistributionListModel;
 
 public class DistributionListModelFactory extends ModelFactory {
-    public DistributionListModelFactory(DatabaseService databaseService) {
-        super(databaseService, DistributionListModel.TABLE);
+    public DistributionListModelFactory(DatabaseProvider databaseProvider) {
+        super(databaseProvider, DistributionListModel.TABLE);
     }
 
+    @NonNull
     public List<DistributionListModel> getAll() {
-        return convertList(getReadableDatabase().query(this.getTableName(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            null));
+        return convertList(
+            getReadableDatabase().query(getTableName(), null, null, null, null, null, null)
+        );
     }
 
     public DistributionListModel getById(long id) {
-        return getFirst(
+        return getFirstOrNull(
             DistributionListModel.COLUMN_ID + "=?",
-            new String[]{
-                String.valueOf(id)
-            });
+            String.valueOf(id)
+        );
     }
 
-    private List<DistributionListModel> convert(
-        QueryBuilder queryBuilder,
-        String orderBy) {
-        queryBuilder.setTables(this.getTableName());
-        return convertList(queryBuilder.query(
-            getReadableDatabase(),
-            null,
-            null,
-            null,
-            null,
-            null,
-            orderBy));
+    @NonNull
+    public List<DistributionListModel> getByIds(@NonNull List<Long> ids) {
+        if (ids.isEmpty()) {
+            return new ArrayList<>();
+        }
+        final @NonNull String placeholders = DatabaseUtil.makePlaceholders(ids.size());
+        final @NonNull String[] selectionArgs = DatabaseUtil.convertArguments(ids);
+        final @NonNull String selection = DistributionListModel.COLUMN_ID + " IN (" + placeholders + ")";
+        return convertList(
+            getReadableDatabase().query(getTableName(), null, selection, selectionArgs, null, null, null)
+        );
     }
 
-    private List<DistributionListModel> convertList(Cursor c) {
+    @NonNull
+    private List<DistributionListModel> convert(@NonNull QueryBuilder queryBuilder, @Nullable String orderBy) {
+        queryBuilder.setTables(getTableName());
+        return convertList(
+            queryBuilder.query(getReadableDatabase(), null, null, null, null, null, orderBy)
+        );
+    }
 
-        List<DistributionListModel> result = new ArrayList<>();
-        if (c != null) {
-            try {
-                while (c.moveToNext()) {
-                    result.add(convert(c));
+    @NonNull
+    private List<DistributionListModel> convertList(@Nullable Cursor cursor) {
+        final @NonNull List<DistributionListModel> results = new ArrayList<>();
+        if (cursor == null) {
+            return results;
+        }
+        try (cursor) {
+            while (cursor.moveToNext()) {
+                final @Nullable DistributionListModel distributionListModel = convert(cursor);
+                if (distributionListModel != null) {
+                    results.add(distributionListModel);
                 }
-            } finally {
-                c.close();
             }
         }
-        return result;
+        return results;
     }
 
-    private DistributionListModel convert(Cursor cursor) {
-        if (cursor != null && cursor.getPosition() >= 0) {
-            final DistributionListModel c = new DistributionListModel();
-
-            //convert default
-            new CursorHelper(cursor, getColumnIndexCache()).current(new CursorHelper.Callback() {
-                @Override
-                public boolean next(CursorHelper cursorHelper) {
-                    c
-                        .setId(cursorHelper.getLong(DistributionListModel.COLUMN_ID))
-                        .setName(cursorHelper.getString(DistributionListModel.COLUMN_NAME))
-                        .setCreatedAt(cursorHelper.getDateByString(DistributionListModel.COLUMN_CREATED_AT))
-                        .setLastUpdate(cursorHelper.getDate(DistributionListModel.COLUMN_LAST_UPDATE))
-                        .setArchived(cursorHelper.getBoolean(DistributionListModel.COLUMN_IS_ARCHIVED))
-                        .setAdHocDistributionList(cursorHelper.getBoolean(DistributionListModel.COLUMN_IS_ADHOC_DISTRIBUTION_LIST));
-
-                    return false;
-                }
-            });
-
-            return c;
+    @Nullable
+    private DistributionListModel convert(@Nullable Cursor cursor) {
+        if (cursor == null || cursor.getPosition() < 0) {
+            return null;
         }
+        final @NonNull DistributionListModel distributionListModel = new DistributionListModel();
+        //convert default
+        new CursorHelper(cursor, getColumnIndexCache()).current(
+            (CursorHelper.Callback) cursorHelper -> {
+                distributionListModel
+                    .setId(cursorHelper.getLong(DistributionListModel.COLUMN_ID))
+                    .setName(cursorHelper.getString(DistributionListModel.COLUMN_NAME))
+                    .setCreatedAt(cursorHelper.getDate(DistributionListModel.COLUMN_CREATED_AT))
+                    .setLastUpdate(cursorHelper.getDate(DistributionListModel.COLUMN_LAST_UPDATE))
+                    .setArchived(cursorHelper.getBoolean(DistributionListModel.COLUMN_IS_ARCHIVED))
+                    .setAdHocDistributionList(cursorHelper.getBoolean(DistributionListModel.COLUMN_IS_ADHOC_DISTRIBUTION_LIST));
 
-        return null;
+                return false;
+            }
+        );
+        return distributionListModel;
     }
 
-    public boolean createOrUpdate(DistributionListModel distributionListModel) {
+    public boolean createOrUpdate(@NonNull DistributionListModel distributionListModel) {
         boolean insert = true;
         if (distributionListModel.getId() > 0) {
             Cursor cursor = getReadableDatabase().query(
@@ -107,10 +113,8 @@ public class DistributionListModelFactory extends ModelFactory {
                 null
             );
             if (cursor != null) {
-                try {
+                try (cursor) {
                     insert = !cursor.moveToNext();
-                } finally {
-                    cursor.close();
                 }
             }
         }
@@ -122,14 +126,14 @@ public class DistributionListModelFactory extends ModelFactory {
         }
     }
 
-    private ContentValues buildContentValues(DistributionListModel distributionListModel) {
+    @NonNull
+    private ContentValues buildContentValues(@NonNull DistributionListModel distributionListModel) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(DistributionListModel.COLUMN_NAME, distributionListModel.getName());
-        contentValues.put(DistributionListModel.COLUMN_CREATED_AT, distributionListModel.getCreatedAt() != null ? CursorHelper.dateAsStringFormat.get().format(distributionListModel.getCreatedAt()) : null);
+        contentValues.put(DistributionListModel.COLUMN_CREATED_AT, distributionListModel.getCreatedAt() != null ? distributionListModel.getCreatedAt().getTime() : null);
         contentValues.put(DistributionListModel.COLUMN_LAST_UPDATE, distributionListModel.getLastUpdate() != null ? distributionListModel.getLastUpdate().getTime() : null);
         contentValues.put(DistributionListModel.COLUMN_IS_ARCHIVED, distributionListModel.isArchived());
         contentValues.put(DistributionListModel.COLUMN_IS_ADHOC_DISTRIBUTION_LIST, distributionListModel.isAdHocDistributionList());
-
         return contentValues;
     }
 
@@ -140,7 +144,7 @@ public class DistributionListModelFactory extends ModelFactory {
      * @param distributionListModel the distribution list model that is inserted into the database
      * @return true on success, false otherwise
      */
-    public boolean create(DistributionListModel distributionListModel) {
+    public boolean create(@NonNull DistributionListModel distributionListModel) {
         ContentValues contentValues = buildContentValues(distributionListModel);
 
         long distributionListId = distributionListModel.getId();
@@ -156,56 +160,50 @@ public class DistributionListModelFactory extends ModelFactory {
         return newId > 0;
     }
 
-    public boolean update(DistributionListModel distributionListModel) {
+    public boolean update(@NonNull DistributionListModel distributionListModel) {
         ContentValues contentValues = buildContentValues(distributionListModel);
-        getWritableDatabase().update(this.getTableName(),
+        getWritableDatabase().update(
+            getTableName(),
             contentValues,
             DistributionListModel.COLUMN_ID + "=?",
             new String[]{
                 String.valueOf(distributionListModel.getId())
-            });
+            }
+        );
         return true;
     }
 
-    public int delete(DistributionListModel distributionListModel) {
-        return getWritableDatabase().delete(this.getTableName(),
+    public int delete(@NonNull DistributionListModel distributionListModel) {
+        return getWritableDatabase().delete(
+            getTableName(),
             DistributionListModel.COLUMN_ID + "=?",
             new String[]{
                 String.valueOf(distributionListModel.getId())
-            });
+            }
+        );
     }
 
-    private DistributionListModel getFirst(String selection, String[] selectionArgs) {
-        Cursor cursor = getReadableDatabase().query(
-            this.getTableName(),
-            null,
-            selection,
-            selectionArgs,
-            null,
-            null,
-            null
-        );
-
-        if (cursor != null) {
-            try {
-                if (cursor.moveToFirst()) {
-                    return convert(cursor);
-                }
-            } finally {
-                cursor.close();
+    @Nullable
+    private DistributionListModel getFirstOrNull(@Nullable String selection, @Nullable String... selectionArgs) {
+        final @Nullable Cursor cursor = getReadableDatabase().query(getTableName(), null, selection, selectionArgs, null, null, null);
+        if (cursor == null) {
+            return null;
+        }
+        try (cursor) {
+            if (cursor.moveToFirst()) {
+                return convert(cursor);
+            } else {
+                return null;
             }
         }
-
-        return null;
     }
 
-    public List<DistributionListModel> filter(DistributionListService.DistributionListFilter filter) {
-        QueryBuilder queryBuilder = new QueryBuilder();
-
+    @NonNull
+    public List<DistributionListModel> filter(@Nullable DistributionListService.DistributionListFilter filter) {
         //sort by id!
-        String orderBy = null;
+        @Nullable String orderBy = null;
         // do not show hidden distribution lists by default
-        String where = DistributionListModel.COLUMN_IS_ADHOC_DISTRIBUTION_LIST + " !=1";
+        @Nullable String where = DistributionListModel.COLUMN_IS_ADHOC_DISTRIBUTION_LIST + " !=1";
 
         if (filter != null) {
             if (!filter.sortingByDate()) {
@@ -216,13 +214,11 @@ public class DistributionListModelFactory extends ModelFactory {
             }
         }
 
+        final @NonNull QueryBuilder queryBuilder = new QueryBuilder();
         if (where != null) {
             queryBuilder.appendWhere(where);
         }
-
-        return convert(
-            queryBuilder,
-            orderBy);
+        return convert(queryBuilder, orderBy);
     }
 
     private long getUniqueId() {
@@ -235,7 +231,7 @@ public class DistributionListModelFactory extends ModelFactory {
     }
 
     private boolean doesIdExist(long id) {
-        return getReadableDatabase().query(
+        final @Nullable Cursor cursor = getReadableDatabase().query(
             getTableName(),
             null,
             DistributionListModel.COLUMN_ID + "=?",
@@ -243,13 +239,30 @@ public class DistributionListModelFactory extends ModelFactory {
             null,
             null,
             null,
-            null).getCount() > 0;
+            null
+        );
+        if (cursor == null) {
+            return false;
+        }
+        try (cursor) {
+            return cursor.getCount() > 0;
+        }
     }
 
-    @Override
-    public String[] getStatements() {
-        return new String[]{
-            "CREATE TABLE `distribution_list` (`id` INTEGER PRIMARY KEY AUTOINCREMENT , `name` VARCHAR , `createdAt` VARCHAR, `lastUpdate` INTEGER, `isArchived` TINYINT DEFAULT 0 , `isHidden` TINYINT DEFAULT 0 );"
-        };
+    public static class Creator implements DatabaseCreationProvider {
+        @Override
+        @NonNull
+        public String[] getCreationStatements() {
+            return new String[]{
+                "CREATE TABLE `" + DistributionListModel.TABLE + "` (" +
+                    "`" + DistributionListModel.COLUMN_ID + "` INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    "`" + DistributionListModel.COLUMN_NAME + "` VARCHAR, " +
+                    "`" + DistributionListModel.COLUMN_CREATED_AT + "` BIGINT, " +
+                    "`" + DistributionListModel.COLUMN_LAST_UPDATE + "` INTEGER, " +
+                    "`" + DistributionListModel.COLUMN_IS_ARCHIVED + "` TINYINT DEFAULT 0, " +
+                    "`" + DistributionListModel.COLUMN_IS_ADHOC_DISTRIBUTION_LIST + "` TINYINT DEFAULT 0 " +
+                    ");"
+            };
+        }
     }
 }

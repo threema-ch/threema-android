@@ -1,11 +1,11 @@
 package ch.threema.app.qrcodes
 
 import ch.threema.common.secureContentEquals
-import ch.threema.domain.types.Identity
+import ch.threema.domain.types.IdentityString
 import java.time.Instant
 
 data class ContactUrlResult(
-    val identity: Identity,
+    val identity: IdentityString,
     val publicKey: ByteArray,
     val expiration: Instant?,
 ) {

@@ -14,9 +14,5 @@ internal class DatabaseUpdateToVersion95(
 
     override fun getDescription() = "add editedAt field for distribution messages"
 
-    override fun getVersion() = VERSION
-
-    companion object {
-        const val VERSION = 95
-    }
+    override val version = 95
 }

@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.annotation.AnyThread
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
+import ch.threema.app.R
 import ch.threema.app.voip.groupcall.GroupCallDescription
 import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.app.voip.groupcall.GroupCallThreadUtil
@@ -15,7 +16,7 @@ import ch.threema.app.voip.groupcall.sfu.messages.P2PMessageContent
 import ch.threema.app.voip.groupcall.sfu.webrtc.RemoteCtx
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.storage.models.ContactModel
+import ch.threema.domain.types.Identity
 import java.lang.Runnable
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock
@@ -32,7 +33,7 @@ private val logger = getThreemaLogger("GroupCallControllerImpl")
 internal class GroupCallControllerImpl(
     override val callId: CallId,
     private val onLeave: Runnable,
-    private val me: ContactModel,
+    private val myIdentity: Identity,
 ) : GroupCallController, GroupCall {
     private val confirmCallSignal = CompletableDeferred<Unit>()
     private val descriptionSetSignal = CompletableDeferred<Unit>()
@@ -198,13 +199,13 @@ internal class GroupCallControllerImpl(
         logger.info("Purge call participants")
         GroupCallThreadUtil.assertDispatcherThread()
 
-        if (localParticipant.identity !in groupMembers) {
+        if (localParticipant.identity.value !in groupMembers) {
             logger.info("Not in group anymore. Leave call.")
             leave()
         } else {
             CoroutineScope(Dispatchers.Default).launch {
                 remoteParticipants
-                    .filter { it.identity !in groupMembers }
+                    .filter { it.identity.value !in groupMembers }
                     .forEach {
                         logger.info("Dislodge participant {}", it.id)
                         dislodgedParticipants.emit(it.id)
@@ -297,11 +298,12 @@ internal class GroupCallControllerImpl(
         try {
             descriptionSetSignal.await()
             Joining(
-                this@GroupCallControllerImpl,
-                sfuBaseUrl,
-                context,
-                me,
-                sfuConnection,
+                call = this@GroupCallControllerImpl,
+                sfuBaseUrl = sfuBaseUrl,
+                context = context,
+                myIdentity = myIdentity,
+                myDisplayName = context.getString(R.string.me_myself_and_i),
+                sfuConnection = sfuConnection,
             ).process()
             // This is only reached _after_ the call has been teared down
             callDisposedSignal.complete(Unit)

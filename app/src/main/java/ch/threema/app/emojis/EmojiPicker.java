@@ -16,6 +16,7 @@ import android.widget.RelativeLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -38,7 +39,7 @@ import ch.threema.data.models.EmojiReactionData;
 public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.EmojiSearchListener {
     private static final Logger logger = getThreemaLogger("EmojiPicker");
 
-    private Activity activity;
+    private AppCompatActivity activity;
     private final ArrayList<EmojiPickerListener> emojiPickerListeners = new ArrayList<>();
     private EmojiService emojiService;
 
@@ -88,11 +89,11 @@ public class EmojiPicker extends LinearLayout implements EmojiSearchWidget.Emoji
         this.emojiKeyListener = listener;
     }
 
-    public void init(Activity activity, EmojiService emojiService, boolean isKeyboardAnimated) {
+    public void init(AppCompatActivity activity, EmojiService emojiService, boolean isKeyboardAnimated) {
         init(activity, emojiService, isKeyboardAnimated, null);
     }
 
-    public void init(Activity activity, EmojiService emojiService, boolean isKeyboardAnimated, @Nullable List<EmojiReactionData> emojiReactions) {
+    public void init(AppCompatActivity activity, EmojiService emojiService, boolean isKeyboardAnimated, @Nullable List<EmojiReactionData> emojiReactions) {
         this.activity = activity;
         this.emojiService = emojiService;
         this.isKeyboardAnimated = isKeyboardAnimated;
