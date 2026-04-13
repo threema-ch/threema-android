@@ -1,3 +1,1 @@
-- Technische und visuelle Überarbeitung der Chatübersicht
-- Der Hauptschlüssel wird neu zusätzlich durch das Android Keystore-System geschützt
-- Verbesserungen und Behebung verschiedener Fehler
+- Verbesserung der Bildvorschau in Benachrichtigungen

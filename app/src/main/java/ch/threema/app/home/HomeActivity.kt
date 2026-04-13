@@ -629,7 +629,7 @@ class HomeActivity : ThreemaAppCompatActivity(), SMSVerificationDialogCallback, 
         if (deviceService.isOnline()) {
             RuntimeUtil.runOnWorkerThread(
                 CheckLicenseRoutine(
-                    applicationContext,
+                    this,
                     apiConnector,
                     userService,
                     deviceService,

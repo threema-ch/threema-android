@@ -1,7 +1,8 @@
 package ch.threema.app.licensing;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.ReceiverCallNotAllowedException;
+import androidx.annotation.NonNull;
 
 import com.google.android.vending.licensing.LicenseChecker;
 import com.google.android.vending.licensing.LicenseCheckerCallback;
@@ -20,13 +21,13 @@ public class StoreLicenseCheck {
     private StoreLicenseCheck() {
     }
 
-    public static void checkLicense(Context context, UserService userService) {
-        logger.debug("Checking LVL licence");
+    public static void checkLicense(@NonNull Activity activity, UserService userService) {
+        logger.info("Checking LVL licence");
         final ThreemaLicensePolicy policy = new ThreemaLicensePolicy();
         LicenseCheckerCallback callback = new LicenseCheckerCallback() {
             @Override
             public void allow(int reason) {
-                logger.debug("LVL License OK");
+                logger.info("LVL License OK");
                 userService.setPolicyResponse(
                     policy.getLastResponseData().responseData,
                     policy.getLastResponseData().signature,
@@ -38,7 +39,7 @@ public class StoreLicenseCheck {
             public void dontAllow(int reason) {
                 // 561 == not licensed
                 // 291 == no connection
-                logger.debug("LVL License not allowed (code {})", reason);
+                logger.info("LVL License not allowed (code {})", reason);
                 userService.setPolicyResponse(
                     null,
                     null,
@@ -48,7 +49,7 @@ public class StoreLicenseCheck {
 
             @Override
             public void applicationError(int errorCode) {
-                logger.debug("LVL License check failed errorCode: {}", errorCode);
+                logger.info("LVL License check failed errorCode: {}", errorCode);
                 userService.setPolicyResponse(
                     null,
                     null,
@@ -56,7 +57,7 @@ public class StoreLicenseCheck {
                 );
             }
         };
-        LicenseChecker licenseChecker = new LicenseChecker(context, policy, LICENSE_PUBLIC_KEY);
+        LicenseChecker licenseChecker = new LicenseChecker(activity.getApplicationContext(), policy, LICENSE_PUBLIC_KEY);
         try {
             licenseChecker.checkAccess(callback);
         } catch (ReceiverCallNotAllowedException x) {

@@ -1,9 +1,12 @@
 package ch.threema.app.routines;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.ReceiverCallNotAllowedException;
 
 import org.slf4j.Logger;
+
+import java.lang.ref.WeakReference;
 
 import androidx.annotation.NonNull;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
@@ -17,6 +20,7 @@ import ch.threema.app.services.license.LicenseServiceThreema;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.domain.protocol.api.APIConnector;
 import ch.threema.domain.stores.IdentityStore;
 
@@ -27,7 +31,7 @@ public class CheckLicenseRoutine implements Runnable {
     private static final Logger logger = getThreemaLogger("CheckLicenseRoutine");
 
     @NonNull
-    private final Context context;
+    private final WeakReference<Activity> activityWeakReference;
     @NonNull
     private final APIConnector apiConnector;
     @NonNull
@@ -43,7 +47,7 @@ public class CheckLicenseRoutine implements Runnable {
 
     public CheckLicenseRoutine(
         @NonNull
-        Context context,
+        Activity activity,
         @NonNull
         APIConnector apiConnector,
         @NonNull
@@ -57,7 +61,7 @@ public class CheckLicenseRoutine implements Runnable {
         @NonNull
         AppRestrictions appRestrictions
     ) {
-        this.context = context;
+        this.activityWeakReference = new WeakReference<>(activity);
         this.apiConnector = apiConnector;
         this.userService = userService;
         this.deviceService = deviceService;
@@ -66,36 +70,34 @@ public class CheckLicenseRoutine implements Runnable {
         this.appRestrictions = appRestrictions;
     }
 
-    private void invalidLicense(String message) {
-        try {
-            LocalBroadcastManager.getInstance(this.context).sendBroadcast(IntentDataUtil.createActionIntentLicenseNotAllowed(message));
-        } catch (ReceiverCallNotAllowedException x) {
-            logger.error("Exception", x);
-        }
-    }
-
     @Override
     public void run() {
+        Activity activity = activityWeakReference.get();
+        if (activity == null) {
+            // TODO(ANDR-4545): Report this to sentry
+            logger.error("Could not check license");
+            return;
+        }
         switch (BuildFlavor.getCurrent().getLicenseType()) {
             case GOOGLE:
             case HMS:
-                StoreLicenseCheck.checkLicense(context, userService);
+                StoreLicenseCheck.checkLicense(activity, userService);
                 break;
             case SERIAL:
             case GOOGLE_WORK:
             case HMS_WORK:
             case ONPREM:
-                this.checkSerial();
+                checkSerial(activity.getApplicationContext());
                 break;
         }
     }
 
-    private void checkSerial() {
+    private void checkSerial(@NonNull Context applicationContext) {
         logger.info("Checking serial license");
 
         String error = licenseService.validate(true);
         if (error != null) {
-            invalidLicense(error);
+            invalidLicense(applicationContext, error);
         } else {
             userService.setCredentials(licenseService.loadCredentials());
 
@@ -103,7 +105,7 @@ public class CheckLicenseRoutine implements Runnable {
                 LicenseServiceThreema<?> licenseServiceThreema = (LicenseServiceThreema<?>) licenseService;
                 if (licenseServiceThreema.getUpdateMessage() != null && !licenseServiceThreema.isUpdateMessageShown()) {
                     try {
-                        LocalBroadcastManager.getInstance(this.context).sendBroadcast(
+                        LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(
                             IntentDataUtil.createActionIntentUpdateAvailable(
                                 licenseServiceThreema.getUpdateMessage(),
                                 licenseServiceThreema.getUpdateUrl()
@@ -126,6 +128,14 @@ public class CheckLicenseRoutine implements Runnable {
                     this.appRestrictions
                 )).run();
             }
+        }
+    }
+
+    private void invalidLicense(@NonNull Context applicationContext, String message) {
+        try {
+            LocalBroadcastManager.getInstance(applicationContext).sendBroadcast(IntentDataUtil.createActionIntentLicenseNotAllowed(message));
+        } catch (ReceiverCallNotAllowedException x) {
+            logger.error("Exception", x);
         }
     }
 }

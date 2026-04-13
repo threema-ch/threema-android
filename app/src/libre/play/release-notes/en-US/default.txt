@@ -1,3 +1,1 @@
-- Technical and visual overhaul of the chat overview
-- The master key is now additionally protected by the Android Keystore system
-- Various under-the-hood improvements and bug fixes
+- Improved thumbnails in notifications

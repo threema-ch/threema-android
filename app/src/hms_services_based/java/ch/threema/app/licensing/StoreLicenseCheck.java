@@ -1,14 +1,13 @@
 package ch.threema.app.licensing;
 
 import android.app.Activity;
-import android.content.Context;
+import androidx.annotation.NonNull;
 
 import com.DrmSDK.Drm;
 import com.DrmSDK.DrmCheckCallback;
 
 import org.slf4j.Logger;
 
-import ch.threema.app.routines.CheckLicenseRoutine;
 import ch.threema.app.services.UserService;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
@@ -21,8 +20,8 @@ public class StoreLicenseCheck {
     private StoreLicenseCheck() {
     }
 
-    public static void checkLicense(Context context, UserService userService) {
-        logger.debug("Check HMS license");
+    public static void checkLicense(@NonNull Activity activity, UserService userService) {
+        logger.info("Check HMS license");
         DrmCheckCallback callback = new DrmCheckCallback() {
             @Override
             public void onCheckSuccess(String signData, String signature) {
@@ -36,7 +35,7 @@ public class StoreLicenseCheck {
 
             @Override
             public void onCheckFailed(int errorCode) {
-                logger.debug("HMS License failed errorCode: {}", errorCode);
+                logger.info("HMS License failed errorCode: {}", errorCode);
                 userService.setPolicyResponse(
                     null,
                     null,
@@ -44,6 +43,6 @@ public class StoreLicenseCheck {
                 );
             }
         };
-        Drm.check((Activity) context, context.getPackageName(), HMS_ID, HMS_PUBLIC_KEY, callback);
+        Drm.check(activity, activity.getPackageName(), HMS_ID, HMS_PUBLIC_KEY, callback);
     }
 }

@@ -75,12 +75,14 @@ import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.repositories.ContactModelRepository;
+import ch.threema.domain.protocol.csp.messages.file.FileData;
 import ch.threema.domain.stores.IdentityStore;
 import ch.threema.domain.taskmanager.TriggerSource;
 import ch.threema.localcrypto.exceptions.MasterKeyLockedException;
 import ch.threema.storage.models.AbstractMessageModel;
 import ch.threema.storage.models.ConversationModel;
 import ch.threema.storage.models.DistributionListModel;
+import ch.threema.storage.models.data.MessageContentsType;
 import ch.threema.storage.models.group.GroupModelOld;
 import ch.threema.storage.models.MessageType;
 import ch.threema.storage.models.ServerMessageModel;
@@ -527,8 +529,7 @@ public class GlobalListeners {
                         serviceManager.getConversationService();
                     ConversationModel conversationModel =
                         conversationService.refresh(modifiedMessageModel);
-                    if (conversationModel != null &&
-                        modifiedMessageModel.getType() == MessageType.IMAGE) {
+                    if (conversationModel != null && isImageOrVideoMessage(modifiedMessageModel)) {
                         // Only show a notification if there is a conversation
                         showConversationNotification(modifiedMessageModel, true);
                     }
@@ -536,6 +537,19 @@ public class GlobalListeners {
                     logger.error("Exception", e);
                 }
             }
+        }
+
+        // The following code does not need to be ported to 'develop'
+        private boolean isImageOrVideoMessage(@NonNull AbstractMessageModel message) {
+            var type = message.getType();
+            if (type != MessageType.IMAGE && type != MessageType.VIDEO && type != MessageType.FILE) {
+                return false;
+            }
+            var contentsType = message.getMessageContentsType();
+            if (contentsType != MessageContentsType.IMAGE && contentsType != MessageContentsType.VIDEO) {
+                return false;
+            }
+            return message.getFileData().getRenderingType() == FileData.RENDERING_MEDIA;
         }
 
         @Override
