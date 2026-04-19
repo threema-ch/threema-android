@@ -543,6 +543,11 @@ public class ComposeMessageFragment extends Fragment implements
     private TextView searchCounter;
     private CircularProgressIndicator searchProgress;
     private ImageView searchNextButton, searchPreviousButton;
+    /** True once the message history has finished loading. The search filter is gated on this. */
+    private boolean allMessagesLoaded = false;
+    /** Latest query typed while the history was still loading. Applied once when load finishes. */
+    @Nullable
+    private CharSequence pendingSearchQuery = null;
     private ViewGroup editMessageBubbleContainer;
     private View dimBackground;
     private ComposeView editMessageBubbleComposeView;
@@ -5049,6 +5054,14 @@ public class ComposeMessageFragment extends Fragment implements
         // listener for search bar on top
         @Override
         public boolean onQueryTextChange(String newText) {
+            if (!allMessagesLoaded) {
+                // buffer; filtering a half-loaded list gives wrong results
+                pendingSearchQuery = (newText != null && newText.length() >= MIN_CONSTRAINT_LENGTH) ? newText : null;
+                if (searchProgress != null) {
+                    searchProgress.setVisibility(pendingSearchQuery != null ? View.VISIBLE : View.INVISIBLE);
+                }
+                return true;
+            }
             composeMessageAdapter.getFilter().filter(newText);
             return true;
         }
@@ -5877,12 +5890,6 @@ public class ComposeMessageFragment extends Fragment implements
 
             activity.getMenuInflater().inflate(R.menu.action_compose_message_search, menu);
 
-            final MenuItem item = menu.findItem(R.id.menu_action_search);
-            final View actionView = item.getActionView();
-
-            item.setActionView(R.layout.item_progress);
-            item.expandActionView();
-
             if (bottomPanel != null) {
                 bottomPanel.setVisibility(View.GONE);
             }
@@ -5891,30 +5898,34 @@ public class ComposeMessageFragment extends Fragment implements
             dismissMentionPopup();
             dismissQuotePopup();
 
-            // load all records
+            // configure the search widget synchronously so focus + typing work while
+            // the message list loads in the background
+            final MenuItem searchItem = menu.findItem(R.id.menu_action_search);
+            configureSearchWidget(searchItem);
+
+            // load all records; once they're in, apply any query the user typed during the wait
             new AsyncTask<Void, Void, Void>() {
                 List<AbstractMessageModel> messageModels;
 
                 @Override
                 protected Void doInBackground(Void... params) {
                     messageModels = getAllRecords();
-
                     return null;
                 }
 
                 @Override
                 protected void onPostExecute(Void result) {
                     if (messageModels != null && isAdded()) {
-                        item.collapseActionView();
-                        item.setActionView(actionView);
-                        configureSearchWidget(menu.findItem(R.id.menu_action_search));
-
                         insertToList(messageModels, true, true, true);
                         convListView.setSelection(Integer.MAX_VALUE);
+                        allMessagesLoaded = true;
+                        if (pendingSearchQuery != null) {
+                            composeMessageAdapter.getFilter().filter(pendingSearchQuery);
+                            pendingSearchQuery = null;
+                        }
                     }
                 }
             }.execute();
-
 
             return true;
         }
@@ -5934,6 +5945,8 @@ public class ComposeMessageFragment extends Fragment implements
         public void onDestroyActionMode(ActionMode mode) {
             searchCounter = null;
             searchActionMode = null;
+            allMessagesLoaded = false;
+            pendingSearchQuery = null;
             if (composeMessageAdapter != null) {
                 composeMessageAdapter.clearFilter();
             }
