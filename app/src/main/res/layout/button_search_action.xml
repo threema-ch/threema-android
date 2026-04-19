@@ -26,11 +26,11 @@
         android:id="@+id/next_progress"
         android:layout_width="32dp"
         android:layout_height="?attr/actionBarSize"
-        android:maxHeight="24dp"
-        android:maxWidth="24dp"
         android:layout_gravity="left|center_vertical"
         android:gravity="left|center_vertical"
         android:visibility="gone"
-        android:indeterminate="true" />
+        android:indeterminate="true"
+        app:indicatorSize="24dp"
+        app:trackThickness="2dp" />
 
 </FrameLayout>

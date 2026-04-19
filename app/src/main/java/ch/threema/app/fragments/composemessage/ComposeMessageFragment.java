@@ -543,6 +543,8 @@ public class ComposeMessageFragment extends Fragment implements
     private TextView searchCounter;
     private CircularProgressIndicator searchProgress;
     private ImageView searchNextButton, searchPreviousButton;
+    private volatile boolean isSearchInProgress = false;
+    private int lastSearchResultsSize = 0;
     private ViewGroup editMessageBubbleContainer;
     private View dimBackground;
     private ComposeView editMessageBubbleComposeView;
@@ -3532,17 +3534,14 @@ public class ComposeMessageFragment extends Fragment implements
                     RuntimeUtil.runOnUiThread(() -> {
                         if (searchCounter != null) {
                             try {
+                                lastSearchResultsSize = searchResultsSize;
                                 if (queryLength < MIN_CONSTRAINT_LENGTH && searchResultsSize == 0) {
                                     searchCounter.setText(getString(R.string.min_n_chars, MIN_CONSTRAINT_LENGTH));
-                                    searchCounter.setVisibility(View.VISIBLE);
-                                    searchPreviousButton.setVisibility(View.INVISIBLE);
-                                    searchNextButton.setVisibility(View.INVISIBLE);
                                 } else {
                                     searchCounter.setText(String.format("%d / %d", searchResultsIndex, searchResultsSize));
-                                    searchCounter.setVisibility(View.VISIBLE);
-                                    searchPreviousButton.setVisibility(View.VISIBLE);
-                                    searchNextButton.setVisibility(View.VISIBLE);
                                 }
+                                searchCounter.setVisibility(View.VISIBLE);
+                                updateSearchNavButtonsVisibility();
                             } catch (Exception e) {
                                 //
                             }
@@ -3552,10 +3551,12 @@ public class ComposeMessageFragment extends Fragment implements
 
                 @Override
                 public void onSearchInProgress(boolean inProgress) {
+                    isSearchInProgress = inProgress;
                     RuntimeUtil.runOnUiThread(() -> {
                         if (searchNextButton != null && searchPreviousButton != null) {
                             try {
                                 searchProgress.setVisibility(inProgress ? View.VISIBLE : View.INVISIBLE);
+                                updateSearchNavButtonsVisibility();
                             } catch (Exception e) {
                                 //
                             }
@@ -5832,6 +5833,15 @@ public class ComposeMessageFragment extends Fragment implements
         return this.currentPageReferenceId;
     }
 
+    /** Hides prev/next while a filter runs (the spinner shares their FrameLayout) or when there's nothing to navigate to. */
+    private void updateSearchNavButtonsVisibility() {
+        if (searchPreviousButton != null && searchNextButton != null) {
+            int visibility = !isSearchInProgress && lastSearchResultsSize > 0 ? View.VISIBLE : View.INVISIBLE;
+            searchPreviousButton.setVisibility(visibility);
+            searchNextButton.setVisibility(visibility);
+        }
+    }
+
     private void configureSearchWidget(final MenuItem menuItem) {
         SearchView searchView = (SearchView) menuItem.getActionView();
         if (searchView != null) {
@@ -5848,7 +5858,9 @@ public class ComposeMessageFragment extends Fragment implements
             LinearLayout linearLayoutOfSearchView = (LinearLayout) searchView.getChildAt(0);
             if (linearLayoutOfSearchView != null) {
                 linearLayoutOfSearchView.setGravity(Gravity.CENTER_VERTICAL);
-                linearLayoutOfSearchView.setPadding(0, 0, 0, 0);
+                // 10dp trailing padding so the next-match button sits off the action-bar edge
+                int endPx = (int) (10 * getResources().getDisplayMetrics().density);
+                linearLayoutOfSearchView.setPadding(0, 0, endPx, 0);
 
                 searchCounter = (TextView) layoutInflater.inflate(R.layout.textview_search_action, null);
                 linearLayoutOfSearchView.addView(searchCounter);
@@ -5934,6 +5946,8 @@ public class ComposeMessageFragment extends Fragment implements
         public void onDestroyActionMode(ActionMode mode) {
             searchCounter = null;
             searchActionMode = null;
+            isSearchInProgress = false;
+            lastSearchResultsSize = 0;
             if (composeMessageAdapter != null) {
                 composeMessageAdapter.clearFilter();
             }
