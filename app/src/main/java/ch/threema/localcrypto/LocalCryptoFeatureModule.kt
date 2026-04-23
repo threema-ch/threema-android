@@ -1,16 +1,14 @@
 package ch.threema.localcrypto
 
+import android.content.Context
 import android.os.Build
-import ch.threema.app.BuildFlavor
 import ch.threema.app.di.Qualifiers
 import ch.threema.app.files.AppDirectoryProvider
 import ch.threema.app.onprem.OnPremCertPinning
 import ch.threema.app.restrictions.AppRestrictions
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.domain.libthreema.LibthreemaHttpClient
-import ch.threema.domain.models.WorkClientInfo
 import ch.threema.domain.onprem.OnPremConfigStore
-import java.util.Locale
 import okhttp3.OkHttpClient
 import org.koin.core.module.dsl.factoryOf
 import org.koin.core.module.dsl.singleOf
@@ -45,6 +43,7 @@ val localCryptoFeatureModule = module {
         MasterKeyStorageManager(
             version2KeyFileManager = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 Version2MasterKeyFileManagerImpl(
+                    deletionDirectory = get<Context>().filesDir,
                     keyFile = masterKeyFileProvider.getVersion2KeyStoreProtectedMasterKeyFile(),
                     unencryptedKeyFile = masterKeyFileProvider.getVersion2UnencryptedMasterKeyFile(),
                     encoder = get(),
@@ -83,7 +82,6 @@ val localCryptoFeatureModule = module {
     }
 
     if (ConfigUtils.isOnPremBuild()) {
-        factory<WorkClientInfo> { getWorkClientInfo() }
         factory {
             RemoteSecretClient(
                 clientInfo = get(),
@@ -103,16 +101,3 @@ val localCryptoFeatureModule = module {
 private fun getWorkServerBaseUrl(onPremConfigStore: OnPremConfigStore?): String =
     onPremConfigStore?.get()?.work?.url
         ?: error("cannot monitor remote secret, no stored OPPF found")
-
-private fun getWorkClientInfo(): WorkClientInfo =
-    WorkClientInfo(
-        appVersion = ConfigUtils.getAppVersion(),
-        appLocale = Locale.getDefault().toString(),
-        deviceModel = Build.MODEL,
-        osVersion = Build.VERSION.RELEASE,
-        workFlavor = when {
-            BuildFlavor.current.isOnPrem -> WorkClientInfo.WorkFlavor.ON_PREM
-            BuildFlavor.current.isWork -> WorkClientInfo.WorkFlavor.WORK
-            else -> error("Not a work build")
-        },
-    )

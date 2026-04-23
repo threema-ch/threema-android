@@ -2,12 +2,12 @@
 name = "uniffi-bindgen"
 version = "0.1.0"
 edition = "2024"
-publish = false
 license = "AGPL-3.0-only"
+publish = false
 
 [[bin]]
 name = "uniffi-bindgen"
 path = "uniffi-bindgen.rs"
 
 [dependencies]
-uniffi = { version = "0.30", features = ["cli"] }
+uniffi = { version = "0.31", features = ["cli"] }

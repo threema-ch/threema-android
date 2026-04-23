@@ -13,6 +13,7 @@ import ch.threema.app.services.GroupService
 import ch.threema.app.services.UserService
 import ch.threema.base.crypto.NaCl
 import ch.threema.data.datatypes.AndroidContactLookupInfo
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.ContactModelData.Companion.javaCreate
@@ -44,6 +45,7 @@ import ch.threema.storage.models.group.GroupModelOld
 import io.mockk.every
 import io.mockk.mockk
 import java.math.BigInteger
+import java.time.Instant
 import java.time.ZoneOffset
 import java.util.Calendar
 import java.util.Date
@@ -421,6 +423,7 @@ object TestData {
         activityState: IdentityState = IdentityState.ACTIVE,
         syncState: ContactSyncState = ContactSyncState.INITIAL,
         isArchived: Boolean = false,
+        availabilityStatus: AvailabilityStatus = AvailabilityStatus.None,
         databaseBackendMock: DatabaseBackend = mockk(relaxed = true),
         coreServiceManagerMock: CoreServiceManager = mockk(relaxed = true),
     ): ch.threema.data.models.ContactModel {
@@ -451,6 +454,8 @@ object TestData {
                 jobTitle = null,
                 department = null,
                 notificationTriggerPolicyOverride = null,
+                availabilityStatus = availabilityStatus,
+                workLastFullSyncAt = null,
             ),
             databaseBackend = databaseBackendMock,
             coreServiceManager = coreServiceManagerMock,
@@ -481,6 +486,8 @@ object TestData {
         jobTitle: String? = null,
         department: String? = null,
         notificationTriggerPolicyOverride: Long? = null,
+        availabilityStatus: AvailabilityStatus = AvailabilityStatus.None,
+        workLastFullSyncAt: Instant? = null,
     ) = ContactModelData(
         identity = identity.value,
         publicKey = publicKey,
@@ -505,6 +512,8 @@ object TestData {
         jobTitle = jobTitle,
         department = department,
         notificationTriggerPolicyOverride = notificationTriggerPolicyOverride,
+        availabilityStatus = availabilityStatus,
+        workLastFullSyncAt = workLastFullSyncAt,
     )
 
     fun createGroupModel(

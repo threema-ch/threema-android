@@ -19,7 +19,7 @@ import ch.threema.android.context
 import ch.threema.android.disableEnterTransition
 import ch.threema.app.R
 import ch.threema.app.activities.EnterSerialActivity
-import ch.threema.app.compose.common.buttons.ButtonPrimary
+import ch.threema.app.compose.common.buttons.primary.ButtonPrimary
 import ch.threema.app.compose.common.rememberLinkifyWeb
 import ch.threema.app.compose.preview.PreviewThreemaAll
 import ch.threema.app.compose.theme.ThreemaTheme

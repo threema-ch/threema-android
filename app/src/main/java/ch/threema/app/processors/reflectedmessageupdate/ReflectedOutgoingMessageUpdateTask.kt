@@ -6,14 +6,9 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.CONTACT
-import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.DISTRIBUTION_LIST
-import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.GROUP
-import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.ID_NOT_SET
-import ch.threema.protobuf.d2d.MdD2D.OutgoingMessageUpdate.Update
-import ch.threema.protobuf.d2d.MdD2D.OutgoingMessageUpdate.Update.UpdateCase.SENT
+import ch.threema.protobuf.common.GroupIdentity
+import ch.threema.protobuf.d2d.ConversationId
+import ch.threema.protobuf.d2d.OutgoingMessageUpdate
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageState
 import java.util.Date
@@ -21,7 +16,7 @@ import java.util.Date
 private val logger = getThreemaLogger("ReflectedOutgoingMessageUpdateTask")
 
 class ReflectedOutgoingMessageUpdateTask(
-    private val outgoingMessageUpdate: MdD2D.OutgoingMessageUpdate,
+    private val outgoingMessageUpdate: OutgoingMessageUpdate,
     private val timestamp: ULong,
     serviceManager: ServiceManager,
 ) {
@@ -30,26 +25,26 @@ class ReflectedOutgoingMessageUpdateTask(
     fun run() {
         outgoingMessageUpdate.updatesList.forEach { update ->
             when (update.updateCase) {
-                SENT -> applySentUpdate(update)
+                OutgoingMessageUpdate.Update.UpdateCase.SENT -> applySentUpdate(update)
                 else -> logger.error("Received an unknown outgoing message update '${update.updateCase}'")
             }
         }
     }
 
-    private fun applySentUpdate(update: Update) {
+    private fun applySentUpdate(update: OutgoingMessageUpdate.Update) {
         val conversation = update.conversation
         val messageId = MessageId(update.messageId)
         when (conversation.idCase) {
-            CONTACT -> applyContactMessageSentUpdate(messageId, conversation.contact)
+            ConversationId.IdCase.CONTACT -> applyContactMessageSentUpdate(messageId, conversation.contact)
 
-            GROUP -> applyGroupMessageSentUpdate(messageId, conversation.group)
+            ConversationId.IdCase.GROUP -> applyGroupMessageSentUpdate(messageId, conversation.group)
 
-            DISTRIBUTION_LIST -> updateDistributionListMessageState(
+            ConversationId.IdCase.DISTRIBUTION_LIST -> updateDistributionListMessageState(
                 messageId,
                 conversation.distributionList,
             )
 
-            ID_NOT_SET -> logger.warn("Received outgoing message update where id is not set")
+            ConversationId.IdCase.ID_NOT_SET -> logger.warn("Received outgoing message update where id is not set")
 
             null -> logger.warn("Received outgoing message update where id is null")
         }
@@ -75,7 +70,7 @@ class ReflectedOutgoingMessageUpdateTask(
 
     private fun applyGroupMessageSentUpdate(
         messageId: MessageId,
-        groupIdentity: Common.GroupIdentity,
+        groupIdentity: GroupIdentity,
     ) {
         val messageModel = messageService.getGroupMessageModel(
             messageId,

@@ -52,7 +52,7 @@ import ch.threema.app.activities.ThreemaAppCompatActivity
 import ch.threema.app.compose.common.SpacerHorizontal
 import ch.threema.app.compose.common.SpacerVertical
 import ch.threema.app.compose.common.ThemedText
-import ch.threema.app.compose.common.buttons.ButtonPrimary
+import ch.threema.app.compose.common.buttons.primary.ButtonPrimary
 import ch.threema.app.compose.common.extensions.get
 import ch.threema.app.compose.preview.PreviewThreemaAll
 import ch.threema.app.compose.theme.ThreemaTheme

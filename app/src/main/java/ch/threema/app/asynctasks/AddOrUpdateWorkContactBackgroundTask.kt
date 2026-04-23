@@ -1,12 +1,12 @@
 package ch.threema.app.asynctasks
 
 import androidx.annotation.WorkerThread
-import ch.threema.app.services.license.LicenseService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.executor.BackgroundTask
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -17,10 +17,8 @@ import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
 import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
-import ch.threema.domain.models.UserCredentials
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.domain.protocol.api.APIConnector
 import ch.threema.domain.protocol.api.work.WorkContact
 import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
@@ -34,7 +32,7 @@ private val logger = getThreemaLogger("AddOrUpdateWorkContactBackgroundTask")
  *
  * This task does not do anything if it isn't a work build.
  */
-open class AddOrUpdateWorkContactBackgroundTask(
+class AddOrUpdateWorkContactBackgroundTask(
     /**
      * The work contact information of the contact that will be added or updated.
      */
@@ -57,10 +55,13 @@ open class AddOrUpdateWorkContactBackgroundTask(
     fun runSynchronously(): ContactModel? {
         runBefore()
 
-        runInBackground().let {
-            runAfter(it)
-            return it
-        }
+        runInBackground()
+            .let { contactModel: ContactModel? ->
+                runAfter(
+                    result = contactModel,
+                )
+                return contactModel
+            }
     }
 
     @WorkerThread
@@ -104,7 +105,7 @@ open class AddOrUpdateWorkContactBackgroundTask(
         return runBlocking {
             try {
                 contactModelRepository.createFromLocal(
-                    ContactModelData(
+                    contactModelData = ContactModelData(
                         identity = workContact.threemaId,
                         publicKey = workContact.publicKey,
                         createdAt = now(),
@@ -132,6 +133,8 @@ open class AddOrUpdateWorkContactBackgroundTask(
                         jobTitle = workContact.jobTitle,
                         department = workContact.department,
                         notificationTriggerPolicyOverride = null,
+                        availabilityStatus = workContact.getAvailabilityStatusOrNone(),
+                        workLastFullSyncAt = workContact.workLastFullSyncAt,
                     ),
                 )
             } catch (e: ContactCreateException) {
@@ -141,6 +144,7 @@ open class AddOrUpdateWorkContactBackgroundTask(
         }
     }
 
+    @WorkerThread
     private fun updateContact(contactModel: ContactModel) {
         logger.info("Updating work contact {}", contactModel.identity)
 
@@ -177,75 +181,25 @@ open class AddOrUpdateWorkContactBackgroundTask(
         if (currentContactModelData.verificationLevel == VerificationLevel.UNVERIFIED) {
             contactModel.setVerificationLevelFromLocal(VerificationLevel.SERVER_VERIFIED)
         }
-    }
-}
 
-/**
- * This task fetches the information whether the given identity is a work identity. If it is, then
- * a new work contact is created or the existing contact is updated.
- *
- * This task does not do anything if it is not a work build.
- */
-class AddOrUpdateWorkIdentityBackgroundTask(
-    private val identity: IdentityString,
-    private val myIdentity: IdentityString,
-    private val licenseService: LicenseService<*>,
-    private val apiConnector: APIConnector,
-    private val contactModelRepository: ContactModelRepository,
-) : BackgroundTask<ContactModel?> {
-    /**
-     * Add the work contact if the identity belongs to a work contact.
-     *
-     * @return the newly inserted contact model or null if it could not be inserted
-     */
-    @WorkerThread
-    fun runSynchronously(): ContactModel? {
-        runBefore()
+        // Update the workLastFullSyncAt timestamp
+        workContact.workLastFullSyncAt?.let { workLastFullSyncAt ->
+            if (currentContactModelData.workLastFullSyncAt != workContact.workLastFullSyncAt) {
+                contactModel.setWorkLastFullSyncFromLocal(workLastFullSyncAt)
+            }
+        }
 
-        runInBackground().let {
-            runAfter(it)
-            return it
+        // Update availability status
+        if (ConfigUtils.supportsAvailabilityStatus()) {
+            val workContactAvailabilityStatus = workContact.getAvailabilityStatusOrNone()
+            if (currentContactModelData.availabilityStatus != workContactAvailabilityStatus) {
+                contactModel.setAvailabilityStatusFromLocal(workContactAvailabilityStatus)
+            }
         }
     }
 
-    @WorkerThread
-    override fun runInBackground(): ContactModel? {
-        if (!ConfigUtils.isWorkBuild()) {
-            logger.error("Cannot fetch work contact in non-work builds")
-            return null
-        }
-
-        val credentials = licenseService.loadCredentials()
-
-        if (credentials !is UserCredentials) {
-            logger.error("No user credentials available")
-            return null
-        }
-
-        logger.info("Fetching contact with identity {} from work server", identity)
-
-        val workContact = apiConnector.fetchWorkContacts(
-            credentials.username,
-            credentials.password,
-            arrayOf(identity),
-        ).firstOrNull() ?: run {
-            logger.info("Identity {} is not a work contact", identity)
-            return null
-        }
-
-        if (workContact.threemaId != identity) {
-            logger.error(
-                "Received different identity from server: {} instead of {}",
-                workContact.threemaId,
-                identity,
-            )
-            return null
-        }
-
-        return AddOrUpdateWorkContactBackgroundTask(
-            workContact,
-            myIdentity,
-            contactModelRepository,
-        ).runSynchronously()
-    }
+    private fun WorkContact.getAvailabilityStatusOrNone(): AvailabilityStatus =
+        availability
+            ?.let(AvailabilityStatus::fromProtocolBase64)
+            ?: AvailabilityStatus.None
 }

@@ -11,6 +11,7 @@ import ch.threema.app.tasks.ReflectGroupSyncCreateTask
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.clearDatabaseAndCaches
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
@@ -76,6 +77,8 @@ class CreateGroupFlowTest : GroupFlowTest(), KoinComponent {
         jobTitle = null,
         department = null,
         notificationTriggerPolicyOverride = null,
+        availabilityStatus = AvailabilityStatus.None,
+        workLastFullSyncAt = null,
     )
 
     private lateinit var taskManager: ControlledTaskManager

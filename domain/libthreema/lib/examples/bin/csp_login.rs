@@ -26,10 +26,10 @@ struct CspPingPongCommand {
 }
 
 struct CspProtocolRunner {
-    /// The TCP stream
+    /// The TCP stream.
     stream: TcpStream,
 
-    /// An instance of the [`CspProtocol`] state machine
+    /// An instance of the [`CspProtocol`] state machine.
     protocol: CspProtocol,
 }
 impl CspProtocolRunner {

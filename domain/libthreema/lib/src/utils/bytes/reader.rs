@@ -22,7 +22,7 @@ pub enum ByteReaderError {
         length: usize,
     },
 
-    /// Insufficient remaining bytes left for the desired operation
+    /// Insufficient remaining bytes left for the desired operation.
     #[error("Insufficient bytes left: requested={requested}, remaining={remaining}, offset={offset}")]
     InsufficientRemaining {
         /// Requested amount of bytes to be read.
@@ -33,7 +33,7 @@ pub enum ByteReaderError {
         offset: usize,
     },
 
-    /// The reader was expected to be consumed but has remaining bytes left
+    /// The reader was expected to be consumed but has remaining bytes left.
     #[error("Unexpected remaining bytes left: remaining={remaining}, length={length}")]
     UnexpectedRemaining {
         /// Remaining amount of bytes left to read.
@@ -210,11 +210,11 @@ pub(crate) trait ByteReader {
 #[derive(Clone, Educe)]
 #[educe(Debug)]
 pub(crate) struct EncryptedDataRange<const TAG_LENGTH: usize> {
-    /// Tag for the decryption process
+    /// Tag for the decryption process.
     #[educe(Debug(method(debug_slice_length)))]
     pub(crate) tag: [u8; TAG_LENGTH],
 
-    /// Data range reference
+    /// Data range reference.
     pub(crate) data: Range<usize>,
 }
 
@@ -654,7 +654,7 @@ mod tests {
 
     /// Test byte reading for an implementation of [`ByteReading`].
     ///
-    /// The tests fail if the passed reader does not contain [`DATA`]
+    /// The tests fail if the passed reader does not contain [`DATA`].
     fn test_byte_reader<Reader, Inner>(mut reader: Reader, inner: Inner)
     where
         Reader: ByteReader,

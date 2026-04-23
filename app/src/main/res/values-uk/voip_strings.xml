@@ -53,7 +53,7 @@
     <string name="voip_prefs_video_codec_no_h264hip">Вимкнути H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Програмні кодеки</string>
     <string name="voip_connection_failed">Не вдалося встановити з\'єднання</string>
-    <string name="voip_call_disconnected">Виклик розірвано</string>
+    <string name="voip_call_disconnected">Виклик роз\'єднано</string>
     <string name="prefs_voip_reject_incoming_calls_title">Відхиляти телефонні виклики</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Відхиляти вхідні дзвінки на телефон, коли триває виклик Threema</string>
     <string name="voip_contact_not_found">Контакта Threema за цим номером не знайдено.</string>
@@ -62,9 +62,9 @@
     <string name="voip_peer_video_disabled">Контакт вимкнув відеовиклики.</string>
     <string name="voip_error_processing_call_anser">Під час відповіді на виклик сталася помилка</string>
     <string name="voip_error_peer_connection">Помилка з\'єднання з вузлом</string>
-    <string name="voip_error_determine_common_video_quality_profile">Не вдалось визначити типовий профіль якості відео</string>
-    <string name="voip_audio_focus_lost">Втрачено доступ до відтворення аудіо</string>
-    <string name="voip_could_not_initialize">Не вдалось розпочати виклик</string>
+    <string name="voip_error_determine_common_video_quality_profile">Не вдалося визначити типовий профіль якості відео</string>
+    <string name="voip_audio_focus_lost">Інший додаток відтворює звук</string>
+    <string name="voip_could_not_initialize">Не вдалося почати виклик</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Діагностика WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Скористайтеся цим інструментом, щоб виявити проблеми зі з\'єднанням під час голосового виклику</string>

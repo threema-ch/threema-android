@@ -27,7 +27,7 @@ use crate::{
                 UpdateContactsInstruction, UpdateContactsLoop, UpdateContactsResponse, UpdateContactsTask,
             },
         },
-        message::payload::IncomingMessageWithMetadataBox,
+        message::{codec::CspMessageDecoder as _, payload::IncomingMessageWithMetadataBox},
         reflect::{ReflectFlags, ReflectInstruction, ReflectPayload, ReflectResponse, ReflectSubtask},
     },
     model::{
@@ -43,13 +43,16 @@ use crate::{
 
 /// Instruction for processing an incoming message.
 pub enum IncomingMessageInstruction {
-    /// TODO(LIB-16)
+    /// TODO(LIB-16).
     FetchSender(ContactsLookupInstruction),
-    /// TODO(LIB-16)
+
+    /// TODO(LIB-16).
     CreateContact(CreateContactsInstruction),
-    /// TODO(LIB-16)
+
+    /// TODO(LIB-16).
     UpdateContact(UpdateContactsInstruction),
-    /// TODO(LIB-16)
+
+    /// TODO(LIB-16).
     ReflectMessage(ReflectInstruction),
 }
 
@@ -1228,6 +1231,7 @@ mod tests {
             D2xContextInit,
             contacts::lookup::{CachedContactResult, ContactsLookupSubtask},
             message::{
+                codec::CspMessageEncoder as _,
                 payload::OutgoingMessageWithMetadataBox,
                 task::outgoing::{
                     encode_and_encrypt_message, encode_metadata, encrypt_message_container_in_place,
@@ -1248,10 +1252,7 @@ mod tests {
             },
         },
         protobuf::{self, d2d_sync::contact as protobuf_contact},
-        utils::{
-            bytes::{OwnedVecByteReader, OwnedVecByteWriter},
-            time::utc_now_ms,
-        },
+        utils::{bytes::OwnedVecByteWriter, time::utc_now_ms},
     };
 
     trait TestSender {
@@ -1276,10 +1277,11 @@ mod tests {
                 activity_state: protobuf_contact::ActivityState::Active,
                 feature_mask: FeatureMask(FeatureMask::NONE),
                 sync_state: protobuf_contact::SyncState::Initial,
+                work_last_full_sync_at: None,
+                work_availability_status: None,
                 read_receipt_policy_override: None,
                 typing_indicator_policy_override: None,
                 notification_trigger_policy_override: None,
-                notification_sound_policy_override: None,
                 conversation_category: protobuf::d2d_sync::ConversationCategory::Default,
                 conversation_visibility: protobuf::d2d_sync::ConversationVisibility::Normal,
             }
@@ -1364,7 +1366,7 @@ mod tests {
                     452b9699dafe34d124dfe521a956cce4adf58902a4c7b8bcf3d4548848dd2f1bee",
                 )
                 .unwrap();
-            let message = MessageWithMetadataBox::decode(OwnedVecByteReader::new(message)).unwrap();
+            let message = MessageWithMetadataBox::try_from(message).unwrap();
             StaticMessage {
                 message,
                 expected_id: MessageId::from_hex("89aa9a7eaff77d96").unwrap(),
@@ -1404,7 +1406,7 @@ mod tests {
                     472a656ebd0790620d710593d3598d",
                 )
                 .unwrap();
-            let message = MessageWithMetadataBox::decode(OwnedVecByteReader::new(message)).unwrap();
+            let message = MessageWithMetadataBox::try_from(message).unwrap();
             StaticMessage {
                 message,
                 expected_id: MessageId::from_hex("6d6b2e0a01d31258").unwrap(),
@@ -1977,7 +1979,7 @@ mod tests {
     #[case(None, Some(vec![0x03, 0x03]), DiscardReason::MessageInvalidPkcs7Padding)]
     #[case(None, Some(vec![0x02, 0x02]), DiscardReason::MessageMissingOuterType)]
     #[case(None, Some(vec![0xff, 0x01]), DiscardReason::MessageDisallowedOuterType)]
-    #[case(None, Some(vec![0xfd, 0x01]), DiscardReason::MessageUnknownOuterType)]
+    #[case(None, Some(vec![0x56, 0x01]), DiscardReason::MessageUnknownOuterType)]
     #[case(None, Some(vec![0xa0, 0x01]), DiscardReason::MessageForwardSecurityUnsupported)]
     #[case(None, Some(vec![0x01, 0xc0, 0x01]), DiscardReason::MessageDecodingFailed)]
     fn fetch_sender_invalid_message(

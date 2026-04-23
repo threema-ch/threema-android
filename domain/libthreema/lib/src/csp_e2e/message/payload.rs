@@ -45,7 +45,7 @@ pub(crate) enum IncomingMessagePayloadError {
 #[derive(Educe)]
 #[educe(Debug)]
 pub(crate) struct IncomingMessageWithMetadataBox {
-    /// Raw bytes of the payload
+    /// Raw bytes of the payload.
     #[educe(Debug(method(debug_slice_length)))]
     pub(super) bytes: Vec<u8>,
 
@@ -55,7 +55,7 @@ pub(crate) struct IncomingMessageWithMetadataBox {
     /// The receiver's Threema ID.
     pub(super) receiver_identity: ThreemaId,
 
-    /// The ID of the message
+    /// The ID of the message.
     pub(super) id: MessageId,
 
     /// (Legacy) UNIX timestamp in seconds for when the message has been created.
@@ -302,7 +302,6 @@ mod tests {
         common::{MessageFlags, MessageId, Nonce, ThreemaId},
         csp::payload::MessageWithMetadataBox,
         csp_e2e::message::payload::IncomingMessageWithMetadataBox,
-        utils::bytes::OwnedVecByteReader,
     };
 
     #[test]
@@ -320,7 +319,7 @@ mod tests {
                 42168a5bea525eaef17d3bf13bbd8551ab8c85f5892fa6ba9c32e01343c3bc8ed2ad59f54411de08\
                 9b193dca452b9699dafe34d124dfe521a956cce4adf58902a4c7b8bcf3d4548848dd2f1bee",
         )?;
-        let message = MessageWithMetadataBox::decode(OwnedVecByteReader::new(message))?;
+        let message = MessageWithMetadataBox::try_from(message)?;
         let message = IncomingMessageWithMetadataBox::try_from(message)?;
 
         assert_eq!(message.bytes.len(), 393);

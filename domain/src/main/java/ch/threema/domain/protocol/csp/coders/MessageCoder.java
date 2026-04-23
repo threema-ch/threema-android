@@ -19,7 +19,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ch.threema.base.ThreemaException;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
@@ -68,6 +70,7 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallHangupMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallOfferMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage;
+import ch.threema.domain.protocol.csp.messages.workdelta.WorkSyncDeltaMessage;
 import ch.threema.domain.stores.ContactStore;
 import ch.threema.domain.stores.IdentityStore;
 import ch.threema.protobuf.csp.e2e.MessageMetadata;
@@ -330,7 +333,7 @@ public class MessageCoder {
         }
     }
 
-    private @NonNull AbstractMessage deserializeData(byte[] data, int realDataLength, String fromIdentity, String toIdentity) throws BadMessageException {
+    private @NonNull AbstractMessage deserializeData(@NonNull byte[] data, int realDataLength, String fromIdentity, String toIdentity) throws BadMessageException {
         /* first byte of data is type */
         int type = data[0] & 0xFF;
         AbstractMessage message;
@@ -642,6 +645,11 @@ public class MessageCoder {
 
             case ProtocolDefines.MSGTYPE_GROUP_REACTION: {
                 message = GroupReactionMessage.fromByteArray(data, 1, realDataLength - 1);
+                break;
+            }
+
+            case ProtocolDefines.MSGTYPE_WORK_SYNC_DELTA: {
+                message = WorkSyncDeltaMessage.fromByteArray(data, 1, realDataLength - 1);
                 break;
             }
 

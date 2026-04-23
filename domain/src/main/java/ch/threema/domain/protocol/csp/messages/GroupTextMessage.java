@@ -11,7 +11,8 @@ import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.GroupId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
-import ch.threema.protobuf.d2d.MdD2D;
+import ch.threema.protobuf.d2d.IncomingMessage;
+import ch.threema.protobuf.d2d.OutgoingMessage;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -112,14 +113,14 @@ public class GroupTextMessage extends AbstractGroupMessage {
     }
 
     @NonNull
-    public static GroupTextMessage fromReflected(MdD2D.IncomingMessage message) throws BadMessageException {
+    public static GroupTextMessage fromReflected(IncomingMessage message) throws BadMessageException {
         GroupTextMessage textMessage = fromByteArray(message.getBody().toByteArray());
         textMessage.initializeCommonProperties(message);
         return textMessage;
     }
 
     @NonNull
-    public static GroupTextMessage fromReflected(MdD2D.OutgoingMessage message) throws BadMessageException {
+    public static GroupTextMessage fromReflected(OutgoingMessage message) throws BadMessageException {
         GroupTextMessage textMessage = fromByteArray(message.getBody().toByteArray());
         textMessage.initializeCommonProperties(message);
         return textMessage;

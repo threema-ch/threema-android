@@ -18,7 +18,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import org.koin.core.component.get
 
 class EditHistoryRepositoryTest {
     private lateinit var databaseProvider: TestDatabaseProvider
@@ -39,7 +38,10 @@ class EditHistoryRepositoryTest {
             },
             taskManager = TestTaskManager(UnusedTaskCodec()),
         )
-        editHistoryRepository = ModelRepositories(coreServiceManager, mockk()).editHistory
+        editHistoryRepository = ModelRepositories(
+            coreServiceManager = coreServiceManager,
+            identityProvider = mockk(),
+        ).editHistory
         editHistoryDao = EditHistoryDaoImpl(databaseProvider)
     }
 

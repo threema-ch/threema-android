@@ -7,7 +7,7 @@ import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.blob.BlobLoader
 import ch.threema.domain.protocol.blob.BlobScope
 import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
-import ch.threema.protobuf.Common.Blob
+import ch.threema.protobuf.common.Blob
 import com.google.protobuf.kotlin.isNotEmpty
 import java.net.SocketTimeoutException
 import okhttp3.OkHttpClient

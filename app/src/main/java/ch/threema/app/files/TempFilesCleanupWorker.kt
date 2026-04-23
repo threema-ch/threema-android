@@ -55,7 +55,7 @@ class TempFilesCleanupWorker(
                 } else if (file.isFile) {
                     try {
                         logger.info("Deleting temp file {}", file.path)
-                        file.deleteSecurely()
+                        file.deleteSecurely(applicationContext.filesDir)
                     } catch (e: IOException) {
                         logger.error("Failed to delete temp file", e)
                     }

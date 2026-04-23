@@ -73,6 +73,7 @@
     <string name="preferences__oppf_url" translatable="false">pref_oppf_url</string>
     <string name="preferences__remote_secret_activated" translatable="false">pref_remote_secret_activated</string>
     <string name="preferences__chats_hidden" translatable="false">pref_chats_hidden</string>
+    <string name="preferences__availability_status" translatable="false">pref_availability_status</string>
     <string name="preferences__lock_mechanism" translatable="false">pref_lock_options</string>
     <string name="preferences__lock_ui_switch" translatable="false">pref_lock_ui</string>
     <string name="preferences__image_attach_previews" translatable="false">pref_image_attach_previews</string>

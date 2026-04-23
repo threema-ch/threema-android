@@ -4,7 +4,6 @@ import ch.threema.common.toByteArray
 import ch.threema.common.toHexString
 import ch.threema.domain.protocol.D2mPayloadType
 import ch.threema.domain.protocol.connection.ServerConnectionException
-import ch.threema.protobuf.d2m.MdD2M
 import com.google.protobuf.ByteString
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
@@ -89,7 +88,7 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
         override val type: String = "ClientHello"
 
         override fun toContainer(): D2mContainer {
-            val hello = MdD2M.ClientHello.newBuilder()
+            val hello = ch.threema.protobuf.d2m.ClientHello.newBuilder()
                 .setVersion(version.toInt())
                 .setResponse(ByteString.copyFrom(response))
                 .setDeviceId(deviceId.id.toLong())
@@ -115,7 +114,7 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
         override val type: String = "GetDevicesInfo"
 
         override fun toContainer(): D2mContainer {
-            val getDevicesInfo = MdD2M.GetDevicesInfo.newBuilder().build()
+            val getDevicesInfo = ch.threema.protobuf.d2m.GetDevicesInfo.newBuilder().build()
             return D2mContainer(payloadType, getDevicesInfo.toByteArray())
         }
     }
@@ -126,7 +125,7 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
         override val type: String = "DropDevice"
 
         override fun toContainer(): D2mContainer {
-            val dropDevice = MdD2M.DropDevice.newBuilder()
+            val dropDevice = ch.threema.protobuf.d2m.DropDevice.newBuilder()
                 .setDeviceId(deviceId.id.toLong())
                 .build()
             return D2mContainer(payloadType, dropDevice.toByteArray())
@@ -140,7 +139,7 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
         override val type: String = "BeginTransaction"
 
         override fun toContainer(): D2mContainer {
-            val beginTransaction = MdD2M.BeginTransaction.newBuilder()
+            val beginTransaction = ch.threema.protobuf.d2m.BeginTransaction.newBuilder()
                 .setEncryptedScope(ByteString.copyFrom(encryptedScope))
                 .setTtl(ttl.toInt())
                 .build()
@@ -153,7 +152,7 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
         override val type: String = "SetSharedDeviceData"
 
         override fun toContainer(): D2mContainer {
-            val data = MdD2M.SetSharedDeviceData.newBuilder()
+            val data = ch.threema.protobuf.d2m.SetSharedDeviceData.newBuilder()
                 .setEncryptedSharedDeviceData(ByteString.copyFrom(encryptedSharedDeviceData))
                 .build()
             return D2mContainer(payloadType, data.toByteArray())
@@ -164,7 +163,7 @@ sealed class OutboundD2mMessage(override val payloadType: UByte) :
         override val type: String = "CommitTransaction"
 
         override fun toContainer(): D2mContainer {
-            val commitTransaction = MdD2M.CommitTransaction.newBuilder()
+            val commitTransaction = ch.threema.protobuf.d2m.CommitTransaction.newBuilder()
                 .build()
             return D2mContainer(payloadType, commitTransaction.toByteArray())
         }
@@ -250,7 +249,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) :
                 if (container.payloadType != D2mPayloadType.SERVER_HELLO) {
                     throw D2mProtocolException("Invalid payload type `${container.payloadType}`")
                 }
-                val proto = MdD2M.ServerHello.parseFrom(container.payload)
+                val proto = ch.threema.protobuf.d2m.ServerHello.parseFrom(container.payload)
                 return ServerHello(
                     proto.version.toUInt(),
                     proto.esk.toByteArray(),
@@ -274,13 +273,13 @@ sealed class InboundD2mMessage(override val payloadType: UByte) :
                 if (container.payloadType != D2mPayloadType.SERVER_INFO) {
                     throw D2mProtocolException("Invalid payload type `${container.payloadType}`")
                 }
-                val proto = MdD2M.ServerInfo.parseFrom(container.payload)
+                val proto = ch.threema.protobuf.d2m.ServerInfo.parseFrom(container.payload)
                 return ServerInfo(
-                    proto.currentTime.toULong(),
-                    proto.maxDeviceSlots.toUInt(),
-                    DeviceSlotState.fromProto(proto.deviceSlotStateValue),
-                    proto.encryptedSharedDeviceData.toByteArray(),
-                    proto.reflectionQueueLength.toUInt(),
+                    currentTime = proto.currentTime.toULong(),
+                    maxDeviceSlots = proto.maxDeviceSlots.toUInt(),
+                    deviceSlotState = DeviceSlotState.fromProto(proto.deviceSlotStateValue),
+                    encryptedSharedDeviceData = proto.encryptedSharedDeviceData.toByteArray(),
+                    reflectionQueueLength = proto.reflectionQueueLength.toUInt(),
                 )
             }
         }
@@ -324,14 +323,14 @@ sealed class InboundD2mMessage(override val payloadType: UByte) :
             val deviceSlotExpirationPolicy: DeviceSlotExpirationPolicy,
         ) {
             companion object {
-                fun fromProto(augmentedDeviceInfo: MdD2M.DevicesInfo.AugmentedDeviceInfo): AugmentedDeviceInfo {
+                fun fromProto(augmentedDeviceInfo: ch.threema.protobuf.d2m.DevicesInfo.AugmentedDeviceInfo): AugmentedDeviceInfo {
                     return AugmentedDeviceInfo(
-                        augmentedDeviceInfo.encryptedDeviceInfo.toByteArray(),
-                        augmentedDeviceInfo.connectedSince.takeIf { augmentedDeviceInfo.hasConnectedSince() }
+                        encryptedDeviceInfo = augmentedDeviceInfo.encryptedDeviceInfo.toByteArray(),
+                        connectedSince = augmentedDeviceInfo.connectedSince.takeIf { augmentedDeviceInfo.hasConnectedSince() }
                             ?.toULong(),
-                        augmentedDeviceInfo.lastDisconnectAt.takeIf { augmentedDeviceInfo.hasLastDisconnectAt() }
+                        lastDisconnectAt = augmentedDeviceInfo.lastDisconnectAt.takeIf { augmentedDeviceInfo.hasLastDisconnectAt() }
                             ?.toULong(),
-                        DeviceSlotExpirationPolicy.fromProto(augmentedDeviceInfo.deviceSlotExpirationPolicyValue),
+                        deviceSlotExpirationPolicy = DeviceSlotExpirationPolicy.fromProto(augmentedDeviceInfo.deviceSlotExpirationPolicyValue),
                     )
                 }
             }
@@ -362,7 +361,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) :
                 if (container.payloadType != D2mPayloadType.DEVICES_INFO) {
                     throw D2mProtocolException("Invalid payload type `${container.payloadType}`")
                 }
-                val proto = MdD2M.DevicesInfo.parseFrom(container.payload)
+                val proto = ch.threema.protobuf.d2m.DevicesInfo.parseFrom(container.payload)
                 val info = proto.augmentedDeviceInfoMap.entries.associate {
                     val deviceId = DeviceId(it.key.toULong())
                     deviceId to AugmentedDeviceInfo.fromProto(it.value)
@@ -381,7 +380,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) :
                 if (container.payloadType != D2mPayloadType.DROP_DEVICE_ACK) {
                     throw D2mProtocolException("Invalid payload type `${container.payloadType}`")
                 }
-                val proto = MdD2M.DropDeviceAck.parseFrom(container.payload)
+                val proto = ch.threema.protobuf.d2m.DropDeviceAck.parseFrom(container.payload)
                 return DropDeviceAck(DeviceId(proto.deviceId.toULong()))
             }
         }
@@ -424,7 +423,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) :
                 if (container.payloadType != D2mPayloadType.TRANSACTION_REJECTED) {
                     throw D2mProtocolException("Invalid payload type `${container.payloadType}`")
                 }
-                val proto = MdD2M.TransactionRejected.parseFrom(container.payload)
+                val proto = ch.threema.protobuf.d2m.TransactionRejected.parseFrom(container.payload)
                 return TransactionRejected(
                     DeviceId(proto.deviceId.toULong()),
                     proto.encryptedScope.toByteArray(),
@@ -444,7 +443,7 @@ sealed class InboundD2mMessage(override val payloadType: UByte) :
                 if (container.payloadType != D2mPayloadType.TRANSACTION_ENDED) {
                     throw D2mProtocolException("Invalid payload type `${container.payloadType}`")
                 }
-                val proto = MdD2M.TransactionEnded.parseFrom(container.payload)
+                val proto = ch.threema.protobuf.d2m.TransactionEnded.parseFrom(container.payload)
                 return TransactionEnded(
                     DeviceId(proto.deviceId.toULong()),
                     proto.encryptedScope.toByteArray(),

@@ -204,7 +204,7 @@
     <string name="no_contacts_sync_on"><![CDATA[У вас пакуль няма кантактаў. Сінхранізацыя ўключана, але, відаць, ніхто з вашай адраснай кнігі яшчэ не карыстаецца ${app_name_short} (запрасіце іх!).]]></string>
     <string name="masterkey_title">Увядзіце кодавую фразу</string>
     <string name="masterkey_body">Ваш галоўны ключ абаронены з дапамогай кодавай фразы.  Увядзіце кодавую фразу, каб разблакаваць ключ.</string>
-    <string name="masterkey_unlocking">Разблакір. галоўнага ключа</string>
+    <string name="masterkey_unlocking">Разблакіроўка галоўнага ключа</string>
     <string name="verify_phonecall_text">Запытаць званок</string>
     <string name="prepare_call_message">Калі вы працягнеце, мы паспрабуем адразу ж патэлефанаваць вам. Код пацверджання будзе прачытаны вам двойчы. Звярніце ўвагу, што мы робім толькі адну спробу, таму, калі ласка, будзьце гатовы прыняць званок.</string>
     <string name="enter_code_hint">Увесці код</string>
@@ -235,13 +235,13 @@
     <string name="ringtone_none">Без гуку</string>
     <string name="no_camera_installed">Няма даступнай для выкарыстання камеры</string>
     <string name="save_message_action">Захаваць</string>
-    <string name="masterkey_is_unlocked">Галоўны ключ разблакаваны</string>
+    <string name="masterkey_is_unlocked">Галоўны ключ разблакіраваны</string>
     <string name="file_too_large">Памер файла перавышае дапушчальныя %1$d Мб.</string>
     <string name="enter_serial_body"><![CDATA[Увядзіце ліцэнзійны ключ крамы. Вы можаце <a href="https://shop.threema.ch/">набыць</a> ліцэнзію або <a href="https://shop.threema.ch/retrieve_keys">аднавіць</a> свае ключы, калі ўжо набывалі ліцэнзію раней.]]></string>
     <!-- ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="work_enter_serial_body">Калі ласка, увядзіце ўліковыя дадзеныя ${app_name_short},  дазволеныя вашай кампаніяй.</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="enter_serial_title">Разблакаваць ${app_name}</string>
+    <string name="enter_serial_title">Разблакіраваць ${app_name}</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="serial_required_want_exit">Ліцэнзійны ключ з\'яўляецца несапраўдным. Вы хочаце паспрабаваць яшчэ раз ці выйсці з ${app_name}?</string>
     <!-- Message shown on progress dialog that shows while checking whether the user has a valid license -->
@@ -287,20 +287,20 @@
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="pinentry_enter_pin">Увядзіце Pin-код ${app_name}</string>
     <string name="pinentry_wrong_pin">Няверны PIN-код</string>
-    <string name="prefs_sum_security_pin">Забл. доступ да карыст. інтэрф.</string>
-    <string name="prefs_title_pin_switch">Абарона пр-мы</string>
-    <string name="prefs_title_pin_code">Устанавіць PIN-код</string>
+    <string name="prefs_sum_security_pin">Заблакіраваць доступ да інтэрфейсу</string>
+    <string name="prefs_title_pin_switch">Блакіроўка праграмы</string>
+    <string name="prefs_title_pin_code">Задаць PIN-код</string>
     <string name="prefs_pin_grace">Час да блакіроўкі</string>
     <string name="prefs_sum_pin_grace">Час да актывацыі блакіроўкі экрана</string>
-    <string name="click_here_to_change_pin">PIN-код усталяваны. Націсніце тут, каб змяніць.</string>
+    <string name="click_here_to_change_pin">PIN-код заданы. Націсніце тут, каб змяніць</string>
     <string name="set_pin_menu_title">Устанавіць новы PIN-код</string>
     <string name="set_pin_summary_intro">Абараніце сваю прыватнасць, усталяваўшы PIN-код. Гэты PIN-код можна выкарыстоўваць для блакавання доступу да праграмы па заканчэнні вызначанага часу або для абароны прыватных чатаў.</string>
     <string name="set_pin_again_summary">Увядзіце PIN яшчэ раз</string>
-    <string name="set_pin_hint">Pin-код</string>
+    <string name="set_pin_hint">PIN-код</string>
     <string name="title_addgroup">Новая суполка</string>
     <string name="updating_system">Абнаўленне сістэмы</string>
     <string name="title_select_contacts">Выберыце ўдзельнікаў</string>
-    <string name="pin_invalid_not_set">Няправільны PIN-код.</string>
+    <string name="pin_invalid_not_set">Памылковы PIN-код.</string>
     <string name="prefs_group_notifications">Супольны чат</string>
     <string name="group_select_at_least_two">Каб працягнуць, трэба абраць як мінімум аднаго ўдзельніка</string>
     <string name="group_select_max">Вы не можаце абраць больш за %1$d удзельнікаў суполкі</string>
@@ -393,7 +393,7 @@
     <string name="distribution_list">Спіс рассылкі</string>
     <string name="title_tab_distribution_list">Спісы рассылання</string>
     <string name="no_matching_distribution_lists">Няма адпаведных спісаў рассылкі</string>
-    <string name="is_typing">друкуе…</string>
+    <string name="is_typing">піша…</string>
     <string name="push_not_available_title">Push сэрвіс не даступны</string>
     <string name="push_not_available_text1">Мы не змаглі знайсці службу push на вашай прыладзе, таму што сэрвісы Google Play не ўстаноўлены або састарэлыя.</string>
     <string name="push_not_available_text2">%s будзе імкнуцца ўсталяваць сталае фонавае падлучэнне да сэрвера. Гэтая функцыя можа працаваць са збоямі, калі механізмы аптымізацыі выкарыстання акумулятара на вашай прыладзе перашкаджаюць падключэнню ў фонавым рэжыме.</string>
@@ -509,7 +509,7 @@
     <string name="invalid_zip_restore_failed">Аднавіць не атрымалася.Несапраўдны файл рэзервовай копіі: %1$s</string>
     <string name="revocation_explain">Пароль, які вы тут уводзіце, дазваляе ануляваць ваш ID на старонцы         https://myid.threema.ch/revoke у выпадку яго страты або крадзяжу</string>
     <!-- Empty state text shown on home screen widget when there are no unread messages -->
-    <string name="no_unread_messages">Няма непрачыт. паведамленняў або актывавана блакіроўка PIN</string>
+    <string name="no_unread_messages">Няма непрачытаных паведамленняў</string>
     <string name="send_media">Адпр. мультымед</string>
     <string name="rotate">Паварот</string>
     <string name="remove">Выдаліць</string>
@@ -545,7 +545,7 @@
     <string name="list_theme_light">Светлая</string>
     <string name="list_theme_dark">Цёмная</string>
     <string name="prefs_header_appearance">Выгляд</string>
-    <string name="prefs_sum_passphrase">Патрабаваць кодавую фразу для разблакавання лакальнага шыфравання</string>
+    <string name="prefs_sum_passphrase">Патрабаваць кодавую фразу для разблакіроўкі лакальнага шыфравання</string>
     <string name="prefs_title_masterkey_change_passphrase">Змяніць кодавую фразу</string>
     <string name="storage_total">Месца на ўнутраным сховішчы</string>
     <string name="storage_threema">Выкарыстоўваецца %s</string>
@@ -614,7 +614,7 @@
     <string name="notifications_choose_sound">Выбраць гук</string>
     <string name="confirm_your_pin">Пацвердзіце ваш PIN-код</string>
     <string name="too_many_incorrect_attempts">Перавышана колькасць няўдалых спроб. Паспрабуйце зноў праз %s секунд.</string>
-    <string name="no_lockscreen_set">У сістэме не ўсталявана блакір. экрана.</string>
+    <string name="no_lockscreen_set">Не ўсталявана сістэмная блакіроўка экрана.</string>
     <string name="on">Уключаны</string>
     <string name="off">выключана</string>
     <string name="new_wizard_select_country">Абярыце вашу краіну</string>
@@ -671,7 +671,7 @@
     <string name="new_wizard_info_nickname">Псеўданім выкарыстоўваецца ў push-апавяшчэннях на некаторых прыладах або як дадатковы спосаб ідэнтыфікацыі для карыстальнікаў, якіх няма ў вашай адраснай кнізе.
 
 Рэкамендуем пазначаць толькі імя або псеўданім. Калі вы яго не выбераце, замест псеўданіма будзе выкарыстоўвацца ваш ${app_name_short} ID.</string>
-    <string name="not_linked">не падлучана</string>
+    <string name="not_linked">не падлучаны</string>
     <string name="linked">Прывязаны</string>
     <string name="pending_sms_verification_notice">Ваш мабільны нумар яшчэ не пацверджаны.</string>
     <string name="no_sms_received">Не атрымалі SMS?</string>
@@ -734,12 +734,12 @@
     <string name="title_show_private_chats">Паказаць прыватныя чаты</string>
     <string name="title_hide_private_chats">Схаваць прыватныя чаты</string>
     <string name="chat_visible">Чат больш не прыватны</string>
-    <string name="prefs_title_locking_mechanism">Тып блакіроўкі</string>
-    <string name="lock_option_none">Не</string>
+    <string name="prefs_title_locking_mechanism">Механізм блакіроўкі</string>
+    <string name="lock_option_none">Няма</string>
     <string name="lock_option_pin">PIN-код</string>
     <string name="lock_option_screenlock">Сістэмная блакіроўка экрана</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
-    <string name="hide_chat_message_explain">${app_name_short} дазваляе абараніць пэўныя чаты з дапамогай PIN-кода і часова схаваць іх са спісу паведамленняў. Для таго, каб выкарыстоўваць прыватныя чаты, калі ласка, усталюйце PIN-код або актывуйце сістэмнае блакаванне экрана (Android 6.0+) у наладах.</string>
+    <string name="hide_chat_message_explain">${app_name_short} дазваляе абараніць пэўныя чаты з дапамогай PIN-кода і часова схаваць іх са спісу паведамленняў. Для таго, каб выкарыстоўваць прыватныя чаты, калі ласка, усталюйце PIN-код або актывуйце сістэмную блакіроўку экрана (Android 6.0+) у наладах.</string>
     <string name="set_lock">Наладзьце зараз</string>
     <string name="prefs_title_access_protection">Абарона доступу</string>
     <string name="private_chat_subject">Прыватны</string>
@@ -907,7 +907,7 @@
     <string name="all">Усе</string>
     <string name="webclient_session_stop_all">Закрыць усё</string>
     <string name="passphrase_service_name">Служба кодавых фраз</string>
-    <string name="passphrase_service_description">Апавяшчэнне пры разблакіроўцы кодавай фразы</string>
+    <string name="passphrase_service_description">Апавяшчэнне пры разблакіраванні кодавай фразы</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="privacy_policy_explain">${app_name} абараняе вашу прыватнасць больш строга, чым любы іншы мэсэнджар. Даведацца больш: %1$s.</string>
     <string name="prefs_title_incognito_keyboard">Запытаць інкогніта-клавіятуру</string>
@@ -1042,11 +1042,11 @@
     <string name="server_hint">Сэрвер</string>
     <!-- Shown in "About" to indicate that the DualLock (a.k.a. "Remote Secret") feature is currently activated -->
     <string name="lock_option_biometric">Біяметрыя</string>
-    <string name="biometric_enter_authentication">Для разблакавання выканайце аўтэнтыфікацыю</string>
+    <string name="biometric_enter_authentication">Для разблакіроўкі выканайце аўтэнтыфікацыю</string>
     <string name="biometric_authentication_successful">Аўтэнтыфікацыя паспяхова пройдзена</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="work_safe_forced_explain">Ваш адміністратар актываваў ${app_name_short} Safe для вашай прылады.</string>
-    <string name="pin_locked_cannot_send">Праграма заблакавана. Адпраўка немагчымая.</string>
+    <string name="pin_locked_cannot_send">Праграма заблакіравана. Адпраўка немагчымая.</string>
     <string name="prefs_summary_hide_screenshots_notice">Заўвага. У мэтах абароны прыватнасці пры актываванай абароне праграмы блакуюцца мініяцюры і здымкі экрана.</string>
     <string name="work_select_categories">Абярыце катэгорыі</string>
     <string name="my_profile">Мой профіль</string>
@@ -1172,7 +1172,7 @@
     <string name="single_ballot_really_delete_text">Вы сапраўды хочаце выдаліць гэтае апытанне?  Вы не зможаце аднавіць галасы.</string>
     <string name="tooltip_voip_other_party_video_on">Суразмоўца пачаў відэазванок. Націсніце тут, каб таксама ўключыць камеру.</string>
     <string name="tooltip_voip_other_party_video_disabled">Суразмоўца не выкарыстоўвае бягучую версію праграмы або не дазваляе відэавыклікі.</string>
-    <string name="biometrics_not_enrolled">Біяметрычныя даныя ў сістэме не рэалізаваны.</string>
+    <string name="biometrics_not_enrolled">Біяметрыя не зарэгістраваная ў сістэме.</string>
     <string name="biometrics_not_avilable">Біяметрыя недаступная ў гэтай сістэме.</string>
     <string name="biometrics_no_permission">Адсутнічае дазвол на доступ да біяметрычных даных ці абсталяванню.</string>
     <string name="verification_settings_desc">Каляровыя кропкі з\'яўляюцца індыкатарам ўзроўню праверкі кантакту.</string>
@@ -1278,7 +1278,7 @@
     <string name="take_me_there">Перайсці…</string>
     <string name="manage">Кіраваць</string>
     <string name="show_public_key">Паказаць адкрыты ключ</string>
-    <string name="public_key_for">Публічны ключ %s</string>
+    <string name="public_key_for">Адкрыты ключ %s</string>
     <string name="copied">Скапіявана</string>
     <string name="no_votes_yet">Галасы яшчэ не былі пададзены.</string>
     <string name="permission_contacts_sync_required">Калі ласка, дазвольце доступ да вашых кантактаў, каб мець магчымасць іх сінхранізаваць.</string>
@@ -1438,7 +1438,7 @@
     <string name="prefs_dynamic_colors">Дынамічны колер</string>
     <string name="prefs_dynamic_colors_sum">Выкарыстоўвайце сістэмныя колеры</string>
     <string name="apply_changes">Прымяніць змены</string>
-    <string name="prefs_threema_work_summary">А ці ведалі вы, што Threema таксама прапануе прафесійнае рашэнне для сувязі для бізнесу? Націсніце тут, каб даведацца больш пра Threema Work.</string>
+    <string name="prefs_threema_work_summary">А ці ведалі вы, што Threema таксама прапануе прафесійнае рашэнне сувязі для бізнесу? Націсніце тут, каб даведацца больш пра Threema Work.</string>
     <string name="notification_channel_voice_message_player">Плэер галасавых паведамленняў</string>
     <string name="voice_message_from">Галасавое паведамленне ад %s</string>
     <string name="vm_fg_service_not_allowed">Памылка прайгравання галасавога паведамлення</string>
@@ -1549,6 +1549,7 @@
     <string name="incoming_calls">Уваходны званкі</string>
     <string name="group_chats">Суполкі</string>
     <string name="edit_history_file_no_caption">Без подпісу</string>
+    <string name="error_reporting_option_never_send">Ніколі</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1601,10 +1602,9 @@
     <string name="work_directory_empty_view_text">Калі ласка, увядзіце як мінімум 3 сімвалы імя, каб пачаць пошук у каталогу карыстальнікаў ${app_name_short} вашай кампаніі.</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">Гэты файл несапраўдны і не можа быць абагулены</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
-    <string name="contact_availability_status_available">Даступна</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <string name="contact_availability_status_unavailable">Недаступна</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e. out-of-office -->
+    <string name="availability_status_unavailable">Недаступна</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently busy-->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
     <!-- Description of the notification channel which is used when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->

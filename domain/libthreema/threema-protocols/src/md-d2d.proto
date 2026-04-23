@@ -11,6 +11,8 @@ syntax = "proto3";
 package d2d;
 
 option java_package = "ch.threema.protobuf.d2d";
+option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\D2d";
 
 import "common.proto";
 import "md-d2d-sync.proto";
@@ -113,6 +115,7 @@ message TransactionScope {
     MDM_PARAMETER_SYNC = 5;
     NEW_DEVICE_SYNC = 6;
     DROP_DEVICE = 7;
+    WORK_SYNC_DELTA = 8;
   }
   Scope scope = 1;
 }
@@ -320,7 +323,7 @@ message IncomingMessageUpdate {
 // User profile synchronisation message.
 message UserProfileSync {
   // Update the user's profile
-  message Update { sync.UserProfile user_profile = 1; }
+  message Update { d2d_sync.UserProfile user_profile = 1; }
 
   // Synchronisation type
   oneof action { Update update = 1; }
@@ -329,10 +332,10 @@ message UserProfileSync {
 // Contact synchronisation message.
 message ContactSync {
   // Create a Threema contact.
-  message Create { sync.Contact contact = 1; }
+  message Create { d2d_sync.Contact contact = 1; }
 
   // Update a Threema contact.
-  message Update { sync.Contact contact = 1; }
+  message Update { d2d_sync.Contact contact = 1; }
 
   // Synchronisation type
   oneof action {
@@ -346,7 +349,7 @@ message ContactSync {
 // Group synchronisation message.
 message GroupSync {
   // Create a group.
-  message Create { sync.Group group = 1; }
+  message Create { d2d_sync.Group group = 1; }
 
   // Update a group.
   //
@@ -365,7 +368,7 @@ message GroupSync {
   // 5. Group `member-changes` by their associated `state-change` and add
   //    appropriate status messages to the associated conversation.
   message Update {
-    sync.Group group = 1;
+    d2d_sync.Group group = 1;
 
     enum MemberStateChange {
       // The member has been added
@@ -400,10 +403,10 @@ message GroupSync {
 // Distribution list synchronisation message.
 message DistributionListSync {
   // Create a distribution list.
-  message Create { sync.DistributionList distribution_list = 1; }
+  message Create { d2d_sync.DistributionList distribution_list = 1; }
 
   // Update a distribution list.
-  message Update { sync.DistributionList distribution_list = 1; }
+  message Update { d2d_sync.DistributionList distribution_list = 1; }
 
   // Delete a distribution list.
   message Delete {
@@ -425,7 +428,7 @@ message DistributionListSync {
 // Settings synchronisation message.
 message SettingsSync {
   // Update settings.
-  message Update { sync.Settings settings = 1; }
+  message Update { d2d_sync.Settings settings = 1; }
 
   // Synchronisation type
   oneof action { Update update = 1; }
@@ -436,7 +439,7 @@ message MdmParameterSync {
   // Update MDM parameters.
   //
   // When receiving this variant, run the _MDM Merge And Apply Steps_.
-  message Update { sync.MdmParameters parameters = 1; }
+  message Update { d2d_sync.MdmParameters parameters = 1; }
 
   // Synchronisation type
   oneof action { Update update = 1; }

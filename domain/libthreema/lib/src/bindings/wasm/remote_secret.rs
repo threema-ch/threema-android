@@ -127,7 +127,7 @@ pub mod setup {
             }
         }
 
-        /// Binding version of a [`RemoteSecretCreateTask::poll`] result
+        /// Binding version of a [`RemoteSecretCreateTask::poll`] result.
         #[derive(Tsify, Serialize)]
         #[serde(
             tag = "type",
@@ -171,13 +171,11 @@ pub mod setup {
             }
 
             /// Binding version of [`create::RemoteSecretCreateTask::poll`].
-            #[allow(clippy::missing_errors_doc, reason = "Binding version")]
             pub fn poll(&mut self) -> RemoteSecretCreatePollResult {
                 self.0.poll().into()
             }
 
             /// Binding version of [`create::RemoteSecretCreateTask::response`].
-            #[allow(clippy::missing_errors_doc, reason = "Binding version")]
             pub fn response(&mut self, response: HttpsResult) -> Option<setup::RemoteSecretSetupError> {
                 self.0.response(response.into()).err()
             }
@@ -281,13 +279,11 @@ pub mod setup {
             }
 
             /// Binding version of [`delete::RemoteSecretDeleteTask::poll`].
-            #[allow(clippy::missing_errors_doc, reason = "Binding version")]
             pub fn poll(&mut self) -> RemoteSecretDeletePollResult {
                 self.0.poll().into()
             }
 
             /// Binding version of [`delete::RemoteSecretDeleteTask::response`].
-            #[allow(clippy::missing_errors_doc, reason = "Binding version")]
             pub fn response(&mut self, response: HttpsResult) -> Option<setup::RemoteSecretSetupError> {
                 self.0.response(response.into()).err()
             }
@@ -354,7 +350,7 @@ pub mod monitor {
     }
 
     /// Binding version of a [`RemoteSecretMonitorProtocol::poll`] result.
-    #[derive(tsify::Tsify, serde::Serialize)]
+    #[derive(tsify::Tsify, Serialize)]
     #[serde(
         tag = "type",
         content = "result",
@@ -428,13 +424,11 @@ pub mod monitor {
         }
 
         /// Binding version of [`monitor::RemoteSecretMonitorProtocol::poll`].
-        #[allow(clippy::missing_errors_doc, reason = "Binding version")]
         pub fn poll(&mut self) -> RemoteSecretMonitorResult {
             self.0.poll().into()
         }
 
         /// Binding version of [`monitor::RemoteSecretMonitorProtocol::response`].
-        #[allow(clippy::missing_errors_doc, reason = "Binding version")]
         pub fn response(&mut self, response: HttpsResult) -> Option<monitor::RemoteSecretMonitorError> {
             self.0.response(response.into()).err()
         }

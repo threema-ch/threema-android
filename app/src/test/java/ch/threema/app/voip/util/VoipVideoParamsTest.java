@@ -4,9 +4,9 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.junit.Test;
 
-import ch.threema.protobuf.Common;
-import ch.threema.protobuf.callsignaling.O2OCall;
-import ch.threema.protobuf.callsignaling.O2OCall.VideoQualityProfile;
+import ch.threema.protobuf.common.Resolution;
+import ch.threema.protobuf.o2o_call.Envelope;
+import ch.threema.protobuf.o2o_call.VideoQualityProfile;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
@@ -26,7 +26,7 @@ public class VoipVideoParamsTest {
         byte[] bytes = highProfile.toSignalingMessageBytes();
 
         // Deserialize
-        final O2OCall.Envelope envelope = O2OCall.Envelope.parseFrom(bytes);
+        final Envelope envelope = Envelope.parseFrom(bytes);
 
         assertTrue(envelope.hasVideoQualityProfile());
         final VideoQualityProfile profile = envelope.getVideoQualityProfile();
@@ -120,12 +120,12 @@ public class VoipVideoParamsTest {
     public void findCommonProfileRawValues() {
         final VoipVideoParams a = VoipVideoParams.high();
         final VoipVideoParams b = VoipVideoParams.fromSignalingMessage(
-            O2OCall.VideoQualityProfile.newBuilder()
+            VideoQualityProfile.newBuilder()
                 .setProfileValue(1234) // Invalid / unknown
                 .setMaxBitrateKbps(600)
                 .setMaxFps(23)
                 .setMaxResolution(
-                    Common.Resolution.newBuilder()
+                    Resolution.newBuilder()
                         .setWidth(2000)
                         .setHeight(700)
                 ).build()
@@ -147,12 +147,12 @@ public class VoipVideoParamsTest {
     public void findCommonProfileRawValuesWithClamping() {
         final VoipVideoParams a = VoipVideoParams.high();
         final VoipVideoParams b = VoipVideoParams.fromSignalingMessage(
-            O2OCall.VideoQualityProfile.newBuilder()
+            VideoQualityProfile.newBuilder()
                 .setProfileValue(1234) // Invalid / unknown
                 .setMaxBitrateKbps(1)
                 .setMaxFps(1)
                 .setMaxResolution(
-                    Common.Resolution.newBuilder()
+                    Resolution.newBuilder()
                         .setWidth(1)
                         .setHeight(1)
                 ).build()

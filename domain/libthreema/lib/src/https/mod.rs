@@ -32,11 +32,11 @@ pub enum HttpsError {
     #[error("Invalid HTTPs request, details: {0}")]
     InvalidRequest(String),
 
-    /// Server unreachable
+    /// Server unreachable.
     #[error("HTTPs server unreachable, details: {0}")]
     Unreachable(String),
 
-    /// Server did not respond in time
+    /// Server did not respond in time.
     #[error("HTTPs server did not respond in time, details: {0}")]
     Timeout(String),
 
@@ -49,7 +49,7 @@ pub enum HttpsError {
     Unclassified(String),
 }
 
-/// HTTPS request method
+/// HTTPS request method.
 #[derive(Debug, PartialEq, Eq)]
 #[cfg_attr(feature = "uniffi", derive(uniffi::Enum))]
 #[cfg_attr(
@@ -59,16 +59,16 @@ pub enum HttpsError {
     tsify(into_wasm_abi)
 )]
 pub enum HttpsMethod {
-    /// Make a DELETE request
+    /// Make a DELETE request.
     Delete,
 
-    /// Make a GET request
+    /// Make a GET request.
     Get,
 
-    /// Make a POST request
+    /// Make a POST request.
     Post,
 
-    /// Make a PUT request
+    /// Make a PUT request.
     Put,
 }
 
@@ -106,7 +106,7 @@ impl HttpsHeadersBuilder {
     }
 }
 
-/// HTTPS header
+/// HTTPS header.
 #[cfg_attr(test, derive(Debug, PartialEq))]
 #[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
 #[cfg_attr(
@@ -116,10 +116,10 @@ impl HttpsHeadersBuilder {
     tsify(into_wasm_abi)
 )]
 pub struct HttpsHeader {
-    /// HTTPS header name
+    /// HTTPS header name.
     pub name: String,
 
-    /// HTTPS header value
+    /// HTTPS header value.
     pub value: String,
 }
 
@@ -174,10 +174,10 @@ pub struct HttpsResponse {
     pub body: Vec<u8>,
 }
 
-/// HTTPS response result
+/// HTTPS response result.
 pub type HttpsResult = Result<HttpsResponse, HttpsError>;
 
-/// Implementations for the CLI
+/// Implementations for the CLI.
 #[cfg(feature = "cli")]
 pub mod cli {
     use tracing::trace;

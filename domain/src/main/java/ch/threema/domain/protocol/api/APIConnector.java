@@ -38,7 +38,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.WorkerThread;
 import ch.threema.base.ThreemaException;
 import ch.threema.base.utils.Base64;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.Version;
 import ch.threema.domain.protocol.api.work.WorkContact;
@@ -66,6 +68,8 @@ public class APIConnector {
 
     private static final String JSON_FIELD_JOB_TITLE = "jobTitle";
     private static final String JSON_FIELD_DEPARTMENT = "department";
+    private static final String JSON_FIELD_AVAILABILITY = "availability";
+    private static final String JSON_FIELD_TIME = "time";
 
     // HMAC-SHA256 keys for contact matching
     private static final byte[] EMAIL_HMAC_KEY = new byte[]{(byte) 0x30, (byte) 0xa5, (byte) 0x50
@@ -1163,7 +1167,7 @@ public class APIConnector {
      * Fetch all custom work data from work API.
      */
     @NonNull
-    public WorkData fetchWorkData(String username, String password, String[] identities) throws Exception {
+    public WorkData fetchWorkData(String username, String password, @NonNull String[] identities) throws Exception {
         WorkData workData = new WorkData();
 
         JSONObject request = new JSONObject();
@@ -1176,7 +1180,7 @@ public class APIConnector {
         }
         request.put("contacts", identityArray);
 
-        HttpRequesterResult httpRequesterResult = httpRequester.post(getWorkServerUrl() + "fetch2", request);
+        HttpRequesterResult httpRequesterResult = httpRequester.post(getWorkServerUrlLegacy() + "fetch2", request);
         if (httpRequesterResult instanceof HttpRequesterResult.Error) {
             workData.responseCode = ((HttpRequesterResult.Error) httpRequesterResult).responseCode;
             return workData;
@@ -1200,13 +1204,17 @@ public class APIConnector {
         workData.checkInterval = (jsonResponse.has("checkInterval") ?
             jsonResponse.getInt("checkInterval") : 0);
 
+        // Current UNIX-ish timestamp in milliseconds of the server.
+        final @Nullable Long timeRaw = jsonResponse.has(JSON_FIELD_TIME) ? jsonResponse.getLong(JSON_FIELD_TIME) : null;
+        final @Nullable Instant time = timeRaw != null ? Instant.ofEpochMilli(timeRaw) : null;
+
         if (jsonResponse.has("contacts")) {
             JSONArray contacts = jsonResponse.getJSONArray("contacts");
 
             for (int n = 0; n < contacts.length(); n++) {
                 JSONObject contact = contacts.getJSONObject(n);
 
-                //validate fields
+                // validate fields
                 if (contact.has("id") && contact.has("pk")) {
                     workData.workContacts.add(
                         new WorkContact(
@@ -1214,10 +1222,10 @@ public class APIConnector {
                             Base64.decode(contact.getString("pk")),
                             contact.has("first") ? contact.getString("first") : null,
                             contact.has("last") ? contact.getString("last") : null,
-                            contact.has(JSON_FIELD_JOB_TITLE) ?
-                                contact.getString(JSON_FIELD_JOB_TITLE) : null,
-                            contact.has(JSON_FIELD_DEPARTMENT) ?
-                                contact.getString(JSON_FIELD_DEPARTMENT) : null
+                            contact.has(JSON_FIELD_JOB_TITLE) ? contact.getString(JSON_FIELD_JOB_TITLE) : null,
+                            contact.has(JSON_FIELD_DEPARTMENT) ? contact.getString(JSON_FIELD_DEPARTMENT) : null,
+                            contact.has(JSON_FIELD_AVAILABILITY) ? contact.getString(JSON_FIELD_AVAILABILITY) : null,
+                            time
                         )
                     );
                 }
@@ -1299,13 +1307,16 @@ public class APIConnector {
         }
         request.put("contacts", identityArray);
 
-        String data = this.postJson(getWorkServerUrl() + "identities", request);
-
-        if (data == null || data.isEmpty()) {
+        final @NonNull String data = this.postJson(getWorkServerUrlLegacy() + "identities", request);
+        if (data.isEmpty()) {
             return contactsList;
         }
 
         JSONObject jsonResponse = new JSONObject(data);
+
+        // Current UNIX-ish timestamp in milliseconds of the server.
+        final @Nullable Long timeRaw = jsonResponse.has(JSON_FIELD_TIME) ? jsonResponse.getLong(JSON_FIELD_TIME) : null;
+        final @Nullable Instant time = timeRaw != null ? Instant.ofEpochMilli(timeRaw) : null;
 
         if (jsonResponse.has("contacts")) {
             JSONArray contacts = jsonResponse.getJSONArray("contacts");
@@ -1321,10 +1332,10 @@ public class APIConnector {
                             Base64.decode(contact.getString("pk")),
                             contact.isNull("first") ? null : contact.getString("first"),
                             contact.isNull("last") ? null : contact.getString("last"),
-                            contact.isNull(JSON_FIELD_JOB_TITLE) ? null :
-                                contact.getString(JSON_FIELD_JOB_TITLE),
-                            contact.isNull(JSON_FIELD_DEPARTMENT) ? null :
-                                contact.getString(JSON_FIELD_DEPARTMENT)
+                            contact.isNull(JSON_FIELD_JOB_TITLE) ? null : contact.getString(JSON_FIELD_JOB_TITLE),
+                            contact.isNull(JSON_FIELD_DEPARTMENT) ? null : contact.getString(JSON_FIELD_DEPARTMENT),
+                            contact.isNull(JSON_FIELD_AVAILABILITY) ? null : contact.getString(JSON_FIELD_AVAILABILITY),
+                            time
                         )
                     );
                 }
@@ -1377,10 +1388,9 @@ public class APIConnector {
         // Paging
         request.put("page", filter.getPage());
 
-        String data = this.postJson(getWorkServerUrl() + "directory", request);
-
+        final @NonNull String data = this.postJson(getWorkServerUrlLegacy() + "directory", request);
         // Verify request
-        if (data == null || data.isEmpty()) {
+        if (data.isEmpty()) {
             return null;
         }
 
@@ -1421,6 +1431,10 @@ public class APIConnector {
                 filterPrevious
             );
 
+            // Current UNIX-ish timestamp in milliseconds of the server.
+            final @Nullable Long workLastFullSyncAtRaw = jsonResponse.has(JSON_FIELD_TIME) ? jsonResponse.getLong(JSON_FIELD_TIME) : null;
+            final @Nullable Instant workLastFullSyncAt = workLastFullSyncAtRaw != null ? Instant.ofEpochMilli(workLastFullSyncAtRaw) : null;
+
             for (int n = 0; n < contacts.length(); n++) {
                 JSONObject contact = contacts.getJSONObject(n);
 
@@ -1429,18 +1443,25 @@ public class APIConnector {
                     WorkDirectoryContact directoryContact = new WorkDirectoryContact(
                         contact.getString("id"),
                         Base64.decode(contact.getString("pk")),
-                        contact.has("first") ? (contact.isNull("first") ? null :
-                            contact.optString("first")) : null,
-                        contact.has("last") ? (contact.isNull("last") ? null : contact.optString(
-                            "last")) : null,
-                        contact.has("csi") ? (contact.isNull("csi") ? null : contact.optString(
-                            "csi")) : null,
-                        contact.has(JSON_FIELD_JOB_TITLE) ?
-                            (contact.isNull(JSON_FIELD_JOB_TITLE) ? null :
-                                contact.optString(JSON_FIELD_JOB_TITLE)) : null,
-                        contact.has(JSON_FIELD_DEPARTMENT) ?
-                            (contact.isNull(JSON_FIELD_DEPARTMENT) ? null :
-                                contact.optString(JSON_FIELD_DEPARTMENT)) : null
+                        contact.has("first")
+                            ? (contact.isNull("first") ? null : contact.optString("first"))
+                            : null,
+                        contact.has("last")
+                            ? (contact.isNull("last") ? null : contact.optString("last"))
+                            : null,
+                        contact.has(JSON_FIELD_JOB_TITLE)
+                            ? (contact.isNull(JSON_FIELD_JOB_TITLE) ? null : contact.optString(JSON_FIELD_JOB_TITLE))
+                            : null,
+                        contact.has(JSON_FIELD_DEPARTMENT)
+                            ? (contact.isNull(JSON_FIELD_DEPARTMENT) ? null : contact.optString(JSON_FIELD_DEPARTMENT))
+                            : null,
+                        contact.isNull(JSON_FIELD_AVAILABILITY)
+                            ? null
+                            : contact.getString(JSON_FIELD_AVAILABILITY),
+                        workLastFullSyncAt,
+                        contact.has("csi")
+                            ? (contact.isNull("csi") ? null : contact.optString("csi"))
+                            : null
                     );
 
                     if (!contact.isNull("org")) {
@@ -1632,8 +1653,8 @@ public class APIConnector {
         return serverAddressProvider.getDirectoryServerUrl(ipv6);
     }
 
-    private String getWorkServerUrl() throws ThreemaException {
-        return serverAddressProvider.getWorkServerUrl(ipv6);
+    private String getWorkServerUrlLegacy() throws ThreemaException {
+        return serverAddressProvider.getWorkServerUrlLegacy(ipv6);
     }
 
     @NonNull

@@ -55,6 +55,16 @@
     minLength: 1
     example: 1.2.3;Q;de/DE;...
 
+  work-server-time-ms: &work-server-time-ms
+    description: |-
+      Current UNIX-ish timestamp in milliseconds of the server.
+
+      This timestamp can be used to check if a work contact change from a
+      `WorkSyncDelta` is relevant compared to the most recent full sync of that
+      work contact through this (or another) endpoint.
+    type: integer
+    minimum: 0
+
   work-username: &work-username
     description: Work license username.
     type: string
@@ -87,6 +97,15 @@
       equivalent to unset.
     type: string
     example: Reverb
+
+  work-availability-status: &work-availability-status
+    <<: *base64
+    description: |-
+      User's availability status as defined by
+      `d2d_sync.WorkAvailabilityStatus`, encoded as base64.
+      `d2d_sync.WorkAvailabilityStatus` with
+      `WorkAvailabilityStatusCategory.NONE` is equivalent to unset (and vice
+      versa, no matter whether a description has been provided or not).
 
   work-user-identifier: &work-user-identifier
     description: |-
@@ -163,6 +182,7 @@
           - 'null'
       jobTitle: *work-job-title
       department: *work-department
+      availability: *work-availability-status
 
   work-organisation: &work-organisation
     type: object
@@ -200,6 +220,12 @@
           Sort contacts ascending by `by` if `true`, sort descending if `false`.
         type: boolean
         default: true
+
+  work-properties: &work-properties
+    <<: *base64
+    description: |-
+      Work properties as defined by `directory.WorkProperties`, encoded as
+      base64.
 
   remote-secret: &remote-secret
     <<: *base64
@@ -368,7 +394,7 @@
         error:
           type: string
       example:
-        sucess: false
+        success: false
         error: Identity not found
 
   id-revocation-request: &id-revocation-request
@@ -451,7 +477,7 @@
         error:
           type: string
       example:
-        sucess: false
+        success: false
         error: 'Identity not found'
 
   sfu-credentials-request: &sfu-credentials-request
@@ -522,10 +548,10 @@
         error:
           type: string
       example:
-        sucess: false
+        success: false
         error: 'Identity not found'
 
-  update-work-data-request: &update-work-data-request
+  work-properties-legacy-request: &work-properties-legacy-request
     type: object
     required:
       - identity
@@ -545,9 +571,9 @@
       department: *work-department
       category: *work-user-category-labels-delimited
 
-  update-work-data-response:
-    ok: &update-work-data-response-ok
-      description: Work data updated successfully.
+  work-properties-legacy-response:
+    ok: &work-properties-legacy-response-ok
+      description: Work properties updated successfully.
       type: object
       required:
         - success
@@ -555,8 +581,8 @@
         success:
           type: boolean
           const: true
-    error: &update-work-data-response-error
-      description: Updating Work data failed.
+    error: &work-properties-legacy-response-error
+      description: Updating Work properties failed.
       type: object
       required:
         - success
@@ -567,7 +593,7 @@
         error:
           type: string
       example:
-        sucess: false
+        success: false
         error: 'Missing parameters'
 
   work-credentials: &work-credentials
@@ -576,6 +602,17 @@
       - username
       - password
     properties:
+      username: *work-username
+      password: *work-password
+
+  work-credentials-with-identity: &work-credentials-with-identity
+    type: object
+    required:
+      - identity
+      - username
+      - password
+    properties:
+      identity: *identity
       username: *work-username
       password: *work-password
 
@@ -688,6 +725,7 @@
         items:
           <<: *work-contact
           description: A configured Work contact.
+      time: *work-server-time-ms
 
   work-contacts-request: &work-contacts-request
     type: object
@@ -716,6 +754,7 @@
         items:
           <<: *work-contact
           description: A Work contact.
+      time: *work-server-time-ms
 
   work-directory-request-wildcard: &work-directory-request-wildcard
     type: object
@@ -762,8 +801,8 @@
   work-directory-response: &work-directory-response
     type: object
     required:
-      - contacts
       - paging
+      - contacts
     properties:
       paging:
         description: Page information.
@@ -801,6 +840,14 @@
               csi: *work-user-identifier
               cat: *work-user-category-ids
               org: *work-organisation
+      time: *work-server-time-ms
+
+  work-properties-request: &work-properties-request
+    type: object
+    required:
+      - properties
+    properties:
+      properties: *work-properties
 
   remote-secret-create-request: &remote-secret-create-request
     type: object
@@ -1047,7 +1094,7 @@ paths:
 
   /identity/update_work_info:
     post:
-      summary: Work Properties
+      summary: Work Properties (Legacy)
       description: |-
         Update Work properties associated to the currently used Threema ID. Only
         used by the _Work_ flavour of Threema.
@@ -1056,9 +1103,12 @@ paths:
         challenge request. The second call must repeat the exact same properties
         and the challenge response.
 
-        Note that all data of the request must be sourced **exclusively** from
-        MDM parameters. For example, the data source for `nickname` must be
+        Note 1: All data of the request must be sourced **exclusively** from MDM
+        parameters. For example, the data source for `nickname` must be
         `th_nickname` and not the custom nickname chosen by the user.
+
+        Note 2: This endpoint is intended to be replaced with the new _Work
+        Properties_ endpoint eventually, see PRD-186.
 
         TODO(SE-368): When sending/receiving steps.
       requestBody:
@@ -1067,10 +1117,10 @@ paths:
           application/json:
             schema:
               oneOf:
-                - *update-work-data-request
+                - *work-properties-legacy-request
                 - !merge-objects
                   - *auth-challenge-response
-                  - *update-work-data-request
+                  - *work-properties-legacy-request
       responses:
         '200':
           description: Success... or not.
@@ -1079,8 +1129,8 @@ paths:
               schema:
                 oneOf:
                   - *auth-challenge-request
-                  - *update-work-data-response-ok
-                  - *update-work-data-response-error
+                  - *work-properties-legacy-response-ok
+                  - *work-properties-legacy-response-error
         '429':
           description: Rate limit exceeded.
 
@@ -1177,6 +1227,85 @@ paths:
         '429':
           description: Rate limit exceeded.
 
+  /api-client/v1/user-properties:
+    post:
+      summary: Work Properties
+      description: |-
+        Update Work properties associated to the currently used Threema ID. Only
+        used by the _Work_ flavour of Threema.
+
+        The first call without the challenge response properties initiates the
+        challenge request. The second call must repeat the exact same properties
+        and the challenge response.
+
+        Note 1: All data (except for the availability status) of the request
+        must be sourced **exclusively** from MDM parameters. For example, the
+        data source for `nickname` must be `th_nickname` and not the custom
+        nickname chosen by the user.
+
+        Note 2: This endpoint is intended to replace the old _Work Properties
+        (Legacy)_ endpoint eventually, see PRD-186.
+
+        When receiving this request without the challenge response:
+
+        1. If the request could not be decoded, respond with status code `400`.
+        2. Respond with an authentication challenge tied to the provided data
+           with purpose _set_.
+
+        When receiving this request with the challenge response:
+
+        1.  If the request could not be decoded, respond with status code `400`.
+        2.  If the Work `credentials` are invalid, respond with status code
+            `401` and code `invalid-credentials`.
+        3.  If the `challenge` expired, respond with status code `401` and code
+            `challenge-expired`.
+        4.  If the `challenge` is not tied to the provided data or does not have
+            the purpose _set_, respond with status code `401` and code
+            `invalid-challenge-response`.
+        5.  If the `response` is not the correctly _signed_ `challenge`, respond
+            with status code `401` and code `invalid-challenge-response`.
+        6.  Decode `properties` into a `directory.WorkProperties` message. If
+            this fails, respond with status code `400`.
+        7.  Update the work properties of the respective user and let `changes`
+            be the set of changes that were applied, including a UNIX-ish
+            timestamp in milliseconds on when the change was applied.
+        8.  If `changes` is empty, respond with status code `204`.
+        9.  For each `contact` of the work contacts in the same subscription as
+            the respective user, schedule sending a `csp_e2e.WorkSyncDelta` via
+            `*3MAW0RK` to `contact` with `changes`.
+        10. Respond with status code `204`.
+      servers: *work-servers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - !merge-objects
+                  - *work-credentials-with-identity
+                  - *work-properties-request
+                - !merge-objects
+                  - *work-credentials-with-identity
+                  - *work-auth-challenge-response
+                  - *work-properties-request
+      responses:
+        '200':
+          description: Authentication challenge.
+          content:
+            application/json:
+              schema: *work-auth-challenge-request
+        '204':
+          description: Success.
+        '400':
+          description: Invalid request.
+        '401':
+          description: Authentication failed.
+          content:
+            application/json:
+              schema: *work-auth-failed
+        '429':
+          description: Rate limit exceeded.
+
   /api-client/v1/remote-secret:
     put:
       summary: Create Remote Secret
@@ -1219,10 +1348,10 @@ paths:
             schema:
               oneOf:
                 - !merge-objects
-                  - *work-credentials
+                  - *work-credentials-with-identity
                   - *remote-secret-create-request
                 - !merge-objects
-                  - *work-credentials
+                  - *work-credentials-with-identity
                   - *work-auth-challenge-response
                   - *remote-secret-create-request
       responses:
@@ -1282,10 +1411,10 @@ paths:
             schema:
               oneOf:
                 - !merge-objects
-                  - *work-credentials
+                  - *work-credentials-with-identity
                   - *remote-secret-delete-request
                 - !merge-objects
-                  - *work-credentials
+                  - *work-credentials-with-identity
                   - *work-auth-challenge-response
                   - *remote-secret-delete-request
       responses:

@@ -20,7 +20,7 @@ import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.createTransaction
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.TransactionScope
 import ch.threema.storage.DatabaseService
 
 private val logger = getThreemaLogger("ActiveGroupStateResyncTask")
@@ -48,7 +48,7 @@ class ActiveGroupStateResyncTask(
 
             handle.createTransaction(
                 keys = multiDeviceProperties.keys,
-                scope = MdD2D.TransactionScope.Scope.GROUP_SYNC,
+                scope = TransactionScope.Scope.GROUP_SYNC,
                 ttl = TRANSACTION_TTL_MAX,
                 precondition = {
                     getGroupModelData()?.isMember == true

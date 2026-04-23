@@ -9,7 +9,7 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.KeyboardDataCollectionPolicy
+import ch.threema.protobuf.d2d.sync.Settings
 
 private val logger = getThreemaLogger("KeyboardDataCollectionPolicySetting")
 
@@ -30,17 +30,17 @@ class KeyboardDataCollectionPolicySetting internal constructor(
     override fun instantiateReflectionTask(): Task<*, TaskCodec> =
         ReflectSettingsSyncTask.ReflectKeyboardDataCollectionPolicySyncUpdate()
 
-    fun getKeyboardDataCollectionPolicy(): KeyboardDataCollectionPolicy =
+    fun getKeyboardDataCollectionPolicy(): Settings.KeyboardDataCollectionPolicy =
         when (get()) {
-            true -> KeyboardDataCollectionPolicy.DENY_DATA_COLLECTION
-            false -> KeyboardDataCollectionPolicy.ALLOW_DATA_COLLECTION
+            true -> Settings.KeyboardDataCollectionPolicy.DENY_DATA_COLLECTION
+            false -> Settings.KeyboardDataCollectionPolicy.ALLOW_DATA_COLLECTION
         }
 
-    fun setFromSync(keyboardDataCollectionPolicy: KeyboardDataCollectionPolicy) {
+    fun setFromSync(keyboardDataCollectionPolicy: Settings.KeyboardDataCollectionPolicy) {
         val value = when (keyboardDataCollectionPolicy) {
-            KeyboardDataCollectionPolicy.DENY_DATA_COLLECTION -> true
-            KeyboardDataCollectionPolicy.ALLOW_DATA_COLLECTION -> false
-            KeyboardDataCollectionPolicy.UNRECOGNIZED -> {
+            Settings.KeyboardDataCollectionPolicy.DENY_DATA_COLLECTION -> true
+            Settings.KeyboardDataCollectionPolicy.ALLOW_DATA_COLLECTION -> false
+            Settings.KeyboardDataCollectionPolicy.UNRECOGNIZED -> {
                 logger.warn("Cannot set unrecognized keyboard data collection policy")
                 return
             }

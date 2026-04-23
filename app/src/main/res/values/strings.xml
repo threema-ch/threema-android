@@ -22,6 +22,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="enter_id_hint">Enter ${app_name_short} ID</string>
     <string name="account_links">Linked accounts</string>
+    <string name="title_set_availability_status">Availability status</string>
     <string name="menu_settings">Settings</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="menu_about">About ${app_name}</string>
@@ -113,6 +114,7 @@
     <string name="set_nickname_title">Set nickname</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
     <string name="copy_message_action">Copy</string>
     <string name="delete_contact_action">Delete contact</string>
     <string name="delete_multiple_contact_action">Delete contacts</string>
@@ -359,6 +361,7 @@
     <string name="can_not_send_no_group_members">You cannot send a message to an empty group</string>
     <string name="you_are_not_a_member_of_this_group">You are not a member of this group</string>
     <string name="title_public_nickname">Nickname</string>
+    <string name="title_availability_status">Status</string>
     <string name="prefs_sum_excluded_sync_identities">The IDs listed here will be ignored when synchronizing contacts</string>
     <string name="prefs_title_excluded_sync_identities">Exclusion list</string>
     <string name="synchronize_contact">Address book sync</string>
@@ -1711,10 +1714,12 @@
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">This file is invalid and cannot be shared</string>
 
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
-    <string name="contact_availability_status_available">Available</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <string name="contact_availability_status_unavailable">Unavailable</string>
+    <string name="availability_status_none">No status</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e. out-of-office -->
+    <string name="availability_status_unavailable">Unavailable</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently busy-->
+    <string name="availability_status_busy">Busy</string>
+
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">The activation link is invalid. Please contact your administrator.</string>
 
@@ -1743,6 +1748,8 @@
     <string name="remote_secret_notification_text">${remote_secret} is active. Tap to learn more.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <string name="remote_secrets_blocked_by_admin">Access to this app has been blocked by your administrator.\n\nPlease contact your administrator for more information.</string>
+    <!-- Label on button, shown when the app is blocked with the DualLock (a.k.a. "Remote Secret") feature and the user has no other option than to close the app -->
+    <string name="remote_secrets_close_app">Close app</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secrets_failed_to_fetch">The ${remote_secret} token could not be fetched. Please check your Internet connection and try again.</string>
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
@@ -1787,6 +1794,14 @@
 
     <string name="failed_to_load_conversations">Chats could not be loaded.</string>
     <string name="contact_support">Contact support</string>
+
+    <string name="edit_availability_status_modal_title">Availability status</string>
+    <string name="edit_availability_status_modal_subtitle">This status is visible to everyone in your company.</string>
+    <string name="edit_availability_status_modal_optional_message_label">Custom text (optional)</string>
+    <string name="edit_availability_status_modal_optional_message_placeholder">In a meeting</string>
+    <string name="edit_availability_status_modal_optional_message_description">Set a custom status message when Busy or Unavailable is selected.</string>
+    <string name="edit_availability_status_modal_optional_message_too_long">Text is too long, please shorten it</string>
+    <string name="edit_availability_status_did_change">Availability status changed</string>
 
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>

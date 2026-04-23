@@ -68,12 +68,12 @@ import ch.threema.app.compose.common.SpacerVertical
 import ch.threema.app.compose.common.ThemedText
 import ch.threema.app.compose.common.buttons.ButtonIconInfo
 import ch.threema.app.compose.common.buttons.ButtonOutlined
-import ch.threema.app.compose.common.buttons.ButtonPrimary
-import ch.threema.app.compose.common.buttons.ButtonPrimaryDense
-import ch.threema.app.compose.common.buttons.ButtonPrimaryWebsite
-import ch.threema.app.compose.common.buttons.ExtendedFloatingActionButtonPrimary
-import ch.threema.app.compose.common.buttons.FloatingActionButtonPrimary
 import ch.threema.app.compose.common.buttons.TextButtonPrimary
+import ch.threema.app.compose.common.buttons.primary.ButtonPrimary
+import ch.threema.app.compose.common.buttons.primary.ButtonPrimaryDense
+import ch.threema.app.compose.common.buttons.primary.ButtonPrimaryWebsite
+import ch.threema.app.compose.common.buttons.primary.ExtendedFloatingActionButtonPrimary
+import ch.threema.app.compose.common.buttons.primary.FloatingActionButtonPrimary
 import ch.threema.app.compose.common.text.conversation.ConversationText
 import ch.threema.app.compose.common.text.conversation.ConversationTextDefaults
 import ch.threema.app.compose.common.text.conversation.EmojiSettings
@@ -866,7 +866,6 @@ private fun LazyListScope.componentConversationText(
                 markupEnabled = true,
                 emojiSettings = EmojiSettings(
                     style = EMOJI_STYLE_ANDROID,
-                    upscalingFeature = EmojiUpscalingFeature.Off,
                 ),
                 highlightFeature = HighlightFeature.On(
                     highlightedContent = highlightPair.value,
@@ -1009,6 +1008,7 @@ private fun ConversationTextEmojiShowcase(
                 true -> EMOJI_STYLE_ANDROID
                 false -> EMOJI_STYLE_DEFAULT
             },
+            upscalingFeature = EmojiUpscalingFeature.On(),
         ),
         mentionFeature = MentionFeature.Off,
     )

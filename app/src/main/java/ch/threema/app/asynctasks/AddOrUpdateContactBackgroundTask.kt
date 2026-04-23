@@ -9,6 +9,7 @@ import ch.threema.base.ThreemaException
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.Http
 import ch.threema.common.now
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -174,7 +175,7 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
         return runBlocking {
             try {
                 val contactModel = contactModelRepository.createFromLocal(
-                    ContactModelData(
+                    contactModelData = ContactModelData(
                         identity = result.identity,
                         publicKey = result.publicKey,
                         createdAt = now(),
@@ -199,6 +200,8 @@ abstract class AddOrUpdateContactBackgroundTask<T>(
                         jobTitle = null,
                         department = null,
                         notificationTriggerPolicyOverride = null,
+                        availabilityStatus = AvailabilityStatus.None,
+                        workLastFullSyncAt = null,
                     ),
                 )
                 ContactCreated(contactModel)

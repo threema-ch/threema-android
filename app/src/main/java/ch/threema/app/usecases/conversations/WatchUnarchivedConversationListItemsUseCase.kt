@@ -7,6 +7,7 @@ import ch.threema.app.services.DistributionListService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.RingtoneService
 import ch.threema.app.usecases.WatchTypingIdentitiesUseCase
+import ch.threema.app.usecases.availabilitystatus.WatchAllContactAvailabilityStatusesUseCase
 import ch.threema.app.usecases.contacts.WatchAllMentionNamesUseCase
 import ch.threema.app.usecases.contacts.WatchContactNameFormatSettingUseCase
 import ch.threema.app.usecases.groups.WatchGroupCallsUseCase
@@ -23,6 +24,7 @@ class WatchUnarchivedConversationListItemsUseCase(
     watchAvatarIterationsUseCase: WatchAvatarIterationsUseCase,
     watchContactNameFormatSettingUseCase: WatchContactNameFormatSettingUseCase,
     watchAllMentionNamesUseCase: WatchAllMentionNamesUseCase,
+    watchAllContactAvailabilityStatusesUseCase: WatchAllContactAvailabilityStatusesUseCase,
     draftManager: DraftManager,
 ) : WatchConversationListItemsUseCase(
     watchConversationsUseCase = watchUnarchivedConversationsUseCase,
@@ -31,6 +33,7 @@ class WatchUnarchivedConversationListItemsUseCase(
     watchAvatarIterationsUseCase = watchAvatarIterationsUseCase,
     watchContactNameFormatSettingUseCase = watchContactNameFormatSettingUseCase,
     watchAllMentionNamesUseCase = watchAllMentionNamesUseCase,
+    watchAllContactAvailabilityStatusesUseCase = watchAllContactAvailabilityStatusesUseCase,
     draftManager = draftManager,
     conversationCategoryService = conversationCategoryService,
     contactService = contactService,

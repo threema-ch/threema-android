@@ -105,8 +105,8 @@ The following steps are defined as _MDM Merge And Apply Steps_.
 
 ¹: When running these steps as part of a Work Sync, the precedence is defined by
 the most recently received `override` parameter with `true` mapping to _threema_
-and `false` mapping to _external_. For reflected `md-d2d-sync.MdmParameters`,
-the precedence is defined as part of the message.
+and `false` mapping to _external_. For reflected `d2d_sync.MdmParameters`, the
+precedence is defined as part of the message.
 
 ## Parameters
 

@@ -1,11 +1,13 @@
 package ch.threema.app.di.modules
 
+import ch.threema.app.activities.directory.directoryFeatureModule
 import ch.threema.app.activities.referral.referralFeatureModule
 import ch.threema.app.activities.starred.starredFeatureModule
 import ch.threema.app.androidcontactsync.androidContactFeatureModule
 import ch.threema.app.applock.appLockFeatureModule
 import ch.threema.app.apptaskexecutor.appTaskExecutorFeatureModule
 import ch.threema.app.archive.archiveFeatureModule
+import ch.threema.app.availabilitystatus.availabilityStatusFeatureModule
 import ch.threema.app.camera.cameraFeatureModule
 import ch.threema.app.compose.edithistory.editHistoryFeatureModule
 import ch.threema.app.contactdetails.contactDetailsFeatureModule
@@ -19,6 +21,7 @@ import ch.threema.app.fragments.composemessage.composeMessageFeatureModule
 import ch.threema.app.fragments.conversations.conversationsFeatureModule
 import ch.threema.app.globalsearch.globalSearchFeatureModule
 import ch.threema.app.home.homeFeatureModule
+import ch.threema.app.identitylinks.identityLinkFeatureModule
 import ch.threema.app.location.locationFeatureModule
 import ch.threema.app.logging.loggingFeatureModule
 import ch.threema.app.mediaattacher.mediaAttacherFeatureModule
@@ -45,6 +48,7 @@ import ch.threema.app.voicemessage.voiceMessageFeatureModule
 import ch.threema.app.voip.voipFeatureModule
 import ch.threema.app.webclient.webclientFeatureModule
 import ch.threema.app.widget.widgetFeatureModule
+import ch.threema.app.work.workFeatureModule
 import ch.threema.app.workers.workersFeatureModule
 import ch.threema.localcrypto.localCryptoFeatureModule
 import org.koin.core.module.dsl.viewModelOf
@@ -59,12 +63,14 @@ val featuresModule = module {
         appLockFeatureModule,
         appRestrictionsFeatureModule,
         appTaskExecutorFeatureModule,
-        conversationsFeatureModule,
+        availabilityStatusFeatureModule,
         archiveFeatureModule,
+        conversationsFeatureModule,
         cameraFeatureModule,
         composeMessageFeatureModule,
         contactDetailsFeatureModule,
         devFeatureModule,
+        directoryFeatureModule,
         draftsFeatureModule,
         editHistoryFeatureModule,
         emojiReactionsFeatureModule,
@@ -72,6 +78,7 @@ val featuresModule = module {
         filesFeatureModule,
         globalSearchFeatureModule,
         homeFeatureModule,
+        identityLinkFeatureModule,
         loggingFeatureModule,
         localCryptoFeatureModule,
         locationFeatureModule,
@@ -97,6 +104,10 @@ val featuresModule = module {
         widgetFeatureModule,
         workersFeatureModule,
     )
+
+    if (ConfigUtils.isWorkBuild()) {
+        includes(workFeatureModule)
+    }
 
     if (ConfigUtils.isOnPremBuild()) {
         includes(onPremFeatureModule)

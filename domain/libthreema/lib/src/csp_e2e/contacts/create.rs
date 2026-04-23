@@ -10,6 +10,7 @@ use crate::{
     common::{Nonce, ThreemaId, task::TaskLoop},
     csp_e2e::{
         CspE2eProtocolContext, CspE2eProtocolError,
+        contacts::codec::D2dContactEncoder as _,
         reflect::{ReflectFlags, ReflectPayload},
         transaction::{
             begin::{
@@ -183,7 +184,7 @@ impl State {
                     protobuf::d2d::envelope::Content::ContactSync(protobuf::d2d::ContactSync {
                         action: Some(protobuf::d2d::contact_sync::Action::Create(
                             protobuf::d2d::contact_sync::Create {
-                                contact: Some(protobuf::d2d_sync::Contact::from(&*contact)),
+                                contact: Some(contact.encode()),
                             },
                         )),
                     }),

@@ -13,6 +13,7 @@ import kotlinx.serialization.json.Json
  * representation will be dropped.
  */
 class PersistableTasksTest {
+
     @Test
     fun testContactDeliveryReceiptMessageTask() {
         assertValidEncoding(
@@ -465,6 +466,45 @@ class PersistableTasksTest {
             ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate::class,
             """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectAcquaintanceLevelUpdate.ReflectAcquaintanceLevelUpdateData",""" +
                 """"acquaintanceLevel":"GROUP","identity":"01234567"}""",
+        )
+    }
+
+    @Test
+    fun testContactAvailabilityStatusUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectAvailabilityStatusUpdate::class,
+            """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectAvailabilityStatusUpdate.""" +
+                """ReflectAvailabilityStatusUpdateData","availabilityStatus":{"type":"ch.threema.data.datatypes.AvailabilityStatus.None"},""" +
+                """"identity":"01234567"}""",
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectAvailabilityStatusUpdate::class,
+            """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectAvailabilityStatusUpdate.""" +
+                """ReflectAvailabilityStatusUpdateData","availabilityStatus":{"type":"ch.threema.data.datatypes.AvailabilityStatus.Unavailable",""" +
+                """"description":"On vacation"},"identity":"01234567"}""",
+        )
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectAvailabilityStatusUpdate::class,
+            """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectAvailabilityStatusUpdate.""" +
+                """ReflectAvailabilityStatusUpdateData","availabilityStatus":{"type":"ch.threema.data.datatypes.AvailabilityStatus.Busy",""" +
+                """"description":"In a meeting"},"identity":"01234567"}""",
+        )
+    }
+
+    @Test
+    fun testReflectUserAvailabilityStatusTask() {
+        assertValidEncoding(
+            ReflectUserAvailabilityStatusTask::class,
+            """{"type":"ch.threema.app.tasks.ReflectUserAvailabilityStatusTask.ReflectUserAvailabilityStatusTaskData"}""",
+        )
+    }
+
+    @Test
+    fun testWorkLastFullSyncAtUpdate() {
+        assertValidEncoding(
+            ReflectContactSyncUpdateTask.ReflectWorkLastFullSyncAtUpdate::class,
+            """{"type":"ch.threema.app.tasks.ReflectContactSyncUpdateTask.ReflectWorkLastFullSyncAtUpdate.""" +
+                """ReflectWorkLastFullSyncAtUpdateData","workLastFullSyncAt":1775144426988, "identity":"01234567"}""",
         )
     }
 

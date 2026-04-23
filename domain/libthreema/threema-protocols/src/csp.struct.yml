@@ -472,10 +472,10 @@ payload: &payload
           - `0x80`: [`echo-response`](ref:payload.echo-response)
           - `0x01`: outgoing [`legacy-message`](ref:payload.legacy-message) or
             [`message-with-metadata-box`](ref:payload.message-with-metadata-box)
-          - `0x81`: outgoing [`message-ack`](ref:payload.message-ack)
+          - `0x81`: [`message-ack`](ref:payload.message-ack) for an outgoing message
           - `0x02`: incoming [`legacy-message`](ref:payload.legacy-message) or
             [`message-with-metadata-box`](ref:payload.message-with-metadata-box)
-          - `0x82`: incoming [`message-ack`](ref:payload.message-ack)
+          - `0x82`: [`message-ack`](ref:payload.message-ack) for an incoming message
           - `0x03`: [`unblock-incoming-messages`](ref:payload.unblock-incoming-messages)
           - `0x20`: [`set-push-notification-token`](ref:payload.set-push-notification-token)
           - `0x21`: (obsolete, formerly used by iOS to set a push filter)
@@ -752,7 +752,14 @@ payload: &payload
              `inner-message`. If this fails, exceptionally abort these steps and
              the connection. If the message has been discarded, _Acknowledge_
              the message and abort these steps.
-      21. If `sender-identity` is not a _Special Contact_:
+      21. If `sender-identity` equals `*3MAW0RK`:
+          1. If `inner-type` is not `0xfd`, log a warning,
+             _Acknowledge_ and discard the message and abort these steps.
+          2. Run the receive steps associated to `inner-type` with
+             `inner-message`. If this fails, exceptionally abort these steps and
+             the connection. If the message has been discarded, _Acknowledge_
+             the message and abort these steps.
+      22. If `sender-identity` is not a _Special Contact_:
           1. If `inner-metadata.nickname` is defined, let `nickname` be the
              value of `inner-metadata.nickname`.¹
           2. If `inner-metadata` is not defined and _User Profile Distribution_
@@ -760,7 +767,7 @@ payload: &payload
              decoding the plaintext `legacy-sender-nickname`.¹
           3. If `nickname` is present, trim any excess whitespaces from the
              beginning and the end of `nickname`.
-          4. If `contact-or-init` does not contain an existing contact:
+          4. If `contact-or-init` does not refer to an existing contact:
              1. If `inner-type` does not require to create an implicit
                 _direct_ contact, log a notice, _Acknowledge_ and discard the
                 message and abort these steps.
@@ -780,28 +787,51 @@ payload: &payload
                 new contact from `contact-or-init` and `nickname`.
              4. TODO(SE-510): Schedule fetching gateway-defined profile picture
                 here, if contact was added and if necessary.
-          5. Lookup the contact associated to `sender-identity` and let
-             `contact` be the result (at this point, `contact` must exist).
-          6. (MD) If the contact's nickname is different to `nickname`:
-              1. Begin a transaction with scope `CONTACT_SYNC` and the
-                 following precondition:
-                 1. If the contact no longer exists, log an error and
-                    exceptionally abort these steps and the connection.
-              2. Reflect a `ContactSync.Update` with `contact` including the
-                 new `nickname`.
-              3. Commit the transaction and await acknowledgement.
-          7. Update the contact's nickname with `nickname`. Remove the
-             contact's nickname if `nickname` is empty.
-          8. Run the receive steps associated to `inner-type` with
+          5. If `contact-or-init` does refer to an existing contact:
+             1. Let `change` be an empty set of properties that need to be
+                updated for `contact-or-init`.
+             2. If `contact-or-init` has an acquaintance level different to
+                _direct_ and `inner-type` requires to create an implicit
+                _direct_ contact, set `change.acquaintance-level` to _direct_.
+             3. If the contact's nickname is different to `nickname`, set
+                `change.nickname` to `nickname`.
+             4. (MD) If `change` is not an empty set:
+                1. Begin a transaction with scope `CONTACT_SYNC` and the
+                   following precondition:
+                   1. If the contact no longer exists, log an error and
+                      exceptionally abort these steps and the connection.
+                2. Reflect a `ContactSync.Update` with `contact` set to
+                   `d2d_sync.Contact` with the following changes:
+                   - `acquaintance_level` set to `change.acquaintance-level`,
+                   - `nickname` set to `change.nickname`.
+                3. Commit the transaction and await acknowledgement.
+             5. Apply any changes in `change` to `contact-or-init`.
+          6. If `inner-type` requires to create an implicit _direct_ contact,
+             run the following sub-steps in a loop:
+             1. If this is the 4th iteration, exceptionally abort these steps
+                and the connection.
+             2. Lookup the contact associated to `sender-identity` and let
+                `contact` be the result (at this point, `contact` must exist).
+             3. If `contact` has acquaintance level _direct_, abort the loop.
+             4. (MD) Run the following sub-steps:
+                1. Begin a transaction with scope `CONTACT_SYNC` and the
+                   following precondition:
+                   1. If the contact no longer exists, log an error and
+                      exceptionally abort these steps and the connection.
+                2. Reflect a `ContactSync.Update` with `contact` including
+                   `acquaintance_level` set to `DIRECT`.
+                3. Commit the transaction and await acknowledgement.
+             5. Set `contact`'s acquaintance level to _direct_.
+          7. Run the receive steps associated to `inner-type` with
              `inner-message`. If this fails, exceptionally abort these steps and
              the connection. If the message has been discarded, _Acknowledge_
              the message and abort these steps.
-      22. (MD) If the properties associated to `inner-type` require
+      23. (MD) If the properties associated to `inner-type` require
           reflecting incoming messages, reflect a `d2d.IncomingMessage` from
           `outer-type` and `outer-message` and the associated conversation to
           other devices and wait for reflection acknowledgement.² If this fails,
           exceptionally abort these steps and the connection.³
-      23. If the properties associated to `inner-type` require sending
+      24. If the properties associated to `inner-type` require sending
           automatic delivery receipts and `flags` does not contain the _no
           automatic delivery receipts_ (`0x80`) flag, schedule a persistent task
           to run the _Bundled Messages Send Steps_ with the following
@@ -812,7 +842,7 @@ payload: &payload
           - to construct a [`delivery-receipt`](ref:e2e.delivery-receipt)
             message with status _received_ (`0x01`) and the respective
             `message-id`.
-      24. _Acknowledge_ the message.
+      25. _Acknowledge_ the message.
 
       ¹: Note that the `nickname` of `MessageMetadata` may be undefined (leading
       to no changes) or defined but explicitly empty (leading to the nickname of
@@ -1108,6 +1138,13 @@ e2e: &e2e
         - Production: 04884d12d668f855d00d71fb1d9d413c95f271312f7e077846af671875c4101b
       - Special: No
 
+    - `*3MAW0RK`:
+      - Nickname: Threema Work Delta Sync
+      - Public Key:
+        - Production: c0e8ad0f50c5c7315c402d3dc26db169408c117613e9b852d3d6c0e87fca536b
+        - Sandbox: c79d9e0f70342e653b0c6df027af8c8681db40e11bf556dd33ec78ee6f810c6d
+      - Special: Yes
+
     - `*3MAWORK`:
       - Nickname: Threema Work Channel
       - Public Key:
@@ -1324,7 +1361,7 @@ e2e: &e2e
         2. If `init.sync_state` is not defined, set it to `INITIAL`.
         3. If `init.verification_level` is not defined, set it to `UNVERIFIED`.
         4. If `init.work_verification_level` is not defined, set it to `NONE`.
-    12.  Update the _contact lookup cache_ with the contents of
+    12. Update the _contact lookup cache_ with the contents of
         `contact-or-inits`. Each newly added or updated entry has an expiration
         time of 10m after which the entry is to be removed from the cache.
     13. Return `contact-or-inits`.
@@ -1364,10 +1401,11 @@ e2e: &e2e
     conversation with that contact is being started by either side in which
     case the acquaintance level should be changed to _direct_.
 
-    A contact with acquaintance level _group_ will remain indefinitely even if
-    the contact is being removed from all groups of the user or if all remaining
-    common groups are marked as _left_. In that case, the contact is implicitly
-    marked as _deleted_ so that it is covered by _block unknown_.
+    A contact with acquaintance level _group_ will remain at that level
+    indefinitely even if the contact is being removed from all groups of the
+    user or if all remaining common groups are marked as _left_. In that case,
+    the contact is implicitly marked as _deleted_ so that it is covered by
+    _block unknown_.
 
     ### Notes Group
 
@@ -1786,7 +1824,7 @@ e2e: &e2e
     other synchronised property of the group:
 
     1. Let `change` be one of the following changes to the group as defined by
-       `sync.Group`:
+       `d2d_sync.Group`:
        - `notification_trigger_policy_override`
        - `notification_sound_policy_override`
        - `conversation_category`
@@ -1821,7 +1859,7 @@ e2e: &e2e
     3. Send a `DropDevice` with this device's Device ID.
     4. Await the corresponding `DropDeviceAck` or the connection closing with
        close code `4113`.
-    5. TODO(SE-494): Enter _read-only_ mode persistently.
+    5. TODO(SE-494): Enter read-only mode persistently.
 
     #### Drop Other Devices Flow
 
@@ -2035,7 +2073,7 @@ e2e: &e2e
               1. If the contact for `receiver` no longer exists, log an error,
                  discard `messages` and abort these steps.
            2. Let `change` be the following changes as defined by
-              `sync.Contact`:
+              `d2d_sync.Contact`:
               - `acquaintance_level` set to `DIRECT`,
               - `conversation_visibility` set to `NORMAL` if the associated
                  conversation visibility is currently _archived_,
@@ -2111,7 +2149,8 @@ e2e: &e2e
              1. If the group does not exist or is marked as left, log a warning
                 that a group sync race occurred, discard `messages` and abort
                 these steps.
-          2. Let `change` be the following changes as defined by `sync.Group`:
+          2. Let `change` be the following changes as defined by
+             `d2d_sync.Group`:
              - `conversation_visibility` set to `NORMAL` if the associated
                conversation visibility is currently _archived_,
           3. Reflect a `GroupSync.Update` with `group` set from `change`.
@@ -2189,7 +2228,7 @@ e2e: &e2e
           2. Let `members` be all current members of the distribution list.
              Remove any members with acquaintance level _deleted_ from `members`.¹
           3. Let `change` be the following changes as defined by
-             `sync.DistributionList`:
+             `d2d_sync.DistributionList`:
              - `member_identities` from `members`,
              - `conversation_visibility` set to `NORMAL` if the associated
                conversation visibility is currently _archived_,
@@ -2332,7 +2371,7 @@ e2e: &e2e
 
     1. Let `blob` be the following properties:
        - `data` being the encrypted binary data to be uploaded,
-       - `scope` being either _public_ (for public facing blobs) or _local_ (for
+       - (MD) `scope` being either _public_ (for public facing blobs) or _local_ (for
            device group facing blobs).
        - `persist` being a mark (primarily for usage within groups).
     2. Run the _Blob Credentials Refresh Steps_ and let `credentials` be the
@@ -2350,7 +2389,7 @@ e2e: &e2e
 
     1. Let `blob` be the following properties:
        - `id` being the blob ID,
-       - `scope` being either _public_ (for public facing blobs) or _local_ (for
+       - (MD) `scope` being either _public_ (for public facing blobs) or _local_ (for
            device group facing blobs).
     2. Run the _Blob Credentials Refresh Steps_ and let `credentials` be the
        result.
@@ -2566,10 +2605,10 @@ e2e: &e2e
     Audio must be in AAC format.
 
     If the source is already in AAC, no transcoding is necessary. Otherwise,
-    the recommended transcoding settings are: Bitrate 128 kbit/s, 2 channels.
+    the recommended transcoding settings are: Bitrate 64 kbit/s, 2 channels.
 
     When recording audio (i.e. a voice message), the recommended recording
-    settings are: Sample rate 44.1 kHz, bitrate 32 kbit/s, 1 channel.
+    settings are: Sample rate 44.1 kHz, bitrate 64 kbit/s, 1 channel.
 
     ### Video
 
@@ -2578,10 +2617,10 @@ e2e: &e2e
     Recommended encoding settings for all videos:
 
     - Low: 480x480, scale by maintaining aspect ratio to nearest multiple
-      of 16px. Video bitrate 384 kbit/s, audio bitrate 32 kbit/s (2
+      of 16px. Video bitrate 384 kbit/s, audio bitrate 128 kbit/s (2
       channels). Baseline Profile, Level 3.1.
     - High: 848x848, scale by maintaining aspect ratio to nearest multiple
-      of 16px. Video bitrate 1500 kbit/s, audio bitrate 64 kbit/s (2
+      of 16px. Video bitrate 1500 kbit/s, audio bitrate 128 kbit/s (2
       channels). Baseline Profile, Level 3.1.
     - Original: As is. Still needs transcoding in case a different codec has
       been used.
@@ -2693,17 +2732,20 @@ e2e: &e2e
        (meaning that multi-device is deactivated), run the following steps:
        1.   [...]
        2.   Update the user's feature mask on the directory server.
-       3.   Let `contacts` be the list of all contacts, including those with an
+       3.   Call the _Work Properties (Legacy)_ endpoint with the data gathered
+            from MDM parameters.
+       4.   Call the _Work Properties_ endpoint and reset all properties to
+            their default.
+       5.   Let `contacts` be the list of all contacts, including those with an
             acquaintance level different than _direct_.
-       4.   Call the _Work Sync_ endpoint with `contacts` and update `contacts`
+       6.   Call the _Work Sync_ endpoint with `contacts` and update `contacts`
             and the settings with the result.
-       5.   Refresh the state, type and feature mask of all `contacts` from the
+       7.   Refresh the state, type and feature mask of all `contacts` from the
             directory server and make any changes persistent.
-       6.   Let `solicited-contacts` be a copy of `contacts` filtered in the
+       8.   Let `solicited-contacts` be a copy of `contacts` filtered in the
             following way. For each `contact`:
-            1. If the `contact`'s activity state is _invalid_ (i.e. it does not
-               exist or has been revoked), remove `contact` from the list and
-               abort these sub-steps.
+            1. If the `contact` is marked as _invalid_, remove `contact` from
+               the list and abort these sub-steps.
             2. If `contact` is part of a group that is not marked as _left_, add
                `contact` to the list and abort these sub-steps.
             3. Lookup the 1:1 conversation with `contact` and let `last-update`
@@ -2711,21 +2753,21 @@ e2e: &e2e
             4. If `last-update` is defined, add `contact` to the list and abort
                these sub-steps.
             5. Remove `contact` from the list.
-       7.   If FS is supported by the client, run the _FS Refresh Steps_ with
+       9.   If FS is supported by the client, run the _FS Refresh Steps_ with
             `solicited-contacts`.
-       8.   For each `contact` of `solicited-contacts` run the _Bundled Messages
+       10.  For each `contact` of `solicited-contacts` run the _Bundled Messages
             Send Steps_ with the following properties:
             - `id` being a random message ID,
             - `created-at` set to the current timestamp,
             - `receivers` set to `contact`,
             - to construct a
               [`contact-request-profile-picture`](ref:e2e.contact-request-profile-picture)
-       9.   For each group not marked as _left_:
+       11.  For each group not marked as _left_:
             1. If the user is the creator of the group, trigger a _group sync_
                for that group.
             2. If the user is not the creator of the group, run the _Group Sync
                Request Steps_ for the group.
-       10. [...]
+       12. [...]
     5. Commit the application state with the updated `contacts` and settings,
        outer storage potentially protected by a passphrase (if provided) and
        inner storage potentially protected by RS (if created).
@@ -2908,7 +2950,6 @@ e2e: &e2e
       - When rejected: Re-send after confirmation
       - Edit applies to: Text
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -2930,7 +2971,6 @@ e2e: &e2e
       - When rejected: Re-send after confirmation
       - Edit applies to: Text
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       When the user submits this message in a 1:1, group or distribution list
@@ -3002,7 +3042,6 @@ e2e: &e2e
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       The image must be in JPEG format, is uploaded to the blob server and
@@ -3071,7 +3110,6 @@ e2e: &e2e
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       The image must be in JPEG format, is uploaded to the blob server and
@@ -3138,7 +3176,6 @@ e2e: &e2e
       - When rejected: Re-send after confirmation
       - Edit applies to: N/A
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -3160,7 +3197,6 @@ e2e: &e2e
       - When rejected: Re-send after confirmation
       - Edit applies to: N/A
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       When the user submits this message in a 1:1, group or distribution list
@@ -3274,7 +3310,6 @@ e2e: &e2e
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -3296,7 +3331,6 @@ e2e: &e2e
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       The audio is uploaded to the blob server and encrypted by:
@@ -3378,7 +3412,6 @@ e2e: &e2e
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -3400,7 +3433,6 @@ e2e: &e2e
       - When rejected: N/A (deprecated message is not being sent)
       - Edit applies to: N/A
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       The video is uploaded to the blob server and encrypted by:
@@ -3491,7 +3523,6 @@ e2e: &e2e
       - When rejected: Re-send after confirmation
       - Edit applies to: Caption
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -3513,7 +3544,6 @@ e2e: &e2e
       - When rejected: Re-send after confirmation
       - Edit applies to: Caption
       - Deletable by: User and sender
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       The file is uploaded to the blob server and encrypted by:
@@ -3657,7 +3687,6 @@ e2e: &e2e
       - When rejected: Re-send after confirmation
       - Edit applies to: N/A
       - Deletable by: User only (TODO(SE-383))
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -3679,7 +3708,6 @@ e2e: &e2e
       - When rejected: Re-send after confirmation
       - Edit applies to: N/A
       - Deletable by: User only (TODO(SE-383))
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       When the user submits this message in a 1:1 or group conversation:
@@ -3826,7 +3854,6 @@ e2e: &e2e
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `poll-vote`)
       - Deletable by: User only (TODO(SE-383))
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -3847,7 +3874,6 @@ e2e: &e2e
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `poll-vote`)
       - Deletable by: User only (TODO(SE-383))
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       ¹: A [`poll-vote`](ref:e2e.poll-vote) updates the poll state initiated by
@@ -3944,7 +3970,6 @@ e2e: &e2e
       - When rejected: Abort call
       - Edit applies to: N/A
       - Deletable by: User only (TODO(SE-384))
-      - Include in history: No
       - Send to Threema Gateway ID group creator: N/A
 
       [//]: # "When submit / receiving / reflected: TODO(SE-102)"
@@ -3991,7 +4016,6 @@ e2e: &e2e
       - When rejected: Abort call
       - Edit applies to: N/A
       - Deletable by: User only (TODO(SE-384))
-      - Include in history: No
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: A [`call-answer`](ref:e2e.call-answer) updates the call state initiated
@@ -4054,7 +4078,6 @@ e2e: &e2e
       - When rejected: N/A (ignored)
       - Edit applies to: N/A
       - Deletable by: N/A
-      - Include in history: No
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: This message does not trigger any kind of reaction and adding ICE
@@ -4108,7 +4131,6 @@ e2e: &e2e
       - When rejected: N/A (ignored)
       - Edit applies to: N/A
       - Deletable by: User only (TODO(SE-384))
-      - Include in history: No
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: A [`call-hangup`](ref:e2e.call-hangup) usually updates the call state
@@ -4156,7 +4178,6 @@ e2e: &e2e
       - When rejected: Abort call
       - Edit applies to: N/A
       - Deletable by: N/A
-      - Include in history: No
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: A [`call-ringing`](ref:e2e.call-ringing) updates the call state
@@ -4198,7 +4219,6 @@ e2e: &e2e
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `delivery-receipt`)
       - Deletable by: N/A
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: Repeating a status of type _received_ or _read_ has no ill-effects.
@@ -4226,7 +4246,6 @@ e2e: &e2e
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `delivery-receipt`)
       - Deletable by: N/A
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: If capture is enabled
 
       ¹: Repeating a status of type _received_ or _read_ has no ill-effects.
@@ -4377,7 +4396,6 @@ e2e: &e2e
       - When rejected: N/A (ignored)
       - Edit applies to: N/A
       - Deletable by: N/A
-      - Include in history: No
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: It is deemed acceptable if the _typing_ indicator in the UI is replayed
@@ -4455,7 +4473,6 @@ e2e: &e2e
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `set-profile-picture`)
       - Deletable by: N/A (can just send a `delete-profile-picture`)
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -4476,7 +4493,6 @@ e2e: &e2e
       - When rejected: N/A¹
       - Edit applies to: N/A (can just send another `set-profile-picture`)
       - Deletable by: N/A (can just send a `delete-profile-picture`)
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: For the group creator it will be handled as if `group-sync-request` was
@@ -4511,17 +4527,17 @@ e2e: &e2e
       4. If `group.profile-picture` is defined and equals `profile-picture`
          (i.e. no changes), discard the message and abort these steps.
       5. (MD) Run the following sub-steps:
-         1. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+         1. Begin a transaction with scope `GROUP_SYNC` and the following
             precondition:
             1. If the group does not exist or the group is marked as _left_, log
                a warning that a group sync race occurred, discard the message
                and abort these steps.
-         2. (MD) Let `group` be a snapshot of the current group state.
-         3. (MD) If `group.profile-picture` is defined and equals
+         2. Let `group` be a snapshot of the current group state.
+         3. If `group.profile-picture` is defined and equals
             `profile-picture`, log a warning that a group sync race occurred.
-         4. (MD) Reflect a `GroupSync.Update` with `group` set to contain
+         4. Reflect a `GroupSync.Update` with `group` set to contain
             `profile_picture` set to `profile-picture.
-         5. (MD) Commit the transaction and await acknowledgement.
+         5. Commit the transaction and await acknowledgement.
       6. Store the profile picture and and apply it to the group.
     fields:
       - _doc: |-
@@ -4560,7 +4576,6 @@ e2e: &e2e
       - When rejected: N/A (ignored)
       - Edit applies to: N/A (can just send another `delete-profile-picture`)
       - Deletable by: N/A
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       **Properties (Group)**:
@@ -4581,7 +4596,6 @@ e2e: &e2e
       - When rejected: N/A¹
       - Edit applies to: N/A (can just send another `delete-profile-picture`)
       - Deletable by: N/A
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: For the group creator it will be handled as if `group-sync-request` was
@@ -4653,7 +4667,6 @@ e2e: &e2e
       - When rejected: N/A (ignored)
       - Edit applies to: N/A
       - Deletable by: N/A
-      - Include in history: No
       - Send to Threema Gateway ID group creator: N/A
 
       When reflected from another device as an incoming message:
@@ -4705,7 +4718,6 @@ e2e: &e2e
       - When rejected: N/A³
       - Edit applies to: N/A (can just send another `group-setup`)
       - Deletable by: N/A (can just send another `group-setup`)
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: A newly created group's conversation visibility is implicitly _normal_
@@ -4857,7 +4869,6 @@ e2e: &e2e
       - When rejected: N/A¹
       - Edit applies to: N/A (can just send another `group-name`)
       - Deletable by: N/A (can just send an empty name)
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: N/A
 
       ¹: For the group creator it will be handled as if `group-sync-request` was
@@ -4921,7 +4932,6 @@ e2e: &e2e
       - When rejected: N/A¹
       - Edit applies to: N/A
       - Deletable by: N/A
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: Yes
 
       ¹: Re-send of `group-leave` implicitly triggered by FS `Reject` receive
@@ -4989,7 +4999,6 @@ e2e: &e2e
       - When rejected: N/A¹
       - Edit applies to: N/A
       - Deletable by: N/A
-      - Include in history: Yes
       - Send to Threema Gateway ID group creator: Yes
 
       ¹: Implicitly ignored by FS `Reject` receive steps.
@@ -5041,7 +5050,7 @@ e2e: &e2e
       per sender/receiver breaks a potential infinite loop.
 
   web-session-resume:
-    _group: Push Control
+    _group: Special Control
     _doc: |-
       A control message from Threema Web, requesting a session to be resumed.
 
@@ -5064,7 +5073,6 @@ e2e: &e2e
       - When rejected: N/A (not sent by clients)
       - Edit applies to: N/A
       - Deletable by: N/A
-      - Include in history: No
       - Send to Threema Gateway ID group creator: N/A
 
       When receiving this message:

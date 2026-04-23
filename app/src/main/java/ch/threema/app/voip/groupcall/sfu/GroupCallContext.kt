@@ -12,8 +12,8 @@ import ch.threema.app.voip.groupcall.sfu.webrtc.ParticipantCallMediaKeyState
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.toByteArray
-import ch.threema.protobuf.groupcall.CallState
-import ch.threema.protobuf.groupcall.ParticipantToParticipant
+import ch.threema.protobuf.group_call.CallState
+import ch.threema.protobuf.group_call.ParticipantToParticipant
 import java.nio.ByteOrder
 import java.util.*
 import java.util.concurrent.locks.ReentrantLock

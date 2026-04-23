@@ -7,6 +7,7 @@ use tsify::Tsify;
 use crate::{
     https::{self, HttpsError},
     remote_secret::{monitor::RemoteSecretMonitorResponse, setup::RemoteSecretSetupResponse},
+    work::properties::WorkPropertiesUpdateResponse,
 };
 
 /// Binding version of [`https::HttpsRequest`].
@@ -78,6 +79,7 @@ pub enum HttpsResult {
     response_type;
     [ RemoteSecretSetupResponse ];
     [ RemoteSecretMonitorResponse ];
+    [ WorkPropertiesUpdateResponse ]
 )]
 impl From<HttpsResult> for response_type {
     fn from(response: HttpsResult) -> Self {

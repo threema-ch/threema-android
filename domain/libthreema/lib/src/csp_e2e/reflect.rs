@@ -28,7 +28,7 @@ pub struct ReflectResponse {
     pub acknowledged_reflect_ids: Vec<ReflectId>,
 }
 
-/// Flags applied when reflecting/reflected
+/// Flags applied when reflecting/reflected.
 #[derive(Default)]
 pub struct ReflectFlags {
     /// If `true`, the reflected message is only transmitted to other devices currently online.
@@ -50,7 +50,7 @@ impl From<&MessageProperties> for ReflectFlags {
 
 /// A message that should be reflected or has been reflected.
 ///
-/// TODO(LIB-16): Add a `From` for the D2M layer reflect payload / align with those structs
+/// TODO(LIB-16): Add a `From` for the D2M layer reflect payload / align with those structs.
 pub struct ReflectPayload {
     /// Flags used for the reflected message.
     pub flags: ReflectFlags,

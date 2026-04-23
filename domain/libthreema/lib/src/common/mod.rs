@@ -26,7 +26,7 @@ pub mod config;
 pub mod keys;
 pub mod task;
 
-/// Client info
+/// Client info.
 #[derive(Debug, Clone)]
 #[cfg_attr(feature = "uniffi", derive(uniffi::Enum))]
 #[cfg_attr(
@@ -36,7 +36,7 @@ pub mod task;
     tsify(from_wasm_abi)
 )]
 pub enum ClientInfo {
-    /// Android
+    /// Android.
     Android {
         /// Version string.
         version: String,
@@ -54,7 +54,7 @@ pub enum ClientInfo {
         os_version: String,
     },
 
-    /// iOS
+    /// iOS.
     Ios {
         /// Version string.
         version: String,
@@ -72,7 +72,7 @@ pub enum ClientInfo {
         os_version: String,
     },
 
-    /// Desktop 2.x
+    /// Desktop 2.x.
     Desktop {
         /// Version string.
         version: String,
@@ -278,7 +278,7 @@ impl ThreemaId {
         unsafe { str::from_utf8_unchecked(&self.0) }
     }
 
-    /// Return whether this is a Gateway ID
+    /// Return whether this is a Gateway ID.
     #[inline]
     #[must_use]
     pub fn is_gateway_id(self) -> bool {
@@ -521,9 +521,9 @@ impl fmt::Debug for CspDeviceId {
 /// A unique group identity.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
 pub struct GroupIdentity {
-    /// Group ID as chosen by the group's creator
+    /// Group ID as chosen by the group's creator.
     pub group_id: u64,
-    /// Threema ID of the group's creator
+    /// Threema ID of the group's creator.
     pub creator_identity: ThreemaId,
 }
 impl TryFrom<&protobuf::common::GroupIdentity> for GroupIdentity {
@@ -598,7 +598,7 @@ impl From<&ConversationId> for protobuf::d2d::ConversationId {
 pub struct FeatureMask(pub u64);
 #[rustfmt::skip]
 impl FeatureMask {
-    /// No features available
+    /// No features available.
     pub const NONE: u64 =                     0b_0000_0000_0000_0000;
     /// Supports voice messages.
     pub const VOICE_MESSAGE_SUPPORT: u64 =    0b_0000_0000_0000_0001;
@@ -629,7 +629,7 @@ impl Nonce {
     /// Byte length of a nonce.
     pub const LENGTH: usize = 24;
 
-    /// Generate a random nonce
+    /// Generate a random nonce.
     #[must_use]
     pub fn random() -> Self {
         let mut nonce = Self([0_u8; Self::LENGTH]);

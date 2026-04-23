@@ -13,8 +13,8 @@ import ch.threema.common.toHexString
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
-import ch.threema.protobuf.Common.CspE2eMessageType
-import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
+import ch.threema.protobuf.common.CspE2eMessageType
+import ch.threema.protobuf.d2d.OutgoingMessage
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
@@ -239,8 +239,6 @@ fun OutgoingMessage.getReflectedOutgoingMessageTask(
     CspE2eMessageType.GROUP_IMAGE -> throw IllegalStateException("Deprecated group image messages are unsupported")
     CspE2eMessageType.GROUP_AUDIO -> throw IllegalStateException("Deprecated group audio messages are unsupported")
     CspE2eMessageType.GROUP_VIDEO -> throw IllegalStateException("Deprecated group video messages are unsupported")
-    CspE2eMessageType.GROUP_JOIN_REQUEST -> throw IllegalStateException("Group join requests are unsupported")
-    CspE2eMessageType.GROUP_JOIN_RESPONSE -> throw IllegalStateException("Group join responses are unsupported")
     CspE2eMessageType.REACTION -> ReflectedOutgoingReactionTask(this, serviceManager)
     CspE2eMessageType.GROUP_REACTION -> ReflectedOutgoingGroupReactionTask(this, serviceManager)
     CspE2eMessageType.GROUP_SETUP -> ReflectedOutgoingPlaceholderTask(
@@ -279,6 +277,10 @@ fun OutgoingMessage.getReflectedOutgoingMessageTask(
 
     CspE2eMessageType.FORWARD_SECURITY_ENVELOPE -> throw IllegalStateException(
         "A forward security envelope message should never be received as reflected outgoing message",
+    )
+
+    CspE2eMessageType.WORK_SYNC_DELTA -> throw IllegalStateException(
+        "A work sync delta message should never be received as reflected outgoing message",
     )
 
     CspE2eMessageType.EMPTY -> throw IllegalStateException("An empty message should never be received as reflected outgoing message")

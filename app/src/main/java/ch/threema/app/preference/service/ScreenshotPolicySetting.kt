@@ -9,7 +9,7 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.ScreenshotPolicy
+import ch.threema.protobuf.d2d.sync.Settings
 
 private val logger = getThreemaLogger("ScreenshotPolicySetting")
 
@@ -30,17 +30,17 @@ class ScreenshotPolicySetting internal constructor(
     override fun instantiateReflectionTask(): Task<*, TaskCodec> =
         ReflectSettingsSyncTask.ReflectScreenshotPolicySyncUpdate()
 
-    fun getScreenshotPolicy(): ScreenshotPolicy =
+    fun getScreenshotPolicy(): Settings.ScreenshotPolicy =
         when (get()) {
-            true -> ScreenshotPolicy.DENY_SCREENSHOT
-            false -> ScreenshotPolicy.ALLOW_SCREENSHOT
+            true -> Settings.ScreenshotPolicy.DENY_SCREENSHOT
+            false -> Settings.ScreenshotPolicy.ALLOW_SCREENSHOT
         }
 
-    fun setFromSync(screenshotPolicy: ScreenshotPolicy) {
+    fun setFromSync(screenshotPolicy: Settings.ScreenshotPolicy) {
         val value = when (screenshotPolicy) {
-            ScreenshotPolicy.DENY_SCREENSHOT -> true
-            ScreenshotPolicy.ALLOW_SCREENSHOT -> false
-            ScreenshotPolicy.UNRECOGNIZED -> {
+            Settings.ScreenshotPolicy.DENY_SCREENSHOT -> true
+            Settings.ScreenshotPolicy.ALLOW_SCREENSHOT -> false
+            Settings.ScreenshotPolicy.UNRECOGNIZED -> {
                 logger.warn("Cannot set unrecognized screenshot policy")
                 return
             }

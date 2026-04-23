@@ -219,6 +219,8 @@ class IdentityBlockedStepsTest {
             jobTitle = null,
             department = null,
             notificationTriggerPolicyOverride = mockk(),
+            availabilityStatus = mockk(),
+            workLastFullSyncAt = null,
         )
 
         every { data } returns contactModelData

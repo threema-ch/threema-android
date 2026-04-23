@@ -36,7 +36,7 @@ import ch.threema.domain.taskmanager.awaitOutgoingMessageAck
 import ch.threema.domain.taskmanager.toCspMessage
 import ch.threema.domain.types.IdentityString
 import ch.threema.libthreema.CryptoException
-import ch.threema.protobuf.Common.GroupIdentity
+import ch.threema.protobuf.common.GroupIdentity
 import ch.threema.protobuf.csp.e2e.fs.Encapsulated.DHType
 import ch.threema.protobuf.csp.e2e.fs.Reject
 import ch.threema.protobuf.csp.e2e.fs.Terminate
@@ -949,12 +949,19 @@ class ForwardSecurityMessageProcessor(
             else -> null
         }
         val dataMessage = ForwardSecurityDataMessage(
+            /* sessionId = */
             session.id,
+            /* type = */
             (dhType),
+            /* counter = */
             counter,
+            /* offeredVersion = */
             session.outgoingOfferedVersion.number,
+            /* appliedVersion = */
             session.outgoingAppliedVersion.number,
+            /* groupIdentity = */
             groupIdentity,
+            /* message = */
             ciphertext,
         )
         val mode: ForwardSecurityMode = getForwardSecurityMode(dataMessage.type)
@@ -990,8 +997,16 @@ class ForwardSecurityMessageProcessor(
             else -> null
         }
 
-        val reject =
-            ForwardSecurityDataReject(sessionId, rejectedMessage.messageId, groupIdentity, cause)
+        val reject = ForwardSecurityDataReject(
+            /* sessionId = */
+            sessionId,
+            /* rejectedMessageId = */
+            rejectedMessage.messageId,
+            /* groupIdentity = */
+            groupIdentity,
+            /* cause = */
+            cause,
+        )
         sendControlMessageToContact(contact, reject, handle)
     }
 

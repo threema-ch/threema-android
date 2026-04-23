@@ -3,8 +3,8 @@ package ch.threema.app.processors.reflectedoutgoingmessage
 import ch.threema.app.managers.ServiceManager
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.DeleteProfilePictureMessage
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
+import ch.threema.protobuf.common.CspE2eMessageType
+import ch.threema.protobuf.d2d.OutgoingMessage
 import ch.threema.storage.models.ContactModel
 
 private val logger = getThreemaLogger("ReflectedOutgoingDeleteProfilePictureTask")
@@ -15,7 +15,7 @@ internal class ReflectedOutgoingDeleteProfilePictureTask(
 ) : ReflectedOutgoingContactMessageTask<DeleteProfilePictureMessage>(
     outgoingMessage = outgoingMessage,
     message = DeleteProfilePictureMessage.fromReflected(outgoingMessage),
-    type = Common.CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE,
+    type = CspE2eMessageType.CONTACT_DELETE_PROFILE_PICTURE,
     serviceManager = serviceManager,
 ) {
     override fun processOutgoingMessage() {

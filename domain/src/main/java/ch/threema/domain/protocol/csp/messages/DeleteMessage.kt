@@ -1,10 +1,13 @@
 package ch.threema.domain.protocol.csp.messages
 
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.protocol.csp.messages.DeleteMessage.Companion.fromByteArray
+import ch.threema.domain.protocol.csp.messages.DeleteMessage.Companion.fromReflected
 import ch.threema.domain.protocol.csp.messages.DeleteMessageData.Companion.fromProtobuf
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufMessage
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 
 class DeleteMessage(payloadData: DeleteMessageData) : AbstractProtobufMessage<DeleteMessageData>(
     ProtocolDefines.MSGTYPE_DELETE_MESSAGE,
@@ -46,14 +49,14 @@ class DeleteMessage(payloadData: DeleteMessageData) : AbstractProtobufMessage<De
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): DeleteMessage {
+        fun fromReflected(message: IncomingMessage): DeleteMessage {
             val deleteMessage = fromByteArray(message.body.toByteArray())
             deleteMessage.initializeCommonProperties(message)
             return deleteMessage
         }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): DeleteMessage {
+        fun fromReflected(message: OutgoingMessage): DeleteMessage {
             val deleteMessage = fromByteArray(message.body.toByteArray())
             deleteMessage.initializeCommonProperties(message)
             return deleteMessage

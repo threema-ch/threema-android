@@ -33,7 +33,7 @@ mod rxdxk;
 /// 1. Let `error` be the provided [`RendezvousProtocolError`].
 /// 2. Abort the protocol due to `error`.
 ///
-/// TODO(LIB-30): Align errors with other protocols
+/// TODO(LIB-30): Align errors with other protocols.
 #[derive(Debug, thiserror::Error)]
 #[cfg_attr(feature = "uniffi", derive(uniffi::Error), uniffi(flat_error))]
 pub enum RendezvousProtocolError {
@@ -135,7 +135,7 @@ pub enum PathStateUpdate {
 /// When handling this result, run the following steps:
 ///
 /// 1. Let `path` be the context of the path whose PID was used in the function call that yielded this result.
-/// 2. If the current phase is the _handshake and nominaton phase_:
+/// 2. If the current phase is the _handshake and nomination phase_:
 ///    1. If `incoming_ulp_data` is present, abort the protocol due to an error and abort these steps.
 ///    2. If `outgoing_frame` is present, enqueue it to be sent on `path`.
 ///    3. If `state_update` is [`PathStateUpdate::AwaitingNominate`] and the protocol took the role of the
@@ -169,7 +169,7 @@ pub struct PathProcessResult {
     pub incoming_ulp_data: Option<Vec<u8>>,
 }
 
-/// 16 byte random authentication challenge
+/// 16 byte random authentication challenge.
 struct Challenge([u8; 16]);
 impl Challenge {
     fn random() -> Self {

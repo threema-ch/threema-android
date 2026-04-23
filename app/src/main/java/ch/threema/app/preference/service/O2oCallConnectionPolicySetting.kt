@@ -9,7 +9,7 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.O2oCallConnectionPolicy
+import ch.threema.protobuf.d2d.sync.Settings
 
 private val logger = getThreemaLogger("O2oCallConnectionPolicySetting")
 
@@ -30,17 +30,17 @@ class O2oCallConnectionPolicySetting internal constructor(
     override fun instantiateReflectionTask(): Task<*, TaskCodec> =
         ReflectSettingsSyncTask.ReflectO2oCallConnectionPolicySyncUpdate()
 
-    fun getO2oCallConnectionPolicy(): O2oCallConnectionPolicy =
+    fun getO2oCallConnectionPolicy(): Settings.O2oCallConnectionPolicy =
         when (get()) {
-            true -> O2oCallConnectionPolicy.REQUIRE_RELAYED_CONNECTION
-            false -> O2oCallConnectionPolicy.ALLOW_DIRECT_CONNECTION
+            true -> Settings.O2oCallConnectionPolicy.REQUIRE_RELAYED_CONNECTION
+            false -> Settings.O2oCallConnectionPolicy.ALLOW_DIRECT_CONNECTION
         }
 
-    fun setFromSync(o2oCallConnectionPolicy: O2oCallConnectionPolicy) {
+    fun setFromSync(o2oCallConnectionPolicy: Settings.O2oCallConnectionPolicy) {
         val value = when (o2oCallConnectionPolicy) {
-            O2oCallConnectionPolicy.REQUIRE_RELAYED_CONNECTION -> true
-            O2oCallConnectionPolicy.ALLOW_DIRECT_CONNECTION -> false
-            O2oCallConnectionPolicy.UNRECOGNIZED -> {
+            Settings.O2oCallConnectionPolicy.REQUIRE_RELAYED_CONNECTION -> true
+            Settings.O2oCallConnectionPolicy.ALLOW_DIRECT_CONNECTION -> false
+            Settings.O2oCallConnectionPolicy.UNRECOGNIZED -> {
                 logger.warn("Cannot set unrecognized 1:1 call connection policy")
                 return
             }

@@ -55,18 +55,18 @@ class ContactModelRepository(
     suspend fun createFromLocal(contactModelData: ContactModelData): ContactModel {
         requireValidContact(contactModelData)
 
-        val createContactLocally: () -> ContactModel = {
+        val createContactLocally: suspend () -> ContactModel = {
             createContactLocally(contactModelData)
         }
 
         return if (coreServiceManager.multiDeviceManager.isMultiDeviceActive) {
             try {
                 coreServiceManager.taskManager.schedule(
-                    ReflectContactSyncCreateTask(
-                        contactModelData,
-                        this,
-                        coreServiceManager.nonceFactory,
-                        createContactLocally,
+                    task = ReflectContactSyncCreateTask(
+                        contactModelData = contactModelData,
+                        contactModelRepository = this,
+                        nonceFactory = coreServiceManager.nonceFactory,
+                        createLocally = createContactLocally,
                     ),
                 ).await()
             } catch (e: TransactionScope.TransactionException) {
@@ -90,17 +90,17 @@ class ContactModelRepository(
     ): ContactModel {
         requireValidContact(contactModelData)
 
-        val createContactLocally: () -> ContactModel = {
+        val createContactLocally: suspend () -> ContactModel = {
             createContactLocally(contactModelData)
         }
 
         return if (coreServiceManager.multiDeviceManager.isMultiDeviceActive) {
             try {
                 ReflectContactSyncCreateTask(
-                    contactModelData,
-                    this,
-                    coreServiceManager.nonceFactory,
-                    createContactLocally,
+                    contactModelData = contactModelData,
+                    contactModelRepository = this,
+                    nonceFactory = coreServiceManager.nonceFactory,
+                    createLocally = createContactLocally,
                 ).invoke(handle)
             } catch (e: TransactionScope.TransactionException) {
                 logger.error("Could not reflect the contact", e)
@@ -121,7 +121,6 @@ class ContactModelRepository(
         if (contactModelData.acquaintanceLevel == AcquaintanceLevel.DIRECT) {
             throw UnexpectedContactException("A contact with acquaintance level group was expected")
         }
-
         createContactLocally(contactModelData)
     }
 

@@ -40,6 +40,8 @@ abstract class BaseViewModel<ViewState : Any, ViewEvent : Any> : ViewModel() {
     val viewState = _viewState.asStateFlow()
 
     private val _events = MutableSharedFlow<ViewEvent>()
+
+    @JvmField
     val events = _events.asSharedFlow()
 
     init {

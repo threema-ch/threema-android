@@ -9,7 +9,7 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.O2oCallPolicy
+import ch.threema.protobuf.d2d.sync.Settings
 
 private val logger = getThreemaLogger("O2oCallPolicySetting")
 
@@ -31,17 +31,17 @@ class O2oCallPolicySetting internal constructor(
         return ReflectSettingsSyncTask.ReflectO2oCallPolicySyncUpdate()
     }
 
-    fun getO2oCallPolicy(): O2oCallPolicy =
+    fun getO2oCallPolicy(): Settings.O2oCallPolicy =
         when (get()) {
-            true -> O2oCallPolicy.ALLOW_O2O_CALL
-            false -> O2oCallPolicy.DENY_O2O_CALL
+            true -> Settings.O2oCallPolicy.ALLOW_O2O_CALL
+            false -> Settings.O2oCallPolicy.DENY_O2O_CALL
         }
 
-    fun setFromSync(o2oCallPolicy: O2oCallPolicy) {
+    fun setFromSync(o2oCallPolicy: Settings.O2oCallPolicy) {
         val value = when (o2oCallPolicy) {
-            O2oCallPolicy.ALLOW_O2O_CALL -> true
-            O2oCallPolicy.DENY_O2O_CALL -> false
-            O2oCallPolicy.UNRECOGNIZED -> {
+            Settings.O2oCallPolicy.ALLOW_O2O_CALL -> true
+            Settings.O2oCallPolicy.DENY_O2O_CALL -> false
+            Settings.O2oCallPolicy.UNRECOGNIZED -> {
                 logger.warn("Cannot set unrecognized 1:1 call policy")
                 return
             }

@@ -11,7 +11,7 @@ androidx_composeBom = "2026.01.00"
 androidx_concurrentFutures = "1.2.0"
 androidx_constraintlayout = "2.2.1"
 androidx_core = "1.15.0"
-androidx_espresso = "3.6.1"
+androidx_espresso = "3.7.0"
 androidx_fragment = "1.8.6"
 androidx_junit = "1.2.1"
 androidx_lifecycle = "2.8.7"
@@ -61,7 +61,7 @@ libphonenumber = "9.0.1"
 lintApi = "31.13.2"
 maplibre = "11.11.0"
 material = "1.13.0"
-mockk = "1.14.0"
+mockk = "1.14.9"
 msgpackCore = "0.8.24"
 nvWebsocketClient = "2.9"
 okhttp3 = "5.1.0"
@@ -108,6 +108,7 @@ androidx-lifecycle-extensions = { module = "androidx.lifecycle:lifecycle-extensi
 androidx-lifecycle-livedata = { module = "androidx.lifecycle:lifecycle-livedata-ktx", version.ref = "androidx_lifecycle" }
 androidx-lifecycle-process = { module = "androidx.lifecycle:lifecycle-process", version.ref = "androidx_lifecycle" }
 androidx-lifecycle-runtime = { module = "androidx.lifecycle:lifecycle-runtime-ktx", version.ref = "androidx_lifecycle" }
+androidx-lifecycle-runtime-android = { module = "androidx.lifecycle:lifecycle-runtime-android", version.ref = "androidx_lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx_lifecycleCompose" }
 androidx-lifecycle-service = { module = "androidx.lifecycle:lifecycle-service", version.ref = "androidx_lifecycle" }
 androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx_lifecycle" }

@@ -15,53 +15,56 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.ConversationUtil
 import ch.threema.app.utils.ConversationUtil.getConversationUid
-import ch.threema.app.utils.GroupUtil
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.crypto.NonceScope
 import ch.threema.base.utils.getThreemaLogger
-import ch.threema.data.datatypes.NotificationTriggerPolicyOverride.*
+import ch.threema.data.datatypes.AvailabilityStatus
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride.MutedIndefinite
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride.MutedIndefiniteExceptMentions
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride.MutedUntil
+import ch.threema.data.datatypes.NotificationTriggerPolicyOverride.NotMuted
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
-import ch.threema.domain.models.ReadReceiptPolicy
-import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.UserState
+import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.csp.ProtocolDefines
-import ch.threema.protobuf.Common.BlobData
-import ch.threema.protobuf.Common.DeltaImage
-import ch.threema.protobuf.Common.Identities
-import ch.threema.protobuf.Common.Image
-import ch.threema.protobuf.blob
-import ch.threema.protobuf.blobData
+import ch.threema.protobuf.common.BlobData
+import ch.threema.protobuf.common.DeltaImage
+import ch.threema.protobuf.common.Identities
+import ch.threema.protobuf.common.Image
+import ch.threema.protobuf.common.blob
+import ch.threema.protobuf.common.blobData
+import ch.threema.protobuf.common.deltaImage
+import ch.threema.protobuf.common.groupIdentity
+import ch.threema.protobuf.common.identities
+import ch.threema.protobuf.common.image
+import ch.threema.protobuf.common.unit
+import ch.threema.protobuf.d2d.join.EssentialData
 import ch.threema.protobuf.d2d.join.EssentialDataKt.augmentedContact
 import ch.threema.protobuf.d2d.join.EssentialDataKt.augmentedDistributionList
 import ch.threema.protobuf.d2d.join.EssentialDataKt.augmentedGroup
 import ch.threema.protobuf.d2d.join.EssentialDataKt.deviceGroupData
 import ch.threema.protobuf.d2d.join.EssentialDataKt.identityData
-import ch.threema.protobuf.d2d.join.MdD2DJoin.EssentialData
-import ch.threema.protobuf.d2d.join.MdD2DJoin.EssentialData.AugmentedContact
-import ch.threema.protobuf.d2d.join.MdD2DJoin.EssentialData.AugmentedDistributionList
-import ch.threema.protobuf.d2d.join.MdD2DJoin.EssentialData.AugmentedGroup
-import ch.threema.protobuf.d2d.join.MdD2DJoin.EssentialData.IdentityData
+import ch.threema.protobuf.d2d.sync.Contact
 import ch.threema.protobuf.d2d.sync.ContactKt
 import ch.threema.protobuf.d2d.sync.ContactKt.readReceiptPolicyOverride
 import ch.threema.protobuf.d2d.sync.ContactKt.typingIndicatorPolicyOverride
+import ch.threema.protobuf.d2d.sync.ConversationCategory
+import ch.threema.protobuf.d2d.sync.ConversationVisibility
+import ch.threema.protobuf.d2d.sync.Group
 import ch.threema.protobuf.d2d.sync.GroupKt
-import ch.threema.protobuf.d2d.sync.MdD2DSync
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.NotificationSoundPolicyOverride
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.NotificationTriggerPolicyOverride
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.SyncState
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.VerificationLevel
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
-import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile.IdentityLinks
-import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile.ProfilePictureShareWith
+import ch.threema.protobuf.d2d.sync.MdmParameters
 import ch.threema.protobuf.d2d.sync.MdmParametersKt.parameter
+import ch.threema.protobuf.d2d.sync.ReadReceiptPolicy
+import ch.threema.protobuf.d2d.sync.Settings
+import ch.threema.protobuf.d2d.sync.ThreemaWorkCredentials
+import ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy
+import ch.threema.protobuf.d2d.sync.UserProfile
 import ch.threema.protobuf.d2d.sync.UserProfileKt.profilePictureShareWith
 import ch.threema.protobuf.d2d.sync.contact
 import ch.threema.protobuf.d2d.sync.distributionList
@@ -70,11 +73,6 @@ import ch.threema.protobuf.d2d.sync.mdmParameters
 import ch.threema.protobuf.d2d.sync.settings
 import ch.threema.protobuf.d2d.sync.threemaWorkCredentials
 import ch.threema.protobuf.d2d.sync.userProfile
-import ch.threema.protobuf.deltaImage
-import ch.threema.protobuf.groupIdentity
-import ch.threema.protobuf.identities
-import ch.threema.protobuf.image
-import ch.threema.protobuf.unit
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.DistributionListModel
 import com.google.protobuf.ByteString
@@ -93,6 +91,7 @@ class BlobDataProvider(private val blobId: ByteArray, private val dataProvider: 
         FAIL,
         NOT_USED,
     }
+
     private var state = BlobDataProviderState.NOT_USED
 
     /**
@@ -141,7 +140,7 @@ class BlobDataProvider(private val blobId: ByteArray, private val dataProvider: 
 }
 
 class AugmentedContactProvider(
-    private val augmentedContact: AugmentedContact,
+    private val augmentedContact: EssentialData.AugmentedContact,
     private val contactDefinedProfilePictureProvider: BlobDataProvider?,
     private val userDefinedProfilePictureProvider: BlobDataProvider?,
 ) {
@@ -150,7 +149,7 @@ class AugmentedContactProvider(
      *
      * @throws IllegalStateException if the profile picture providers have not been used at all
      */
-    fun get(): AugmentedContact {
+    fun get(): EssentialData.AugmentedContact {
         val invalidContactDefinedProfilePicture = contactDefinedProfilePictureProvider?.hasBeenSuccessfullyUsed() == false
         val invalidUserDefinedProfilePicture = userDefinedProfilePictureProvider?.hasBeenSuccessfullyUsed() == false
         if (invalidContactDefinedProfilePicture || invalidUserDefinedProfilePicture) {
@@ -174,7 +173,7 @@ class AugmentedContactProvider(
 }
 
 class AugmentedGroupProvider(
-    private val augmentedGroup: AugmentedGroup,
+    private val augmentedGroup: EssentialData.AugmentedGroup,
     private val groupProfilePictureProvider: BlobDataProvider?,
 ) {
     /**
@@ -182,7 +181,7 @@ class AugmentedGroupProvider(
      *
      * @throws IllegalStateException if the profile picture provider has not been used at all
      */
-    fun get(): AugmentedGroup {
+    fun get(): EssentialData.AugmentedGroup {
         if (groupProfilePictureProvider?.hasBeenSuccessfullyUsed() == false) {
             // In case the group profile picture could be used successfully, we remove it from the group. Otherwise, the group would contain an
             // invalid blob id.
@@ -221,6 +220,7 @@ class DeviceLinkingDataCollector(
     serviceManager: ServiceManager,
 ) : KoinComponent {
     private val identityStore by lazy { serviceManager.identityStore }
+    private val preferenceService by lazy { serviceManager.preferenceService }
     private val userService by lazy { serviceManager.userService }
     private val contactService by lazy { serviceManager.contactService }
     private val contactModelRepository by lazy { serviceManager.modelRepositories.contacts }
@@ -233,7 +233,6 @@ class DeviceLinkingDataCollector(
     private val fileService by lazy { serviceManager.fileService }
     private val conversationCategoryService by lazy { serviceManager.conversationCategoryService }
     private val conversationService by lazy { serviceManager.conversationService }
-    private val ringtoneService by lazy { serviceManager.ringtoneService }
     private val nonceFactory by lazy { serviceManager.nonceFactory }
     private val licenseService by lazy { serviceManager.licenseService }
     private val appRestrictions: AppRestrictions by inject()
@@ -322,7 +321,7 @@ class DeviceLinkingDataCollector(
         return DeviceLinkingData(blobsSequence, essentialDataProvider)
     }
 
-    private fun collectIdentityData(): IdentityData {
+    private fun collectIdentityData(): EssentialData.IdentityData {
         return identityData {
             identity = identityStore.getIdentityString()!!
             ck = identityStore.getPrivateKey()!!.toByteString()
@@ -331,7 +330,7 @@ class DeviceLinkingDataCollector(
         }
     }
 
-    private fun collectUserProfile(): Pair<BlobDataProvider?, MdD2DSync.UserProfile> {
+    private fun collectUserProfile(): Pair<BlobDataProvider?, UserProfile> {
         return collectUserProfilePicture().let { profilePictureData ->
             profilePictureData?.first to userProfile {
                 nickname = identityStore.getPublicNickname()
@@ -340,6 +339,12 @@ class DeviceLinkingDataCollector(
                 }
                 profilePictureShareWith = collectProfilePictureShareWith()
                 identityLinks = collectIdentityLinks()
+                if (ConfigUtils.supportsAvailabilityStatus()) {
+                    val availabilityStatus = preferenceService.getAvailabilityStatus()
+                    if (availabilityStatus != null) {
+                        workAvailabilityStatus = availabilityStatus.toProtocolModel()
+                    }
+                }
             }
         }
     }
@@ -376,7 +381,7 @@ class DeviceLinkingDataCollector(
         }
     }
 
-    private fun collectProfilePictureShareWith(): ProfilePictureShareWith {
+    private fun collectProfilePictureShareWith(): UserProfile.ProfilePictureShareWith {
         val policy = contactService.profilePictureSharePolicy
 
         return profilePictureShareWith {
@@ -390,7 +395,7 @@ class DeviceLinkingDataCollector(
         }
     }
 
-    private fun collectIdentityLinks(): IdentityLinks {
+    private fun collectIdentityLinks(): UserProfile.IdentityLinks {
         return ReflectUserProfileIdentityLinksTask.getUserProfileSyncIdentityLinks(userService)
     }
 
@@ -407,14 +412,14 @@ class DeviceLinkingDataCollector(
                 Settings.UnknownContactPolicy.ALLOW_UNKNOWN
             }
             readReceiptPolicy = if (synchronizedSettingsService.areReadReceiptsEnabled()) {
-                MdD2DSync.ReadReceiptPolicy.SEND_READ_RECEIPT
+                ReadReceiptPolicy.SEND_READ_RECEIPT
             } else {
-                MdD2DSync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
+                ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
             }
             typingIndicatorPolicy = if (synchronizedSettingsService.isTypingIndicatorEnabled()) {
-                MdD2DSync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR
+                TypingIndicatorPolicy.SEND_TYPING_INDICATOR
             } else {
-                MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
+                TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
             }
             o2OCallPolicy = if (synchronizedSettingsService.isVoipEnabled()) {
                 Settings.O2oCallPolicy.ALLOW_O2O_CALL
@@ -517,7 +522,9 @@ class DeviceLinkingDataCollector(
             readReceiptPolicyOverride = mapReadReceiptPolicyOverride(contactModelData)
             typingIndicatorPolicyOverride = mapTypingIndicatorPolicyOverride(contactModelData)
             notificationTriggerPolicyOverride = collectContactNotificationTriggerPolicyOverride(contactModelData)
-            notificationSoundPolicyOverride = collectNotificationSoundPolicyOverride(contactModelData)
+            deprecatedNotificationSoundPolicyOverride = ContactKt.deprecatedNotificationSoundPolicyOverride {
+                default = unit {}
+            }
 
             if (contactDefinedProfilePictureInfo != null) {
                 blobDataProviders.add(contactDefinedProfilePictureInfo.first)
@@ -530,17 +537,25 @@ class DeviceLinkingDataCollector(
             }
 
             conversationCategory = if (conversationCategoryService.isPrivateChat(ContactUtil.getUniqueIdString(contactModelData.identity))) {
-                MdD2DSync.ConversationCategory.PROTECTED
+                ConversationCategory.PROTECTED
             } else {
-                MdD2DSync.ConversationCategory.DEFAULT
+                ConversationCategory.DEFAULT
             }
 
             conversationVisibility = if (conversationStats?.isPinned == true) {
-                MdD2DSync.ConversationVisibility.PINNED
+                ConversationVisibility.PINNED
             } else if (conversationStats?.isArchived == true) {
-                MdD2DSync.ConversationVisibility.ARCHIVED
+                ConversationVisibility.ARCHIVED
             } else {
-                MdD2DSync.ConversationVisibility.NORMAL
+                ConversationVisibility.NORMAL
+            }
+
+            if (ConfigUtils.isWorkBuild() && contactModelData.workLastFullSyncAt != null) {
+                workLastFullSyncAt = contactModelData.workLastFullSyncAt.toEpochMilli()
+            }
+
+            if (ConfigUtils.supportsAvailabilityStatus() && contactModelData.availabilityStatus != AvailabilityStatus.None) {
+                workAvailabilityStatus = contactModelData.availabilityStatus.toProtocolModel()
             }
         }
 
@@ -561,23 +576,23 @@ class DeviceLinkingDataCollector(
         return blobDataProviders to augmentedContactProvider
     }
 
-    private fun collectSyncState(contactModelData: ContactModelData): SyncState {
+    private fun collectSyncState(contactModelData: ContactModelData): Contact.SyncState {
         // TODO(ANDR-2327): Consolidate this mechanism
         return if (contactModelData.isLinkedToAndroidContact()) {
-            SyncState.IMPORTED
+            Contact.SyncState.IMPORTED
         } else if (contactModelData.lastName.isBlank() && contactModelData.firstName.isBlank()) {
-            SyncState.INITIAL
+            Contact.SyncState.INITIAL
         } else {
-            SyncState.CUSTOM
+            Contact.SyncState.CUSTOM
         }
     }
 
     private fun mapReadReceiptPolicyOverride(contactModelData: ContactModelData): Contact.ReadReceiptPolicyOverride {
         return readReceiptPolicyOverride {
             when (contactModelData.readReceiptPolicy) {
-                ReadReceiptPolicy.DEFAULT -> default = unit {}
-                ReadReceiptPolicy.SEND -> policy = MdD2DSync.ReadReceiptPolicy.SEND_READ_RECEIPT
-                ReadReceiptPolicy.DONT_SEND -> policy = MdD2DSync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
+                ch.threema.domain.models.ReadReceiptPolicy.DEFAULT -> default = unit {}
+                ch.threema.domain.models.ReadReceiptPolicy.SEND -> policy = ReadReceiptPolicy.SEND_READ_RECEIPT
+                ch.threema.domain.models.ReadReceiptPolicy.DONT_SEND -> policy = ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
             }
         }
     }
@@ -585,20 +600,20 @@ class DeviceLinkingDataCollector(
     private fun mapTypingIndicatorPolicyOverride(contactModelData: ContactModelData): Contact.TypingIndicatorPolicyOverride {
         return typingIndicatorPolicyOverride {
             when (contactModelData.typingIndicatorPolicy) {
-                TypingIndicatorPolicy.DEFAULT -> default = unit {}
-                TypingIndicatorPolicy.SEND -> policy = MdD2DSync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR
-                TypingIndicatorPolicy.DONT_SEND -> policy = MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
+                ch.threema.domain.models.TypingIndicatorPolicy.DEFAULT -> default = unit {}
+                ch.threema.domain.models.TypingIndicatorPolicy.SEND -> policy = TypingIndicatorPolicy.SEND_TYPING_INDICATOR
+                ch.threema.domain.models.TypingIndicatorPolicy.DONT_SEND -> policy = TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
             }
         }
     }
 
-    private fun collectContactNotificationTriggerPolicyOverride(contactModelData: ContactModelData): NotificationTriggerPolicyOverride {
+    private fun collectContactNotificationTriggerPolicyOverride(contactModelData: ContactModelData): Contact.NotificationTriggerPolicyOverride {
         return ContactKt.notificationTriggerPolicyOverride {
             when (val modelPolicy = contactModelData.currentNotificationTriggerPolicyOverride) {
                 NotMuted -> default = unit {}
 
                 MutedIndefinite -> policy = ContactKt.NotificationTriggerPolicyOverrideKt.policy {
-                    policy = NotificationTriggerPolicy.NEVER
+                    policy = Contact.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
                 }
 
                 MutedIndefiniteExceptMentions -> throw IllegalStateException(
@@ -606,20 +621,10 @@ class DeviceLinkingDataCollector(
                 )
 
                 is MutedUntil -> policy = ContactKt.NotificationTriggerPolicyOverrideKt.policy {
-                    policy = NotificationTriggerPolicy.NEVER
+                    policy = Contact.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
                     assertValidTimestamp(modelPolicy.utcMillis, "Contact notificationTriggerPolicyOverride (${contactModelData.identity})")
                     expiresAt = modelPolicy.utcMillis
                 }
-            }
-        }
-    }
-
-    private fun collectNotificationSoundPolicyOverride(contactModelData: ContactModelData): NotificationSoundPolicyOverride {
-        return ContactKt.notificationSoundPolicyOverride {
-            if (ringtoneService.isSilent(ContactUtil.getUniqueIdString(contactModelData.identity), false)) {
-                policy = MdD2DSync.NotificationSoundPolicy.MUTED
-            } else {
-                default = unit {}
             }
         }
     }
@@ -658,11 +663,11 @@ class DeviceLinkingDataCollector(
         return blobDataProvider to picture
     }
 
-    private fun mapVerificationLevel(contactModelData: ContactModelData): VerificationLevel {
+    private fun mapVerificationLevel(contactModelData: ContactModelData): Contact.VerificationLevel {
         return when (contactModelData.verificationLevel) {
-            ch.threema.domain.models.VerificationLevel.UNVERIFIED -> VerificationLevel.UNVERIFIED
-            ch.threema.domain.models.VerificationLevel.SERVER_VERIFIED -> VerificationLevel.SERVER_VERIFIED
-            ch.threema.domain.models.VerificationLevel.FULLY_VERIFIED -> VerificationLevel.FULLY_VERIFIED
+            VerificationLevel.UNVERIFIED -> Contact.VerificationLevel.UNVERIFIED
+            VerificationLevel.SERVER_VERIFIED -> Contact.VerificationLevel.SERVER_VERIFIED
+            VerificationLevel.FULLY_VERIFIED -> Contact.VerificationLevel.FULLY_VERIFIED
         }
     }
 
@@ -733,26 +738,27 @@ class DeviceLinkingDataCollector(
             assertValidTimestamp(data.createdAt.time, "Group createdAt (${groupModel.groupIdentity})")
             createdAt = data.createdAt.time
             userState = collectUserState(data)
-            notificationTriggerPolicyOverride =
-                collectGroupNotificationTriggerPolicyOverride(groupModel)
-            notificationSoundPolicyOverride =
-                collectGroupNotificationSoundPolicyOverride(groupModel)
+            notificationTriggerPolicyOverride = collectGroupNotificationTriggerPolicyOverride(groupModel)
+            deprecatedNotificationSoundPolicyOverride = GroupKt.deprecatedNotificationSoundPolicyOverride {
+                default = unit {}
+            }
+
             if (groupAvatarInfo != null) {
                 blobDataProviders.add(groupAvatarInfo.first)
                 profilePicture = groupAvatarInfo.second
             }
             memberIdentities = collectGroupIdentities(data)
             conversationCategory = if (conversationCategoryService.isPrivateGroupChat(groupModel.getDatabaseId())) {
-                MdD2DSync.ConversationCategory.PROTECTED
+                ConversationCategory.PROTECTED
             } else {
-                MdD2DSync.ConversationCategory.DEFAULT
+                ConversationCategory.DEFAULT
             }
             conversationVisibility = if (conversationStats?.isPinned == true) {
-                MdD2DSync.ConversationVisibility.PINNED
+                ConversationVisibility.PINNED
             } else if (conversationStats?.isArchived == true) {
-                MdD2DSync.ConversationVisibility.ARCHIVED
+                ConversationVisibility.ARCHIVED
             } else {
-                MdD2DSync.ConversationVisibility.NORMAL
+                ConversationVisibility.NORMAL
             }
         }
 
@@ -780,11 +786,11 @@ class DeviceLinkingDataCollector(
         }
     }
 
-    private fun collectUserState(groupModelData: GroupModelData): MdD2DSync.Group.UserState {
+    private fun collectUserState(groupModelData: GroupModelData): Group.UserState {
         return when (groupModelData.userState) {
-            UserState.MEMBER -> MdD2DSync.Group.UserState.MEMBER
-            UserState.LEFT -> MdD2DSync.Group.UserState.LEFT
-            UserState.KICKED -> MdD2DSync.Group.UserState.KICKED
+            UserState.MEMBER -> Group.UserState.MEMBER
+            UserState.LEFT -> Group.UserState.LEFT
+            UserState.KICKED -> Group.UserState.KICKED
         }
     }
 
@@ -797,21 +803,21 @@ class DeviceLinkingDataCollector(
         }
     }
 
-    private fun collectGroupNotificationTriggerPolicyOverride(groupModel: GroupModel): MdD2DSync.Group.NotificationTriggerPolicyOverride {
+    private fun collectGroupNotificationTriggerPolicyOverride(groupModel: GroupModel): Group.NotificationTriggerPolicyOverride {
         return GroupKt.notificationTriggerPolicyOverride {
             when (val modelPolicy = groupModel.data?.currentNotificationTriggerPolicyOverride) {
                 NotMuted -> default = unit {}
 
                 MutedIndefinite -> policy = GroupKt.NotificationTriggerPolicyOverrideKt.policy {
-                    policy = MdD2DSync.Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
+                    policy = Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
                 }
 
                 MutedIndefiniteExceptMentions -> policy = GroupKt.NotificationTriggerPolicyOverrideKt.policy {
-                    policy = MdD2DSync.Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.MENTIONED
+                    policy = Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.MENTIONED
                 }
 
                 is MutedUntil -> policy = GroupKt.NotificationTriggerPolicyOverrideKt.policy {
-                    policy = MdD2DSync.Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
+                    policy = Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
                     assertValidTimestamp(modelPolicy.utcMillis, "Group notificationTriggerPolicyOverride (${groupModel.groupIdentity})")
                     expiresAt = modelPolicy.utcMillis
                 }
@@ -821,24 +827,10 @@ class DeviceLinkingDataCollector(
         }
     }
 
-    private fun collectGroupNotificationSoundPolicyOverride(groupModel: GroupModel): MdD2DSync.Group.NotificationSoundPolicyOverride {
-        return GroupKt.notificationSoundPolicyOverride {
-            if (ringtoneService.isSilent(groupModel.getUniqueId(), true)) {
-                policy = MdD2DSync.NotificationSoundPolicy.MUTED
-            } else {
-                default = unit {}
-            }
-        }
-    }
-
-    private fun GroupModel.getUniqueId(): String {
-        return GroupUtil.getUniqueIdString(this)
-    }
-
     /**
      * Collect the distribution lists and ignore lists without members.
      */
-    private fun collectDistributionLists(conversationsStats: Map<String, ConversationStats>): List<AugmentedDistributionList> {
+    private fun collectDistributionLists(conversationsStats: Map<String, ConversationStats>): List<EssentialData.AugmentedDistributionList> {
         return distributionListService.all.mapNotNull {
             mapToAugmentedDistributionList(it, conversationsStats)
         }.also { logger.trace("{} distribution lists", it.size) }
@@ -850,7 +842,7 @@ class DeviceLinkingDataCollector(
     private fun mapToAugmentedDistributionList(
         distributionListModel: DistributionListModel,
         conversationsStats: Map<String, ConversationStats>,
-    ): AugmentedDistributionList? {
+    ): EssentialData.AugmentedDistributionList? {
         val conversationStats = conversationsStats[distributionListModel.getConversationUid()]
 
         return collectDistributionListIdentities(distributionListModel)?.let { identities ->
@@ -862,16 +854,16 @@ class DeviceLinkingDataCollector(
                 memberIdentities = identities
                 conversationCategory =
                     if (conversationCategoryService.isPrivateChat(distributionListModel.getUniqueId())) {
-                        MdD2DSync.ConversationCategory.PROTECTED
+                        ConversationCategory.PROTECTED
                     } else {
-                        MdD2DSync.ConversationCategory.DEFAULT
+                        ConversationCategory.DEFAULT
                     }
                 conversationVisibility = if (conversationStats?.isPinned == true) {
-                    MdD2DSync.ConversationVisibility.PINNED
+                    ConversationVisibility.PINNED
                 } else if (conversationStats?.isArchived == true) {
-                    MdD2DSync.ConversationVisibility.ARCHIVED
+                    ConversationVisibility.ARCHIVED
                 } else {
-                    MdD2DSync.ConversationVisibility.NORMAL
+                    ConversationVisibility.NORMAL
                 }
             }
         }?.let {
@@ -913,7 +905,7 @@ class DeviceLinkingDataCollector(
             .also { logger.trace("{} d2d nonce hashes", it.size) }
     }
 
-    private fun collectWorkCredentials(): MdD2DSync.ThreemaWorkCredentials? {
+    private fun collectWorkCredentials(): ThreemaWorkCredentials? {
         val credentials = licenseService.let {
             if (it is LicenseServiceUser) {
                 it.loadCredentials()
@@ -930,7 +922,7 @@ class DeviceLinkingDataCollector(
     }
 
     // TODO(ANDR-2670): Collect all mdm parameters
-    private fun collectMdmParameters(): MdD2DSync.MdmParameters? {
+    private fun collectMdmParameters(): MdmParameters? {
         // Currently we only send the remote secret mdm parameter
         val remoteSecretMdmParamValue = appRestrictions.isRemoteSecretEnabledOrNull()
         if (remoteSecretMdmParamValue != null) {

@@ -8,7 +8,7 @@ readme = "README.md"
 edition = "2018"
 documentation = "https://docs.rs/blake2"
 repository = "https://github.com/RustCrypto/hashes"
-keywords = ["crypto", "blake2", "hash", "digest"]
+keywords = ["blake2", "crypto", "digest", "hash"]
 categories = ["cryptography", "no-std"]
 
 [dependencies]
@@ -20,9 +20,9 @@ hex-literal = "0.2.2"
 
 [features]
 default = ["std"]
-std = ["digest/std"]
 reset = [] # Enable reset functionality
 simd = []
-simd_opt = ["simd"]
 simd_asm = ["simd_opt"]
+simd_opt = ["simd"]
 size_opt = [] # Optimize for code size. Removes some `inline(always)`
+std = ["digest/std"]

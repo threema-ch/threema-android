@@ -1,4 +1,4 @@
-package ch.threema.app.compose.common.buttons
+package ch.threema.app.compose.common.buttons.primary
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.PaddingValues
@@ -32,21 +32,22 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import ch.threema.app.R
 import ch.threema.app.compose.common.ThemedText
+import ch.threema.app.compose.common.buttons.ButtonIconInfo
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.color.AlphaValues
 import ch.threema.app.compose.theme.dimens.GridUnit
 import ch.threema.app.utils.compose.stringResourceOrNull
 
-private val primaryButtonColors: ButtonColors
+val primaryButtonColors: ButtonColors
     @Composable
     get() = ButtonColors(
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
         disabledContainerColor = MaterialTheme.colorScheme.primary.copy(
-            alpha = AlphaValues.DISABLED_CONTAINER,
+            alpha = AlphaValues.DISABLED,
         ),
         disabledContentColor = MaterialTheme.colorScheme.onPrimary.copy(
-            alpha = AlphaValues.DISABLED_ON_CONTAINER,
+            alpha = AlphaValues.DISABLED,
         ),
     )
 
@@ -105,10 +106,10 @@ fun ButtonPrimaryOverride(
             containerColor = colorPrimaryOverride,
             contentColor = colorOnPrimaryOverride,
             disabledContainerColor = colorPrimaryOverride.copy(
-                alpha = AlphaValues.DISABLED_CONTAINER,
+                alpha = AlphaValues.DISABLED,
             ),
             disabledContentColor = colorOnPrimaryOverride.copy(
-                alpha = AlphaValues.DISABLED_ON_CONTAINER,
+                alpha = AlphaValues.DISABLED,
             ),
         ),
         contentPadding = PaddingValues(

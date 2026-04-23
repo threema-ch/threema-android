@@ -52,28 +52,18 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesMessage
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.taskmanager.catchAllExceptNetworkException
-import ch.threema.protobuf.Common.CspE2eMessageType
-import ch.threema.protobuf.d2d.MdD2D.ContactSync
-import ch.threema.protobuf.d2d.MdD2D.DistributionListSync
-import ch.threema.protobuf.d2d.MdD2D.Envelope
-import ch.threema.protobuf.d2d.MdD2D.Envelope.ContentCase.CONTACT_SYNC
-import ch.threema.protobuf.d2d.MdD2D.Envelope.ContentCase.DISTRIBUTION_LIST_SYNC
-import ch.threema.protobuf.d2d.MdD2D.Envelope.ContentCase.GROUP_SYNC
-import ch.threema.protobuf.d2d.MdD2D.Envelope.ContentCase.INCOMING_MESSAGE
-import ch.threema.protobuf.d2d.MdD2D.Envelope.ContentCase.INCOMING_MESSAGE_UPDATE
-import ch.threema.protobuf.d2d.MdD2D.Envelope.ContentCase.MDM_PARAMETER_SYNC
-import ch.threema.protobuf.d2d.MdD2D.Envelope.ContentCase.OUTGOING_MESSAGE
-import ch.threema.protobuf.d2d.MdD2D.Envelope.ContentCase.OUTGOING_MESSAGE_UPDATE
-import ch.threema.protobuf.d2d.MdD2D.Envelope.ContentCase.SETTINGS_SYNC
-import ch.threema.protobuf.d2d.MdD2D.Envelope.ContentCase.USER_PROFILE_SYNC
-import ch.threema.protobuf.d2d.MdD2D.GroupSync
-import ch.threema.protobuf.d2d.MdD2D.IncomingMessage
-import ch.threema.protobuf.d2d.MdD2D.IncomingMessageUpdate
-import ch.threema.protobuf.d2d.MdD2D.MdmParameterSync
-import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
-import ch.threema.protobuf.d2d.MdD2D.OutgoingMessageUpdate
-import ch.threema.protobuf.d2d.MdD2D.SettingsSync
-import ch.threema.protobuf.d2d.MdD2D.UserProfileSync
+import ch.threema.protobuf.common.CspE2eMessageType
+import ch.threema.protobuf.d2d.ContactSync
+import ch.threema.protobuf.d2d.DistributionListSync
+import ch.threema.protobuf.d2d.Envelope
+import ch.threema.protobuf.d2d.GroupSync
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.IncomingMessageUpdate
+import ch.threema.protobuf.d2d.MdmParameterSync
+import ch.threema.protobuf.d2d.OutgoingMessage
+import ch.threema.protobuf.d2d.OutgoingMessageUpdate
+import ch.threema.protobuf.d2d.SettingsSync
+import ch.threema.protobuf.d2d.UserProfileSync
 
 private val logger = getThreemaLogger("IncomingReflectedMessageTask")
 
@@ -120,43 +110,43 @@ class IncomingReflectedMessageTask(
 
     private suspend fun processEnvelope(envelope: Envelope, handle: ActiveTaskCodec) {
         when (envelope.contentCase) {
-            OUTGOING_MESSAGE -> {
+            Envelope.ContentCase.OUTGOING_MESSAGE -> {
                 processOutgoingMessage(envelope.outgoingMessage)
             }
 
-            OUTGOING_MESSAGE_UPDATE -> {
+            Envelope.ContentCase.OUTGOING_MESSAGE_UPDATE -> {
                 processOutgoingMessageUpdate(envelope.outgoingMessageUpdate)
             }
 
-            INCOMING_MESSAGE -> {
+            Envelope.ContentCase.INCOMING_MESSAGE -> {
                 processIncomingMessage(envelope.incomingMessage, handle)
             }
 
-            INCOMING_MESSAGE_UPDATE -> {
+            Envelope.ContentCase.INCOMING_MESSAGE_UPDATE -> {
                 processIncomingMessageUpdate(envelope.incomingMessageUpdate)
             }
 
-            USER_PROFILE_SYNC -> {
+            Envelope.ContentCase.USER_PROFILE_SYNC -> {
                 processUserProfileSync(envelope.userProfileSync)
             }
 
-            CONTACT_SYNC -> {
+            Envelope.ContentCase.CONTACT_SYNC -> {
                 processContactSync(envelope.contactSync)
             }
 
-            GROUP_SYNC -> {
+            Envelope.ContentCase.GROUP_SYNC -> {
                 processGroupSync(envelope.groupSync)
             }
 
-            DISTRIBUTION_LIST_SYNC -> {
+            Envelope.ContentCase.DISTRIBUTION_LIST_SYNC -> {
                 processDistributionListSync(envelope.distributionListSync)
             }
 
-            SETTINGS_SYNC -> {
+            Envelope.ContentCase.SETTINGS_SYNC -> {
                 processSettingsSync(envelope.settingsSync)
             }
 
-            MDM_PARAMETER_SYNC -> {
+            Envelope.ContentCase.MDM_PARAMETER_SYNC -> {
                 processMdmParameterSync(envelope.mdmParameterSync)
             }
 
@@ -257,8 +247,6 @@ class IncomingReflectedMessageTask(
             CspE2eMessageType.GROUP_IMAGE -> throw IllegalStateException("Deprecated group image messages are unsupported")
             CspE2eMessageType.GROUP_AUDIO -> throw IllegalStateException("Deprecated group audio messages are unsupported")
             CspE2eMessageType.GROUP_VIDEO -> throw IllegalStateException("Deprecated group video messages are unsupported")
-            CspE2eMessageType.GROUP_JOIN_REQUEST -> throw IllegalStateException("Group join requests are unsupported")
-            CspE2eMessageType.GROUP_JOIN_RESPONSE -> throw IllegalStateException("Group join responses are unsupported")
             CspE2eMessageType.REACTION -> ReactionMessage.fromReflected(incomingMessage)
             CspE2eMessageType.GROUP_REACTION -> GroupReactionMessage.fromReflected(incomingMessage)
 
@@ -276,6 +264,10 @@ class IncomingReflectedMessageTask(
 
             CspE2eMessageType.FORWARD_SECURITY_ENVELOPE -> throw IllegalStateException(
                 "A forward security envelope message should never be received as reflected incoming message",
+            )
+
+            CspE2eMessageType.WORK_SYNC_DELTA -> throw IllegalStateException(
+                "A work sync delta message should never be received as reflected incoming message",
             )
 
             CspE2eMessageType.EMPTY -> throw IllegalStateException("An empty message should never be received as reflected incoming message")
@@ -334,11 +326,11 @@ class IncomingReflectedMessageTask(
         ).run()
     }
 
-    private fun processContactSync(contactSync: ContactSync) {
+    private suspend fun processContactSync(contactSync: ContactSync) {
         ReflectedContactSyncTask(
-            contactSync,
-            serviceManager.modelRepositories.contacts,
-            serviceManager,
+            contactSync = contactSync,
+            contactModelRepository = serviceManager.modelRepositories.contacts,
+            serviceManager = serviceManager,
         ).run()
     }
 

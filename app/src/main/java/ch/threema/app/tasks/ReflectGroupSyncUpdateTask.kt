@@ -23,17 +23,18 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncUpdate
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.blob
-import ch.threema.protobuf.d2d.MdD2D.GroupSync.Update.MemberStateChange
+import ch.threema.protobuf.common.Image
+import ch.threema.protobuf.common.blob
+import ch.threema.protobuf.common.deltaImage
+import ch.threema.protobuf.common.identities
+import ch.threema.protobuf.common.image
+import ch.threema.protobuf.common.unit
+import ch.threema.protobuf.d2d.GroupSync.Update.MemberStateChange
+import ch.threema.protobuf.d2d.sync.ConversationCategory
+import ch.threema.protobuf.d2d.sync.ConversationVisibility
+import ch.threema.protobuf.d2d.sync.Group
 import ch.threema.protobuf.d2d.sync.GroupKt
-import ch.threema.protobuf.d2d.sync.MdD2DSync
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Group
 import ch.threema.protobuf.d2d.sync.group
-import ch.threema.protobuf.deltaImage
-import ch.threema.protobuf.identities
-import ch.threema.protobuf.image
-import ch.threema.protobuf.unit
 import ch.threema.storage.models.ConversationTag
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
@@ -145,7 +146,7 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
 
     override fun getMemberStateChanges(): Map<String, MemberStateChange> = emptyMap()
 
-    override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> Unit = {
+    override val runAfterSuccessfulTransaction: suspend (transactionResult: Unit) -> Unit = {
         // Nothing to do
     }
 
@@ -241,8 +242,7 @@ abstract class ReflectGroupSyncUpdateImmediateTask(
         }
 
         override fun getGroupSync(): Group = group {
-            groupIdentity =
-                this@ReflectGroupSetProfilePicture.groupModel.groupIdentity.toProtobuf()
+            groupIdentity = this@ReflectGroupSetProfilePicture.groupModel.groupIdentity.toProtobuf()
             profilePicture = deltaImage {
                 updated = image {
                     blob = blob {
@@ -311,7 +311,7 @@ abstract class ReflectGroupSyncUpdateTask(
         reflectGroupSync(handle)
     }
 
-    override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> Unit = {
+    override val runAfterSuccessfulTransaction: suspend (transactionResult: Unit) -> Unit = {
         // Nothing to do
     }
 
@@ -399,9 +399,9 @@ abstract class ReflectGroupSyncUpdateTask(
 
         override val buildGroupSyncChanges: GroupKt.Dsl.() -> Unit = {
             conversationCategory = if (isPrivateChat) {
-                MdD2DSync.ConversationCategory.PROTECTED
+                ConversationCategory.PROTECTED
             } else {
-                MdD2DSync.ConversationCategory.DEFAULT
+                ConversationCategory.DEFAULT
             }
         }
 
@@ -444,9 +444,9 @@ abstract class ReflectGroupSyncUpdateTask(
 
         override val buildGroupSyncChanges: GroupKt.Dsl.() -> Unit = {
             this.conversationVisibility = if (isArchived) {
-                MdD2DSync.ConversationVisibility.ARCHIVED
+                ConversationVisibility.ARCHIVED
             } else {
-                MdD2DSync.ConversationVisibility.NORMAL
+                ConversationVisibility.NORMAL
             }
         }
 
@@ -493,9 +493,9 @@ abstract class ReflectGroupSyncUpdateTask(
 
         override val buildGroupSyncChanges: GroupKt.Dsl.() -> Unit = {
             this.conversationVisibility = if (isPinned) {
-                MdD2DSync.ConversationVisibility.PINNED
+                ConversationVisibility.PINNED
             } else {
-                MdD2DSync.ConversationVisibility.NORMAL
+                ConversationVisibility.NORMAL
             }
         }
 
@@ -583,7 +583,7 @@ class ReflectLocalGroupUpdate(
                     groupProfilePictureUploadResultSuccess?.let {
                         profilePicture = deltaImage {
                             updated = image {
-                                type = Common.Image.Type.JPEG
+                                type = Image.Type.JPEG
                                 blob = blob {
                                     id = it.blobId.toByteString()
                                     nonce = ProtocolDefines.GROUP_PHOTO_NONCE.toByteString()
@@ -619,7 +619,7 @@ class ReflectLocalGroupUpdate(
         uploadResult
     }
 
-    override val runAfterSuccessfulTransaction: (GroupProfilePictureUploadResult?) -> ReflectionResult<GroupProfilePictureUploadResult?> = {
+    override val runAfterSuccessfulTransaction: suspend (GroupProfilePictureUploadResult?) -> ReflectionResult<GroupProfilePictureUploadResult?> = {
         ReflectionResult.Success(it)
     }
 
@@ -651,7 +651,7 @@ class ReflectLocalGroupLeaveOrDisband(
         reflectGroupSync(handle)
     }
 
-    override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> ReflectionResult<Unit> = {
+    override val runAfterSuccessfulTransaction: suspend (transactionResult: Unit) -> ReflectionResult<Unit> = {
         ReflectionResult.Success(Unit)
     }
 

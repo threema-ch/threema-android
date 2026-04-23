@@ -1,4 +1,4 @@
-//! Implementation of the Threema ID Backup
+//! Implementation of the Threema ID Backup.
 use core::str;
 
 use data_encoding::BASE32;
@@ -11,7 +11,7 @@ use crate::common::{ThreemaId, keys::ClientKey};
 mod argon_chacha_poly_scheme;
 mod legacy_scheme;
 
-/// An error occurred while encrypting/decrypting an identity backup
+/// An error occurred while encrypting/decrypting an identity backup.
 ///
 /// Note: Errors can occur when using the API incorrectly or when the passed encrypted backups are
 /// invalid.
@@ -76,14 +76,14 @@ impl TryFrom<&[u8]> for Salt {
     }
 }
 
-/// ID backup version
+/// ID backup version.
 #[derive(Debug, PartialEq, Eq, strum::FromRepr)]
 #[repr(u8)]
 pub enum BackupVersion {
-    /// Legacy PBKDF2 scheme using XSalsa20 and a custom integrity hash
+    /// Legacy PBKDF2 scheme using XSalsa20 and a custom integrity hash.
     Legacy = 0x00,
 
-    /// Argon2id ChaCha20Poly1305 scheme V1
+    /// Argon2id ChaCha20Poly1305 scheme V1.
     ArgonChachaPolyV1 = 0x01,
 }
 

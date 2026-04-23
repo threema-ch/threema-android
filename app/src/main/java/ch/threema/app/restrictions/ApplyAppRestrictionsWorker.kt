@@ -42,8 +42,7 @@ import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.localcrypto.MasterKeyManager
 import ch.threema.localcrypto.models.RemoteSecretCheckType
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.ScreenshotPolicy
+import ch.threema.protobuf.d2d.sync.Settings
 import java.time.Instant
 import kotlin.collections.any
 import kotlin.time.Duration
@@ -246,9 +245,9 @@ class ApplyAppRestrictionsWorker(
             settingsSyncCreator = { settingsBuilder, disableScreenshotsRestriction ->
                 settingsBuilder.setScreenshotPolicy(
                     if (disableScreenshotsRestriction) {
-                        ScreenshotPolicy.DENY_SCREENSHOT
+                        Settings.ScreenshotPolicy.DENY_SCREENSHOT
                     } else {
-                        ScreenshotPolicy.ALLOW_SCREENSHOT
+                        Settings.ScreenshotPolicy.ALLOW_SCREENSHOT
                     },
                 )
             },

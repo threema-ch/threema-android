@@ -4,7 +4,7 @@ import ch.threema.app.voip.groupcall.sfu.webrtc.DtlsParameters
 import ch.threema.app.voip.groupcall.sfu.webrtc.IceParameters
 import ch.threema.app.voip.groupcall.sfu.webrtc.SessionParameters
 import ch.threema.common.toHexString
-import ch.threema.protobuf.groupcall.SfuHttpResponse
+import ch.threema.protobuf.group_call.SfuHttpResponse
 
 typealias JoinResponse = SfuResponse<JoinResponseBody>
 

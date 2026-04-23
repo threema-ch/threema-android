@@ -4,8 +4,8 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
+import ch.threema.protobuf.common.CspE2eMessageType
+import ch.threema.protobuf.d2d.OutgoingMessage
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.LocationDataModel
 import ch.threema.storage.models.data.MessageContentsType
@@ -20,7 +20,7 @@ internal class ReflectedOutgoingGroupLocationTask(
 ) : ReflectedOutgoingGroupMessageTask<GroupLocationMessage>(
     outgoingMessage = outgoingMessage,
     message = GroupLocationMessage.fromReflected(outgoingMessage),
-    type = Common.CspE2eMessageType.GROUP_LOCATION,
+    type = CspE2eMessageType.GROUP_LOCATION,
     serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }

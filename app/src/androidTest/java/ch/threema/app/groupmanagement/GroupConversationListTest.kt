@@ -27,20 +27,21 @@ abstract class GroupConversationListTest<T : AbstractGroupMessage> : GroupContro
 
     private fun startScenario() {
         Intents.init()
+        try {
+            launchActivity<HomeActivity>()
 
-        launchActivity<HomeActivity>()
-
-        do {
-            var switchedToMessages = false
-            try {
-                onView(withId(R.id.messages)).perform(click())
-                switchedToMessages = true
-            } catch (_: NoMatchingViewException) {
-                onView(withId(R.id.close_button)).perform(click())
-            }
-        } while (!switchedToMessages)
-
-        Intents.release()
+            do {
+                var switchedToMessages = false
+                try {
+                    onView(withId(R.id.messages)).perform(click())
+                    switchedToMessages = true
+                } catch (_: NoMatchingViewException) {
+                    onView(withId(R.id.close_button)).perform(click())
+                }
+            } while (!switchedToMessages)
+        } finally {
+            Intents.release()
+        }
     }
 
     /**

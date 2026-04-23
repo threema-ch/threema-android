@@ -7,7 +7,8 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 import org.json.JSONArray
@@ -54,7 +55,7 @@ class GroupPollVoteMessage : AbstractGroupMessage(), BallotVoteInterface {
             for (voteJson in 0 until votesJsonArray.length()) {
                 this.votes.add(BallotVote.parse(votesJsonArray.getJSONArray(voteJson)))
             }
-        } catch (jsonException: JSONException) {
+        } catch (_: JSONException) {
             throw BadMessageException("TM035")
         }
     }
@@ -87,14 +88,14 @@ class GroupPollVoteMessage : AbstractGroupMessage(), BallotVoteInterface {
 
     companion object {
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): GroupPollVoteMessage = fromByteArray(
+        fun fromReflected(message: IncomingMessage): GroupPollVoteMessage = fromByteArray(
             data = message.body.toByteArray(),
         ).apply {
             initializeCommonProperties(message)
         }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): GroupPollVoteMessage = fromByteArray(
+        fun fromReflected(message: OutgoingMessage): GroupPollVoteMessage = fromByteArray(
             data = message.body.toByteArray(),
         ).apply {
             initializeCommonProperties(message)

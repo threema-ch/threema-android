@@ -7,7 +7,8 @@ import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 
@@ -69,7 +70,7 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
     companion object {
         @JvmStatic
         fun fromReflected(
-            message: MdD2D.IncomingMessage,
+            message: IncomingMessage,
             fromIdentity: IdentityString,
         ): GroupPollSetupMessage = fromByteArray(
             data = message.body.toByteArray(),
@@ -80,7 +81,7 @@ class GroupPollSetupMessage : AbstractGroupMessage(), BallotSetupInterface {
 
         @JvmStatic
         fun fromReflected(
-            message: MdD2D.OutgoingMessage,
+            message: OutgoingMessage,
             fromIdentity: IdentityString,
         ): GroupPollSetupMessage = fromByteArray(
             data = message.body.toByteArray(),

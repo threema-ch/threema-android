@@ -2,7 +2,7 @@ package ch.threema.app.voip.groupcall.sfu.messages
 
 import ch.threema.app.voip.groupcall.sfu.ParticipantId
 import ch.threema.app.voip.groupcall.sfu.SfuException
-import ch.threema.protobuf.groupcall.SfuToParticipant
+import ch.threema.protobuf.group_call.SfuToParticipant
 import org.webrtc.DataChannel
 
 sealed interface S2PMessage {

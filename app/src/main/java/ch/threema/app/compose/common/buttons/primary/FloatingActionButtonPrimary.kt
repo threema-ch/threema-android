@@ -1,4 +1,4 @@
-package ch.threema.app.compose.common.buttons
+package ch.threema.app.compose.common.buttons.primary
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.padding
@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import ch.threema.app.R
 import ch.threema.app.compose.common.ThemedText
+import ch.threema.app.compose.common.buttons.ButtonIconInfo
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.GridUnit
 

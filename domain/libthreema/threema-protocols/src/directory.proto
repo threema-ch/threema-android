@@ -1,0 +1,25 @@
+// ## Directory and Work Sync Messages
+//
+// This is a supplementary section to the corresponding OpenAPI section with
+// newer messages that use Protobuf instead of JSON.
+
+syntax = "proto3";
+
+package directory;
+
+option java_package = "ch.threema.protobuf.directory";
+option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\Directory";
+
+import "md-d2d-sync.proto";
+
+// A user's work properties.
+//
+// IMPORTANT: All fields are optional and presence indicates a change to a
+// property. Lack of presence means that the property remains unchanged.
+message WorkProperties {
+  // Availability status of the user.
+  //
+  // Always optional.
+  d2d_sync.WorkAvailabilityStatus availability_status = 1;
+}

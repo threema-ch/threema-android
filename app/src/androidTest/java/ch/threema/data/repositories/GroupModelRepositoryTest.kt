@@ -60,7 +60,10 @@ class GroupModelRepositoryTest {
             },
             taskManager = TestTaskManager(UnusedTaskCodec()),
         )
-        this.groupModelRepository = ModelRepositories(coreServiceManager, mockk()).groups
+        this.groupModelRepository = ModelRepositories(
+            coreServiceManager = coreServiceManager,
+            identityProvider = mockk(),
+        ).groups
     }
 
     @Test

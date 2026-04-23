@@ -27,7 +27,7 @@ import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.protocol.rendezvous.RendezvousConnection
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.protobuf.url_payloads.DeviceGroupJoinRequestOrOffer
+import ch.threema.protobuf.url.DeviceGroupJoinRequestOrOffer
 import com.google.protobuf.InvalidProtocolBufferException
 import java.io.IOException
 import java.security.SecureRandom

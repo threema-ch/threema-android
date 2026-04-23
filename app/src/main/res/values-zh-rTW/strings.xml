@@ -22,6 +22,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="enter_id_hint">輸入 ${app_name_short} ID</string>
     <string name="account_links">連結帳戶</string>
+    <string name="title_set_availability_status">在線狀態</string>
     <string name="menu_settings">設定</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="menu_about">關於 ${app_name}</string>
@@ -112,6 +113,7 @@
     <string name="set_nickname_title">設定暱稱</string>
     <string name="ok">確認</string>
     <string name="cancel">取消</string>
+    <string name="save">儲存</string>
     <string name="copy_message_action">複製</string>
     <string name="delete_contact_action">刪除聯絡人</string>
     <string name="delete_multiple_contact_action">刪除聯絡人</string>
@@ -356,6 +358,7 @@
     <string name="can_not_send_no_group_members">您無法將訊息傳送到空群組</string>
     <string name="you_are_not_a_member_of_this_group">您不是此群組的成員</string>
     <string name="title_public_nickname">暱稱</string>
+    <string name="title_availability_status">狀態</string>
     <string name="prefs_sum_excluded_sync_identities">同步聯絡人時，這裡列出的ID將被忽略</string>
     <string name="prefs_title_excluded_sync_identities">排除清單</string>
     <string name="synchronize_contact">通訊錄同步</string>
@@ -1691,10 +1694,11 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="work_directory_empty_view_text">請輸入至少3個字元，以便在貴公司的 ${app_name_short} 使用者目錄中搜尋。</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">此檔案為無效，無法分享</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
-    <string name="contact_availability_status_available">上線</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <string name="contact_availability_status_unavailable">離線</string>
+    <string name="availability_status_none">無狀態</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e. out-of-office -->
+    <string name="availability_status_unavailable">離線</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently busy-->
+    <string name="availability_status_busy">忙碌中</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">啟動連結為無效，請聯絡您的管理員以取得協助。</string>
     <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
@@ -1761,6 +1765,13 @@ ${app_name_short} 支援的所有表情符號。</string>
     <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_off">在通話過程中，即使藍牙耳機斷開連線，通話仍會繼續進行。注意：這可能會導致耳機上的掛斷按鈕無法使用。</string>
     <string name="failed_to_load_conversations">無法載入對話。</string>
     <string name="contact_support">聯絡支援人員</string>
+    <string name="edit_availability_status_modal_title">在線狀態</string>
+    <string name="edit_availability_status_modal_subtitle">此狀態對貴公司所有人都可見。</string>
+    <string name="edit_availability_status_modal_optional_message_label">自訂文字（可選）</string>
+    <string name="edit_availability_status_modal_optional_message_placeholder">開會中</string>
+    <string name="edit_availability_status_modal_optional_message_description">當選取為「忙碌」或「離線」時，設定自訂狀態訊息。</string>
+    <string name="edit_availability_status_modal_optional_message_too_long">文字過長，請縮短</string>
+    <string name="edit_availability_status_did_change">在線狀態已變更</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d位聯絡人</item>
     </plurals>

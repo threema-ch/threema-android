@@ -10,6 +10,7 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.processors.reflectedd2dsync.ReflectedContactSyncTask
 import ch.threema.app.stores.IdentityProvider
 import ch.threema.base.crypto.NaCl
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -25,18 +26,17 @@ import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.types.Identity
+import ch.threema.protobuf.common.unit
 import ch.threema.protobuf.d2d.ContactSyncKt.create
 import ch.threema.protobuf.d2d.ContactSyncKt.update
 import ch.threema.protobuf.d2d.contactSync
-import ch.threema.protobuf.d2d.sync.ContactKt.notificationSoundPolicyOverride
+import ch.threema.protobuf.d2d.sync.Contact
+import ch.threema.protobuf.d2d.sync.ContactKt.deprecatedNotificationSoundPolicyOverride
 import ch.threema.protobuf.d2d.sync.ContactKt.readReceiptPolicyOverride
 import ch.threema.protobuf.d2d.sync.ContactKt.typingIndicatorPolicyOverride
-import ch.threema.protobuf.d2d.sync.MdD2DSync
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.ActivityState
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.ReadReceiptPolicyOverride
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.TypingIndicatorPolicyOverride
+import ch.threema.protobuf.d2d.sync.ConversationCategory
+import ch.threema.protobuf.d2d.sync.ConversationVisibility
 import ch.threema.protobuf.d2d.sync.contact
-import ch.threema.protobuf.unit
 import ch.threema.storage.TestDatabaseProvider
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import com.google.protobuf.kotlin.toByteString
@@ -51,6 +51,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 import kotlin.test.fail
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.koin.dsl.module
@@ -87,6 +88,8 @@ class ReflectedContactSyncTaskTest {
         jobTitle = null,
         department = null,
         notificationTriggerPolicyOverride = null,
+        availabilityStatus = AvailabilityStatus.None,
+        workLastFullSyncAt = null,
     )
 
     private val instrumentedTestModule = module {
@@ -121,11 +124,14 @@ class ReflectedContactSyncTaskTest {
             taskManager = TestTaskManager(taskCodec),
             identityStore = identityStoreMock,
         )
-        contactModelRepository = ModelRepositories(coreServiceManager, identityProviderMock).contacts
+        contactModelRepository = ModelRepositories(
+            coreServiceManager = coreServiceManager,
+            identityProvider = identityProviderMock,
+        ).contacts
     }
 
     @Test
-    fun testNewReflectedContact() {
+    fun testNewReflectedContact() = runTest {
         val contact = contact {
             identity = "01234567"
             publicKey = ByteArray(NaCl.PUBLIC_KEY_BYTES) { it.toByte() }.toByteString()
@@ -133,26 +139,25 @@ class ReflectedContactSyncTaskTest {
             firstName = "0123"
             // No last name provided
             nickname = "nick"
-            verificationLevel = MdD2DSync.Contact.VerificationLevel.FULLY_VERIFIED
-            workVerificationLevel = MdD2DSync.Contact.WorkVerificationLevel.NONE
-            identityType = MdD2DSync.Contact.IdentityType.WORK
-            acquaintanceLevel = MdD2DSync.Contact.AcquaintanceLevel.DIRECT
-            activityState = ActivityState.INACTIVE
+            verificationLevel = Contact.VerificationLevel.FULLY_VERIFIED
+            workVerificationLevel = Contact.WorkVerificationLevel.NONE
+            identityType = Contact.IdentityType.WORK
+            acquaintanceLevel = Contact.AcquaintanceLevel.DIRECT
+            activityState = Contact.ActivityState.INACTIVE
             featureMask = 123
-            syncState = MdD2DSync.Contact.SyncState.IMPORTED
+            syncState = Contact.SyncState.IMPORTED
             readReceiptPolicyOverride = readReceiptPolicyOverride {
                 default = unit {}
             }
             typingIndicatorPolicyOverride = typingIndicatorPolicyOverride {
-                policy = MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
+                policy = ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
             }
-            notificationTriggerPolicyOverride =
-                MdD2DSync.Contact.NotificationTriggerPolicyOverride.getDefaultInstance()
-            notificationSoundPolicyOverride = notificationSoundPolicyOverride {
-                policy = MdD2DSync.NotificationSoundPolicy.MUTED
+            notificationTriggerPolicyOverride = Contact.NotificationTriggerPolicyOverride.getDefaultInstance()
+            deprecatedNotificationSoundPolicyOverride = deprecatedNotificationSoundPolicyOverride {
+                default = unit {}
             }
-            conversationCategory = MdD2DSync.ConversationCategory.DEFAULT
-            conversationVisibility = MdD2DSync.ConversationVisibility.NORMAL
+            conversationCategory = ConversationCategory.DEFAULT
+            conversationVisibility = ConversationVisibility.NORMAL
         }
 
         testReflectedContactCreate(contact) { contactModel ->
@@ -179,7 +184,7 @@ class ReflectedContactSyncTaskTest {
     }
 
     @Test
-    fun testReflectedNicknameChange() {
+    fun testReflectedNicknameChange() = runTest {
         val newNickname = "new nickname"
         testReflectedContactUpdate(
             contact {
@@ -191,16 +196,16 @@ class ReflectedContactSyncTaskTest {
         }
     }
 
-    private fun testReflectedContactCreate(
-        contact: MdD2DSync.Contact,
+    private suspend fun testReflectedContactCreate(
+        contact: Contact,
         assertContactCreated: (contactModel: ContactModel) -> Unit,
     ) {
         assertNull(contactModelRepository.getByIdentity(contact.identity))
 
         ReflectedContactSyncTask(
-            contact.toContactSyncCreate(),
-            contactModelRepository,
-            ThreemaApplication.requireServiceManager(),
+            contactSync = contact.toContactSyncCreate(),
+            contactModelRepository = contactModelRepository,
+            serviceManager = ThreemaApplication.requireServiceManager(),
         ).run()
 
         // Assert that no transaction have been executed
@@ -214,16 +219,16 @@ class ReflectedContactSyncTaskTest {
         assertContactCreated(contactModel)
     }
 
-    private fun testReflectedContactUpdate(
-        contact: MdD2DSync.Contact,
+    private suspend fun testReflectedContactUpdate(
+        contact: Contact,
         assertUpdateApplied: (contactModel: ContactModel) -> Unit,
     ) {
         createContact(initialContactModelData.copy(identity = contact.identity))
 
         ReflectedContactSyncTask(
-            contact.toContactSyncUpdate(),
-            contactModelRepository,
-            ThreemaApplication.requireServiceManager(),
+            contactSync = contact.toContactSyncUpdate(),
+            contactModelRepository = contactModelRepository,
+            serviceManager = ThreemaApplication.requireServiceManager(),
         ).run()
 
         // Assert that no transaction have been executed
@@ -264,83 +269,83 @@ class ReflectedContactSyncTaskTest {
         assertTrue { taskCodec.outboundMessages.isEmpty() }
     }
 
-    private fun MdD2DSync.Contact.toContactSyncCreate() = contactSync {
+    private fun Contact.toContactSyncCreate() = contactSync {
         create = create {
             contact = this@toContactSyncCreate
         }
     }
 
-    private fun MdD2DSync.Contact.toContactSyncUpdate() = contactSync {
+    private fun Contact.toContactSyncUpdate() = contactSync {
         update = update {
             contact = this@toContactSyncUpdate
         }
     }
 
-    private fun MdD2DSync.Contact.VerificationLevel.convert(): VerificationLevel = when (this) {
-        MdD2DSync.Contact.VerificationLevel.FULLY_VERIFIED -> VerificationLevel.FULLY_VERIFIED
-        MdD2DSync.Contact.VerificationLevel.SERVER_VERIFIED -> VerificationLevel.SERVER_VERIFIED
-        MdD2DSync.Contact.VerificationLevel.UNVERIFIED -> VerificationLevel.UNVERIFIED
-        MdD2DSync.Contact.VerificationLevel.UNRECOGNIZED -> fail("Verification level is unrecognized")
+    private fun Contact.VerificationLevel.convert(): VerificationLevel = when (this) {
+        Contact.VerificationLevel.FULLY_VERIFIED -> VerificationLevel.FULLY_VERIFIED
+        Contact.VerificationLevel.SERVER_VERIFIED -> VerificationLevel.SERVER_VERIFIED
+        Contact.VerificationLevel.UNVERIFIED -> VerificationLevel.UNVERIFIED
+        Contact.VerificationLevel.UNRECOGNIZED -> fail("Verification level is unrecognized")
     }
 
-    private fun MdD2DSync.Contact.WorkVerificationLevel.convert(): WorkVerificationLevel =
+    private fun Contact.WorkVerificationLevel.convert(): WorkVerificationLevel =
         when (this) {
-            MdD2DSync.Contact.WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED -> WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED
-            MdD2DSync.Contact.WorkVerificationLevel.NONE -> WorkVerificationLevel.NONE
-            MdD2DSync.Contact.WorkVerificationLevel.UNRECOGNIZED -> fail("Work verification level is unrecognized")
+            Contact.WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED -> WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED
+            Contact.WorkVerificationLevel.NONE -> WorkVerificationLevel.NONE
+            Contact.WorkVerificationLevel.UNRECOGNIZED -> fail("Work verification level is unrecognized")
         }
 
-    private fun MdD2DSync.Contact.IdentityType.convert(): IdentityType = when (this) {
-        MdD2DSync.Contact.IdentityType.REGULAR -> IdentityType.NORMAL
-        MdD2DSync.Contact.IdentityType.WORK -> IdentityType.WORK
-        MdD2DSync.Contact.IdentityType.UNRECOGNIZED -> fail("Identity type is unrecognized")
+    private fun Contact.IdentityType.convert(): IdentityType = when (this) {
+        Contact.IdentityType.REGULAR -> IdentityType.NORMAL
+        Contact.IdentityType.WORK -> IdentityType.WORK
+        Contact.IdentityType.UNRECOGNIZED -> fail("Identity type is unrecognized")
     }
 
-    private fun MdD2DSync.Contact.AcquaintanceLevel.convert(): AcquaintanceLevel =
+    private fun Contact.AcquaintanceLevel.convert(): AcquaintanceLevel =
         when (this) {
-            MdD2DSync.Contact.AcquaintanceLevel.DIRECT -> AcquaintanceLevel.DIRECT
-            MdD2DSync.Contact.AcquaintanceLevel.GROUP_OR_DELETED -> AcquaintanceLevel.GROUP
-            MdD2DSync.Contact.AcquaintanceLevel.UNRECOGNIZED -> fail("Acquaintance level is unrecognized")
+            Contact.AcquaintanceLevel.DIRECT -> AcquaintanceLevel.DIRECT
+            Contact.AcquaintanceLevel.GROUP_OR_DELETED -> AcquaintanceLevel.GROUP
+            Contact.AcquaintanceLevel.UNRECOGNIZED -> fail("Acquaintance level is unrecognized")
         }
 
-    private fun ActivityState.convert(): IdentityState = when (this) {
-        ActivityState.ACTIVE -> IdentityState.ACTIVE
-        ActivityState.INACTIVE -> IdentityState.INACTIVE
-        ActivityState.INVALID -> IdentityState.INVALID
-        ActivityState.UNRECOGNIZED -> fail("Activity state is unrecognized")
+    private fun Contact.ActivityState.convert(): IdentityState = when (this) {
+        Contact.ActivityState.ACTIVE -> IdentityState.ACTIVE
+        Contact.ActivityState.INACTIVE -> IdentityState.INACTIVE
+        Contact.ActivityState.INVALID -> IdentityState.INVALID
+        Contact.ActivityState.UNRECOGNIZED -> fail("Activity state is unrecognized")
     }
 
-    private fun MdD2DSync.Contact.SyncState.convert(): ContactSyncState = when (this) {
-        MdD2DSync.Contact.SyncState.INITIAL -> ContactSyncState.INITIAL
-        MdD2DSync.Contact.SyncState.IMPORTED -> ContactSyncState.IMPORTED
-        MdD2DSync.Contact.SyncState.CUSTOM -> ContactSyncState.CUSTOM
-        MdD2DSync.Contact.SyncState.UNRECOGNIZED -> fail("Sync state is unrecognized")
+    private fun Contact.SyncState.convert(): ContactSyncState = when (this) {
+        Contact.SyncState.INITIAL -> ContactSyncState.INITIAL
+        Contact.SyncState.IMPORTED -> ContactSyncState.IMPORTED
+        Contact.SyncState.CUSTOM -> ContactSyncState.CUSTOM
+        Contact.SyncState.UNRECOGNIZED -> fail("Sync state is unrecognized")
     }
 
-    private fun ReadReceiptPolicyOverride.convert(): ReadReceiptPolicy = when (overrideCase) {
-        ReadReceiptPolicyOverride.OverrideCase.DEFAULT -> ReadReceiptPolicy.DEFAULT
-        ReadReceiptPolicyOverride.OverrideCase.POLICY -> when (policy) {
-            MdD2DSync.ReadReceiptPolicy.SEND_READ_RECEIPT -> ReadReceiptPolicy.SEND
-            MdD2DSync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT -> ReadReceiptPolicy.DONT_SEND
-            MdD2DSync.ReadReceiptPolicy.UNRECOGNIZED -> fail("Read receipt policy is unrecognized")
+    private fun Contact.ReadReceiptPolicyOverride.convert(): ReadReceiptPolicy = when (overrideCase) {
+        Contact.ReadReceiptPolicyOverride.OverrideCase.DEFAULT -> ReadReceiptPolicy.DEFAULT
+        Contact.ReadReceiptPolicyOverride.OverrideCase.POLICY -> when (policy) {
+            ch.threema.protobuf.d2d.sync.ReadReceiptPolicy.SEND_READ_RECEIPT -> ReadReceiptPolicy.SEND
+            ch.threema.protobuf.d2d.sync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT -> ReadReceiptPolicy.DONT_SEND
+            ch.threema.protobuf.d2d.sync.ReadReceiptPolicy.UNRECOGNIZED -> fail("Read receipt policy is unrecognized")
             null -> fail("Read receipt policy is null")
         }
 
-        ReadReceiptPolicyOverride.OverrideCase.OVERRIDE_NOT_SET -> fail("Read receipt policy override not set")
+        Contact.ReadReceiptPolicyOverride.OverrideCase.OVERRIDE_NOT_SET -> fail("Read receipt policy override not set")
         null -> fail("Read receipt policy override is null")
     }
 
-    private fun TypingIndicatorPolicyOverride.convert(): TypingIndicatorPolicy =
+    private fun Contact.TypingIndicatorPolicyOverride.convert(): TypingIndicatorPolicy =
         when (overrideCase) {
-            TypingIndicatorPolicyOverride.OverrideCase.DEFAULT -> TypingIndicatorPolicy.DEFAULT
-            TypingIndicatorPolicyOverride.OverrideCase.POLICY -> when (policy) {
-                MdD2DSync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR -> TypingIndicatorPolicy.SEND
-                MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR -> TypingIndicatorPolicy.DONT_SEND
-                MdD2DSync.TypingIndicatorPolicy.UNRECOGNIZED -> fail("Typing indicator policy is unrecognized")
+            Contact.TypingIndicatorPolicyOverride.OverrideCase.DEFAULT -> TypingIndicatorPolicy.DEFAULT
+            Contact.TypingIndicatorPolicyOverride.OverrideCase.POLICY -> when (policy) {
+                ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR -> TypingIndicatorPolicy.SEND
+                ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR -> TypingIndicatorPolicy.DONT_SEND
+                ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy.UNRECOGNIZED -> fail("Typing indicator policy is unrecognized")
                 null -> fail("Typing indicator policy is null")
             }
 
-            TypingIndicatorPolicyOverride.OverrideCase.OVERRIDE_NOT_SET -> fail("Typing indicator policy override not set")
+            Contact.TypingIndicatorPolicyOverride.OverrideCase.OVERRIDE_NOT_SET -> fail("Typing indicator policy override not set")
             null -> fail("Typing indicator policy override is null")
         }
 }

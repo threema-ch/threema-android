@@ -4,7 +4,7 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.emptyByteArray
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.OutgoingMessage
 
 private val logger = getThreemaLogger("ReflectedOutgoingPlaceholderTask")
 
@@ -13,7 +13,7 @@ private val logger = getThreemaLogger("ReflectedOutgoingPlaceholderTask")
  * parse the unused messages. Therefore we use the [PlaceholderMessage].
  */
 internal class ReflectedOutgoingPlaceholderTask(
-    outgoingMessage: MdD2D.OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
     private val logMessage: String? = null,
 ) : ReflectedOutgoingContactMessageTask<AbstractMessage>(

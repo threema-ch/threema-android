@@ -44,9 +44,9 @@ import ch.threema.app.R
 import ch.threema.app.compose.common.SpacerVertical
 import ch.threema.app.compose.common.ThemedText
 import ch.threema.app.compose.common.buttons.ButtonIconInfo
-import ch.threema.app.compose.common.buttons.ButtonPrimaryWebsite
 import ch.threema.app.compose.common.buttons.TextButtonNeutral
 import ch.threema.app.compose.common.buttons.TextButtonPrimary
+import ch.threema.app.compose.common.buttons.primary.ButtonPrimaryWebsite
 import ch.threema.app.compose.preview.PreviewThreemaAll
 import ch.threema.app.compose.theme.ThreemaTheme
 import ch.threema.app.compose.theme.ThreemaThemePreview

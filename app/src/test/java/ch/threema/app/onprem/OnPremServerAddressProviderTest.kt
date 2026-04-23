@@ -127,7 +127,7 @@ class OnPremServerAddressProviderTest {
     fun `test work server url`() {
         assertEquals(
             "https://work.threemaonprem.initrode.com/",
-            serverAddressProvider.getWorkServerUrl(ipv6 = false),
+            serverAddressProvider.getWorkServerUrlLegacy(ipv6 = false),
         )
     }
 

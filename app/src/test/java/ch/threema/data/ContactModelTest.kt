@@ -11,6 +11,7 @@ import ch.threema.base.crypto.NonceStore
 import ch.threema.common.emptyByteArray
 import ch.threema.common.plus
 import ch.threema.data.datatypes.AndroidContactLookupInfo
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -173,6 +174,8 @@ class ContactModelTest {
                 jobTitle = null,
                 department = null,
                 notificationTriggerPolicyOverride = null,
+                availabilityStatus = AvailabilityStatus.None,
+                workLastFullSyncAt = null,
             ),
             databaseBackend = databaseBackendMock,
             coreServiceManager = coreServiceManagerMock,
@@ -228,6 +231,39 @@ class ContactModelTest {
         assertTrue("Contact listener onModified called for wrong identity") {
             contactListenerTracker.onModified.all { it == contact.identity }
         }
+    }
+
+    @Test
+    fun testSetAvailabilityStatusFromLocal() {
+        assertChangeFromLocal(
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel -> contactModel.setAvailabilityStatusFromLocal(AvailabilityStatus.Busy()) },
+            checkDataChanged = { contactModel -> AvailabilityStatus.Busy() == contactModel.data!!.availabilityStatus },
+            expectedTaskReflectType = ReflectContactSyncUpdateTask.ReflectAvailabilityStatusUpdate::class.java,
+        )
+    }
+
+    @Test
+    fun testSetAvailabilityStatusFromSync() {
+        assertChangeFromSync(
+            contactModel = TestData.createContactModel(
+                coreServiceManagerMock = coreServiceManagerMock,
+            ),
+            performChange = { contactModel ->
+                contactModel.setAvailabilityStatusFromSync(
+                    AvailabilityStatus.Unavailable(
+                        description = "On vacation",
+                    ),
+                )
+            },
+            checkDataChanged = { contactModel ->
+                AvailabilityStatus.Unavailable(
+                    description = "On vacation",
+                ) == contactModel.data!!.availabilityStatus
+            },
+        )
     }
 
     @Test

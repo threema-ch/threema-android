@@ -19,7 +19,7 @@ interface DatabaseBackend {
      * @throws SQLiteException if insertion fails due to a conflict
      * @throws IllegalArgumentException if the length of the identity or public key is invalid
      */
-    fun createContact(contact: DbContact)
+    fun createContact(dbContact: DbContact)
 
     /**
      * Return the contact with the specified [identity].
@@ -37,7 +37,7 @@ interface DatabaseBackend {
      * - The public key
      * - The createdAt timestamp
      */
-    fun updateContact(contact: DbContact)
+    fun updateContact(dbContact: DbContact)
 
     /**
      * Delete the contact with the specified identity.

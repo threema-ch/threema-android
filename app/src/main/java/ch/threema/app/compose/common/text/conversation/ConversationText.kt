@@ -40,6 +40,7 @@ import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -88,6 +89,7 @@ fun ConversationText(
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     color: Color = LocalContentColor.current,
     maxLines: Int = Int.MAX_VALUE,
+    textAlign: TextAlign? = null,
     overflow: TextOverflow = TextOverflow.Ellipsis,
     emojiSettings: EmojiSettings = ConversationTextDefaults.EmojiSettings,
     mentionFeature: MentionFeature = MentionFeature.Off,
@@ -172,6 +174,7 @@ fun ConversationText(
                 ),
             ),
             maxLines = maxLines,
+            textAlign = textAlign,
             overflow = overflow,
             color = color,
             onTextLayout = { layoutResult ->
@@ -354,7 +357,7 @@ private fun TextLayoutResult.getBoundingBoxes(
 @Immutable
 data class EmojiSettings(
     @EmojiStyle val style: Int,
-    val upscalingFeature: EmojiUpscalingFeature,
+    val upscalingFeature: EmojiUpscalingFeature = EmojiUpscalingFeature.Off,
 ) {
     internal val useSystemEmojis: Boolean = style == EMOJI_STYLE_ANDROID
 }
@@ -363,7 +366,6 @@ object ConversationTextDefaults {
 
     val EmojiSettings = EmojiSettings(
         style = ConfigUtils.emojiStyle,
-        upscalingFeature = EmojiUpscalingFeature.Off,
     )
 }
 

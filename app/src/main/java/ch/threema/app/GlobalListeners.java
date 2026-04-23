@@ -3,19 +3,13 @@ package ch.threema.app;
 import android.app.ForegroundServiceStartNotAllowedException;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.ContentObserver;
 import android.os.Handler;
 import android.os.Looper;
-import android.provider.ContactsContract;
 
-import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
@@ -25,7 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import ch.threema.android.ToastDuration;
-import ch.threema.app.apptaskexecutor.AppTaskExecutor;
+import ch.threema.app.androidcontactsync.AndroidContactChangeMonitor;
 import ch.threema.app.listeners.BallotVoteListener;
 import ch.threema.app.listeners.ContactListener;
 import ch.threema.app.listeners.ContactTypingListener;
@@ -53,7 +47,6 @@ import ch.threema.app.services.MessageService;
 import ch.threema.app.services.UserService;
 import ch.threema.app.services.ballot.BallotService;
 import ch.threema.app.services.notification.NotificationService;
-import ch.threema.app.androidcontactsync.usecases.UpdateContactNameUseCase;
 import ch.threema.app.utils.BallotUtil;
 import ch.threema.app.utils.ConversationNotificationUtil;
 import ch.threema.app.utils.ShortcutUtil;
@@ -72,7 +65,6 @@ import ch.threema.base.ThreemaException;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import ch.threema.data.models.ContactModel;
-import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.protocol.csp.messages.file.FileData;
@@ -93,7 +85,6 @@ import ch.threema.storage.models.ballot.IdentityBallotModel;
 import ch.threema.storage.models.ballot.LinkBallotModel;
 import ch.threema.storage.models.data.status.GroupStatusDataModel;
 import ch.threema.storage.models.data.status.VoipStatusDataModel;
-import kotlin.Unit;
 
 import static ch.threema.android.ToastKt.showToast;
 
@@ -102,19 +93,22 @@ public class GlobalListeners {
 
     private static final Logger logger = getThreemaLogger("GlobalListeners");
 
-    private final AppTaskExecutor appTaskExecutor = KoinJavaComponent.get(AppTaskExecutor.class);
-
     public static final Lock onAndroidContactChangeLock = new ReentrantLock();
 
     private final Handler handler = new Handler(Looper.getMainLooper());
 
     private final ExecutorService workerExecutor = Executors.newCachedThreadPool();
 
+    @NonNull
+    private final AndroidContactChangeMonitor androidContactChangeMonitor;
+
     public GlobalListeners(
         @NonNull Context appContext,
+        @NonNull AndroidContactChangeMonitor androidContactChangeMonitor,
         @NonNull ServiceManager serviceManager
     ) {
         this.appContext = appContext;
+        this.androidContactChangeMonitor = androidContactChangeMonitor;
         this.serviceManager = serviceManager;
 
         webClientWakeUpListener = () -> showToast(appContext, R.string.webclient_protocol_version_to_old, ToastDuration.LONG);
@@ -166,21 +160,11 @@ public class GlobalListeners {
     }
 
     private void registerContactNameChangeListener() {
-        if (ContextCompat.checkSelfPermission(appContext,
-            android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            appContext.getContentResolver()
-                .registerContentObserver(ContactsContract.Contacts.CONTENT_URI,
-                    false,
-                    contentObserverChangeContactNames);
-        }
+        androidContactChangeMonitor.start();
     }
 
     private void unregisterContactNameChangeListener() {
-        if (ContextCompat.checkSelfPermission(appContext,
-            android.Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-            appContext.getContentResolver()
-                .unregisterContentObserver(contentObserverChangeContactNames);
-        }
+        androidContactChangeMonitor.stop();
     }
 
     private void showNotesGroupNotice(GroupModelOld groupModel, @GroupService.GroupState int oldState, @GroupService.GroupState int newState) {
@@ -787,90 +771,20 @@ public class GlobalListeners {
     };
 
     @NonNull
-    private final ContentObserver contentObserverChangeContactNames = new ContentObserver(null) {
-        private boolean isRunning = false;
-
-        @Override
-        public boolean deliverSelfNotifications() {
-            return super.deliverSelfNotifications();
-        }
-
-        @Override
-        public void onChange(boolean selfChange) {
-            super.onChange(selfChange);
-
-            logger.info("Contact name change observed");
-
-            if (selfChange || isRunning) {
-                logger.info("Contact name change observer already running");
-                return;
-            }
-
-            try {
-                this.isRunning = true;
-                onAndroidContactChangeLock.lock();
-                logger.info("Starting to update all contact names from android contacts");
-
-                if (serviceManager.getSynchronizeContactsService().isSynchronizationInProgress()) {
-                    logger.warn("Aborting contact name change observer as a contact synchronization is currently in progress");
-                    return;
-                }
-
-                if (!serviceManager.getSynchronizedSettingsService().isSyncContacts()) {
-                    logger.warn("Contact synchronization is not enabled. Aborting.");
-                    return;
-                }
-
-                logger.info("Updating all contact names from android contacts");
-                List<ContactModel> allContactModels = serviceManager.getModelRepositories().getContacts().getAll();
-                Set<ContactModel> linkedContactModels = new HashSet<>();
-                for (ContactModel contactModel : allContactModels) {
-                    ContactModelData contactModelData = contactModel.getData();
-                    if (contactModelData != null && contactModelData.androidContactLookupInfo != null) {
-                        linkedContactModels.add(contactModel);
-                    }
-                }
-                appTaskExecutor.runInAppTask(continuation -> {
-                    // Note that continuation can only be used once to call a suspend function!
-                    // Inject contact name use case here to prevent creating it if contacts never change.
-                    UpdateContactNameUseCase updateContactNameUseCase = KoinJavaComponent.get(UpdateContactNameUseCase.class);
-                    updateContactNameUseCase.call(linkedContactModels, continuation);
-                    logger.info("Finished updating contact names from android contacts");
-                    return Unit.INSTANCE;
-                });
-            } catch (MasterKeyLockedException masterKeyLockedException) {
-                logger.error("Cantact name change observer could not be run successfully", masterKeyLockedException);
-            } finally {
-                this.isRunning = false;
-                onAndroidContactChangeLock.unlock();
-            }
-        }
-    };
-
-    @NonNull
     private final SynchronizeContactsListener synchronizeContactsListener = new SynchronizeContactsListener() {
         @Override
         public void onStarted(SynchronizeContactsRoutine startedRoutine) {
-            //disable contact observer
-            appContext.getContentResolver().unregisterContentObserver(contentObserverChangeContactNames);
+            androidContactChangeMonitor.stop();
         }
 
         @Override
         public void onFinished(SynchronizeContactsRoutine finishedRoutine) {
-            //enable contact observer
-            appContext.getContentResolver().registerContentObserver(
-                ContactsContract.Contacts.CONTENT_URI,
-                false,
-                contentObserverChangeContactNames);
+            androidContactChangeMonitor.start();
         }
 
         @Override
         public void onError(SynchronizeContactsRoutine finishedRoutine) {
-            //enable contact observer
-            appContext.getContentResolver().registerContentObserver(
-                ContactsContract.Contacts.CONTENT_URI,
-                false,
-                contentObserverChangeContactNames);
+            androidContactChangeMonitor.start();
         }
     };
 

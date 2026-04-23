@@ -32,6 +32,7 @@ import ch.threema.app.compose.preview.PreviewData
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.GridUnit
 import ch.threema.app.usecases.conversations.AvatarIteration
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.domain.models.ContactReceiverIdentifier
 import ch.threema.domain.models.ReceiverIdentifier
 
@@ -49,6 +50,7 @@ fun AvatarAsyncCheckable(
     contentDescription: String?,
     @DrawableRes fallbackIcon: Int,
     showWorkBadge: Boolean,
+    availabilityStatus: AvailabilityStatus?,
     isChecked: Boolean,
     onClick: () -> Unit,
 ) {
@@ -79,6 +81,7 @@ fun AvatarAsyncCheckable(
                 contentDescription = contentDescription,
                 fallbackIcon = fallbackIcon,
                 showWorkBadge = showWorkBadge,
+                availabilityStatus = availabilityStatus,
                 onClick = onClick,
             )
         } else {
@@ -133,6 +136,7 @@ private fun AvatarAsyncCheckable_Preview_Unchecked() {
                 contentDescription = null,
                 fallbackIcon = R.drawable.ic_contact,
                 showWorkBadge = true,
+                availabilityStatus = AvailabilityStatus.Busy(),
                 isChecked = false,
                 onClick = {},
             )
@@ -154,6 +158,7 @@ private fun AvatarAsyncCheckable_Preview_Checked() {
                 contentDescription = null,
                 fallbackIcon = R.drawable.ic_contact,
                 showWorkBadge = true,
+                availabilityStatus = AvailabilityStatus.Busy(),
                 isChecked = true,
                 onClick = {},
             )

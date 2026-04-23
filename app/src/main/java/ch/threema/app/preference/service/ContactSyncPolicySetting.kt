@@ -9,7 +9,7 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.ContactSyncPolicy
+import ch.threema.protobuf.d2d.sync.Settings
 
 private val logger = getThreemaLogger("ContactSyncPolicySetting")
 
@@ -30,17 +30,17 @@ class ContactSyncPolicySetting internal constructor(
     override fun instantiateReflectionTask(): Task<*, TaskCodec> =
         ReflectSettingsSyncTask.ReflectContactSyncPolicySyncUpdate()
 
-    fun getContactSyncPolicy(): ContactSyncPolicy =
+    fun getContactSyncPolicy(): Settings.ContactSyncPolicy =
         when (get()) {
-            true -> ContactSyncPolicy.SYNC
-            false -> ContactSyncPolicy.NOT_SYNCED
+            true -> Settings.ContactSyncPolicy.SYNC
+            false -> Settings.ContactSyncPolicy.NOT_SYNCED
         }
 
-    fun setFromSync(contactSyncPolicy: ContactSyncPolicy) {
+    fun setFromSync(contactSyncPolicy: Settings.ContactSyncPolicy) {
         val value = when (contactSyncPolicy) {
-            ContactSyncPolicy.SYNC -> true
-            ContactSyncPolicy.NOT_SYNCED -> false
-            ContactSyncPolicy.UNRECOGNIZED -> {
+            Settings.ContactSyncPolicy.SYNC -> true
+            Settings.ContactSyncPolicy.NOT_SYNCED -> false
+            Settings.ContactSyncPolicy.UNRECOGNIZED -> {
                 logger.warn("Cannot set unrecognized contact sync policy")
                 return
             }

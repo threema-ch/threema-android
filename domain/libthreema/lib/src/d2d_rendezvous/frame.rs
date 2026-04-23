@@ -9,7 +9,7 @@ use crate::utils::{
 
 const HEADER_LENGTH: usize = 4;
 
-/// An incoming frame
+/// An incoming frame.
 #[derive(Educe)]
 #[educe(Debug)]
 pub struct IncomingFrame(#[educe(Debug(method(debug_slice_length)))] pub Vec<u8>);
@@ -27,7 +27,7 @@ impl FrameDecoder {
 
 /// An outgoing frame.
 ///
-/// TODO(LIB-30): Simplify
+/// TODO(LIB-30): Simplify.
 #[derive(Educe, Name)]
 #[educe(Debug)]
 pub struct OutgoingFrame(#[educe(Debug(method(debug_slice_length)))] pub(super) Vec<u8>);

@@ -10,7 +10,8 @@ import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.protocol.csp.coders.MessageBox;
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityMode;
 import ch.threema.protobuf.csp.e2e.fs.Version;
-import ch.threema.protobuf.d2d.MdD2D;
+import ch.threema.protobuf.d2d.IncomingMessage;
+import ch.threema.protobuf.d2d.OutgoingMessage;
 
 /**
  * Abstract base class for messages that can be sent via the Threema server interface,
@@ -154,7 +155,7 @@ public abstract class AbstractMessage implements MessageTypeProperties, MessageF
      *
      * @param message the incoming MdD2D message
      */
-    public void initializeCommonProperties(@NonNull MdD2D.IncomingMessage message) {
+    public void initializeCommonProperties(@NonNull IncomingMessage message) {
         this.fromIdentity = message.getSenderIdentity();
         this.messageId = new MessageId(message.getMessageId());
         this.date = new Date(message.getCreatedAt());
@@ -165,7 +166,7 @@ public abstract class AbstractMessage implements MessageTypeProperties, MessageF
      *
      * @param message the outgoing MdD2D message
      */
-    protected void initializeCommonProperties(@NonNull MdD2D.OutgoingMessage message) {
+    protected void initializeCommonProperties(@NonNull OutgoingMessage message) {
         this.messageId = new MessageId((message.getMessageId()));
         this.date = new Date(message.getCreatedAt());
     }

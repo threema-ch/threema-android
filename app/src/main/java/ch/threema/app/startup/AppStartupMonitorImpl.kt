@@ -99,7 +99,14 @@ class AppStartupMonitorImpl : AppStartupMonitor {
         )
 
         unlockedMasterKeyStateFlow.value = SystemStatus.PENDING
-        remoteSecretStateFlow.value = SystemStatus.UNKNOWN
+        remoteSecretStateFlow.update { previousValue ->
+            if (previousValue == SystemStatus.PENDING) {
+                // If we're already in PENDING state, it needs to be preserved
+                SystemStatus.PENDING
+            } else {
+                SystemStatus.UNKNOWN
+            }
+        }
         databaseStateFlow.delegate = stateFlowOf(SystemStatus.UNKNOWN)
         systemUpdateStateFlow.delegate = stateFlowOf(SystemStatus.UNKNOWN)
         systemStatuses.delegate = createInitialPendingSystemsFlow()

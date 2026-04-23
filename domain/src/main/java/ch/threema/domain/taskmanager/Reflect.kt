@@ -10,24 +10,28 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.protocol.multidevice.MultiDeviceProperties
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.Common.GroupIdentity
+import ch.threema.protobuf.common.GroupIdentity
+import ch.threema.protobuf.common.groupIdentity
 import ch.threema.protobuf.d2d.ContactSyncKt
-import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.protobuf.d2d.MdD2D.ConversationId
-import ch.threema.protobuf.d2d.MdD2D.GroupSync.Update.MemberStateChange
-import ch.threema.protobuf.d2d.MdD2D.ProtocolVersion
+import ch.threema.protobuf.d2d.ConversationId
+import ch.threema.protobuf.d2d.Envelope
+import ch.threema.protobuf.d2d.GroupSync
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.IncomingMessageUpdate
+import ch.threema.protobuf.d2d.OutgoingMessage
+import ch.threema.protobuf.d2d.OutgoingMessageUpdate
+import ch.threema.protobuf.d2d.ProtocolVersion
 import ch.threema.protobuf.d2d.SettingsSyncKt
 import ch.threema.protobuf.d2d.UserProfileSyncKt
 import ch.threema.protobuf.d2d.contactSync
 import ch.threema.protobuf.d2d.conversationId
 import ch.threema.protobuf.d2d.groupSync
 import ch.threema.protobuf.d2d.settingsSync
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Group
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
-import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile
+import ch.threema.protobuf.d2d.sync.Contact
+import ch.threema.protobuf.d2d.sync.Group
+import ch.threema.protobuf.d2d.sync.Settings
+import ch.threema.protobuf.d2d.sync.UserProfile
 import ch.threema.protobuf.d2d.userProfileSync
-import ch.threema.protobuf.groupIdentity
 import com.google.protobuf.kotlin.toByteString
 
 class ReflectIdManager {
@@ -45,7 +49,7 @@ fun getEncryptedIncomingMessageEnvelope(
     val messageBody = message.body ?: return null
     val envelope = buildEnvelopeFor(mediatorDeviceId) {
         setIncomingMessage(
-            MdD2D.IncomingMessage.newBuilder()
+            IncomingMessage.newBuilder()
                 .setSenderIdentity(message.fromIdentity)
                 .setMessageId(message.messageId.messageIdLong)
                 .setCreatedAt(message.date.time)
@@ -66,7 +70,7 @@ fun getEncryptedOutgoingMessageEnvelope(
     val messageBody = message.body ?: return null
     val envelope = buildEnvelopeFor(mediatorDeviceId) {
         setOutgoingMessage(
-            MdD2D.OutgoingMessage.newBuilder()
+            OutgoingMessage.newBuilder()
                 .setConversation(getConversation(message))
                 .setMessageId(message.messageId.messageIdLong)
                 .setCreatedAt(message.date.time)
@@ -85,12 +89,12 @@ fun getEncryptedOutgoingMessageUpdateSentEnvelope(
 ): MultiDeviceKeys.EncryptedEnvelopeResult {
     val envelope = buildEnvelopeFor(mediatorDeviceId) {
         setOutgoingMessageUpdate(
-            MdD2D.OutgoingMessageUpdate.newBuilder()
+            OutgoingMessageUpdate.newBuilder()
                 .addUpdates(
-                    MdD2D.OutgoingMessageUpdate.Update.newBuilder()
+                    OutgoingMessageUpdate.Update.newBuilder()
                         .setConversation(getConversation(message))
                         .setMessageId(message.messageId.messageIdLong)
-                        .setSent(MdD2D.OutgoingMessageUpdate.Sent.newBuilder()),
+                        .setSent(OutgoingMessageUpdate.Sent.newBuilder()),
                 ),
         )
     }
@@ -144,14 +148,14 @@ private fun getEncryptedIncomingMessageUpdateReadEnvelope(
 ): MultiDeviceKeys.EncryptedEnvelopeResult {
     val envelope = buildEnvelopeFor(mediatorDeviceId) {
         setIncomingMessageUpdate(
-            MdD2D.IncomingMessageUpdate.newBuilder()
+            IncomingMessageUpdate.newBuilder()
                 .addAllUpdates(
                     messageIds.map {
-                        MdD2D.IncomingMessageUpdate.Update.newBuilder()
+                        IncomingMessageUpdate.Update.newBuilder()
                             .setMessageId(it.messageIdLong)
                             .setConversation(conversation)
                             .setRead(
-                                MdD2D.IncomingMessageUpdate.Read.newBuilder().setAt(timestamp).build(),
+                                IncomingMessageUpdate.Read.newBuilder().setAt(timestamp).build(),
                             )
                             .build()
                     },
@@ -197,7 +201,7 @@ fun getEncryptedUserProfileSyncUpdate(
     userProfile: UserProfile,
     multiDeviceProperties: MultiDeviceProperties,
 ): MultiDeviceKeys.EncryptedEnvelopeResult {
-    val envelope: MdD2D.Envelope = buildEnvelopeFor(multiDeviceProperties.mediatorDeviceId) {
+    val envelope: Envelope = buildEnvelopeFor(multiDeviceProperties.mediatorDeviceId) {
         setUserProfileSync(
             userProfileSync {
                 update = UserProfileSyncKt.update {
@@ -241,7 +245,7 @@ fun getEncryptedGroupSyncCreate(
 
 fun getEncryptedGroupSyncUpdate(
     group: Group,
-    memberStateChanges: Map<String, MemberStateChange>,
+    memberStateChanges: Map<String, GroupSync.Update.MemberStateChange>,
     multiDeviceProperties: MultiDeviceProperties,
 ): MultiDeviceKeys.EncryptedEnvelopeResult {
     val envelope = buildEnvelopeFor(multiDeviceProperties.mediatorDeviceId) {
@@ -275,9 +279,9 @@ fun getEncryptedGroupSyncDelete(
 
 private fun buildEnvelopeFor(
     mediatorDeviceId: DeviceId,
-    buildBody: MdD2D.Envelope.Builder.() -> Unit,
-): MdD2D.Envelope =
-    MdD2D.Envelope.newBuilder()
+    buildBody: Envelope.Builder.() -> Unit,
+): Envelope =
+    Envelope.newBuilder()
         .setPadding(generateRandomProtobufPadding())
         .setDeviceId(mediatorDeviceId.id.toLong())
         .setProtocolVersion(ProtocolVersion.V0_3_VALUE)

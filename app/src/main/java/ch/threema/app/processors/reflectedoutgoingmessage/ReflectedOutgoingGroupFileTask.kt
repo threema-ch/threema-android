@@ -6,8 +6,8 @@ import ch.threema.app.utils.MimeUtil
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.file.FileData
 import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.common.CspE2eMessageType
+import ch.threema.protobuf.d2d.OutgoingMessage
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.media.FileDataModel
@@ -16,12 +16,12 @@ import ch.threema.storage.models.group.GroupMessageModel
 private val logger = getThreemaLogger("ReflectedOutgoingGroupFileTask")
 
 internal class ReflectedOutgoingGroupFileTask(
-    outgoingMessage: MdD2D.OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
 ) : ReflectedOutgoingGroupMessageTask<GroupFileMessage>(
     outgoingMessage = outgoingMessage,
     message = GroupFileMessage.fromReflected(outgoingMessage),
-    type = Common.CspE2eMessageType.GROUP_FILE,
+    type = CspE2eMessageType.GROUP_FILE,
     serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }

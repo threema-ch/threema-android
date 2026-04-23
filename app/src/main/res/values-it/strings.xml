@@ -22,6 +22,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="enter_id_hint">Inserisci ${app_name_short} ID</string>
     <string name="account_links">Connessioni</string>
+    <string name="title_set_availability_status">Stato di disponibilità</string>
     <string name="menu_settings">Impostazioni</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="menu_about">Su ${app_name}</string>
@@ -114,6 +115,7 @@
     <string name="set_nickname_title">Imposta nickname</string>
     <string name="ok">OK</string>
     <string name="cancel">Interrompi</string>
+    <string name="save">Salva</string>
     <string name="copy_message_action">Copia</string>
     <string name="delete_contact_action">Cancella contatto</string>
     <string name="delete_multiple_contact_action">Elimina contatti</string>
@@ -363,6 +365,7 @@
     <string name="can_not_send_no_group_members">Non possono essere inviati messaggi a un gruppo senza membri.</string>
     <string name="you_are_not_a_member_of_this_group">Non sei più membro di questo gruppo</string>
     <string name="title_public_nickname">Nickname</string>
+    <string name="title_availability_status">Stato</string>
     <string name="prefs_sum_excluded_sync_identities">Gli ID qui elencati saranno esclusi dalla sincronizzazione dei
 		contatti.</string>
     <string name="prefs_title_excluded_sync_identities">Lista ID esclusi</string>
@@ -1684,10 +1687,11 @@
     <string name="work_directory_empty_view_text">Inserisci almeno 3 caratteri di un nome per iniziare a cercare nella directory della tua azienda degli utenti di ${app_name_short} o seleziona una categoria toccando sull\'icona del filtro.</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">Questo file non è valido e non può essere condiviso</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
-    <string name="contact_availability_status_available">Disponibile</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <string name="contact_availability_status_unavailable">Non disponibile</string>
+    <string name="availability_status_none">Nessuno stato</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e. out-of-office -->
+    <string name="availability_status_unavailable">Non disponibile</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently busy-->
+    <string name="availability_status_busy">Occupato</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">Il link di attivazione non è valido. Contatta l\'amministratore.</string>
     <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
@@ -1754,6 +1758,13 @@
     <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_off">La chiamata continua anche se l\'auricolare Bluetooth viene disconnesso durante una conversazione. Nota: ciò potrebbe impedire il funzionamento del pulsante di fine chiamata sulle cuffie.</string>
     <string name="failed_to_load_conversations">Impossibile caricare le chat.</string>
     <string name="contact_support">Contatta l\'assistenza</string>
+    <string name="edit_availability_status_modal_title">Stato di disponibilità</string>
+    <string name="edit_availability_status_modal_subtitle">Questo stato è visibile a tutti nella tua azienda.</string>
+    <string name="edit_availability_status_modal_optional_message_label">Testo personalizzato (facoltativo)</string>
+    <string name="edit_availability_status_modal_optional_message_placeholder">In riunione</string>
+    <string name="edit_availability_status_modal_optional_message_description">Imposta un messaggio di stato personalizzato quando sono selezionati Occupato o Non disponibile.</string>
+    <string name="edit_availability_status_modal_optional_message_too_long">Il testo è troppo lungo, accorcialo</string>
+    <string name="edit_availability_status_did_change">Stato di disponibilità cambiato</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contatto</item>
         <item quantity="other">%d contatti</item>

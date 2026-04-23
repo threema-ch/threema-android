@@ -5,8 +5,8 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.MessageUtil
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.DeliveryReceiptMessage
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
+import ch.threema.protobuf.common.CspE2eMessageType
+import ch.threema.protobuf.d2d.OutgoingMessage
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageState
 import java.util.Date
@@ -19,7 +19,7 @@ internal class ReflectedOutgoingDeliveryReceiptTask(
 ) : ReflectedOutgoingContactMessageTask<DeliveryReceiptMessage>(
     outgoingMessage = outgoingMessage,
     message = DeliveryReceiptMessage.fromReflected(outgoingMessage),
-    type = Common.CspE2eMessageType.DELIVERY_RECEIPT,
+    type = CspE2eMessageType.DELIVERY_RECEIPT,
     serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }

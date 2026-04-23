@@ -5,8 +5,10 @@ import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
+import ch.threema.domain.protocol.csp.messages.location.GroupLocationMessage.Companion.fromByteArray
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 
@@ -80,14 +82,14 @@ class GroupLocationMessage(private val locationMessageData: LocationMessageData)
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): GroupLocationMessage {
+        fun fromReflected(message: IncomingMessage): GroupLocationMessage {
             val groupLocationMessage = fromByteArray(message.body.toByteArray())
             groupLocationMessage.initializeCommonProperties(message)
             return groupLocationMessage
         }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): GroupLocationMessage {
+        fun fromReflected(message: OutgoingMessage): GroupLocationMessage {
             val groupLocationMessage = fromByteArray(message.body.toByteArray())
             groupLocationMessage.initializeCommonProperties(message)
             return groupLocationMessage

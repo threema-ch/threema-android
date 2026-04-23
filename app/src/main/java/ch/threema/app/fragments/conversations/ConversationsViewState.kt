@@ -2,6 +2,7 @@ package ch.threema.app.fragments.conversations
 
 import androidx.compose.runtime.Immutable
 import ch.threema.app.compose.conversation.models.ConversationListItemUiModel
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ContactNameFormat
 
 /**
@@ -10,6 +11,7 @@ import ch.threema.data.datatypes.ContactNameFormat
  *  excluded from visible items.
  *  @param hasPrivateConversations    Is `true` if at least one private-marked conversation exist that is not archived.
  *  @param archivedConversationsCount The count of all archived conversations that match an optional [filterQuery]. The count respects the users
+ *  @param availabilityStatus         The [AvailabilityStatus] of the user
  *  setting to hide private conversations. If private conversations should be hidden, these will never be counted.
  */
 @Immutable
@@ -20,6 +22,7 @@ data class ConversationsViewState(
     val hasPrivateConversations: Boolean,
     val archivedConversationsCount: Long,
     val contactNameFormat: ContactNameFormat,
+    val availabilityStatus: AvailabilityStatus,
 )
 
 @Immutable

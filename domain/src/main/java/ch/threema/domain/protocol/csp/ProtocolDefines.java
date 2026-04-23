@@ -38,6 +38,8 @@ public class ProtocolDefines {
     public static final int BALLOT_ASSESSMENT_TYPE_LEN = 1;
     public static final int BALLOT_VISIBILITY_LEN = 1;
 
+    public static final int MAX_AVAILABILITY_STATUS_DESCRIPTION_BYTES = 256;
+
     /* server handshake */
     public static final int SERVER_HELLO_BOXLEN = NaCl.PUBLIC_KEY_BYTES + COOKIE_LEN + NaCl.BOX_OVERHEAD_BYTES;
     public static final int SERVER_HELLO_LEN = COOKIE_LEN + SERVER_HELLO_BOXLEN;
@@ -115,6 +117,7 @@ public class ProtocolDefines {
     public static final int MSGTYPE_GROUP_DELETE_MESSAGE = 0x94;
     public static final int MSGTYPE_REACTION = 0x82;
     public static final int MSGTYPE_GROUP_REACTION = 0x83;
+    public static final int MSGTYPE_WORK_SYNC_DELTA = 0xfd;
 
     /* message flags */
     // Note: Do not forget to update AbstractMessage#getMessageTypeDefaultFlags when adding a flag

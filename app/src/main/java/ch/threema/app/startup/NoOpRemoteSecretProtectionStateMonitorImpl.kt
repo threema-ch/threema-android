@@ -6,6 +6,6 @@ private val logger = getThreemaLogger("NoOpRemoteSecretProtectionStateMonitorImp
 
 class NoOpRemoteSecretProtectionStateMonitorImpl : RemoteSecretProtectionStateMonitor {
     override suspend fun monitorRemoteSecretProtectionState() {
-        logger.info("Remote secret is not monitored")
+        logger.debug("Remote secret is not monitored")
     }
 }

@@ -95,7 +95,7 @@ import ch.threema.app.webrtc.Camera;
 import ch.threema.app.webrtc.DataChannelObserver;
 import ch.threema.app.webrtc.UnboundedFlowControlledDataChannel;
 import ch.threema.domain.protocol.api.APIConnector;
-import ch.threema.protobuf.callsignaling.O2OCall;
+import ch.threema.protobuf.o2o_call.Envelope;
 
 import static ch.threema.android.DelayedExecutorCompatKt.createDelayedExecutor;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
@@ -343,7 +343,7 @@ public class PeerConnectionClient {
          * @param envelope The protobuf envelope.
          */
         @WorkerThread
-        default void onSignalingMessage(long callId, final @NonNull O2OCall.Envelope envelope) {
+        default void onSignalingMessage(long callId, final @NonNull Envelope envelope) {
         }
 
         /**
@@ -1642,10 +1642,10 @@ public class PeerConnectionClient {
             copy.put(buffer.data);
             copy.flip();
 
-            // Notify event listener asychronously
+            // Notify event listener asynchronously
             RuntimeUtil.runOnWorkerThread(() -> {
                 try {
-                    final @NonNull O2OCall.Envelope envelope = O2OCall.Envelope.parseFrom(copy);
+                    final @NonNull Envelope envelope = Envelope.parseFrom(copy);
                     if (events != null) {
                         events.onSignalingMessage(callId, envelope);
                     }

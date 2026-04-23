@@ -9,9 +9,10 @@ import androidx.annotation.Nullable;
 import ch.threema.app.utils.RandomUtil;
 import ch.threema.app.voip.signaling.ToSignalingMessage;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
-import ch.threema.protobuf.Common;
-import ch.threema.protobuf.callsignaling.O2OCall;
-import ch.threema.protobuf.callsignaling.O2OCall.VideoQualityProfile.QualityProfile;
+
+import ch.threema.protobuf.common.Resolution;
+import ch.threema.protobuf.o2o_call.Envelope;
+import ch.threema.protobuf.o2o_call.VideoQualityProfile;
 
 /**
  * Manage video quality profiles.
@@ -19,7 +20,7 @@ import ch.threema.protobuf.callsignaling.O2OCall.VideoQualityProfile.QualityProf
 public class VoipVideoParams implements ToSignalingMessage {
     private static final Logger logger = getThreemaLogger("VoipVideoParams");
 
-    private final @Nullable QualityProfile profile;
+    private final @Nullable VideoQualityProfile.QualityProfile profile;
     private final int maxBitrateKbps;
     private final int maxFps;
     private final int maxWidth, maxHeight;
@@ -30,7 +31,7 @@ public class VoipVideoParams implements ToSignalingMessage {
     public static final int MIN_HEIGHT = 240;
 
     private VoipVideoParams(
-        @Nullable QualityProfile profile,
+        @Nullable VideoQualityProfile.QualityProfile profile,
         int maxBitrateKbps,
         int maxFps,
         int maxWidth,
@@ -47,14 +48,14 @@ public class VoipVideoParams implements ToSignalingMessage {
 
     @Override
     public int getType() {
-        return O2OCall.Envelope.VIDEO_QUALITY_PROFILE_FIELD_NUMBER;
+        return Envelope.VIDEO_QUALITY_PROFILE_FIELD_NUMBER;
     }
 
     /**
      * Return the profile name.
      */
     @Nullable
-    public QualityProfile getProfile() {
+    public VideoQualityProfile.QualityProfile getProfile() {
         return profile;
     }
 
@@ -109,7 +110,7 @@ public class VoipVideoParams implements ToSignalingMessage {
      * - 960x540 px resolution
      */
     public static VoipVideoParams low() {
-        return new VoipVideoParams(QualityProfile.LOW, 400, 20, 960, 540);
+        return new VoipVideoParams(VideoQualityProfile.QualityProfile.LOW, 400, 20, 960, 540);
     }
 
     /**
@@ -120,7 +121,7 @@ public class VoipVideoParams implements ToSignalingMessage {
      * - 1280x720 px resolution
      */
     public static VoipVideoParams high() {
-        return new VoipVideoParams(QualityProfile.HIGH, 2000, 25, 1280, 720);
+        return new VoipVideoParams(VideoQualityProfile.QualityProfile.HIGH, 2000, 25, 1280, 720);
     }
 
     /**
@@ -131,7 +132,7 @@ public class VoipVideoParams implements ToSignalingMessage {
      * - 1920x1080 px resolution
      */
     public static VoipVideoParams max() {
-        return new VoipVideoParams(QualityProfile.MAX, 4000, 25, 1920, 1080);
+        return new VoipVideoParams(VideoQualityProfile.QualityProfile.MAX, 4000, 25, 1920, 1080);
     }
 
     /**
@@ -187,8 +188,8 @@ public class VoipVideoParams implements ToSignalingMessage {
             return this;
         }
         logger.debug("findCommonProfile: this={} peer={} relayed={}", this.profile, peerParams.profile, networkIsRelayed);
-        if (this.profile == null || this.profile == QualityProfile.UNRECOGNIZED ||
-            peerParams.getProfile() == null || peerParams.getProfile() == QualityProfile.UNRECOGNIZED) {
+        if (this.profile == null || this.profile == VideoQualityProfile.QualityProfile.UNRECOGNIZED ||
+            peerParams.getProfile() == null || peerParams.getProfile() == VideoQualityProfile.QualityProfile.UNRECOGNIZED) {
             return new VoipVideoParams(
                 null,
                 Math.max(Math.min(this.maxBitrateKbps, peerParams.getMaxBitrateKbps()), MIN_BITRATE),
@@ -196,11 +197,11 @@ public class VoipVideoParams implements ToSignalingMessage {
                 Math.max(Math.min(this.maxWidth, peerParams.getMaxWidth()), MIN_WIDTH),
                 Math.max(Math.min(this.maxHeight, peerParams.getMaxHeight()), MIN_HEIGHT)
             );
-        } else if (this.profile == QualityProfile.LOW || peerParams.profile == QualityProfile.LOW) {
+        } else if (this.profile == VideoQualityProfile.QualityProfile.LOW || peerParams.profile == VideoQualityProfile.QualityProfile.LOW) {
             return VoipVideoParams.low();
-        } else if (this.profile == QualityProfile.HIGH || peerParams.profile == QualityProfile.HIGH) {
+        } else if (this.profile == VideoQualityProfile.QualityProfile.HIGH || peerParams.profile == VideoQualityProfile.QualityProfile.HIGH) {
             return VoipVideoParams.high();
-        } else if (this.profile == QualityProfile.MAX || peerParams.profile == QualityProfile.MAX) {
+        } else if (this.profile == VideoQualityProfile.QualityProfile.MAX || peerParams.profile == VideoQualityProfile.QualityProfile.MAX) {
             // Prevent MAX profile if relay is being used
             return Boolean.TRUE.equals(networkIsRelayed)
                 ? VoipVideoParams.high()
@@ -215,7 +216,7 @@ public class VoipVideoParams implements ToSignalingMessage {
     //region Protocol buffers
 
     public static @Nullable VoipVideoParams fromSignalingMessage(
-        @NonNull O2OCall.VideoQualityProfile profile
+        @NonNull VideoQualityProfile profile
     ) {
         switch (profile.getProfile()) {
             case LOW:
@@ -243,14 +244,14 @@ public class VoipVideoParams implements ToSignalingMessage {
             logger.warn("Received message without max resolution");
             return null;
         }
-        final Common.Resolution resolution = profile.getMaxResolution();
+        final Resolution resolution = profile.getMaxResolution();
         if (resolution.getWidth() == 0 || resolution.getHeight() == 0) {
             logger.warn("Received message with 0 width or height");
             return null;
         }
 
         return new VoipVideoParams(
-            QualityProfile.UNRECOGNIZED,
+            VideoQualityProfile.QualityProfile.UNRECOGNIZED,
             maxBitrate,
             maxFps,
             resolution.getWidth(),
@@ -259,16 +260,16 @@ public class VoipVideoParams implements ToSignalingMessage {
     }
 
     @Override
-    public @NonNull O2OCall.Envelope toSignalingMessage() {
-        final Common.Resolution.Builder resolution = Common.Resolution.newBuilder()
+    public @NonNull Envelope toSignalingMessage() {
+        final Resolution.Builder resolution = Resolution.newBuilder()
             .setWidth(this.maxWidth)
             .setHeight(this.maxHeight);
-        final O2OCall.VideoQualityProfile.Builder profile = O2OCall.VideoQualityProfile.newBuilder()
+        final VideoQualityProfile.Builder profile = VideoQualityProfile.newBuilder()
             .setProfile(this.profile)
             .setMaxBitrateKbps(this.maxBitrateKbps)
             .setMaxFps(this.maxFps)
             .setMaxResolution(resolution);
-        return O2OCall.Envelope.newBuilder()
+        return Envelope.newBuilder()
             .setPadding(ByteString.copyFrom(RandomUtil.generateRandomPadding(0, 255)))
             .setVideoQualityProfile(profile)
             .build();

@@ -28,6 +28,7 @@ import ch.threema.base.utils.Base64
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.secureContentEquals
 import ch.threema.common.takeUnlessEmpty
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory
 import ch.threema.domain.protocol.api.work.WorkOrganization
@@ -35,6 +36,8 @@ import java.time.Instant
 import java.util.Arrays
 import java.util.LinkedList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -1070,6 +1073,37 @@ class PreferenceServiceImpl(
 
     override fun getDebugLogEnabledTimestamp(): Instant? =
         preferenceStore.getInstant(getKeyName(R.string.preferences__debug_log_enable_time))
+
+    override fun setAvailabilityStatus(availabilityStatus: AvailabilityStatus) {
+        if (!ConfigUtils.supportsAvailabilityStatus()) {
+            logger.error("The current build does not support this feature")
+            return
+        }
+        preferenceStore.save(
+            getKeyName(R.string.preferences__availability_status),
+            availabilityStatus.toJson(),
+        )
+    }
+
+    override fun getAvailabilityStatus(): AvailabilityStatus? {
+        if (!ConfigUtils.supportsAvailabilityStatus()) {
+            return null
+        }
+        return preferenceStore
+            .getString(getKeyName(R.string.preferences__availability_status))
+            ?.let(AvailabilityStatus::fromJson)
+    }
+
+    override fun watchAvailabilityStatus(): Flow<AvailabilityStatus?> {
+        if (!ConfigUtils.supportsAvailabilityStatus()) {
+            return flowOf(null)
+        }
+        return preferenceStore
+            .watchString(getKeyName(R.string.preferences__availability_status))
+            .map { availabilityStatusJson: String? ->
+                availabilityStatusJson?.let(AvailabilityStatus::fromJson)
+            }
+    }
 
     override fun clear() {
         preferenceStore.clear()

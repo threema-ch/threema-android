@@ -12,7 +12,6 @@ import ch.threema.domain.protocol.csp.fs.ForwardSecurityDecryptionResult
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityDataReject
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.Common
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageState
@@ -247,9 +246,9 @@ class IncomingForwardSecurityRejectTask(
         }
     }
 
-    private fun Common.GroupIdentity.isEmpty() = groupId == 0L && creatorIdentity == ""
+    private fun ch.threema.protobuf.common.GroupIdentity.isEmpty() = groupId == 0L && creatorIdentity == ""
 
-    private fun Common.GroupIdentity.convert() = GroupIdentity(creatorIdentity, groupId)
+    private fun ch.threema.protobuf.common.GroupIdentity.convert() = GroupIdentity(creatorIdentity, groupId)
 
     private fun getBasicContact(identity: IdentityString): BasicContact? =
         contactStore.getCachedContact(identity)

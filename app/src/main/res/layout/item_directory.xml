@@ -9,15 +9,30 @@
     android:paddingHorizontal="@dimen/listitem_contacts_margin_left_right"
     android:paddingVertical="@dimen/listitem_contacts_margin_top_bottom">
 
-    <ch.threema.app.ui.InitialAvatarView
-        android:id="@+id/avatar_view"
+    <FrameLayout
+        android:id="@+id/avatar_view_container"
         android:layout_width="@dimen/avatar_size_small"
         android:layout_height="@dimen/avatar_size_small"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/status"
-        android:clickable="false"
-        android:contentDescription="@string/mime_contact" />
+        android:layout_toEndOf="@id/status">
+
+        <ch.threema.app.ui.InitialAvatarView
+            android:id="@+id/avatar_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clickable="false"
+            android:contentDescription="@string/mime_contact" />
+
+        <ch.threema.app.availabilitystatus.AvailabilityStatusIconElevatedView
+            android:id="@+id/availability_status_avatar_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="bottom|end"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -25,7 +40,7 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="@dimen/messagelist_avatar_padding"
         android:layout_toLeftOf="@id/status"
-        android:layout_toRightOf="@id/avatar_view">
+        android:layout_toRightOf="@id/avatar_view_container">
 
         <TextView
             android:id="@+id/name"

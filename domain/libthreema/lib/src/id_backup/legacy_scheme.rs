@@ -1,12 +1,11 @@
 //! This scheme uses PBKDF2 for the key derivation and XSalsa20 unauthenticated encryption with a custom
 //! integrity check.
 //!
-//! The encrypted backup is a grouped base32 encoded value, such as:
-//!
+//! The encrypted backup is a grouped base32 encoded value, such as (without line breaks):
+//! ```text
 //! 4K4M-5Q6T-KFUH-KHL5-2VCJ-ZM57-NL7R-WJTA-V45L-NJAM-
 //! WLEU-5DS4-XF7S-OPH4-CTCL-N2CF-3C4C-HPB7-YZWW-U3S6
-//!
-//! (without line breaks)
+//! ```
 use libthreema_macros::concat_fixed_bytes;
 use subtle::ConstantTimeEq as _;
 
@@ -32,7 +31,7 @@ const NONCE: [u8; 24] = [0; 24];
 /// ```
 pub(super) const ENCRYPTED_LENGTH: usize = Salt::LENGTH + IdentityBackupData::LENGTH + HASH_LENGTH;
 
-/// Derive the symmetric backup encryption key
+/// Derive the symmetric backup encryption key.
 fn derive_key(password: &str, salt: Salt) -> BackupKey {
     BackupKey(pbkdf2_hmac_array::<Sha256, BACKUP_KEY_LENGTH>(
         password.as_bytes(),

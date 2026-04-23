@@ -5,8 +5,8 @@ import ch.threema.app.services.BlockedIdentitiesService
 import ch.threema.app.services.ExcludedSyncIdentitiesService
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.protobuf.d2d.MdD2D.SettingsSync
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
+import ch.threema.protobuf.d2d.SettingsSync
+import ch.threema.protobuf.d2d.sync.Settings
 
 private val logger = getThreemaLogger("ReflectedSettingsSyncTask")
 

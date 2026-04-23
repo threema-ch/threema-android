@@ -24,9 +24,9 @@ use crate::{
     },
 };
 
-/// The minimum supported protocol version (inclusive)
+/// The minimum supported protocol version (inclusive).
 const MINIMUM_PROTOCOL_VERSION: u32 = protobuf::ProtocolVersion::V0 as u32;
-/// The maximum supported protocol version (inclusive)
+/// The maximum supported protocol version (inclusive).
 const MAXIMUM_PROTOCOL_VERSION: u32 = protobuf::ProtocolVersion::V0 as u32;
 
 pub mod payload;
@@ -50,25 +50,25 @@ pub enum InternalErrorCause {
     /// Unable to encrypt a struct or message.
     #[error("Encrypting '{name}' failed")]
     EncryptionFailed {
-        /// Name of the struct or message
+        /// Name of the struct or message.
         name: &'static str,
     },
 
     /// Unable to encode a struct or message.
     #[error("Encoding '{name}' failed: {source}")]
     EncodingFailed {
-        /// Name of the struct or message
+        /// Name of the struct or message.
         name: &'static str,
-        /// Error source
+        /// Error source.
         source: InternalEncodingErrorCause,
     },
 
     /// Unable to encode a protobuf message.
     #[error("Encoding protobuf '{name} failed: {source}")]
     EncodingProtobufFailed {
-        /// Name of the protobuf message
+        /// Name of the protobuf message.
         name: &'static str,
-        /// Error source
+        /// Error source.
         source: prost::EncodeError,
     },
 }
@@ -147,6 +147,37 @@ pub enum D2mProtocolError {
     UnsupportedVersion(u32),
 }
 
+/// D2M-specific context information.
+pub struct D2mContext {
+    /// Mediator server URL from the configuration.
+    pub mediator_server_url: MediatorServerBaseUrl,
+
+    /// The device group key of the D2X protocol.
+    pub device_group_key: DeviceGroupKey,
+
+    /// CSP server group.
+    pub csp_server_group: ChatServerGroup,
+
+    /// The D2X device ID.
+    pub device_id: D2xDeviceId,
+
+    /// Policy to be applied in case the device id is not registered on the server and all device slots have
+    /// been exhausted.
+    pub device_slots_exhausted_policy: protobuf::client_hello::DeviceSlotsExhaustedPolicy,
+
+    /// Policy determining the device slot's lifetime.
+    pub device_slot_expiration_policy: protobuf::DeviceSlotExpirationPolicy,
+
+    /// Expected device registration state on the mediator server.
+    pub expected_device_slot_state: protobuf::DeviceSlotState,
+
+    /// Client info to derive the `DeviceInfo` from.
+    pub client_info: ClientInfo,
+
+    /// The device's label (e.g. "PC at Work"), recommended to not exceed 64 grapheme clusters.
+    pub device_label: Option<String>,
+}
+
 /// A D2M state update to indicate advancing.
 #[derive(Debug)]
 pub enum D2mStateUpdate {
@@ -178,37 +209,6 @@ pub struct D2mProtocolInstruction {
 
     /// The incoming message that should be processed by the client.
     pub incoming_payload: Option<IncomingPayload>,
-}
-
-/// D2M-specific context information.
-pub struct D2mContext {
-    /// Mediator server URL from the configuration.
-    pub mediator_server_url: MediatorServerBaseUrl,
-
-    /// The device group key of the D2X protocol.
-    pub device_group_key: DeviceGroupKey,
-
-    /// CSP server group.
-    pub csp_server_group: ChatServerGroup,
-
-    /// The D2X device ID.
-    pub device_id: D2xDeviceId,
-
-    /// Policy to be applied in case the device id is not registered on the server and all device slots have
-    /// been exhausted.
-    pub device_slots_exhausted_policy: protobuf::client_hello::DeviceSlotsExhaustedPolicy,
-
-    /// Policy determining the device slot's lifetime.
-    pub device_slot_expiration_policy: protobuf::DeviceSlotExpirationPolicy,
-
-    /// Expected device registration state on the mediator server.
-    pub expected_device_slot_state: protobuf::DeviceSlotState,
-
-    /// Client info to derive the `DeviceInfo` from.
-    pub client_info: ClientInfo,
-
-    /// The device's label (e.g. "PC at Work"), recommended to not exceed 64 grapheme clusters.
-    pub device_label: Option<String>,
 }
 
 struct AwaitingServerHelloState {

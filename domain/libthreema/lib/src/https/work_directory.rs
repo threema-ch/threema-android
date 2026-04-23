@@ -5,7 +5,7 @@ use super::endpoint::{HttpsEndpointError, TIMEOUT, https_headers_with_authentica
 use crate::{
     common::{
         ClientInfo, ThreemaId,
-        config::{WorkContext, WorkServerBaseUrl},
+        config::{WorkContext, WorkServerBaseUrl, WorkServerLegacyBaseUrl},
         keys::{ClientKey, PublicKey, RemoteSecret, RemoteSecretAuthenticationToken},
     },
     crypto::{blake2b, digest::Mac as _},
@@ -127,7 +127,7 @@ struct WorkContactsRequest<'body> {
 /// subscription.
 pub(crate) fn request_contacts(
     client_info: &ClientInfo,
-    work_server_url: &WorkServerBaseUrl,
+    work_server_url: &WorkServerLegacyBaseUrl,
     context: &WorkContext,
     identities: &[ThreemaId],
 ) -> HttpsRequest {
@@ -212,6 +212,85 @@ pub(crate) fn handle_contacts_result(result: HttpsResult) -> Result<Vec<WorkCont
 }
 
 #[derive(Debug, Serialize)]
+struct WorkPropertiesRequest<'body> {
+    #[serde(rename = "identity")]
+    identity: ThreemaId,
+
+    #[serde(flatten)]
+    credentials: WorkCredentials<'body>,
+
+    #[serde(rename = "properties", with = "base64::variable_length")]
+    work_properties: Vec<u8>,
+}
+
+/// Request an authentication challenge to update the work properties.
+pub(crate) fn update_work_properties_authentication_request(
+    client_info: &ClientInfo,
+    work_server_url: &WorkServerBaseUrl,
+    context: &WorkContext,
+    identity: ThreemaId,
+    encoded_work_properties: Vec<u8>,
+) -> HttpsRequest {
+    HttpsRequest {
+        timeout: TIMEOUT,
+        url: work_server_url.work_properties_path(),
+        method: HttpsMethod::Post,
+        headers: https_headers(Some(context))
+            .accept("application/json")
+            .build(client_info),
+        body: serde_json::to_vec(&WorkPropertiesRequest {
+            identity,
+            credentials: (&context.credentials).into(),
+            work_properties: encoded_work_properties,
+        })
+        .expect("Failed to create work properties update challenge request body"),
+    }
+}
+
+#[derive(Debug, Serialize)]
+struct CreateWorkPropertiesAuthenticatedRequest<'body> {
+    #[serde(flatten)]
+    request: WorkPropertiesRequest<'body>,
+
+    #[serde(flatten)]
+    authentication: AuthenticationChallengeResponse,
+}
+
+/// Update the work properties.
+pub(crate) fn update_work_properties_request(
+    client_info: &ClientInfo,
+    work_server_url: &WorkServerBaseUrl,
+    context: &WorkContext,
+    identity: ThreemaId,
+    authentication: AuthenticationChallengeResponse,
+    encoded_work_properties: Vec<u8>,
+) -> HttpsRequest {
+    HttpsRequest {
+        timeout: TIMEOUT,
+        url: work_server_url.work_properties_path(),
+        method: HttpsMethod::Post,
+        headers: https_headers(Some(context))
+            .accept("application/json")
+            .build(client_info),
+        body: serde_json::to_vec(&CreateWorkPropertiesAuthenticatedRequest {
+            request: WorkPropertiesRequest {
+                identity,
+                credentials: (&context.credentials).into(),
+                work_properties: encoded_work_properties,
+            },
+            authentication,
+        })
+        .expect("Failed to create update work properties request body"),
+    }
+}
+
+/// Process the result after attempting to update work properties.
+pub(crate) fn handle_update_work_properties_result(result: HttpsResult) -> Result<(), HttpsEndpointError> {
+    let _ = handle_status(result, |_| None)?;
+    Ok(())
+}
+
+#[derive(Debug, Serialize)]
 struct WorkCreateRemoteSecretRequest<'body> {
     #[serde(rename = "identity")]
     identity: ThreemaId,
@@ -227,8 +306,8 @@ struct WorkCreateRemoteSecretRequest<'body> {
 pub(crate) fn create_remote_secret_authentication_request(
     client_info: &ClientInfo,
     work_server_url: &WorkServerBaseUrl,
-    identity: ThreemaId,
     context: &WorkContext,
+    identity: ThreemaId,
     remote_secret: &RemoteSecret,
 ) -> HttpsRequest {
     HttpsRequest {
@@ -317,8 +396,8 @@ struct WorkDeleteRemoteSecretRequest<'body> {
 pub(crate) fn delete_remote_secret_authentication_request(
     client_info: &ClientInfo,
     work_server_url: &WorkServerBaseUrl,
-    identity: ThreemaId,
     context: &WorkContext,
+    identity: ThreemaId,
     remote_secret_authentication_token: &RemoteSecretAuthenticationToken,
 ) -> HttpsRequest {
     HttpsRequest {
@@ -350,8 +429,8 @@ struct WorkDeleteRemoteSecretAuthenticatedRequest<'body> {
 pub(crate) fn delete_remote_secret_request(
     client_info: &ClientInfo,
     work_server_url: &WorkServerBaseUrl,
-    identity: ThreemaId,
     context: &WorkContext,
+    identity: ThreemaId,
     authentication: AuthenticationChallengeResponse,
     remote_secret_authentication_token: &RemoteSecretAuthenticationToken,
 ) -> HttpsRequest {
@@ -433,6 +512,7 @@ pub(crate) fn handle_remote_secret_result(
 mod tests {
     use assert_matches::assert_matches;
     use data_encoding::HEXLOWER;
+    use prost::Message as _;
     use rstest::rstest;
     use serde_json::json;
 
@@ -440,6 +520,8 @@ mod tests {
     use crate::{
         common::config::{Config, WorkCredentials, WorkFlavor},
         https::HttpsResponse,
+        protobuf,
+        work::properties::{WorkAvailabilityStatus, WorkProperties},
     };
 
     fn work_server_url() -> WorkServerBaseUrl {
@@ -453,6 +535,15 @@ mod tests {
                 password: "bürste".to_owned(),
             },
             flavor: WorkFlavor::Work,
+        }
+    }
+
+    fn work_properties() -> WorkProperties {
+        WorkProperties {
+            availability_status: Some(WorkAvailabilityStatus {
+                category: protobuf::d2d_sync::WorkAvailabilityStatusCategory::Busy,
+                description: None,
+            }),
         }
     }
 
@@ -599,17 +690,71 @@ mod tests {
     }
 
     #[test]
+    fn create_work_properties_challenge_request() -> anyhow::Result<()> {
+        let request = update_work_properties_authentication_request(
+            &ClientInfo::Libthreema,
+            &work_server_url(),
+            &work_context(),
+            ThreemaId::predefined(*b"TITATEST"),
+            protobuf::directory::WorkProperties::try_from(work_properties())?.encode_to_vec(),
+        );
+
+        assert_eq!(
+            request.url,
+            "https://work.example.threema.ch/api-client/v1/user-properties"
+        );
+
+        assert_eq!(request.method, HttpsMethod::Post);
+        let body: serde_json::Value = serde_json::from_slice(&request.body)?;
+        assert_eq!(body["identity"], "TITATEST");
+        assert_eq!(body["username"], "klo");
+        assert_eq!(body["password"], "bürste");
+        assert_eq!(body["properties"], "CgIIAg==");
+        Ok(())
+    }
+
+    #[test]
+    fn create_work_properties_request_valid() -> anyhow::Result<()> {
+        let request = update_work_properties_request(
+            &ClientInfo::Libthreema,
+            &work_server_url(),
+            &work_context(),
+            ThreemaId::predefined(*b"TITATEST"),
+            AuthenticationChallengeResponse {
+                challenge: b"kekse".to_vec(),
+                response: [0_u8; 32],
+            },
+            protobuf::directory::WorkProperties::try_from(work_properties())?.encode_to_vec(),
+        );
+
+        assert_eq!(
+            request.url,
+            "https://work.example.threema.ch/api-client/v1/user-properties"
+        );
+        assert_eq!(request.method, HttpsMethod::Post);
+        let body: serde_json::Value = serde_json::from_slice(&request.body)?;
+        assert_eq!(body["identity"], "TITATEST");
+        assert_eq!(body["username"], "klo");
+        assert_eq!(body["password"], "bürste");
+        assert_eq!(body["challenge"], "a2Vrc2U=");
+        assert_eq!(body["response"], "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=");
+        assert_eq!(body["properties"], "CgIIAg==");
+
+        Ok(())
+    }
+
+    #[test]
     fn create_remote_secret_challenge_request() -> anyhow::Result<()> {
         let request = create_remote_secret_authentication_request(
             &ClientInfo::Libthreema,
             &work_server_url(),
-            ThreemaId::predefined(*b"TESTTEST"),
             &work_context(),
+            ThreemaId::predefined(*b"TESTTEST"),
             &RemoteSecret([1_u8; 32]),
         );
         assert_eq!(
             request.url,
-            "https://ds-apip-work.example.threema.ch/api-client/v1/remote-secret"
+            "https://work.example.threema.ch/api-client/v1/remote-secret"
         );
         assert_eq!(request.method, HttpsMethod::Put);
         let body: serde_json::Value = serde_json::from_slice(&request.body)?;
@@ -635,7 +780,7 @@ mod tests {
         );
         assert_eq!(
             request.url,
-            "https://ds-apip-work.example.threema.ch/api-client/v1/remote-secret"
+            "https://work.example.threema.ch/api-client/v1/remote-secret"
         );
         assert_eq!(request.method, HttpsMethod::Put);
         let body: serde_json::Value = serde_json::from_slice(&request.body)?;
@@ -665,13 +810,13 @@ mod tests {
         let request = delete_remote_secret_authentication_request(
             &ClientInfo::Libthreema,
             &work_server_url(),
-            ThreemaId::predefined(*b"TESTTEST"),
             &work_context(),
+            ThreemaId::predefined(*b"TESTTEST"),
             &RemoteSecretAuthenticationToken([2_u8; 32]),
         );
         assert_eq!(
             request.url,
-            "https://ds-apip-work.example.threema.ch/api-client/v1/remote-secret"
+            "https://work.example.threema.ch/api-client/v1/remote-secret"
         );
         assert_eq!(request.method, HttpsMethod::Delete);
         let body: serde_json::Value = serde_json::from_slice(&request.body)?;
@@ -690,8 +835,8 @@ mod tests {
         let request = delete_remote_secret_request(
             &ClientInfo::Libthreema,
             &work_server_url(),
-            ThreemaId::predefined(*b"TESTTEST"),
             &work_context(),
+            ThreemaId::predefined(*b"TESTTEST"),
             AuthenticationChallengeResponse {
                 challenge: b"kekse".to_vec(),
                 response: [0_u8; 32],
@@ -700,7 +845,7 @@ mod tests {
         );
         assert_eq!(
             request.url,
-            "https://ds-apip-work.example.threema.ch/api-client/v1/remote-secret"
+            "https://work.example.threema.ch/api-client/v1/remote-secret"
         );
         assert_eq!(request.method, HttpsMethod::Delete);
         let body: serde_json::Value = serde_json::from_slice(&request.body)?;
@@ -725,7 +870,7 @@ mod tests {
         );
         assert_eq!(
             request.url,
-            "https://ds-apip-work.example.threema.ch/api-client/v1/remote-secret"
+            "https://work.example.threema.ch/api-client/v1/remote-secret"
         );
         assert_eq!(request.method, HttpsMethod::Post);
         let body: serde_json::Value = serde_json::from_slice(&request.body)?;

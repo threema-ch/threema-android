@@ -12,6 +12,7 @@ import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.mockUser
 import ch.threema.base.crypto.NaCl
 import ch.threema.data.datatypes.AndroidContactLookupInfo
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData
 import ch.threema.domain.helpers.TransactionAckTaskCodec
@@ -147,6 +148,8 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
             jobTitle = jobTitle,
             department = department,
             notificationTriggerPolicyOverride = null,
+            availabilityStatus = AvailabilityStatus.None,
+            workLastFullSyncAt = null,
         )
     }
 
@@ -178,7 +181,10 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
             identityStore = identityStoreMock,
         )
         this.databaseService = coreServiceManager.databaseService
-        this.contactModelRepository = ModelRepositories(coreServiceManager, identityProviderMock).contacts
+        this.contactModelRepository = ModelRepositories(
+            coreServiceManager = coreServiceManager,
+            identityProvider = identityProviderMock,
+        ).contacts
 
         // Instantiate services where MD is enabled
         this.databaseProviderMd = TestDatabaseProvider()
@@ -196,7 +202,10 @@ class ContactModelRepositoryTest(private val contactModelData: ContactModelData)
             identityStore = identityStoreMock,
         )
         this.databaseServiceMd = coreServiceManagerMd.databaseService
-        this.contactModelRepositoryMd = ModelRepositories(coreServiceManagerMd, identityProviderMock).contacts
+        this.contactModelRepositoryMd = ModelRepositories(
+            coreServiceManager = coreServiceManagerMd,
+            identityProvider = identityProviderMock,
+        ).contacts
     }
 
     /**

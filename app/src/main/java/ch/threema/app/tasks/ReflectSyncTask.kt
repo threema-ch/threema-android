@@ -5,12 +5,12 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.TransactionScope.TransactionException
 import ch.threema.domain.taskmanager.createTransaction
-import ch.threema.protobuf.d2d.MdD2D.TransactionScope.Scope
+import ch.threema.protobuf.d2d.TransactionScope
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 abstract class ReflectSyncTask<TransactionResult, TaskResult>(
-    private val transactionScope: Scope,
+    private val transactionScope: TransactionScope.Scope,
 ) : KoinComponent {
     protected val multiDeviceManager: MultiDeviceManager by inject()
     protected val mdProperties by lazy { multiDeviceManager.propertiesProvider.get() }
@@ -29,7 +29,7 @@ abstract class ReflectSyncTask<TransactionResult, TaskResult>(
     /**
      * This is run after the transaction has been successfully executed.
      */
-    protected abstract val runAfterSuccessfulTransaction: (transactionResult: TransactionResult) -> TaskResult
+    protected abstract val runAfterSuccessfulTransaction: suspend (transactionResult: TransactionResult) -> TaskResult
 
     /**
      * The transaction ttl that is used for the transaction in [reflectSync].

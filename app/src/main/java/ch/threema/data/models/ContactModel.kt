@@ -12,6 +12,7 @@ import ch.threema.app.utils.ContactUtil
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.toDate
 import ch.threema.data.datatypes.AndroidContactLookupInfo
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.repositories.RepositoryToken
@@ -237,6 +238,30 @@ class ContactModel(
                 featureMask,
                 identity,
             ),
+        )
+    }
+
+    fun setAvailabilityStatusFromLocal(availabilityStatus: AvailabilityStatus) {
+        this.updateFields(
+            methodName = "setAvailabilityStatusFromLocal",
+            detectChanges = { originalData -> originalData.availabilityStatus != availabilityStatus },
+            updateData = { originalData -> originalData.copy(availabilityStatus = availabilityStatus) },
+            updateDatabase = ::updateDatabase,
+            onUpdated = ::defaultOnUpdated,
+            reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectAvailabilityStatusUpdate(
+                newAvailabilityStatus = availabilityStatus,
+                contactIdentity = identity,
+            ),
+        )
+    }
+
+    fun setAvailabilityStatusFromSync(availabilityStatus: AvailabilityStatus) {
+        this.updateFields(
+            methodName = "setAvailabilityStatusFromSync",
+            detectChanges = { originalData -> originalData.availabilityStatus != availabilityStatus },
+            updateData = { originalData -> originalData.copy(availabilityStatus = availabilityStatus) },
+            updateDatabase = ::updateDatabase,
+            onUpdated = ::defaultOnUpdated,
         )
     }
 
@@ -735,6 +760,23 @@ class ContactModel(
     }
 
     /**
+     *  Update the contact's work-last-fill-sync-at and reflect the change.
+     */
+    fun setWorkLastFullSyncFromLocal(workLastFullSyncAt: Instant) {
+        this.updateFields(
+            methodName = "setWorkLastFullSyncFromLocal",
+            detectChanges = { originalData -> originalData.workLastFullSyncAt != workLastFullSyncAt },
+            updateData = { originalData -> originalData.copy(workLastFullSyncAt = workLastFullSyncAt) },
+            updateDatabase = ::updateDatabase,
+            onUpdated = null,
+            reflectUpdateTask = ReflectContactSyncUpdateTask.ReflectWorkLastFullSyncAtUpdate(
+                workLastFullSyncAt = workLastFullSyncAt,
+                contactIdentity = identity,
+            ),
+        )
+    }
+
+    /**
      * Update all data from database.
      *
      * Note: This method may only be called by the repository, in code that bridges the old models
@@ -760,7 +802,9 @@ class ContactModel(
     }
 
     private fun updateDatabase(updatedData: ContactModelData) {
-        databaseBackend.updateContact(ContactModelDataFactory.toDbType(updatedData))
+        databaseBackend.updateContact(
+            dbContact = ContactModelDataFactory.toDbType(updatedData),
+        )
     }
 
     /**
@@ -809,6 +853,11 @@ internal object ContactModelDataFactory : ModelDataFactory<ContactModelData, DbC
         jobTitle = value.jobTitle,
         department = value.department,
         notificationTriggerPolicyOverride = value.notificationTriggerPolicyOverride,
+        availabilityStatusSet = when (value.availabilityStatus) {
+            AvailabilityStatus.None -> null
+            is AvailabilityStatus.Set -> value.availabilityStatus
+        },
+        workLastFullSyncAt = value.workLastFullSyncAt,
     )
 
     override fun toDataType(value: DbContact): ContactModelData = ContactModelData(
@@ -836,6 +885,8 @@ internal object ContactModelDataFactory : ModelDataFactory<ContactModelData, DbC
         jobTitle = value.jobTitle,
         department = value.department,
         notificationTriggerPolicyOverride = value.notificationTriggerPolicyOverride,
+        availabilityStatus = value.availabilityStatusSet ?: AvailabilityStatus.None,
+        workLastFullSyncAt = value.workLastFullSyncAt,
     )
 
     private fun AndroidContactLookupInfo?.toDatabaseString(): String? = this?.run {

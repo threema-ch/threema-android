@@ -40,6 +40,7 @@ class RemoteSecretMonitorService : LifecycleService(), KoinComponent {
     private val dispatcherProvider: DispatcherProvider by inject()
     private val masterKeyManager: MasterKeyManager by inject()
     private val appStartupMonitor: AppStartupMonitorImpl by inject()
+    private val remoteSecretMonitorRetryController: RemoteSecretMonitorRetryController by inject()
 
     private var monitoringJob: Job? = null
 
@@ -47,36 +48,6 @@ class RemoteSecretMonitorService : LifecycleService(), KoinComponent {
         logger.debug("onCreate")
         super.onCreate()
         createNotificationChannel()
-        ServiceCompat.startForeground(
-            this,
-            REMOTE_SECRET_ACTIVE_NOTIFICATION_ID,
-            createNotification(),
-            FG_SERVICE_TYPE,
-        )
-    }
-
-    private fun createNotification(): Notification {
-        return NotificationCompat.Builder(
-            this,
-            NotificationChannels.NOTIFICATION_CHANNEL_REMOTE_SECRET,
-        ).apply {
-            val learnMoreUrl = getString(R.string.remote_secret_learn_more_url).toUri()
-            val contentIntent = PendingIntent.getActivity(
-                /* context = */
-                this@RemoteSecretMonitorService,
-                /* requestCode = */
-                0,
-                /* intent = */
-                Intent(Intent.ACTION_VIEW, learnMoreUrl),
-                /* flags = */
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-            )
-            setContentTitle(getString(R.string.remote_secret))
-            setContentText(getString(R.string.remote_secret_notification_text))
-            setSmallIcon(R.drawable.ic_notification_small)
-            setLocalOnly(true)
-            setContentIntent(contentIntent)
-        }.build()
     }
 
     private fun createNotificationChannel() {
@@ -103,11 +74,41 @@ class RemoteSecretMonitorService : LifecycleService(), KoinComponent {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         logger.debug("onStartCommand")
         super.onStartCommand(intent, flags, startId)
+        ServiceCompat.startForeground(
+            this,
+            REMOTE_SECRET_ACTIVE_NOTIFICATION_ID,
+            createNotification(),
+            FG_SERVICE_TYPE,
+        )
         if (monitoringJob == null) {
             monitoringJob = startMonitoringRemoteSecret()
         }
 
         return START_STICKY
+    }
+
+    private fun createNotification(): Notification {
+        return NotificationCompat.Builder(
+            this,
+            NotificationChannels.NOTIFICATION_CHANNEL_REMOTE_SECRET,
+        ).apply {
+            val learnMoreUrl = getString(R.string.remote_secret_learn_more_url).toUri()
+            val contentIntent = PendingIntent.getActivity(
+                /* context = */
+                this@RemoteSecretMonitorService,
+                /* requestCode = */
+                0,
+                /* intent = */
+                Intent(Intent.ACTION_VIEW, learnMoreUrl),
+                /* flags = */
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
+            setContentTitle(getString(R.string.remote_secret))
+            setContentText(getString(R.string.remote_secret_notification_text))
+            setSmallIcon(R.drawable.ic_notification_small)
+            setLocalOnly(true)
+            setContentIntent(contentIntent)
+        }.build()
     }
 
     private fun startMonitoringRemoteSecret(): Job {
@@ -169,7 +170,7 @@ class RemoteSecretMonitorService : LifecycleService(), KoinComponent {
             }
 
             // Wait for the user to request a retry
-            RemoteSecretMonitorRetryController.awaitRetryRequest()
+            remoteSecretMonitorRetryController.awaitRetryRequest()
             appStartupMonitor.clearTemporaryStartupErrors()
         }
     }

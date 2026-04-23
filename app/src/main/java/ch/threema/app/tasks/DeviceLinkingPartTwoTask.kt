@@ -22,7 +22,7 @@ import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.createTransaction
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.TransactionScope
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Deferred
@@ -55,9 +55,9 @@ class DeviceLinkingPartTwoTask(
 
         return try {
             handle.createTransaction(
-                multiDeviceKeys,
-                MdD2D.TransactionScope.Scope.NEW_DEVICE_SYNC,
-                TRANSACTION_TTL_MAX,
+                keys = multiDeviceKeys,
+                scope = TransactionScope.Scope.NEW_DEVICE_SYNC,
+                ttl = TRANSACTION_TTL_MAX,
             ).execute(::invokeInTransaction)
         } catch (exception: Exception) {
             Result.failure(exception)

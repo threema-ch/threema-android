@@ -73,7 +73,7 @@ import ch.threema.app.R
 import ch.threema.app.compose.common.LocalDayOfYear
 import ch.threema.app.compose.common.SpacerHorizontal
 import ch.threema.app.compose.common.ThemedText
-import ch.threema.app.compose.common.buttons.ButtonPrimaryDense
+import ch.threema.app.compose.common.buttons.primary.ButtonPrimaryDense
 import ch.threema.app.compose.common.immutables.ImmutableBitmap
 import ch.threema.app.compose.common.list.swipe.ListItemSwipeContainer
 import ch.threema.app.compose.common.list.swipe.ListItemSwipeFeature
@@ -104,6 +104,7 @@ import ch.threema.app.voip.groupcall.sfu.CallId
 import ch.threema.common.emptyByteArray
 import ch.threema.common.now
 import ch.threema.common.toHMMSS
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.datatypes.LocalGroupId
 import ch.threema.domain.models.ContactReceiverIdentifier
@@ -375,6 +376,10 @@ private fun AvatarContent(
         showWorkBadge = when (conversationUiModel) {
             is ConversationUiModel.ContactConversation -> conversationUiModel.showWorkBadge
             else -> false
+        },
+        availabilityStatus = when (conversationUiModel) {
+            is ConversationUiModel.ContactConversation -> conversationUiModel.availabilityStatus
+            else -> null
         },
         isChecked = conversationListItemUiModel.isChecked,
         onClick = onClick,
@@ -1061,6 +1066,7 @@ private class PreviewProviderContactConversationListItemItemUiModel : PreviewPar
                 showWorkBadge = showWorkBadge,
                 isTyping = isTyping,
                 avatarIteration = AvatarIteration.initial,
+                availabilityStatus = AvailabilityStatus.Unavailable(),
             ),
             isChecked = isChecked,
             isHighlighted = isHighlighted,

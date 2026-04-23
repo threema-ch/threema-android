@@ -1,5 +1,6 @@
 package ch.threema.data.storage
 
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.domain.models.ContactSyncState
 import ch.threema.domain.models.IdentityState
 import ch.threema.domain.models.IdentityType
@@ -10,6 +11,7 @@ import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.types.IdentityString
 import ch.threema.storage.models.ContactModel
+import java.time.Instant
 import java.util.Date
 
 // This file contains the types used in the database abstraction layer.
@@ -61,6 +63,14 @@ data class DbContact(
     val jobTitle: String?,
     val department: String?,
     val notificationTriggerPolicyOverride: Long?,
+    /**
+     *  In work builds, work contacts can have an optional [AvailabilityStatus.Set].
+     *  On database an explicit value of [AvailabilityStatus.None] is never stored.
+     *
+     *  This value is joined in from a separate database table ([DbAvailabilityStatus.TABLE]).
+     */
+    val availabilityStatusSet: AvailabilityStatus.Set?,
+    val workLastFullSyncAt: Instant?,
 )
 
 data class DbGroup(

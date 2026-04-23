@@ -5,8 +5,8 @@ import ch.threema.app.utils.MessageUtil
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.protocol.csp.messages.GroupDeliveryReceiptMessage
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.common.CspE2eMessageType
+import ch.threema.protobuf.d2d.OutgoingMessage
 import ch.threema.storage.models.MessageState
 import ch.threema.storage.models.group.GroupMessageModel
 import java.util.Date
@@ -14,12 +14,12 @@ import java.util.Date
 private val logger = getThreemaLogger("ReflectedOutgoingGroupDeliveryReceiptTask")
 
 internal class ReflectedOutgoingGroupDeliveryReceiptTask(
-    outgoingMessage: MdD2D.OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
 ) : ReflectedOutgoingContactMessageTask<GroupDeliveryReceiptMessage>(
     outgoingMessage = outgoingMessage,
     message = GroupDeliveryReceiptMessage.fromReflected(outgoingMessage),
-    type = Common.CspE2eMessageType.GROUP_DELIVERY_RECEIPT,
+    type = CspE2eMessageType.GROUP_DELIVERY_RECEIPT,
     serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }

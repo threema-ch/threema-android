@@ -1,9 +1,11 @@
 package ch.threema.app.processors
 
+import ch.threema.app.AppConstants
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.processors.incomingcspmessage.getSubTaskFromMessage
+import ch.threema.app.processors.incomingcspmessage.workdelta.IncomingWorkSyncDeltaMessageTask
 import ch.threema.app.processors.push.IncomingWebSessionResumeMessageTask
 import ch.threema.app.protocolsteps.Contact
 import ch.threema.app.protocolsteps.IdentityBlockedSteps
@@ -41,6 +43,7 @@ import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.domain.protocol.csp.messages.MissingPublicKeyException
 import ch.threema.domain.protocol.csp.messages.WebSessionResumeMessage
 import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityEnvelopeMessage
+import ch.threema.domain.protocol.csp.messages.workdelta.WorkSyncDeltaMessage
 import ch.threema.domain.stores.ContactStore
 import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -182,7 +185,7 @@ class IncomingMessageTask(
             }
 
             if (message.fromIdentity == ProtocolDefines.SPECIAL_CONTACT_PUSH) {
-                // Handle messages from special contact
+                // Handle messages from special push contact
                 when (message) {
                     is WebSessionResumeMessage -> IncomingWebSessionResumeMessageTask(
                         message,
@@ -191,11 +194,21 @@ class IncomingMessageTask(
                     )
 
                     else -> {
-                        logger.warn(
-                            "Received unexpected message {} from {}",
-                            Utils.byteToHex(message.type.toByte(), true, true),
-                            ProtocolDefines.SPECIAL_CONTACT_PUSH,
-                        )
+                        logReceivedUnexpectedMessageFromSpecialIdentity(message)
+                        throw DiscardMessageException(message)
+                    }
+                }.run(handle)
+            } else if (message.fromIdentity == AppConstants.THREEMA_WORK_SYNC_IDENTITY) {
+                // Handle messages from special work delta sync contact
+                when (message) {
+                    is WorkSyncDeltaMessage -> IncomingWorkSyncDeltaMessageTask(
+                        message = message,
+                        triggerSource = TriggerSource.REMOTE,
+                        serviceManager = serviceManager,
+                    )
+
+                    else -> {
+                        logReceivedUnexpectedMessageFromSpecialIdentity(message)
                         throw DiscardMessageException(message)
                     }
                 }.run(handle)
@@ -281,6 +294,14 @@ class IncomingMessageTask(
             message.protectAgainstReplay(),
             peerRatchetIdentifier,
             handle,
+        )
+    }
+
+    private fun logReceivedUnexpectedMessageFromSpecialIdentity(message: AbstractMessage) {
+        logger.warn(
+            "Received unexpected message {} from {}",
+            Utils.byteToHex(message.type.toByte(), true, true),
+            message.fromIdentity,
         )
     }
 

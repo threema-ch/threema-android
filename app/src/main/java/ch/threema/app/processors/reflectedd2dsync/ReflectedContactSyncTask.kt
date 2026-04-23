@@ -4,12 +4,14 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.services.DeadlineListService.DEADLINE_INDEFINITE
 import ch.threema.app.utils.AppVersionProvider
+import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
 import ch.threema.app.utils.ExifInterface
 import ch.threema.app.utils.ShortcutUtil
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.contentEquals
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
@@ -27,20 +29,19 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.Common.Blob
-import ch.threema.protobuf.d2d.MdD2D.ContactSync
-import ch.threema.protobuf.d2d.MdD2D.ContactSync.Create
-import ch.threema.protobuf.d2d.MdD2D.ContactSync.Update
-import ch.threema.protobuf.d2d.sync.MdD2DSync
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy
-import ch.threema.protobuf.d2d.sync.MdD2DSync.NotificationSoundPolicy
+import ch.threema.protobuf.common.Blob
+import ch.threema.protobuf.common.DeltaImage
+import ch.threema.protobuf.d2d.ContactSync
+import ch.threema.protobuf.d2d.sync.Contact
+import ch.threema.protobuf.d2d.sync.ConversationCategory
+import ch.threema.protobuf.d2d.sync.ConversationVisibility
 import ch.threema.protobuf.d2d.sync.contactDefinedProfilePictureOrNull
 import ch.threema.protobuf.d2d.sync.userDefinedProfilePictureOrNull
+import ch.threema.protobuf.d2d.sync.workAvailabilityStatusOrNull
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.ConversationModel
 import ch.threema.storage.models.ConversationTag
+import java.time.Instant
 import java.util.Date
 
 private val logger = getThreemaLogger("ReflectedContactSyncTask")
@@ -51,13 +52,9 @@ class ReflectedContactSyncTask(
     private val serviceManager: ServiceManager,
 ) {
     private val conversationCategoryService by lazy { serviceManager.conversationCategoryService }
-    private val ringtoneService by lazy { serviceManager.ringtoneService }
     private val fileService by lazy { serviceManager.fileService }
     private val contactService by lazy { serviceManager.contactService }
     private val preferenceService by lazy { serviceManager.preferenceService }
-
-    // Used when chats are pinned
-    private val conversationTagService by lazy { serviceManager.conversationTagService }
     private val conversationService by lazy { serviceManager.conversationService }
 
     fun run() {
@@ -69,7 +66,7 @@ class ReflectedContactSyncTask(
         }
     }
 
-    private fun handleContactCreate(contactCreate: Create) {
+    private fun handleContactCreate(contactCreate: ContactSync.Create) {
         logger.info("Processing reflected contact create")
 
         if (!contactCreate.hasContact()) {
@@ -110,7 +107,7 @@ class ReflectedContactSyncTask(
         logger.info("New contact {} successfully created from sync", contactCreate.contact.identity)
     }
 
-    private fun handleContactUpdate(contactUpdate: Update) {
+    private fun handleContactUpdate(contactUpdate: ContactSync.Update) {
         logger.info("Processing reflected contact update")
 
         val identity = contactUpdate.contact.identity
@@ -144,13 +141,15 @@ class ReflectedContactSyncTask(
 
         applyNotificationTriggerPolicy(contactModel, contact)
 
-        applyNotificationSoundPolicy(contact)
-
         applyProfilePictures(contact)
 
         applyConversationCategory(contact)
 
         applyConversationVisibility(contact)
+
+        if (ConfigUtils.supportsAvailabilityStatus()) {
+            applyAvailabilityStatus(contactModel, contact)
+        }
     }
 
     private fun applyNames(contactModel: ContactModel, contact: Contact) {
@@ -216,14 +215,25 @@ class ReflectedContactSyncTask(
         }
     }
 
+    private fun applyAvailabilityStatus(contactModel: ContactModel, contact: Contact) {
+        val availabilityStatus = contact.workAvailabilityStatusOrNull
+            ?.let { workAvailabilityStatus ->
+                AvailabilityStatus.fromProtocolModel(workAvailabilityStatus)
+                    ?: unrecognizedValue("work availability status")
+            }
+        if (availabilityStatus != null) {
+            contactModel.setAvailabilityStatusFromSync(availabilityStatus)
+        }
+    }
+
     private fun applyConversationCategory(contact: Contact) {
         if (!contact.hasConversationCategory()) {
             return
         }
         when (contact.conversationCategory) {
-            MdD2DSync.ConversationCategory.DEFAULT -> false
-            MdD2DSync.ConversationCategory.PROTECTED -> true
-            MdD2DSync.ConversationCategory.UNRECOGNIZED -> unrecognizedValue("conversation category")
+            ConversationCategory.DEFAULT -> false
+            ConversationCategory.PROTECTED -> true
+            ConversationCategory.UNRECOGNIZED -> unrecognizedValue("conversation category")
             null -> nullValue("conversation category")
         }?.let { isPrivateChat ->
             val uid = ContactUtil.getUniqueIdString(contact.identity)
@@ -244,7 +254,7 @@ class ReflectedContactSyncTask(
             contact.notificationTriggerPolicyOverride.hasPolicy() -> {
                 val policy = contact.notificationTriggerPolicyOverride.policy
                 when (policy.policy) {
-                    NotificationTriggerPolicy.NEVER -> {
+                    Contact.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER -> {
                         if (policy.hasExpiresAt()) {
                             NotificationTriggerPolicyOverride.MutedUntil(policy.expiresAt)
                         } else {
@@ -252,7 +262,8 @@ class ReflectedContactSyncTask(
                         }
                     }
 
-                    NotificationTriggerPolicy.UNRECOGNIZED -> unrecognizedValue("notification trigger policy override")
+                    Contact.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.UNRECOGNIZED ->
+                        unrecognizedValue("notification trigger policy override")
                     null -> nullValue("notification trigger policy override")
                 }
             }
@@ -270,26 +281,6 @@ class ReflectedContactSyncTask(
         }
     }
 
-    private fun applyNotificationSoundPolicy(contact: Contact) {
-        val uid = ContactUtil.getUniqueIdString(contact.identity)
-
-        if (contact.hasNotificationSoundPolicyOverride()) {
-            if (contact.notificationSoundPolicyOverride.hasDefault()) {
-                if (ringtoneService.isSilent(uid, false)) {
-                    ringtoneService.setRingtone(uid, ringtoneService.defaultContactRingtone)
-                }
-            } else if (contact.notificationSoundPolicyOverride.hasPolicy()) {
-                when (contact.notificationSoundPolicyOverride.policy) {
-                    NotificationSoundPolicy.MUTED -> ringtoneService.setRingtone(uid, null)
-                    NotificationSoundPolicy.UNRECOGNIZED -> unrecognizedValue("notification sound policy")
-                    null -> nullValue("notification sound policy")
-                }
-            } else {
-                logger.warn("Notification sound policy does not contain default or policy")
-            }
-        }
-    }
-
     private fun applyProfilePictures(contact: Contact) {
         applyContactDefinedProfilePicture(contact)
         applyUserDefinedProfilePicture(contact)
@@ -297,7 +288,7 @@ class ReflectedContactSyncTask(
 
     private fun applyContactDefinedProfilePicture(contact: Contact) {
         when (contact.contactDefinedProfilePictureOrNull?.imageCase) {
-            Common.DeltaImage.ImageCase.UPDATED -> {
+            DeltaImage.ImageCase.UPDATED -> {
                 contact.contactDefinedProfilePicture.updated.blob.loadAndMarkAsDone { blob ->
                     logger.info("Applying updated contact defined profile picture from sync")
 
@@ -312,7 +303,7 @@ class ReflectedContactSyncTask(
                 }
             }
 
-            Common.DeltaImage.ImageCase.REMOVED -> {
+            DeltaImage.ImageCase.REMOVED -> {
                 if (fileService.hasContactDefinedProfilePicture(contact.identity)) {
                     logger.info("Removing contact defined profile picture from sync")
                     fileService.removeContactDefinedProfilePicture(contact.identity)
@@ -320,14 +311,14 @@ class ReflectedContactSyncTask(
                 }
             }
 
-            Common.DeltaImage.ImageCase.IMAGE_NOT_SET -> logger.warn("Contact defined profile picture is not set")
+            DeltaImage.ImageCase.IMAGE_NOT_SET -> logger.warn("Contact defined profile picture is not set")
             null -> Unit
         }
     }
 
     private fun applyUserDefinedProfilePicture(contact: Contact) {
         when (contact.userDefinedProfilePictureOrNull?.imageCase) {
-            Common.DeltaImage.ImageCase.UPDATED -> {
+            DeltaImage.ImageCase.UPDATED -> {
                 logger.info("Applying updated user defined profile picture from sync")
                 contact.userDefinedProfilePicture.updated.blob.loadAndMarkAsDone { blob ->
                     if (!fileService.getUserDefinedProfilePictureStream(contact.identity).contentEquals(blob)) {
@@ -337,7 +328,7 @@ class ReflectedContactSyncTask(
                 }
             }
 
-            Common.DeltaImage.ImageCase.REMOVED -> {
+            DeltaImage.ImageCase.REMOVED -> {
                 if (fileService.hasUserDefinedProfilePicture(contact.identity)) {
                     logger.info("Removing user defined profile picture from sync")
                     fileService.removeUserDefinedProfilePicture(contact.identity)
@@ -345,7 +336,7 @@ class ReflectedContactSyncTask(
                 }
             }
 
-            Common.DeltaImage.ImageCase.IMAGE_NOT_SET -> logger.warn("User defined profile picture is not set")
+            DeltaImage.ImageCase.IMAGE_NOT_SET -> logger.warn("User defined profile picture is not set")
             null -> Unit
         }
     }
@@ -400,7 +391,7 @@ class ReflectedContactSyncTask(
     private fun applyConversationVisibility(contact: Contact) {
         if (contact.hasConversationVisibility()) {
             when (contact.conversationVisibility) {
-                MdD2DSync.ConversationVisibility.NORMAL -> {
+                ConversationVisibility.NORMAL -> {
                     // TODO(ANDR-3010): Use new conversation model
                     val archivedConversationModel = getArchivedConversationModel(contact.identity)
                     if (archivedConversationModel != null) {
@@ -410,7 +401,7 @@ class ReflectedContactSyncTask(
                     }
                 }
 
-                MdD2DSync.ConversationVisibility.ARCHIVED -> {
+                ConversationVisibility.ARCHIVED -> {
                     val conversationModel = getConversationModel(contact.identity)
                     if (conversationModel != null) {
                         conversationService.archive(conversationModel, TriggerSource.SYNC)
@@ -421,14 +412,14 @@ class ReflectedContactSyncTask(
                     }
                 }
 
-                MdD2DSync.ConversationVisibility.PINNED -> {
+                ConversationVisibility.PINNED -> {
                     getArchivedConversationModel(contact.identity)?.let {
                         conversationService.unarchive(listOf(it), TriggerSource.SYNC)
                     }
                     pinConversation(contact.identity)
                 }
 
-                MdD2DSync.ConversationVisibility.UNRECOGNIZED -> unrecognizedValue("conversation visibility")
+                ConversationVisibility.UNRECOGNIZED -> unrecognizedValue("conversation visibility")
 
                 null -> nullValue("conversation visibility")
             }
@@ -604,9 +595,9 @@ class ReflectedContactSyncTask(
             when {
                 readReceiptPolicyOverride.hasDefault() -> ReadReceiptPolicy.DEFAULT
                 readReceiptPolicyOverride.hasPolicy() -> when (readReceiptPolicyOverride.policy) {
-                    MdD2DSync.ReadReceiptPolicy.SEND_READ_RECEIPT -> ReadReceiptPolicy.SEND
-                    MdD2DSync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT -> ReadReceiptPolicy.DONT_SEND
-                    MdD2DSync.ReadReceiptPolicy.UNRECOGNIZED -> unrecognizedValue("read receipt policy override")
+                    ch.threema.protobuf.d2d.sync.ReadReceiptPolicy.SEND_READ_RECEIPT -> ReadReceiptPolicy.SEND
+                    ch.threema.protobuf.d2d.sync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT -> ReadReceiptPolicy.DONT_SEND
+                    ch.threema.protobuf.d2d.sync.ReadReceiptPolicy.UNRECOGNIZED -> unrecognizedValue("read receipt policy override")
                     null -> nullValue("read receipt policy override")
                 }
 
@@ -625,9 +616,9 @@ class ReflectedContactSyncTask(
             when {
                 typingIndicatorPolicyOverride.hasDefault() -> TypingIndicatorPolicy.DEFAULT
                 typingIndicatorPolicyOverride.hasPolicy() -> when (typingIndicatorPolicyOverride.policy) {
-                    MdD2DSync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR -> TypingIndicatorPolicy.SEND
-                    MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR -> TypingIndicatorPolicy.DONT_SEND
-                    MdD2DSync.TypingIndicatorPolicy.UNRECOGNIZED -> unrecognizedValue("typing indicator policy")
+                    ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR -> TypingIndicatorPolicy.SEND
+                    ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR -> TypingIndicatorPolicy.DONT_SEND
+                    ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy.UNRECOGNIZED -> unrecognizedValue("typing indicator policy")
                     null -> nullValue("typing indicator policy")
                 }
 
@@ -641,16 +632,32 @@ class ReflectedContactSyncTask(
         }
     }
 
+    private fun Contact.getWorkLastFullSyncAtOrNull(): Instant? {
+        return if (this.hasWorkLastFullSyncAt()) {
+            Instant.ofEpochMilli(workLastFullSyncAt)
+        } else {
+            null
+        }
+    }
+
     private fun Contact.getConversationVisibilityArchiveOrNull(): Boolean? {
         return if (hasConversationVisibility()) {
             when (conversationVisibility) {
-                MdD2DSync.ConversationVisibility.NORMAL, MdD2DSync.ConversationVisibility.PINNED -> false
-                MdD2DSync.ConversationVisibility.ARCHIVED -> true
-                MdD2DSync.ConversationVisibility.UNRECOGNIZED -> unrecognizedValue("conversation visibility")
+                ConversationVisibility.NORMAL, ConversationVisibility.PINNED -> false
+                ConversationVisibility.ARCHIVED -> true
+                ConversationVisibility.UNRECOGNIZED -> unrecognizedValue("conversation visibility")
                 null -> nullValue("conversation visibility")
             }
         } else {
             null
+        }
+    }
+
+    private fun Contact.getAvailabilityStatusOrNone(): AvailabilityStatus {
+        return if (hasWorkAvailabilityStatus()) {
+            AvailabilityStatus.fromProtocolModel(workAvailabilityStatus) ?: AvailabilityStatus.None
+        } else {
+            AvailabilityStatus.None
         }
     }
 
@@ -664,7 +671,7 @@ class ReflectedContactSyncTask(
 
     private fun Contact.getCreatedAtOrNull(): Date? {
         return if (hasCreatedAt()) {
-            return Date(createdAt)
+            Date(createdAt)
         } else {
             null
         }
@@ -701,6 +708,8 @@ class ReflectedContactSyncTask(
         jobTitle = null,
         department = null,
         notificationTriggerPolicyOverride = notificationTriggerPolicyOverride.toInternalMutedOverrideUntilValue(),
+        availabilityStatus = getAvailabilityStatusOrNone(),
+        workLastFullSyncAt = getWorkLastFullSyncAtOrNull(),
     )
 
     private fun Contact.NotificationTriggerPolicyOverride.toInternalMutedOverrideUntilValue(): Long? =

@@ -22,6 +22,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="enter_id_hint">输入 ${app_name_short} ID</string>
     <string name="account_links">链接账户</string>
+    <string name="title_set_availability_status">在线状态</string>
     <string name="menu_settings">设置</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="menu_about">关于 ${app_name}</string>
@@ -112,6 +113,7 @@
     <string name="set_nickname_title">设置昵称</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
+    <string name="save">保存</string>
     <string name="copy_message_action">复制</string>
     <string name="delete_contact_action">删除联系人</string>
     <string name="delete_multiple_contact_action">删除联系人</string>
@@ -356,6 +358,7 @@
     <string name="can_not_send_no_group_members">您无法将消息发送到空群组</string>
     <string name="you_are_not_a_member_of_this_group">您不是此群组的成员</string>
     <string name="title_public_nickname">昵称</string>
+    <string name="title_availability_status">状态</string>
     <string name="prefs_sum_excluded_sync_identities">同步联系人时，这里列出的ID将被忽略</string>
     <string name="prefs_title_excluded_sync_identities">排除清单</string>
     <string name="synchronize_contact">通讯录同步</string>
@@ -1691,10 +1694,11 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="work_directory_empty_view_text">请输入至少3个字符，以便在贵公司的 ${app_name_short} 用户目录中搜索。</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">此文件为无效，无法分享</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
-    <string name="contact_availability_status_available">在线</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <string name="contact_availability_status_unavailable">离线</string>
+    <string name="availability_status_none">无状态</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e. out-of-office -->
+    <string name="availability_status_unavailable">离线</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently busy-->
+    <string name="availability_status_busy">忙碌中</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">激活链接为无效，请联系您的管理员以获取帮助。</string>
     <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
@@ -1761,6 +1765,13 @@ ${app_name_short} 支持的所有表情符号。</string>
     <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_off">在通话过程中，即使蓝牙耳机断开连接，通话仍会继续进行。注意​​：这可能会导致耳机上的挂断按钮无法使用。</string>
     <string name="failed_to_load_conversations">无法加载会话。</string>
     <string name="contact_support">联系客服</string>
+    <string name="edit_availability_status_modal_title">在线状态</string>
+    <string name="edit_availability_status_modal_subtitle">此状态对贵公司所有人都可见。</string>
+    <string name="edit_availability_status_modal_optional_message_label">自定义文本（可选）</string>
+    <string name="edit_availability_status_modal_optional_message_placeholder">开会中</string>
+    <string name="edit_availability_status_modal_optional_message_description">当选择为 “忙碌中” 或 “离线” 时，设置自定义状态消息。</string>
+    <string name="edit_availability_status_modal_optional_message_too_long">文本太长，请缩短</string>
+    <string name="edit_availability_status_did_change">在线状态已更改</string>
     <plurals name="contacts_counter_label">
         <item quantity="other">%d个联系人</item>
     </plurals>

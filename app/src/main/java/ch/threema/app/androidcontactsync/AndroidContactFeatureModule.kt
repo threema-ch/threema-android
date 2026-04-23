@@ -11,6 +11,7 @@ import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 
 val androidContactFeatureModule = module {
+    singleOf(::AndroidContactChangeMonitor)
     singleOf(::AndroidContactReader)
     singleOf(::GetAndroidContactNameUseCase)
     singleOf(::GetRawContactNameUseCase)

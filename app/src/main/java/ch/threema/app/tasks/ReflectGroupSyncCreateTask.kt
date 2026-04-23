@@ -10,7 +10,7 @@ import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncCreate
-import ch.threema.protobuf.d2d.sync.MdD2DSync
+import ch.threema.protobuf.d2d.sync.ConversationVisibility
 
 private val logger = getThreemaLogger("ReflectGroupSyncCreateTask")
 
@@ -47,7 +47,8 @@ class ReflectGroupSyncCreateTask(
         uploadResult
     }
 
-    override val runAfterSuccessfulTransaction: (transactionResult: GroupProfilePictureUploadResult?) -> GroupProfilePictureUploadResult? = { it }
+    override val runAfterSuccessfulTransaction: suspend (transactionResult: GroupProfilePictureUploadResult?) -> GroupProfilePictureUploadResult? =
+        { it }
 
     private suspend fun reflectGroupSyncCreate(groupProfilePictureUploadSuccess: GroupProfilePictureUploadResult.Success?, handle: ActiveTaskCodec) {
         logger.info("Reflecting group sync create for group {}", groupModelData.name)
@@ -60,7 +61,7 @@ class ReflectGroupSyncCreateTask(
         val encryptedEnvelopeResult = getEncryptedGroupSyncCreate(
             groupModelData.toGroupSync(
                 isPrivateChat = false,
-                conversationVisibility = MdD2DSync.ConversationVisibility.NORMAL,
+                conversationVisibility = ConversationVisibility.NORMAL,
                 expectedProfilePictureChange = profilePictureChange,
             ),
             multiDeviceManager.propertiesProvider.get(),

@@ -127,6 +127,20 @@ class PreferenceStoreImpl(
             null
         }
 
+    /**
+     *  Watch the String value of [key].
+     *
+     *  See [watchLatest] for details about this flows behavior and the backpressure handling.
+     */
+    override fun watchString(key: String): Flow<String?> =
+        watchLatest(
+            sharedPreferences = sharedPreferences,
+            key = key,
+            read = {
+                this.getString(key, null)
+            },
+        )
+
     override fun getStringArray(key: String): Array<String>? =
         sharedPreferences.getString(key, null)
             ?.takeUnlessEmpty()

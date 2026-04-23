@@ -72,7 +72,7 @@ impl<const LENGTH: usize> fmt::Debug for FixedLengthFrameDecoder<LENGTH> {
 pub(crate) trait FrameDelimiter<const LENGTH: usize> {
     const LENGTH: usize;
 
-    /// Decode the frame delimiter and return the length of the frame
+    /// Decode the frame delimiter and return the length of the frame.
     fn decode(data: [u8; LENGTH]) -> usize;
 }
 
@@ -105,17 +105,17 @@ enum VariableLengthFrameDecoderState {
 /// Contains a stream of data and hands out individual variable length frames, one by one.
 #[derive(Name)]
 pub(crate) struct VariableLengthFrameDecoder<
-    const DELIMETER_LENGTH: usize,
-    TDelimiter: FrameDelimiter<DELIMETER_LENGTH>,
+    const DELIMITER_LENGTH: usize,
+    TDelimiter: FrameDelimiter<DELIMITER_LENGTH>,
 > {
     delimiter: PhantomData<TDelimiter>,
     state: VariableLengthFrameDecoderState,
     data: Vec<u8>,
 }
-impl<const DELIMETER_LENGTH: usize, TDelimiter: FrameDelimiter<DELIMETER_LENGTH>>
-    VariableLengthFrameDecoder<DELIMETER_LENGTH, TDelimiter>
+impl<const DELIMITER_LENGTH: usize, TDelimiter: FrameDelimiter<DELIMITER_LENGTH>>
+    VariableLengthFrameDecoder<DELIMITER_LENGTH, TDelimiter>
 {
-    const LENGTH: usize = DELIMETER_LENGTH;
+    const LENGTH: usize = DELIMITER_LENGTH;
 
     /// Create a frame decoder using a [`FrameDelimiter`] to decode the length of frames with `data`
     /// being the initial data.
@@ -162,20 +162,20 @@ impl<const DELIMETER_LENGTH: usize, TDelimiter: FrameDelimiter<DELIMETER_LENGTH>
         map_fn: F,
     ) -> Option<TResult>
     where
-        [(); DELIMETER_LENGTH]:,
+        [(); DELIMITER_LENGTH]:,
     {
         if let VariableLengthFrameDecoderState::PartialDelimiter = &self.state {
             // Check if we have sufficient bytes to decode the limiter or wait for more
-            let delimiter = self.data.get(..DELIMETER_LENGTH)?;
+            let delimiter = self.data.get(..DELIMITER_LENGTH)?;
 
             // Decode the delimiter to retrieve the length
-            let delimiter: [u8; DELIMETER_LENGTH] = delimiter
+            let delimiter: [u8; DELIMITER_LENGTH] = delimiter
                 .try_into()
-                .expect("[0..DELIMETER_LENGTH] must be DELIMETER_LENGTH bytes");
+                .expect("[0..DELIMITER_LENGTH] must be DELIMITER_LENGTH bytes");
             let length = TDelimiter::decode(delimiter);
 
             // Drain the delimiter and move into the next state
-            let _ = self.data.drain(..DELIMETER_LENGTH);
+            let _ = self.data.drain(..DELIMITER_LENGTH);
             self.state = VariableLengthFrameDecoderState::PartialFrame { length };
         }
 
@@ -195,8 +195,8 @@ impl<const DELIMETER_LENGTH: usize, TDelimiter: FrameDelimiter<DELIMETER_LENGTH>
         unreachable!("All decoder states should have been handled at this point");
     }
 }
-impl<const DELIMETER_LENGTH: usize, TDelimiter: FrameDelimiter<DELIMETER_LENGTH>> fmt::Debug
-    for VariableLengthFrameDecoder<DELIMETER_LENGTH, TDelimiter>
+impl<const DELIMITER_LENGTH: usize, TDelimiter: FrameDelimiter<DELIMITER_LENGTH>> fmt::Debug
+    for VariableLengthFrameDecoder<DELIMITER_LENGTH, TDelimiter>
 {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         formatter

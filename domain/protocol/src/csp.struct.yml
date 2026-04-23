@@ -752,7 +752,14 @@ payload: &payload
              `inner-message`. If this fails, exceptionally abort these steps and
              the connection. If the message has been discarded, _Acknowledge_
              the message and abort these steps.
-      21. If `sender-identity` is not a _Special Contact_:
+      21. If `sender-identity` equals `*3MAW0RK`:
+          1. If `inner-type` is not `0xfd`, log a warning,
+             _Acknowledge_ and discard the message and abort these steps.
+          2. Run the receive steps associated to `inner-type` with
+             `inner-message`. If this fails, exceptionally abort these steps and
+             the connection. If the message has been discarded, _Acknowledge_
+             the message and abort these steps.
+      22. If `sender-identity` is not a _Special Contact_:
           1. If `inner-metadata.nickname` is defined, let `nickname` be the
              value of `inner-metadata.nickname`.¹
           2. If `inner-metadata` is not defined and _User Profile Distribution_
@@ -794,7 +801,7 @@ payload: &payload
                    1. If the contact no longer exists, log an error and
                       exceptionally abort these steps and the connection.
                 2. Reflect a `ContactSync.Update` with `contact` set to
-                   `sync.Contact` with the following changes:
+                   `d2d_sync.Contact` with the following changes:
                    - `acquaintance_level` set to `change.acquaintance-level`,
                    - `nickname` set to `change.nickname`.
                 3. Commit the transaction and await acknowledgement.
@@ -819,12 +826,12 @@ payload: &payload
              `inner-message`. If this fails, exceptionally abort these steps and
              the connection. If the message has been discarded, _Acknowledge_
              the message and abort these steps.
-      22. (MD) If the properties associated to `inner-type` require
+      23. (MD) If the properties associated to `inner-type` require
           reflecting incoming messages, reflect a `d2d.IncomingMessage` from
           `outer-type` and `outer-message` and the associated conversation to
           other devices and wait for reflection acknowledgement.² If this fails,
           exceptionally abort these steps and the connection.³
-      23. If the properties associated to `inner-type` require sending
+      24. If the properties associated to `inner-type` require sending
           automatic delivery receipts and `flags` does not contain the _no
           automatic delivery receipts_ (`0x80`) flag, schedule a persistent task
           to run the _Bundled Messages Send Steps_ with the following
@@ -835,7 +842,7 @@ payload: &payload
           - to construct a [`delivery-receipt`](ref:e2e.delivery-receipt)
             message with status _received_ (`0x01`) and the respective
             `message-id`.
-      24. _Acknowledge_ the message.
+      25. _Acknowledge_ the message.
 
       ¹: Note that the `nickname` of `MessageMetadata` may be undefined (leading
       to no changes) or defined but explicitly empty (leading to the nickname of
@@ -1131,6 +1138,13 @@ e2e: &e2e
         - Production: 04884d12d668f855d00d71fb1d9d413c95f271312f7e077846af671875c4101b
       - Special: No
 
+    - `*3MAW0RK`:
+      - Nickname: Threema Work Delta Sync
+      - Public Key:
+        - Production: c0e8ad0f50c5c7315c402d3dc26db169408c117613e9b852d3d6c0e87fca536b
+        - Sandbox: c79d9e0f70342e653b0c6df027af8c8681db40e11bf556dd33ec78ee6f810c6d
+      - Special: Yes
+
     - `*3MAWORK`:
       - Nickname: Threema Work Channel
       - Public Key:
@@ -1165,7 +1179,13 @@ e2e: &e2e
         - Sandbox: 3a38650c681435bd1fb8498e213a2919b09388f5803aa44640e0f706326a865c
       - Special: No
 
-    Note: OnPrem provisions predefined contacts in the associated OPPF file.
+    Note 1: OnPrem provisions predefined contacts in the associated OPPF file.
+
+    Note 2: The _Valid Contacts Lookup Steps_ will prefer returning special
+    contacts with builtin public keys over returning existing contacts. In
+    theory, a special contact could therefore have a different public key or
+    verification level over the corresponding locally stored contact. This is
+    considered acceptable for the use cases of special contacts.
 
     ### Mitigating Replay
 
@@ -1347,7 +1367,7 @@ e2e: &e2e
         2. If `init.sync_state` is not defined, set it to `INITIAL`.
         3. If `init.verification_level` is not defined, set it to `UNVERIFIED`.
         4. If `init.work_verification_level` is not defined, set it to `NONE`.
-    12.  Update the _contact lookup cache_ with the contents of
+    12. Update the _contact lookup cache_ with the contents of
         `contact-or-inits`. Each newly added or updated entry has an expiration
         time of 10m after which the entry is to be removed from the cache.
     13. Return `contact-or-inits`.
@@ -1810,7 +1830,7 @@ e2e: &e2e
     other synchronised property of the group:
 
     1. Let `change` be one of the following changes to the group as defined by
-       `sync.Group`:
+       `d2d_sync.Group`:
        - `notification_trigger_policy_override`
        - `notification_sound_policy_override`
        - `conversation_category`
@@ -2059,7 +2079,7 @@ e2e: &e2e
               1. If the contact for `receiver` no longer exists, log an error,
                  discard `messages` and abort these steps.
            2. Let `change` be the following changes as defined by
-              `sync.Contact`:
+              `d2d_sync.Contact`:
               - `acquaintance_level` set to `DIRECT`,
               - `conversation_visibility` set to `NORMAL` if the associated
                  conversation visibility is currently _archived_,
@@ -2135,7 +2155,8 @@ e2e: &e2e
              1. If the group does not exist or is marked as left, log a warning
                 that a group sync race occurred, discard `messages` and abort
                 these steps.
-          2. Let `change` be the following changes as defined by `sync.Group`:
+          2. Let `change` be the following changes as defined by
+             `d2d_sync.Group`:
              - `conversation_visibility` set to `NORMAL` if the associated
                conversation visibility is currently _archived_,
           3. Reflect a `GroupSync.Update` with `group` set from `change`.
@@ -2213,7 +2234,7 @@ e2e: &e2e
           2. Let `members` be all current members of the distribution list.
              Remove any members with acquaintance level _deleted_ from `members`.¹
           3. Let `change` be the following changes as defined by
-             `sync.DistributionList`:
+             `d2d_sync.DistributionList`:
              - `member_identities` from `members`,
              - `conversation_visibility` set to `NORMAL` if the associated
                conversation visibility is currently _archived_,
@@ -2356,7 +2377,7 @@ e2e: &e2e
 
     1. Let `blob` be the following properties:
        - `data` being the encrypted binary data to be uploaded,
-       - `scope` being either _public_ (for public facing blobs) or _local_ (for
+       - (MD) `scope` being either _public_ (for public facing blobs) or _local_ (for
            device group facing blobs).
        - `persist` being a mark (primarily for usage within groups).
     2. Run the _Blob Credentials Refresh Steps_ and let `credentials` be the
@@ -2374,7 +2395,7 @@ e2e: &e2e
 
     1. Let `blob` be the following properties:
        - `id` being the blob ID,
-       - `scope` being either _public_ (for public facing blobs) or _local_ (for
+       - (MD) `scope` being either _public_ (for public facing blobs) or _local_ (for
            device group facing blobs).
     2. Run the _Blob Credentials Refresh Steps_ and let `credentials` be the
        result.
@@ -2590,10 +2611,10 @@ e2e: &e2e
     Audio must be in AAC format.
 
     If the source is already in AAC, no transcoding is necessary. Otherwise,
-    the recommended transcoding settings are: Bitrate 128 kbit/s, 2 channels.
+    the recommended transcoding settings are: Bitrate 64 kbit/s, 2 channels.
 
     When recording audio (i.e. a voice message), the recommended recording
-    settings are: Sample rate 44.1 kHz, bitrate 32 kbit/s, 1 channel.
+    settings are: Sample rate 44.1 kHz, bitrate 64 kbit/s, 1 channel.
 
     ### Video
 
@@ -2602,10 +2623,10 @@ e2e: &e2e
     Recommended encoding settings for all videos:
 
     - Low: 480x480, scale by maintaining aspect ratio to nearest multiple
-      of 16px. Video bitrate 384 kbit/s, audio bitrate 32 kbit/s (2
+      of 16px. Video bitrate 384 kbit/s, audio bitrate 128 kbit/s (2
       channels). Baseline Profile, Level 3.1.
     - High: 848x848, scale by maintaining aspect ratio to nearest multiple
-      of 16px. Video bitrate 1500 kbit/s, audio bitrate 64 kbit/s (2
+      of 16px. Video bitrate 1500 kbit/s, audio bitrate 128 kbit/s (2
       channels). Baseline Profile, Level 3.1.
     - Original: As is. Still needs transcoding in case a different codec has
       been used.
@@ -2717,17 +2738,20 @@ e2e: &e2e
        (meaning that multi-device is deactivated), run the following steps:
        1.   [...]
        2.   Update the user's feature mask on the directory server.
-       3.   Let `contacts` be the list of all contacts, including those with an
+       3.   Call the _Work Properties (Legacy)_ endpoint with the data gathered
+            from MDM parameters.
+       4.   Call the _Work Properties_ endpoint and reset all properties to
+            their default.
+       5.   Let `contacts` be the list of all contacts, including those with an
             acquaintance level different than _direct_.
-       4.   Call the _Work Sync_ endpoint with `contacts` and update `contacts`
+       6.   Call the _Work Sync_ endpoint with `contacts` and update `contacts`
             and the settings with the result.
-       5.   Refresh the state, type and feature mask of all `contacts` from the
+       7.   Refresh the state, type and feature mask of all `contacts` from the
             directory server and make any changes persistent.
-       6.   Let `solicited-contacts` be a copy of `contacts` filtered in the
+       8.   Let `solicited-contacts` be a copy of `contacts` filtered in the
             following way. For each `contact`:
-            1. If the `contact`'s activity state is _invalid_ (i.e. it does not
-               exist or has been revoked), remove `contact` from the list and
-               abort these sub-steps.
+            1. If the `contact` is marked as _invalid_, remove `contact` from
+               the list and abort these sub-steps.
             2. If `contact` is part of a group that is not marked as _left_, add
                `contact` to the list and abort these sub-steps.
             3. Lookup the 1:1 conversation with `contact` and let `last-update`
@@ -2735,21 +2759,21 @@ e2e: &e2e
             4. If `last-update` is defined, add `contact` to the list and abort
                these sub-steps.
             5. Remove `contact` from the list.
-       7.   If FS is supported by the client, run the _FS Refresh Steps_ with
+       9.   If FS is supported by the client, run the _FS Refresh Steps_ with
             `solicited-contacts`.
-       8.   For each `contact` of `solicited-contacts` run the _Bundled Messages
+       10.  For each `contact` of `solicited-contacts` run the _Bundled Messages
             Send Steps_ with the following properties:
             - `id` being a random message ID,
             - `created-at` set to the current timestamp,
             - `receivers` set to `contact`,
             - to construct a
               [`contact-request-profile-picture`](ref:e2e.contact-request-profile-picture)
-       9.   For each group not marked as _left_:
+       11.  For each group not marked as _left_:
             1. If the user is the creator of the group, trigger a _group sync_
                for that group.
             2. If the user is not the creator of the group, run the _Group Sync
                Request Steps_ for the group.
-       10. [...]
+       12. [...]
     5. Commit the application state with the updated `contacts` and settings,
        outer storage potentially protected by a passphrase (if provided) and
        inner storage potentially protected by RS (if created).
@@ -4509,17 +4533,17 @@ e2e: &e2e
       4. If `group.profile-picture` is defined and equals `profile-picture`
          (i.e. no changes), discard the message and abort these steps.
       5. (MD) Run the following sub-steps:
-         1. (MD) Begin a transaction with scope `GROUP_SYNC` and the following
+         1. Begin a transaction with scope `GROUP_SYNC` and the following
             precondition:
             1. If the group does not exist or the group is marked as _left_, log
                a warning that a group sync race occurred, discard the message
                and abort these steps.
-         2. (MD) Let `group` be a snapshot of the current group state.
-         3. (MD) If `group.profile-picture` is defined and equals
+         2. Let `group` be a snapshot of the current group state.
+         3. If `group.profile-picture` is defined and equals
             `profile-picture`, log a warning that a group sync race occurred.
-         4. (MD) Reflect a `GroupSync.Update` with `group` set to contain
+         4. Reflect a `GroupSync.Update` with `group` set to contain
             `profile_picture` set to `profile-picture.
-         5. (MD) Commit the transaction and await acknowledgement.
+         5. Commit the transaction and await acknowledgement.
       6. Store the profile picture and and apply it to the group.
     fields:
       - _doc: |-
@@ -5032,7 +5056,7 @@ e2e: &e2e
       per sender/receiver breaks a potential infinite loop.
 
   web-session-resume:
-    _group: Push Control
+    _group: Special Control
     _doc: |-
       A control message from Threema Web, requesting a session to be resumed.
 

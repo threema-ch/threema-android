@@ -5,7 +5,7 @@ use crate::{
     utils::time::Duration,
 };
 
-/// An error occurred while communicationg with a common HTTPS endpoint.
+/// An error occurred while communicating with a common HTTPS endpoint.
 ///
 /// Note: Not all errors are expected from all endpoints. For example, an endpoint whose protocol
 /// specification has no semantic meaning addressed to status code `403` will not map it to
@@ -16,15 +16,15 @@ pub(crate) enum HttpsEndpointError {
     #[error("Network error: {0}")]
     NetworkError(#[from] HttpsError),
 
-    /// Access forbidden
+    /// Access forbidden.
     #[error("Forbidden")]
     Forbidden,
 
-    /// Not found
+    /// Not found.
     #[error("Not found")]
     NotFound,
 
-    /// Invalid authentication credentials
+    /// Invalid authentication credentials.
     #[error("Invalid credentials")]
     InvalidCredentials,
 
@@ -32,11 +32,11 @@ pub(crate) enum HttpsEndpointError {
     #[error("Rate limit exceeded")]
     RateLimitExceeded,
 
-    /// An authentication challenge expired
+    /// An authentication challenge expired.
     #[error("Challenge expired")]
     ChallengeExpired,
 
-    /// Authentication challenge response was invalid
+    /// Authentication challenge response was invalid.
     #[error("Invalid challenge response")]
     InvalidChallengeResponse,
 
@@ -48,7 +48,7 @@ pub(crate) enum HttpsEndpointError {
     #[error("Decoding response failed: {0}")]
     DecodingFailed(#[from] serde_json::Error),
 
-    /// The awkward response did not indicate success and contained a custom (possibly localized) error
+    /// The awkward response did not indicate success and contained a custom (possibly localized) error.
     /// instead.
     #[error("Custom (possibly localized) error from server: {0}")]
     CustomPossiblyLocalizedError(String),
@@ -57,7 +57,7 @@ pub(crate) enum HttpsEndpointError {
 /// Default timeout for HTTPS endpoints.
 pub(crate) const TIMEOUT: Duration = Duration::from_secs(15);
 
-/// Returns a default set of headers for use with endpoints with basic auth added only if operating
+/// Returns a default set of headers for use with endpoints with basic auth added only if operating.
 /// in OnPrem mode.
 pub(crate) fn https_headers_with_authentication(context: &WorkContext) -> HttpsHeadersBuilder {
     let credentials = match context.flavor {

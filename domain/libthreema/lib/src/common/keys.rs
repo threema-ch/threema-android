@@ -258,7 +258,7 @@ impl fmt::Debug for PublicKey {
 /// Cipher associated to the key computed as `X25519HSalsa20(DGPK.secret, ephemeral_server_key)`.
 pub(crate) struct DeviceGroupPathAuthenticationCipher(pub(crate) salsa20::XSalsa20Poly1305);
 
-/// The Device Group Path Key (DGPK)
+/// The Device Group Path Key (DGPK).
 pub(crate) struct DeviceGroupPathKey(x25519_dalek::StaticSecret);
 impl DeviceGroupPathKey {
     /// Byte length of the device group key.
@@ -294,13 +294,13 @@ pub(crate) struct DeviceGroupTransactionScopeCipher(pub(crate) salsa20::XSalsa20
 
 #[derive(Educe, ZeroizeOnDrop)]
 #[educe(Debug)]
-/// The Device Group Key (DGK)
+/// The Device Group Key (DGK).
 pub struct DeviceGroupKey(#[educe(Debug(method(debug_static_secret)))] x25519::StaticSecret);
 impl DeviceGroupKey {
     /// Byte length of the device group key.
     pub const LENGTH: usize = 32;
 
-    /// Sample a random Device Group Key
+    /// Sample a random Device Group Key.
     #[must_use]
     pub fn random() -> Self {
         let mut device_group_key = [0_u8; Self::LENGTH];
@@ -489,7 +489,7 @@ impl RemoteSecret {
     /// Byte length of the remote secret.
     pub const LENGTH: usize = 32;
 
-    /// Sample a random Remote Secret
+    /// Sample a random Remote Secret.
     #[must_use]
     pub fn random() -> Self {
         let mut remote_secret = [0_u8; Self::LENGTH];
@@ -536,7 +536,7 @@ impl WonkyFieldCipherKey {
     pub const LENGTH: usize = 32;
 }
 
-/// Remote Secret Authentication Token (RSAT) associated to a Remote Secret (RS)
+/// Remote Secret Authentication Token (RSAT) associated to a Remote Secret (RS).
 #[derive(Clone, ZeroizeOnDrop)]
 pub struct RemoteSecretAuthenticationToken(pub [u8; Self::LENGTH]);
 impl RemoteSecretAuthenticationToken {

@@ -5,6 +5,7 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.processors.incomingcspmessage.IncomingCspMessageSubTask
 import ch.threema.app.processors.incomingcspmessage.ReceiveStepsResult
 import ch.threema.app.protocolsteps.Contact
+import ch.threema.app.protocolsteps.ContactOrInit
 import ch.threema.app.protocolsteps.Init
 import ch.threema.app.protocolsteps.Invalid
 import ch.threema.app.protocolsteps.SpecialContact
@@ -13,8 +14,7 @@ import ch.threema.app.protocolsteps.ValidContactsLookupSteps
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationService
 import ch.threema.app.services.GroupService
-import ch.threema.app.services.RingtoneService
-import ch.threema.app.services.UserService
+import ch.threema.app.stores.IdentityProvider
 import ch.threema.app.tasks.ReflectGroupSyncUpdateImmediateTask
 import ch.threema.app.tasks.ReflectionResult
 import ch.threema.app.tasks.toFullSyncContact
@@ -49,12 +49,13 @@ import ch.threema.domain.taskmanager.getEncryptedContactSyncCreate
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncCreate
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncUpdate
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.protobuf.d2d.MdD2D.GroupSync.Update.MemberStateChange
-import ch.threema.protobuf.d2d.sync.MdD2DSync
+import ch.threema.protobuf.common.groupIdentity
+import ch.threema.protobuf.common.identities
+import ch.threema.protobuf.d2d.GroupSync
+import ch.threema.protobuf.d2d.TransactionScope
+import ch.threema.protobuf.d2d.sync.ConversationVisibility
+import ch.threema.protobuf.d2d.sync.Group
 import ch.threema.protobuf.d2d.sync.group
-import ch.threema.protobuf.groupIdentity
-import ch.threema.protobuf.identities
 import ch.threema.storage.models.ContactModel
 import java.util.Collections
 import org.koin.core.component.KoinComponent
@@ -68,14 +69,13 @@ class IncomingGroupSetupTask(
     serviceManager: ServiceManager,
 ) : IncomingCspMessageSubTask<GroupSetupMessage>(message, triggerSource, serviceManager), KoinComponent {
     // Services
-    private val userService: UserService by inject()
+    private val identityProvider: IdentityProvider by inject()
     private val groupService: GroupService by inject()
     private val groupCallManager: GroupCallManager by inject()
     private val nonceFactory: NonceFactory by inject()
     private val multiDeviceManager: MultiDeviceManager by inject()
     private val conversationService: ConversationService by inject()
     private val conversationCategoryService: ConversationCategoryService by inject()
-    private val ringtoneService: RingtoneService by inject()
 
     // Repositories
     private val contactModelRepository: ContactModelRepository by inject()
@@ -85,11 +85,14 @@ class IncomingGroupSetupTask(
     private val validContactsLookupSteps: ValidContactsLookupSteps by inject()
 
     // Properties
-    private val myIdentity by lazy { userService.identity!! }
+    private val myIdentity by lazy {
+        identityProvider.getIdentityString()!!
+    }
+
     private val groupIdentity by lazy {
         GroupIdentity(
-            message.groupCreator,
-            message.apiGroupId.toLong(),
+            creatorIdentity = message.groupCreator,
+            groupId = message.apiGroupId.toLong(),
         )
     }
 
@@ -161,24 +164,25 @@ class IncomingGroupSetupTask(
 
     private suspend fun handleSetupContainingUser(
         senderIdentity: IdentityString,
-        members: Set<String>,
+        members: Set<IdentityString>,
         group: GroupModel?,
         handle: ActiveTaskCodec,
     ): ReceiveStepsResult {
-        val detectedChanges = if (multiDeviceManager.isMultiDeviceActive) {
-            handle.createTransaction(
-                keys = multiDeviceManager.propertiesProvider.get().keys,
-                scope = MdD2D.TransactionScope.Scope.GROUP_SYNC,
-                ttl = TRANSACTION_TTL_MAX,
-                precondition = {
-                    contactModelRepository.getByIdentity(senderIdentity)?.data != null
-                },
-            ).execute {
+        val detectedChanges: GroupChanges =
+            if (multiDeviceManager.isMultiDeviceActive) {
+                handle.createTransaction(
+                    keys = multiDeviceManager.propertiesProvider.get().keys,
+                    scope = TransactionScope.Scope.GROUP_SYNC,
+                    ttl = TRANSACTION_TTL_MAX,
+                    precondition = {
+                        contactModelRepository.getByIdentity(senderIdentity)?.data != null
+                    },
+                ).execute {
+                    detectAndReflectChangesIfMdEnabled(members, group, handle)
+                }
+            } else {
                 detectAndReflectChangesIfMdEnabled(members, group, handle)
             }
-        } else {
-            detectAndReflectChangesIfMdEnabled(members, group, handle)
-        }
 
         persistChanges(detectedChanges)
 
@@ -186,11 +190,14 @@ class IncomingGroupSetupTask(
     }
 
     private suspend fun detectAndReflectChangesIfMdEnabled(
-        members: Set<String>,
+        members: Set<IdentityString>,
         group: GroupModel?,
         handle: ActiveTaskCodec,
     ): GroupChanges {
-        val validMembersLookupResult = validContactsLookupSteps.run(identities = members)
+        val validMembersLookupResult: Map<IdentityString, ContactOrInit> = validContactsLookupSteps
+            .run(
+                identities = members,
+            )
             .filter { (_, contactOrInit) ->
                 when (contactOrInit) {
                     // Invalid contacts cannot be part of a group
@@ -204,17 +211,25 @@ class IncomingGroupSetupTask(
                 }
             }
 
-        val newContactModelData = validMembersLookupResult.asSequence()
-            .filter { it.key != myIdentity }
-            .map { it.value }
+        val newContacts: Set<ContactModelData> = validMembersLookupResult
+            .asSequence()
+            .filter { (identity, _) -> identity != myIdentity }
+            .map { (_, contactOrInit) -> contactOrInit }
             .filterIsInstance<Init>()
-            .map { it.contactModelData }
-            .map { it.copy(acquaintanceLevel = ContactModel.AcquaintanceLevel.GROUP) }
+            .map { init -> init.contactModelData }
+            .map { contactModelData ->
+                contactModelData.copy(
+                    acquaintanceLevel = ContactModel.AcquaintanceLevel.GROUP,
+                )
+            }
             .toSet()
 
-        newContactModelData.reflectAsNewContactsIfMdEnabled(handle)
+        reflectNewContactsIfMdEnabled(
+            newContacts = newContacts,
+            handle = handle,
+        )
 
-        val validMembers = validMembersLookupResult.map { it.key }.toSet()
+        val validMembers: Set<IdentityString> = validMembersLookupResult.keys
 
         val groupModelData = group?.data
 
@@ -234,38 +249,40 @@ class IncomingGroupSetupTask(
                 notificationTriggerPolicyOverride = null,
             )
             newGroupModelData.reflectAsNewGroupIfMdEnabled(handle)
-            NewGroup(newContactModelData, newGroupModelData)
+            NewGroup(newContacts, newGroupModelData)
         } else {
             val currentMembers = groupModelData.otherMembers
             val addedMembers = validMembers - currentMembers
             val removedMembers = currentMembers - validMembers
 
-            val memberStateChanges = addedMembers.associateWith { MemberStateChange.ADDED } +
-                removedMembers.associateWith { MemberStateChange.KICKED }
+            val memberStateChanges = addedMembers.associateWith { GroupSync.Update.MemberStateChange.ADDED } +
+                removedMembers.associateWith { GroupSync.Update.MemberStateChange.KICKED }
 
             validMembers.reflectAsGroupUpdateIfMdEnabled(memberStateChanges, handle)
-            ModifiedGroup(newContactModelData, group, addedMembers, removedMembers)
+            ModifiedGroup(
+                newContacts = newContacts,
+                groupModel = group,
+                addedMembers = addedMembers,
+                removedMembers = removedMembers,
+            )
         }
     }
 
     private fun persistChanges(changes: GroupChanges) {
         // Persist newly created contacts
-        changes.newContacts.forEach {
+        changes.newContacts.forEach { contactModelData ->
             try {
-                contactModelRepository.persistGroupContactFromRemote(it)
-            } catch (e: ContactCreateException) {
-                when (e) {
-                    // The contact must not exists yet
-                    is ContactStoreException -> logger.error(
-                        "Contact {} already exists",
-                        it.identity,
-                    )
+                contactModelRepository.persistGroupContactFromRemote(contactModelData)
+            } catch (contactCreateException: ContactCreateException) {
+                when (contactCreateException) {
+                    // The contact must not exist yet
+                    is ContactStoreException -> logger.error("Contact {} already exists", contactModelData.identity)
                     // This should never happen
-                    is InvalidContactException -> throw e
+                    is InvalidContactException -> throw contactCreateException
                     // This should never happen
-                    is UnexpectedContactException -> throw e
+                    is UnexpectedContactException -> throw contactCreateException
                     // This should never happen
-                    is ContactReflectException -> throw e
+                    is ContactReflectException -> throw contactCreateException
                 }
             }
         }
@@ -346,18 +363,20 @@ class IncomingGroupSetupTask(
         return ReceiveStepsResult.SUCCESS
     }
 
-    private suspend fun Collection<ContactModelData>.reflectAsNewContactsIfMdEnabled(handle: ActiveTaskCodec) {
-        val multiDeviceProperties = this@IncomingGroupSetupTask.multiDeviceProperties ?: return
-        map {
+    private suspend fun reflectNewContactsIfMdEnabled(
+        newContacts: Collection<ContactModelData>,
+        handle: ActiveTaskCodec,
+    ) {
+        val multiDeviceProperties = this@IncomingGroupSetupTask.multiDeviceProperties
+            ?: return
+        newContacts.map { contactModelData ->
             val encryptedEnvelopeResult = getEncryptedContactSyncCreate(
-                it.toFullSyncContact(
-                    conversationService,
-                    conversationCategoryService,
-                    ringtoneService,
+                contact = contactModelData.toFullSyncContact(
+                    conversationService = conversationService,
+                    conversationCategoryService = conversationCategoryService,
                 ),
-                multiDeviceProperties,
+                multiDeviceProperties = multiDeviceProperties,
             )
-
             handle.reflect(encryptedEnvelopeResult) to encryptedEnvelopeResult.nonce
         }.forEach { (reflectAck, nonce) ->
             handle.awaitReflectAck(reflectAck)
@@ -368,42 +387,51 @@ class IncomingGroupSetupTask(
     private suspend fun GroupModelData.reflectAsNewGroupIfMdEnabled(handle: ActiveTaskCodec) {
         val multiDeviceProperties = this@IncomingGroupSetupTask.multiDeviceProperties ?: return
 
-        val groupSync = toGroupSync(false, MdD2DSync.ConversationVisibility.NORMAL)
+        val groupSync = toGroupSync(
+            isPrivateChat = false,
+            conversationVisibility = ConversationVisibility.NORMAL,
+        )
         val encryptedEnvelopeResult = getEncryptedGroupSyncCreate(groupSync, multiDeviceProperties)
         handle.reflectAndAwaitAck(
-            encryptedEnvelopeResult,
-            true,
-            nonceFactory,
+            encryptedEnvelopeResult = encryptedEnvelopeResult,
+            storeD2dNonce = true,
+            nonceFactory = nonceFactory,
         )
     }
 
     private suspend fun Collection<String>.reflectAsGroupUpdateIfMdEnabled(
-        memberStateChanges: Map<String, MemberStateChange>,
+        memberStateChanges: Map<String, GroupSync.Update.MemberStateChange>,
         handle: ActiveTaskCodec,
     ) {
-        val multiDeviceProperties = this@IncomingGroupSetupTask.multiDeviceProperties ?: return
+        val multiDeviceProperties = this@IncomingGroupSetupTask.multiDeviceProperties
+            ?: return
 
         val groupSync = group {
             groupIdentity = groupIdentity {
                 creatorIdentity = this@IncomingGroupSetupTask.groupIdentity.creatorIdentity
                 groupId = this@IncomingGroupSetupTask.groupIdentity.groupId
             }
-            userState = MdD2DSync.Group.UserState.MEMBER
+            userState = Group.UserState.MEMBER
             memberIdentities = identities {
                 identities.addAll(this@reflectAsGroupUpdateIfMdEnabled)
             }
         }
-        val encryptedEnvelopeResult =
-            getEncryptedGroupSyncUpdate(groupSync, memberStateChanges, multiDeviceProperties)
+        val encryptedEnvelopeResult = getEncryptedGroupSyncUpdate(
+            group = groupSync,
+            memberStateChanges = memberStateChanges,
+            multiDeviceProperties = multiDeviceProperties,
+        )
         handle.reflectAndAwaitAck(
-            encryptedEnvelopeResult,
-            true,
-            nonceFactory,
+            encryptedEnvelopeResult = encryptedEnvelopeResult,
+            storeD2dNonce = true,
+            nonceFactory = nonceFactory,
         )
     }
 }
 
-private sealed class GroupChanges(val newContacts: Set<ContactModelData>)
+private sealed class GroupChanges(
+    val newContacts: Set<ContactModelData>,
+)
 
 private class NewGroup(
     newContacts: Set<ContactModelData>,

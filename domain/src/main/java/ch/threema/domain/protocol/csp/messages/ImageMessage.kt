@@ -5,8 +5,10 @@ import ch.threema.common.buildByteArray
 import ch.threema.common.readLittleEndianInt
 import ch.threema.common.writeLittleEndianInt
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.protocol.csp.messages.ImageMessage.Companion.fromByteArray
+import ch.threema.domain.protocol.csp.messages.ImageMessage.Companion.fromReflected
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
 
 /**
  * A message that has an image (stored on the blob server) as its content.
@@ -71,7 +73,7 @@ class ImageMessage(
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): ImageMessage {
+        fun fromReflected(message: IncomingMessage): ImageMessage {
             val bodyBytes: ByteArray = message.body.toByteArray()
             val imageMessage = fromByteArray(bodyBytes, 0, bodyBytes.size)
             imageMessage.initializeCommonProperties(message)

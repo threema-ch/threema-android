@@ -7,8 +7,8 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.QuoteUtil
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.TextMessage
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
+import ch.threema.protobuf.common.CspE2eMessageType
+import ch.threema.protobuf.d2d.OutgoingMessage
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.MessageContentsType
@@ -21,7 +21,7 @@ internal class ReflectedOutgoingTextTask(
 ) : ReflectedOutgoingContactMessageTask<TextMessage>(
     outgoingMessage = outgoingMessage,
     message = TextMessage.fromReflected(outgoingMessage),
-    type = Common.CspE2eMessageType.TEXT,
+    type = CspE2eMessageType.TEXT,
     serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }

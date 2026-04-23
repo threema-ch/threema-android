@@ -86,6 +86,10 @@ pub(crate) enum CacheLookupPolicy {
 
 /// Contact that was looked up.
 #[derive(Clone)]
+#[expect(
+    clippy::large_enum_variant,
+    reason = "Most of the use-cases will contain `NewContact`"
+)]
 pub(crate) enum CachedContactResult {
     /// The contact does not yet exist.
     NewContact(ContactInit),
@@ -217,7 +221,7 @@ impl State {
                 Flavor::Consumer => None,
                 Flavor::Work(work_context) => Some(work_directory::request_contacts(
                     &context.client_info,
-                    &context.config.work_server_url,
+                    &context.config.work_server_legacy_url,
                     work_context,
                     &contacts.unknown,
                 )),

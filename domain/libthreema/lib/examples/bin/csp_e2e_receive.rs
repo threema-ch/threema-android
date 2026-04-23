@@ -75,23 +75,23 @@ impl From<OutgoingPayloadForCspE2e> for OutgoingPayload {
     }
 }
 
-/// Payload queues for the main process
+/// Payload queues for the main process.
 struct PayloadQueuesForCspE2e {
     incoming: mpsc::Receiver<IncomingPayloadForCspE2e>,
     outgoing: mpsc::Sender<OutgoingPayloadForCspE2e>,
 }
 
-/// Payload queues for the protocol flow runner
+/// Payload queues for the protocol flow runner.
 struct PayloadQueuesForCsp {
     incoming: mpsc::Sender<IncomingPayloadForCspE2e>,
     outgoing: mpsc::Receiver<OutgoingPayloadForCspE2e>,
 }
 
 struct CspProtocolRunner {
-    /// The TCP stream
+    /// The TCP stream.
     stream: TcpStream,
 
-    /// An instance of the [`CspProtocol`] state machine
+    /// An instance of the [`CspProtocol`] state machine.
     protocol: CspProtocol,
 }
 impl CspProtocolRunner {
@@ -347,10 +347,10 @@ impl CspProtocolRunner {
 }
 
 struct CspE2eProtocolRunner {
-    /// An instance of the [`CspE2eProtocol`] state machine
+    /// An instance of the [`CspE2eProtocol`] state machine.
     protocol: CspE2eProtocol,
 
-    /// HTTP client
+    /// HTTP client.
     http_client: reqwest::Client,
 }
 impl CspE2eProtocolRunner {

@@ -4,7 +4,9 @@ syntax = "proto3";
 
 package common;
 
-option java_package = "ch.threema.protobuf";
+option java_package = "ch.threema.protobuf.common";
+option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\Common";
 
 // A unit that may be used in a `oneof` option without any values.
 // Note: We're using this to simulate tagged unions.
@@ -16,11 +18,11 @@ message Blob {
   bytes id = 1;
 
   // Nonce used for encrypting/decrypting the Blob.
-  // Note: May be omitted if unambigously defined by the context.
+  // Note: May be omitted if unambiguously defined by the context.
   bytes nonce = 2;
 
   // Secret (or public) key used for encrypting/decrypting the Blob.
-  // Note: May be omitted if unambigously defined by the context.
+  // Note: May be omitted if unambiguously defined by the context.
   bytes key = 3;
 
   // Unix-ish timestamp in milliseconds when the blob has been uploaded
@@ -76,7 +78,7 @@ message DeltaImage {
 message Timespan {
   // Start of the timespan (Unix-ish timestamp in milliseconds, inclusive)
   uint64 from = 1;
-  // End of the timespan (Unix-ish timestamp in miliseconds, inclusive)
+  // End of the timespan (Unix-ish timestamp in milliseconds, inclusive)
   uint64 to = 2;
 }
 
@@ -186,14 +188,6 @@ enum CspE2eMessageType {
   // [`contact-request-profile-picture`](ref:e2e.contact-request-profile-picture)
   CONTACT_REQUEST_PROFILE_PICTURE = 0x1a;
 
-  // Group invitations
-  // -----------------
-
-  // `csp-e2e.GroupJoinRequest`
-  GROUP_JOIN_REQUEST = 0x4d;
-  // `csp-e2e.GroupJoinResponse`
-  GROUP_JOIN_RESPONSE = 0x4e;
-
   // Group control
   // -------------
 
@@ -269,9 +263,12 @@ enum CspE2eMessageType {
   // `csp-e2e-fs.Envelope`
   FORWARD_SECURITY_ENVELOPE = 0xa0;
 
-  // Push control
-  // ------------
+  // Special control
+  // ---------------
 
-  // [`web-session-resume`](ref:e2e.web-session-resume)
+  // `csp-e2e.WorkSyncDelta` from `*3MAW0RK`
+  WORK_SYNC_DELTA = 0xfd;
+
+  // [`web-session-resume`](ref:e2e.web-session-resume) from `*3MAPUSH`
   WEB_SESSION_RESUME = 0xfe;
 }

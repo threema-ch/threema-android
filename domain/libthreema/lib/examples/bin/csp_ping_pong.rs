@@ -36,23 +36,23 @@ struct CspPingPongCommand {
     config: FullIdentityConfigOptions,
 }
 
-/// Payload queues for the main process
+/// Payload queues for the main process.
 struct PayloadQueuesForCspPingPong {
     incoming: mpsc::Receiver<IncomingPayload>,
     outgoing: mpsc::Sender<OutgoingPayload>,
 }
 
-/// Payload queues for the protocol flow runner
+/// Payload queues for the protocol flow runner.
 struct PayloadQueuesForCsp {
     incoming: mpsc::Sender<IncomingPayload>,
     outgoing: mpsc::Receiver<OutgoingPayload>,
 }
 
 struct CspProtocolRunner {
-    /// The TCP stream
+    /// The TCP stream.
     stream: TcpStream,
 
-    /// An instance of the [`CspProtocol`] state machine
+    /// An instance of the [`CspProtocol`] state machine.
     protocol: CspProtocol,
 }
 impl CspProtocolRunner {

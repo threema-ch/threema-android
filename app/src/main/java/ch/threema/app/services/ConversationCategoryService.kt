@@ -5,7 +5,7 @@ import ch.threema.base.SessionScoped
 import ch.threema.data.models.ContactModel
 import ch.threema.domain.types.ConversationUID
 import ch.threema.domain.types.GroupDatabaseId
-import ch.threema.protobuf.d2d.sync.MdD2DSync.ConversationCategory
+import ch.threema.protobuf.d2d.sync.ConversationCategory
 
 /**
  * The conversation category service is used to keep track of private chats. It manages reflection if MD is enabled.

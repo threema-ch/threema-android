@@ -40,12 +40,6 @@
     allow(clippy::large_stack_arrays, reason = "tests do not need to be efficient")
 )]
 
-// Pin generic-array to version 0.14.7 as 0.14.8 was deprecated and RustCrypto needs to upgrade first.
-// See https://github.com/fizyk20/generic-array/issues/158
-mod external_crate_false_positive_pinned_version {
-    use generic_array as _;
-}
-
 // Avoids dev dependencies used only in examples to be picked up by the linter. Should no longer be
 // necessary once https://github.com/rust-lang/cargo/issues/1982 has been resolved.
 #[cfg(test)]
@@ -56,7 +50,6 @@ mod external_crate_false_positives {
 mod external_crate_false_positives_cli_feature {
     use clap as _;
     use futures_util as _;
-    use rustls as _;
     use tokio as _;
     use tokio_tungstenite as _;
 }
@@ -98,14 +91,18 @@ pub mod protobuf {
     }
 
     /// Data synchronisation messages
-    pub mod sync {
-        include!(concat!(env!("OUT_DIR"), "/sync.rs"));
+    pub mod d2d_sync {
+        include!(concat!(env!("OUT_DIR"), "/d2d_sync.rs"));
     }
-    pub use sync as d2d_sync;
 
     /// Connection Rendezvous Protocol messages.
     pub mod d2d_rendezvous {
-        include!(concat!(env!("OUT_DIR"), "/rendezvous.rs"));
+        include!(concat!(env!("OUT_DIR"), "/d2d_rendezvous.rs"));
+    }
+
+    /// Directory server messages.
+    pub mod directory {
+        include!(concat!(env!("OUT_DIR"), "/directory.rs"));
     }
 }
 
@@ -123,3 +120,4 @@ pub mod id_backup;
 pub mod model;
 pub mod remote_secret;
 pub mod utils;
+pub mod work;

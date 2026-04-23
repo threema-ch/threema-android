@@ -47,7 +47,11 @@ class OnPremServerAddressProvider(
         fetch().directory.url
 
     @Throws(ThreemaException::class)
-    override fun getWorkServerUrl(ipv6: Boolean): String =
+    override fun getWorkServerUrlLegacy(ipv6: Boolean): String =
+        fetch().work.url
+
+    @Throws(ThreemaException::class)
+    override fun getWorkServerUrl(): String =
         fetch().work.url
 
     @Throws(ThreemaException::class)

@@ -69,7 +69,7 @@ class RemoteSecretDeleteStepsTask(
     private fun getRemoteSecretClientParameters(): RemoteSecretClientParameters? {
         return RemoteSecretClientParameters(
             workServerBaseUrl = serverAddressProvider
-                .getWorkServerUrl(preferenceService.isIpv6Preferred())
+                .getWorkServerUrlLegacy(preferenceService.isIpv6Preferred())
                 ?: return null,
             userIdentity = identityProvider.getIdentity()
                 ?: return null,

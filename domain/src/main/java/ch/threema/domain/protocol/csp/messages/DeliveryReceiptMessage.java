@@ -11,7 +11,8 @@ import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
-import ch.threema.protobuf.d2d.MdD2D;
+import ch.threema.protobuf.d2d.IncomingMessage;
+import ch.threema.protobuf.d2d.OutgoingMessage;
 
 /**
  * A message that confirms delivery of one or multiple other messages, listed with their
@@ -125,14 +126,14 @@ public class DeliveryReceiptMessage extends AbstractMessage {
     }
 
     @NonNull
-    public static DeliveryReceiptMessage fromReflected(@NonNull MdD2D.IncomingMessage message) throws BadMessageException {
+    public static DeliveryReceiptMessage fromReflected(@NonNull IncomingMessage message) throws BadMessageException {
         DeliveryReceiptMessage deliveryReceiptMessage = fromByteArray(message.getBody().toByteArray());
         deliveryReceiptMessage.initializeCommonProperties(message);
         return deliveryReceiptMessage;
     }
 
     @NonNull
-    public static DeliveryReceiptMessage fromReflected(@NonNull MdD2D.OutgoingMessage message) throws BadMessageException {
+    public static DeliveryReceiptMessage fromReflected(@NonNull OutgoingMessage message) throws BadMessageException {
         DeliveryReceiptMessage deliveryReceiptMessage = fromByteArray(message.getBody().toByteArray());
         deliveryReceiptMessage.initializeCommonProperties(message);
         return deliveryReceiptMessage;

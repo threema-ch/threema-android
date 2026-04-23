@@ -74,7 +74,10 @@ class AddOrUpdateContactBackgroundTaskTest : KoinComponent {
             identityProvider = identityProviderMock,
             identityStore = identityStoreMock,
         )
-        contactModelRepository = ModelRepositories(coreServiceManager, identityProviderMock).contacts
+        contactModelRepository = ModelRepositories(
+            coreServiceManager = coreServiceManager,
+            identityProvider = identityProviderMock,
+        ).contacts
     }
 
     @Test

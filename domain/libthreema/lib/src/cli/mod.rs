@@ -29,6 +29,7 @@ use crate::{
         monitor::{RemoteSecretMonitorContext, RemoteSecretVerifier},
         setup::RemoteSecretSetupContext,
     },
+    work::properties::WorkPropertiesUpdateContext,
 };
 
 /// Config environment option for CLI, reduced to variants for Consumer and Work. Irrelevant for OnPrem.
@@ -233,6 +234,24 @@ impl MinimalIdentityConfig {
         })
     }
 
+    /// Generate a [`WorkPropertiesUpdateContext`] from the config.
+    ///
+    /// # Errors
+    ///
+    /// Returns an error if the configuration flavor is not Work (or OnPrem).
+    pub fn work_properties_update_context(&self) -> anyhow::Result<WorkPropertiesUpdateContext> {
+        let Flavor::Work(work_context) = &self.common.flavor else {
+            bail!("Work properties update context only available for 'Work' flavor");
+        };
+        Ok(WorkPropertiesUpdateContext {
+            client_info: ClientInfo::Libthreema,
+            work_server_url: self.common.config.work_server_url.clone(),
+            work_context: work_context.clone(),
+            user_identity: self.user_identity,
+            client_key: ClientKey::from(&self.client_key),
+        })
+    }
+
     /// Generate a [`RemoteSecretSetupContext`] from the config.
     ///
     /// # Errors
@@ -240,7 +259,7 @@ impl MinimalIdentityConfig {
     /// Returns an error if the configuration flavor is not Work (or OnPrem).
     pub fn remote_secret_setup_context(&self) -> anyhow::Result<RemoteSecretSetupContext> {
         let Flavor::Work(work_context) = &self.common.flavor else {
-            bail!("Remote secret context only available for 'Work' flavor");
+            bail!("Remote secret setup context only available for 'Work' flavor");
         };
         Ok(RemoteSecretSetupContext {
             client_info: ClientInfo::Libthreema,

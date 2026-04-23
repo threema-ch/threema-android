@@ -2,7 +2,7 @@ package ch.threema.domain.protocol.csp.messages
 
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
 
 /**
  * A "throw-away" message that signals that the sender is currently typing a message or has
@@ -48,7 +48,7 @@ class TypingIndicatorMessage : AbstractMessage() {
     companion object {
         @JvmStatic
         @Throws(BadMessageException::class)
-        fun fromReflected(message: MdD2D.IncomingMessage): TypingIndicatorMessage {
+        fun fromReflected(message: IncomingMessage): TypingIndicatorMessage {
             return fromByteArray(message.body.toByteArray()).apply {
                 initializeCommonProperties(message)
             }

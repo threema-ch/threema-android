@@ -55,10 +55,10 @@ import ch.threema.app.compose.common.SpacerHorizontal
 import ch.threema.app.compose.common.ThemedText
 import ch.threema.app.compose.common.avatar.AvatarAsync
 import ch.threema.app.compose.common.colorReferenceResource
+import ch.threema.app.compose.common.extensions.get
 import ch.threema.app.compose.common.immutables.ImmutableBitmap
 import ch.threema.app.compose.common.text.conversation.ConversationText
 import ch.threema.app.compose.common.text.conversation.EmojiSettings
-import ch.threema.app.compose.common.text.conversation.EmojiUpscalingFeature
 import ch.threema.app.compose.common.text.conversation.HighlightFeature
 import ch.threema.app.compose.common.text.conversation.MentionFeature
 import ch.threema.app.compose.preview.PreviewData
@@ -73,6 +73,7 @@ import ch.threema.app.utils.MimeUtil
 import ch.threema.app.utils.NameUtil
 import ch.threema.common.minus
 import ch.threema.common.now
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.domain.models.ContactReceiverIdentifier
 import ch.threema.domain.models.GroupReceiverIdentifier
@@ -179,6 +180,7 @@ private fun AvatarContent(
                 is StarredMessageUiModel.StarredContactMessage -> starredMessageUiModel.showWorkBadge
                 else -> false
             },
+            availabilityStatus = AvailabilityStatus.None, // TODO(ANDR-4714): Evaluate to set existing value
         )
     } else {
         Box(
@@ -277,7 +279,7 @@ private fun RowScope.MessageBubbleContent(
 
         if (!starredMessageUiModel.messageModel.isDeleted) {
             ConversationText(
-                rawInput = starredMessageUiModel.messageContent?.get(LocalContext.current) ?: "",
+                rawInput = starredMessageUiModel.messageContent?.get() ?: "",
                 textStyle = MaterialTheme.typography.bodyMedium,
                 mentionFeature = MentionFeature.On(
                     ownIdentity = ownIdentity,
@@ -294,7 +296,6 @@ private fun RowScope.MessageBubbleContent(
                 ),
                 emojiSettings = EmojiSettings(
                     style = emojiStyle,
-                    upscalingFeature = EmojiUpscalingFeature.Off,
                 ),
                 markupEnabled = true,
                 maxLines = 4,

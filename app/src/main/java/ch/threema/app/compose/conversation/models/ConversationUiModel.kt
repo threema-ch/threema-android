@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import ch.threema.android.ResolvableString
 import ch.threema.app.usecases.conversations.AvatarIteration
 import ch.threema.app.utils.TextUtil
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.domain.models.ContactReceiverIdentifier
 import ch.threema.domain.models.DistributionListReceiverIdentifier
 import ch.threema.domain.models.GroupReceiverIdentifier
@@ -57,6 +58,7 @@ sealed interface ConversationUiModel {
         override val avatarIteration: AvatarIteration,
         val showWorkBadge: Boolean,
         val isTyping: Boolean,
+        val availabilityStatus: AvailabilityStatus?,
     ) : ConversationUiModel
 
     @Immutable

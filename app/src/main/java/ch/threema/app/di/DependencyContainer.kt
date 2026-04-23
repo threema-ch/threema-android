@@ -33,6 +33,7 @@ import ch.threema.app.services.WallpaperService
 import ch.threema.app.services.ballot.BallotService
 import ch.threema.app.services.license.LicenseService
 import ch.threema.app.services.notification.NotificationService
+import ch.threema.app.stores.IdentityProvider
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.threemasafe.ThreemaSafeMDMConfig
 import ch.threema.app.threemasafe.ThreemaSafeService
@@ -93,6 +94,7 @@ class DependencyContainer : KoinComponent {
     val groupFlowDispatcher: GroupFlowDispatcher by inject()
     val groupModelRepository: GroupModelRepository by inject()
     val groupService: GroupService by inject()
+    val identityProvider: IdentityProvider by inject()
     val identityStore: IdentityStore by inject()
     val licenseService: LicenseService<*> by inject()
     val lifetimeService: LifetimeService by inject()

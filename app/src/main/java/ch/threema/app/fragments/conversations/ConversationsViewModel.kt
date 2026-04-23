@@ -37,6 +37,7 @@ import ch.threema.app.utils.DispatcherProvider
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.stateFlowOf
 import ch.threema.common.takeUnlessEmpty
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.repositories.ContactModelRepository
@@ -141,6 +142,7 @@ class ConversationsViewModel(
                 logger.error("Failed to read contact name format setting from preferences", throwable)
                 ContactNameFormat.DEFAULT
             }
+
         return ConversationsViewState(
             itemsState = initialItemsState,
             filterQuery = null,
@@ -148,6 +150,7 @@ class ConversationsViewModel(
             hasPrivateConversations = conversationCategoryService.hasPrivateChats(),
             archivedConversationsCount = archivedConversationsCount,
             contactNameFormat = contactNameFormatOrDefault,
+            availabilityStatus = getAvailabilityStatusOrNone(),
         )
     }
 
@@ -177,7 +180,8 @@ class ConversationsViewModel(
             flow2 = preferenceService.watchArePrivateChatsHidden(),
             flow3 = highlightedConversationUidFlow,
             flow4 = watchContactNameFormatSettingUseCase.call(),
-        ) { conversationUiModelsResult, hidePrivateConversations, openedConversationUID, contactNameFormat ->
+            flow5 = watchAvailabilityStatusOrNone(),
+        ) { conversationUiModelsResult, hidePrivateConversations, openedConversationUID, contactNameFormat, availabilityStatus ->
             latestConversationUiModelsResult = conversationUiModelsResult
             val updatedItemsState = conversationUiModelsResult
                 .fold(
@@ -212,10 +216,31 @@ class ConversationsViewModel(
                     hasPrivateConversations = conversationCategoryService.hasPrivateChats(),
                     archivedConversationsCount = archivedConversationsCount,
                     contactNameFormat = contactNameFormat,
+                    availabilityStatus = availabilityStatus ?: AvailabilityStatus.None,
                 )
             }
         }.launchIn(viewModelScope)
     }
+
+    private fun getAvailabilityStatusOrNone(): AvailabilityStatus =
+        runCatching {
+            preferenceService.getAvailabilityStatus()
+                ?: AvailabilityStatus.None
+        }.getOrElse { throwable ->
+            logger.error("Failed to users availability status from preferences", throwable)
+            AvailabilityStatus.None
+        }
+
+    private fun watchAvailabilityStatusOrNone(): StateFlow<AvailabilityStatus> =
+        preferenceService.watchAvailabilityStatus()
+            .map { availabilityStatus ->
+                availabilityStatus ?: AvailabilityStatus.None
+            }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Lazily,
+                initialValue = getAvailabilityStatusOrNone(),
+            )
 
     fun onLongClickConversationItem(conversationUiModel: ConversationUiModel) = runAction {
         val conversationModel: ConversationModel? = conversationService.get(conversationUiModel.receiverIdentifier)
@@ -633,5 +658,9 @@ class ConversationsViewModel(
                 appRestrictions = appRestrictions,
             ).runSynchronously()
         }
+    }
+
+    fun onAvailabilityStatusWasChanged() = runAction {
+        emitEvent(ConversationsViewEvent.OnAvailabilityStatusChanged)
     }
 }

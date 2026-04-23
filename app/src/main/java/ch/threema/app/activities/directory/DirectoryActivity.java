@@ -1,4 +1,4 @@
-package ch.threema.app.activities;
+package ch.threema.app.activities.directory;
 
 import android.animation.LayoutTransition;
 import android.annotation.SuppressLint;
@@ -23,6 +23,7 @@ import com.google.android.material.search.SearchBar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.koin.android.compat.ViewModelCompat;
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 
@@ -35,17 +36,21 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.ActionBar;
+import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.paging.LivePagedListBuilder;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import ch.threema.android.FlowJavaCompat;
 import ch.threema.app.R;
+import ch.threema.app.activities.ComposeMessageActivity;
+import ch.threema.app.activities.ThreemaToolbarActivity;
 import ch.threema.app.adapters.DirectoryAdapter;
-import ch.threema.app.asynctasks.AddOrUpdateWorkContactBackgroundTask;
 import ch.threema.app.di.DependencyContainer;
 import ch.threema.app.dialogs.MultiChoiceSelectorDialog;
 import ch.threema.app.ui.DirectoryDataSource;
@@ -58,9 +63,9 @@ import ch.threema.app.ui.ViewExtensionsKt;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.IntentDataUtil;
 import ch.threema.app.utils.executor.BackgroundExecutor;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
-import ch.threema.data.models.ContactModel;
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory;
 import ch.threema.domain.protocol.api.work.WorkDirectoryContact;
 import ch.threema.domain.protocol.api.work.WorkOrganization;
@@ -90,6 +95,9 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
     private static final int EMPTY_STATE_IDLE = 0;
     private static final int EMPTY_STATE_SEARCHING = 1;
     private static final int EMPTY_STATE_RESULTS = 2;
+
+    @Nullable
+    DirectoryViewModel viewModel;
 
     @NonNull
     private final DependencyContainer dependencies = KoinJavaComponent.get(DependencyContainer.class);
@@ -136,6 +144,20 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         logScreenVisibility(this, logger);
         if (!isSessionScopeReady()) {
             finish();
+        }
+        viewModel = ViewModelCompat.getViewModel(this, DirectoryViewModel.class);
+        FlowJavaCompat.collect(this, Lifecycle.State.STARTED, viewModel.events, this::onViewModelEvent);
+    }
+
+    private void onViewModelEvent(@NonNull DirectoryScreenEvent directoryScreenEvent) {
+        if (directoryScreenEvent instanceof DirectoryScreenEvent.WorkContactAdded) {
+            final @NonNull DirectoryScreenEvent.WorkContactAdded workContactAddedEvent = (DirectoryScreenEvent.WorkContactAdded) directoryScreenEvent;
+            if (workContactAddedEvent.openOnSuccess) {
+                openContact(workContactAddedEvent.workDirectoryContact.threemaId);
+            }
+            directoryAdapter.notifyItemChanged(workContactAddedEvent.changedAdapterPosition);
+        } else if (directoryScreenEvent instanceof DirectoryScreenEvent.Error) {
+            Toast.makeText(this, R.string.an_error_occurred, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -254,8 +276,10 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
             }
 
             @Override
-            public void onAdd(WorkDirectoryContact workDirectoryContact, final int position) {
-                addContact(workDirectoryContact, () -> directoryAdapter.notifyItemChanged(position));
+            public void onAdd(@NonNull WorkDirectoryContact workDirectoryContact, final int position) {
+                if (viewModel != null) {
+                    viewModel.addContact(workDirectoryContact, position, false);
+                }
             }
         });
 
@@ -388,7 +412,7 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
         return super.onOptionsItemSelected(item);
     }
 
-    private void openContact(String identity) {
+    private void openContact(@NonNull String identity) {
         Intent intent = new Intent(this, ComposeMessageActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.setData((Uri.parse("foobar://" + SystemClock.elapsedRealtime())));
@@ -398,31 +422,14 @@ public class DirectoryActivity extends ThreemaToolbarActivity implements Threema
 
     private void launchContact(@NonNull final WorkDirectoryContact workDirectoryContact, final int position) {
         if (dependencies.getContactService().getByIdentity(workDirectoryContact.threemaId) == null) {
-            addContact(workDirectoryContact, () -> {
-                openContact(workDirectoryContact.threemaId);
-                directoryAdapter.notifyItemChanged(position);
-            });
+            if (viewModel != null) {
+                viewModel.addContact(workDirectoryContact, position, true);
+            }
         } else if (workDirectoryContact.threemaId.equalsIgnoreCase(dependencies.getUserService().getIdentity())) {
             Toast.makeText(this, R.string.me_myself_and_i, Toast.LENGTH_LONG).show();
         } else {
             openContact(workDirectoryContact.threemaId);
         }
-    }
-
-    private void addContact(final WorkDirectoryContact workDirectoryContact, Runnable runAfter) {
-        logger.info("Add new work contact");
-        backgroundExecutor.getValue().execute(
-            new AddOrUpdateWorkContactBackgroundTask(
-                workDirectoryContact,
-                dependencies.getUserService().getIdentity(),
-                dependencies.getContactModelRepository()
-            ) {
-                @Override
-                public void runAfter(ContactModel contactModel) {
-                    runAfter.run();
-                }
-            }
-        );
     }
 
     @NonNull

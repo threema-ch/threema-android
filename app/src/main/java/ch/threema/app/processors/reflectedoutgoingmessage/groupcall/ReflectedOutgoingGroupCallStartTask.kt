@@ -3,11 +3,11 @@ package ch.threema.app.processors.reflectedoutgoingmessage.groupcall
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.processors.reflectedoutgoingmessage.ReflectedOutgoingGroupMessageTask
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.common.CspE2eMessageType
+import ch.threema.protobuf.d2d.OutgoingMessage
 
 internal class ReflectedOutgoingGroupCallStartTask(
-    outgoingMessage: MdD2D.OutgoingMessage,
+    outgoingMessage: OutgoingMessage,
     serviceManager: ServiceManager,
 ) : ReflectedOutgoingGroupMessageTask<GroupCallStartMessage>(
     outgoingMessage = outgoingMessage,
@@ -15,7 +15,7 @@ internal class ReflectedOutgoingGroupCallStartTask(
         message = outgoingMessage,
         ownIdentity = serviceManager.identityStore.getIdentityString()!!,
     ),
-    type = Common.CspE2eMessageType.GROUP_CALL_START,
+    type = CspE2eMessageType.GROUP_CALL_START,
     serviceManager = serviceManager,
 ) {
     private val groupCallManager = serviceManager.groupCallManager

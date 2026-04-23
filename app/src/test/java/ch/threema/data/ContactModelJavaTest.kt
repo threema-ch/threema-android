@@ -4,6 +4,7 @@ import ch.threema.app.managers.CoreServiceManager
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.common.now
 import ch.threema.data.datatypes.AndroidContactLookupInfo
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.models.ContactModelData.Companion.javaCreate
@@ -84,6 +85,8 @@ class ContactModelJavaTest {
                 jobTitle = null,
                 department = null,
                 notificationTriggerPolicyOverride = null,
+                availabilityStatus = AvailabilityStatus.None,
+                workLastFullSyncAt = null,
             ),
             databaseBackendMock,
             coreServiceManagerMock,

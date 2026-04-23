@@ -4,9 +4,8 @@ import com.google.protobuf.ByteString;
 
 import androidx.annotation.NonNull;
 import ch.threema.app.utils.RandomUtil;
-import ch.threema.protobuf.callsignaling.O2OCall;
-import ch.threema.protobuf.callsignaling.O2OCall.CaptureState.CaptureDevice;
-import ch.threema.protobuf.callsignaling.O2OCall.CaptureState.Mode;
+import ch.threema.protobuf.o2o_call.CaptureState.CaptureDevice;
+import ch.threema.protobuf.o2o_call.Envelope;
 
 /**
  * Hold information about the capturing state for a certain device.
@@ -32,7 +31,7 @@ public class CaptureState implements ToSignalingMessage {
 
     @Override
     public int getType() {
-        return O2OCall.Envelope.CAPTURE_STATE_CHANGE_FIELD_NUMBER;
+        return Envelope.CAPTURE_STATE_CHANGE_FIELD_NUMBER;
     }
 
     //endregion
@@ -40,11 +39,15 @@ public class CaptureState implements ToSignalingMessage {
     //region Protocol buffers
 
     @Override
-    public @NonNull O2OCall.Envelope toSignalingMessage() {
-        final O2OCall.CaptureState.Builder captureState = O2OCall.CaptureState.newBuilder()
+    public @NonNull Envelope toSignalingMessage() {
+        final ch.threema.protobuf.o2o_call.CaptureState.Builder captureState = ch.threema.protobuf.o2o_call.CaptureState.newBuilder()
             .setDevice(this.device)
-            .setState(this.capturing ? Mode.ON : Mode.OFF);
-        return O2OCall.Envelope.newBuilder()
+            .setState(
+                this.capturing
+                    ? ch.threema.protobuf.o2o_call.CaptureState.Mode.ON
+                    : ch.threema.protobuf.o2o_call.CaptureState.Mode.OFF
+            );
+        return Envelope.newBuilder()
             .setPadding(ByteString.copyFrom(RandomUtil.generateRandomPadding(0, 255)))
             .setCaptureStateChange(captureState)
             .build();

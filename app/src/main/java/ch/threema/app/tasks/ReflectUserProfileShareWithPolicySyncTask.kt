@@ -3,10 +3,10 @@ package ch.threema.app.tasks
 import ch.threema.app.services.ContactService.ProfilePictureSharePolicy.Policy
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
-import ch.threema.protobuf.d2d.sync.MdD2DSync
+import ch.threema.protobuf.common.unit
+import ch.threema.protobuf.d2d.sync.UserProfile
 import ch.threema.protobuf.d2d.sync.UserProfileKt.profilePictureShareWith
 import ch.threema.protobuf.d2d.sync.userProfile
-import ch.threema.protobuf.unit
 import kotlinx.serialization.Serializable
 
 /**
@@ -32,7 +32,7 @@ class ReflectUserProfileShareWithPolicySyncTask(
         }
     }
 
-    override fun createUpdatedUserProfile(): MdD2DSync.UserProfile = userProfile {
+    override fun createUpdatedUserProfile(): UserProfile = userProfile {
         this.profilePictureShareWith = profilePictureShareWith {
             when (newPolicy) {
                 Policy.NOBODY -> this.nobody = unit {}

@@ -26,7 +26,7 @@ pub(crate) fn debug_bytes_hex(bytes: &[u8], formatter: &mut fmt::Formatter<'_>) 
     formatter.write_str(&HEXLOWER.encode(bytes))
 }
 
-/// Formatter to format a [`x25519::StaticSecret`] to its public key
+/// Formatter to format a [`x25519::StaticSecret`] to its public key.
 pub(crate) fn debug_static_secret(
     static_secret: &x25519::StaticSecret,
     formatter: &mut fmt::Formatter<'_>,

@@ -9,7 +9,7 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.protobuf.d2d.sync.MdD2DSync.ReadReceiptPolicy
+import ch.threema.protobuf.d2d.sync.ReadReceiptPolicy
 
 private val logger = getThreemaLogger("ReadReceiptPolicySetting")
 

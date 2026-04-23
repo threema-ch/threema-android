@@ -64,8 +64,8 @@ impl State {
         let request = work_directory::create_remote_secret_authentication_request(
             &context.client_info,
             &context.work_server_url,
-            context.user_identity,
             &context.work_context,
+            context.user_identity,
             &state.remote_secret,
         );
         (
@@ -81,7 +81,7 @@ impl State {
         context: &RemoteSecretSetupContext,
         state: ChallengeState,
     ) -> Result<(Self, RemoteSecretCreateLoop), RemoteSecretSetupError> {
-        // Ensure the caller provided the response
+        // Ensure the caller provided the response.
         let Some(response) = state.response else {
             return Err(RemoteSecretSetupError::InvalidState(formatcp!(
                 "{} result was not provided for '{}' state",
@@ -90,7 +90,7 @@ impl State {
             )));
         };
 
-        // Handle the authentication challenge and provide the final request to create a remote secret
+        // Handle the authentication challenge and provide the final request to create a remote secret.
         let authentication =
             work_directory::handle_authentication_challenge(&context.client_key, response.result)?;
         info!("Creating remote secret");
@@ -114,7 +114,7 @@ impl State {
     }
 
     fn poll_create(state: CreateState) -> Result<(Self, RemoteSecretCreateLoop), RemoteSecretSetupError> {
-        // Ensure the caller provided the resonse
+        // Ensure the caller provided the response.
         let Some(response) = state.response else {
             return Err(RemoteSecretSetupError::InvalidState(formatcp!(
                 "{} result was not provided for '{}' state",
@@ -123,7 +123,7 @@ impl State {
             )));
         };
 
-        // Handle the result
+        // Handle the result.
         let remote_secret_authentication_token =
             work_directory::handle_create_remote_secret_result(response.result)?;
         info!("Remote secret created");

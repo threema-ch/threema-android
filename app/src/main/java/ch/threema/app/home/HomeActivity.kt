@@ -45,7 +45,6 @@ import ch.threema.app.R
 import ch.threema.app.activities.BackupAdminActivity
 import ch.threema.app.activities.BackupRestoreProgressActivity
 import ch.threema.app.activities.ComposeMessageActivity
-import ch.threema.app.activities.DirectoryActivity
 import ch.threema.app.activities.DistributionListAddActivity
 import ch.threema.app.activities.DownloadApkActivity
 import ch.threema.app.activities.EnterSerialActivity
@@ -54,6 +53,7 @@ import ch.threema.app.activities.ServerMessageActivity
 import ch.threema.app.activities.ThreemaAppCompatActivity
 import ch.threema.app.activities.WhatsNewActivity
 import ch.threema.app.activities.WorkIntroActivity
+import ch.threema.app.activities.directory.DirectoryActivity
 import ch.threema.app.activities.starred.StarredMessagesActivity
 import ch.threema.app.activities.wizard.WizardBaseActivity
 import ch.threema.app.activities.wizard.WizardStartActivity
@@ -86,6 +86,7 @@ import ch.threema.app.home.usecases.GetStarredMessagesCountUseCase
 import ch.threema.app.home.usecases.GetUnreadConversationCountUseCase
 import ch.threema.app.home.usecases.SetUpThreemaChannelUseCase
 import ch.threema.app.home.usecases.ShouldShowWorkIntroScreenUseCase
+import ch.threema.app.identitylinks.VerifyMobileNumberUseCase
 import ch.threema.app.listeners.AppIconListener
 import ch.threema.app.listeners.ContactCountListener
 import ch.threema.app.listeners.ConversationListener
@@ -220,6 +221,7 @@ class HomeActivity : ThreemaAppCompatActivity(), SMSVerificationDialogCallback, 
     private val getUnreadConversationCountUseCase: GetUnreadConversationCountUseCase by inject()
     private val getStarredMessagesCountUseCase: GetStarredMessagesCountUseCase by inject()
     private val checkServerMessagesUseCase: CheckServerMessagesUseCase by inject()
+    private val verifyMobileNumberUseCase: VerifyMobileNumberUseCase by inject()
     private val debugLogHelper: DebugLogHelper by inject()
     private val viewModel: HomeViewModel by viewModel()
     private val destroyer = createDestroyer()
@@ -1271,25 +1273,27 @@ class HomeActivity : ThreemaAppCompatActivity(), SMSVerificationDialogCallback, 
     private fun verifyPhoneCode(code: String?) {
         logger.info("Verifying phone code")
         lifecycleScope.launch {
-            val errorMessage = withContext(dispatcherProvider.worker) {
-                try {
-                    userService.verifyMobileNumber(code, TriggerSource.LOCAL)
-                    null
-                } catch (e: LinkMobileNoException) {
-                    logger.warn("Invalid phone code used", e)
-                    getString(R.string.code_invalid)
-                } catch (e: Exception) {
-                    logger.error("Failed to verify phone code", e)
-                    getString(R.string.verify_failed_summary)
+            val verificationResult = verifyMobileNumberUseCase.call(
+                verificationCode = code,
+            )
+
+            when (verificationResult) {
+                is VerifyMobileNumberUseCase.VerificationResult.Success -> {
+                    showToast(R.string.verify_success_text, ToastDuration.LONG)
+                    DialogUtil.dismissDialog(supportFragmentManager, DIALOG_TAG_VERIFY_CODE, true)
                 }
-            }
-            if (errorMessage != null) {
-                supportFragmentManager.runTransaction(allowStateLoss = true) {
-                    add(SimpleStringAlertDialog.newInstance(R.string.error, errorMessage), null)
+
+                is VerifyMobileNumberUseCase.VerificationResult.Failure -> {
+                    supportFragmentManager.runTransaction(allowStateLoss = true) {
+                        add(
+                            SimpleStringAlertDialog.newInstance(
+                                R.string.error,
+                                verificationResult.errorMessage.get(this@HomeActivity),
+                            ),
+                            null,
+                        )
+                    }
                 }
-            } else {
-                showToast(R.string.verify_success_text, ToastDuration.LONG)
-                DialogUtil.dismissDialog(supportFragmentManager, DIALOG_TAG_VERIFY_CODE, true)
             }
         }
     }

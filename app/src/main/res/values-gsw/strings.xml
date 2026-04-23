@@ -22,6 +22,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="enter_id_hint">${app_name_short}-ID iigeh</string>
     <string name="account_links">Verchnüpfige</string>
+    <string name="title_set_availability_status">Verfüegbarkeitsstatus</string>
     <string name="menu_settings">Iistellige</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="menu_about">Über ${app_name}</string>
@@ -112,6 +113,7 @@
     <string name="set_nickname_title">Nickname festlegge</string>
     <string name="ok">Aso guet</string>
     <string name="cancel">Abbräche</string>
+    <string name="save">Speichere</string>
     <string name="copy_message_action">Kopiere</string>
     <string name="delete_contact_action">Kontakt lösche</string>
     <string name="delete_multiple_contact_action">Kontäkt lösche</string>
@@ -348,6 +350,7 @@
     <string name="can_not_send_no_group_members">Es chönd kei Nachrichte ine leeri Gruppe gschickt werde.</string>
     <string name="you_are_not_a_member_of_this_group">Sie sind keis Mitglied vo dere Gruppe.</string>
     <string name="title_public_nickname">Nickname</string>
+    <string name="title_availability_status">Status</string>
     <string name="prefs_sum_excluded_sync_identities">Die IDs, wo da ufglischted sind, werded bim Synchronisiere vo Kontäkt ignoriert.</string>
     <string name="prefs_title_excluded_sync_identities">Usschlussliste</string>
     <string name="synchronize_contact">Adrässbuech-Synchronisation</string>
@@ -1663,10 +1666,11 @@
     <string name="work_directory_empty_view_text">Bitte gebed Sie mindestens 3 Zeiche vomene Name ii, zum im Unternehmensverzeichnis vo ${app_name_short} z’sueche.</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">Die Datei isch ungültig und cha nöd teilt werde</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
-    <string name="contact_availability_status_available">Verfüegbar</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <string name="contact_availability_status_unavailable">Nöd verfüegbar</string>
+    <string name="availability_status_none">Kein Status</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e. out-of-office -->
+    <string name="availability_status_unavailable">Nöd verfüegbar</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently busy-->
+    <string name="availability_status_busy">Beschäftigt</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">De Aktivierigslink isch ungültig. Bitte kontaktiered Sie Ihre Administrator.</string>
     <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
@@ -1733,6 +1737,13 @@
     <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_off">De Aruef wird wiitergfüehrt, wenn s’Bluetooth-Headset während eme Aruef trännt wird. Hiiwis: Als Folg funktioniert d’Uflegg-Taste vom Headset möglicherwiis nüme.</string>
     <string name="failed_to_load_conversations">Chats händ nöd chöne glade werde.</string>
     <string name="contact_support">Support kontaktiere</string>
+    <string name="edit_availability_status_modal_title">Verfüegbarkeitsstatus</string>
+    <string name="edit_availability_status_modal_subtitle">De Status isch für all ide Firma sichtbar.</string>
+    <string name="edit_availability_status_modal_optional_message_label">Eigene Text (optional)</string>
+    <string name="edit_availability_status_modal_optional_message_placeholder">Imene Meeting</string>
+    <string name="edit_availability_status_modal_optional_message_description">Wenn «Beschäftigt» oder «Abwesend» usgwählt isch, chönd Sie en eigene Status definiere.</string>
+    <string name="edit_availability_status_modal_optional_message_too_long">Text isch z’lang, bitte chürzed Sie ihn.</string>
+    <string name="edit_availability_status_did_change">Verfüegbarkeitsstatus gänderet</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontäkt</item>

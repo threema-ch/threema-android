@@ -133,7 +133,7 @@ fun WizardButton(
                 alpha = if (isEnabled) {
                     AlphaValues.FULLY_OPAQUE
                 } else {
-                    AlphaValues.DISABLED_ON_CONTAINER
+                    AlphaValues.DISABLED
                 },
             ),
             maxLines = 1,
@@ -150,7 +150,7 @@ fun WizardButton(
                     alpha = if (isEnabled) {
                         AlphaValues.FULLY_OPAQUE
                     } else {
-                        AlphaValues.DISABLED_ON_CONTAINER
+                        AlphaValues.DISABLED
                     },
                 ),
             )
@@ -172,7 +172,7 @@ private fun buildBorderStroke(
     !isEnabled -> BorderStroke(
         width = BORDER_WIDTH.dp,
         color = colorResource(R.color.md_theme_dark_primary).copy(
-            alpha = AlphaValues.DISABLED_CONTAINER,
+            alpha = AlphaValues.DISABLED,
         ),
     )
 
@@ -191,10 +191,10 @@ private fun buildWizardButtonColors(
         containerColor = containerColor,
         contentColor = contentColor,
         disabledContainerColor = containerColor.copy(
-            alpha = AlphaValues.DISABLED_CONTAINER,
+            alpha = AlphaValues.DISABLED,
         ),
         disabledContentColor = contentColor.copy(
-            alpha = AlphaValues.DISABLED_ON_CONTAINER,
+            alpha = AlphaValues.DISABLED,
         ),
     )
 }

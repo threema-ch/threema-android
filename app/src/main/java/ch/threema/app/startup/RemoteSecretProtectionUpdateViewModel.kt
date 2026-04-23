@@ -95,7 +95,7 @@ class RemoteSecretProtectionUpdateViewModel(
     private fun getRemoteSecretClientParameters(): RemoteSecretClientParameters =
         RemoteSecretClientParameters(
             workServerBaseUrl = serverAddressProvider
-                .getWorkServerUrl(preferenceService.isIpv6Preferred())
+                .getWorkServerUrlLegacy(preferenceService.isIpv6Preferred())
                 ?: error("No work server URL found"),
             userIdentity = userService.identity
                 ?.toIdentityOrNull()

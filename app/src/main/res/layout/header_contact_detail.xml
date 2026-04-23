@@ -9,11 +9,6 @@
     android:paddingLeft="16dp"
     android:paddingRight="16dp">
 
-    <ch.threema.app.contactdetails.ContactAvailabilityView
-        android:id="@+id/availability_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
-
     <ch.threema.app.ui.SectionHeaderView
         android:id="@+id/header_job_title"
         android:layout_width="match_parent"
@@ -86,6 +81,27 @@
             android:padding="@dimen/grid_unit_x1"
             app:srcCompat="@drawable/ic_info_outline"
             app:tint="?attr/colorOnSurface" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/availability_status_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="@dimen/grid_unit_x3"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <ch.threema.app.ui.SectionHeaderView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/title_availability_status" />
+
+        <ch.threema.app.availabilitystatus.AvailabilityStatusLabelView
+            android:id="@+id/availability_status_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </LinearLayout>
 

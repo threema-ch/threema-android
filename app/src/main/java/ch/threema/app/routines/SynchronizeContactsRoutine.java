@@ -43,7 +43,10 @@ import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ContactUtil;
 import ch.threema.app.utils.TestUtil;
 import ch.threema.base.ThreemaException;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.datatypes.AvailabilityStatus;
 import ch.threema.data.models.ContactModel;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.data.repositories.ContactModelRepository;
@@ -300,6 +303,8 @@ public class SynchronizeContactsRoutine implements Runnable {
                         null,
                         null,
                         null,
+                        null,
+                        AvailabilityStatus.None.INSTANCE,
                         null
                     );
                     contact = new AddContactBackgroundTask(contactModelData, contactModelRepository)

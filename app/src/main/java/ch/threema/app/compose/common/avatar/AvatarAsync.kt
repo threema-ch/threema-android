@@ -20,6 +20,7 @@ import ch.threema.app.compose.common.immutables.toImmutableBitmap
 import ch.threema.app.compose.preview.PreviewData
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.usecases.conversations.AvatarIteration
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.domain.models.ContactReceiverIdentifier
 import ch.threema.domain.models.ReceiverIdentifier
 
@@ -38,6 +39,7 @@ fun AvatarAsync(
     contentDescription: String?,
     @DrawableRes fallbackIcon: Int,
     showWorkBadge: Boolean,
+    availabilityStatus: AvailabilityStatus?,
     onClick: (() -> Unit)? = null,
 ) {
     // A new bitmap asset will be requested from bitmapProvider if one of these values change
@@ -55,6 +57,7 @@ fun AvatarAsync(
         contentDescription = contentDescription,
         fallbackIcon = fallbackIcon,
         showWorkBadge = showWorkBadge,
+        availabilityStatus = availabilityStatus,
         onClick = onClick,
     )
 }
@@ -77,6 +80,7 @@ private fun AvatarAsync_Preview() {
                 contentDescription = null,
                 fallbackIcon = R.drawable.ic_contact,
                 showWorkBadge = true,
+                availabilityStatus = AvailabilityStatus.None,
                 onClick = {},
             )
         }
@@ -96,6 +100,7 @@ private fun AvatarAsync_Preview_NoAvatar() {
                 contentDescription = null,
                 fallbackIcon = R.drawable.ic_contact,
                 showWorkBadge = true,
+                availabilityStatus = AvailabilityStatus.Unavailable(),
                 onClick = {},
             )
         }
@@ -120,6 +125,7 @@ private fun AvatarAsync_Preview_Dark() {
                 contentDescription = null,
                 fallbackIcon = R.drawable.ic_contact,
                 showWorkBadge = true,
+                availabilityStatus = AvailabilityStatus.Busy(),
                 onClick = {},
             )
         }

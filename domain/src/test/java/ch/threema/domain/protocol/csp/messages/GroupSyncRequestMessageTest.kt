@@ -2,10 +2,10 @@ package ch.threema.domain.protocol.csp.messages
 
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
+import ch.threema.protobuf.common.groupIdentity
 import ch.threema.protobuf.d2d.conversationId
 import ch.threema.protobuf.d2d.incomingMessage
 import ch.threema.protobuf.d2d.outgoingMessage
-import ch.threema.protobuf.groupIdentity
 import ch.threema.testhelpers.willThrow
 import com.google.protobuf.kotlin.toByteString
 import kotlin.random.Random.Default.nextBytes

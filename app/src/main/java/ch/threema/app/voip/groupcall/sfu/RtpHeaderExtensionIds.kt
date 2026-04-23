@@ -1,6 +1,6 @@
 package ch.threema.app.voip.groupcall.sfu
 
-import ch.threema.protobuf.groupcall.SfuHttpResponse
+import ch.threema.protobuf.group_call.SfuHttpResponse
 
 data class RtpHeaderExtensionIds(
     val microphone: Map<UInt, String>,

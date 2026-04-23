@@ -17,7 +17,10 @@ import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import ch.threema.domain.models.BasicContact;
 import ch.threema.domain.models.Contact;
+import ch.threema.domain.models.IdentityState;
+import ch.threema.domain.models.IdentityType;
 import ch.threema.domain.models.VerificationLevel;
+import ch.threema.domain.models.WorkVerificationLevel;
 import ch.threema.domain.protocol.ServerAddressProvider;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.domain.stores.ContactStore;
@@ -63,7 +66,17 @@ public class DatabaseContactStore implements ContactStore {
             } else {
                 specialContacts.put(
                     ProtocolDefines.SPECIAL_CONTACT_PUSH,
-                    new Contact(ProtocolDefines.SPECIAL_CONTACT_PUSH, publicKey, VerificationLevel.FULLY_VERIFIED)
+                    BasicContact.javaCreate(
+                        ProtocolDefines.SPECIAL_CONTACT_PUSH,
+                        publicKey,
+                        0,
+                        IdentityState.ACTIVE,
+                        IdentityType.NORMAL,
+                        VerificationLevel.FULLY_VERIFIED,
+                        WorkVerificationLevel.NONE,
+                        null,
+                        null
+                    )
                 );
             }
         } catch (ThreemaException e) {

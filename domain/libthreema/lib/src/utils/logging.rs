@@ -1,4 +1,4 @@
-//! Logging-related utilities
+//! Logging-related utilities.
 #[cfg(any(test, feature = "cli"))]
 use tracing::level_filters::LevelFilter;
 

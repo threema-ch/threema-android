@@ -6,7 +6,8 @@ import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 import org.json.JSONArray
@@ -82,14 +83,14 @@ open class PollVoteMessage : AbstractMessage(), BallotVoteInterface {
 
     companion object {
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): PollVoteMessage = fromByteArray(
+        fun fromReflected(message: IncomingMessage): PollVoteMessage = fromByteArray(
             data = message.body.toByteArray(),
         ).apply {
             initializeCommonProperties(message)
         }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): PollVoteMessage = fromByteArray(
+        fun fromReflected(message: OutgoingMessage): PollVoteMessage = fromByteArray(
             data = message.body.toByteArray(),
         ).apply {
             initializeCommonProperties(message)

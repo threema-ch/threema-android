@@ -11,8 +11,8 @@ import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.domain.taskmanager.getEncryptedUserProfileSyncUpdate
-import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.protobuf.d2d.sync.MdD2DSync
+import ch.threema.protobuf.d2d.TransactionScope
+import ch.threema.protobuf.d2d.sync.UserProfile
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
@@ -27,7 +27,7 @@ abstract class ReflectUserProfileShareWithPolicySyncTaskBase(
 
     private val mdProperties by lazy { multiDeviceManager.propertiesProvider.get() }
 
-    abstract fun createUpdatedUserProfile(): MdD2DSync.UserProfile
+    abstract fun createUpdatedUserProfile(): UserProfile
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
         if (!multiDeviceManager.isMultiDeviceActive) {
@@ -37,7 +37,7 @@ abstract class ReflectUserProfileShareWithPolicySyncTaskBase(
 
         handle.createTransaction(
             keys = mdProperties.keys,
-            scope = MdD2D.TransactionScope.Scope.USER_PROFILE_SYNC,
+            scope = TransactionScope.Scope.USER_PROFILE_SYNC,
             ttl = TRANSACTION_TTL_MAX,
         ).execute {
             encryptAndReflectUserProfileUpdate(handle)

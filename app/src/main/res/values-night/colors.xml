@@ -34,4 +34,16 @@
     color outside of work the apps (e.g.: Referral banner) -->
     <color name="work_primary_fixed">#51CFFF</color> <!-- work-500 -->
     <color name="work_onPrimary_fixed">#000000</color>
+
+    <!-- Availability Status-->
+    <color name="availability_status_icon_none">@color/brand_grey_700</color>
+    <color name="availability_status_container_none">@color/brand_grey_200</color>
+
+    <color name="availability_status_icon_unavailable">#FD4346</color>
+    <color name="availability_status_container_unavailable">#4D1415</color>
+    <color name="availability_status_on_container_unavailable">#FFFFFF</color>
+
+    <color name="availability_status_icon_busy">#F6A421</color>
+    <color name="availability_status_container_busy">#56480D</color>
+    <color name="availability_status_on_container_busy">#FFFFFF</color>
 </resources>

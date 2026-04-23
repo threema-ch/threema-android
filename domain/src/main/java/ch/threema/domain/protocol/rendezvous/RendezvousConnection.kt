@@ -5,8 +5,8 @@ import ch.threema.common.chunked
 import ch.threema.libthreema.PathProcessResult
 import ch.threema.libthreema.PathStateUpdate
 import ch.threema.libthreema.RendezvousProtocol
-import ch.threema.protobuf.d2d.join.MdD2DJoin.NdToEd
-import ch.threema.protobuf.d2d.rendezvous.MdD2DRendezvous.RendezvousInit
+import ch.threema.protobuf.d2d.join.NdToEd
+import ch.threema.protobuf.d2d.rendezvous.RendezvousInit
 import kotlinx.coroutines.Deferred
 import okhttp3.OkHttpClient
 
@@ -102,8 +102,7 @@ class RendezvousConnection private constructor(
     }
 
     companion object {
-        private class DefaultRendezvousPathProvider(private val okHttpClient: OkHttpClient) :
-            RendezvousPathProvider {
+        private class DefaultRendezvousPathProvider(private val okHttpClient: OkHttpClient) : RendezvousPathProvider {
             override fun getPaths(rendezvousInit: RendezvousInit): Map<UInt, RendezvousPath> {
                 return getPaths(okHttpClient, rendezvousInit)
             }

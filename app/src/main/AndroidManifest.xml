@@ -673,7 +673,7 @@
             android:theme="@style/Theme.Threema.Wizard"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity
-            android:name=".activities.SMSVerificationLinkActivity"
+            android:name=".identitylinks.SMSVerificationLinkActivity"
             android:exported="true"
             android:theme="@style/Theme.Threema.Translucent">
             <intent-filter>
@@ -748,7 +748,7 @@
             android:theme="@style/Theme.Threema.WithToolbar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
         <activity
-            android:name="ch.threema.app.activities.DirectoryActivity"
+            android:name="ch.threema.app.activities.directory.DirectoryActivity"
             android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize|uiMode"
             android:theme="@style/Theme.Threema.WithToolbar"
             android:windowSoftInputMode="adjustResize" />

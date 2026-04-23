@@ -20,7 +20,7 @@ pub fn sha256(data: &[u8]) -> Vec<u8> {
 }
 
 /// Compute the HMAC-SHA256 from the provided key and data.
-#[allow(clippy::missing_panics_doc, reason = "Panic will never happen")]
+#[expect(clippy::missing_panics_doc, reason = "Panic will never happen")]
 #[must_use]
 #[wasm_bindgen(js_name = hmacSha256)]
 pub fn hmac_sha256(key: &[u8], data: &[u8]) -> Vec<u8> {
@@ -39,7 +39,7 @@ pub fn hmac_sha256(key: &[u8], data: &[u8]) -> Vec<u8> {
 ///
 /// Returns an error if `key` is present and less than 1 or more than 128
 /// bytes and when `personal` or `salt` is more than 32 bytes.
-#[allow(
+#[expect(
     clippy::needless_pass_by_value,
     reason = "Bindings don't allow to use Option<&Vec<u8>>"
 )]
@@ -72,7 +72,7 @@ pub fn blake2b_mac_256(
 ///
 /// Returns an error if `key` is present and less than 1 or more than 128
 /// bytes and when `personal` or `salt` is more than 32 bytes.
-#[allow(
+#[expect(
     clippy::needless_pass_by_value,
     reason = "Bindings don't allow to use Option<&Vec<u8>>"
 )]
@@ -98,7 +98,7 @@ pub fn blake2b_mac_512(
     )
 }
 
-/// Parameters for [`argon2id`]
+/// Parameters for [`argon2id`].
 #[derive(Clone, Copy, Tsify, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[tsify(from_wasm_abi, into_wasm_abi)]
@@ -137,10 +137,6 @@ impl TryFrom<Argon2idParameters> for argon2::Params {
 ///
 /// Returns an error if the passed parameters are invalid (see
 /// [`Argon2idParameters`] for the requirements).
-#[allow(
-    clippy::needless_pass_by_value,
-    reason = "Bindings don't allow to use &Argon2idParameters"
-)]
 #[wasm_bindgen(js_name = argon2id)]
 pub fn argon2id(password: &[u8], salt: &[u8], parameters: Argon2idParameters) -> Result<Vec<u8>, Error> {
     let context = argon2::Argon2::new(argon2::Argon2id, argon2::Version::V0x13, parameters.try_into()?);
@@ -152,7 +148,7 @@ pub fn argon2id(password: &[u8], salt: &[u8], parameters: Argon2idParameters) ->
     Ok(output)
 }
 
-/// Parameters for [`scrypt()`]
+/// Parameters for [`scrypt()`].
 #[derive(Clone, Tsify, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 #[tsify(from_wasm_abi, into_wasm_abi)]
@@ -188,10 +184,6 @@ impl TryFrom<ScryptParameters> for scrypt::Params {
 ///
 /// Returns an error if the passed parameters are invalid (see [`ScryptParameters`] for the
 /// requirements).
-#[allow(
-    clippy::needless_pass_by_value,
-    reason = "Bindings don't allow to use &ScryptParameters"
-)]
 #[wasm_bindgen()]
 pub fn scrypt(password: &[u8], salt: &[u8], parameters: ScryptParameters) -> Result<Vec<u8>, Error> {
     let mut output = vec![0; parameters.output_length as usize];

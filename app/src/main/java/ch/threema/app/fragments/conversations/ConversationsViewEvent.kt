@@ -37,5 +37,7 @@ sealed interface ConversationsViewEvent {
 
     data object UpdateWidgets : ConversationsViewEvent
 
+    data object OnAvailabilityStatusChanged : ConversationsViewEvent
+
     data object InternalError : ConversationsViewEvent
 }

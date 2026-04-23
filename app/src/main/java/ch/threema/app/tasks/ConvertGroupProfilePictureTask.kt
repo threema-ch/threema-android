@@ -7,6 +7,7 @@ import ch.threema.app.protocolsteps.ExpectedProfilePictureChange
 import ch.threema.app.protocolsteps.PredefinedMessageIds
 import ch.threema.app.services.FileService
 import ch.threema.app.utils.OutgoingCspMessageServices
+import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
@@ -19,13 +20,13 @@ import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.TaskManager
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncUpdate
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.blob
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.common.Image
+import ch.threema.protobuf.common.blob
+import ch.threema.protobuf.common.deltaImage
+import ch.threema.protobuf.common.image
+import ch.threema.protobuf.common.unit
+import ch.threema.protobuf.d2d.TransactionScope
 import ch.threema.protobuf.d2d.sync.group
-import ch.threema.protobuf.deltaImage
-import ch.threema.protobuf.image
-import ch.threema.protobuf.unit
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
@@ -44,6 +45,7 @@ class ConvertGroupProfilePictureTask(
     private val taskManager: TaskManager by inject()
     private val outgoingCspMessageServices: OutgoingCspMessageServices by inject()
     private val groupModelRepository: GroupModelRepository by inject()
+    private val nonceFactory: NonceFactory by inject()
     private val multiDeviceManager by lazy { outgoingCspMessageServices.multiDeviceManager }
 
     override val type = "ConvertGroupProfilePictureTask"
@@ -104,13 +106,13 @@ class ConvertGroupProfilePictureTask(
             }
 
             logger.info("Reflecting group update to reflect group profile picture")
-            handle.reflect(
+            handle.reflectAndAwaitAck(
                 getEncryptedGroupSyncUpdate(
                     group = group {
                         groupIdentity = groupModel.groupIdentity.toProtobuf()
                         profilePicture = deltaImage {
                             updated = image {
-                                type = Common.Image.Type.JPEG
+                                type = Image.Type.JPEG
                                 blob = blob {
                                     id = uploadResult.blobId.toByteString()
                                     nonce = ProtocolDefines.GROUP_PHOTO_NONCE.toByteString()
@@ -122,6 +124,8 @@ class ConvertGroupProfilePictureTask(
                     memberStateChanges = emptyMap(),
                     multiDeviceProperties = multiDeviceManager.propertiesProvider.get(),
                 ),
+                storeD2dNonce = true,
+                nonceFactory = nonceFactory,
             )
             uploadResult
         }
@@ -144,8 +148,8 @@ class ConvertGroupProfilePictureTask(
 
         handle.runInGroupSyncTransaction(groupModel) {
             logger.info("Reflecting group update to remove group profile picture")
-            handle.reflect(
-                getEncryptedGroupSyncUpdate(
+            handle.reflectAndAwaitAck(
+                encryptedEnvelopeResult = getEncryptedGroupSyncUpdate(
                     group = group {
                         groupIdentity = groupModel.groupIdentity.toProtobuf()
                         profilePicture = deltaImage {
@@ -155,6 +159,8 @@ class ConvertGroupProfilePictureTask(
                     memberStateChanges = emptyMap(),
                     multiDeviceProperties = multiDeviceManager.propertiesProvider.get(),
                 ),
+                storeD2dNonce = true,
+                nonceFactory = nonceFactory,
             )
         }
 
@@ -191,7 +197,7 @@ class ConvertGroupProfilePictureTask(
     private suspend fun <T> ActiveTaskCodec.runInGroupSyncTransaction(groupModel: GroupModel, runInTransaction: suspend () -> T): T =
         createTransaction(
             keys = multiDeviceManager.propertiesProvider.get().keys,
-            scope = MdD2D.TransactionScope.Scope.GROUP_SYNC,
+            scope = TransactionScope.Scope.GROUP_SYNC,
             ttl = TRANSACTION_TTL_MAX,
             precondition = {
                 !groupModel.isDeleted

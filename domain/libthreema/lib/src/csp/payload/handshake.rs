@@ -51,26 +51,26 @@ pub(crate) struct ServerHello {
     pub(crate) server_challenge_response_box: [u8; Self::SERVER_CHALLENGE_RESPONSE_BOX_LENGTH],
 }
 impl ServerHello {
-    /// Total byte length
+    /// Total byte length.
     pub(crate) const LENGTH: usize = Cookie::LENGTH + Self::SERVER_CHALLENGE_RESPONSE_BOX_LENGTH;
-    /// Byte length of the encrypted [`ServerChallengeResponse`]
+    /// Byte length of the encrypted [`ServerChallengeResponse`].
     const SERVER_CHALLENGE_RESPONSE_BOX_LENGTH: usize =
         ServerChallengeResponse::LENGTH + { salsa20::TAG_LENGTH };
 }
 impl From<&[u8; Self::LENGTH]> for ServerHello {
     fn from(data: &[u8; Self::LENGTH]) -> Self {
         let mut reader = SliceByteReader::new(data);
-
         let server_cookie = ServerCookie(Cookie(
             reader
                 .read_fixed::<{ Cookie::LENGTH }>()
                 .expect("data must be >= Cookie::LENGTH"),
         ));
-
         let server_challenge_response_box = reader
             .read_fixed::<{ Self::SERVER_CHALLENGE_RESPONSE_BOX_LENGTH }>()
             .expect("data must be >= Cookie::LENGTH + SERVER_CHALLENGE_BOX_RESPONSE_LENGTH");
-
+        let _ = reader
+            .expect_consumed()
+            .expect("data length must be exactly Cookie::LENGTH + SERVER_CHALLENGE_BOX_RESPONSE_LENGTH");
         Self {
             server_cookie,
             server_challenge_response_box,
@@ -78,7 +78,7 @@ impl From<&[u8; Self::LENGTH]> for ServerHello {
     }
 }
 
-/// [`ServerHello`] frame decoder
+/// [`ServerHello`] frame decoder.
 pub(crate) type ServerHelloDecoder = FixedLengthFrameDecoder<{ ServerHello::LENGTH }>;
 
 /// Authentication challenge response from the server.
@@ -88,20 +88,20 @@ pub(crate) struct ServerChallengeResponse {
     pub(crate) repeated_client_cookie: ClientCookie,
 }
 impl ServerChallengeResponse {
-    /// Byte length
+    /// Byte length.
     const LENGTH: usize = PublicKey::LENGTH + Cookie::LENGTH;
 }
 impl TryFrom<&[u8]> for ServerChallengeResponse {
     type Error = CspProtocolError;
 
     fn try_from(data: &[u8]) -> Result<Self, Self::Error> {
-        let mut reader = SliceByteReader::new(data);
-        reader
-            .run(|reader| {
+        SliceByteReader::new(data)
+            .run_owned(|mut reader| {
                 let temporary_server_key = TemporaryServerKey(PublicKey(x25519::PublicKey::from(
                     reader.read_fixed::<{ PublicKey::LENGTH }>()?,
                 )));
                 let repeated_client_cookie = ClientCookie(Cookie(reader.read_fixed::<{ Cookie::LENGTH }>()?));
+                let _ = reader.expect_consumed()?;
                 Ok(Self {
                     temporary_server_key,
                     repeated_client_cookie,
@@ -282,19 +282,19 @@ pub(crate) struct LoginData {
     pub(crate) identity: ThreemaId,
 
     /// Byte length of the **encrypted** extensions (meaning with overhead, provided separately
-    /// within [`Login`])
+    /// within [`Login`]).
     pub(crate) extensions_byte_length: u16,
 
-    /// Repeated server connection Cookie (SCK), acting as the client's challenge response
+    /// Repeated server connection Cookie (SCK), acting as the client's challenge response.
     pub(crate) repeated_server_cookie: ServerCookie,
 
-    /// Session voucher
+    /// Session voucher.
     #[educe(Debug(method(debug_slice_length)))]
     pub(crate) vouch: [u8; MAC_256_LENGTH],
 }
 impl LoginData {
     const EXTENSION_INDICATOR_LENGTH: usize = 32;
-    /// Magic string to indicate presence of extension indicator
+    /// Magic string to indicate presence of extension indicator.
     const EXTENSION_INDICATOR_MAGIC_STRING: [u8; 30] = *b"threema-clever-extension-field";
     const LENGTH: usize = ThreemaId::LENGTH
         + Self::EXTENSION_INDICATOR_LENGTH
@@ -335,7 +335,7 @@ pub(crate) struct Login {
     #[educe(Debug(method(debug_slice_length)))]
     pub(crate) login_data_box: [u8; LOGIN_DATA_BOX_LENGTH],
 
-    /// The encrypted extensions
+    /// The encrypted extensions.
     #[educe(Debug(method(debug_slice_length)))]
     pub(crate) extensions_box: Vec<u8>,
 }
@@ -374,12 +374,12 @@ impl TryFrom<&[u8]> for LoginAckData {
     type Error = CspProtocolError;
 
     fn try_from(data: &[u8]) -> Result<Self, Self::Error> {
-        let mut reader = SliceByteReader::new(data);
-        reader
-            .run(|reader| {
+        SliceByteReader::new(data)
+            .run_owned(|mut reader| {
                 reader.skip(Self::RESERVED_LENGTH)?;
                 let current_time = reader.read_u64_le()?;
                 let queued_messages = reader.read_u32_le()?;
+                let _ = reader.expect_consumed()?;
                 Ok(Self {
                     clock_delta: ClockDelta::calculate(Duration::from_millis(current_time)),
                     queued_messages,
@@ -405,14 +405,15 @@ impl LoginAck {
 impl From<&[u8; Self::LENGTH]> for LoginAck {
     fn from(data: &[u8; Self::LENGTH]) -> Self {
         let mut reader = SliceByteReader::new(data);
-
         let login_ack_data_box = reader
             .read_fixed::<{ Self::LOGIN_ACK_DATA_BOX_LENGTH }>()
             .expect("data must be >= LOGIN_ACK_DATA_BOX_LENGTH");
-
+        let _ = reader
+            .expect_consumed()
+            .expect("data length must be exactly LOGIN_ACK_DATA_BOX_LENGTH");
         Self { login_ack_data_box }
     }
 }
 
-/// [`LoginAck`] frame decoder
+/// [`LoginAck`] frame decoder.
 pub(crate) type LoginAckDecoder = FixedLengthFrameDecoder<{ LoginAck::LENGTH }>;

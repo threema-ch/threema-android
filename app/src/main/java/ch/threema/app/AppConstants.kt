@@ -41,4 +41,5 @@ object AppConstants {
 
     const val THREEMA_SUPPORT_IDENTITY: IdentityString = "*SUPPORT"
     const val THREEMA_CHANNEL_IDENTITY: IdentityString = "*THREEMA"
+    const val THREEMA_WORK_SYNC_IDENTITY: IdentityString = "*3MAW0RK"
 }

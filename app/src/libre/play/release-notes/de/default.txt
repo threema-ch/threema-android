@@ -1,1 +1,1 @@
-- Verbesserung der Bildvorschau in Benachrichtigungen
+- Verbesserungen und Behebung verschiedener Fehler

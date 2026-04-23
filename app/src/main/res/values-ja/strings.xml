@@ -62,6 +62,7 @@
     <!-- Label on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
     <string name="prefs_notification_light">通知ライト</string>
     <!-- Summary on checkbox in notification settings screen, to let the user enable/disable the use of the device's color LED for notifications. Only relevant on Android 7 -->
+    <string name="prefs_sum_notification_light">(可能であれば)メッセージ受信時LEDを点灯させる</string>
     <string name="prefs_title_wallpaper_switch">壁紙</string>
     <string name="prefs_title_enter">改行キーで送信</string>
     <string name="prefs_sum_enter_on">改行キーが送信キーになります</string>
@@ -330,6 +331,7 @@ https://shop.threema.ch/retrieve_keys]]></string>
     <string name="updating_group">グループを更新中です</string>
     <string name="leaving_group">グループを退会</string>
     <string name="removing_group">グループを削除</string>
+    <string name="resyncing_group">グループを再同期</string>
     <string name="status_create_group">グループが作成されました</string>
     <string name="status_rename_group">グループ名が «%1$s» に変更されました</string>
     <string name="status_group_new_photo">グループ画像が更新されました。</string>
@@ -1018,6 +1020,7 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <string name="url_warning_body">開こうとしているリンクのホスト名が不審です。\n\n表示されたホスト名: <b>%s</b>\n本当のホスト名: <b>%s</b>\n\nこれは、あなたを騙して、別のサイトのふりをしたサイトを開かせようとしている可能性があります。\n\nそれでも続行しますか？</string>
     <string name="url_warning_title">警告: フィッシング</string>
     <!-- ${app_name} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="permission_camera_qr_required">QRコードをスキャンするために、${app_name}にカメラアクセスの許可が必要です</string>
     <string name="voice_action_title">ボイス・アクション</string>
     <string name="voice_action_body">ボイスアクションの処理中</string>
     <string name="permission_camera_photo_required">写真を撮るために、カメラへのアクセスを許可してください</string>
@@ -1509,8 +1512,8 @@ https://myid.threema.ch/revoke に入力することで ID を削除すること
     <!-- Instruction text for the user directory search -->
     <!-- Prompt to the user shown in the work directory search. ${app_name_short} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <!-- Message that is shown when the user wants to share an invalid file. -->
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e. out-of-office -->
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently busy-->
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
     <!-- Description of the notification channel which is used when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->

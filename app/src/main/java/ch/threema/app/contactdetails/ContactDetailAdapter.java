@@ -29,12 +29,14 @@ import androidx.annotation.StringRes;
 import androidx.annotation.UiThread;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
-import ch.threema.app.BuildConfig;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
+import ch.threema.app.availabilitystatus.AvailabilityStatusLabelView;
 import ch.threema.app.dialogs.PublicKeyDialog;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ServiceManager;
+import ch.threema.app.preference.service.PreferenceService;
+import ch.threema.app.preference.service.PreferenceService.EmojiStyle;
 import ch.threema.app.preference.service.SynchronizedSettingsService;
 import ch.threema.app.services.BlockedIdentitiesService;
 import ch.threema.app.services.ContactService;
@@ -45,7 +47,10 @@ import ch.threema.app.ui.VerificationLevelImageView;
 import ch.threema.app.utils.AndroidContactUtil;
 import ch.threema.app.utils.ConfigUtils;
 import ch.threema.app.utils.ViewUtil;
+
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
+
+import ch.threema.data.datatypes.AvailabilityStatus;
 import ch.threema.data.models.ContactModelData;
 import ch.threema.domain.models.ReadReceiptPolicy;
 import ch.threema.domain.models.TypingIndicatorPolicy;
@@ -83,6 +88,7 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
     private final BlockedIdentitiesService blockedIdentitiesService;
     private final @NonNull ch.threema.data.models.ContactModel contactModel;
     private final @NonNull ContactModelData contactModelData;
+    private final @EmojiStyle int emojiStyle;
     private final List<GroupModelOld> values;
     private OnClickListener onClickListener;
     private final @NonNull RequestManager requestManager;
@@ -108,7 +114,8 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
         private final @NonNull SectionHeaderView departmentHeaderView;
         private final @NonNull TextView departmentTextView;
         private final @NonNull TextView threemaIdView;
-        private final @NonNull ContactAvailabilityView availabilityView;
+        private final @NonNull LinearLayout availabilityStatusContainer;
+        private final @NonNull AvailabilityStatusLabelView availabilityStatusLabelView;
         private final @NonNull MaterialSwitch synchronize;
         private final @NonNull View nicknameContainer, synchronizeContainer;
         private final @NonNull ImageView syncSourceIcon;
@@ -127,7 +134,8 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
             this.departmentHeaderView = Objects.requireNonNull(itemView.findViewById(R.id.header_department));
             this.departmentTextView = Objects.requireNonNull(itemView.findViewById(R.id.value_department));
             this.threemaIdView = Objects.requireNonNull(itemView.findViewById(R.id.threema_id));
-            this.availabilityView = Objects.requireNonNull(itemView.findViewById(R.id.availability_status));
+            this.availabilityStatusContainer = Objects.requireNonNull(itemView.findViewById(R.id.availability_status_container));
+            this.availabilityStatusLabelView = Objects.requireNonNull(itemView.findViewById(R.id.availability_status_view));
             this.verificationLevelImageView = Objects.requireNonNull(itemView.findViewById(R.id.verification_level_image));
             ImageView verificationLevelIconView = Objects.requireNonNull(itemView.findViewById(R.id.verification_information_icon));
             this.synchronize = Objects.requireNonNull(itemView.findViewById(R.id.synchronize_contact));
@@ -152,8 +160,18 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
                 return true;
             });
 
-            if (!BuildConfig.AVAILABILITY_STATUS_ENABLED) {
-                availabilityView.setVisibility(View.GONE);
+            if (ConfigUtils.supportsAvailabilityStatus()) {
+                availabilityStatusContainer.setVisibility(
+                    contactModelData.availabilityStatus instanceof AvailabilityStatus.Set
+                        ? View.VISIBLE
+                        : View.GONE
+                );
+                availabilityStatusLabelView.setState(
+                    contactModelData.availabilityStatus instanceof AvailabilityStatus.Set
+                        ? (AvailabilityStatus.Set) contactModelData.availabilityStatus
+                        : null,
+                    emojiStyle
+                );
             }
 
             // When clicking ten times on the Threema ID, the clear forward security session button
@@ -214,12 +232,14 @@ public class ContactDetailAdapter extends RecyclerView.Adapter<RecyclerView.View
         List<GroupModelOld> values,
         @NonNull ch.threema.data.models.ContactModel contactModel,
         @NonNull ContactModelData contactModelData,
+        @EmojiStyle int emojiStyle,
         @NonNull RequestManager requestManager
     ) {
         this.context = context;
         this.values = values;
         this.contactModel = contactModel;
         this.contactModelData = contactModelData;
+        this.emojiStyle = emojiStyle;
         this.requestManager = requestManager;
 
         ServiceManager serviceManager = ThreemaApplication.requireServiceManager();

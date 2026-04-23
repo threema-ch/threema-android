@@ -5,7 +5,7 @@ import com.google.protobuf.ByteString;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.domain.fs.DHSessionId;
-import ch.threema.protobuf.Common;
+import ch.threema.protobuf.common.GroupIdentity;
 import ch.threema.protobuf.csp.e2e.fs.Encapsulated;
 import ch.threema.protobuf.csp.e2e.fs.Envelope;
 
@@ -15,7 +15,7 @@ public class ForwardSecurityDataMessage extends ForwardSecurityData {
     private final long counter;
     private final int offeredVersion;
     private final int appliedVersion;
-    private final @Nullable Common.GroupIdentity groupIdentity;
+    private final @Nullable GroupIdentity groupIdentity;
     private final @NonNull byte[] message;
 
     public ForwardSecurityDataMessage(
@@ -24,7 +24,7 @@ public class ForwardSecurityDataMessage extends ForwardSecurityData {
         long counter,
         int offeredVersion,
         int appliedVersion,
-        @Nullable Common.GroupIdentity groupIdentity,
+        @Nullable GroupIdentity groupIdentity,
         @NonNull byte[] message
     ) {
         super(sessionId);
@@ -54,7 +54,7 @@ public class ForwardSecurityDataMessage extends ForwardSecurityData {
     }
 
     @Nullable
-    public Common.GroupIdentity getGroupIdentity() {
+    public GroupIdentity getGroupIdentity() {
         return this.groupIdentity;
     }
 

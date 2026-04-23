@@ -333,7 +333,7 @@ pub fn protobuf_annotations(_attribute: TokenStream, input: TokenStream) -> Toke
 ///
 /// Note: All fields must implement [`subtle::ConstantTimeEq`].
 ///
-/// The proc macro was adapted from <https://github.com/dalek-cryptography/subtle/pull/111>
+/// The proc macro was adapted from <https://github.com/dalek-cryptography/subtle/pull/111>.
 ///
 /// # Examples
 ///

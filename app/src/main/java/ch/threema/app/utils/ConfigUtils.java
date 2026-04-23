@@ -668,15 +668,15 @@ public class ConfigUtils {
             : context.getString(R.string.notification_title_restart);
         String text = context.getString(R.string.tap_to_start, context.getString(R.string.app_name));
         return new NotificationCompat.Builder(context, NotificationChannels.NOTIFICATION_CHANNEL_ALERT)
-                .setSmallIcon(R.drawable.ic_notification_small)
-                .setContentTitle(title)
-                .setContentText(text)
-                .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
-                .setPriority(NotificationCompat.PRIORITY_MAX)
-                .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
-                .setContentIntent(getRestartPendingIntent(context))
-                .setAutoCancel(false)
-                .build();
+            .setSmallIcon(R.drawable.ic_notification_small)
+            .setContentTitle(title)
+            .setContentText(text)
+            .setDefaults(Notification.DEFAULT_LIGHTS | Notification.DEFAULT_VIBRATE)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setStyle(new NotificationCompat.BigTextStyle().bigText(text))
+            .setContentIntent(getRestartPendingIntent(context))
+            .setAutoCancel(false)
+            .build();
     }
 
     private static PendingIntent getRestartPendingIntent(@NonNull Context context) {
@@ -798,8 +798,7 @@ public class ConfigUtils {
             return staturBarInsets.top - staturBarInsets.bottom;
         }
         int result = 0;
-        @SuppressLint({"InternalInsetResource", "DiscouragedApi"})
-        final int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        @SuppressLint({"InternalInsetResource", "DiscouragedApi"}) final int resourceId = activity.getResources().getIdentifier("status_bar_height", "dimen", "android");
         if (resourceId > 0) {
             result = activity.getResources().getDimensionPixelSize(resourceId);
         }
@@ -1595,5 +1594,9 @@ public class ConfigUtils {
 
     private static AppRestrictions getAppRestrictions() {
         return KoinJavaComponent.get(AppRestrictions.class);
+    }
+
+    public static boolean supportsAvailabilityStatus() {
+        return isWorkBuild() && BuildConfig.AVAILABILITY_STATUS_ENABLED;
     }
 }

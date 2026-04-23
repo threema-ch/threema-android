@@ -53,8 +53,8 @@ import ch.threema.app.compose.common.DynamicSpacerSize3
 import ch.threema.app.compose.common.SpacerHorizontal
 import ch.threema.app.compose.common.SpacerVertical
 import ch.threema.app.compose.common.ThemedText
-import ch.threema.app.compose.common.buttons.ButtonPrimaryOverride
 import ch.threema.app.compose.common.buttons.TextButtonPrimaryOverride
+import ch.threema.app.compose.common.buttons.primary.ButtonPrimaryOverride
 import ch.threema.app.compose.theme.ThreemaTheme
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.GridUnit

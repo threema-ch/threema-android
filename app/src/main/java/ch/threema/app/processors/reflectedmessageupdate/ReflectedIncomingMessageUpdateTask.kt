@@ -7,14 +7,9 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.models.MessageId
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.Common.GroupIdentity
-import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.CONTACT
-import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.DISTRIBUTION_LIST
-import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.GROUP
-import ch.threema.protobuf.d2d.MdD2D.ConversationId.IdCase.ID_NOT_SET
-import ch.threema.protobuf.d2d.MdD2D.IncomingMessageUpdate
-import ch.threema.protobuf.d2d.MdD2D.IncomingMessageUpdate.Update.UpdateCase.READ
+import ch.threema.protobuf.common.GroupIdentity
+import ch.threema.protobuf.d2d.ConversationId
+import ch.threema.protobuf.d2d.IncomingMessageUpdate
 import ch.threema.storage.models.AbstractMessageModel
 import ch.threema.storage.models.MessageModel
 import ch.threema.storage.models.group.GroupMessageModel
@@ -36,26 +31,26 @@ class ReflectedIncomingMessageUpdateTask(
 
         incomingMessageUpdate.updatesList.forEach { update ->
             when (update.updateCase) {
-                READ -> applyReadUpdate(update)
+                IncomingMessageUpdate.Update.UpdateCase.READ -> applyReadUpdate(update)
                 else -> logger.error("Received an unknown incoming message update '${update.updateCase}'")
             }
         }
     }
 
     private fun applyReadUpdate(update: IncomingMessageUpdate.Update) {
-        val conversationId: MdD2D.ConversationId = update.conversation
+        val conversationId: ConversationId = update.conversation
         val messageId = MessageId(update.messageId)
         val readAt = update.read.at
         when (conversationId.idCase) {
-            CONTACT -> applyContactMessageReadUpdate(messageId, conversationId.contact, readAt)
+            ConversationId.IdCase.CONTACT -> applyContactMessageReadUpdate(messageId, conversationId.contact, readAt)
 
-            GROUP -> applyGroupMessageReadUpdate(messageId, conversationId.group, readAt)
+            ConversationId.IdCase.GROUP -> applyGroupMessageReadUpdate(messageId, conversationId.group, readAt)
 
-            DISTRIBUTION_LIST -> throw IllegalStateException(
+            ConversationId.IdCase.DISTRIBUTION_LIST -> throw IllegalStateException(
                 "Received incoming message update for a distribution list",
             )
 
-            ID_NOT_SET -> logger.warn("Received incoming message update where id is not set")
+            ConversationId.IdCase.ID_NOT_SET -> logger.warn("Received incoming message update where id is not set")
 
             null -> logger.warn("Received incoming message update where id is null")
         }

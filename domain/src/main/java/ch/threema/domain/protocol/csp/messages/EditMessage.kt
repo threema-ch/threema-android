@@ -1,9 +1,12 @@
 package ch.threema.domain.protocol.csp.messages
 
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.protocol.csp.messages.EditMessage.Companion.fromByteArray
+import ch.threema.domain.protocol.csp.messages.EditMessage.Companion.fromReflected
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufMessage
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import kotlin.time.Duration.Companion.hours
 
 class EditMessage(payloadData: EditMessageData) : AbstractProtobufMessage<EditMessageData>(
@@ -46,14 +49,14 @@ class EditMessage(payloadData: EditMessageData) : AbstractProtobufMessage<EditMe
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): EditMessage {
+        fun fromReflected(message: IncomingMessage): EditMessage {
             val editMessage = fromByteArray(message.body.toByteArray())
             editMessage.initializeCommonProperties(message)
             return editMessage
         }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): EditMessage {
+        fun fromReflected(message: OutgoingMessage): EditMessage {
             val editMessage = fromByteArray(message.body.toByteArray())
             editMessage.initializeCommonProperties(message)
             return editMessage

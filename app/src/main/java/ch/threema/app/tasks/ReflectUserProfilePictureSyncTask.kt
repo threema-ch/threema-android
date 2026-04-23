@@ -12,13 +12,13 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.domain.taskmanager.getEncryptedUserProfileSyncUpdate
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.blob
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.common.Image
+import ch.threema.protobuf.common.blob
+import ch.threema.protobuf.common.deltaImage
+import ch.threema.protobuf.common.image
+import ch.threema.protobuf.common.unit
+import ch.threema.protobuf.d2d.TransactionScope
 import ch.threema.protobuf.d2d.sync.userProfile
-import ch.threema.protobuf.deltaImage
-import ch.threema.protobuf.image
-import ch.threema.protobuf.unit
 import ch.threema.storage.models.ContactModel
 import com.google.protobuf.kotlin.toByteString
 import kotlinx.serialization.Serializable
@@ -56,7 +56,7 @@ class ReflectUserProfilePictureSyncTask() : ActiveTask<Unit>, PersistableTask, K
                 removed = unit { }
             } else {
                 updated = image {
-                    type = Common.Image.Type.JPEG
+                    type = Image.Type.JPEG
                     blob = blob {
                         id = profilePictureUploadData.blobId.toByteString()
                         nonce = ProtocolDefines.CONTACT_PHOTO_NONCE.toByteString()
@@ -69,7 +69,7 @@ class ReflectUserProfilePictureSyncTask() : ActiveTask<Unit>, PersistableTask, K
 
         handle.createTransaction(
             keys = mdProperties.keys,
-            scope = MdD2D.TransactionScope.Scope.USER_PROFILE_SYNC,
+            scope = TransactionScope.Scope.USER_PROFILE_SYNC,
             ttl = TRANSACTION_TTL_MAX,
         ).execute {
             val encryptedEnvelopeResult = getEncryptedUserProfileSyncUpdate(

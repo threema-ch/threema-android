@@ -134,7 +134,7 @@ private fun TextButtonBase(
             contentColor = contentColor,
             disabledContainerColor = Color.Transparent,
             disabledContentColor = contentColor.copy(
-                alpha = AlphaValues.DISABLED_ON_CONTAINER,
+                alpha = AlphaValues.DISABLED,
             ),
         ),
         shape = ShapeDefaults.Medium,

@@ -13,7 +13,7 @@ import android.widget.TextView
 import androidx.lifecycle.lifecycleScope
 import ch.threema.app.R
 import ch.threema.app.ThreemaApplication
-import ch.threema.app.activities.DirectoryActivity
+import ch.threema.app.activities.directory.DirectoryActivity
 import ch.threema.app.adapters.UserListAdapter
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.BlockedIdentitiesService

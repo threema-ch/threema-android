@@ -9,7 +9,7 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.O2oCallVideoPolicy
+import ch.threema.protobuf.d2d.sync.Settings
 
 private val logger = getThreemaLogger("O2oCallVideoPolicySetting")
 
@@ -30,17 +30,17 @@ class O2oCallVideoPolicySetting internal constructor(
     override fun instantiateReflectionTask(): Task<*, TaskCodec> =
         ReflectSettingsSyncTask.ReflectO2oCallVideoPolicySyncUpdate()
 
-    fun getO2oCallVideoPolicy(): O2oCallVideoPolicy =
+    fun getO2oCallVideoPolicy(): Settings.O2oCallVideoPolicy =
         when (get()) {
-            true -> O2oCallVideoPolicy.ALLOW_VIDEO
-            false -> O2oCallVideoPolicy.DENY_VIDEO
+            true -> Settings.O2oCallVideoPolicy.ALLOW_VIDEO
+            false -> Settings.O2oCallVideoPolicy.DENY_VIDEO
         }
 
-    fun setFromSync(o2oCallVideoPolicy: O2oCallVideoPolicy) {
+    fun setFromSync(o2oCallVideoPolicy: Settings.O2oCallVideoPolicy) {
         val value = when (o2oCallVideoPolicy) {
-            O2oCallVideoPolicy.ALLOW_VIDEO -> true
-            O2oCallVideoPolicy.DENY_VIDEO -> false
-            O2oCallVideoPolicy.UNRECOGNIZED -> {
+            Settings.O2oCallVideoPolicy.ALLOW_VIDEO -> true
+            Settings.O2oCallVideoPolicy.DENY_VIDEO -> false
+            Settings.O2oCallVideoPolicy.UNRECOGNIZED -> {
                 logger.warn("Cannot set unrecognized 1:1 call video policy")
                 return
             }

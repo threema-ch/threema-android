@@ -1,7 +1,5 @@
 package ch.threema.domain.protocol.rendezvous
 
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.d2d.join.MdD2DJoin
 import ch.threema.protobuf.d2d.join.begin
 import ch.threema.protobuf.d2d.join.edToNd
 import ch.threema.protobuf.d2d.join.ndToEd
@@ -26,14 +24,14 @@ sealed interface DeviceJoinMessage {
             }.toByteArray()
     }
 
-    data class BlobData(val data: Common.BlobData) : DeviceJoinMessage {
+    data class BlobData(val data: ch.threema.protobuf.common.BlobData) : DeviceJoinMessage {
         override val bytes: ByteArray
             get() = edToNd {
                 blobData = data
             }.toByteArray()
     }
 
-    data class EssentialData(val data: MdD2DJoin.EssentialData) : DeviceJoinMessage {
+    data class EssentialData(val data: ch.threema.protobuf.d2d.join.EssentialData) : DeviceJoinMessage {
         override val bytes: ByteArray
             get() = edToNd {
                 essentialData = data

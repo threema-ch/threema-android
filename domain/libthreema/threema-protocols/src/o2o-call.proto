@@ -2,9 +2,11 @@
 
 syntax = "proto3";
 
-package callsignaling;
+package o2o_call;
 
-option java_package = "ch.threema.protobuf.callsignaling";
+option java_package = "ch.threema.protobuf.o2o_call";
+option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\O2oCall";
 
 import "common.proto";
 

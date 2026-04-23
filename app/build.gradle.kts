@@ -32,7 +32,7 @@ if (gradle.startParameter.taskRequests.toString().contains("Hms")) {
 /**
  * Only use the scheme "<major>.<minor>.<patch>" for the appVersion
  */
-val appVersion = "6.4.1"
+val appVersion = "6.4.2"
 
 /**
  * betaSuffix with leading dash (e.g. `-beta1`).
@@ -41,7 +41,7 @@ val appVersion = "6.4.1"
  */
 val betaSuffix = ""
 
-val defaultVersionCode = 1137
+val defaultVersionCode = 1142
 
 /**
  * Map with keystore paths (if found).
@@ -100,8 +100,9 @@ android {
         stringBuildConfigField("GIT_BRANCH", getGitBranch())
         stringBuildConfigField("DIRECTORY_SERVER_URL", "https://apip.threema.ch/")
         stringBuildConfigField("DIRECTORY_SERVER_IPV6_URL", "https://ds-apip.threema.ch/")
+        stringBuildConfigField("WORK_SERVER_URL_LEGACY", null)
+        stringBuildConfigField("WORK_SERVER_IPV6_URL_LEGACY", null)
         stringBuildConfigField("WORK_SERVER_URL", null)
-        stringBuildConfigField("WORK_SERVER_IPV6_URL", null)
         stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.threema.ch/{deviceGroupIdPrefix8}/")
 
         // Base blob url used for "download" and "done" calls
@@ -232,8 +233,9 @@ android {
             stringBuildConfigField("CHAT_SERVER_PREFIX", "w-")
             stringBuildConfigField("CHAT_SERVER_IPV6_PREFIX", "ds.w-")
             stringBuildConfigField("MEDIA_PATH", "ThreemaWork")
-            stringBuildConfigField("WORK_SERVER_URL", "https://apip-work.threema.ch/")
-            stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_URL_LEGACY", "https://apip-work.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_IPV6_URL_LEGACY", "https://ds-apip-work.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_URL", "https://work.threema.ch/")
             stringBuildConfigField("APP_RATING_URL", "https://threema.com/app-rating/android-work/{rating}")
             stringBuildConfigField("LOG_TAG", "3mawrk")
             stringBuildConfigField("DEFAULT_APP_THEME", "2")
@@ -306,8 +308,9 @@ android {
             byteArrayBuildConfigField("SERVER_PUBKEY_ALT", PublicKeys.sandboxServer)
             stringBuildConfigField("DIRECTORY_SERVER_URL", "https://apip.test.threema.ch/")
             stringBuildConfigField("DIRECTORY_SERVER_IPV6_URL", "https://ds-apip.test.threema.ch/")
-            stringBuildConfigField("WORK_SERVER_URL", "https://apip-work.test.threema.ch/")
-            stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.test.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_URL_LEGACY", "https://apip-work.test.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_IPV6_URL_LEGACY", "https://ds-apip-work.test.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_URL", "https://work.test.threema.ch/")
             stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}/")
             stringBuildConfigField("BLOB_SERVER_URL", "https://blobp-{blobIdPrefix}.test.threema.ch")
             stringBuildConfigField("BLOB_SERVER_IPV6_URL", "https://ds-blobp-{blobIdPrefix}.test.threema.ch")
@@ -326,6 +329,7 @@ android {
             stringBuildConfigField("uriScheme", "threemawork")
             stringBuildConfigField("actionUrl", "work.test.threema.ch")
 
+            booleanBuildConfigField("AVAILABILITY_STATUS_ENABLED", true)
             booleanBuildConfigField("ERROR_REPORTING_SUPPORTED", true)
 
             stringBuildConfigField("MD_CLIENT_DOWNLOAD_URL", "https://three.ma/mdw")
@@ -409,8 +413,9 @@ android {
             byteArrayBuildConfigField("SERVER_PUBKEY_ALT", PublicKeys.sandboxServer)
             stringBuildConfigField("DIRECTORY_SERVER_URL", "https://apip.test.threema.ch/")
             stringBuildConfigField("DIRECTORY_SERVER_IPV6_URL", "https://ds-apip.test.threema.ch/")
-            stringBuildConfigField("WORK_SERVER_URL", "https://apip-work.test.threema.ch/")
-            stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.test.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_URL_LEGACY", "https://apip-work.test.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_IPV6_URL_LEGACY", "https://ds-apip-work.test.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_URL", "https://work.test.threema.ch/")
             stringBuildConfigField("MEDIATOR_SERVER_URL", "wss://mediator-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}/")
             stringBuildConfigField("BLOB_SERVER_URL", "https://blobp-{blobIdPrefix}.test.threema.ch")
             stringBuildConfigField("BLOB_SERVER_IPV6_URL", "https://ds-blobp-{blobIdPrefix}.test.threema.ch")
@@ -424,6 +429,7 @@ android {
             stringBuildConfigField("LOG_TAG", "3mablue")
             stringBuildConfigField("BLOB_MIRROR_SERVER_URL", "https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
 
+            booleanBuildConfigField("AVAILABILITY_STATUS_ENABLED", true)
             booleanBuildConfigField("ERROR_REPORTING_SUPPORTED", true)
 
             // config fields for action URLs / deep links
@@ -450,8 +456,9 @@ android {
             stringBuildConfigField("CHAT_SERVER_PREFIX", "w-")
             stringBuildConfigField("CHAT_SERVER_IPV6_PREFIX", "ds.w-")
             stringBuildConfigField("MEDIA_PATH", "ThreemaWork")
-            stringBuildConfigField("WORK_SERVER_URL", "https://apip-work.threema.ch/")
-            stringBuildConfigField("WORK_SERVER_IPV6_URL", "https://ds-apip-work.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_URL_LEGACY", "https://apip-work.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_IPV6_URL_LEGACY", "https://ds-apip-work.threema.ch/")
+            stringBuildConfigField("WORK_SERVER_URL", "https://work.threema.ch/")
             stringBuildConfigField("APP_RATING_URL", "https://threema.com/app-rating/android-work/{rating}")
             stringBuildConfigField("LOG_TAG", "3mawrk")
             stringBuildConfigField("DEFAULT_APP_THEME", "2")

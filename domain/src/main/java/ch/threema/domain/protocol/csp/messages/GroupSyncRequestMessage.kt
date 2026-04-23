@@ -5,7 +5,8 @@ import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import ch.threema.protobuf.d2d.conversationOrNull
 import ch.threema.protobuf.d2d.groupOrNull
 import java.io.ByteArrayOutputStream
@@ -53,7 +54,7 @@ class GroupSyncRequestMessage : AbstractGroupMessage() {
         @JvmStatic
         @Throws(BadMessageException::class)
         fun fromReflected(
-            message: MdD2D.IncomingMessage,
+            message: IncomingMessage,
             myIdentity: IdentityString,
         ): GroupSyncRequestMessage {
             val groupSyncRequestMessage = fromByteArray(message.body.toByteArray(), myIdentity)
@@ -63,7 +64,7 @@ class GroupSyncRequestMessage : AbstractGroupMessage() {
 
         @JvmStatic
         @Throws(BadMessageException::class)
-        fun fromReflected(message: MdD2D.OutgoingMessage): GroupSyncRequestMessage {
+        fun fromReflected(message: OutgoingMessage): GroupSyncRequestMessage {
             val creatorIdentity = message.conversationOrNull?.groupOrNull?.creatorIdentity
                 ?: throw BadMessageException("Group conversation is not set on group-sync-request message")
             val groupSyncRequestMessage = fromByteArray(message.body.toByteArray(), creatorIdentity)

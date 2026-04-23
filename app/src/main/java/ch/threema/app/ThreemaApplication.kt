@@ -93,11 +93,11 @@ import ch.threema.storage.DatabaseUpdateException
 import ch.threema.storage.SQLDHSessionStore
 import ch.threema.storage.setupDatabaseLogging
 import kotlin.getValue
+import kotlin.system.exitProcess
 import kotlin.time.measureTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.koin.android.ext.android.inject
@@ -224,12 +224,17 @@ class ThreemaApplication : Application() {
         masterKeyManager: MasterKeyManagerImpl,
     ) = coroutineScope {
         val masterKeyProvider = masterKeyManager.masterKeyProvider
-        while (isActive) {
-            val masterKey = masterKeyProvider.awaitUnlocked()
-            onMasterKeyUnlocked(masterKey)
+        try {
+            while (true) {
+                val masterKey = masterKeyProvider.awaitUnlocked()
+                onMasterKeyUnlocked(masterKey)
 
-            masterKeyProvider.awaitLocked()
-            get<MasterKeyLockStateChangeHandler>().onMasterKeyLocked()
+                masterKeyProvider.awaitLocked()
+                get<MasterKeyLockStateChangeHandler>().onMasterKeyLocked()
+            }
+        } catch (e: Exception) {
+            logger.error("Master key monitoring failed", e)
+            exitProcess(2)
         }
     }
 

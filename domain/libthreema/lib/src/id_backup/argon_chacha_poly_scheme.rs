@@ -1,12 +1,12 @@
 //! This scheme uses Argon2id for the key derivation and ChaCha20Poly1305 for authenticated
 //! encryption.
 //!
-//! The encrypted backup is a grouped base32 encoded value, such as:
+//! The encrypted backup is a grouped base32 encoded value, such as (without line breaks):
 //!
+//! ```text
 //! AHCV-YVN5-MZF6-H47E-BFDA-XPQ4-523T-QEJ7-Q7TB-5O2G-U3LM-IPAY-PMO3-
 //! RWYJ-FZ5F-VRAH-5MHT-IP2E-ODYI-GXW4-4NAF-EOCO-OZPR-NZK4-CHVE-LYVL
-//!
-//! (without line breaks)
+//! ```
 #[cfg(all(test, feature = "slow_tests"))]
 use libthreema_macros::concat_fixed_bytes;
 
@@ -33,7 +33,7 @@ const ENCRYPTED_DATA_LENGTH: usize = IdentityBackupData::LENGTH + TAG_LENGTH;
 // version || salt || ChaCha20-Poly1305(Threema ID || CK)
 const ENCRYPTED_LENGTH: usize = ASSOCIATED_DATA_LENGTH + ENCRYPTED_DATA_LENGTH;
 
-/// Derive the symmetric backup encryption key
+/// Derive the symmetric backup encryption key.
 fn derive_key(password: &str, salt: Salt) -> Result<BackupKey, IdentityBackupError> {
     let mut key = [0; BackupKey::LENGTH];
     Argon2::new(

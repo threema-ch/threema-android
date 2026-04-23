@@ -33,7 +33,10 @@ interface ServerAddressProvider {
     fun getDirectoryServerUrl(ipv6: Boolean): String
 
     @Throws(ThreemaException::class)
-    fun getWorkServerUrl(ipv6: Boolean): String?
+    fun getWorkServerUrlLegacy(ipv6: Boolean): String?
+
+    @Throws(ThreemaException::class)
+    fun getWorkServerUrl(): String?
 
     @Throws(ThreemaException::class)
     fun getBlobServerDownloadUrl(useIpV6: Boolean): BlobUrl

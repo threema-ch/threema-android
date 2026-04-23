@@ -62,6 +62,7 @@ public class ContactModel extends Contact implements ReceiverModel {
     public static final String COLUMN_JOB_TITLE = "jobTitle";
     public static final String COLUMN_DEPARTMENT = "department";
     public static final String COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE = "notificationTriggerPolicyOverride";
+    public static final String COLUMN_WORK_LAST_FULL_SYNC_AT = "workLastFullSyncAt";
 
     public static final byte[] NO_PROFILE_PICTURE_BLOB_ID = new byte[0];
 

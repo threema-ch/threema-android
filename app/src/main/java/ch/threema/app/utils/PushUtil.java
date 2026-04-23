@@ -47,7 +47,7 @@ import ch.threema.base.ThreemaException;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import ch.threema.data.models.ContactModel;
-import ch.threema.protobuf.d2d.sync.MdD2DSync;
+import ch.threema.protobuf.d2d.sync.ConversationCategory;
 
 import static ch.threema.app.di.DIJavaCompat.getMasterKeyManager;
 
@@ -267,8 +267,8 @@ public class PushUtil {
 
                     @NonNull
                     @Override
-                    public MdD2DSync.ConversationCategory getConversationCategory(@NonNull String uniqueIdString) {
-                        return MdD2DSync.ConversationCategory.DEFAULT;
+                    public ConversationCategory getConversationCategory(@NonNull String uniqueIdString) {
+                        return ConversationCategory.DEFAULT;
                     }
 
                     @Override

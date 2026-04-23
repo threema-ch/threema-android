@@ -4,6 +4,7 @@ import ch.threema.testhelpers.createTempDirectory
 import java.io.File
 import java.io.IOException
 import kotlin.test.Test
+import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
@@ -91,12 +92,15 @@ class FileExtensionsTest {
 
     @Test
     fun `delete a file securely`() {
+        val trashDirectory = createTempDirectory()
         val file = File.createTempFile("test", "test")
+        file.writeText("Hello World")
         assertTrue(file.exists())
 
-        file.deleteSecurely()
+        file.deleteSecurely(trashDirectory)
 
         assertFalse(file.exists())
+        assertContentEquals(emptyArray<File>(), trashDirectory.listFiles())
     }
 
     @Test
@@ -105,7 +109,7 @@ class FileExtensionsTest {
         file.delete()
         assertFalse(file.exists())
 
-        file.deleteSecurely()
+        file.deleteSecurely(createTempDirectory())
         assertFalse(file.exists())
     }
 
@@ -114,7 +118,7 @@ class FileExtensionsTest {
         val directory = createTempDirectory("root")
 
         assertFailsWith<IOException> {
-            directory.deleteSecurely()
+            directory.deleteSecurely(createTempDirectory())
         }
     }
 }

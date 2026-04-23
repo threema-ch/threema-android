@@ -4,20 +4,20 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 import androidx.annotation.LongDef;
-import ch.threema.protobuf.Common;
+import ch.threema.protobuf.common.CspFeatureMaskFlag;
 
 public class ThreemaFeature {
-    public final static long AUDIO = Common.CspFeatureMaskFlag.VOICE_MESSAGE_SUPPORT_VALUE;
-    public final static long GROUP_CHAT = Common.CspFeatureMaskFlag.GROUP_SUPPORT_VALUE;
-    public final static long BALLOT = Common.CspFeatureMaskFlag.POLL_SUPPORT_VALUE;
-    public final static long FILE = Common.CspFeatureMaskFlag.FILE_MESSAGE_SUPPORT_VALUE;
-    public final static long VOIP = Common.CspFeatureMaskFlag.O2O_AUDIO_CALL_SUPPORT_VALUE;
-    public final static long VIDEOCALLS = Common.CspFeatureMaskFlag.O2O_VIDEO_CALL_SUPPORT_VALUE;
-    public final static long FORWARD_SECURITY = Common.CspFeatureMaskFlag.FORWARD_SECURITY_SUPPORT_VALUE;
-    public final static long GROUP_CALLS = Common.CspFeatureMaskFlag.GROUP_CALL_SUPPORT_VALUE;
-    public final static long EDIT_MESSAGES = Common.CspFeatureMaskFlag.EDIT_MESSAGE_SUPPORT_VALUE;
-    public final static long DELETE_MESSAGES = Common.CspFeatureMaskFlag.DELETE_MESSAGE_SUPPORT_VALUE;
-    public final static long EMOJI_REACTIONS = Common.CspFeatureMaskFlag.REACTION_SUPPORT_VALUE;
+    public final static long AUDIO = CspFeatureMaskFlag.VOICE_MESSAGE_SUPPORT_VALUE;
+    public final static long GROUP_CHAT = CspFeatureMaskFlag.GROUP_SUPPORT_VALUE;
+    public final static long BALLOT = CspFeatureMaskFlag.POLL_SUPPORT_VALUE;
+    public final static long FILE = CspFeatureMaskFlag.FILE_MESSAGE_SUPPORT_VALUE;
+    public final static long VOIP = CspFeatureMaskFlag.O2O_AUDIO_CALL_SUPPORT_VALUE;
+    public final static long VIDEOCALLS = CspFeatureMaskFlag.O2O_VIDEO_CALL_SUPPORT_VALUE;
+    public final static long FORWARD_SECURITY = CspFeatureMaskFlag.FORWARD_SECURITY_SUPPORT_VALUE;
+    public final static long GROUP_CALLS = CspFeatureMaskFlag.GROUP_CALL_SUPPORT_VALUE;
+    public final static long EDIT_MESSAGES = CspFeatureMaskFlag.EDIT_MESSAGE_SUPPORT_VALUE;
+    public final static long DELETE_MESSAGES = CspFeatureMaskFlag.DELETE_MESSAGE_SUPPORT_VALUE;
+    public final static long EMOJI_REACTIONS = CspFeatureMaskFlag.REACTION_SUPPORT_VALUE;
 
     @Retention(RetentionPolicy.SOURCE)
     @LongDef({AUDIO, GROUP_CHAT, BALLOT, FILE, VOIP, VIDEOCALLS, FORWARD_SECURITY, GROUP_CALLS, EDIT_MESSAGES, DELETE_MESSAGES, EMOJI_REACTIONS})

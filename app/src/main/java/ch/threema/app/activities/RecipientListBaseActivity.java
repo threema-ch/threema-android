@@ -254,8 +254,7 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
             return false;
         }
 
-        if (!dependencies.getUserService().hasIdentity() || (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid())) {
-            logger.debug("No identity or not licensed");
+        if (ConfigUtils.isSerialLicensed() && !ConfigUtils.isSerialLicenseValid()) {
             finish();
             System.exit(0);
         }
@@ -1373,6 +1372,10 @@ public class RecipientListBaseActivity extends ThreemaToolbarActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (dependencies.getIdentityProvider().getIdentityString() == null) {
+            finish();
+            return;
+        }
 
         // TODO(ANDR-4389): Improve the waiting mechanism
         waitUntilReady(this, () -> {

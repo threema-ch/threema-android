@@ -92,8 +92,8 @@ class ResetAppTask(
     }
 
     private fun deleteMasterKey() {
-        masterKeyFileProvider.getVersion2KeyStoreProtectedMasterKeyFile().deleteSecurely()
-        masterKeyFileProvider.getVersion2UnencryptedMasterKeyFile().deleteSecurely()
+        masterKeyFileProvider.getVersion2KeyStoreProtectedMasterKeyFile().deleteSecurely(appContext.filesDir)
+        masterKeyFileProvider.getVersion2UnencryptedMasterKeyFile().deleteSecurely(appContext.filesDir)
 
         // The secret key must only be deleted AFTER the master key file(s) have been deleted,
         // as having a master key file but no secret key to unlock it is an invalid state the app cannot recover from.
@@ -135,9 +135,9 @@ class ResetAppTask(
 
         // All app files will be deleted in the end, but with some files we want to be extra careful,
         // so we first overwrite them with zeroes
-        DatabaseOpenHelper.getDatabaseFile(appContext).deleteSecurely()
-        DatabaseNonceStore.getDatabaseFile(appContext).deleteSecurely()
-        DatabaseOpenHelper.getDatabaseBackupFile(appContext).deleteSecurely()
+        DatabaseOpenHelper.getDatabaseFile(appContext).deleteSecurely(appContext.filesDir)
+        DatabaseNonceStore.getDatabaseFile(appContext).deleteSecurely(appContext.filesDir)
+        DatabaseOpenHelper.getDatabaseBackupFile(appContext).deleteSecurely(appContext.filesDir)
 
         appContext.getSystemService<ActivityManager>()
             ?.clearApplicationUserData()

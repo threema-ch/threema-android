@@ -9,7 +9,7 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.GroupCallPolicy
+import ch.threema.protobuf.d2d.sync.Settings
 
 private val logger = getThreemaLogger("GroupCallPolicySetting")
 
@@ -30,17 +30,17 @@ class GroupCallPolicySetting internal constructor(
     override fun instantiateReflectionTask(): Task<*, TaskCodec> =
         ReflectSettingsSyncTask.ReflectGroupCallPolicySyncUpdate()
 
-    fun getGroupCallPolicy(): GroupCallPolicy =
+    fun getGroupCallPolicy(): Settings.GroupCallPolicy =
         when (get()) {
-            true -> GroupCallPolicy.ALLOW_GROUP_CALL
-            false -> GroupCallPolicy.DENY_GROUP_CALL
+            true -> Settings.GroupCallPolicy.ALLOW_GROUP_CALL
+            false -> Settings.GroupCallPolicy.DENY_GROUP_CALL
         }
 
-    fun setFromSync(groupCallPolicy: GroupCallPolicy) {
+    fun setFromSync(groupCallPolicy: Settings.GroupCallPolicy) {
         val value = when (groupCallPolicy) {
-            GroupCallPolicy.ALLOW_GROUP_CALL -> true
-            GroupCallPolicy.DENY_GROUP_CALL -> false
-            GroupCallPolicy.UNRECOGNIZED -> {
+            Settings.GroupCallPolicy.ALLOW_GROUP_CALL -> true
+            Settings.GroupCallPolicy.DENY_GROUP_CALL -> false
+            Settings.GroupCallPolicy.UNRECOGNIZED -> {
                 logger.warn("Cannot set unrecognized group call policy")
                 return
             }

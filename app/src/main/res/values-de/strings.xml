@@ -22,6 +22,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="enter_id_hint">${app_name_short}-ID eingeben</string>
     <string name="account_links">Verknüpfungen</string>
+    <string name="title_set_availability_status">Verfügbarkeitsstatus</string>
     <string name="menu_settings">Einstellungen</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="menu_about">Über ${app_name}</string>
@@ -112,6 +113,7 @@
     <string name="set_nickname_title">Nickname festlegen</string>
     <string name="ok">OK</string>
     <string name="cancel">Abbrechen</string>
+    <string name="save">Speichern</string>
     <string name="copy_message_action">Kopieren</string>
     <string name="delete_contact_action">Kontakt löschen</string>
     <string name="delete_multiple_contact_action">Kontakte löschen</string>
@@ -365,6 +367,7 @@
     <string name="can_not_send_no_group_members">Es können keine Nachrichten an eine leere Gruppe gesendet werden.</string>
     <string name="you_are_not_a_member_of_this_group">Sie sind kein Mitglied dieser Gruppe.</string>
     <string name="title_public_nickname">Nickname</string>
+    <string name="title_availability_status">Status</string>
     <string name="prefs_sum_excluded_sync_identities">Die IDs, die hier aufgelistet sind, werden beim Synchronisieren
         von Kontakten ignoriert.</string>
     <string name="prefs_title_excluded_sync_identities">Ausschlussliste</string>
@@ -1697,10 +1700,11 @@
     <string name="work_directory_empty_view_text">Bitte geben Sie mindestens 3 Zeichen eines Namens ein, um im Unternehmensverzeichnis nach ${app_name_short}-Kontakten zu suchen.</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">Diese Datei ist ungültig und kann nicht geteilt werden</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
-    <string name="contact_availability_status_available">Verfügbar</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <string name="contact_availability_status_unavailable">Beschäftigt</string>
+    <string name="availability_status_none">Kein Status</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e. out-of-office -->
+    <string name="availability_status_unavailable">Abwesend</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently busy-->
+    <string name="availability_status_busy">Beschäftigt</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">Der Aktivierungslink ist ungültig. Bitte kontaktieren Sie Ihren Administrator.</string>
     <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
@@ -1725,6 +1729,8 @@
     <string name="remote_secret_notification_text">${remote_secret} ist aktiv. Tippen für mehr Informationen.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <string name="remote_secrets_blocked_by_admin">Der Zugriff auf diese App wurde von Ihrem Administrator gesperrt.\n\nBitte wenden Sie sich an Ihren Administrator.</string>
+    <!-- Label on button, shown when the app is blocked with the DualLock (a.k.a. "Remote Secret") feature and the user has no other option than to close the app -->
+    <string name="remote_secrets_close_app">App schliessen</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
     <string name="remote_secrets_failed_to_fetch">Das ${remote_secret}-Token konnte nicht abgerufen werden. Bitte prüfen Sie Ihre Internetverbindung und versuchen Sie es erneut.</string>
     <!-- Shown on loading spinner after app is started while DualLock (a.k.a. "Remote Secret") is fetched from the server to unlock the app. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
@@ -1767,6 +1773,13 @@
     <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_off">Der Anruf wird fortgesetzt, wenn das Bluetooth-Headset während eines Anrufs getrennt wird. Hinweis: Dadurch funktioniert die Auflegen-Taste des Headsets möglicherweise nicht mehr.</string>
     <string name="failed_to_load_conversations">Chats konnten nicht geladen werden.</string>
     <string name="contact_support">Support kontaktieren</string>
+    <string name="edit_availability_status_modal_title">Verfügbarkeitsstatus</string>
+    <string name="edit_availability_status_modal_subtitle">Dieser Status ist für alle im Unternehmen sichtbar.</string>
+    <string name="edit_availability_status_modal_optional_message_label">Eigener Text (optional)</string>
+    <string name="edit_availability_status_modal_optional_message_placeholder">In einem Meeting</string>
+    <string name="edit_availability_status_modal_optional_message_description">Wenn «Beschäftigt» oder «Abwesend» ausgewählt ist, können Sie einen eigenen Status definieren.</string>
+    <string name="edit_availability_status_modal_optional_message_too_long">Text zu lang, bitte kürzen Sie ihn.</string>
+    <string name="edit_availability_status_did_change">Verfügbarkeitsstatus geändert</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d Kontakt</item>
         <item quantity="other">%d Kontakte</item>

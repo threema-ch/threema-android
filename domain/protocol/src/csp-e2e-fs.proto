@@ -175,7 +175,7 @@
 //
 // So, for example, when an outgoing 4DH message is being sent, it will be
 // encrypted by deriving `XDHMK` from `local-4DHK` and then `local-4DHK` will be
-// replaced by applying `XDKH'` to `local-4DHK`.
+// replaced by applying `XDHK'` to `local-4DHK`.
 //
 // ### Key Counters
 //
@@ -313,7 +313,7 @@
 //
 // It is possible for both parties to create an FS session independently, before
 // having received the other party's `Init`. In that case, both parties
-// determinstically run a conflict resolve mechanism based on the session ID.
+// deterministically run a conflict resolve mechanism based on the session ID.
 //
 // Each party will proceed normally to ensure any messages sent while the race
 // is ongoing will be received. When choosing a session for sending a new
@@ -438,6 +438,7 @@ package csp_e2e_fs;
 
 option java_package = "ch.threema.protobuf.csp.e2e.fs";
 option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\Csp\\E2e\\Fs";
 
 import "common.proto";
 

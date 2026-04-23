@@ -8,13 +8,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast.LENGTH_SHORT
 import androidx.annotation.StringRes
 import androidx.annotation.UiThread
 import androidx.core.view.isVisible
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import ch.threema.android.ToastDuration
 import ch.threema.android.showToast
 import ch.threema.app.AppConstants
@@ -22,6 +27,9 @@ import ch.threema.app.R
 import ch.threema.app.activities.ExportIDActivity
 import ch.threema.app.activities.ProfilePicRecipientsActivity
 import ch.threema.app.applock.CheckAppLockContract
+import ch.threema.app.availabilitystatus.displayText
+import ch.threema.app.availabilitystatus.edit.EditAvailabilityStatusBottomSheetDialog
+import ch.threema.app.availabilitystatus.iconRes
 import ch.threema.app.dialogs.GenericAlertDialog
 import ch.threema.app.dialogs.GenericAlertDialog.DialogClickListener
 import ch.threema.app.dialogs.GenericProgressDialog
@@ -55,10 +63,12 @@ import ch.threema.app.utils.LocaleUtil
 import ch.threema.app.utils.ShareUtil
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.takeUnlessEmpty
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.domain.protocol.api.LinkMobileNoException
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.TriggerSource
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import kotlin.system.exitProcess
 import kotlinx.coroutines.launch
@@ -87,6 +97,9 @@ class MyIDFragment : MainFragment(), DialogClickListener, TextEntryDialogClickLi
     private var picReleaseConfigView: View? = null
     private var picReleaseSpinner: MaterialAutoCompleteTextView? = null
     private var nicknameTextView: EmojiTextView? = null
+    private var currentAvailabilityStatusContainer: LinearLayout? = null
+    private var currentAvailabilityStatusIcon: ImageView? = null
+    private var currentAvailabilityStatusName: EmojiTextView? = null
 
     private var hidden = false
     private var isDisabledProfilePicReleaseSettings = false
@@ -152,6 +165,17 @@ class MyIDFragment : MainFragment(), DialogClickListener, TextEntryDialogClickLi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
+
+        if (ConfigUtils.supportsAvailabilityStatus()) {
+            setFragmentResultListener(
+                requestKey = REQUEST_KEY_EDIT_AVAILABILITY_STATUS,
+            ) { _, bundle ->
+                val didChangeStatus = bundle.getBoolean(EditAvailabilityStatusBottomSheetDialog.RESULT_KEY_DID_CHANGE_STATUS)
+                if (didChangeStatus && this.view != null && isAdded) {
+                    Snackbar.make(requireView(), R.string.edit_availability_status_did_change, LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -195,10 +219,17 @@ class MyIDFragment : MainFragment(), DialogClickListener, TextEntryDialogClickLi
         val picReleaseSpinner = fragmentView.findViewById<MaterialAutoCompleteTextView>(R.id.picrelease_spinner)
         val picReleaseConfigView = fragmentView.findViewById<View>(R.id.picrelease_config)
         val picReleaseTextView = fragmentView.findViewById<View>(R.id.picrelease_text)
+        val currentAvailabilityStatusContainer = fragmentView.findViewById<LinearLayout>(R.id.current_availability_status_container)
+        val currentAvailabilityStatusIcon = fragmentView.findViewById<ImageView>(R.id.current_availability_status_icon)
+        val currentAvailabilityStatusName = fragmentView.findViewById<EmojiTextView>(R.id.current_availability_status_name)
+        val changeAvailabilityStatusButton = fragmentView.findViewById<MaterialButton>(R.id.change_availability_status)
         this.avatarView = avatarView
         this.nicknameTextView = nicknameTextView
         this.picReleaseConfigView = picReleaseConfigView
         this.picReleaseSpinner = picReleaseSpinner
+        this.currentAvailabilityStatusContainer = currentAvailabilityStatusContainer
+        this.currentAvailabilityStatusIcon = currentAvailabilityStatusIcon
+        this.currentAvailabilityStatusName = currentAvailabilityStatusName
 
         picReleaseConfigView.setOnClickListener {
             launchProfilePictureRecipientsSelector()
@@ -206,6 +237,25 @@ class MyIDFragment : MainFragment(), DialogClickListener, TextEntryDialogClickLi
         picReleaseConfigView.isVisible = preferenceService.getProfilePicRelease() == PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST
 
         policyExplainView.isVisible = isReadonlyProfile || isBackupsDisabled
+
+        currentAvailabilityStatusContainer.isVisible = ConfigUtils.supportsAvailabilityStatus()
+        if (ConfigUtils.supportsAvailabilityStatus()) {
+            setUpAvailabilityStatusDisplay(
+                availabilityStatus = preferenceService.getAvailabilityStatus(),
+            )
+            changeAvailabilityStatusButton.setOnClickListener {
+                EditAvailabilityStatusBottomSheetDialog
+                    .newInstance(
+                        requestKey = REQUEST_KEY_EDIT_AVAILABILITY_STATUS,
+                    )
+                    .show(
+                        /* manager = */
+                        parentFragmentManager,
+                        /* tag = */
+                        "edit-availability-status-from-user-profile",
+                    )
+            }
+        }
 
         if (isDisabledProfilePicReleaseSettings) {
             picReleaseSpinner.isVisible = false
@@ -294,6 +344,24 @@ class MyIDFragment : MainFragment(), DialogClickListener, TextEntryDialogClickLi
         ListenerManager.profileListeners.add(this.profileListener)
 
         return fragmentView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        if (ConfigUtils.supportsAvailabilityStatus()) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                viewLifecycleOwner.repeatOnLifecycle(androidx.lifecycle.Lifecycle.State.STARTED) {
+                    preferenceService.watchAvailabilityStatus().collect(::setUpAvailabilityStatusDisplay)
+                }
+            }
+        }
+    }
+
+    private fun setUpAvailabilityStatusDisplay(availabilityStatus: AvailabilityStatus?) {
+        val availabilityStatusEffective = availabilityStatus ?: AvailabilityStatus.None
+        currentAvailabilityStatusIcon?.setImageResource(availabilityStatusEffective.iconRes())
+        currentAvailabilityStatusName?.text = availabilityStatusEffective.displayText().get(requireContext())
     }
 
     private fun setupPicReleaseSpinner() {
@@ -878,5 +946,7 @@ class MyIDFragment : MainFragment(), DialogClickListener, TextEntryDialogClickLi
         private const val DIALOG_TAG_DELETE_ID = "deleteId"
         private const val DIALOG_TAG_LINKED_MOBILE_CONFIRM = "cfm"
         private const val DIALOG_TAG_VERIFY_MOBILE_ERROR = "ve"
+
+        private const val REQUEST_KEY_EDIT_AVAILABILITY_STATUS = "edit-availability-status-from-user-profile"
     }
 }

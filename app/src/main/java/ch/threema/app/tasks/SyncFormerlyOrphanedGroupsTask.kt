@@ -2,6 +2,8 @@ package ch.threema.app.tasks
 
 import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.systemupdates.updates.SystemUpdateToVersion110
+import ch.threema.base.crypto.NonceFactory
+import ch.threema.base.crypto.NonceScope
 import ch.threema.data.repositories.GroupModelRepository
 import ch.threema.domain.taskmanager.ActiveTask
 import ch.threema.domain.taskmanager.ActiveTaskCodec
@@ -11,8 +13,8 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.awaitReflectAck
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.domain.taskmanager.getEncryptedGroupSyncUpdate
-import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Group
+import ch.threema.protobuf.d2d.TransactionScope
+import ch.threema.protobuf.d2d.sync.Group
 import ch.threema.protobuf.d2d.sync.group
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
@@ -25,6 +27,7 @@ import org.koin.core.component.inject
 class SyncFormerlyOrphanedGroupsTask() : ActiveTask<Unit>, PersistableTask, KoinComponent {
     private val multiDeviceManager: MultiDeviceManager by inject()
     private val groupModelRepository: GroupModelRepository by inject()
+    private val nonceFactory: NonceFactory by inject()
 
     override suspend fun invoke(handle: ActiveTaskCodec) {
         if (!multiDeviceManager.isMultiDeviceActive) {
@@ -39,9 +42,9 @@ class SyncFormerlyOrphanedGroupsTask() : ActiveTask<Unit>, PersistableTask, Koin
 
         val multiDeviceProperties = multiDeviceManager.propertiesProvider.get()
         handle.createTransaction(
-            multiDeviceProperties.keys,
-            MdD2D.TransactionScope.Scope.GROUP_SYNC,
-            TRANSACTION_TTL_MAX,
+            keys = multiDeviceProperties.keys,
+            scope = TransactionScope.Scope.GROUP_SYNC,
+            ttl = TRANSACTION_TTL_MAX,
         )
             .execute {
                 groups.map { groupModel ->
@@ -54,10 +57,14 @@ class SyncFormerlyOrphanedGroupsTask() : ActiveTask<Unit>, PersistableTask, Koin
                         multiDeviceProperties = multiDeviceProperties,
                     )
 
-                    handle.reflect(encryptedEnvelopeResult)
+                    handle.reflect(encryptedEnvelopeResult) to encryptedEnvelopeResult.nonce
                 }
-                    .forEach { reflectId ->
+                    .forEach { (reflectId, nonce) ->
                         handle.awaitReflectAck(reflectId)
+                        nonceFactory.store(
+                            scope = NonceScope.D2D,
+                            nonce = nonce,
+                        )
                     }
             }
     }

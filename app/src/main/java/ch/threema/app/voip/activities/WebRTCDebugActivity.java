@@ -55,7 +55,7 @@ import ch.threema.app.voip.util.SdpPatcher;
 import static ch.threema.base.utils.LoggingKt.getThreemaLogger;
 
 import ch.threema.data.models.ContactModel;
-import ch.threema.protobuf.callsignaling.O2OCall;
+import ch.threema.protobuf.o2o_call.Envelope;
 
 import static ch.threema.app.di.DIJavaCompat.isSessionScopeReady;
 import static ch.threema.app.utils.ActiveScreenLoggerKt.logScreenVisibility;
@@ -366,7 +366,7 @@ public class WebRTCDebugActivity extends ThreemaToolbarActivity implements PeerC
     }
 
     @Override
-    public void onSignalingMessage(long callId, @NonNull O2OCall.Envelope envelope) {
+    public void onSignalingMessage(long callId, @NonNull Envelope envelope) {
         logger.info("onSignalingMessage: {}", envelope);
     }
 

@@ -11,7 +11,7 @@ use crate::crypto::{
     subtle::ConstantTimeEq as _,
 };
 
-/// Invalid Tag (aka Message Authentication Code or MAC)
+/// Invalid Tag (aka Message Authentication Code or MAC).
 #[derive(thiserror::Error, Debug)]
 #[error("Invalid tag")]
 pub struct InvalidTag;
@@ -148,8 +148,11 @@ impl ChunkedXChaCha20Poly1305Decryptor {
     /// [`Self::finalize_verify`] indicated success (i.e. a valid MAC). Decrypted data that was not yet
     /// authenticated or failed the authentication check must not be used!
     ///
-    /// Note: To ensure good performance, the chunk should always be a multiple of 16 bytes. To balance
+    /// Note 1: To ensure good performance, the chunk should always be a multiple of 16 bytes. To balance
     /// function call overhead with memory pressure, 1 MiB chunks are recommended.
+    ///
+    /// Note 2: The chunks must not contain the tag as it must be passed separately in
+    /// [`Self::finalize_verify`].
     #[expect(clippy::missing_panics_doc, reason = "Panic will never happen")]
     #[inline]
     pub fn decrypt(&mut self, chunk: &mut [u8]) {
@@ -223,7 +226,7 @@ impl ChunkedXSalsa20Poly1305Encryptor {
 
     /// Encrypt a chunk.
     ///
-    /// Ensure to call [`Self::finalize`] to obatain the message authentication code (MAC aka tag) that
+    /// Ensure to call [`Self::finalize`] to obtain the message authentication code (MAC aka tag) that
     /// provides integrity of the ciphertext.
     ///
     /// Note: To ensure good performance, the chunk should always be a multiple of 16 bytes. To balance
@@ -265,8 +268,11 @@ impl ChunkedXSalsa20Poly1305Decryptor {
     /// [`Self::finalize_verify`] indicated success (i.e. a valid MAC). Decrypted data that was not yet
     /// authenticated or failed the authentication check must not be used!
     ///
-    /// Note: To ensure good performance, the chunk should always be a multiple of 16 bytes. To balance
+    /// Note 1: To ensure good performance, the chunk should always be a multiple of 16 bytes. To balance
     /// function call overhead with memory pressure, 1 MiB chunks are recommended.
+    ///
+    /// Note 2: The chunks must not contain the tag as it must be passed separately in
+    /// [`Self::finalize_verify`].
     #[inline]
     pub fn decrypt(&mut self, chunk: &mut [u8]) {
         // Add ciphertext to the MAC and decrypt
@@ -404,7 +410,7 @@ mod tests {
         }
 
         /// Implements test vector A.3 of draft-irtf-cfrg-xchacha-03
-        /// See <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-xchacha#appendix-A.3>
+        /// See <https://datatracker.ietf.org/doc/html/draft-irtf-cfrg-xchacha#appendix-A.3>.
         #[test]
         fn xchacha20poly1305_encryption_rfc() {
             TestCase {
@@ -593,7 +599,7 @@ mod tests {
 
         #[rustfmt::skip]
         /// Implements Rooterberg's test vector number 3, see
-        /// <https://github.com/bleichenbacher-daniel/Rooterberg/blob/0d4bc48105dd817de4af746c602621f2be086b0a/test_vectors/auth_enc/nacl_xsalsa20_poly1305.json#L62-L72>
+        /// <https://github.com/bleichenbacher-daniel/Rooterberg/blob/0d4bc48105dd817de4af746c602621f2be086b0a/test_vectors/auth_enc/nacl_xsalsa20_poly1305.json#L62-L72>.
         #[test]
         fn xsalsa20poly1305_encryption_rooterberg() {
             TestCase {

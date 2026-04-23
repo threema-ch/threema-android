@@ -5,6 +5,7 @@ import ch.threema.app.groupflows.GroupFlowResult
 import ch.threema.app.tasks.ActiveGroupStateResyncTask
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.clearDatabaseAndCaches
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
@@ -57,6 +58,8 @@ class GroupResyncFlowTest : GroupFlowTest() {
         jobTitle = null,
         department = null,
         notificationTriggerPolicyOverride = null,
+        availabilityStatus = AvailabilityStatus.None,
+        workLastFullSyncAt = null,
     )
 
     private val myInitialGroupModelData = GroupModelData(

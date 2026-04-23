@@ -21,6 +21,7 @@ import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.base.crypto.NaCl
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
 import ch.threema.data.repositories.ModelRepositories
@@ -167,6 +168,8 @@ class MarkContactAsDeletedBackgroundTaskTest {
         jobTitle = null,
         department = null,
         notificationTriggerPolicyOverride = null,
+        availabilityStatus = AvailabilityStatus.None,
+        workLastFullSyncAt = null,
     )
 
     @BeforeTest
@@ -206,7 +209,10 @@ class MarkContactAsDeletedBackgroundTaskTest {
             serviceManager.notificationService,
             ContactModelFactory(databaseProvider, identityProviderMock),
         )
-        contactModelRepository = ModelRepositories(coreServiceManager, identityProviderMock).contacts
+        contactModelRepository = ModelRepositories(
+            coreServiceManager = coreServiceManager,
+            identityProvider = identityProviderMock,
+        ).contacts
 
         // Add a contact "from sync". This has no side effects and does not reflect the contact.
         contactModelRepository.createFromSync(testContactModelData)

@@ -6,7 +6,8 @@ import ch.threema.common.emptyByteArray
 import ch.threema.common.writeLittleEndianInt
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
@@ -64,14 +65,14 @@ class SetProfilePictureMessage(
 
     companion object {
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): SetProfilePictureMessage = fromByteArray(
+        fun fromReflected(message: IncomingMessage): SetProfilePictureMessage = fromByteArray(
             data = message.body.toByteArray(),
         ).apply {
             initializeCommonProperties(message)
         }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): SetProfilePictureMessage = fromByteArray(
+        fun fromReflected(message: OutgoingMessage): SetProfilePictureMessage = fromByteArray(
             data = message.body.toByteArray(),
         ).apply {
             initializeCommonProperties(message)

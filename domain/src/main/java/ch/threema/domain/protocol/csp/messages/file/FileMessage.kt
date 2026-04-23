@@ -4,8 +4,11 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
+import ch.threema.domain.protocol.csp.messages.file.FileMessage.Companion.fromByteArray
+import ch.threema.domain.protocol.csp.messages.file.FileMessage.Companion.fromReflected
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 
@@ -61,7 +64,7 @@ class FileMessage : AbstractMessage(), FileMessageInterface {
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): FileMessage {
+        fun fromReflected(message: IncomingMessage): FileMessage {
             val fileMessage = fromByteArray(message.body.toByteArray())
             fileMessage.initializeCommonProperties(message)
             return fileMessage
@@ -78,7 +81,7 @@ class FileMessage : AbstractMessage(), FileMessageInterface {
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): FileMessage {
+        fun fromReflected(message: OutgoingMessage): FileMessage {
             val fileMessage = fromByteArray(message.body.toByteArray())
             fileMessage.initializeCommonProperties(message)
             return fileMessage

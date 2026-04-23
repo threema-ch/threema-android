@@ -34,6 +34,7 @@ import ch.threema.app.utils.IntentDataUtil
 import ch.threema.app.utils.logScreenVisibility
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.localcrypto.MasterKeyManager
+import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -53,6 +54,7 @@ class AppStartupActivity : AppCompatActivity() {
     private val appStartupMonitor: AppStartupMonitor by inject()
     private val masterKeyManager: MasterKeyManager by inject()
     private val shareDebugLogUseCase: ShareDebugLogUseCase by inject()
+    private val remoteSecretMonitorRetryController: RemoteSecretMonitorRetryController by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge()
@@ -106,7 +108,10 @@ class AppStartupActivity : AppCompatActivity() {
                             ErrorState(
                                 errors = errors,
                                 onClickExportLogs = ::exportLogs,
-                                onClickRetryRemoteSecrets = RemoteSecretMonitorRetryController::requestRetry,
+                                onClickCloseApp = {
+                                    exitProcess(0)
+                                },
+                                onClickRetryRemoteSecrets = remoteSecretMonitorRetryController::requestRetry,
                             )
                         }
                         pendingSystems.isNotEmpty() -> {

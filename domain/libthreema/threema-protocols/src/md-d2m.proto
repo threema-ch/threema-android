@@ -12,6 +12,8 @@ syntax = "proto3";
 package d2m;
 
 option java_package = "ch.threema.protobuf.d2m";
+option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\D2m";
 
 // D2M protocol versions.
 enum ProtocolVersion {

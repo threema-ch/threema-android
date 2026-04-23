@@ -43,6 +43,8 @@ interface PreferenceStore {
 
     fun getString(key: String): String?
 
+    fun watchString(key: String): Flow<String?>
+
     fun getLong(key: String) = getLong(key, defaultValue = 0L)
 
     fun getLong(key: String, defaultValue: Long): Long

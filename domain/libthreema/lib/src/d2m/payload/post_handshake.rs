@@ -65,6 +65,9 @@ impl ReflectAck {
                 let reflect_id = reader.read_u32_le()?;
                 let timestamp = reader.read_u64_le()?;
 
+                // Note: Intentionally **not** calling `reader.expect_consumed()` since we may extend the
+                // struct in a backwards-compatible way.
+
                 Ok(Self {
                     reflect_id,
                     timestamp,
@@ -243,7 +246,7 @@ impl From<protobuf::TransactionRejected> for TransactionRejected {
 #[derive(Educe)]
 #[educe(Debug)]
 pub struct TransactionEnded {
-    /// The device that held the lock up until now
+    /// The device that held the lock up until now.
     pub device_id: D2xDeviceId,
 
     /// The encrypted transaction scope (`d2d.TransactionScope`) associated with the transaction that just
@@ -306,10 +309,10 @@ pub enum IncomingPayload {
     /// The payload type is not known, either due to server misbehavior or as consequence of running an old
     /// version of libthreema. This information might be helpful for debugging.
     UnknownPayload {
-        /// The (unsupported) type of the payload
+        /// The (unsupported) type of the payload.
         payload_type: u8,
 
-        /// The length of the payload
+        /// The length of the payload.
         length: usize,
     },
 }
@@ -454,7 +457,7 @@ impl From<SharedDeviceData> for protobuf::SetSharedDeviceData {
 #[derive(Name, Educe)]
 #[educe(Debug)]
 pub struct Reflect {
-    /// [`ReflectFlags`] set for this reflected message
+    /// [`ReflectFlags`] set for this reflected message.
     pub flags: ReflectFlags,
 
     /// Unique number (per connection), used for acknowledgement.

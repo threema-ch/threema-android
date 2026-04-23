@@ -19,7 +19,7 @@ pub enum ByteWriterError {
         length: usize,
     },
 
-    /// Insufficient space left for the desired operation
+    /// Insufficient space left for the desired operation.
     #[error(
         "Insufficient space left: required-space={required_space}, available-space={available_space}, \
          offset={offset}"
@@ -59,7 +59,7 @@ pub(crate) trait ByteWriter {
     /// Run an arbitrary operation on the writer at a relative offset to the current offset in a
     /// child reader instance. The parent reader will maintain the current offset.
     ///
-    /// If the underlying buffer is extendable and not large enough to facilitiate `offset`, newly
+    /// If the underlying buffer is extendable and not large enough to facilitate `offset`, newly
     /// allocated space up until `offset` will be zerofilled.
     ///
     /// # Error

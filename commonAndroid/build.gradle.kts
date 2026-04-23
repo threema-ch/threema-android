@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.androidx.core)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.work.runtime)
+    implementation(libs.androidx.lifecycle.runtime.android)
     compileOnly(libs.compose.annotation)
 
     testImplementation(libs.junit)

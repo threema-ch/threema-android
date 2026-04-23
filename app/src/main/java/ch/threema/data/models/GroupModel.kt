@@ -18,7 +18,6 @@ import ch.threema.data.storage.DatabaseBackend
 import ch.threema.data.storage.DbGroup
 import ch.threema.domain.models.UserState
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.Common
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.util.Collections
@@ -52,7 +51,7 @@ data class GroupIdentity(
     /**
      * The group identity as protobuf data.
      */
-    fun toProtobuf(): Common.GroupIdentity = Common.GroupIdentity.newBuilder()
+    fun toProtobuf(): ch.threema.protobuf.common.GroupIdentity = ch.threema.protobuf.common.GroupIdentity.newBuilder()
         .setCreatorIdentity(creatorIdentity)
         .setGroupId(groupId)
         .build()

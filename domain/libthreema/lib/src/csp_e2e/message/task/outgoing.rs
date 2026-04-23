@@ -4,7 +4,7 @@ use aead::AeadMutInPlace as _;
 
 use crate::{
     common::{Delta, MessageMetadata, Nonce, ThreemaId, keys::CspE2eKey},
-    csp_e2e::message::payload::OutgoingMessageWithMetadataBox,
+    csp_e2e::message::{codec::CspMessageEncoder as _, payload::OutgoingMessageWithMetadataBox},
     model::message::{MessageProperties, OutgoingMessage},
     utils::bytes::OwnedVecByteWriter,
 };

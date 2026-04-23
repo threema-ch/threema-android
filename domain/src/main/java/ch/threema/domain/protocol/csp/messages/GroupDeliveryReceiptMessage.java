@@ -12,7 +12,8 @@ import ch.threema.domain.models.GroupId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
-import ch.threema.protobuf.d2d.MdD2D;
+import ch.threema.protobuf.d2d.IncomingMessage;
+import ch.threema.protobuf.d2d.OutgoingMessage;
 
 /**
  * A message that confirms delivery of one or multiple other messages, listed with their
@@ -133,14 +134,14 @@ public class GroupDeliveryReceiptMessage extends AbstractGroupMessage {
     }
 
     @NonNull
-    public static GroupDeliveryReceiptMessage fromReflected(@NonNull MdD2D.IncomingMessage message) throws BadMessageException {
+    public static GroupDeliveryReceiptMessage fromReflected(@NonNull IncomingMessage message) throws BadMessageException {
         GroupDeliveryReceiptMessage groupDeliveryReceiptMessage = fromByteArray(message.getBody().toByteArray());
         groupDeliveryReceiptMessage.initializeCommonProperties(message);
         return groupDeliveryReceiptMessage;
     }
 
     @NonNull
-    public static GroupDeliveryReceiptMessage fromReflected(@NonNull MdD2D.OutgoingMessage message) throws BadMessageException {
+    public static GroupDeliveryReceiptMessage fromReflected(@NonNull OutgoingMessage message) throws BadMessageException {
         GroupDeliveryReceiptMessage groupDeliveryReceiptMessage = fromByteArray(message.getBody().toByteArray());
         groupDeliveryReceiptMessage.initializeCommonProperties(message);
         return groupDeliveryReceiptMessage;

@@ -22,6 +22,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="enter_id_hint">Saisissez l\'ID ${app_name_short}</string>
     <string name="account_links">Compte liés</string>
+    <string name="title_set_availability_status">Statut de disponibilité</string>
     <string name="menu_settings">Paramètres</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="menu_about">À propos de ${app_name}</string>
@@ -112,6 +113,7 @@
     <string name="set_nickname_title">Définir un surnom</string>
     <string name="ok">OK</string>
     <string name="cancel">Annuler</string>
+    <string name="save">Enregistrer</string>
     <string name="copy_message_action">Copier</string>
     <string name="delete_contact_action">Supprimer le contact</string>
     <string name="delete_multiple_contact_action">Supprimer les contacts</string>
@@ -348,6 +350,7 @@
     <string name="can_not_send_no_group_members">Vous ne pouvez pas envoyer de message à un groupe vide</string>
     <string name="you_are_not_a_member_of_this_group">Vous n\'êtes pas membre de ce groupe</string>
     <string name="title_public_nickname">Surnom</string>
+    <string name="title_availability_status">Statut</string>
     <string name="prefs_sum_excluded_sync_identities">Les ID indiqués ici seront ignorés lors de la synchronisation des contacts.</string>
     <string name="prefs_title_excluded_sync_identities">Liste d\'exclusion</string>
     <string name="synchronize_contact">Synchronisation du carnet d\'adresses</string>
@@ -1669,10 +1672,11 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="work_directory_empty_view_text">Veuillez saisir au moins 3 caractères d\'un nom pour lancer une recherche dans le répertoire d\'utilisateurs ${app_name_short} de votre entreprise.</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">Ce fichier n\'est pas valide et ne peut pas être partagé</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
-    <string name="contact_availability_status_available">Disponible</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <string name="contact_availability_status_unavailable">Indisponible</string>
+    <string name="availability_status_none">Aucun statut</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e. out-of-office -->
+    <string name="availability_status_unavailable">Indisponible</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently busy-->
+    <string name="availability_status_busy">Occupé</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">Le lien d’activation n’est pas valide. Veuillez contacter votre administrateur.</string>
     <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
@@ -1739,6 +1743,13 @@ Veuillez saisir une question pour votre enquête.</string>
     <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_off">L\'appel se poursuit même si le casque Bluetooth est déconnecté pendant un appel. Remarque : Ceci peut empêcher le bouton de raccrochage du casque de fonctionner.</string>
     <string name="failed_to_load_conversations">Les conversations n\'ont pas pu être chargées.</string>
     <string name="contact_support">Contacter l\'assistance</string>
+    <string name="edit_availability_status_modal_title">Statut de disponibilité</string>
+    <string name="edit_availability_status_modal_subtitle">Ce statut est visible par tous dans votre entreprise.</string>
+    <string name="edit_availability_status_modal_optional_message_label">Texte personnalisé (facultatif)</string>
+    <string name="edit_availability_status_modal_optional_message_placeholder">En réunion</string>
+    <string name="edit_availability_status_modal_optional_message_description">Définissez un message de statut personnalisé lorsque Occupé ou Indisponible est sélectionné.</string>
+    <string name="edit_availability_status_modal_optional_message_too_long">Texte trop long, veuillez le raccourcir</string>
+    <string name="edit_availability_status_did_change">Statut de disponibilité modifié</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contact</item>
         <item quantity="other">%d contacts</item>

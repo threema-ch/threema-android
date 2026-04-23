@@ -42,11 +42,11 @@ pub enum InternalErrorCause {
     /// Unable to encrypt a message or a struct.
     #[error("Encrypting '{name}' failed")]
     EncryptionFailed {
-        /// Name of the message or struct
+        /// Name of the message or struct.
         name: &'static str,
     },
 
-    /// Another kind of error occurred
+    /// Another kind of error occurred.
     #[error("{0}")]
     Other(String),
 }
@@ -161,20 +161,6 @@ impl From<ProviderError> for CspE2eProtocolError {
     }
 }
 
-/// A D2M reflect ID.
-#[derive(Clone, Copy, Eq, Hash, PartialEq, Name)]
-pub struct ReflectId(pub u32);
-impl fmt::Debug for ReflectId {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{}({:016x})", Self::NAME, self.0.to_be())
-    }
-}
-impl From<SequenceNumberValue<u32>> for ReflectId {
-    fn from(value: SequenceNumberValue<u32>) -> Self {
-        ReflectId(value.0)
-    }
-}
-
 /// Initializer for a [`CspE2eContext`].
 pub struct CspE2eContextInit {
     /// The user's identity.
@@ -229,19 +215,6 @@ pub struct CspE2eProtocolContextInit {
     pub conversations: Box<RefCell<dyn ConversationProvider>>,
 }
 
-/// The current D2M role.
-#[derive(Debug, Clone, Copy, PartialEq)]
-pub enum D2mRole {
-    /// Follower role (i.e. not yet _leader_).
-    Follower,
-
-    /// Leader role.
-    Leader,
-}
-
-/// Sequence number used for outgoing reflections.
-struct ReflectSequenceNumber(SequenceNumberU32);
-
 /// CSP-specific context information.
 pub struct CspE2eContext {
     /// The user's identity.
@@ -267,7 +240,20 @@ impl From<CspE2eContextInit> for CspE2eContext {
     }
 }
 
-/// D2M/D2D-specific context information
+/// Sequence number used for outgoing reflections.
+struct ReflectSequenceNumber(SequenceNumberU32);
+
+/// The current D2M role.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub enum D2mRole {
+    /// Follower role (i.e. not yet _leader_).
+    Follower,
+
+    /// Leader role.
+    Leader,
+}
+
+/// D2M/D2D-specific context information.
 pub struct D2xContext {
     /// The device's (D2X) ID.
     device_id: D2xDeviceId,
@@ -296,7 +282,7 @@ impl From<D2xContextInit> for D2xContext {
     }
 }
 
-/// CSP E2EE protocol context
+/// CSP E2EE protocol context.
 pub struct CspE2eProtocolContext {
     /// Client info.
     client_info: ClientInfo,
@@ -341,6 +327,20 @@ impl From<CspE2eProtocolContextInit> for CspE2eProtocolContext {
     }
 }
 
+/// A D2M reflect ID.
+#[derive(Clone, Copy, Eq, Hash, PartialEq, Name)]
+pub struct ReflectId(pub u32);
+impl fmt::Debug for ReflectId {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{}({:016x})", Self::NAME, self.0.to_be())
+    }
+}
+impl From<SequenceNumberValue<u32>> for ReflectId {
+    fn from(value: SequenceNumberValue<u32>) -> Self {
+        ReflectId(value.0)
+    }
+}
+
 /// The Chat Server E2EE Protocol state machine.
 ///
 /// TODO(LIB-16):
@@ -373,11 +373,11 @@ impl CspE2eProtocol {
         &mut self.context
     }
 
-    /// TODO(LIB-16): How to use
+    /// TODO(LIB-16): How to use.
     ///
     /// # Errors
     ///
-    /// TODO(LIB-16): Describe errors
+    /// TODO(LIB-16): Describe errors.
     #[tracing::instrument(skip_all, fields(?d2m_state))]
     pub fn update_d2m_state(&mut self, d2m_state: D2mRole) -> Result<(), CspE2eProtocolError> {
         let Some(d2m_context) = &mut self.context.d2x else {
@@ -393,11 +393,11 @@ impl CspE2eProtocol {
         Ok(())
     }
 
-    /// TODO(LIB-16): How to use
+    /// TODO(LIB-16): How to use.
     ///
     /// # Errors
     ///
-    /// TODO(LIB-16): Describe errors
+    /// TODO(LIB-16): Describe errors.
     #[expect(clippy::unused_self, reason = "TODO(LIB-16)")]
     #[must_use]
     #[tracing::instrument(skip_all, fields(?payload))]

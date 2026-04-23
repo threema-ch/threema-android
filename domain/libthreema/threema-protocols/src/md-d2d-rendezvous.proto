@@ -17,7 +17,7 @@
 // - `ETK`: Ephemeral Transport Key
 // - `STK`: Shared Transport Key
 // - `PID`: Path ID
-// - `RPH`: Rendevous Path Hash
+// - `RPH`: Rendezvous Path Hash
 // - `RIDAK`: RID's Authentication Key
 // - `RRDAK`: RRD's Authentication Key
 // - `RIDTK`: RID's Transport Key
@@ -92,7 +92,7 @@
 //
 // ### Protocol Flow
 //
-// Connection paths are formed by transmitting a `rendezvous.RendezvousInit`
+// Connection paths are formed by transmitting a `d2d_rendezvous.RendezvousInit`
 // from RID to RRD as defined in the description of that message.
 //
 // The connections are then simultaneously established in the background and
@@ -186,9 +186,11 @@
 
 syntax = "proto3";
 
-package rendezvous;
+package d2d_rendezvous;
 
 option java_package = "ch.threema.protobuf.d2d.rendezvous";
+option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\D2d\\Rendezvous";
 
 // Contains the data necessary to initialise a 1:1 connection between two
 // devices.

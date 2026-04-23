@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.models.MessageId;
 import ch.threema.domain.protocol.csp.messages.BadMessageException;
-import ch.threema.protobuf.Common;
+import ch.threema.protobuf.common.GroupIdentity;
 import ch.threema.protobuf.csp.e2e.fs.Envelope;
 import ch.threema.protobuf.csp.e2e.fs.Reject;
 
@@ -21,7 +21,7 @@ public class ForwardSecurityDataRejectTest {
         .setSessionId(ByteString.copyFrom(TEST_SESSION_ID.get()))
         .setReject(Reject.newBuilder()
             .setMessageId(TEST_REJECTED_MESSAGE_ID.getMessageIdLong())
-            .setGroupIdentity(Common.GroupIdentity.newBuilder().build())
+            .setGroupIdentity(GroupIdentity.newBuilder().build())
             .setCause(TEST_CAUSE)
             .build())
         .build();

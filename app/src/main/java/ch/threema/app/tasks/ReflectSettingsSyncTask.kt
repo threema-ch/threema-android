@@ -14,10 +14,10 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.domain.taskmanager.getEncryptedSettingsSyncUpdate
-import ch.threema.protobuf.d2d.MdD2D.TransactionScope
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
+import ch.threema.protobuf.common.identities
+import ch.threema.protobuf.d2d.TransactionScope
+import ch.threema.protobuf.d2d.sync.Settings
 import ch.threema.protobuf.d2d.sync.settings
-import ch.threema.protobuf.identities
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

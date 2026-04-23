@@ -7,8 +7,8 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.utils.QuoteUtil
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.messages.GroupTextMessage
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
+import ch.threema.protobuf.common.CspE2eMessageType
+import ch.threema.protobuf.d2d.OutgoingMessage
 import ch.threema.storage.models.MessageType
 import ch.threema.storage.models.data.MessageContentsType
 
@@ -20,7 +20,7 @@ internal class ReflectedOutgoingGroupTextTask(
 ) : ReflectedOutgoingGroupMessageTask<GroupTextMessage>(
     outgoingMessage = outgoingMessage,
     message = GroupTextMessage.fromReflected(outgoingMessage),
-    type = Common.CspE2eMessageType.GROUP_TEXT,
+    type = CspE2eMessageType.GROUP_TEXT,
     serviceManager = serviceManager,
 ) {
     private val messageService by lazy { serviceManager.messageService }

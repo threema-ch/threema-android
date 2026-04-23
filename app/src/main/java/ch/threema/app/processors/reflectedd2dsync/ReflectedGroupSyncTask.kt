@@ -29,21 +29,12 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.Common.Blob
-import ch.threema.protobuf.Common.DeltaImage
-import ch.threema.protobuf.d2d.MdD2D.GroupSync
-import ch.threema.protobuf.d2d.MdD2D.GroupSync.ActionCase.ACTION_NOT_SET
-import ch.threema.protobuf.d2d.MdD2D.GroupSync.ActionCase.CREATE
-import ch.threema.protobuf.d2d.MdD2D.GroupSync.ActionCase.DELETE
-import ch.threema.protobuf.d2d.MdD2D.GroupSync.ActionCase.UPDATE
-import ch.threema.protobuf.d2d.MdD2D.GroupSync.Create
-import ch.threema.protobuf.d2d.MdD2D.GroupSync.Delete
-import ch.threema.protobuf.d2d.MdD2D.GroupSync.Update
-import ch.threema.protobuf.d2d.MdD2D.GroupSync.Update.MemberStateChange
-import ch.threema.protobuf.d2d.sync.MdD2DSync
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Group
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy
+import ch.threema.protobuf.common.Blob
+import ch.threema.protobuf.common.DeltaImage
+import ch.threema.protobuf.d2d.GroupSync
+import ch.threema.protobuf.d2d.sync.ConversationCategory
+import ch.threema.protobuf.d2d.sync.ConversationVisibility
+import ch.threema.protobuf.d2d.sync.Group
 import ch.threema.storage.models.ConversationModel
 import ch.threema.storage.models.ConversationTag
 import java.util.Collections
@@ -70,15 +61,15 @@ class ReflectedGroupSyncTask(
 
     fun run() {
         when (groupSync.actionCase) {
-            CREATE -> handleGroupCreate(groupSync.create)
-            UPDATE -> handleGroupUpdate(groupSync.update)
-            DELETE -> handleGroupDelete(groupSync.delete)
-            ACTION_NOT_SET -> logger.warn("No action set for group sync")
+            GroupSync.ActionCase.CREATE -> handleGroupCreate(groupSync.create)
+            GroupSync.ActionCase.UPDATE -> handleGroupUpdate(groupSync.update)
+            GroupSync.ActionCase.DELETE -> handleGroupDelete(groupSync.delete)
+            GroupSync.ActionCase.ACTION_NOT_SET -> logger.warn("No action set for group sync")
             null -> logger.warn("Action is null for contact sync")
         }
     }
 
-    private fun handleGroupCreate(groupCreate: Create) {
+    private fun handleGroupCreate(groupCreate: GroupSync.Create) {
         logger.info("Processing reflected group create")
 
         val groupModelData = groupCreate.group.toNewGroupModelData()
@@ -99,7 +90,7 @@ class ReflectedGroupSyncTask(
         logger.info("New group successfully created from sync")
     }
 
-    private fun handleGroupUpdate(groupUpdate: Update) {
+    private fun handleGroupUpdate(groupUpdate: GroupSync.Update) {
         logger.info("Processing reflected group update")
 
         val group = groupUpdate.group
@@ -118,7 +109,7 @@ class ReflectedGroupSyncTask(
         applyConversationVisibility(group, groupModel)
     }
 
-    private fun handleGroupDelete(groupDelete: Delete) {
+    private fun handleGroupDelete(groupDelete: GroupSync.Delete) {
         logger.info("Processing reflected group delete")
 
         val groupIdentity = groupDelete.groupIdentity.convert()
@@ -171,7 +162,7 @@ class ReflectedGroupSyncTask(
 
     private fun applyMembers(
         group: Group,
-        memberStateMap: Map<String, MemberStateChange>,
+        memberStateMap: Map<String, GroupSync.Update.MemberStateChange>,
         groupModel: GroupModel,
     ) {
         // Abort if the member identities are not set
@@ -202,7 +193,7 @@ class ReflectedGroupSyncTask(
 
         memberStateMap.forEach { (identity, state) ->
             when (state) {
-                MemberStateChange.ADDED -> {
+                GroupSync.Update.MemberStateChange.ADDED -> {
                     when {
                         oldMembers.contains(identity) -> logger.error(
                             "Group already contains {}",
@@ -221,7 +212,7 @@ class ReflectedGroupSyncTask(
                     }
                 }
 
-                MemberStateChange.LEFT, MemberStateChange.KICKED -> {
+                GroupSync.Update.MemberStateChange.LEFT, GroupSync.Update.MemberStateChange.KICKED -> {
                     when {
                         !oldMembers.contains(identity) -> logger.error(
                             "Member {} was not present in group",
@@ -233,7 +224,7 @@ class ReflectedGroupSyncTask(
                             identity,
                         )
 
-                        state == MemberStateChange.LEFT -> notifyDeprecatedOnMemberLeaveListeners(
+                        state == GroupSync.Update.MemberStateChange.LEFT -> notifyDeprecatedOnMemberLeaveListeners(
                             groupModel.groupIdentity,
                             identity,
                         )
@@ -246,7 +237,7 @@ class ReflectedGroupSyncTask(
                     }
                 }
 
-                MemberStateChange.UNRECOGNIZED -> logger.warn("Member state change unrecognized")
+                GroupSync.Update.MemberStateChange.UNRECOGNIZED -> logger.warn("Member state change unrecognized")
             }
         }
     }
@@ -257,9 +248,9 @@ class ReflectedGroupSyncTask(
         }
 
         when (group.conversationCategory) {
-            MdD2DSync.ConversationCategory.DEFAULT -> conversationCategoryService.persistDefaultChat(GroupUtil.getUniqueIdString(groupModel))
-            MdD2DSync.ConversationCategory.PROTECTED -> conversationCategoryService.persistPrivateChat(GroupUtil.getUniqueIdString(groupModel))
-            MdD2DSync.ConversationCategory.UNRECOGNIZED -> unrecognizedValue("Group.conversationCategory")
+            ConversationCategory.DEFAULT -> conversationCategoryService.persistDefaultChat(GroupUtil.getUniqueIdString(groupModel))
+            ConversationCategory.PROTECTED -> conversationCategoryService.persistPrivateChat(GroupUtil.getUniqueIdString(groupModel))
+            ConversationCategory.UNRECOGNIZED -> unrecognizedValue("Group.conversationCategory")
             null -> nullValue("Group.conversationCategory")
         }
     }
@@ -267,7 +258,7 @@ class ReflectedGroupSyncTask(
     private fun applyConversationVisibility(group: Group, groupModel: GroupModel) {
         if (group.hasConversationVisibility()) {
             when (group.conversationVisibility) {
-                MdD2DSync.ConversationVisibility.NORMAL -> {
+                ConversationVisibility.NORMAL -> {
                     val archivedConversationModel = getArchivedConversationModel(groupModel.getDatabaseId())
                     if (archivedConversationModel != null) {
                         conversationService.unarchive(listOf(archivedConversationModel), TriggerSource.SYNC)
@@ -280,7 +271,7 @@ class ReflectedGroupSyncTask(
                     }
                 }
 
-                MdD2DSync.ConversationVisibility.ARCHIVED -> {
+                ConversationVisibility.ARCHIVED -> {
                     val conversationModel = getConversationModel(groupModel.getDatabaseId())
                     if (conversationModel != null) {
                         conversationService.untag(conversationModel, ConversationTag.PINNED, TriggerSource.SYNC)
@@ -292,7 +283,7 @@ class ReflectedGroupSyncTask(
                     }
                 }
 
-                MdD2DSync.ConversationVisibility.PINNED -> {
+                ConversationVisibility.PINNED -> {
                     val archivedConversationModel = getArchivedConversationModel(groupModel.getDatabaseId())
                     if (archivedConversationModel != null) {
                         conversationService.unarchive(listOf(archivedConversationModel), TriggerSource.SYNC)
@@ -305,7 +296,7 @@ class ReflectedGroupSyncTask(
                     }
                 }
 
-                MdD2DSync.ConversationVisibility.UNRECOGNIZED -> unrecognizedValue("conversation visibility")
+                ConversationVisibility.UNRECOGNIZED -> unrecognizedValue("conversation visibility")
 
                 null -> nullValue("conversation visibility")
             }
@@ -435,7 +426,7 @@ class ReflectedGroupSyncTask(
         null -> nullValue("Group.UserState")
     }
 
-    private fun Common.GroupIdentity.convert() = GroupIdentity(
+    private fun ch.threema.protobuf.common.GroupIdentity.convert() = GroupIdentity(
         creatorIdentity = creatorIdentity,
         groupId = groupId,
     )
@@ -445,8 +436,8 @@ class ReflectedGroupSyncTask(
             Group.NotificationTriggerPolicyOverride.OverrideCase.DEFAULT -> null
             Group.NotificationTriggerPolicyOverride.OverrideCase.POLICY -> {
                 when (policy.policy) {
-                    NotificationTriggerPolicy.MENTIONED -> DEADLINE_INDEFINITE_EXCEPT_MENTIONS
-                    NotificationTriggerPolicy.NEVER -> {
+                    Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.MENTIONED -> DEADLINE_INDEFINITE_EXCEPT_MENTIONS
+                    Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER -> {
                         if (policy.hasExpiresAt()) {
                             policy.expiresAt
                         } else {
@@ -454,7 +445,7 @@ class ReflectedGroupSyncTask(
                         }
                     }
 
-                    NotificationTriggerPolicy.UNRECOGNIZED -> unrecognizedValue(
+                    Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.UNRECOGNIZED -> unrecognizedValue(
                         "Group.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy",
                     )
 

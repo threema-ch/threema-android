@@ -32,9 +32,11 @@
 
 syntax = "proto3";
 
-package sync;
+package d2d_sync;
 
 option java_package = "ch.threema.protobuf.d2d.sync";
+option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\D2d\\Sync";
 
 import "common.proto";
 
@@ -54,10 +56,37 @@ enum TypingIndicatorPolicy {
   DONT_SEND_TYPING_INDICATOR = 1;
 }
 
-// Notification sound policy.
-enum NotificationSoundPolicy {
-  // Do not emit a sound when notifying of a _conversation_ message.
-  MUTED = 0;
+// Availability status category.
+enum WorkAvailabilityStatusCategory {
+  // None (i.e. no (un)availability).
+  NONE = 0;
+  // Unavailable (i.e. for generic signalling of unavailability).
+  UNAVAILABLE = 1;
+  // Busy.
+  BUSY = 2;
+}
+
+// Availability status of the
+//
+// - user, or,
+// - a contact, sourced from the _Work Sync_ or _Work Contacts_ or _Work
+//   Directory_ endpoint.
+//
+// Note 1: The default is `WorkAvailabilityStatusCategory.NONE` and no
+// description (i.e. empty string). Supplying these values explicitly is also
+// the way to _reset_ the availability status.
+//
+// Note 2: Supplying a description with `WorkAvailabilityStatusCategory.NONE` is
+// bogus and will be treated as `WorkAvailabilityStatusCategory.NONE` without a
+// description.
+message WorkAvailabilityStatus {
+  // Status category.
+  WorkAvailabilityStatusCategory category = 1;
+
+  // Optional custom status description as chosen by the contact. Must be ≤
+  // 256 bytes. An empty string means no custom status description is
+  // present.
+  string description = 2;
 }
 
 // Visibility of a conversation.
@@ -188,10 +217,20 @@ message UserProfile {
     repeated IdentityLink links = 1;
   }
   IdentityLinks identity_links = 4;
+
+  // Availability status of the user.
+  //
+  // Shall not be present in the _Consumer_ flavour.
+  //
+  // Always optional in the _Work_ flavour.
+  WorkAvailabilityStatus work_availability_status = 5;
 }
 
 // Threema contact.
 message Contact {
+  // Contact items
+  // -------------
+
   // Threema ID of the contact
   //
   // Always required.
@@ -255,7 +294,8 @@ message Contact {
   }
   optional VerificationLevel verification_level = 7;
 
-  // Threema Work verification level of the contact.
+  // Threema Work verification level of the contact, sourced from the _Work
+  // Sync_ or _Work Contacts_ endpoint.
   //
   // Required towards a new device and for a new contact. Optional for an
   // existing contact.
@@ -358,6 +398,38 @@ message Contact {
   }
   optional SyncState sync_state = 13;
 
+  // Contact-defined profile picture as received from the contact in a
+  // `set-profile-picture` message.
+  //
+  // Always optional.
+  common.DeltaImage contact_defined_profile_picture = 14;
+
+  // User-defined profile picture set by the user or imported from the address
+  // book.
+  //
+  // Always optional.
+  common.DeltaImage user_defined_profile_picture = 15;
+
+  // Server-reported UNIX-ish timestamp in milliseconds of the last incident all
+  // work properties of this contact were retrieved (and any potential changes
+  // were applied) from a _Work Sync_, a _Work Contacts_, or a _Work Directory_
+  // endpoint.
+  //
+  // Shall not be present in the _Consumer_ flavour.
+  //
+  // Always optional in the _Work_ flavour.
+  optional uint64 work_last_full_sync_at = 26;
+
+  // Availability status of the contact.
+  //
+  // Shall not be present in the _Consumer_ flavour.
+  //
+  // Always optional in the _Work_ flavour.
+  WorkAvailabilityStatus work_availability_status = 27;
+
+  // Conversation items
+  // ------------------
+
   // _Read_ receipt policy override for this contact
   //
   // Required towards a new device and for a new contact. Optional for an
@@ -415,35 +487,16 @@ message Contact {
   }
   NotificationTriggerPolicyOverride notification_trigger_policy_override = 19;
 
-  // Notification sound policy for the contact
+  // Deprecated notification sound policy.
   //
-  // Required towards a new device and for a new contact. Optional for an
-  // existing contact.
-  //
-  // Custom sounds are not reflected but are to be (re-)applied in case the
-  // policy is _default_.
-  message NotificationSoundPolicyOverride {
+  // Required towards a new device and for a new contact until the field has
+  // been phased out. Optional for an existing contact.
+  message DeprecatedNotificationSoundPolicyOverride {
     oneof override {
-      // Apply the notification sound policy specified in the settings (i.e.
-      // always emit a sound when notifying of a _conversation_ message).
       common.Unit default = 1;
-      // Apply the following notification sound policy
-      NotificationSoundPolicy policy = 2;
     }
   }
-  NotificationSoundPolicyOverride notification_sound_policy_override = 20;
-
-  // Contact-defined profile picture as received from the contact in a
-  // `set-profile-picture` message.
-  //
-  // Always optional.
-  common.DeltaImage contact_defined_profile_picture = 14;
-
-  // User-defined profile picture set by the user or imported from the address
-  // book.
-  //
-  // Always optional.
-  common.DeltaImage user_defined_profile_picture = 15;
+  DeprecatedNotificationSoundPolicyOverride deprecated_notification_sound_policy_override = 20 [deprecated = true];
 
   // Conversation category of the contact
   //
@@ -460,6 +513,9 @@ message Contact {
 
 // Threema contacts associated to a group.
 message Group {
+  // Group items
+  // -----------
+
   // Unique group identity
   //
   // Always required.
@@ -518,6 +574,9 @@ message Group {
   // An empty list is valid.
   common.Identities member_identities = 8;
 
+  // Conversation items
+  // ------------------
+
   // Notification trigger policy for the group
   //
   // Required towards a new device and for a new group. Optional for an
@@ -549,23 +608,16 @@ message Group {
   }
   NotificationTriggerPolicyOverride notification_trigger_policy_override = 9;
 
-  // Notification sound policy for the group
+  // Deprecated notification sound policy.
   //
-  // Required towards a new device and for a new group. Optional for an existing
-  // group.
-  //
-  // Custom sounds are not reflected but are to be (re-)applied in case the
-  // policy is _default_.
-  message NotificationSoundPolicyOverride {
+  // Required towards a new device and for a new group until the field has
+  // been phased out. Optional for an existing group.
+  message DeprecatedNotificationSoundPolicyOverride {
     oneof override {
-      // Apply the notification sound policy specified in the settings (i.e.
-      // always emit a sound when notifying of a _conversation_ message).
       common.Unit default = 1;
-      // Apply the following notification sound policy
-      NotificationSoundPolicy policy = 2;
     }
   }
-  NotificationSoundPolicyOverride notification_sound_policy_override = 10;
+  DeprecatedNotificationSoundPolicyOverride deprecated_notification_sound_policy_override = 10 [deprecated = true];
 
   // Conversation category of the group
   //
@@ -582,6 +634,9 @@ message Group {
 
 // Threema contacts associated to a distribution list.
 message DistributionList {
+  // Distribution list items
+  // -----------------------
+
   // Unique ID of the distribution list
   //
   // Always required.
@@ -610,6 +665,9 @@ message DistributionList {
   // An empty list is **not** valid. Clearing all members should be prevented
   // by the UI.
   common.Identities member_identities = 6;
+
+  // Conversation items
+  // ------------------
 
   // Conversation category of the distribution list
   //

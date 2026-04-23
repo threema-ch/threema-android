@@ -1,7 +1,5 @@
 package ch.threema.app.routines;
 
-import android.content.Context;
-
 import org.koin.java.KoinJavaComponent;
 import org.slf4j.Logger;
 

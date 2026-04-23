@@ -14,7 +14,7 @@ import ch.threema.data.models.ContactModel
 import ch.threema.domain.types.ConversationUID
 import ch.threema.domain.types.GroupDatabaseId
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.d2d.sync.MdD2DSync
+import ch.threema.protobuf.d2d.sync.ConversationCategory
 import java.lang.ref.WeakReference
 
 private val logger = getThreemaLogger("ConversationCategoryServiceImpl")
@@ -115,11 +115,11 @@ class ConversationCategoryServiceImpl(
     }
 
     @Synchronized
-    override fun getConversationCategory(uniqueIdString: ConversationUID): MdD2DSync.ConversationCategory {
+    override fun getConversationCategory(uniqueIdString: ConversationUID): ConversationCategory {
         return if (privateChatsCache.isPrivateChat(UniqueIdentifier(uniqueIdString))) {
-            MdD2DSync.ConversationCategory.PROTECTED
+            ConversationCategory.PROTECTED
         } else {
-            MdD2DSync.ConversationCategory.DEFAULT
+            ConversationCategory.DEFAULT
         }
     }
 

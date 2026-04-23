@@ -3,9 +3,12 @@ package ch.threema.domain.protocol.csp.messages
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.DeleteMessageData.Companion.fromProtobuf
+import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage.Companion.fromByteArray
+import ch.threema.domain.protocol.csp.messages.GroupDeleteMessage.Companion.fromReflected
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufGroupMessage
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import java.nio.charset.StandardCharsets
 
 /**
@@ -51,14 +54,14 @@ class GroupDeleteMessage(payloadData: DeleteMessageData) :
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): GroupDeleteMessage {
+        fun fromReflected(message: IncomingMessage): GroupDeleteMessage {
             val groupDeleteMessage = fromByteArray(message.body.toByteArray())
             groupDeleteMessage.initializeCommonProperties(message)
             return groupDeleteMessage
         }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): GroupDeleteMessage {
+        fun fromReflected(message: OutgoingMessage): GroupDeleteMessage {
             val groupDeleteMessage = fromByteArray(message.body.toByteArray())
             groupDeleteMessage.initializeCommonProperties(message)
             return groupDeleteMessage

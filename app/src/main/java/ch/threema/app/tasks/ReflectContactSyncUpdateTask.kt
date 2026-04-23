@@ -9,6 +9,7 @@ import ch.threema.app.utils.ConversationUtil
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.SymmetricEncryptionService
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
@@ -27,22 +28,23 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.getEncryptedContactSyncUpdate
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.blob
+import ch.threema.protobuf.common.Image
+import ch.threema.protobuf.common.blob
+import ch.threema.protobuf.common.deltaImage
+import ch.threema.protobuf.common.image
+import ch.threema.protobuf.common.unit
+import ch.threema.protobuf.d2d.sync.Contact
 import ch.threema.protobuf.d2d.sync.ContactKt.NotificationTriggerPolicyOverrideKt.policy
 import ch.threema.protobuf.d2d.sync.ContactKt.notificationTriggerPolicyOverride
 import ch.threema.protobuf.d2d.sync.ContactKt.readReceiptPolicyOverride
 import ch.threema.protobuf.d2d.sync.ContactKt.typingIndicatorPolicyOverride
-import ch.threema.protobuf.d2d.sync.MdD2DSync
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.NotificationTriggerPolicyOverride.Policy
+import ch.threema.protobuf.d2d.sync.ConversationCategory
+import ch.threema.protobuf.d2d.sync.ConversationVisibility
 import ch.threema.protobuf.d2d.sync.contact
-import ch.threema.protobuf.deltaImage
-import ch.threema.protobuf.image
-import ch.threema.protobuf.unit
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
 import ch.threema.storage.models.ConversationTag
 import com.google.protobuf.kotlin.toByteString
+import java.time.Instant
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -104,7 +106,7 @@ abstract class ReflectContactSyncUpdateBaseTask(
         )
     }
 
-    override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> Unit = {
+    override val runAfterSuccessfulTransaction: suspend (transactionResult: Unit) -> Unit = {
         // Nothing to do
     }
 }
@@ -194,7 +196,7 @@ abstract class ReflectContactSyncUpdateImmediateTask(contactIdentity: IdentitySt
                 when (profilePictureUpdate) {
                     is UpdatedProfilePicture -> {
                         updated = image {
-                            type = Common.Image.Type.JPEG
+                            type = Image.Type.JPEG
                             blob = blob {
                                 id = profilePictureUpdate.blobId.toByteString()
                                 nonce = profilePictureUpdate.nonce.toByteString()
@@ -316,8 +318,8 @@ abstract class ReflectContactSyncUpdateTask(
             readReceiptPolicyOverride = readReceiptPolicyOverride {
                 when (readReceiptPolicy) {
                     ReadReceiptPolicy.DEFAULT -> default = unit {}
-                    ReadReceiptPolicy.SEND -> policy = MdD2DSync.ReadReceiptPolicy.SEND_READ_RECEIPT
-                    ReadReceiptPolicy.DONT_SEND -> policy = MdD2DSync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
+                    ReadReceiptPolicy.SEND -> policy = ch.threema.protobuf.d2d.sync.ReadReceiptPolicy.SEND_READ_RECEIPT
+                    ReadReceiptPolicy.DONT_SEND -> policy = ch.threema.protobuf.d2d.sync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
                 }
             }
         }
@@ -360,9 +362,9 @@ abstract class ReflectContactSyncUpdateTask(
                 when (typingIndicatorPolicy) {
                     TypingIndicatorPolicy.DEFAULT -> default = unit {}
 
-                    TypingIndicatorPolicy.SEND -> policy = MdD2DSync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR
+                    TypingIndicatorPolicy.SEND -> policy = ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR
 
-                    TypingIndicatorPolicy.DONT_SEND -> policy = MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
+                    TypingIndicatorPolicy.DONT_SEND -> policy = ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
                 }
             }
         }
@@ -622,6 +624,40 @@ abstract class ReflectContactSyncUpdateTask(
         }
     }
 
+    // TODO(ANDR-4751): Test when desktop is ready
+    class ReflectAvailabilityStatusUpdate(
+        private val newAvailabilityStatus: AvailabilityStatus,
+        contactIdentity: IdentityString,
+    ) : ReflectContactSyncUpdateTask(contactIdentity) {
+
+        override val type: String = "ReflectAvailabilityStatusUpdate"
+
+        override fun isChangeValid(currentData: ContactModelData): Boolean =
+            currentData.availabilityStatus == newAvailabilityStatus
+
+        override fun getContactSync(): Contact = contact {
+            identity = contactIdentity
+            workAvailabilityStatus = newAvailabilityStatus.toProtocolModel()
+        }
+
+        override fun serialize(): SerializableTaskData = ReflectAvailabilityStatusUpdateData(
+            availabilityStatus = newAvailabilityStatus,
+            identity = contactIdentity,
+        )
+
+        @Serializable
+        data class ReflectAvailabilityStatusUpdateData(
+            private val availabilityStatus: AvailabilityStatus,
+            private val identity: IdentityString,
+        ) : SerializableTaskData {
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectAvailabilityStatusUpdate(
+                    newAvailabilityStatus = availabilityStatus,
+                    contactIdentity = identity,
+                )
+        }
+    }
+
     /**
      * Reflect a new user defined profile picture.
      */
@@ -668,7 +704,7 @@ abstract class ReflectContactSyncUpdateTask(
                     identity = contactIdentity
                     userDefinedProfilePicture = deltaImage {
                         updated = image {
-                            type = Common.Image.Type.JPEG
+                            type = Image.Type.JPEG
                             blob = blob {
                                 id = blobId.toByteString()
                                 nonce = ProtocolDefines.CONTACT_PHOTO_NONCE.toByteString()
@@ -724,7 +760,7 @@ abstract class ReflectContactSyncUpdateTask(
                     NotificationTriggerPolicyOverride.NotMuted -> default = unit {}
 
                     NotificationTriggerPolicyOverride.MutedIndefinite -> policy = policy {
-                        policy = Policy.NotificationTriggerPolicy.NEVER
+                        policy = Contact.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
                     }
 
                     NotificationTriggerPolicyOverride.MutedIndefiniteExceptMentions -> throw IllegalStateException(
@@ -732,7 +768,7 @@ abstract class ReflectContactSyncUpdateTask(
                     )
 
                     is NotificationTriggerPolicyOverride.MutedUntil -> policy = policy {
-                        policy = Policy.NotificationTriggerPolicy.NEVER
+                        policy = Contact.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
                         expiresAt = newNotificationTriggerPolicyOverride.utcMillis
                     }
                 }
@@ -780,11 +816,10 @@ abstract class ReflectContactSyncUpdateTask(
 
         override fun getContactSync(): Contact = contact {
             identity = contactIdentity
-
             conversationCategory = if (isPrivateChat) {
-                MdD2DSync.ConversationCategory.PROTECTED
+                ConversationCategory.PROTECTED
             } else {
-                MdD2DSync.ConversationCategory.DEFAULT
+                ConversationCategory.DEFAULT
             }
         }
 
@@ -825,9 +860,9 @@ abstract class ReflectContactSyncUpdateTask(
             identity = contactIdentity
 
             conversationVisibility = if (isArchived) {
-                MdD2DSync.ConversationVisibility.ARCHIVED
+                ConversationVisibility.ARCHIVED
             } else {
-                MdD2DSync.ConversationVisibility.NORMAL
+                ConversationVisibility.NORMAL
             }
         }
 
@@ -845,6 +880,45 @@ abstract class ReflectContactSyncUpdateTask(
                 ReflectConversationVisibilityArchiveUpdate(
                     isArchived = isArchived,
                     contactIdentity = contactIdentity,
+                )
+        }
+    }
+
+    /**
+     *  Reflect a new work-last-full-sync-at timestamp
+     */
+    class ReflectWorkLastFullSyncAtUpdate(
+        private val workLastFullSyncAt: Instant,
+        contactIdentity: IdentityString,
+    ) : ReflectContactSyncUpdateTask(
+        contactIdentity,
+    ) {
+        override val type = "ReflectWorkLastFullSyncAtUpdate"
+
+        override fun isChangeValid(currentData: ContactModelData) = currentData.workLastFullSyncAt == workLastFullSyncAt
+
+        override fun getContactSync(): Contact {
+            val updatedWorkLastFullSyncAt = workLastFullSyncAt
+            return contact {
+                this.identity = contactIdentity
+                this.workLastFullSyncAt = updatedWorkLastFullSyncAt.toEpochMilli()
+            }
+        }
+
+        override fun serialize(): SerializableTaskData = ReflectWorkLastFullSyncAtUpdateData(
+            workLastFullSyncAt = workLastFullSyncAt.toEpochMilli(),
+            identity = contactIdentity,
+        )
+
+        @Serializable
+        data class ReflectWorkLastFullSyncAtUpdateData(
+            private val workLastFullSyncAt: Long,
+            private val identity: IdentityString,
+        ) : SerializableTaskData {
+            override fun createTask(): Task<*, TaskCodec> =
+                ReflectWorkLastFullSyncAtUpdate(
+                    workLastFullSyncAt = Instant.ofEpochMilli(workLastFullSyncAt),
+                    contactIdentity = identity,
                 )
         }
     }
@@ -872,9 +946,9 @@ abstract class ReflectContactSyncUpdateTask(
             identity = contactIdentity
 
             conversationVisibility = if (isPinned) {
-                MdD2DSync.ConversationVisibility.PINNED
+                ConversationVisibility.PINNED
             } else {
-                MdD2DSync.ConversationVisibility.NORMAL
+                ConversationVisibility.NORMAL
             }
         }
 

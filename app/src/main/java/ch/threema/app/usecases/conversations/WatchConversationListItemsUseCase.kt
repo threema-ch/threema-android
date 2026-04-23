@@ -22,6 +22,7 @@ import ch.threema.app.services.DistributionListService
 import ch.threema.app.services.GroupService
 import ch.threema.app.services.RingtoneService
 import ch.threema.app.usecases.WatchTypingIdentitiesUseCase
+import ch.threema.app.usecases.availabilitystatus.WatchAllContactAvailabilityStatusesUseCase
 import ch.threema.app.usecases.contacts.WatchAllMentionNamesUseCase
 import ch.threema.app.usecases.contacts.WatchContactNameFormatSettingUseCase
 import ch.threema.app.usecases.groups.WatchGroupCallsUseCase
@@ -30,6 +31,7 @@ import ch.threema.app.utils.NameUtil
 import ch.threema.app.utils.QuoteUtil
 import ch.threema.app.utils.StateBitmapUtil
 import ch.threema.common.combine
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.datatypes.MentionNameData
 import ch.threema.data.datatypes.localGroupId
@@ -55,8 +57,9 @@ abstract class WatchConversationListItemsUseCase(
     private val watchTypingIdentitiesUseCase: WatchTypingIdentitiesUseCase,
     private val watchAvatarIterationsUseCase: WatchAvatarIterationsUseCase,
     private val watchContactNameFormatSettingUseCase: WatchContactNameFormatSettingUseCase,
-    private val draftManager: DraftManager,
     private val watchAllMentionNamesUseCase: WatchAllMentionNamesUseCase,
+    private val watchAllContactAvailabilityStatusesUseCase: WatchAllContactAvailabilityStatusesUseCase,
+    private val draftManager: DraftManager,
     private val conversationCategoryService: ConversationCategoryService,
     private val contactService: ContactService,
     private val groupService: GroupService,
@@ -95,7 +98,17 @@ abstract class WatchConversationListItemsUseCase(
             watchContactNameFormatSettingUseCase.call(),
             draftManager.drafts,
             watchAllMentionNamesUseCase.call(),
-        ) { conversationModels, groupCalls, typingIdentities, avatarIterations, contactNameFormat, drafts, mentionNameData ->
+            watchAllContactAvailabilityStatusesUseCase.call(),
+        ) {
+                conversationModels,
+                groupCalls,
+                typingIdentities,
+                avatarIterations,
+                contactNameFormat,
+                drafts,
+                mentionNameData,
+                contactAvailabilityStatuses,
+            ->
             val privateConversationUIDs: Set<ConversationUID> = conversationModels
                 .mapNotNull { conversationModel ->
                     if (getIsPrivate(conversationModel)) conversationModel.uid else null
@@ -112,6 +125,7 @@ abstract class WatchConversationListItemsUseCase(
                         contactNameFormat = contactNameFormat,
                         drafts = drafts,
                         mentionNameData = mentionNameData,
+                        contactAvailabilityStatuses = contactAvailabilityStatuses,
                     )
                 }
         }
@@ -125,6 +139,7 @@ abstract class WatchConversationListItemsUseCase(
         contactNameFormat: ContactNameFormat,
         drafts: Map<ConversationUID, MessageDraft>,
         mentionNameData: List<MentionNameData>,
+        contactAvailabilityStatuses: Map<IdentityString, AvailabilityStatus>,
     ): ConversationUiModel? =
         if (conversationModel.contact != null) {
             mapToContactConversationUiModel(
@@ -135,6 +150,7 @@ abstract class WatchConversationListItemsUseCase(
                 contactNameFormat = contactNameFormat,
                 drafts = drafts,
                 mentionNameData = mentionNameData,
+                contactAvailabilityStatuses = contactAvailabilityStatuses,
             )
         } else if (conversationModel.group != null) {
             mapToGroupConversationUiModel(
@@ -166,6 +182,7 @@ abstract class WatchConversationListItemsUseCase(
         contactNameFormat: ContactNameFormat,
         drafts: Map<ConversationUID, MessageDraft>,
         mentionNameData: List<MentionNameData>,
+        contactAvailabilityStatuses: Map<IdentityString, AvailabilityStatus>,
     ): ConversationUiModel.ContactConversation? {
         val contactModel: ContactModel = conversationModel.contact ?: return null
         return ConversationUiModel.ContactConversation(
@@ -187,6 +204,7 @@ abstract class WatchConversationListItemsUseCase(
             showWorkBadge = contactService.showBadge(contactModel),
             isTyping = typingIdentities.contains(contactModel.identity),
             avatarIteration = avatarIterations[contactModel.identifier] ?: AvatarIteration.initial,
+            availabilityStatus = contactAvailabilityStatuses[contactModel.identity],
         )
     }
 

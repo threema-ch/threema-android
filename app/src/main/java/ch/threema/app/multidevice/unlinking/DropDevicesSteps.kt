@@ -15,7 +15,7 @@ import ch.threema.domain.taskmanager.MessageFilterInstruction
 import ch.threema.domain.taskmanager.NetworkException
 import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.createTransaction
-import ch.threema.protobuf.d2d.MdD2D.TransactionScope
+import ch.threema.protobuf.d2d.TransactionScope
 
 private val logger = getThreemaLogger("DropDevicesSteps")
 

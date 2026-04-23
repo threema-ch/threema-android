@@ -22,6 +22,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="enter_id_hint">Ввести ${app_name_short} ID</string>
     <string name="account_links">Связи учётной записи</string>
+    <string name="title_set_availability_status">Статус доступности</string>
     <string name="menu_settings">Настройки</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="menu_about">О ${app_name}</string>
@@ -112,6 +113,7 @@
     <string name="set_nickname_title">Установка псевдонима</string>
     <string name="ok">OK</string>
     <string name="cancel">Отмена</string>
+    <string name="save">Сохранить</string>
     <string name="copy_message_action">Копировать</string>
     <string name="delete_contact_action">Удалить контакт</string>
     <string name="delete_multiple_contact_action">Удалить контакты</string>
@@ -122,8 +124,10 @@
     <string name="scan_duplicate">Этот ID уже был считан и проверен.</string>
     <string name="linked_email">Электронная почта</string>
     <!-- Pattern for displaying the user's email address on the My Profile screen. %1$s is a placeholder for the email address, %2$s is a placeholder for the verification state (e.g. "pending") -->
+    <string name="linked_email_pattern">%1$s (%2$s)</string>
     <string name="linked_mobile">Мобильный телефон</string>
     <!-- Pattern for displaying the user's mobile phone number on the My Profile screen. %1$s is a placeholder for the phone number, %2$s is a placeholder for the verification state (e.g. "pending") -->
+    <string name="linked_mobile_pattern">%1$s (%2$s)</string>
     <string name="public_nickname">Псевдоним</string>
     <string name="share_via">Поделиться…</string>
     <string name="share_subject">Беседа в %s</string>
@@ -346,6 +350,7 @@
     <string name="can_not_send_no_group_members">Вы не можете отправить сообщение в пустую группу</string>
     <string name="you_are_not_a_member_of_this_group">Вы не являетесь участником этой группы</string>
     <string name="title_public_nickname">Псевдоним</string>
+    <string name="title_availability_status">Статус</string>
     <string name="prefs_sum_excluded_sync_identities">Перечисленные здесь ID будут игнорироваться при синхронизации контактов</string>
     <string name="prefs_title_excluded_sync_identities">Список исключений</string>
     <string name="synchronize_contact">Синхронизация адресной книги</string>
@@ -482,6 +487,7 @@
     <string name="wearable_reply_label">Ответить %s</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="push_disable_text">Если продолжить, вместо службы push-уведомлений системы будет использоваться функция ${app_name_short} Push. Это помогает сократить «цифровой след», но требует настройки телефона таким образом, чтобы приложение могло работать в фоновом режиме. Если соответствующие параметры не удаётся найти в настройках устройства, попробуйте обратиться в службу поддержки производителя вашего устройства за помощью с настройкой.</string>
+    <string name="debug_log_enabled_recently_warning">Если у вас возникла конкретная проблема, попробуйте воспроизвести её, прежде чем отправлять файл журнала отладки. Это поможет нам эффективнее изучить проблему. Спасибо.</string>
     <string name="ballot_intermediate_results_show">Показать промежуточные результаты</string>
     <string name="converting_video">Обработка видео</string>
     <string name="video_size_small">Высокая (меньше данных)</string>
@@ -808,6 +814,7 @@
     <string name="play">Играть</string>
     <string name="pause">Пауза</string>
     <string name="retry">Повторить</string>
+    <string name="voice_message">Голосовое сообщение</string>
     <string name="voice_message_record">Записать голосовое сообщение</string>
     <string name="open_navdrawer">Открыть панель навигации</string>
     <string name="profile_picture">Аватар</string>
@@ -917,6 +924,7 @@
     <string name="password_too_short_generic">Слишком короткий пароль</string>
     <string name="passwords_dont_match">Пароли не совпадают</string>
     <!-- Error message shown when setting up a custom server for the Threema Safe feature. %s is a placeholder for the details of the error. -->
+    <string name="threema_safe_test_unsuccessful">Тест не пройден: %s</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="preparing_threema_safe">Подготовка ${app_name_short} Safe…</string>
     <string name="disable_powermanager_title">Ограничения по питанию</string>
@@ -1098,6 +1106,7 @@
         <p>Для дополнительной информации перейдите в «Меню» → «Threema 2.0 для ПК (бета)».</p>
         ]]></string>
     <string name="tap_to_start">Нажмите здесь, чтобы запустить %s.</string>
+    <string name="notification_title_restart">Требуется перезапуск</string>
     <string name="two_years">2 года</string>
     <string name="backup_data_no_permission">Запись в этот каталог невозможна. Выберите другой.</string>
     <string name="prefs_sum_show_unread_badge">Показывать значок с числом непрочитанных сообщений рядом со значком сообщений</string>
@@ -1517,10 +1526,13 @@
     <string name="problemsolver_title_background_data">Фоновая передача данных ограничена</string>
     <string name="problemsolver_title_notifications">Уведомления отключены</string>
     <string name="problemsolver_title_fullscreen_notifications">Полноэкранные уведомления запрещены</string>
+    <string name="problemsolver_title_debug_log_enabled">Ведение журнала по-прежнему включено</string>
     <string name="problemsolver_explain_fullscreen_notifications">Приложению запрещено отображать полноэкранные уведомления. Вы можете пропустить входящие вызовы, когда устройство заблокировано. Чтобы это исправить, активируйте параметр «Разрешить полноэкранные уведомления».</string>
     <string name="problemsolver_explain_notifications">Уведомления для этого приложения полностью отключены. Вы не будете получать информацию о входящих сообщениях или звонках, приложение может работать не так, как ожидалось. Чтобы это исправить, включите переключатель рядом с «Все уведомления».</string>
     <string name="problemsolver_explain_background_data">Приложение не может использовать мобильные данные в фоновом режиме. Вы не будете получать уведомления о входящих сообщениях, если приложение неактивно. Чтобы это исправить, активируйте параметр «Фоновая передача данных».</string>
     <string name="problemsolver_explain_background">Работа приложения в фоновом режиме не разрешена. Вы не будете получать никаких уведомлений, а многие функции не будут работать должным образом. Чтобы это исправить, нажмите «Использование батареи приложением» и выберите «Неограниченно».</string>
+    <string name="problemsolver_explain_debug_log_enabled">Некоторое время назад вы включили журнал отладки. Если вам больше не нужно регистрировать события и сетевую информацию, возможно, стоит отключить его.</string>
+    <string name="problemsolver_explain_debug_log_force_enabled">${app_name} записывает события и сетевую информацию, поскольку вы создали файл «%s». Если вам больше не нужно вести журнал, удалите этот файл.</string>
     <string name="problemsolver_info_text">Названия некоторых из упомянутых выше параметров настройки системы могут различаться в зависимости от версии Android и производителя устройства.</string>
     <string name="problemsolver_title_app_battery_usgae_optimized">Использование батареи приложением установлено на «оптимальное»</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
@@ -1547,12 +1559,26 @@
     <string name="incoming_calls">Входящие звонки</string>
     <string name="group_chats">Групповые чаты</string>
     <string name="edit_history_file_no_caption">Без заголовка</string>
+    <string name="prefs_title_error_reporting">Отчёт об ошибке</string>
+    <string name="prefs_send_error_reports">Отправка анонимных отчётов</string>
+    <string name="error_reporting_option_never_send">Никогда</string>
+    <string name="error_reporting_option_always_send">Всегда</string>
+    <string name="error_reporting_option_always_ask">Спрашивать каждый раз</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_never_send">Никогда не отправлять отчёты об ошибках в ${company_name}</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_always_send">Автоматически отправлять отчёты об ошибках в ${company_name} при возникновении критических ошибок</string>
     <!-- ${company_name} is a placeholder for the name of the company that operates the app, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="error_reporting_summary_always_ask">Каждый раз запрашивать отправку отчёта об ошибке в ${company_name}</string>
+    <string name="error_detected_dialog_title">Отправить анонимный отчёт</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="crash_detected_dialog_text">Похоже, в ${app_name_short} недавно произошёл сбой. Отправить анонимный отчёт об ошибке?</string>
+    <string name="crash_detected_dialog_remember_choice">Запомнить выбор</string>
+    <string name="crash_detected_dialog_send_button">Отправить</string>
     <!-- Shown in the advanced settings, shows the user their own Device's uniquely generated ID, which is used for sending error reports -->
+    <string name="prefs_error_reporting_id">Анонимный ID устройства</string>
     <!-- The %s is a placeholder for an ID. It must be left as-is. -->
+    <string name="prefs_error_reporting_id_summary">Этот идентификатор используется для отправки отчётов об ошибках. Он является анонимным и не связан с вашим идентификатором Threema ID.\n%s</string>
     <string name="md_device_currently_active">Сейчас активно</string>
     <string name="md_device_last_active_at">Последняя активность: %s</string>
     <plurals name="md_max_device_slots_reached_info">
@@ -1637,6 +1663,8 @@
     <string name="device_linking_error_invalid_contact_title">Недействительный контакт</string>
     <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <string name="device_linking_error_invalid_contact_body">Контакт %1$s неправильно сохранён на этом устройстве и не позволяет привязать новое устройство. Обратитесь в службу поддержки (Главное меню → Поддержка).</string>
+    <string name="device_linking_error_invalid_timestamp_title">Неправильная дата</string>
+    <string name="device_linking_error_invalid_timestamp_body">Обнаружена неправильная дата. Обратитесь в службу поддержки (Главное меню → Поддержка).</string>
     <string name="work_directory_title">Каталог компании</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Поиск в каталоге</string>
@@ -1644,13 +1672,15 @@
     <string name="work_directory_empty_view_text">Введите не менее 3 символов имени, чтобы начать поиск в каталоге пользователей ${app_name_short} вашей компании.</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">Невозможно поделиться некорректным файлом</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
-    <string name="contact_availability_status_available">Доступен</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <string name="contact_availability_status_unavailable">Недоступен</string>
+    <string name="availability_status_none">Нет статуса</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e. out-of-office -->
+    <string name="availability_status_unavailable">Недоступен</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently busy-->
+    <string name="availability_status_busy">Занят</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">Ссылка активации неправильная. Обратитесь к администратору.</string>
     <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
+    <string name="export_logs_screen_warning">По соображениям конфиденциальности предоставляйте доступ к файлу журнала только службе поддержки ${company_name} и только в том случае, если вас об этом попросят.</string>
     <string name="work_intro_screen_work_title">ВЫСОКОЗАЩИЩЁННАЯ КОММУНИКАЦИЯ ДЛЯ БИЗНЕСА</string>
     <string name="work_intro_screen_work_subtitle">Threema Work — это безопасное коммуникационное решение для компаний, обеспечивающее сквозное шифрование, соответствующее требованиям GDPR и разработанное в Швейцарии.</string>
     <string name="work_intro_screen_work_sign_in_button_label">Войти</string>
@@ -1666,7 +1696,9 @@
     <string name="work_intro_screen_onprem_use_private_hint">Если вы хотите использовать Threema в личных целях, мы рекомендуем приложение Threema Private.</string>
     <string name="work_intro_screen_onprem_download_private_button_label">Скачать</string>
     <!-- Description of the notification channel which is used when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_notification_channel_description">Если активирован ${remote_secret}, отображается постоянное уведомление.</string>
     <!-- Text of the notification which is shown when DualLock (a.k.a. "Remote Secret") is active. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
+    <string name="remote_secret_notification_text">${remote_secret} активирован. Нажмите, чтобы узнать больше.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that their access has been blocked by an admin. Only used for OnPrem builds. -->
     <string name="remote_secrets_blocked_by_admin">Доступ к приложению заблокирован вашим администратором.\n\nСвяжитесь с ним для получения дополнительной информации.</string>
     <!-- Message shown fullscreen when the app is opened, to inform the user that the DualLock (a.k.a. "Remote Secret") needed to unlock the app could not be fetched due to a network issue. Shown above a "Retry" button. Only used for OnPrem builds. ${remote_secret} is a placeholder for a feature name, e.g. "DualLock". It must be left as-is and not translated. -->
@@ -1706,6 +1738,18 @@
     <string name="referral_share_invitation_link">Поделиться ссылкой-приглашением</string>
     <string name="referral_view_terms_and_conditions">Посмотреть условия и положения</string>
     <string name="referral_invitation_message_content">Здравствуйте! Думаю, это может быть полезно для вас: Threema Work — отличный вариант для безопасного делового общения. Вот тестовая ссылка: %1$s</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_title">Завершать звонок при отключении Bluetooth</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_on">Звонок завершается, если во время разговора отключится Bluetooth-гарнитура.</string>
+    <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_off">Звонок продолжается, если во время разговора отключится Bluetooth-гарнитура. Примечание: кнопка завершения вызова на гарнитуре может перестать работать.</string>
+    <string name="failed_to_load_conversations">Невозможно загрузить чаты.</string>
+    <string name="contact_support">Связаться со службой поддержки</string>
+    <string name="edit_availability_status_modal_title">Статус доступности</string>
+    <string name="edit_availability_status_modal_subtitle">Этот статус виден всем в вашей компании.</string>
+    <string name="edit_availability_status_modal_optional_message_label">Свой текст (необязательно)</string>
+    <string name="edit_availability_status_modal_optional_message_placeholder">На совещании</string>
+    <string name="edit_availability_status_modal_optional_message_description">Установите своё сообщение для статусов «Занят» или «Недоступен».</string>
+    <string name="edit_availability_status_modal_optional_message_too_long">Текст слишком длинный, сократите его</string>
+    <string name="edit_availability_status_did_change">Статус доступности изменён</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d контакт</item>
         <item quantity="few">%d контакта</item>

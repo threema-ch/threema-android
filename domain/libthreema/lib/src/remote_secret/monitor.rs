@@ -462,7 +462,7 @@ impl State {
 /// [`RemoteSecret`] before it has been blocked or removed.
 ///
 /// Note for choosing parameters: The maximum timeout after an initial fetch can be calculated as follows:
-/// `check_interval_s` * `n_missed_checks_max` + `endpoint::TIMEOUT`
+/// `check_interval_s` * `n_missed_checks_max` + `endpoint::TIMEOUT`.
 #[derive(Name, Educe)]
 #[educe(Debug)]
 pub struct RemoteSecretMonitorProtocol {

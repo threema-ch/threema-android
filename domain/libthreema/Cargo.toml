@@ -1,48 +1,7 @@
 [workspace]
+resolver = "2"
 members = ["lib", "macros", "tools/uniffi-bindgen"]
 default-members = ["lib", "macros"]
-resolver = "2"
-
-[profile.release]
-lto = true
-
-[patch.crates-io]
-blake2 = { path = "patches/blake2" }
-
-[workspace.lints.rust]
-deprecated_safe = "warn"
-explicit_outlives_requirements = "warn"
-# Wait for https://github.com/rust-lang/rust/issues/130351
-# fuzzy_provenance_casts = "warn"
-impl_trait_overcaptures = "warn"
-# Wait for https://github.com/rust-lang/rust/issues/130351
-# lossy_provenance_casts = "warn"
-macro_use_extern_crate = "warn"
-meta_variable_misuse = "warn"
-missing_abi = "warn"
-missing_docs = "warn"
-missing_unsafe_on_extern = "warn"
-non_ascii_idents = "warn"
-# Wait for https://github.com/rust-lang/rust/issues/89554
-# non_exhaustive_omitted_patterns = "warn"
-non_local_definitions = "warn"
-redundant_lifetimes = "warn"
-single_use_lifetimes = "warn"
-unit_bindings = "warn"
-unnameable_types = "warn"
-unreachable_pub = "warn"
-unsafe_op_in_unsafe_fn = "warn"
-unstable_features = "warn"
-unused_crate_dependencies = "warn"
-unused_extern_crates = "warn"
-unused_macro_rules = "warn"
-unused_qualifications = "warn"
-unused_results = "warn"
-
-[workspace.lints.rustdoc]
-missing_crate_level_docs = "warn"
-private_doc_tests = "warn"
-unescaped_backticks = "warn"
 
 # Commented lints are in a newer Clippy version or tied to unstable and we want
 # to try them ASAP.
@@ -54,6 +13,7 @@ unescaped_backticks = "warn"
 pedantic = "warn"
 similar_names = { level = "allow", priority = 1 }
 too_many_lines = { level = "allow", priority = 1 }
+
 # Restriction
 alloc_instead_of_core = { level = "warn", priority = 1 }
 allow_attributes = { level = "warn", priority = 1 }
@@ -62,13 +22,14 @@ arithmetic_side_effects = { level = "warn", priority = 1 }
 as_pointer_underscore = { level = "warn", priority = 1 }
 as_underscore = { level = "warn", priority = 1 }
 big_endian_bytes = { level = "warn", priority = 1 }
-create_dir = { level = "warn", priority = 1 }
 cfg_not_test = { level = "warn", priority = 1 }
 clone_on_ref_ptr = { level = "warn", priority = 1 }
+create_dir = { level = "warn", priority = 1 }
 dbg_macro = { level = "warn", priority = 1 }
 default_numeric_fallback = { level = "warn", priority = 1 }
 deref_by_slicing = { level = "warn", priority = 1 }
 doc_include_without_cfg = { level = "warn", priority = 1 }
+doc_paragraphs_missing_punctuation = { level = "warn", priority = 1 }
 empty_drop = { level = "warn", priority = 1 }
 empty_enum_variants_with_brackets = { level = "warn", priority = 1 }
 empty_structs_with_brackets = { level = "warn", priority = 1 }
@@ -89,7 +50,6 @@ map_with_unused_argument_over_ranges = { level = "warn", priority = 1 }
 min_ident_chars = { level = "warn", priority = 1 }
 missing_assert_message = { level = "warn", priority = 1 }
 mixed_read_write_in_expression = { level = "warn", priority = 1 }
-module_name_repetitions = { level = "allow", priority = 1 }
 multiple_unsafe_ops_per_block = { level = "warn", priority = 1 }
 mutex_atomic = { level = "warn", priority = 1 }
 mutex_integer = { level = "warn", priority = 1 }
@@ -133,6 +93,48 @@ unused_trait_names = { level = "warn", priority = 1 }
 unwrap_used = { level = "warn", priority = 1 }
 use_debug = { level = "warn", priority = 1 }
 verbose_file_reads = { level = "warn", priority = 1 }
+
 # Cargo
 cargo = "warn"
 cargo_common_metadata = { level = "allow", priority = 1 }
+
+[workspace.lints.rust]
+deprecated_safe = "warn"
+explicit_outlives_requirements = "warn"
+# Wait for https://github.com/rust-lang/rust/issues/130351
+# fuzzy_provenance_casts = "warn"
+impl_trait_overcaptures = "warn"
+# Wait for https://github.com/rust-lang/rust/issues/130351
+# lossy_provenance_casts = "warn"
+macro_use_extern_crate = "warn"
+meta_variable_misuse = "warn"
+missing_abi = "warn"
+missing_docs = "warn"
+missing_unsafe_on_extern = "warn"
+non_ascii_idents = "warn"
+# Wait for https://github.com/rust-lang/rust/issues/89554
+# non_exhaustive_omitted_patterns = "warn"
+non_local_definitions = "warn"
+redundant_lifetimes = "warn"
+single_use_lifetimes = "warn"
+unit_bindings = "warn"
+unnameable_types = "warn"
+unreachable_pub = "warn"
+unsafe_op_in_unsafe_fn = "warn"
+unstable_features = "warn"
+unused_crate_dependencies = "warn"
+unused_extern_crates = "warn"
+unused_macro_rules = "warn"
+unused_qualifications = "warn"
+unused_results = "warn"
+
+[workspace.lints.rustdoc]
+missing_crate_level_docs = "warn"
+private_doc_tests = "warn"
+unescaped_backticks = "warn"
+
+[patch.crates-io]
+blake2 = { path = "patches/blake2" }
+
+[profile.release]
+lto = true

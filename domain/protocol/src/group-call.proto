@@ -410,10 +410,11 @@
 
 syntax = "proto3";
 
-package groupcall;
+package group_call;
 
-option java_package = "ch.threema.protobuf.groupcall";
+option java_package = "ch.threema.protobuf.group_call";
 option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\GroupCall";
 
 import "common.proto";
 
@@ -1348,9 +1349,9 @@ message ParticipantToParticipant {
   //    1. Stop displaying the corresponding media feed in the UI.
   //    2. Pause the corresponding media track.
   //    3. If `device` is `Microphone`, no further action is necessary.
-  //    4. If `device` is `Camera`, send a `ParticipantCamera.Unsubcribe`
+  //    4. If `device` is `Camera`, send a `ParticipantCamera.Unsubscribe`
   //       message to the SFU.
-  //    5. If `device` is `Screen`, send a `ParticipantScreen.Unsubcribe`
+  //    5. If `device` is `Screen`, send a `ParticipantScreen.Unsubscribe`
   //       message to the SFU.
   // 3. If `device` was turned _on_ and the user is not subscribed to the given
   //    `device`'s feed:
@@ -1415,8 +1416,8 @@ message ParticipantToParticipant {
   // 1. Apply the _hold_ state in the UI for the participant.
   // 2. Pause any video-based media tracks of the participant.
   // 3. If subscribed to the participant's camera feed, send a
-  //    `ParticipantCamera.Unsubcribe` message to the SFU.
+  //    `ParticipantCamera.Unsubscribe` message to the SFU.
   // 4. If subscribed to the participant's screen feed, send a
-  //    `ParticipantScreen.Unsubcribe` message to the SFU.
+  //    `ParticipantScreen.Unsubscribe` message to the SFU.
   message HoldState {}
 }

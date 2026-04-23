@@ -38,12 +38,14 @@ class DefaultServerAddressProvider : ServerAddressProvider {
             BuildConfig.DIRECTORY_SERVER_URL
         }
 
-    override fun getWorkServerUrl(ipv6: Boolean): String? =
+    override fun getWorkServerUrlLegacy(ipv6: Boolean): String? =
         if (ipv6) {
-            BuildConfig.WORK_SERVER_IPV6_URL
+            BuildConfig.WORK_SERVER_IPV6_URL_LEGACY
         } else {
-            BuildConfig.WORK_SERVER_URL
+            BuildConfig.WORK_SERVER_URL_LEGACY
         }
+
+    override fun getWorkServerUrl(): String? = BuildConfig.WORK_SERVER_URL
 
     /**
      * @throws ThreemaException if the build config field for the correct base url is missing in current build flavor. This

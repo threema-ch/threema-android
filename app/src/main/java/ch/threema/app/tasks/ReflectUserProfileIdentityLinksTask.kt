@@ -11,9 +11,8 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.domain.taskmanager.getEncryptedUserProfileSyncUpdate
-import ch.threema.protobuf.d2d.MdD2D.TransactionScope
-import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile
-import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile.IdentityLinks
+import ch.threema.protobuf.d2d.TransactionScope
+import ch.threema.protobuf.d2d.sync.UserProfile
 import ch.threema.protobuf.d2d.sync.UserProfileKt.IdentityLinksKt.identityLink
 import ch.threema.protobuf.d2d.sync.UserProfileKt.identityLinks
 import ch.threema.protobuf.d2d.sync.userProfile
@@ -82,7 +81,7 @@ class ReflectUserProfileIdentityLinksTask() : ActiveTask<Unit>, PersistableTask,
         /**
          * Get the identity links that are part of the user profile sync.
          */
-        fun getUserProfileSyncIdentityLinks(userService: UserService): IdentityLinks = identityLinks {
+        fun getUserProfileSyncIdentityLinks(userService: UserService): UserProfile.IdentityLinks = identityLinks {
             if (userService.mobileLinkingState == UserService.LinkingState_LINKED) {
                 val linkedPhoneNumber = userService.linkedMobileE164
                 if (linkedPhoneNumber != null) {

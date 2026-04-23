@@ -17,7 +17,7 @@ class DeleteMessageData(
                     protobufMessage.messageId,
                 )
             } catch (e: InvalidProtocolBufferException) {
-                throw BadMessageException("Invalid DeleteMessage protobuf data")
+                throw BadMessageException("Invalid DeleteMessage protobuf data", e)
             } catch (e: IllegalArgumentException) {
                 throw BadMessageException("Could not create DeleteMessage data", e)
             }

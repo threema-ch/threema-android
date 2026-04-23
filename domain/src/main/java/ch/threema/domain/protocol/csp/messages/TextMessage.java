@@ -6,7 +6,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.domain.protocol.csp.ProtocolDefines;
 import ch.threema.protobuf.csp.e2e.fs.Version;
-import ch.threema.protobuf.d2d.MdD2D;
+import ch.threema.protobuf.d2d.IncomingMessage;
+import ch.threema.protobuf.d2d.OutgoingMessage;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -95,19 +96,18 @@ public class TextMessage extends AbstractMessage {
     }
 
     @NonNull
-    public static TextMessage fromReflected(MdD2D.IncomingMessage message) throws BadMessageException {
+    public static TextMessage fromReflected(IncomingMessage message) throws BadMessageException {
         TextMessage textMessage = fromByteArray(message.getBody().toByteArray());
         textMessage.initializeCommonProperties(message);
         return textMessage;
     }
 
     @NonNull
-    public static TextMessage fromReflected(MdD2D.OutgoingMessage message) throws BadMessageException {
+    public static TextMessage fromReflected(OutgoingMessage message) throws BadMessageException {
         TextMessage textMessage = fromByteArray(message.getBody().toByteArray());
         textMessage.initializeCommonProperties(message);
         return textMessage;
     }
-
 
     @NonNull
     public static TextMessage fromByteArray(@NonNull byte[] data) throws BadMessageException {

@@ -14,7 +14,7 @@ import ch.threema.domain.protocol.connection.data.DeviceId
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage.DevicesInfo
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.ProtocolVersion
 import kotlinx.coroutines.flow.Flow
 
 @SessionScoped
@@ -82,7 +82,7 @@ interface MultiDeviceManager {
         /**
          * This defines the oldest version of the d2d protocol the android client would link to.
          */
-        val minimumSupportedD2dProtocolVersion = MdD2D.ProtocolVersion.V0_2
+        val minimumSupportedD2dProtocolVersion = ProtocolVersion.V0_2
 
         const val DEVICE_JOIN_OFFER_URI_PREFIX: String = "threema://device-group/join"
     }

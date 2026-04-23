@@ -3,7 +3,7 @@ package ch.threema.app.voip.signaling;
 import java.nio.ByteBuffer;
 
 import androidx.annotation.NonNull;
-import ch.threema.protobuf.callsignaling.O2OCall;
+import ch.threema.protobuf.o2o_call.Envelope;
 
 public interface ToSignalingMessage {
     /**
@@ -17,14 +17,14 @@ public interface ToSignalingMessage {
      * Convert the current type into a voip signaling envelope.
      */
     @NonNull
-    O2OCall.Envelope toSignalingMessage();
+    Envelope toSignalingMessage();
 
     /**
      * Convert the current type into voip signaling message bytes
      * (to be sent through the signaling channel).
      */
     default @NonNull byte[] toSignalingMessageBytes() {
-        final O2OCall.Envelope envelope = this.toSignalingMessage();
+        final Envelope envelope = this.toSignalingMessage();
         return envelope.toByteArray();
     }
 

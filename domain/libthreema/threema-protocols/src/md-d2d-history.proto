@@ -40,14 +40,14 @@
 //
 // #### Connection Setup
 //
-// RID creates an `rendezvous.RendezvousInit` by following the Connection
-// Rendezvous Protocol. It encrypts the created `rendezvous.RendezvousInit`
-// with `DGHEK`, wraps it in a `url.HistoryExchangeRequestOrOffer` and offers
-// it in form of a URL or a QR code.
+// RID creates an `d2d_rendezvous.RendezvousInit` by following the Connection
+// Rendezvous Protocol. It encrypts the created `d2d_rendezvous.RendezvousInit`
+// with `DGHEK`, wraps it in a `url.HistoryExchangeRequestOrOffer` and offers it
+// in form of a URL or a QR code.
 //
-// RRD scans the QR code and parses the `url.HistoryExchangeRequestOrOffer`.
-// It will then decrypt the contained `rendezvous.RendezvousInit`. Once
-// decrypted, the enclosed `rendezvous.RendezvousInit` must be handled
+// RRD scans the QR code and parses the `url.HistoryExchangeRequestOrOffer`. It
+// will then decrypt the contained `d2d_rendezvous.RendezvousInit`. Once
+// decrypted, the enclosed `d2d_rendezvous.RendezvousInit` must be handled
 // according to the Connection Rendezvous Protocol.
 //
 // Once the Connection Rendezvous Protocol has established at least one
@@ -91,9 +91,11 @@
 
 syntax = "proto3";
 
-package history;
+package d2d_history;
 
 option java_package = "ch.threema.protobuf.d2d.history";
+option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\D2d\\History";
 
 import "common.proto";
 import "md-d2d.proto";
@@ -244,18 +246,17 @@ message Reaction {
   // Unix-ish timestamp in milliseconds when the reaction happened.
   uint64 at = 1;
 
-  // Threema ID of the sender.
-  string identity = 2;
-
-  // A single fully-qualified [emoji codepoint sequence that is part of the
-  // currently supported Unicode standard][emoji-test.txt]
-  //
-  // [emoji-test.txt]:
-  // https://www.unicode.org/Public/emoji/latest/emoji-test.txt
-  bytes reaction = 3;
+  // The reaction type.
+  enum Type {
+    // Message explicitly acknowledged
+    ACKNOWLEDGE = 0;
+    // Message explicitly declined
+    DECLINE = 1;
+  }
+  Type type = 2;
 }
 
-// A past outgoing message marked as as _Include in history_.
+// A past outgoing message
 message PastOutgoingMessage {
   // Enclosed outgoing message
   d2d.OutgoingMessage message = 1;
@@ -267,11 +268,11 @@ message PastOutgoingMessage {
   // marked as read
   optional uint64 read_at = 3;
 
-  // Optional reactions to the message
-  repeated Reaction reactions = 4;
+  // Optional last reaction to the message
+  Reaction last_reaction_at = 4;
 }
 
-// A past incoming message marked as as _Include in history_.
+// A past incoming message
 message PastIncomingMessage {
   // Enclosed incoming message
   d2d.IncomingMessage message = 1;
@@ -283,6 +284,6 @@ message PastIncomingMessage {
   // marked as read
   optional uint64 read_at = 3;
 
-  // Optional reactions to the message
-  repeated Reaction reactions = 4;
+  // Optional last reaction to the message
+  Reaction last_reaction_at = 4;
 }

@@ -91,12 +91,8 @@ pub(crate) mod aead {
         ///
         /// ```nobuild
         /// let plaintext = b"Top secret message, handle with care";
-        /// let ciphertext = cipher.encrypt(nonce, plaintext);
+        /// let ciphertext = cipher.encrypt_random_nonce_ahead(plaintext);
         /// ```
-        ///
-        /// The default implementation assumes a postfix tag (e.g AES-GCM, AES-GCM-SIV, ChaCha20Poly1305).
-        /// [`Aead`] implementations which do not use a postfix tag (e.g. Salsa20Poly1305) will need to
-        /// override this to correctly assemble the ciphertext message.
         fn encrypt_random_nonce_ahead<'message, 'aad, TPlaintext: Into<Payload<'message, 'aad>>>(
             &self,
             plaintext: TPlaintext,
@@ -117,12 +113,8 @@ pub(crate) mod aead {
         ///
         /// ```nobuild
         /// let ciphertext = b"...";
-        /// let plaintext = cipher.decrypt(nonce, ciphertext)?;
+        /// let plaintext = cipher.decrypt_random_nonce_ahead(ciphertext)?;
         /// ```
-        ///
-        /// The default implementation assumes a postfix tag (e.g AES-GCM, AES-GCM-SIV, ChaCha20Poly1305).
-        /// [`Aead`] implementations which do not use a postfix tag (e.g. Salsa20Poly1305) will need to
-        /// override this to correctly parse the ciphertext message.
         #[expect(dead_code, reason = "May use later")]
         fn decrypt_random_nonce_ahead<'message, 'aad, TCiphertext: Into<Payload<'message, 'aad>>>(
             &self,
@@ -300,7 +292,7 @@ pub(crate) mod x25519 {
     pub(crate) struct SharedSecretHSalsa20([u8; Self::LENGTH]);
 
     impl SharedSecretHSalsa20 {
-        /// The byte length
+        /// The byte length.
         pub(crate) const LENGTH: usize = KEY_LENGTH;
 
         /// Convert this shared secret key to a byte array.
@@ -329,5 +321,233 @@ pub(crate) mod x25519 {
                 .into(),
             )
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use assert_matches::assert_matches;
+    use rand::rngs::OsRng;
+    use rstest::rstest;
+
+    use crate::crypto::{
+        aead::AeadRandomNonceAhead,
+        chacha20::{ChaCha20Poly1305, XChaCha20Poly1305},
+        cipher::{KeyInit as _, Unsigned as _},
+        salsa20::XSalsa20Poly1305,
+    };
+
+    #[rstest]
+    #[case(XSalsa20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(XChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(ChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    fn encrypt_nonce_in_place_ahead<TCipher: AeadRandomNonceAhead>(
+        #[case] cipher: TCipher,
+    ) -> anyhow::Result<()> {
+        let mut buffer = vec![1_u8; 300];
+        let data_length = buffer.len();
+        let nonce = cipher
+            .encrypt_in_place_random_nonce_ahead(b"", &mut buffer)?
+            .to_vec();
+
+        let nonce_length = TCipher::NonceSize::to_usize();
+
+        assert_eq!(
+            nonce,
+            buffer.get(0..nonce_length).expect("Nonce should be present")
+        );
+
+        assert_eq!(
+            buffer.len(),
+            nonce_length + data_length + TCipher::TagSize::to_usize()
+        );
+
+        Ok(())
+    }
+
+    #[rstest]
+    #[case(XSalsa20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(XChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(ChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    fn encrypt_nonce_ahead<TCipher: AeadRandomNonceAhead>(#[case] cipher: TCipher) -> anyhow::Result<()> {
+        let data = vec![1_u8; 300];
+        let (nonce, encrypted_data) = cipher.encrypt_random_nonce_ahead(data.as_slice())?;
+
+        let nonce_length = TCipher::NonceSize::to_usize();
+
+        assert_eq!(
+            nonce.to_vec(),
+            encrypted_data
+                .get(0..nonce_length)
+                .expect("Nonce should be present")
+        );
+
+        assert_eq!(
+            encrypted_data.len(),
+            nonce_length + data.len() + TCipher::TagSize::to_usize()
+        );
+
+        Ok(())
+    }
+
+    #[rstest]
+    #[case(XSalsa20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(XChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(ChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    fn decrypt_nonce_ahead_nonce_fail_too_small<TCipher: AeadRandomNonceAhead>(#[case] cipher: TCipher) {
+        let mut buffer = vec![1_u8; 3];
+
+        assert!(
+            cipher
+                .decrypt_in_place_random_nonce_ahead(b"", &mut buffer)
+                .is_err()
+        );
+    }
+
+    #[rstest]
+    #[case(XSalsa20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(XChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(ChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    fn decrypt_in_place_nonce_ahead_fail_tag<TCipher: AeadRandomNonceAhead>(#[case] cipher: TCipher) {
+        let mut buffer = vec![1_u8; 128];
+        let error = cipher.decrypt_in_place_random_nonce_ahead(b"", &mut buffer);
+        assert_matches!(error, Err(_));
+
+        let buffer = &[1_u8; 128];
+        assert!(cipher.decrypt_random_nonce_ahead(buffer.as_slice()).is_err());
+    }
+
+    #[rstest]
+    #[case(XSalsa20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(XChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(ChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    fn decrypt_in_place_nonce_ahead_valid<TCipher: AeadRandomNonceAhead>(
+        #[case] cipher: TCipher,
+    ) -> anyhow::Result<()> {
+        let mut buffer = vec![1_u8; 300];
+        let decrypted_data = buffer.clone();
+        let nonce = cipher
+            .encrypt_in_place_random_nonce_ahead(b"", &mut buffer)?
+            .to_vec();
+
+        let decryption_nonce = cipher
+            .decrypt_in_place_random_nonce_ahead(b"", &mut buffer)?
+            .to_vec();
+
+        let nonce_length = TCipher::NonceSize::to_usize();
+
+        assert_eq!(nonce, decryption_nonce);
+        assert_eq!(decryption_nonce.len(), nonce_length);
+        assert_eq!(buffer, decrypted_data);
+
+        Ok(())
+    }
+
+    #[rstest]
+    #[case(XSalsa20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(XChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(ChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    fn decrypt_nonce_ahead_valid<TCipher: AeadRandomNonceAhead>(
+        #[case] cipher: TCipher,
+    ) -> anyhow::Result<()> {
+        let mut buffer = vec![1_u8; 300];
+        let original_data = buffer.clone();
+        let nonce = cipher
+            .encrypt_in_place_random_nonce_ahead(b"", &mut buffer)?
+            .to_vec();
+
+        let (decryption_nonce, decrypted_data) = cipher.decrypt_random_nonce_ahead(buffer.as_slice())?;
+
+        let nonce_length = TCipher::NonceSize::to_usize();
+
+        assert_eq!(nonce, decryption_nonce.to_vec());
+        assert_eq!(decryption_nonce.len(), nonce_length);
+        assert_eq!(original_data, decrypted_data);
+
+        Ok(())
+    }
+
+    #[rstest]
+    #[case(XSalsa20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(XChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(ChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    fn check_nonce_randomness_in_place<TCipher: AeadRandomNonceAhead>(
+        #[case] cipher: TCipher,
+    ) -> anyhow::Result<()> {
+        let mut first_buffer = vec![1_u8; 300];
+        let mut second_buffer = first_buffer.clone();
+        let first_nonce = cipher
+            .encrypt_in_place_random_nonce_ahead(b"", &mut first_buffer)?
+            .to_vec();
+
+        let second_nonce = cipher
+            .encrypt_in_place_random_nonce_ahead(b"", &mut second_buffer)?
+            .to_vec();
+
+        assert_ne!(first_nonce, second_nonce);
+        assert_ne!(first_buffer, second_buffer);
+
+        Ok(())
+    }
+
+    #[rstest]
+    #[case(XSalsa20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(XChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(ChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    fn check_nonce_randomness<TCipher: AeadRandomNonceAhead>(#[case] cipher: TCipher) -> anyhow::Result<()> {
+        let data = vec![1_u8; 300];
+        let (first_nonce, first_encrypted_data) = cipher.encrypt_random_nonce_ahead(data.as_slice())?;
+
+        let (second_nonce, second_encrypted_data) = cipher.encrypt_random_nonce_ahead(data.as_slice())?;
+
+        assert_ne!(first_nonce, second_nonce);
+        assert_ne!(first_encrypted_data, second_encrypted_data);
+
+        Ok(())
+    }
+
+    #[rstest]
+    #[case(XSalsa20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(XChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(ChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    fn test_encryption_compatibility<TCipher: AeadRandomNonceAhead>(
+        #[case] cipher: TCipher,
+    ) -> anyhow::Result<()> {
+        let mut buffer = vec![1_u8; 12];
+        let data = buffer.clone();
+        let nonce = cipher.encrypt_in_place_random_nonce_ahead(b"", &mut buffer)?;
+
+        let mut buffer = buffer
+            .get(TCipher::NonceSize::to_usize()..)
+            .expect("Should be long enough")
+            .to_vec();
+        cipher.decrypt_in_place(&nonce, b"", &mut buffer)?;
+
+        assert_eq!(data, buffer);
+
+        Ok(())
+    }
+
+    #[rstest]
+    #[case(XSalsa20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(XChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    #[case(ChaCha20Poly1305::new_from_slice(&[0; 32]).unwrap())]
+    fn test_decryption_compatibility<TCipher: AeadRandomNonceAhead>(
+        #[case] cipher: TCipher,
+    ) -> anyhow::Result<()> {
+        let mut buffer = vec![1_u8; 300];
+        let nonce = TCipher::generate_nonce(&mut OsRng);
+        let data = buffer.clone();
+        cipher.encrypt_in_place(&nonce, b"", &mut buffer)?;
+
+        let mut ciphertext = nonce.clone().as_slice().to_vec();
+        ciphertext.extend(buffer);
+
+        let extracted_nonce = cipher.decrypt_in_place_random_nonce_ahead(b"", &mut ciphertext)?;
+
+        assert_eq!(data, ciphertext);
+        assert_eq!(extracted_nonce, nonce);
+
+        Ok(())
     }
 }

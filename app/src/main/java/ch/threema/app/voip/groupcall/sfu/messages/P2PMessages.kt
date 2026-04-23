@@ -7,9 +7,9 @@ import ch.threema.app.voip.groupcall.sfu.webrtc.ParticipantCallMediaKeyState
 import ch.threema.base.utils.generateRandomProtobufPadding
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.groupcall.ParticipantToParticipant
-import ch.threema.protobuf.groupcall.ParticipantToSfu
+import ch.threema.protobuf.common.Unit
+import ch.threema.protobuf.group_call.ParticipantToParticipant
+import ch.threema.protobuf.group_call.ParticipantToSfu
 import com.google.protobuf.ByteString
 import com.google.protobuf.InvalidProtocolBufferException
 import java.util.Date
@@ -163,7 +163,7 @@ sealed class P2PMessageContent {
                     ParticipantToParticipant.CaptureState.StateCase.STATE_NOT_SET -> null
                     null -> {
                         logger.warn("Capture state is not set")
-                        return null
+                        null
                     }
                 }
             }
@@ -182,7 +182,7 @@ sealed class P2PMessageContent {
 
             override fun toProtobuf(): ParticipantToParticipant.CaptureState {
                 val builder = ParticipantToParticipant.CaptureState.Microphone.newBuilder()
-                val unit = Common.Unit.newBuilder().build()
+                val unit = Unit.newBuilder().build()
                 if (active) {
                     builder.on = unit
                 } else {
@@ -199,7 +199,7 @@ sealed class P2PMessageContent {
 
             override fun toProtobuf(): ParticipantToParticipant.CaptureState {
                 val builder = ParticipantToParticipant.CaptureState.Camera.newBuilder()
-                val unit = Common.Unit.newBuilder().build()
+                val unit = Unit.newBuilder().build()
                 if (active) {
                     builder.on = unit
                 } else {
@@ -227,7 +227,7 @@ sealed class P2PMessageContent {
                         .setStartedAt(startedAt.time)
                         .build()
                 } else {
-                    builder.off = Common.Unit.newBuilder().build()
+                    builder.off = Unit.newBuilder().build()
                 }
                 return ParticipantToParticipant.CaptureState.newBuilder()
                     .setScreen(builder.build())

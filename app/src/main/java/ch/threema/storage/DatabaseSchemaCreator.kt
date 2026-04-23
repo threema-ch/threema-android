@@ -4,6 +4,7 @@ import ch.threema.storage.factories.AppTaskPersistenceFactory
 import ch.threema.storage.factories.BallotChoiceModelFactory
 import ch.threema.storage.factories.BallotModelFactory
 import ch.threema.storage.factories.BallotVoteModelFactory
+import ch.threema.storage.factories.ContactAvailabilityStatusModelFactory
 import ch.threema.storage.factories.ContactEditHistoryEntryModelFactory
 import ch.threema.storage.factories.ContactEmojiReactionModelFactory
 import ch.threema.storage.factories.ContactModelFactory
@@ -65,5 +66,6 @@ object DatabaseSchemaCreator {
             GroupEditHistoryEntryModelFactory.Creator,
             ContactEmojiReactionModelFactory.Creator,
             GroupEmojiReactionModelFactory.Creator,
+            ContactAvailabilityStatusModelFactory.Creator,
         )
 }

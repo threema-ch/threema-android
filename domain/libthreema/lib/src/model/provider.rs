@@ -45,16 +45,16 @@ impl From<uniffi::UnexpectedUniFFICallbackError> for ProviderError {
 /// A set of supported media types for profile pictures.
 #[derive(Clone, Copy)]
 pub enum ProfilePictureMediaType {
-    /// JPEG (not JPEG XL)
+    /// JPEG (not JPEG XL).
     Jpeg,
 }
 
 /// A profile picture.
 #[derive(Clone)]
 pub struct ProfilePicture {
-    /// Media type of the profile picture
+    /// Media type of the profile picture.
     pub media_type: ProfilePictureMediaType,
-    /// Bytes of the profile picture
+    /// Bytes of the profile picture.
     pub data: Vec<u8>,
 }
 
@@ -281,7 +281,7 @@ pub trait ConversationProvider {
     fn add_or_update_incoming_message(&mut self, message: IncomingMessage) -> Result<(), ProviderError>;
 }
 
-/// In memory provider implementations for testing / the CLI
+/// In memory provider implementations for testing / the CLI.
 #[cfg(any(test, feature = "cli"))]
 pub mod in_memory {
     use core::cell::RefCell;
@@ -575,7 +575,7 @@ pub mod in_memory {
             // Add, if possible
             match conversation.entry((message.sender_identity, message.id)) {
                 hash_map::Entry::Occupied(_) => {
-                    // A message from the sender with the same message ID already existss
+                    // A message from the sender with the same message ID already exists
                     warn!(
                         sender_identity = ?message.sender_identity,
                         nessage_id = ?message.id,

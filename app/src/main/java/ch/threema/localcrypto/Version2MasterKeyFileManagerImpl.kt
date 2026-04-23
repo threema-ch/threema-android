@@ -17,6 +17,7 @@ private val logger = getThreemaLogger("Version2MasterKeyFileManagerImpl")
  * @param unencryptedKeyFile The file that used to store the master key data in unencrypted format, before the introduction of [keyStoreCrypto]
  */
 class Version2MasterKeyFileManagerImpl(
+    private val deletionDirectory: File,
     private val keyFile: File,
     private val unencryptedKeyFile: File,
     private val encoder: Version2MasterKeyStorageEncoder,
@@ -27,8 +28,15 @@ class Version2MasterKeyFileManagerImpl(
 
     @Throws(IOException::class)
     override fun readKeyFile(): MasterKeyStorageData.Version2 {
+        var unencryptedKeyCorrupted = false
         val keyDataReadFromUnencryptedKeyFile = if (unencryptedKeyFile.exists()) {
-            readUnencryptedFile()
+            try {
+                readUnencryptedFile()
+            } catch (e: Exception) {
+                unencryptedKeyCorrupted = true
+                logger.error("Failed to read unencrypted key file", e)
+                null
+            }
         } else {
             null
         }
@@ -50,7 +58,10 @@ class Version2MasterKeyFileManagerImpl(
             }
 
             logger.info("Deleting unencrypted master key file")
-            unencryptedKeyFile.deleteSecurely()
+            unencryptedKeyFile.deleteSecurely(deletionDirectory)
+        } else if (unencryptedKeyCorrupted) {
+            logger.info("Deleting corrupted unencrypted master key file")
+            unencryptedKeyFile.deleteSecurely(deletionDirectory)
         }
 
         return masterKeyStorageData

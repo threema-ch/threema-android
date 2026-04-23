@@ -21,7 +21,6 @@ import ch.threema.domain.taskmanager.TRANSACTION_TTL_MAX
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.TriggerSource
 import ch.threema.domain.taskmanager.createTransaction
-import ch.threema.protobuf.d2d.MdD2D
 import java.util.Date
 
 private val logger = getThreemaLogger("IncomingGroupSyncRequestTask")
@@ -102,9 +101,9 @@ suspend fun handleIncomingGroupSyncRequest(
 
         try {
             handle.createTransaction(
-                multiDeviceProperties.keys,
-                MdD2D.TransactionScope.Scope.GROUP_SYNC,
-                TRANSACTION_TTL_MAX,
+                keys = multiDeviceProperties.keys,
+                scope = ch.threema.protobuf.d2d.TransactionScope.Scope.GROUP_SYNC,
+                ttl = TRANSACTION_TTL_MAX,
                 precondition = {
                     group.data != null
                 },

@@ -7,6 +7,7 @@ import androidx.annotation.StringRes
 import ch.threema.app.services.ContactService.ProfilePictureUploadData
 import ch.threema.app.threemasafe.ThreemaSafeServerInfo
 import ch.threema.app.utils.ConfigUtils.AppThemeSetting
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.domain.protocol.api.work.WorkDirectoryCategory
 import ch.threema.domain.protocol.api.work.WorkOrganization
@@ -573,6 +574,27 @@ interface PreferenceService {
     fun setDebugLogEnabledTimestamp(timestamp: Instant?)
 
     fun getDebugLogEnabledTimestamp(): Instant?
+
+    /**
+     *  Persist the users [AvailabilityStatus]. If the current build does not support this feature, this is a no-op.
+     */
+    fun setAvailabilityStatus(availabilityStatus: AvailabilityStatus)
+
+    /**
+     *  Read the currently stored [AvailabilityStatus] of the user **if** the current build supports the feature.
+     *
+     *  In case no status was ever saved or the deserialization fails, `null` will be returned.
+     */
+    fun getAvailabilityStatus(): AvailabilityStatus?
+
+    /**
+     *  Creates a *cold* flow of the latest [AvailabilityStatus] of the user.
+     *
+     *  If the current build does not support this feature, a single value flow of `null` is returned.
+     *
+     *  In case the deserialization fails, `null` will be emitted.
+     */
+    fun watchAvailabilityStatus(): Flow<AvailabilityStatus?>
 
     fun clear()
 

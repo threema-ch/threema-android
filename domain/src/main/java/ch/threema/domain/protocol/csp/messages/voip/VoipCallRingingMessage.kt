@@ -3,7 +3,9 @@ package ch.threema.domain.protocol.csp.messages.voip
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.BadMessageException
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage.Companion.fromByteArray
+import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingMessage.Companion.fromReflected
+import ch.threema.protobuf.d2d.IncomingMessage
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 
@@ -59,7 +61,7 @@ class VoipCallRingingMessage : VoipMessage() {
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): VoipCallRingingMessage {
+        fun fromReflected(message: IncomingMessage): VoipCallRingingMessage {
             val bodyBytes: ByteArray = message.body.toByteArray()
             val voipCallRingingMessage = fromByteArray(bodyBytes, 0, bodyBytes.size)
             voipCallRingingMessage.initializeCommonProperties(message)

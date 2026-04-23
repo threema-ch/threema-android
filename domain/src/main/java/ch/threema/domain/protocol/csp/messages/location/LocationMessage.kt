@@ -3,8 +3,10 @@ package ch.threema.domain.protocol.csp.messages.location
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
+import ch.threema.domain.protocol.csp.messages.location.LocationMessage.Companion.fromByteArray
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import java.nio.charset.StandardCharsets
 
 /**
@@ -64,14 +66,14 @@ class LocationMessage(private val locationMessageData: LocationMessageData) : Ab
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): LocationMessage {
+        fun fromReflected(message: IncomingMessage): LocationMessage {
             val locationMessage = fromByteArray(message.body.toByteArray())
             locationMessage.initializeCommonProperties(message)
             return locationMessage
         }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): LocationMessage {
+        fun fromReflected(message: OutgoingMessage): LocationMessage {
             val locationMessage = fromByteArray(message.body.toByteArray())
             locationMessage.initializeCommonProperties(message)
             return locationMessage

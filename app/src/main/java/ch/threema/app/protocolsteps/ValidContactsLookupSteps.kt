@@ -7,6 +7,7 @@ import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.ThreemaException
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.now
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.models.ContactModel
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.repositories.ContactModelRepository
@@ -48,7 +49,9 @@ class ValidContactsLookupSteps(
     private val licenseService: LicenseService<*>,
     private val apiConnector: APIConnector,
 ) {
-    private val myIdentity = identityProvider.getIdentityString()!!
+    private val myIdentity by lazy {
+        identityProvider.getIdentityString()!!
+    }
 
     @WorkerThread
     fun run(identity: IdentityString): ContactOrInit =
@@ -57,7 +60,7 @@ class ValidContactsLookupSteps(
     @WorkerThread
     fun run(identities: Set<IdentityString>): Map<IdentityString, ContactOrInit> {
         val contactOrInitMap = mutableMapOf<IdentityString, ContactOrInit>()
-        val unknownIdentities = mutableSetOf<String>()
+        val unknownIdentities = mutableSetOf<IdentityString>()
 
         for (identity in identities) {
             val result = try {
@@ -78,21 +81,22 @@ class ValidContactsLookupSteps(
             return contactOrInitMap
         }
 
-        val workContacts: Map<String, WorkContact> = if (ConfigUtils.isWorkBuild()) {
-            val credentials = licenseService.loadCredentials()
-            if (credentials !is UserCredentials) {
-                logger.error("Work build without user credentials")
-                emptyMap()
+        val unknownWorkContacts: Map<IdentityString, WorkContact> =
+            if (ConfigUtils.isWorkBuild()) {
+                val credentials = licenseService.loadCredentials()
+                if (credentials !is UserCredentials) {
+                    logger.error("Work build without user credentials")
+                    emptyMap()
+                } else {
+                    checkWorkAPI(unknownIdentities, apiConnector, credentials)
+                }
             } else {
-                checkWorkAPI(unknownIdentities, apiConnector, credentials)
+                emptyMap()
             }
-        } else {
-            emptyMap()
-        }
 
-        fetchIdentities(unknownIdentities, workContacts, apiConnector)
-            .forEach {
-                contactOrInitMap[it.identity] = it
+        fetchIdentities(unknownIdentities, unknownWorkContacts, apiConnector)
+            .forEach { contactOrInit ->
+                contactOrInitMap[contactOrInit.identity] = contactOrInit
             }
 
         // TODO(SE-173): Run the contact import flow for `contactOrInitMap` and update verification
@@ -134,7 +138,9 @@ class ValidContactsLookupSteps(
             if (cachedContact !is BasicContact) {
                 throw InvalidIdentityException("Cached contact of unexpected type. Skipping identity $identity")
             }
-            return Init(cachedContact.toContactModelData())
+            return Init(
+                contactModelData = cachedContact.toContactModelData(),
+            )
         }
 
         return null
@@ -145,12 +151,15 @@ class ValidContactsLookupSteps(
         unknownIdentities: Set<IdentityString>,
         apiConnector: APIConnector,
         credentials: UserCredentials,
-    ): Map<String, WorkContact> {
+    ): Map<IdentityString, WorkContact> {
         val workContacts =
             try {
                 apiConnector.fetchWorkContacts(
+                    /* username = */
                     credentials.username,
+                    /* password = */
                     credentials.password,
+                    /* identities = */
                     unknownIdentities.toTypedArray(),
                 )
             } catch (e: Exception) {
@@ -158,13 +167,13 @@ class ValidContactsLookupSteps(
                 logger.warn("Exception during work contact fetch", e)
                 throw e
             }
-        return workContacts.associateBy { it.threemaId }
+        return workContacts.associateBy(WorkContact::threemaId)
     }
 
     @WorkerThread
     private fun fetchIdentities(
         unknownIdentities: Set<IdentityString>,
-        workContacts: Map<String, WorkContact>,
+        unknownWorkContacts: Map<IdentityString, WorkContact>,
         apiConnector: APIConnector,
     ): Set<ContactOrInit> {
         val fetchResults = try {
@@ -183,13 +192,17 @@ class ValidContactsLookupSteps(
             }
         }
 
-        val fetchedContacts = fetchResults
-            .map { it.toContactModelData(workContacts[it.identity]) }
-            .map {
-                if (it.activityState == IdentityState.INVALID) {
-                    Invalid(it.identity)
+        val fetchedContacts: MutableSet<ContactOrInit> = fetchResults
+            .map { fetchIdentityResult ->
+                fetchIdentityResult.toContactModelData(
+                    workContact = unknownWorkContacts[fetchIdentityResult.identity],
+                )
+            }
+            .map { contactModelData ->
+                if (contactModelData.activityState == IdentityState.INVALID) {
+                    Invalid(contactModelData.identity)
                 } else {
-                    Init(it)
+                    Init(contactModelData)
                 }
             }
             // TODO(ANDR-3262): Check whether the contact is a predefined contact and perform
@@ -197,9 +210,10 @@ class ValidContactsLookupSteps(
             .toMutableSet()
 
         // Identities where we did not receive a response from the server are considered invalid
-        (unknownIdentities - fetchedContacts.map { it.identity }.toSet()).forEach {
-            fetchedContacts.add(Invalid(it))
-        }
+        (unknownIdentities - fetchedContacts.map(ContactOrInit::identity).toSet())
+            .forEach { identity ->
+                fetchedContacts.add(Invalid(identity))
+            }
 
         return fetchedContacts
     }
@@ -228,6 +242,8 @@ class ValidContactsLookupSteps(
         jobTitle = jobTitle,
         department = department,
         notificationTriggerPolicyOverride = null,
+        availabilityStatus = AvailabilityStatus.None,
+        workLastFullSyncAt = null,
     )
 
     private fun FetchIdentityResult.toContactModelData(workContact: WorkContact?) = ContactModelData(
@@ -258,6 +274,8 @@ class ValidContactsLookupSteps(
         jobTitle = workContact?.jobTitle,
         department = workContact?.department,
         notificationTriggerPolicyOverride = null,
+        availabilityStatus = workContact?.getAvailabilityStatusOrNone() ?: AvailabilityStatus.None,
+        workLastFullSyncAt = workContact?.workLastFullSyncAt,
     )
 
     private fun FetchIdentityResult.getIdentityType() = when (type) {
@@ -290,6 +308,11 @@ class ValidContactsLookupSteps(
     } else {
         WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED
     }
+
+    private fun WorkContact.getAvailabilityStatusOrNone(): AvailabilityStatus =
+        availability
+            ?.let(AvailabilityStatus::fromProtocolBase64)
+            ?: AvailabilityStatus.None
 
     private class InvalidIdentityException(msg: String) : ThreemaException(msg)
 }

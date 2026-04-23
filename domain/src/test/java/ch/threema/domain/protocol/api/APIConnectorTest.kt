@@ -39,7 +39,7 @@ class APIConnectorTest {
             /* serverAddressProvider = */
             mockk {
                 every { getDirectoryServerUrl(any()) } returns "https://server.url/"
-                every { getWorkServerUrl(any()) } returns "https://api-work.threema.ch/"
+                every { getWorkServerUrlLegacy(any()) } returns "https://api-work.threema.ch/"
             },
             /* isWork = */
             false,

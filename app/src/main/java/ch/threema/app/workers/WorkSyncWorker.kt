@@ -261,14 +261,16 @@ class WorkSyncWorker(
         val fetchedWorkIdentities = workData.workContacts.map { it.threemaId }.toSet()
 
         // Create or update work contacts
-        val refreshedWorkIdentities = workData.workContacts
+        val refreshedWorkIdentities = workData
+            .workContacts
             .mapNotNull { workContact ->
                 AddOrUpdateWorkContactBackgroundTask(
                     workContact = workContact,
                     myIdentity = userService.identity!!,
                     contactModelRepository = contactModelRepository,
                 ).runSynchronously()
-            }.map { it.identity }
+            }
+            .map(ContactModel::identity)
 
         val newWorkIdentities = refreshedWorkIdentities - existingWorkIdentities
         newWorkContacts.addAll(

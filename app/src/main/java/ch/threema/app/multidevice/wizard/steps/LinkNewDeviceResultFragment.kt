@@ -42,7 +42,7 @@ import ch.threema.app.R
 import ch.threema.app.compose.common.DynamicSpacerSize1
 import ch.threema.app.compose.common.DynamicSpacerSize4
 import ch.threema.app.compose.common.ThemedText
-import ch.threema.app.compose.common.buttons.ButtonPrimary
+import ch.threema.app.compose.common.buttons.primary.ButtonPrimary
 import ch.threema.app.compose.preview.PreviewThreemaPhone
 import ch.threema.app.compose.theme.ThreemaTheme
 import ch.threema.app.compose.theme.ThreemaThemePreview

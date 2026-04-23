@@ -22,6 +22,7 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="enter_id_hint">Introduzca el ID de ${app_name_short}</string>
     <string name="account_links">Conexiones</string>
+    <string name="title_set_availability_status">Estado de disponibilidad</string>
     <string name="menu_settings">Configuración</string>
     <!-- ${app_name} is a placeholder for the app's name, it must be kept as-is, not translated. -->
     <string name="menu_about">Acerca de ${app_name}</string>
@@ -112,6 +113,7 @@
     <string name="set_nickname_title">Definir alias</string>
     <string name="ok">Aceptar</string>
     <string name="cancel">Cancelar</string>
+    <string name="save">Guardar</string>
     <string name="copy_message_action">Copiar</string>
     <string name="delete_contact_action">Eliminar contacto</string>
     <string name="delete_multiple_contact_action">Eliminar contactos</string>
@@ -349,6 +351,7 @@
     <string name="can_not_send_no_group_members">No se pueden enviar mensajes a un grupo vacío.</string>
     <string name="you_are_not_a_member_of_this_group">Usted no es miembro de este grupo</string>
     <string name="title_public_nickname">Alias</string>
+    <string name="title_availability_status">Estado</string>
     <string name="prefs_sum_excluded_sync_identities">Los ID de esta lista se ignoran al sincronizar los contactos.</string>
     <string name="prefs_title_excluded_sync_identities">Lista de exclusión</string>
     <string name="synchronize_contact">Sincronización de la libreta de direcciones</string>
@@ -1666,7 +1669,7 @@ almacenado.</string>
     <!-- Error message when linking of a new device failed due to an invalid contact. %1$s will be replaced with the threema identity of the affected contact. -->
     <string name="device_linking_error_invalid_contact_body">El contacto con la identidad %1$s no está almacenado correctamente en este dispositivo y hace que se sea posible enlazar con el nuevo dispositivo. Por favor, contacta con el equipo técnico (Menú principal &gt; Ayuda).</string>
     <string name="device_linking_error_invalid_timestamp_title">Fecha no válida</string>
-    <string name="device_linking_error_invalid_timestamp_body">Se ha encontrado una fecha no válida. Póngase en contacto con el servicio de asistencia («Menú principal > Ayuda»).</string>
+    <string name="device_linking_error_invalid_timestamp_body">Se ha encontrado una fecha no válida. Póngase en contacto con el servicio de asistencia («Menú principal &gt; Ayuda»).</string>
     <string name="work_directory_title">Directorio de la empresa</string>
     <!-- Instruction text for the user directory search -->
     <string name="work_directory_search">Buscar en el directorio</string>
@@ -1674,10 +1677,11 @@ almacenado.</string>
     <string name="work_directory_empty_view_text">Introduce al menos 3 caracteres de un nombre para comenzar la búsqueda en el directorio de usuarios de ${app_name_short} de tu empresa.</string>
     <!-- Message that is shown when the user wants to share an invalid file. -->
     <string name="invalid_file_cannot_be_shared">Este archivo no es válido y no puede ser compartido</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile. Indicating that the person is currently available, i.e., not busy and not out-of-office -->
-    <string name="contact_availability_status_available">Disponible</string>
-    <!-- Status of a contact (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e., busy or out-of-office -->
-    <string name="contact_availability_status_unavailable">No disponible</string>
+    <string name="availability_status_none">Sin estado</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently not available, i.e. out-of-office -->
+    <string name="availability_status_unavailable">No disponible</string>
+    <!-- Status (only relevant for Work), e.g. as shown on their profile, indicating that the person is currently busy-->
+    <string name="availability_status_busy">Ocupado</string>
     <!-- Error message (only relevant for OnPrem) if the preset server url is different from the one provided by the activation link. -->
     <string name="error_preset_onprem_url_mismatch_intent">El enlace de activación no es válido. Póngase en contacto con su administrador.</string>
     <!-- Warning message displayed on screen where the user can export a debug log file to share with Support. ${company_name} is a placeholder for the company name and should be kept as-is, not translated. -->
@@ -1744,6 +1748,13 @@ almacenado.</string>
     <string name="prefs_voip_abort_on_bluetooth_disconnect_summary_off">La llamada continúa aunque se desconecte el auricular Bluetooth durante la misma. Nota: esto podría impedir que funcione el botón de colgar de los auriculares.</string>
     <string name="failed_to_load_conversations">No se pudieron cargar los chats.</string>
     <string name="contact_support">Póngase en contacto con el servicio de asistencia</string>
+    <string name="edit_availability_status_modal_title">Estado de disponibilidad</string>
+    <string name="edit_availability_status_modal_subtitle">Todos en su empresa podrán ver este estado.</string>
+    <string name="edit_availability_status_modal_optional_message_label">Texto personalizado (opcional)</string>
+    <string name="edit_availability_status_modal_optional_message_placeholder">En una reunión</string>
+    <string name="edit_availability_status_modal_optional_message_description">Establezca un mensaje de estado personalizado cuando se seleccione Ocupado o No disponible.</string>
+    <string name="edit_availability_status_modal_optional_message_too_long">El texto es demasiado largo, acórtelo.</string>
+    <string name="edit_availability_status_did_change">Estado de disponibilidad cambiado</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d contacto</item>
         <item quantity="other">%d contactos</item>

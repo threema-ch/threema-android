@@ -56,6 +56,10 @@ public class AppLinksActivity extends ThreemaToolbarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         logScreenVisibility(this, logger);
+        if (dependencies.getIdentityProvider().getIdentityString() == null) {
+            finish();
+            return;
+        }
         if (finishAndRestartLaterIfNotReady(this)) {
             return;
         }

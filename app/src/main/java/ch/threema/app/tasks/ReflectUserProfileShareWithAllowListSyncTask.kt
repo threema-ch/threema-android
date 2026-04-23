@@ -6,10 +6,10 @@ import ch.threema.app.services.ProfilePictureRecipientsService
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.d2d.sync.MdD2DSync
+import ch.threema.protobuf.common.identities
+import ch.threema.protobuf.d2d.sync.UserProfile
 import ch.threema.protobuf.d2d.sync.UserProfileKt.profilePictureShareWith
 import ch.threema.protobuf.d2d.sync.userProfile
-import ch.threema.protobuf.identities
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -31,7 +31,7 @@ class ReflectUserProfileShareWithAllowListSyncTask(
 
     override val type = "ReflectUserProfileShareWithAllowListSyncTask"
 
-    override fun createUpdatedUserProfile(): MdD2DSync.UserProfile = userProfile {
+    override fun createUpdatedUserProfile(): UserProfile = userProfile {
         this.profilePictureShareWith = profilePictureShareWith {
             this.allowList = identities {
                 this.identities.addAll(allowedIdentities)

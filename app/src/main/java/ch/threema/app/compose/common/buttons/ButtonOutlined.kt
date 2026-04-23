@@ -41,7 +41,7 @@ fun ButtonOutlined(
         colors = ButtonDefaults.outlinedButtonColors().copy(
             contentColor = MaterialTheme.colorScheme.onSurface,
             disabledContentColor = MaterialTheme.colorScheme.onSurface
-                .copy(alpha = AlphaValues.DISABLED_ON_CONTAINER),
+                .copy(alpha = AlphaValues.DISABLED),
         ),
     ) {
         if (leadingIcon != null) {

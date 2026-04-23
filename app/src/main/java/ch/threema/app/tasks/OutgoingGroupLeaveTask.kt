@@ -22,7 +22,6 @@ import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.d2d.MdD2D
 import java.util.Date
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
@@ -65,7 +64,7 @@ class OutgoingGroupLeaveTask(
 
         handle.createTransaction(
             keys = multiDeviceProperties.keys,
-            scope = MdD2D.TransactionScope.Scope.GROUP_SYNC,
+            scope = ch.threema.protobuf.d2d.TransactionScope.Scope.GROUP_SYNC,
             ttl = TRANSACTION_TTL_MAX,
             precondition = {
                 val groupModelData = groupModelRepository.getByGroupIdentity(groupIdentity)?.data

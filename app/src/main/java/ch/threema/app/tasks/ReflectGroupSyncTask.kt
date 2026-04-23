@@ -10,26 +10,26 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.NetworkException
 import ch.threema.domain.taskmanager.TransactionScope.TransactionException
-import ch.threema.protobuf.blob
-import ch.threema.protobuf.d2d.MdD2D.TransactionScope.Scope.GROUP_SYNC
-import ch.threema.protobuf.d2d.sync.GroupKt.notificationSoundPolicyOverride
+import ch.threema.protobuf.common.blob
+import ch.threema.protobuf.common.deltaImage
+import ch.threema.protobuf.common.groupIdentity
+import ch.threema.protobuf.common.identities
+import ch.threema.protobuf.common.image
+import ch.threema.protobuf.common.unit
+import ch.threema.protobuf.d2d.TransactionScope
+import ch.threema.protobuf.d2d.sync.ConversationCategory
+import ch.threema.protobuf.d2d.sync.ConversationVisibility
+import ch.threema.protobuf.d2d.sync.Group
+import ch.threema.protobuf.d2d.sync.GroupKt.deprecatedNotificationSoundPolicyOverride
 import ch.threema.protobuf.d2d.sync.GroupKt.notificationTriggerPolicyOverride
-import ch.threema.protobuf.d2d.sync.MdD2DSync
-import ch.threema.protobuf.d2d.sync.MdD2DSync.ConversationVisibility
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Group
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Group.NotificationSoundPolicyOverride
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Group.NotificationTriggerPolicyOverride
 import ch.threema.protobuf.d2d.sync.group
-import ch.threema.protobuf.deltaImage
-import ch.threema.protobuf.groupIdentity
-import ch.threema.protobuf.identities
-import ch.threema.protobuf.image
-import ch.threema.protobuf.unit
 import com.google.protobuf.kotlin.toByteString
 
 private val logger = getThreemaLogger("ReflectGroupSyncTask")
 
-abstract class ReflectGroupSyncTask<TransactionResult, TaskResult>() : ReflectSyncTask<TransactionResult, TaskResult>(transactionScope = GROUP_SYNC) {
+abstract class ReflectGroupSyncTask<TransactionResult, TaskResult> : ReflectSyncTask<TransactionResult, TaskResult>(
+    transactionScope = TransactionScope.Scope.GROUP_SYNC,
+) {
     /**
      * Runs the transaction. The group sync is performed inside of the transaction.
      */
@@ -83,13 +83,12 @@ sealed interface ReflectionResult<T> {
  *
  * Note that the profile-picture is not set.
  *
- * For notification trigger and sound policy override, the default option is chosen if not provided.
+ * For notification trigger policy override, the default option is chosen if not provided.
  */
 fun GroupModelData.toGroupSync(
     isPrivateChat: Boolean?,
     conversationVisibility: ConversationVisibility?,
-    notificationTriggerPolicyOverride: NotificationTriggerPolicyOverride? = null,
-    notificationSoundPolicyOverride: NotificationSoundPolicyOverride? = null,
+    notificationTriggerPolicyOverride: Group.NotificationTriggerPolicyOverride? = null,
     expectedProfilePictureChange: ExpectedProfilePictureChange? = null,
 ): Group = group {
     val data = this@toGroupSync
@@ -102,9 +101,9 @@ fun GroupModelData.toGroupSync(
     memberIdentities = data.getProtoMembers()
     if (isPrivateChat != null) {
         conversationCategory = if (isPrivateChat) {
-            MdD2DSync.ConversationCategory.PROTECTED
+            ConversationCategory.PROTECTED
         } else {
-            MdD2DSync.ConversationCategory.DEFAULT
+            ConversationCategory.DEFAULT
         }
     }
     if (conversationVisibility != null) {
@@ -144,10 +143,9 @@ fun GroupModelData.toGroupSync(
             default = unit { }
         }
 
-    this.notificationSoundPolicyOverride = notificationSoundPolicyOverride
-        ?: notificationSoundPolicyOverride {
-            default = unit { }
-        }
+    this.deprecatedNotificationSoundPolicyOverride = deprecatedNotificationSoundPolicyOverride {
+        default = unit {}
+    }
 }
 
 fun GroupModel.getProtoGroupIdentity() =

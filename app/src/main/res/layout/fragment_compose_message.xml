@@ -25,6 +25,15 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <ch.threema.app.availabilitystatus.AvailabilityStatusContactBannerView
+                android:id="@+id/availability_status_banner_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <ch.threema.app.ui.OngoingCallNoticeView
                 android:id="@+id/ongoing_call_notice"
                 android:layout_width="match_parent"
@@ -35,7 +44,8 @@
                 android:visibility="gone"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/availability_status_banner_view"
+                tools:visibility="visible" />
 
             <ch.threema.app.ui.OpenBallotNoticeView
                 android:id="@+id/open_ballots_layout"
@@ -60,7 +70,8 @@
                 android:visibility="gone"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/open_ballots_layout" />
+                app:layout_constraintTop_toBottomOf="@id/open_ballots_layout"
+                tools:visibility="visible" />
 
             <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
                 android:id="@+id/ptr_layout"

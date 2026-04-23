@@ -5,6 +5,7 @@ import ch.threema.app.services.RemoteSecretMonitorService
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.RuntimeUtil
 import org.koin.core.module.dsl.factoryOf
+import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -37,4 +38,6 @@ val startupFeatureModule = module {
             NoOpRemoteSecretProtectionStateMonitorImpl()
         }
     }
+
+    singleOf(::RemoteSecretMonitorRetryController)
 }

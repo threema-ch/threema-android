@@ -53,12 +53,18 @@
     <string name="voip_prefs_video_codec_no_h264hip">Отключить H264-HiP</string>
     <string name="voip_prefs_video_codec_sw">Программные кодеки</string>
     <string name="voip_connection_failed">Невозможно установить соединение.</string>
+    <string name="voip_call_disconnected">Звонок прерван</string>
     <string name="prefs_voip_reject_incoming_calls_title">Отклонять звонки с мобильных</string>
     <string name="prefs_voip_reject_incoming_calls_summary">Отклонять входящие звонки с мобильных телефонов, когда совершается звонок Threema.</string>
     <string name="voip_contact_not_found">По этому номеру не найден контакт Threema.</string>
     <string name="voip_another_pstn_call">Невозможно начать звонок. Выполняется обычный телефонный звонок.</string>
     <string name="voip_call_status_off_hours">Звонок в нерабочее время</string>
     <string name="voip_peer_video_disabled">Видеозвонки отключены собеседником.</string>
+    <string name="voip_error_processing_call_anser">Произошла ошибка при обработке ответа на звонок</string>
+    <string name="voip_error_peer_connection">Ошибка соединения с собеседником</string>
+    <string name="voip_error_determine_common_video_quality_profile">Невозможно определить профиль качества видео</string>
+    <string name="voip_audio_focus_lost">Потерян аудиофокус</string>
+    <string name="voip_could_not_initialize">Невозможно инициализировать звонок</string>
     <!-- WebRTC debugger -->
     <string name="voip_prefs_webrtc_debug">Диагностика WebRTC</string>
     <string name="voip_prefs_webrtc_debug_summary">Запустите это средство для отладки неполадок с настройкой соединения для голосовой связи</string>

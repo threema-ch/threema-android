@@ -52,7 +52,7 @@ pub(crate) struct ServerHello {
     /// Ephemeral Server Key (ESK).
     pub(crate) ephemeral_server_key: PublicKey,
 
-    /// 32 byte random challenge
+    /// 32 byte random challenge.
     #[educe(Debug(method(debug_slice_length)))]
     pub(crate) challenge: [u8; 32],
 }

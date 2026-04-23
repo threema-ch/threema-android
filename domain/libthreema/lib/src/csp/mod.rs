@@ -48,20 +48,20 @@ pub enum InternalErrorCause {
     /// Unable to encrypt a handshake message or a payload.
     #[error("Encrypting '{name}' failed")]
     EncryptionFailed {
-        /// Name of the handshake message or payload
+        /// Name of the handshake message or payload.
         name: &'static str,
     },
 
     /// Unable to encode a struct.
     #[error("Encoding '{name}' failed: {source}")]
     EncodingFailed {
-        /// Name of the struct
+        /// Name of the struct.
         name: &'static str,
-        /// Error source
+        /// Error source.
         source: ByteWriterError,
     },
 
-    /// Another kind of error occurred
+    /// Another kind of error occurred.
     #[error("{0}")]
     Other(String),
 }
@@ -143,39 +143,6 @@ impl From<SequenceNumberOverflow> for CspProtocolError {
     }
 }
 
-/// A CSP state update to indicate advancing.
-#[derive(Debug)]
-pub enum CspStateUpdate {
-    /// The client hello was sent successfully.
-    AwaitingLoginAck,
-
-    /// The handshake was successful.
-    PostHandshake(LoginAckData),
-}
-
-/// An instruction of what to do next.
-///
-/// When handling this instruction, run the following steps:
-///
-/// 1. If the current phase is the _handshake phase_:
-///    1. If `incoming_payload` is present, abort the protocol due to an error and abort these steps.
-///    2. If `outgoing_frame` is present, enqueue it to be sent to the chat server.
-/// 2. If the current phase is the _payload phase_:
-///    1. If `state_update` is present, abort the protocol due to an error and abort these steps.
-///    2. If `outgoing_frame` is present, enqueue it to be sent to the chat server.
-///    3. If `incoming_payload` is present, hand it off to the application.
-/// 3. (Unreachable)
-pub struct CspProtocolInstruction {
-    /// The state to which the CSP protocol was advanced to.
-    pub state_update: Option<CspStateUpdate>,
-
-    /// The outgoing frame that should be sent to the server.
-    pub outgoing_frame: Option<OutgoingFrame>,
-
-    /// The incoming payload that should be processed by the client.
-    pub incoming_payload: Option<IncomingPayload>,
-}
-
 /// Initializer for a [`CspProtocolContext`].
 pub struct CspProtocolContextInit {
     /// The server's permanent public keys.
@@ -193,7 +160,7 @@ pub struct CspProtocolContextInit {
     /// Client info to be sent to the server during the handshake.
     pub client_info: ClientInfo,
 
-    /// The (optional) device cookie of the client's device
+    /// The (optional) device cookie of the client's device.
     pub device_cookie: Option<DeviceCookie>,
 
     /// CSP device ID, randomly generated once for the associated multi-device group.
@@ -241,6 +208,39 @@ impl TryFrom<CspProtocolContextInit> for CspProtocolContext {
             csp_device_id: init.csp_device_id,
         })
     }
+}
+
+/// A CSP state update to indicate advancing.
+#[derive(Debug)]
+pub enum CspStateUpdate {
+    /// The client hello was sent successfully.
+    AwaitingLoginAck,
+
+    /// The handshake was successful.
+    PostHandshake(LoginAckData),
+}
+
+/// An instruction of what to do next.
+///
+/// When handling this instruction, run the following steps:
+///
+/// 1. If the current phase is the _handshake phase_:
+///    1. If `incoming_payload` is present, abort the protocol due to an error and abort these steps.
+///    2. If `outgoing_frame` is present, enqueue it to be sent to the chat server.
+/// 2. If the current phase is the _payload phase_:
+///    1. If `state_update` is present, abort the protocol due to an error and abort these steps.
+///    2. If `outgoing_frame` is present, enqueue it to be sent to the chat server.
+///    3. If `incoming_payload` is present, hand it off to the application.
+/// 3. (Unreachable)
+pub struct CspProtocolInstruction {
+    /// The state to which the CSP protocol was advanced to.
+    pub state_update: Option<CspStateUpdate>,
+
+    /// The outgoing frame that should be sent to the server.
+    pub outgoing_frame: Option<OutgoingFrame>,
+
+    /// The incoming payload that should be processed by the client.
+    pub incoming_payload: Option<IncomingPayload>,
 }
 
 /// 16 byte random cookie used in combination with the sequence numbers to produce random nonces.
@@ -327,13 +327,13 @@ struct PostHandshakeState {
 /// [`State::poll_awaiting_server_hello`] to advance _out of_ the [`State::AwaitingServerHello`].
 #[derive(DebugVariantNames, VariantNames)]
 enum State {
-    /// Sent the client hello, next incoming message should be the server hello
+    /// Sent the client hello, next incoming message should be the server hello.
     AwaitingServerHello(AwaitingServerHelloState),
 
-    /// Sent the login, next incoming message should be the login ack
+    /// Sent the login, next incoming message should be the login ack.
     AwaitingLoginAck(AwaitingLoginAckState),
 
-    /// Already completed, following messages should be incoming payload messages
+    /// Already completed, following messages should be incoming payload messages.
     PostHandshake(PostHandshakeState),
 
     /// An unrecoverable error has happened, this state can never be left again. Close the

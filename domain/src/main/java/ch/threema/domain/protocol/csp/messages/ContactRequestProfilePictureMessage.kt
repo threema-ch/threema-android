@@ -3,7 +3,8 @@ package ch.threema.domain.protocol.csp.messages
 import ch.threema.common.emptyByteArray
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 
 class ContactRequestProfilePictureMessage : AbstractMessage() {
     override fun getType(): Int = ProtocolDefines.MSGTYPE_CONTACT_REQUEST_PHOTO
@@ -32,7 +33,7 @@ class ContactRequestProfilePictureMessage : AbstractMessage() {
 
     companion object {
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): ContactRequestProfilePictureMessage =
+        fun fromReflected(message: IncomingMessage): ContactRequestProfilePictureMessage =
             fromByteArray(
                 data = message.body.toByteArray(),
             ).apply {
@@ -40,7 +41,7 @@ class ContactRequestProfilePictureMessage : AbstractMessage() {
             }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): ContactRequestProfilePictureMessage =
+        fun fromReflected(message: OutgoingMessage): ContactRequestProfilePictureMessage =
             fromByteArray(
                 data = message.body.toByteArray(),
             ).apply {

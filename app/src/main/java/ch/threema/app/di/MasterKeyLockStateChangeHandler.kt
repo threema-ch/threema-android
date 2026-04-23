@@ -2,6 +2,7 @@ package ch.threema.app.di
 
 import android.content.Context
 import ch.threema.app.GlobalListeners
+import ch.threema.app.androidcontactsync.AndroidContactChangeMonitor
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ServiceManagerProviderImpl
@@ -17,15 +18,17 @@ import ch.threema.app.workers.ShareTargetUpdateWorker
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.storage.DatabaseProviderImpl
 import ch.threema.storage.DatabaseState
+import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.get
+import org.koin.core.component.inject
 
 private val logger = getThreemaLogger("MasterKeyLockStateChangeHandler")
 
@@ -43,6 +46,8 @@ class MasterKeyLockStateChangeHandler(
     @Volatile
     private var globalListeners: GlobalListeners? = null
 
+    private val androidContactChangeMonitor: AndroidContactChangeMonitor by inject()
+
     fun onMasterKeyUnlocked(
         serviceManager: ServiceManager,
         databaseState: StateFlow<DatabaseState>,
@@ -51,7 +56,7 @@ class MasterKeyLockStateChangeHandler(
         serviceManagerProvider.setServiceManager(serviceManager)
 
         appStartupMonitor.onMasterKeyUnlocked(databaseState, systemUpdateState)
-        globalListeners = GlobalListeners(appContext, serviceManager).apply {
+        globalListeners = GlobalListeners(appContext, androidContactChangeMonitor, serviceManager).apply {
             setUp()
         }
 
@@ -59,6 +64,7 @@ class MasterKeyLockStateChangeHandler(
     }
 
     suspend fun onMasterKeyLocked() = coroutineScope {
+        logger.info("Master key locked")
         appStartupMonitor.onMasterKeyLocked()
 
         serviceManagerProvider.getServiceManagerOrNull()
@@ -76,14 +82,19 @@ class MasterKeyLockStateChangeHandler(
     }
 
     private suspend fun cleanUpSession(serviceManager: ServiceManager) {
-        withTimeout(SERVICE_MANAGER_CLEANUP_TIMEOUT) {
-            stopOngoingCalls(serviceManager)
-            dismissNotifications(serviceManager)
-            stopConnection(serviceManager)
-            deleteShareTargetShortcuts()
-            stopWebClientSession(serviceManager)
-            clearAvatarCache(serviceManager)
-            closeDatabases(serviceManager)
+        try {
+            withTimeout(SERVICE_MANAGER_CLEANUP_TIMEOUT) {
+                stopOngoingCalls(serviceManager)
+                dismissNotifications(serviceManager)
+                stopConnection(serviceManager)
+                deleteShareTargetShortcuts()
+                stopWebClientSession(serviceManager)
+                clearAvatarCache(serviceManager)
+                closeDatabases(serviceManager)
+            }
+        } catch (e: TimeoutCancellationException) {
+            logger.error("Failed to clean up the session within {}", SERVICE_MANAGER_CLEANUP_TIMEOUT, e)
+            exitProcess(1)
         }
 
         delay(SERVICE_MANAGER_CLEANUP_GRACE_PERIOD)
@@ -135,10 +146,11 @@ class MasterKeyLockStateChangeHandler(
 
     companion object {
         /**
-         * Locking the master key must complete quickly. If it doesn't, we'd rather crash the app to ensure
-         * that the master key is cleared from memory than to linger here and wait for the full cleanup.
+         * When the master key is locked, we need to clean up various services, caches, etc. This must complete quickly. If it doesn't,
+         * we'd rather stop the app entirely than to linger here and wait for the full cleanup, to ensure that potentially sensitive user data
+         * is cleared from memory.
          */
-        private val SERVICE_MANAGER_CLEANUP_TIMEOUT = 3.seconds
+        private val SERVICE_MANAGER_CLEANUP_TIMEOUT = 10.seconds
 
         /**
          * we grant a short grace period for services to shutdown properly before the service manager is closed,

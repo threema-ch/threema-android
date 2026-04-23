@@ -41,23 +41,23 @@ struct D2mPingPongCommand {
     config: FullIdentityConfigOptions,
 }
 
-/// Payload queues for the main process
+/// Payload queues for the main process.
 struct PayloadQueuesForD2mPingPong {
     incoming: mpsc::Receiver<IncomingPayload>,
     outgoing: mpsc::Sender<OutgoingPayload>,
 }
 
-/// Payload queues for the protocol flow runner
+/// Payload queues for the protocol flow runner.
 struct PayloadQueuesForProtocol {
     incoming: mpsc::Sender<IncomingPayload>,
     outgoing: mpsc::Receiver<OutgoingPayload>,
 }
 
 struct D2mProtocolRunner {
-    /// The WebSocket stream
+    /// The WebSocket stream.
     stream: WebSocketStream<MaybeTlsStream<TcpStream>>,
 
-    /// An instance of the [`D2mProtocol`] state machine
+    /// An instance of the [`D2mProtocol`] state machine.
     protocol: D2mProtocol,
 }
 impl D2mProtocolRunner {
@@ -352,13 +352,13 @@ impl D2mPingPongFlowRunner {
                 }))
             },
 
-            // Transaction running: Commit
+            // Transaction running: Commit.
             TransactionState::Running => {
                 self.transaction_state = TransactionState::AwaitingCommitAck;
                 Some(OutgoingPayload::CommitTransaction)
             },
 
-            // No trannsaction running: Reflect
+            // No transaction running: Reflect.
             TransactionState::None
             | TransactionState::Blocked
             | TransactionState::AwaitingBeginAck

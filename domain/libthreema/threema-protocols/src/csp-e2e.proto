@@ -10,8 +10,10 @@ package csp_e2e;
 
 option java_package = "ch.threema.protobuf.csp.e2e";
 option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\Csp\\E2e";
 
 import "common.proto";
+import "md-d2d-sync.proto";
 
 // Metadata sent within a CSP payload `message-with-metadata-box` struct.
 message MessageMetadata {
@@ -63,7 +65,6 @@ message MessageMetadata {
 // - Reactions: No
 // - Edit applies to: N/A (obviously)
 // - Deletable by: N/A
-// - Include in history: Yes
 // - When rejected: N/A (ignored)
 // - Send to Threema Gateway ID group creator: N/A
 //
@@ -85,7 +86,6 @@ message MessageMetadata {
 // - Reactions: No
 // - Edit applies to: N/A (obviously)
 // - Deletable by: N/A
-// - Include in history: Yes
 // - When rejected: N/A (ignored)
 // - Send to Threema Gateway ID group creator: If capture is enabled
 //
@@ -237,7 +237,6 @@ message EditMessage {
 // - Reactions: No
 // - Edit applies to: N/A
 // - Deletable by: N/A (obviously)
-// - Include in history: Yes
 // - When rejected: N/A (ignored)
 // - Send to Threema Gateway ID group creator: N/A
 //
@@ -259,7 +258,6 @@ message EditMessage {
 // - Reactions: No
 // - Edit applies to: N/A
 // - Deletable by: N/A (obviously)
-// - Include in history: Yes
 // - When rejected: N/A (ignored)
 // - Send to Threema Gateway ID group creator: If capture is enabled
 //
@@ -369,7 +367,6 @@ message DeleteMessage {
 // - When rejected: N/A¹
 // - Edit applies to: N/A
 // - Deletable by: N/A
-// - Include in history: Yes
 // - Send to Threema Gateway ID group creator: If capture is enabled
 //
 // ¹: For the group creator it will be handled as if `group-sync-request` was
@@ -447,7 +444,6 @@ message GroupCallStart {
 // - When rejected: N/A (ignored)
 // - Edit applies to: N/A (can withdraw and apply with another `Reaction`)
 // - Deletable by: N/A (can withdraw with another `Reaction`)
-// - Include in history: Yes
 // - Send to Threema Gateway ID group creator: N/A
 //
 // **Properties (Group)**:
@@ -467,7 +463,6 @@ message GroupCallStart {
 // - When rejected: N/A (ignored)
 // - Edit applies to: N/A (can withdraw and apply with another `Reaction`)
 // - Deletable by: N/A (can withdraw with another `Reaction`)
-// - Include in history: Yes
 // - Send to Threema Gateway ID group creator: If capture is enabled
 //
 // When the user submits a reaction in a 1:1 conversation:
@@ -621,130 +616,141 @@ message Reaction {
   }
 }
 
-// Request joining a group.
+// A control message from the Threema Work Directory, providing a set of Work
+// Sync Deltas for immediate visibility (or requesting a full Work Sync).
 //
-// This message is sent to the administrator of a group. The required
-// information is provided by a `GroupInvite` URL payload.
-//
-// **Properties**:
-// - Kind: 1:1
-// - Flags:
-//   - `0x01`: Send push notification.
-// - User profile distribution: Yes
-// - Exempt from blocking: Yes
-// - Implicit _direct_ contact creation: Yes
-// - Protect against replay: Yes
-// - Reflect:
-//   - Incoming: Yes
-//   - Outgoing: Yes
-//   - _Sent_ update: No
-// - Delivery receipts: No
-// - Reactions: No
-// - When rejected: N/A (ignored)
-// - Edit applies to: N/A
-// - Deletable by: User only
-// - Include in history: No
-// - Send to Threema Gateway ID group creator: N/A
-//
-// When receiving this message:
-//
-// 1. Look up the corresponding group invitation by the token.
-// 2. If the group invitation could not be found, discard the message and abort
-//    these steps.
-// 3. If the sender is already part of the group, send an accept response and
-//    then respond as if the sender had sent a `group-sync-request` (i.e. send a
-//    `group-setup`, `group-name`, etc.). Finally, abort these steps.
-// 4. If the group name does not match the name in the originally sent group
-//    invitation, discard the message and abort these steps.
-// 5. If the group invitation has expired, send the respective response and
-//    abort these steps.
-// 6. If the group invitation requires the admin to accept the request, show
-//    this information in the user interface and pause these steps until the
-//    user manually confirmed of rejected the request. Note that the date of the
-//    decision is allowed to extend beyond the expiration date of the group
-//    invitation. Continue with the following sub-steps once the user made a
-//    decision on the request:
-//     1. If the user manually rejected the request, send the respective
-//        response and abort these steps.
-// 7. If the group is full, send the respective response and abort these steps.
-// 8. Send an accept response.
-// 9. Add the sender of the group invitation request to the group and follow the
-//    group protocol from there.
-message GroupJoinRequest {
-  // The group invite token, 16 bytes
-  bytes token = 1;
-
-  // The group name from the group invite URL
-  string group_name = 2;
-
-  // A message for the group administrator, e.g. for identification purposes
-  //
-  // The message helps the administrator to decide whether or not to accept a
-  // join request.
-  //
-  // Should be requested by the user interface for invitations that require
-  // manual confirmation by the administrator. Should not be requested in case
-  // the invitation will be automatically accepted.
-  string message = 3;
-}
-
-// Response sent by the admin of a group towards a sender of a valid group join
-// request.
-//
-// **Properties**:
+// **Properties (1:1)**:
 // - Kind: 1:1
 // - Flags: None
-// - User profile distribution: Yes
+// - User profile distribution: N/A (not sent by apps)
 // - Exempt from blocking: Yes
-// - Implicit _direct_ contact creation: Yes
+// - Implicit _direct_ contact creation: N/A (blocking is circumvented)
 // - Protect against replay: Yes
+// - Unarchive: No
+// - Bump _last update_: No
 // - Reflect:
-//   - Incoming: Yes
-//   - Outgoing: Yes
+//   - Incoming: No
+//   - Outgoing: No
 //   - _Sent_ update: No
-// - Delivery receipts: No
-// - Reactions: No
-// - When rejected: N/A (ignored)
+// - Delivery receipts: N/A
+// - Reactions: N/A
+// - When rejected: N/A (not sent by clients)
 // - Edit applies to: N/A
 // - Deletable by: N/A
-// - Include in history: Yes
 // - Send to Threema Gateway ID group creator: N/A
 //
 // When receiving this message:
 //
-// 1. Look up the corresponding group join request by the token and the
-//    sender's Threema ID as the administrator's Threema ID.
-// 2. If the group join request could not be found, discard the message and
-//    abort these steps.
-// 3. Mark the group join request as accepted or (automatically) rejected by
-//    the given response type.
-// 4. If the group join request has been accepted, remember the group id in
-//    order to be able to map an incoming `group-setup` to the group.
-message GroupJoinResponse {
-  // The group invite token, 16 bytes
-  bytes token = 1;
-
-  // Response of the admin
-  message Response {
-    // Accept a group invite request
-    message Accept {
-      // Group ID (little-endian) as chosen by the group creator
+// 1. If not Work flavour, log a warning, discard the message and abort these
+//    steps.
+// 2. If the sender is not `*3MAW0RK`, discard the message and abort these
+//    steps.
+// 3. If `action` is of variant `require_work_sync`, schedule a persistent task
+//    to make a full Work Sync.
+// 4. If `action` is of variant `apply`:
+//    1. Run the _Work Sync Delta Change Determination Steps_ with
+//       `apply.deltas` and let `changes` be the result.
+//    2. If `changes` is a marker that a _full Work Sync is required_, schedule
+//       a persistent task to make a full Work Sync and abort these steps.
+//    3. If `changes` is empty, discard the message and abort these steps.
+//    4. (MD) Run the following sub-steps:
+//       1. Begin a transaction with scope `WORK_SYNC_DELTA` and no
+//          precondition.
+//       2. Run the _Work Sync Delta Change Determination Steps_ another time
+//          and update `changes` with the result.¹
+//       3. If `changes` is a marker that a _full Work Sync is required_,
+//          schedule a persistent task to make a full Work Sync. Otherwise, reflect
+//          all `changes`.
+//       4. Commit the transaction and await acknowledgement.
+//    5. Apply all `changes` persistently.
+// 5. If `action` is an unknown variant, log a warning that an unknown Work Sync
+//    variant has been encountered.
+//
+// ¹: The two-tiered approach is necessary since we want to prevent unnecessary
+// transactions from Work Sync Deltas that don't affect any contact in the
+// user's contact list. But since changes may affect information that has been
+// altered since the transaction was started, it needs to be run twice when
+// multi-device is enabled.
+//
+// The following steps are defined as the _Work Sync Delta Change Determination
+// Steps_:
+//
+// 1. Let `deltas` be a list of `WorkSyncDelta.Delta`.
+// 2. Let `changes` be an empty list of _change instructions_ that would be
+//    required to apply all `deltas`.
+// 3. For each `delta` of `deltas`:
+//    1. If `delta.action` is of variant `contact_sync`:
+//       1. If `contact_sync.action` is of variant `update`:
+//           1. Lookup the contact associated to `update.identity` and let
+//              `contact` be the result.
+//           2. If `contact` is not defined, discard `update` and continue with
+//              the next delta.¹
+//           3. If `contact` is not currently considered a work contact, return
+//              that a _full Work Sync is required_.
+//           4. If `contact`'s last full Work Sync timestamp is defined and ≥
+//              `delta.applied_at`, discard `update` and continue with the next
+//              delta.
+//           5. If `update` does not diverge from the properties of `contact`,
+//              discard `update` and continue with the next delta.
+//           6. Add a change to `changes` for the necessary changes defined by
+//              `update` to update the `contact` in form of a
+//              `d2d_sync.Contact`.
+//       2. If `contact_sync.action` is an unknown variant, log a warning that
+//          an unknown Work Sync Delta contact action has been encountered.
+//    2. If `delta.action` is an unknown variant, log a warning that an unknown
+//       Work Sync Delta action has been encountered.
+// 4. Return `changes`.
+//
+// ¹: We intentionally do not filter contacts marked as _invalid_ since it may
+// be a relevant use case to revoke a contact and then updating other properties
+// afterwards, e.g. removing its availability status, etc.
+//
+// Note: The _Work Sync Delta Change Determination Steps_ may result in
+// inconsistencies until the next full Work Sync in some rare edge cases. For
+// example, if a change to a contact is currently in progress by another
+// device's transaction while this device determines that no change is required.
+// This is considered acceptable.
+message WorkSyncDelta {
+  // Work contact synchronisation message.
+  message ContactSync {
+    // Update a Work contact.
+    message Update {
+      // Threema ID of the contact.
       //
-      // Note: Combined with the Threema ID of the administrator, this forms the
-      // `GroupIdentity`.
-      fixed64 group_id = 1;
+      // Always required.
+      string identity = 1;
+
+      // Availability status of the contact.
+      //
+      // Always optional.
+      d2d_sync.WorkAvailabilityStatus availability_status = 2;
     }
 
-    oneof response {
-      // Accept a group invite request
-      Accept accept = 1;
-      // Token of a group invitation expired
-      common.Unit expired = 2;
-      // Group invitation cannot be accepted due to the group being full
-      common.Unit group_full = 3;
-      // The administrator explicitly rejects the invitation request
-      common.Unit reject = 4;
+    // Synchronisation type.
+    oneof action {
+      // Update a Work contact.
+      Update update = 1;
     }
   }
-  Response response = 2;
+
+  message Delta {
+    // Unix-ish timestamp in milliseconds for when the delta has been applied on
+    // the server side (i.e. since when the change is in effect and would be
+    // picked up by querying the _Work Sync_, a _Work Contacts_, or the _Work
+    // Directory_ endpoint).
+    uint64 applied_at = 1;
+
+    oneof action {
+      ContactSync contact_sync = 2;
+    }
+  }
+
+  message Apply {
+    repeated Delta deltas = 1;
+  }
+
+  oneof action {
+    common.Unit require_work_sync = 1;
+    Apply apply = 2;
+  }
 }

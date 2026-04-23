@@ -38,14 +38,14 @@
 //
 // #### Connection Setup
 //
-// RID creates a `rendezvous.RendezvousInit` by following the Connection
+// RID creates a `d2d_rendezvous.RendezvousInit` by following the Connection
 // Rendezvous Protocol. It wraps it in a `url.DeviceGroupJoinRequestOrOffer` and
 // offers it in form of a URL or a QR code.
 //
 // RRD scans the QR code or decodes the URL and then parses the
 // `url.DeviceGroupJoinRequestOrOffer`. It will then receive the data over a
 // sufficiently secure channel (e.g. a QR code). Once decoded, the enclosed
-// `rendezvous.RendezvousInit` must be handled according to the Connection
+// `d2d_rendezvous.RendezvousInit` must be handled according to the Connection
 // Rendezvous Protocol.
 //
 // Once the Connection Rendezvous Protocol has established at least one
@@ -131,9 +131,11 @@
 
 syntax = "proto3";
 
-package join;
+package d2d_join;
 
 option java_package = "ch.threema.protobuf.d2d.join";
+option java_multiple_files = true;
+option php_namespace = "Threema\\Protocols\\D2d\\Join";
 
 import "common.proto";
 import "md-d2d-sync.proto";
@@ -248,9 +250,10 @@ message EssentialData {
 
   // Threema Work credentials
   //
-  // Required for a Threema Work app. Must not be present in a Threema consumer
-  // app.
-  sync.ThreemaWorkCredentials work_credentials = 12;
+  // Shall not be present in the _Consumer_ flavour.
+  //
+  // Required in the _Work_ flavour.
+  d2d_sync.ThreemaWorkCredentials work_credentials = 12;
 
   // Device group data
   message DeviceGroupData {
@@ -260,22 +263,24 @@ message EssentialData {
   DeviceGroupData device_group_data = 3;
 
   // User's profile
-  sync.UserProfile user_profile = 4;
+  d2d_sync.UserProfile user_profile = 4;
 
   // Shared settings
-  sync.Settings settings = 5;
+  d2d_sync.Settings settings = 5;
 
   // MDM parameters
   //
-  // Optional for a Threema Work app. Must not be present in a Threema consumer app.
+  // Shall not be present in the _Consumer_ flavour.
+  //
+  // Optional in the _Work_ flavour.
   //
   // [//]: # "TODO(SE-307): Make this required for Threema Work!"
-  sync.MdmParameters mdm_parameters = 6;
+  d2d_sync.MdmParameters mdm_parameters = 6;
 
   // Contacts
   message AugmentedContact {
     // The contact's data.
-    sync.Contact contact = 1;
+    d2d_sync.Contact contact = 1;
 
     // Unix-ish timestamp in milliseconds when the conversation with this
     // contact was last updated.
@@ -288,7 +293,7 @@ message EssentialData {
   // Groups
   message AugmentedGroup {
     // The group's data.
-    sync.Group group = 1;
+    d2d_sync.Group group = 1;
 
     // Unix-ish timestamp in milliseconds when the conversation with this
     // group was last updated.
@@ -299,7 +304,7 @@ message EssentialData {
   // Distribution lists
   message AugmentedDistributionList {
     // The distribution list's data.
-    sync.DistributionList distribution_list = 1;
+    d2d_sync.DistributionList distribution_list = 1;
 
     // Unix-ish timestamp in milliseconds when the conversation of this
     // distribution list was last updated.
@@ -310,7 +315,7 @@ message EssentialData {
   // Hashed nonces that were used for CSP messages.
   repeated bytes csp_hashed_nonces = 10;
 
-  // Hashed nonces thate were used for D2D messages.
+  // Hashed nonces that were used for D2D messages.
   repeated bytes d2d_hashed_nonces = 11;
 }
 

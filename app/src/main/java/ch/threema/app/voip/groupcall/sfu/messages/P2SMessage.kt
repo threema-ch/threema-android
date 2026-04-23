@@ -2,8 +2,8 @@ package ch.threema.app.voip.groupcall.sfu.messages
 
 import ch.threema.app.voip.groupcall.sfu.ParticipantId
 import ch.threema.base.utils.generateRandomProtobufPadding
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.groupcall.ParticipantToSfu
+import ch.threema.protobuf.common.Resolution
+import ch.threema.protobuf.group_call.ParticipantToSfu
 import com.google.protobuf.ByteString
 
 sealed class P2SMessage {
@@ -90,7 +90,7 @@ sealed class P2SMessage {
         override val type = "SubscribeParticipantCamera"
 
         override fun wrap(envelope: ParticipantToSfu.Envelope.Builder): ParticipantToSfu.Envelope.Builder {
-            val resolution = Common.Resolution.newBuilder()
+            val resolution = Resolution.newBuilder()
                 .setWidth(width)
                 .setHeight(height)
                 .build()

@@ -162,7 +162,7 @@ impl RendezvousProtocol {
     }
 
     /// Binding version of [`d2d_rendezvous::RendezvousProtocol::add_chunks`].
-    #[allow(clippy::missing_errors_doc, reason = "Binding version")]
+    #[expect(clippy::missing_errors_doc, reason = "Binding version")]
     #[wasm_bindgen(js_name = addChunk)]
     pub fn add_chunk(&mut self, pid: u32, chunk: &[u8]) -> Result<(), Error> {
         self.inner
@@ -171,7 +171,7 @@ impl RendezvousProtocol {
     }
 
     /// Binding version of [`d2d_rendezvous::RendezvousProtocol::process_frame`].
-    #[allow(clippy::missing_errors_doc, reason = "Binding version")]
+    #[expect(clippy::missing_errors_doc, reason = "Binding version")]
     #[wasm_bindgen(js_name = processFrame)]
     pub fn process_frame(&mut self, pid: u32) -> Result<Option<PathProcessResult>, Error> {
         self.inner
@@ -181,7 +181,7 @@ impl RendezvousProtocol {
     }
 
     /// Binding version of [`d2d_rendezvous::RendezvousProtocol::nominate_path`].
-    #[allow(clippy::missing_errors_doc, reason = "Binding version")]
+    #[expect(clippy::missing_errors_doc, reason = "Binding version")]
     #[wasm_bindgen(js_name = nominatePath)]
     pub fn nominate_path(&mut self, pid: u32) -> Result<PathProcessResult, Error> {
         self.inner
@@ -191,7 +191,7 @@ impl RendezvousProtocol {
     }
 
     /// Binding version of [`d2d_rendezvous::RendezvousProtocol::create_ulp_frame`].
-    #[allow(clippy::missing_errors_doc, reason = "Binding version")]
+    #[expect(clippy::missing_errors_doc, reason = "Binding version")]
     #[wasm_bindgen(js_name = createUlpFrame)]
     pub fn create_ulp_frame(&mut self, outgoing_data: Vec<u8>) -> Result<PathProcessResult, Error> {
         self.inner

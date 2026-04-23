@@ -117,7 +117,7 @@ class GetRawContactNameUseCaseTest {
     }
 
     private fun getRawContactWithNames(
-        rawContactId: RawContactId = mockk(),
+        rawContactId: RawContactId = RawContactId(0UL),
         structuredNames: Set<StructuredName>,
     ) = RawContact(
         rawContactId = rawContactId,

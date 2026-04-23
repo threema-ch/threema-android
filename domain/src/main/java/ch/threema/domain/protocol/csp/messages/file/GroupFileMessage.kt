@@ -5,8 +5,11 @@ import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.AbstractGroupMessage
 import ch.threema.domain.protocol.csp.messages.BadMessageException
+import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage.Companion.fromByteArray
+import ch.threema.domain.protocol.csp.messages.file.GroupFileMessage.Companion.fromReflected
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import java.io.ByteArrayOutputStream
 import java.nio.charset.StandardCharsets
 
@@ -64,7 +67,7 @@ class GroupFileMessage : AbstractGroupMessage(), FileMessageInterface {
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): GroupFileMessage {
+        fun fromReflected(message: IncomingMessage): GroupFileMessage {
             val groupFileMessage = fromByteArray(message.body.toByteArray())
             groupFileMessage.initializeCommonProperties(message)
             return groupFileMessage
@@ -81,7 +84,7 @@ class GroupFileMessage : AbstractGroupMessage(), FileMessageInterface {
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): GroupFileMessage {
+        fun fromReflected(message: OutgoingMessage): GroupFileMessage {
             val groupFileMessage = fromByteArray(message.body.toByteArray())
             groupFileMessage.initializeCommonProperties(message)
             return groupFileMessage

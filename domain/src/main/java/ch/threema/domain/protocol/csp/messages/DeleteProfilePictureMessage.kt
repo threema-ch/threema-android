@@ -3,7 +3,8 @@ package ch.threema.domain.protocol.csp.messages
 import ch.threema.common.emptyByteArray
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 
 class DeleteProfilePictureMessage : AbstractMessage() {
     override fun getType(): Int = ProtocolDefines.MSGTYPE_CONTACT_DELETE_PHOTO
@@ -32,7 +33,7 @@ class DeleteProfilePictureMessage : AbstractMessage() {
 
     companion object {
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): DeleteProfilePictureMessage =
+        fun fromReflected(message: IncomingMessage): DeleteProfilePictureMessage =
             fromByteArray(
                 data = message.body.toByteArray(),
             ).apply {
@@ -40,7 +41,7 @@ class DeleteProfilePictureMessage : AbstractMessage() {
             }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): DeleteProfilePictureMessage =
+        fun fromReflected(message: OutgoingMessage): DeleteProfilePictureMessage =
             fromByteArray(
                 data = message.body.toByteArray(),
             ).apply {

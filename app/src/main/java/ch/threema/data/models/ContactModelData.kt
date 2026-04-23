@@ -7,9 +7,11 @@ import ch.threema.common.isNotNullOrBlank
 import ch.threema.common.plus
 import ch.threema.common.toDate
 import ch.threema.data.datatypes.AndroidContactLookupInfo
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.datatypes.IdColor
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
+import ch.threema.data.models.ContactModelData.Companion.DISPLAY_NAME_INVALID_CONTACT
 import ch.threema.domain.models.BasicContact
 import ch.threema.domain.models.ContactSyncState
 import ch.threema.domain.models.IdentityState
@@ -96,6 +98,13 @@ data class ContactModelData(
      *  See [NotificationTriggerPolicyOverride] for possible values and their meanings.
      */
     @JvmField val notificationTriggerPolicyOverride: Long?,
+    /**
+     *  In work builds, work contacts can have an optional [AvailabilityStatus].
+     *
+     *  If not a work build or it was never set, it will be [AvailabilityStatus.None].
+     */
+    @JvmField val availabilityStatus: AvailabilityStatus,
+    @JvmField val workLastFullSyncAt: Instant?,
 ) {
     companion object {
 
@@ -133,6 +142,8 @@ data class ContactModelData(
             jobTitle: String?,
             department: String?,
             notificationTriggerPolicyOverride: Long?,
+            availabilityStatus: AvailabilityStatus,
+            workLastFullSyncAt: Instant?,
         ): ContactModelData {
             require(featureMask.signum() >= 0 && featureMask.bitLength() <= 64) { "featureMask must be between 0 and 2^64" }
             require(publicKey.size == NaCl.PUBLIC_KEY_BYTES) { "public key must be ${NaCl.PUBLIC_KEY_BYTES} long" }
@@ -161,6 +172,8 @@ data class ContactModelData(
                 jobTitle = jobTitle,
                 department = department,
                 notificationTriggerPolicyOverride = notificationTriggerPolicyOverride,
+                availabilityStatus = availabilityStatus,
+                workLastFullSyncAt = workLastFullSyncAt,
             )
         }
     }
@@ -228,7 +241,7 @@ data class ContactModelData(
     }
 
     /**
-     * Return whether or not this contact is linked to an Android contact.
+     * Return whether this contact is linked to an Android contact.
      */
     fun isLinkedToAndroidContact(): Boolean = this.androidContactLookupInfo != null
 
@@ -300,6 +313,8 @@ data class ContactModelData(
         if (jobTitle != other.jobTitle) return false
         if (department != other.department) return false
         if (notificationTriggerPolicyOverride != other.notificationTriggerPolicyOverride) return false
+        if (availabilityStatus != other.availabilityStatus) return false
+        if (workLastFullSyncAt != other.workLastFullSyncAt) return false
 
         return true
     }
@@ -326,6 +341,8 @@ data class ContactModelData(
         result = 31 * result + isRestored.hashCode()
         result = 31 * result + (profilePictureBlobId?.contentHashCode() ?: 0)
         result = 31 * result + notificationTriggerPolicyOverride.hashCode()
+        result = 31 * result + availabilityStatus.hashCode()
+        result = 31 * result + workLastFullSyncAt.hashCode()
         return result
     }
 }

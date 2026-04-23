@@ -15,7 +15,6 @@ import ch.threema.domain.protocol.multidevice.MultiDeviceKeys
 import ch.threema.domain.taskmanager.MessageFilterInstruction.ACCEPT
 import ch.threema.domain.taskmanager.MessageFilterInstruction.BYPASS_OR_BACKLOG
 import ch.threema.domain.types.IdentityString
-import ch.threema.protobuf.d2d.MdD2D.TransactionScope.Scope
 
 /**
  * A passive task codec is used to retrieve messages from the server. To send messages we need an
@@ -123,7 +122,7 @@ const val TRANSACTION_TTL_MAX: UInt = 0u
 
 fun ActiveTaskCodec.createTransaction(
     keys: MultiDeviceKeys,
-    scope: Scope,
+    scope: ch.threema.protobuf.d2d.TransactionScope.Scope,
     ttl: UInt,
     precondition: (suspend () -> Boolean)? = null,
 ): TransactionScope {
@@ -134,7 +133,7 @@ fun ActiveTaskCodec.createTransaction(
 class TransactionScope(
     private val codec: ActiveTaskCodec,
     private val keys: MultiDeviceKeys,
-    private val scope: Scope,
+    private val scope: ch.threema.protobuf.d2d.TransactionScope.Scope,
     private val ttl: UInt,
     private val precondition: (suspend () -> Boolean)?,
 ) {
@@ -171,7 +170,7 @@ class TransactionScope(
 
     private suspend fun ActiveTaskCodec.startTransaction(
         keys: MultiDeviceKeys,
-        scope: Scope,
+        scope: ch.threema.protobuf.d2d.TransactionScope.Scope,
         ttl: UInt,
     ) {
         transactionLogger.trace("Start transaction (scope={}, ttl={})", scope, ttl)

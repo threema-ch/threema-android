@@ -3,7 +3,7 @@ package ch.threema.app.voip.groupcall.sfu
 import ch.threema.app.voip.groupcall.GroupCallException
 import ch.threema.base.utils.generateRandomProtobufPadding
 import ch.threema.domain.types.Identity
-import ch.threema.protobuf.groupcall.CallState
+import ch.threema.protobuf.group_call.CallState
 
 data class GroupCallState(
     val createdBy: ParticipantId,

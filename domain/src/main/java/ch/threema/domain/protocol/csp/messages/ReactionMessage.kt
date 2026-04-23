@@ -1,9 +1,12 @@
 package ch.threema.domain.protocol.csp.messages
 
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.protocol.csp.messages.ReactionMessage.Companion.fromByteArray
+import ch.threema.domain.protocol.csp.messages.ReactionMessage.Companion.fromReflected
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufMessage
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 
 class ReactionMessage(payloadData: ReactionMessageData) :
     AbstractProtobufMessage<ReactionMessageData>(
@@ -44,14 +47,14 @@ class ReactionMessage(payloadData: ReactionMessageData) :
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): ReactionMessage {
+        fun fromReflected(message: IncomingMessage): ReactionMessage {
             val reactionMessage = fromByteArray(message.body.toByteArray())
             reactionMessage.initializeCommonProperties(message)
             return reactionMessage
         }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): ReactionMessage {
+        fun fromReflected(message: OutgoingMessage): ReactionMessage {
             val reactionMessage = fromByteArray(message.body.toByteArray())
             reactionMessage.initializeCommonProperties(message)
             return reactionMessage

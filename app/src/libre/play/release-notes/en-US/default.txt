@@ -1,1 +1,1 @@
-- Improved thumbnails in notifications
+- Various under-the-hood improvements and bug fixes

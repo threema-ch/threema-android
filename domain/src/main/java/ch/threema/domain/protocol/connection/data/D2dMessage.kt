@@ -1,7 +1,6 @@
 package ch.threema.domain.protocol.connection.data
 
 import ch.threema.base.utils.generateRandomProtobufPadding
-import ch.threema.protobuf.d2d.MdD2D
 
 sealed interface D2dMessage {
     val bytes: ByteArray
@@ -15,14 +14,14 @@ sealed interface D2dMessage {
         companion object {
             val INVALID_DEVICE_INFO = DeviceInfo(Platform.UNSPECIFIED, "", "", "")
 
-            fun fromProtobuf(deviceInfo: MdD2D.DeviceInfo): DeviceInfo {
+            fun fromProtobuf(deviceInfo: ch.threema.protobuf.d2d.DeviceInfo): DeviceInfo {
                 val platform: Platform = when (deviceInfo.platform) {
-                    MdD2D.DeviceInfo.Platform.UNSPECIFIED -> Platform.UNSPECIFIED
-                    MdD2D.DeviceInfo.Platform.ANDROID -> Platform.ANDROID
-                    MdD2D.DeviceInfo.Platform.IOS -> Platform.IOS
-                    MdD2D.DeviceInfo.Platform.DESKTOP -> Platform.DESKTOP
-                    MdD2D.DeviceInfo.Platform.WEB -> Platform.WEB
-                    null, MdD2D.DeviceInfo.Platform.UNRECOGNIZED -> Platform.UNSPECIFIED
+                    ch.threema.protobuf.d2d.DeviceInfo.Platform.UNSPECIFIED -> Platform.UNSPECIFIED
+                    ch.threema.protobuf.d2d.DeviceInfo.Platform.ANDROID -> Platform.ANDROID
+                    ch.threema.protobuf.d2d.DeviceInfo.Platform.IOS -> Platform.IOS
+                    ch.threema.protobuf.d2d.DeviceInfo.Platform.DESKTOP -> Platform.DESKTOP
+                    ch.threema.protobuf.d2d.DeviceInfo.Platform.WEB -> Platform.WEB
+                    null, ch.threema.protobuf.d2d.DeviceInfo.Platform.UNRECOGNIZED -> Platform.UNSPECIFIED
                 }
                 return DeviceInfo(
                     platform,
@@ -42,7 +41,7 @@ sealed interface D2dMessage {
         }
 
         override val bytes: ByteArray
-            get() = MdD2D.DeviceInfo.newBuilder()
+            get() = ch.threema.protobuf.d2d.DeviceInfo.newBuilder()
                 .setPadding(generateRandomProtobufPadding())
                 .setPlatformValue(platform.value)
                 .setPlatformDetails(platformDetails)

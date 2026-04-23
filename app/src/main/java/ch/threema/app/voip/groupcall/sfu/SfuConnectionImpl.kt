@@ -17,7 +17,7 @@ import ch.threema.domain.protocol.api.SfuToken
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.getUserAgent
 import ch.threema.domain.stores.IdentityStore
-import ch.threema.protobuf.groupcall.SfuHttpRequest
+import ch.threema.protobuf.group_call.SfuHttpRequest
 import com.google.protobuf.kotlin.toByteString
 import java.lang.Exception
 import java.net.MalformedURLException

@@ -8,21 +8,36 @@
     android:layout_gravity="center_vertical"
     android:background="?attr/selectableItemBackgroundBorderless">
 
-    <ch.threema.app.ui.AvatarView
-        android:id="@+id/avatar_view"
-        android:layout_width="@dimen/compose_title_avatar_size"
-        android:layout_height="@dimen/compose_title_avatar_size"
+    <FrameLayout
+        android:id="@+id/avatar_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
-        android:layout_marginRight="16dp"
-        android:contentDescription="@string/threema_contact" />
+        android:layout_marginRight="@dimen/grid_unit_x2">
+
+        <ch.threema.app.ui.AvatarView
+            android:id="@+id/avatar_view"
+            android:layout_width="@dimen/compose_title_avatar_size"
+            android:layout_height="@dimen/compose_title_avatar_size"
+            android:contentDescription="@string/threema_contact" />
+
+        <ch.threema.app.availabilitystatus.AvailabilityStatusIconElevatedView
+            android:id="@+id/availability_status_avatar_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_gravity="bottom|end"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignWithParentIfMissing="true"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/avatar_view"
+        android:layout_toRightOf="@id/avatar_container"
         android:orientation="vertical">
 
         <ch.threema.app.emojis.EmojiTextView
@@ -34,7 +49,7 @@
             android:includeFontPadding="false"
             android:singleLine="true"
             android:textAppearance="@style/Threema.TextAppearance.Toolbar.Title"
-            tools:text="Title" />
+            tools:text="Chat Title" />
 
         <FrameLayout
             android:layout_width="wrap_content"

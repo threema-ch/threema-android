@@ -5,8 +5,10 @@ import ch.threema.app.profilepicture.RawProfilePicture
 import ch.threema.app.services.ContactService.ProfilePictureUploadData
 import ch.threema.app.services.ProfilePictureRecipientsService
 import ch.threema.app.services.UserService
+import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.crypto.SymmetricEncryptionService
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.domain.models.AppVersion
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.blob.BlobScope
@@ -14,11 +16,10 @@ import ch.threema.domain.protocol.connection.d2m.MultiDevicePropertyProvider
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ProtocolException
 import ch.threema.domain.taskmanager.TriggerSource
-import ch.threema.protobuf.Common.DeltaImage
-import ch.threema.protobuf.d2d.MdD2D.UserProfileSync
-import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile
-import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile.IdentityLinks.IdentityLink
-import ch.threema.protobuf.d2d.sync.MdD2DSync.UserProfile.ProfilePictureShareWith
+import ch.threema.protobuf.common.DeltaImage
+import ch.threema.protobuf.d2d.UserProfileSync
+import ch.threema.protobuf.d2d.sync.UserProfile
+import ch.threema.protobuf.d2d.sync.UserProfile.IdentityLinks.IdentityLink
 import ch.threema.protobuf.d2d.userProfileOrNull
 import okhttp3.OkHttpClient
 
@@ -56,6 +57,7 @@ class ReflectedUserProfileSyncTask(
         applyReflectedProfilePicture(userProfile)
         applyReflectedProfilePictureShareWith(userProfile)
         applyReflectedIdentityLinks(userProfile)
+        applyReflectedAvailabilityStatus(userProfile)
     }
 
     private fun applyReflectedNickname(userProfile: UserProfile) {
@@ -94,20 +96,20 @@ class ReflectedUserProfileSyncTask(
         }
 
         when (userProfile.profilePictureShareWith.policyCase) {
-            ProfilePictureShareWith.PolicyCase.NOBODY -> {
+            UserProfile.ProfilePictureShareWith.PolicyCase.NOBODY -> {
                 logger.info("Apply sharing profile picture with nobody")
                 preferenceService.setProfilePicRelease(PreferenceService.PROFILEPIC_RELEASE_NOBODY)
             }
-            ProfilePictureShareWith.PolicyCase.EVERYONE -> {
+            UserProfile.ProfilePictureShareWith.PolicyCase.EVERYONE -> {
                 logger.info("Apply sharing profile picture with everyone")
                 preferenceService.setProfilePicRelease(PreferenceService.PROFILEPIC_RELEASE_EVERYONE)
             }
-            ProfilePictureShareWith.PolicyCase.ALLOW_LIST -> {
+            UserProfile.ProfilePictureShareWith.PolicyCase.ALLOW_LIST -> {
                 logger.info("Apply sharing profile picture with allow list")
                 preferenceService.setProfilePicRelease(PreferenceService.PROFILEPIC_RELEASE_ALLOW_LIST)
                 profilePictureRecipientsService.replaceAll(userProfile.profilePictureShareWith.allowList.identitiesList.toTypedArray())
             }
-            ProfilePictureShareWith.PolicyCase.POLICY_NOT_SET -> {
+            UserProfile.ProfilePictureShareWith.PolicyCase.POLICY_NOT_SET -> {
                 logger.warn("Profile picture share with policy is not set")
             }
             null -> {
@@ -155,6 +157,18 @@ class ReflectedUserProfileSyncTask(
                     logger.warn("Ignoring identity link as type is null")
                 }
             }
+        }
+    }
+
+    // TODO(ANDR-4751): Test when desktop is ready
+    private fun applyReflectedAvailabilityStatus(userProfile: UserProfile) {
+        if (ConfigUtils.supportsAvailabilityStatus() && userProfile.hasWorkAvailabilityStatus()) {
+            val availabilityStatus = AvailabilityStatus.fromProtocolModel(userProfile.workAvailabilityStatus)
+            if (availabilityStatus == null) {
+                logger.error("Failed to apply user availability status")
+                return
+            }
+            preferenceService.setAvailabilityStatus(availabilityStatus)
         }
     }
 

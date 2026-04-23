@@ -9,7 +9,7 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings.UnknownContactPolicy
+import ch.threema.protobuf.d2d.sync.Settings
 
 private val logger = getThreemaLogger("UnknownContactPolicySetting")
 
@@ -30,17 +30,17 @@ class UnknownContactPolicySetting internal constructor(
     override fun instantiateReflectionTask(): Task<*, TaskCodec> =
         ReflectSettingsSyncTask.ReflectUnknownContactPolicySyncUpdate()
 
-    fun getUnknownContactPolicy(): UnknownContactPolicy =
+    fun getUnknownContactPolicy(): Settings.UnknownContactPolicy =
         when (get()) {
-            true -> UnknownContactPolicy.BLOCK_UNKNOWN
-            false -> UnknownContactPolicy.ALLOW_UNKNOWN
+            true -> Settings.UnknownContactPolicy.BLOCK_UNKNOWN
+            false -> Settings.UnknownContactPolicy.ALLOW_UNKNOWN
         }
 
-    fun setFromSync(unknownContactPolicy: UnknownContactPolicy) {
+    fun setFromSync(unknownContactPolicy: Settings.UnknownContactPolicy) {
         val value = when (unknownContactPolicy) {
-            UnknownContactPolicy.ALLOW_UNKNOWN -> false
-            UnknownContactPolicy.BLOCK_UNKNOWN -> true
-            UnknownContactPolicy.UNRECOGNIZED -> {
+            Settings.UnknownContactPolicy.ALLOW_UNKNOWN -> false
+            Settings.UnknownContactPolicy.BLOCK_UNKNOWN -> true
+            Settings.UnknownContactPolicy.UNRECOGNIZED -> {
                 logger.warn("Cannot set unrecognized unknown contact policy")
                 return
             }

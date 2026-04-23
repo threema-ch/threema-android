@@ -12,11 +12,9 @@ import ch.threema.domain.protocol.connection.data.D2mProtocolException
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.libthreema.CryptoException
 import ch.threema.libthreema.blake2bMac256
-import ch.threema.protobuf.d2d.MdD2D
-import ch.threema.protobuf.d2d.MdD2D.DeviceInfo
-import ch.threema.protobuf.d2d.MdD2D.Envelope
-import ch.threema.protobuf.d2d.MdD2D.TransactionScope
-import ch.threema.protobuf.d2d.MdD2D.TransactionScope.Scope
+import ch.threema.protobuf.d2d.DeviceInfo
+import ch.threema.protobuf.d2d.Envelope
+import ch.threema.protobuf.d2d.TransactionScope
 import ch.threema.protobuf.d2d.transactionScope
 
 private val logger = getThreemaLogger("MultiDeviceKeys")
@@ -85,10 +83,11 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
             key = dgdik,
             nonce = nonce,
         )
-        return DeviceInfo.parseFrom(decrypted).let { D2dMessage.DeviceInfo.fromProtobuf(it) }
+        return DeviceInfo.parseFrom(decrypted)
+            .let { D2dMessage.DeviceInfo.fromProtobuf(it) }
     }
 
-    fun encryptTransactionScope(scope: Scope): ByteArray {
+    fun encryptTransactionScope(scope: TransactionScope.Scope): ByteArray {
         val nonce = createNonce()
         val bytes = transactionScope {
             this.scope = scope
@@ -97,7 +96,7 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
         return nonce + encrypted
     }
 
-    fun decryptTransactionScope(encryptedTransactionScope: ByteArray): Scope {
+    fun decryptTransactionScope(encryptedTransactionScope: ByteArray): TransactionScope.Scope {
         val nonce = encryptedTransactionScope.copyOfRange(0, NaCl.NONCE_BYTES)
         val data = encryptedTransactionScope.copyOfRange(nonce.size, encryptedTransactionScope.size)
         val decrypted = NaCl.symmetricDecryptData(
@@ -151,7 +150,7 @@ data class MultiDeviceKeys(val dgk: ByteArray) {
 
     /**
      * @param encryptedEnvelope Encrypted envelope bytes
-     * @param debugInfo         Only used for debugging. Contains the unencrypted contents of [MdD2D.Envelope.toString]
+     * @param debugInfo         Only used for debugging. Contains the unencrypted contents of [Envelope.toString]
      */
     data class EncryptedEnvelopeResult(
         val encryptedEnvelope: ByteArray,

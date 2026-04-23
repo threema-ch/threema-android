@@ -42,7 +42,7 @@ pub(crate) mod base64 {
                     let decoded = BASE64.decode(encoded).map_err(|error| Error::custom(error))?;
                     let length = decoded.len();
                     decoded.try_into().map_err(|_| {
-                        Error::custom(format_args!("invalid decoded length {length}, expected {N}",))
+                        Error::custom(format_args!("invalid decoded length {length}, expected {N}"))
                     })
                 }
             }
@@ -88,7 +88,7 @@ pub(crate) mod base64 {
 
 /// Serialize/deserialize strings.
 pub(crate) mod string {
-    /// Serialize a string by [`std::string::ToString`]
+    /// Serialize a string by [`std::string::ToString`].
     pub(crate) mod to_string {
         use serde::{Serialize as _, Serializer};
 

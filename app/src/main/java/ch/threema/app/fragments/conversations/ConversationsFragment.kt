@@ -10,7 +10,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast.LENGTH_SHORT
 import androidx.activity.result.launch
 import androidx.annotation.AnyThread
 import androidx.annotation.StringRes
@@ -26,6 +25,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,6 +35,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.union
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -44,6 +46,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -51,19 +55,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.core.view.MenuItemCompat
+import androidx.fragment.app.setFragmentResultListener
 import ch.threema.app.AppConstants
 import ch.threema.app.AppConstants.MAX_PW_LENGTH_BACKUP
 import ch.threema.app.AppConstants.MIN_PW_LENGTH_BACKUP
@@ -76,13 +84,15 @@ import ch.threema.app.activities.ThreemaActivity
 import ch.threema.app.applock.AppLockUtil
 import ch.threema.app.applock.CheckAppLockContract
 import ch.threema.app.archive.ArchiveActivity
+import ch.threema.app.availabilitystatus.AvailabilityStatusOwnBanner
+import ch.threema.app.availabilitystatus.edit.EditAvailabilityStatusBottomSheetDialog
 import ch.threema.app.backuprestore.BackupChatService
 import ch.threema.app.compose.common.LocalDayOfYear
 import ch.threema.app.compose.common.SpacerVertical
 import ch.threema.app.compose.common.ThemedText
 import ch.threema.app.compose.common.buttons.ButtonIconInfo
 import ch.threema.app.compose.common.buttons.ButtonOutlined
-import ch.threema.app.compose.common.buttons.ExtendedFloatingActionButtonPrimary
+import ch.threema.app.compose.common.buttons.primary.ExtendedFloatingActionButtonPrimary
 import ch.threema.app.compose.common.list.swipe.ListItemSwipeFeature
 import ch.threema.app.compose.common.list.swipe.ListItemSwipeFeatureState
 import ch.threema.app.compose.common.rememberRefreshingLocalDayOfYear
@@ -140,6 +150,7 @@ import ch.threema.base.utils.getThreemaLogger
 import ch.threema.base.utils.onCompleted
 import ch.threema.common.consume
 import ch.threema.common.toIntCapped
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
@@ -164,6 +175,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.parameter.parametersOf
@@ -258,6 +270,17 @@ class ConversationsFragment :
         ListenerManager.groupListeners.add(groupListener)
 
         this.resumePauseHandler = ResumePauseHandler.getByActivity(this, requireActivity())
+
+        if (ConfigUtils.supportsAvailabilityStatus()) {
+            setFragmentResultListener(
+                requestKey = REQUEST_KEY_EDIT_AVAILABILITY_STATUS,
+            ) { _, bundle ->
+                val didChangeStatus = bundle.getBoolean(EditAvailabilityStatusBottomSheetDialog.RESULT_KEY_DID_CHANGE_STATUS)
+                if (didChangeStatus) {
+                    viewModel.onAvailabilityStatusWasChanged()
+                }
+            }
+        }
     }
 
     override fun onDestroy() {
@@ -738,7 +761,21 @@ class ConversationsFragment :
         myIdentity = userService.getIdentity()?.toIdentityOrNull()
         return ComposeView(requireContext()).apply {
             setContent {
-                EventHandler(viewModel, ::handleEvent)
+                val snackbarHostState = remember { SnackbarHostState() }
+                val scope = rememberCoroutineScope()
+
+                EventHandler(viewModel) { event ->
+                    handleEvent(
+                        event = event,
+                        requestShowSnackbar = { messageRes ->
+                            scope.launch {
+                                snackbarHostState.showSnackbar(
+                                    message = getString(messageRes),
+                                )
+                            }
+                        },
+                    )
+                }
 
                 val contentWindowInsets: WindowInsets =
                     WindowInsets.systemBars
@@ -755,6 +792,9 @@ class ConversationsFragment :
                     val lazyListState = rememberLazyListState()
 
                     Scaffold(
+                        snackbarHost = {
+                            SnackbarHost(snackbarHostState)
+                        },
                         contentWindowInsets = contentWindowInsets,
                         floatingActionButton = {
                             ExtendedFloatingActionButtonPrimary(
@@ -776,45 +816,86 @@ class ConversationsFragment :
                                     )
                                 }
 
-                                when (val itemsState = conversationsViewState.itemsState) {
-                                    is ItemsState.Loaded -> {
-                                        if (itemsState.items.isNotEmpty()) {
-                                            ConversationList(
-                                                insetsPadding = insetsPadding,
-                                                myIdentity = myIdentity!!,
-                                                lazyListState = lazyListState,
-                                                emojiStyle = preferenceService.getEmojiStyle(),
-                                                items = itemsState.items,
-                                                contactNameFormat = conversationsViewState.contactNameFormat,
-                                                archivedCount = conversationsViewState.archivedConversationsCount,
-                                                filterQuery = conversationsViewState.filterQuery,
-                                            )
-                                        }
+                                val emojiStyle: Int = remember {
+                                    preferenceService.getEmojiStyle()
+                                }
 
-                                        AnimatedVisibility(
-                                            visible = itemsState.items.isEmpty(),
-                                            enter = fadeIn(
-                                                animationSpec = spring(
-                                                    stiffness = Spring.StiffnessVeryLow,
+                                Column(
+                                    modifier = Modifier.fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                ) {
+                                    if (conversationsViewState.availabilityStatus is AvailabilityStatus.Set) {
+                                        val layoutDirection = LocalLayoutDirection.current
+                                        AvailabilityStatusOwnBanner(
+                                            modifier = Modifier
+                                                .padding(
+                                                    start = insetsPadding.calculateStartPadding(layoutDirection),
+                                                    end = insetsPadding.calculateEndPadding(layoutDirection),
+                                                )
+                                                .padding(
+                                                    all = GridUnit.x1,
+                                                )
+                                                .widthIn(
+                                                    max = 550.dp,
+                                                )
+                                                .fillMaxWidth(),
+                                            status = conversationsViewState.availabilityStatus,
+                                            onClickEdit = {
+                                                EditAvailabilityStatusBottomSheetDialog
+                                                    .newInstance(
+                                                        requestKey = REQUEST_KEY_EDIT_AVAILABILITY_STATUS,
+                                                    )
+                                                    .show(
+                                                        /* manager = */
+                                                        parentFragmentManager,
+                                                        /* tag = */
+                                                        "edit-availability-status-from-conversations-list",
+                                                    )
+                                            },
+                                            emojiStyle = emojiStyle,
+                                        )
+                                    }
+
+                                    when (val itemsState = conversationsViewState.itemsState) {
+                                        is ItemsState.Loaded -> {
+                                            if (itemsState.items.isNotEmpty()) {
+                                                ConversationList(
+                                                    insetsPadding = insetsPadding,
+                                                    myIdentity = myIdentity!!,
+                                                    lazyListState = lazyListState,
+                                                    emojiStyle = emojiStyle,
+                                                    items = itemsState.items,
+                                                    contactNameFormat = conversationsViewState.contactNameFormat,
+                                                    archivedCount = conversationsViewState.archivedConversationsCount,
+                                                    filterQuery = conversationsViewState.filterQuery,
+                                                )
+                                            }
+
+                                            AnimatedVisibility(
+                                                visible = itemsState.items.isEmpty(),
+                                                enter = fadeIn(
+                                                    animationSpec = spring(
+                                                        stiffness = Spring.StiffnessVeryLow,
+                                                    ),
                                                 ),
-                                            ),
-                                            exit = fadeOut(
-                                                animationSpec = spring(
-                                                    stiffness = Spring.StiffnessMedium,
+                                                exit = fadeOut(
+                                                    animationSpec = spring(
+                                                        stiffness = Spring.StiffnessMedium,
+                                                    ),
                                                 ),
-                                            ),
-                                        ) {
-                                            EmptyContent(
+                                            ) {
+                                                EmptyContent(
+                                                    insetsPadding = insetsPadding,
+                                                    conversationsViewState = conversationsViewState,
+                                                )
+                                            }
+                                        }
+                                        ItemsState.Failed -> {
+                                            FailureContent(
                                                 insetsPadding = insetsPadding,
-                                                conversationsViewState = conversationsViewState,
+                                                onClickContactSupport = viewModel::onClickContactSupport,
                                             )
                                         }
-                                    }
-                                    ItemsState.Failed -> {
-                                        FailureContent(
-                                            insetsPadding = insetsPadding,
-                                            onClickContactSupport = viewModel::onClickContactSupport,
-                                        )
                                     }
                                 }
                             }
@@ -825,7 +906,13 @@ class ConversationsFragment :
         }
     }
 
-    private fun handleEvent(event: ConversationsViewEvent) {
+    /**
+     *  @param requestShowSnackbar Block receiving [StringRes]
+     */
+    private fun handleEvent(
+        event: ConversationsViewEvent,
+        requestShowSnackbar: (Int) -> Unit,
+    ) {
         when (event) {
             is ConversationsViewEvent.OpenConversationActionDialog ->
                 onOpenConversationActionDialog(
@@ -848,14 +935,14 @@ class ConversationsFragment :
                     conversationModel = event.conversationModel,
                 )
 
-            ConversationsViewEvent.ConversationMarkAsPrivateSuccess -> showSnackbar(R.string.chat_hidden)
+            ConversationsViewEvent.ConversationMarkAsPrivateSuccess -> requestShowSnackbar(R.string.chat_hidden)
 
             is ConversationsViewEvent.UnlockRequiredToUnmarkConversationAsPrivate ->
                 onUnlockRequiredToUnmarkConversationAsPrivate(
                     conversationModel = event.conversationModel,
                 )
 
-            ConversationsViewEvent.ConversationUnmarkAsPrivateSuccess -> showSnackbar(R.string.chat_visible)
+            ConversationsViewEvent.ConversationUnmarkAsPrivateSuccess -> requestShowSnackbar(R.string.chat_visible)
 
             ConversationsViewEvent.UnlockRequiredToShowPrivateConversations ->
                 checkLockToShowPrivateConversationLauncher.launch()
@@ -878,21 +965,17 @@ class ConversationsFragment :
                     conversationModel = event.conversationModel,
                 )
 
-            ConversationsViewEvent.OnSystemLockWasRemoved -> showSnackbar(R.string.no_lockscreen_set)
+            ConversationsViewEvent.OnSystemLockWasRemoved -> requestShowSnackbar(R.string.no_lockscreen_set)
 
             is ConversationsViewEvent.OnSupportContactAvailable -> openConversation(event.receiverIdentifier)
 
-            is ConversationsViewEvent.OnSupportContactUnavailable -> showSnackbar(event.message)
+            is ConversationsViewEvent.OnSupportContactUnavailable -> requestShowSnackbar(event.message)
 
             ConversationsViewEvent.UpdateWidgets -> widgetUpdater.updateWidgets()
 
-            ConversationsViewEvent.InternalError -> showSnackbar(R.string.an_error_occurred)
-        }
-    }
+            ConversationsViewEvent.OnAvailabilityStatusChanged -> requestShowSnackbar(R.string.edit_availability_status_did_change)
 
-    private fun showSnackbar(@StringRes messageRes: Int) {
-        view?.let { fragmentView ->
-            Snackbar.make(fragmentView, messageRes, LENGTH_SHORT).show()
+            ConversationsViewEvent.InternalError -> requestShowSnackbar(R.string.an_error_occurred)
         }
     }
 
@@ -1690,6 +1773,8 @@ class ConversationsFragment :
         private const val DIALOG_TAG_REALLY_DISSOLVE_GROUP = "reallyDissolveGroup"
         private const val DIALOG_TAG_REALLY_DELETE_MY_GROUP = "rdmg"
         private const val DIALOG_TAG_REALLY_DELETE_GROUP = "rdgcc"
+
+        private const val REQUEST_KEY_EDIT_AVAILABILITY_STATUS = "edit-availability-status-from-conversation-list"
 
         private const val TAG_EMPTY_CONVERSATION = 1
         private const val TAG_DELETE_DISTRIBUTION_LIST = 2

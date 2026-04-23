@@ -149,6 +149,8 @@ import ch.threema.app.adapters.decorators.ImageChatAdapterDecorator;
 import ch.threema.app.adapters.decorators.MessagePlayerFactory;
 import ch.threema.app.adapters.decorators.VoipStatusDataChatAdapterDecorator;
 import ch.threema.app.asynctasks.EmptyOrDeleteConversationsAsyncTask;
+import ch.threema.app.availabilitystatus.AvailabilityStatusContactBannerView;
+import ch.threema.app.availabilitystatus.AvailabilityStatusIconElevatedView;
 import ch.threema.app.cache.ThumbnailCache;
 import ch.threema.app.compose.common.interop.ComposeJavaBridge;
 import ch.threema.app.contactdetails.ContactDetailActivity;
@@ -274,8 +276,10 @@ import ch.threema.app.voip.services.VoipCallService;
 import ch.threema.app.voip.services.VoipStateService;
 import ch.threema.app.voip.util.VoipUtil;
 import ch.threema.app.webviews.WorkExplainActivity;
+import ch.threema.data.datatypes.AvailabilityStatus;
 import ch.threema.data.datatypes.IdColor;
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride;
+import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.GroupIdentity;
 import ch.threema.data.models.GroupModel;
 import ch.threema.data.models.GroupModelData;
@@ -509,6 +513,7 @@ public class ComposeMessageFragment extends Fragment implements
     private TextView actionBarSubtitleTextView;
     private VerificationLevelImageView actionBarSubtitleImageView;
     private AvatarView actionBarAvatarView;
+    private AvailabilityStatusIconElevatedView availabilityStatusAvatarIconView;
     private ImageView wallpaperView;
     private ActionBar actionBar;
     private TooltipPopup workTooltipPopup;
@@ -516,6 +521,7 @@ public class ComposeMessageFragment extends Fragment implements
     private QuotePopup quotePopup;
     private OpenBallotNoticeView openBallotNoticeView;
     private ReportSpamView reportSpamView;
+    private AvailabilityStatusContactBannerView availabilityStatusBannerView;
     private ComposeMessageActivity activity;
     private View fragmentView;
     private FrameLayout coordinatorLayout;
@@ -1340,6 +1346,8 @@ public class ComposeMessageFragment extends Fragment implements
             this.reportSpamView = this.fragmentView.findViewById(R.id.report_spam_layout);
             this.reportSpamView.setListener(this);
 
+            this.availabilityStatusBannerView = this.fragmentView.findViewById(R.id.availability_status_banner_view);
+
             quickscrollDownContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
@@ -1429,11 +1437,45 @@ public class ComposeMessageFragment extends Fragment implements
 
     private void setObservers() {
         viewModel.getEvents().observe(getViewLifecycleOwner(), this::handleViewModelEvent);
+        viewModel.getContactAvailabilityStatus().observe(getViewLifecycleOwner(), this::onContactAvailabilityStatusChanged);
     }
 
     private void handleViewModelEvent(@NonNull ComposeMessageEvent event) {
         if (event instanceof ComposeMessageEvent.NextRecordsLoaded) {
             onNextRecordsLoadedEvent((ComposeMessageEvent.NextRecordsLoaded) event);
+        }
+    }
+
+    private void onContactAvailabilityStatusChanged(@NonNull AvailabilityStatus availabilityStatus) {
+        if (!ConfigUtils.supportsAvailabilityStatus()) {
+            return;
+        }
+        // Toolbar avatar icon
+        if (availabilityStatusAvatarIconView != null) {
+            availabilityStatusAvatarIconView.setVisibility(
+                availabilityStatus instanceof AvailabilityStatus.Set
+                    ? View.VISIBLE
+                    : View.GONE
+            );
+            availabilityStatusAvatarIconView.setStatus(
+                availabilityStatus instanceof AvailabilityStatus.Set
+                    ? (AvailabilityStatus.Set) availabilityStatus
+                    : null
+            );
+        }
+        // Banner
+        if (availabilityStatusBannerView != null) {
+            availabilityStatusBannerView.setVisibility(
+                availabilityStatus instanceof AvailabilityStatus.Set
+                    ? View.VISIBLE
+                    : View.GONE
+            );
+            availabilityStatusBannerView.setState(
+                availabilityStatus instanceof AvailabilityStatus.Set
+                    ? (AvailabilityStatus.Set) availabilityStatus
+                    : null,
+                preferenceService.getEmojiStyle()
+            );
         }
     }
 
@@ -1738,6 +1780,8 @@ public class ComposeMessageFragment extends Fragment implements
         }
 
         updateOngoingCallNotice();
+
+        viewModel.onResume(messageReceiver);
     }
 
     @Override
@@ -2414,6 +2458,7 @@ public class ComposeMessageFragment extends Fragment implements
             this.actionBarSubtitleImageView = actionBarTitleView.findViewById(R.id.subtitle_image);
             this.actionBarSubtitleTextView = actionBarTitleView.findViewById(R.id.subtitle_text);
             this.actionBarAvatarView = actionBarTitleView.findViewById(R.id.avatar_view);
+            this.availabilityStatusAvatarIconView = actionBarTitleView.findViewById(R.id.availability_status_avatar_icon);
             final RelativeLayout actionBarTitleContainer = actionBarTitleView.findViewById(R.id.title_container);
             actionBarTitleContainer.setOnClickListener(v -> {
                 Intent intent;
@@ -2433,6 +2478,24 @@ public class ComposeMessageFragment extends Fragment implements
                     activity.startActivity(intent);
                 }
             });
+
+            if (ConfigUtils.supportsAvailabilityStatus() && messageReceiver != null && messageReceiver instanceof ContactMessageReceiver) {
+                final @Nullable ch.threema.data.models.ContactModel contactModel = ((ContactMessageReceiver) messageReceiver).getContactModel();
+                final @Nullable ContactModelData contactModelData = contactModel != null ? contactModel.getData() : null;
+                final @Nullable AvailabilityStatus availabilityStatus = contactModelData != null ? contactModelData.availabilityStatus : null;
+                if (availabilityStatus != null) {
+                    availabilityStatusAvatarIconView.setVisibility(
+                        availabilityStatus instanceof AvailabilityStatus.Set
+                            ? View.VISIBLE
+                            : View.GONE
+                    );
+                    availabilityStatusAvatarIconView.setStatus(
+                        availabilityStatus instanceof AvailabilityStatus.Set
+                            ? (AvailabilityStatus.Set) availabilityStatus
+                            : null
+                    );
+                }
+            }
 
             if (contactModel != null) {
                 if (contactModel.getIdentityType() == IdentityType.WORK) {

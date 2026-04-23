@@ -130,7 +130,11 @@ internal class TestServerAddressProvider(
         MUST_NOT_BE_CALLED()
     }
 
-    override fun getWorkServerUrl(ipv6: Boolean): String {
+    override fun getWorkServerUrlLegacy(ipv6: Boolean): String {
+        MUST_NOT_BE_CALLED()
+    }
+
+    override fun getWorkServerUrl(): String {
         MUST_NOT_BE_CALLED()
     }
 

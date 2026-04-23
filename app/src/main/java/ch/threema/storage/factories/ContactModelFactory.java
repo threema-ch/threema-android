@@ -368,6 +368,7 @@ public class ContactModelFactory extends ModelFactory {
                     "`" + ContactModel.COLUMN_JOB_TITLE + "` VARCHAR DEFAULT NULL," +
                     "`" + ContactModel.COLUMN_DEPARTMENT + "` VARCHAR DEFAULT NULL," +
                     "`" + ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE + "` BIGINT DEFAULT NULL," +
+                    "`" + ContactModel.COLUMN_WORK_LAST_FULL_SYNC_AT + "` DATETIME DEFAULT NULL," +
                     "PRIMARY KEY (`" + ContactModel.COLUMN_IDENTITY + "`) );"
             };
         }

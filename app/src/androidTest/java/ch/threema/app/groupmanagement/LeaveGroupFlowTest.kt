@@ -8,6 +8,7 @@ import ch.threema.app.tasks.ReflectGroupSyncDeleteTask
 import ch.threema.app.tasks.ReflectLocalGroupLeaveOrDisband
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.clearDatabaseAndCaches
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
@@ -62,6 +63,8 @@ class LeaveGroupFlowTest : GroupFlowTest() {
         jobTitle = null,
         department = null,
         notificationTriggerPolicyOverride = null,
+        availabilityStatus = AvailabilityStatus.None,
+        workLastFullSyncAt = null,
     )
 
     private val myInitialGroupModelData = GroupModelData(

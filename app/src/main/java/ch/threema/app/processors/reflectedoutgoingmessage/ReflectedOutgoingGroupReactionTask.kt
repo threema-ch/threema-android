@@ -4,8 +4,8 @@ import ch.threema.app.managers.ServiceManager
 import ch.threema.app.tasks.runCommonReactionMessageReceiveEmojiSequenceConversion
 import ch.threema.app.tasks.runCommonReactionMessageReceiveSteps
 import ch.threema.domain.protocol.csp.messages.GroupReactionMessage
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.d2d.MdD2D.OutgoingMessage
+import ch.threema.protobuf.common.CspE2eMessageType
+import ch.threema.protobuf.d2d.OutgoingMessage
 import ch.threema.storage.models.AbstractMessageModel
 
 internal class ReflectedOutgoingGroupReactionTask(
@@ -14,7 +14,7 @@ internal class ReflectedOutgoingGroupReactionTask(
 ) : ReflectedOutgoingGroupMessageTask<GroupReactionMessage>(
     outgoingMessage = outgoingMessage,
     message = GroupReactionMessage.fromReflected(outgoingMessage),
-    type = Common.CspE2eMessageType.GROUP_REACTION,
+    type = CspE2eMessageType.GROUP_REACTION,
     serviceManager = serviceManager,
 ) {
     private val messageService = serviceManager.messageService

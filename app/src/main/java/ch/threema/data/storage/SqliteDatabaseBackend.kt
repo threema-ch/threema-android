@@ -8,10 +8,13 @@ import androidx.core.database.getBlobOrNull
 import androidx.core.database.getIntOrNull
 import androidx.core.database.getLongOrNull
 import androidx.core.database.getStringOrNull
+import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.sqlite.db.SupportSQLiteQueryBuilder
 import ch.threema.app.stores.IdentityProvider
+import ch.threema.app.utils.ConfigUtils
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.getThreemaLogger
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.ContactSyncState
 import ch.threema.domain.models.IdentityState
@@ -25,6 +28,7 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.types.IdentityString
 import ch.threema.storage.DatabaseProvider
 import ch.threema.storage.DatabaseUtil
+import ch.threema.storage.DbAvailabilityStatus
 import ch.threema.storage.buildContentValues
 import ch.threema.storage.models.ContactModel
 import ch.threema.storage.models.ContactModel.AcquaintanceLevel
@@ -32,6 +36,8 @@ import ch.threema.storage.models.IncomingGroupSyncRequestLogModel
 import ch.threema.storage.models.group.GroupMemberModel
 import ch.threema.storage.models.group.GroupMessageModel
 import ch.threema.storage.models.group.GroupModelOld
+import ch.threema.storage.runTransaction
+import java.time.Instant
 import java.util.Collections
 import java.util.Date
 import net.zetetic.database.sqlcipher.SQLiteDatabase
@@ -116,9 +122,21 @@ class SqliteDatabaseBackend(
      */
     override fun getAllContacts(): List<DbContact> {
         return try {
-            val cursor = databaseProvider.readableDatabase.query("SELECT * FROM ${ContactModel.TABLE};")
+            val contactIdentity = "${ContactModel.TABLE}.${ContactModel.COLUMN_IDENTITY}"
+            val availabilityStatusIdentity = "${DbAvailabilityStatus.TABLE}.${DbAvailabilityStatus.COLUMN_IDENTITY}"
+            val availabilityStatusCategory = "${DbAvailabilityStatus.TABLE}.${DbAvailabilityStatus.COLUMN_CATEGORY}"
+            val availabilityStatusDescription = "${DbAvailabilityStatus.TABLE}.${DbAvailabilityStatus.COLUMN_DESCRIPTION}"
+            /*
+             * SELECT contacts.*, contact_availability_status.category, contact_availability_status.description
+             * FROM contacts LEFT JOIN contact_availability_status ON contacts.identity = contact_availability_status.identity;
+             */
+            val query = """
+                SELECT ${ContactModel.TABLE}.*, $availabilityStatusCategory, $availabilityStatusDescription
+                FROM ${ContactModel.TABLE} LEFT JOIN ${DbAvailabilityStatus.TABLE} ON $contactIdentity = $availabilityStatusIdentity;
+            """.trimIndent()
+            val cursor = databaseProvider.readableDatabase.query(query)
             val dbContacts = mutableListOf<DbContact>()
-            cursor.use {
+            cursor.use { cursor ->
                 while (cursor.moveToNext()) {
                     dbContacts.add(cursor.mapToDbContact())
                 }
@@ -130,60 +148,96 @@ class SqliteDatabaseBackend(
         }
     }
 
-    override fun createContact(contact: DbContact) {
-        require(contact.identity.length == ProtocolDefines.IDENTITY_LEN) {
-            "Cannot create contact with invalid identity: ${contact.identity}"
+    override fun createContact(dbContact: DbContact) {
+        require(dbContact.identity.length == ProtocolDefines.IDENTITY_LEN) {
+            "Cannot create contact with invalid identity: ${dbContact.identity}"
         }
-        require(contact.publicKey.size == NaCl.PUBLIC_KEY_BYTES) {
-            "Cannot create contact (${contact.identity}) with public key of invalid length: ${contact.publicKey.size}"
+        require(dbContact.publicKey.size == NaCl.PUBLIC_KEY_BYTES) {
+            "Cannot create contact (${dbContact.identity}) with public key of invalid length: ${dbContact.publicKey.size}"
         }
-        require(contact.identity != identityProvider.getIdentityString()) {
+        require(dbContact.identity != identityProvider.getIdentityString()) {
             "Cannot create contact with the user's identity"
         }
-
-        val contentValues = buildContentValues {
-            put(ContactModel.COLUMN_IDENTITY, contact.identity)
-            put(ContactModel.COLUMN_PUBLIC_KEY, contact.publicKey)
-            put(ContactModel.COLUMN_CREATED_AT, contact.createdAt.time)
-            update(contact)
+        val contentValuesContact = buildContentValues {
+            put(ContactModel.COLUMN_IDENTITY, dbContact.identity)
+            put(ContactModel.COLUMN_PUBLIC_KEY, dbContact.publicKey)
+            put(ContactModel.COLUMN_CREATED_AT, dbContact.createdAt.time)
+            update(dbContact)
         }
-
-        databaseProvider.writableDatabase.insert(
-            table = ContactModel.TABLE,
-            conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
-            values = contentValues,
-        )
+        databaseProvider.writableDatabase.runTransaction {
+            insert(
+                table = ContactModel.TABLE,
+                conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
+                values = contentValuesContact,
+            )
+            if (ConfigUtils.supportsAvailabilityStatus()) {
+                dbContact.availabilityStatusSet
+                    ?.toDatabaseModel(dbContact.identity)
+                    ?.let { dbAvailabilityStatusSet ->
+                        insert(
+                            table = DbAvailabilityStatus.TABLE,
+                            conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
+                            values = dbAvailabilityStatusSet.toContentValues(),
+                        )
+                    }
+            }
+        }
     }
 
     override fun getContactByIdentity(identity: IdentityString): DbContact? {
+        val contactIdentity = "${ContactModel.TABLE}.${ContactModel.COLUMN_IDENTITY}"
+        val availabilityStatusIdentity = "${DbAvailabilityStatus.TABLE}.${DbAvailabilityStatus.COLUMN_IDENTITY}"
+        val availabilityStatusCategory = "${DbAvailabilityStatus.TABLE}.${DbAvailabilityStatus.COLUMN_CATEGORY}"
+        val availabilityStatusDescription = "${DbAvailabilityStatus.TABLE}.${DbAvailabilityStatus.COLUMN_DESCRIPTION}"
+        /*
+         * SELECT contacts.*, contact_availability_status.category, contact_availability_status.description
+         * FROM contacts LEFT JOIN contact_availability_status ON contacts.identity = contact_availability_status.identity
+         * WHERE contacts.identity = ?;
+         */
+        val query = """
+            SELECT ${ContactModel.TABLE}.*, $availabilityStatusCategory, $availabilityStatusDescription
+            FROM ${ContactModel.TABLE} LEFT JOIN ${DbAvailabilityStatus.TABLE} ON $contactIdentity = $availabilityStatusIdentity
+            WHERE $contactIdentity = ?;
+        """.trimIndent()
         val cursor = databaseProvider.readableDatabase.query(
-            SupportSQLiteQueryBuilder.builder(ContactModel.TABLE)
-                .columns(allContactColumns)
-                .selection("${ContactModel.COLUMN_IDENTITY} = ?", arrayOf(identity))
-                .create(),
+            /* query = */
+            query,
+            /* bindArgs = */
+            arrayOf(identity),
         )
-        if (!cursor.moveToFirst()) {
-            cursor.close()
-            return null
+        return cursor.use { cursor ->
+            if (cursor.moveToFirst()) {
+                cursor.mapToDbContact()
+            } else {
+                null
+            }
         }
-        val dbContact = cursor.mapToDbContact()
-        cursor.close()
-        return dbContact
     }
 
     override fun getContactsByIdentities(identities: Set<IdentityString>): List<DbContact> {
+        if (identities.isEmpty()) {
+            return emptyList()
+        }
         val placeholders = DatabaseUtil.makePlaceholders(identities.size)
+        val contactIdentity = "${ContactModel.TABLE}.${ContactModel.COLUMN_IDENTITY}"
+        val availabilityStatusIdentity = "${DbAvailabilityStatus.TABLE}.${DbAvailabilityStatus.COLUMN_IDENTITY}"
+        val availabilityStatusCategory = "${DbAvailabilityStatus.TABLE}.${DbAvailabilityStatus.COLUMN_CATEGORY}"
+        val availabilityStatusDescription = "${DbAvailabilityStatus.TABLE}.${DbAvailabilityStatus.COLUMN_DESCRIPTION}"
+        /*
+         * SELECT contacts.*, contact_availability_status.category, contact_availability_status.description
+         * FROM contacts LEFT JOIN contact_availability_status ON contacts.identity = contact_availability_status.identity
+         * WHERE contacts.identity IN (?, ...);
+         */
+        val query = """
+            SELECT ${ContactModel.TABLE}.*, $availabilityStatusCategory, $availabilityStatusDescription
+            FROM ${ContactModel.TABLE} LEFT JOIN ${DbAvailabilityStatus.TABLE} ON $contactIdentity = $availabilityStatusIdentity
+            WHERE $contactIdentity IN ($placeholders);
+        """.trimIndent()
         val cursor = databaseProvider.readableDatabase.query(
-            query = SupportSQLiteQueryBuilder
-                .builder(
-                    tableName = ContactModel.TABLE,
-                )
-                .columns(allContactColumns)
-                .selection(
-                    selection = "${ContactModel.COLUMN_IDENTITY} IN ($placeholders)",
-                    bindArgs = identities.toTypedArray(),
-                )
-                .create(),
+            /* query = */
+            query,
+            /* bindArgs = */
+            identities.toTypedArray(),
         )
         return cursor.use { usedCursor ->
             val results = mutableListOf<DbContact>()
@@ -223,8 +277,18 @@ class SqliteDatabaseBackend(
         val profilePictureBlobId = getBlobOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_PROFILE_PIC_BLOB_ID))
         val jobTitle = getStringOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_JOB_TITLE))
         val department = getStringOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_DEPARTMENT))
-        val notificationTriggerPolicyOverride =
-            getLongOrNull(getColumnIndexOrThrow(this, ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE))
+        val notificationTriggerPolicyOverride = getLongOrNull(
+            getColumnIndexOrThrow(this, ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE),
+        )
+        val availabilityStatusCategoryRaw = getIntOrNull(
+            getColumnIndexOrThrow(this, DbAvailabilityStatus.COLUMN_CATEGORY),
+        )
+        val availabilityStatusDescription = getStringOrNull(
+            getColumnIndexOrThrow(this, DbAvailabilityStatus.COLUMN_DESCRIPTION),
+        )
+        val workLastFullSyncAtRaw = getLongOrNull(
+            getColumnIndexOrThrow(this, ContactModel.COLUMN_WORK_LAST_FULL_SYNC_AT),
+        )
 
         // Validation and mapping
         if (colorIndex !in 0..255) {
@@ -330,6 +394,23 @@ class SqliteDatabaseBackend(
             }
         }
 
+        // Since both these values are joined via LEFT JOIN, they actually can be null, although they are defined as NOT NULL in their dedicated table
+        val availabilityStatus: AvailabilityStatus.Set? =
+            if (
+                ConfigUtils.supportsAvailabilityStatus() &&
+                availabilityStatusCategoryRaw != null &&
+                availabilityStatusDescription != null
+            ) {
+                AvailabilityStatus.fromDatabaseValues(
+                    categorySerialized = availabilityStatusCategoryRaw,
+                    description = availabilityStatusDescription,
+                ) as? AvailabilityStatus.Set
+            } else {
+                null
+            }
+
+        val workLastFullSyncAt: Instant? = workLastFullSyncAtRaw?.let(Instant::ofEpochMilli)
+
         return DbContact(
             identity = identity,
             publicKey = publicKey,
@@ -355,21 +436,55 @@ class SqliteDatabaseBackend(
             jobTitle = jobTitle,
             department = department,
             notificationTriggerPolicyOverride = notificationTriggerPolicyOverride,
+            availabilityStatusSet = availabilityStatus,
+            workLastFullSyncAt = workLastFullSyncAt,
         )
     }
 
-    override fun updateContact(contact: DbContact) {
-        val contentValues = buildContentValues {
-            update(contact)
+    override fun updateContact(dbContact: DbContact) {
+        val contentValuesContact = buildContentValues {
+            update(dbContact)
         }
+        databaseProvider.writableDatabase.runTransaction {
+            update(
+                table = ContactModel.TABLE,
+                conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
+                values = contentValuesContact,
+                whereClause = "${ContactModel.COLUMN_IDENTITY} = ?",
+                whereArgs = arrayOf(dbContact.identity),
+            )
+            if (ConfigUtils.supportsAvailabilityStatus()) {
+                updateAvailabilityStatus(
+                    identity = dbContact.identity,
+                    availabilityStatusSet = dbContact.availabilityStatusSet,
+                )
+            }
+        }
+    }
 
-        databaseProvider.writableDatabase.update(
-            table = ContactModel.TABLE,
-            conflictAlgorithm = SQLiteDatabase.CONFLICT_ROLLBACK,
-            values = contentValues,
-            whereClause = "${ContactModel.COLUMN_IDENTITY} = ?",
-            whereArgs = arrayOf(contact.identity),
-        )
+    /**
+     *  Updating the availability status on database.
+     *
+     *  In case [availabilityStatusSet] is not null, a database row will be created or replaced for the given [identity]. If `null` was passed,
+     *  any potential existing database entry for the given [identity] gets deleted.
+     */
+    private fun SupportSQLiteDatabase.updateAvailabilityStatus(
+        identity: IdentityString,
+        availabilityStatusSet: AvailabilityStatus.Set?,
+    ) {
+        if (availabilityStatusSet != null) {
+            insert(
+                table = DbAvailabilityStatus.TABLE,
+                conflictAlgorithm = SQLiteDatabase.CONFLICT_REPLACE,
+                values = availabilityStatusSet.toDatabaseModel(identity).toContentValues(),
+            )
+        } else {
+            delete(
+                table = DbAvailabilityStatus.TABLE,
+                whereClause = "${DbAvailabilityStatus.COLUMN_IDENTITY} = ?",
+                whereArgs = arrayOf(identity),
+            )
+        }
     }
 
     private fun ContentValues.update(contact: DbContact) {
@@ -441,15 +556,27 @@ class SqliteDatabaseBackend(
         put(ContactModel.COLUMN_JOB_TITLE, contact.jobTitle)
         put(ContactModel.COLUMN_DEPARTMENT, contact.department)
         put(ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE, contact.notificationTriggerPolicyOverride)
+        put(ContactModel.COLUMN_WORK_LAST_FULL_SYNC_AT, contact.workLastFullSyncAt?.toEpochMilli())
     }
 
-    override fun deleteContactByIdentity(identity: IdentityString): Boolean {
-        return databaseProvider.writableDatabase.delete(
+    private fun DbAvailabilityStatus.toContentValues() = buildContentValues {
+        put(DbAvailabilityStatus.COLUMN_IDENTITY, identity)
+        put(DbAvailabilityStatus.COLUMN_CATEGORY, category)
+        put(DbAvailabilityStatus.COLUMN_DESCRIPTION, description)
+    }
+
+    /**
+     *  Delete the contact from database by [identity].
+     *
+     *  The corresponding optional [AvailabilityStatus] in table [DbAvailabilityStatus.TABLE] will also be deleted (implicitly by the SQLite
+     *  constraint).
+     */
+    override fun deleteContactByIdentity(identity: IdentityString): Boolean =
+        databaseProvider.writableDatabase.delete(
             table = ContactModel.TABLE,
             whereClause = "${ContactModel.COLUMN_IDENTITY} = ?",
             whereArgs = arrayOf(identity),
         ) > 0
-    }
 
     override fun isContactInGroup(identity: IdentityString): Boolean {
         databaseProvider.readableDatabase.query(
@@ -767,34 +894,5 @@ class SqliteDatabaseBackend(
                 values = contentValues,
             )
         }
-    }
-
-    private companion object {
-        val allContactColumns = arrayOf(
-            ContactModel.COLUMN_IDENTITY,
-            ContactModel.COLUMN_PUBLIC_KEY,
-            ContactModel.COLUMN_CREATED_AT,
-            ContactModel.COLUMN_FIRST_NAME,
-            ContactModel.COLUMN_LAST_NAME,
-            ContactModel.COLUMN_PUBLIC_NICK_NAME,
-            ContactModel.COLUMN_ID_COLOR_INDEX,
-            ContactModel.COLUMN_VERIFICATION_LEVEL,
-            ContactModel.COLUMN_IS_WORK,
-            ContactModel.COLUMN_TYPE,
-            ContactModel.COLUMN_ACQUAINTANCE_LEVEL,
-            ContactModel.COLUMN_STATE,
-            ContactModel.COLUMN_SYNC_STATE,
-            ContactModel.COLUMN_FEATURE_MASK,
-            ContactModel.COLUMN_READ_RECEIPTS,
-            ContactModel.COLUMN_TYPING_INDICATORS,
-            ContactModel.COLUMN_IS_ARCHIVED,
-            ContactModel.COLUMN_ANDROID_CONTACT_LOOKUP_KEY,
-            ContactModel.COLUMN_LOCAL_AVATAR_EXPIRES,
-            ContactModel.COLUMN_IS_RESTORED,
-            ContactModel.COLUMN_PROFILE_PIC_BLOB_ID,
-            ContactModel.COLUMN_JOB_TITLE,
-            ContactModel.COLUMN_DEPARTMENT,
-            ContactModel.COLUMN_NOTIFICATION_TRIGGER_POLICY_OVERRIDE,
-        )
     }
 }

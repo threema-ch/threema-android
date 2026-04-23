@@ -76,6 +76,7 @@ import ch.threema.app.usecases.conversations.AvatarIteration
 import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.voip.activities.GroupCallActivity
 import ch.threema.common.consume
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ContactNameFormat
 import ch.threema.domain.models.ContactReceiverIdentifier
 import ch.threema.domain.models.DistributionListReceiverIdentifier
@@ -474,6 +475,7 @@ private fun ArchiveActivityContent_Preview() {
                             showWorkBadge = true,
                             isTyping = false,
                             avatarIteration = AvatarIteration.initial,
+                            availabilityStatus = AvailabilityStatus.Unavailable(),
                         ),
                         isChecked = false,
                         isHighlighted = false,

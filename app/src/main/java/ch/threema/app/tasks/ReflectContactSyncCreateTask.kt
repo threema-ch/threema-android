@@ -15,7 +15,7 @@ class ReflectContactSyncCreateTask(
     private val contactModelData: ContactModelData,
     private val contactModelRepository: ContactModelRepository,
     private val nonceFactory: NonceFactory,
-    private val createLocally: () -> ContactModel,
+    private val createLocally: suspend () -> ContactModel,
 ) : ReflectContactSyncTask<Unit, ContactModel>(), ActiveTask<ContactModel> {
     override val type = "ReflectContactSyncCreate"
 
@@ -28,10 +28,9 @@ class ReflectContactSyncCreateTask(
 
     override val runInsideTransaction: suspend (handle: ActiveTaskCodec) -> Unit = { handle ->
         logger.info("Reflecting contact sync create for identity {}", contactModelData.identity)
-
         val encryptedEnvelopeResult = getEncryptedContactSyncCreate(
-            contactModelData.toFullSyncContact(),
-            mdProperties,
+            contact = contactModelData.toFullSyncContact(),
+            multiDeviceProperties = mdProperties,
         )
         handle.reflectAndAwaitAck(
             encryptedEnvelopeResult = encryptedEnvelopeResult,
@@ -40,7 +39,7 @@ class ReflectContactSyncCreateTask(
         )
     }
 
-    override val runAfterSuccessfulTransaction: (transactionResult: Unit) -> ContactModel = {
+    override val runAfterSuccessfulTransaction: suspend (transactionResult: Unit) -> ContactModel = {
         createLocally()
     }
 }

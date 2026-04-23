@@ -2,9 +2,12 @@ package ch.threema.domain.protocol.csp.messages
 
 import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.ProtocolDefines
+import ch.threema.domain.protocol.csp.messages.GroupReactionMessage.Companion.fromByteArray
+import ch.threema.domain.protocol.csp.messages.GroupReactionMessage.Companion.fromReflected
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufGroupMessage
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import java.nio.charset.StandardCharsets
 
 class GroupReactionMessage(
@@ -47,14 +50,14 @@ class GroupReactionMessage(
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): GroupReactionMessage {
+        fun fromReflected(message: IncomingMessage): GroupReactionMessage {
             val groupReactionMessage = fromByteArray(message.body.toByteArray())
             groupReactionMessage.initializeCommonProperties(message)
             return groupReactionMessage
         }
 
         @JvmStatic
-        fun fromReflected(message: MdD2D.OutgoingMessage): GroupReactionMessage {
+        fun fromReflected(message: OutgoingMessage): GroupReactionMessage {
             val groupReactionMessage = fromByteArray(message.body.toByteArray())
             groupReactionMessage.initializeCommonProperties(message)
             return groupReactionMessage

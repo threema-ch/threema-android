@@ -114,8 +114,11 @@ import ch.threema.domain.protocol.csp.messages.voip.VoipCallRingingData;
 import ch.threema.domain.protocol.csp.messages.voip.VoipICECandidatesData;
 import ch.threema.domain.protocol.csp.messages.voip.features.FeatureList;
 import ch.threema.domain.protocol.csp.messages.voip.features.VideoFeature;
-import ch.threema.protobuf.callsignaling.O2OCall;
 import ch.threema.data.models.ContactModel;
+import ch.threema.protobuf.o2o_call.CaptureState;
+import ch.threema.protobuf.o2o_call.Envelope;
+import ch.threema.protobuf.o2o_call.O2OCall;
+import ch.threema.protobuf.o2o_call.VideoQualityProfile;
 import kotlin.Unit;
 
 import java.util.function.Supplier;
@@ -2018,7 +2021,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
 
     @Override
     @WorkerThread
-    public void onSignalingMessage(long callId, @NonNull O2OCall.Envelope envelope) {
+    public void onSignalingMessage(long callId, @NonNull Envelope envelope) {
         if (envelope.hasCaptureStateChange()) {
             this.handleCaptureStateChange(callId, envelope.getCaptureStateChange());
         } else if (envelope.hasVideoQualityProfile()) {
@@ -2612,7 +2615,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
      * @param captureStateChange The received signaling message.
      */
     @AnyThread
-    private void handleCaptureStateChange(long callId, @NonNull O2OCall.CaptureState captureStateChange) {
+    private void handleCaptureStateChange(long callId, @NonNull CaptureState captureStateChange) {
         logCallInfo(
             callId,
             "Signaling: Call partner changed {} capturing state to {}",
@@ -2621,7 +2624,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
         );
 
         // Handle camera capturing state changes
-        if (O2OCall.CaptureState.CaptureDevice.CAMERA == captureStateChange.getDevice()) {
+        if (CaptureState.CaptureDevice.CAMERA == captureStateChange.getDevice()) {
             switch (captureStateChange.getState()) {
                 case ON:
                     this.remoteVideoStateDetector.onRemoteVideoCapturingEnabled();
@@ -2641,7 +2644,7 @@ public class VoipCallService extends LifecycleService implements PeerConnectionC
      * @param videoQualityProfile The received signaling message.
      */
     @AnyThread
-    private void handleVideoQualityProfileChange(long callId, @NonNull O2OCall.VideoQualityProfile videoQualityProfile) {
+    private void handleVideoQualityProfileChange(long callId, @NonNull VideoQualityProfile videoQualityProfile) {
         logCallInfo(callId, "Signaling: Call partner changed video profile to {}", videoQualityProfile.getProfile());
 
         final VoipVideoParams profile = VoipVideoParams.fromSignalingMessage(videoQualityProfile);

@@ -16,10 +16,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import ch.threema.app.R
+import ch.threema.app.availabilitystatus.AvailabilityStatusIconElevated
 import ch.threema.app.compose.common.extensions.thenIf
 import ch.threema.app.compose.common.immutables.ImmutableBitmap
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.GridUnit
+import ch.threema.data.datatypes.AvailabilityStatus
 
 @Composable
 fun Avatar(
@@ -28,6 +30,7 @@ fun Avatar(
     contentDescription: String?,
     @DrawableRes fallbackIcon: Int = R.drawable.ic_contact,
     showWorkBadge: Boolean,
+    availabilityStatus: AvailabilityStatus? = null,
     onClick: (() -> Unit)? = null,
 ) {
     Box(
@@ -66,6 +69,14 @@ fun Avatar(
                 contentDescription = null,
             )
         }
+
+        if (availabilityStatus is AvailabilityStatus.Set) {
+            AvailabilityStatusIconElevated(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd),
+                status = availabilityStatus,
+            )
+        }
     }
 }
 
@@ -77,6 +88,34 @@ private fun Avatar_Preview() {
             bitmap = null,
             contentDescription = null,
             showWorkBadge = true,
+            onClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun Avatar_Preview_Unavailable() {
+    ThreemaThemePreview {
+        Avatar(
+            bitmap = null,
+            contentDescription = null,
+            showWorkBadge = true,
+            availabilityStatus = AvailabilityStatus.Unavailable(),
+            onClick = {},
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun Avatar_Preview_Busy() {
+    ThreemaThemePreview {
+        Avatar(
+            bitmap = null,
+            contentDescription = null,
+            showWorkBadge = true,
+            availabilityStatus = AvailabilityStatus.Busy(),
             onClick = {},
         )
     }

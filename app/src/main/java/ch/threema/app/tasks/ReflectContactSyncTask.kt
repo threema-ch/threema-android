@@ -3,8 +3,9 @@ package ch.threema.app.tasks
 import ch.threema.app.services.ContactService.ProfilePictureUploadData
 import ch.threema.app.services.ConversationCategoryService
 import ch.threema.app.services.ConversationService
-import ch.threema.app.services.RingtoneService
+import ch.threema.app.utils.ConfigUtils
 import ch.threema.app.utils.ContactUtil
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride.MutedIndefinite
 import ch.threema.data.datatypes.NotificationTriggerPolicyOverride.MutedIndefiniteExceptMentions
@@ -19,23 +20,24 @@ import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.protobuf.Common
-import ch.threema.protobuf.Common.DeltaImage
-import ch.threema.protobuf.blob
-import ch.threema.protobuf.d2d.MdD2D.TransactionScope.Scope.CONTACT_SYNC
+import ch.threema.protobuf.common.DeltaImage
+import ch.threema.protobuf.common.Image
+import ch.threema.protobuf.common.blob
+import ch.threema.protobuf.common.deltaImage
+import ch.threema.protobuf.common.image
+import ch.threema.protobuf.common.unit
+import ch.threema.protobuf.d2d.TransactionScope
+import ch.threema.protobuf.d2d.sync.Contact
 import ch.threema.protobuf.d2d.sync.ContactKt
-import ch.threema.protobuf.d2d.sync.MdD2DSync
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Contact.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy
-import ch.threema.protobuf.d2d.sync.MdD2DSync.NotificationSoundPolicy
+import ch.threema.protobuf.d2d.sync.ContactKt.deprecatedNotificationSoundPolicyOverride
+import ch.threema.protobuf.d2d.sync.ConversationCategory
+import ch.threema.protobuf.d2d.sync.ConversationVisibility
 import ch.threema.protobuf.d2d.sync.contact
-import ch.threema.protobuf.deltaImage
-import ch.threema.protobuf.image
-import ch.threema.protobuf.unit
 import ch.threema.storage.models.ContactModel
 import com.google.protobuf.kotlin.toByteString
 
 abstract class ReflectContactSyncTask<TransactionResult, TaskResult>() : ReflectSyncTask<TransactionResult, TaskResult>(
-    transactionScope = CONTACT_SYNC,
+    transactionScope = TransactionScope.Scope.CONTACT_SYNC,
 ) {
     protected suspend fun reflectContactSync(handle: ActiveTaskCodec): TaskResult {
         return reflectSync(handle)
@@ -45,10 +47,9 @@ abstract class ReflectContactSyncTask<TransactionResult, TaskResult>() : Reflect
 fun ContactModelData.toFullSyncContact(
     conversationService: ConversationService? = null,
     conversationCategoryService: ConversationCategoryService? = null,
-    ringtoneService: RingtoneService? = null,
     contactDefinedProfilePictureUpload: ProfilePictureUploadData? = null,
     userDefinedProfilePictureUpload: ProfilePictureUploadData? = null,
-): MdD2DSync.Contact {
+): Contact {
     val data = this
     return contact {
         identity = data.identity
@@ -67,86 +68,88 @@ fun ContactModelData.toFullSyncContact(
         readReceiptPolicyOverride = data.getSyncReadReceiptPolicyOverride()
         typingIndicatorPolicyOverride = data.getSyncTypingIndicatorPolicyOverride()
         notificationTriggerPolicyOverride = data.getSyncNotificationTriggerPolicyOverride()
-        notificationSoundPolicyOverride = getSyncNotificationSoundPolicyOverride(ringtoneService)
+        deprecatedNotificationSoundPolicyOverride = deprecatedNotificationSoundPolicyOverride {
+            default = unit {}
+        }
         contactDefinedProfilePicture = contactDefinedProfilePictureUpload.toDeltaImage()
         userDefinedProfilePicture = userDefinedProfilePictureUpload.toDeltaImage()
         conversationCategory = data.getSyncConversationCategory(conversationCategoryService)
         conversationVisibility = data.getSyncConversationVisibility(conversationService)
+
+        if (ConfigUtils.supportsAvailabilityStatus() && data.availabilityStatus != AvailabilityStatus.None) {
+            workAvailabilityStatus = data.availabilityStatus.toProtocolModel()
+        }
     }
 }
 
-private fun ContactModelData.getSyncVerificationLevel(): MdD2DSync.Contact.VerificationLevel =
+private fun ContactModelData.getSyncVerificationLevel(): Contact.VerificationLevel =
     when (this.verificationLevel) {
-        VerificationLevel.FULLY_VERIFIED -> MdD2DSync.Contact.VerificationLevel.FULLY_VERIFIED
-        VerificationLevel.SERVER_VERIFIED -> MdD2DSync.Contact.VerificationLevel.SERVER_VERIFIED
-        VerificationLevel.UNVERIFIED -> MdD2DSync.Contact.VerificationLevel.UNVERIFIED
+        VerificationLevel.FULLY_VERIFIED -> Contact.VerificationLevel.FULLY_VERIFIED
+        VerificationLevel.SERVER_VERIFIED -> Contact.VerificationLevel.SERVER_VERIFIED
+        VerificationLevel.UNVERIFIED -> Contact.VerificationLevel.UNVERIFIED
     }
 
-private fun ContactModelData.getSyncWorkVerificationLevel(): MdD2DSync.Contact.WorkVerificationLevel =
+private fun ContactModelData.getSyncWorkVerificationLevel(): Contact.WorkVerificationLevel =
     when (this.workVerificationLevel) {
-        WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED -> MdD2DSync.Contact.WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED
-        WorkVerificationLevel.NONE -> MdD2DSync.Contact.WorkVerificationLevel.NONE
+        WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED -> Contact.WorkVerificationLevel.WORK_SUBSCRIPTION_VERIFIED
+        WorkVerificationLevel.NONE -> Contact.WorkVerificationLevel.NONE
     }
 
-private fun ContactModelData.getSyncIdentityType(): MdD2DSync.Contact.IdentityType =
+private fun ContactModelData.getSyncIdentityType(): Contact.IdentityType =
     when (this.identityType) {
-        IdentityType.NORMAL -> MdD2DSync.Contact.IdentityType.REGULAR
-        IdentityType.WORK -> MdD2DSync.Contact.IdentityType.WORK
+        IdentityType.NORMAL -> Contact.IdentityType.REGULAR
+        IdentityType.WORK -> Contact.IdentityType.WORK
     }
 
-private fun ContactModelData.getSyncAcquaintanceLevel(): MdD2DSync.Contact.AcquaintanceLevel =
+private fun ContactModelData.getSyncAcquaintanceLevel(): Contact.AcquaintanceLevel =
     when (this.acquaintanceLevel) {
-        ContactModel.AcquaintanceLevel.DIRECT -> MdD2DSync.Contact.AcquaintanceLevel.DIRECT
-        ContactModel.AcquaintanceLevel.GROUP -> MdD2DSync.Contact.AcquaintanceLevel.GROUP_OR_DELETED
+        ContactModel.AcquaintanceLevel.DIRECT -> Contact.AcquaintanceLevel.DIRECT
+        ContactModel.AcquaintanceLevel.GROUP -> Contact.AcquaintanceLevel.GROUP_OR_DELETED
     }
 
-private fun ContactModelData.getSyncActivityState(): MdD2DSync.Contact.ActivityState =
+private fun ContactModelData.getSyncActivityState(): Contact.ActivityState =
     when (this.activityState) {
-        IdentityState.ACTIVE -> MdD2DSync.Contact.ActivityState.ACTIVE
-        IdentityState.INACTIVE -> MdD2DSync.Contact.ActivityState.INACTIVE
-        IdentityState.INVALID -> MdD2DSync.Contact.ActivityState.INVALID
+        IdentityState.ACTIVE -> Contact.ActivityState.ACTIVE
+        IdentityState.INACTIVE -> Contact.ActivityState.INACTIVE
+        IdentityState.INVALID -> Contact.ActivityState.INVALID
     }
 
-private fun ContactModelData.getSyncSyncState(): MdD2DSync.Contact.SyncState =
+private fun ContactModelData.getSyncSyncState(): Contact.SyncState =
     // TODO(ANDR-2327): Consolidate this mechanism
     if (androidContactLookupInfo != null) {
-        MdD2DSync.Contact.SyncState.IMPORTED
+        Contact.SyncState.IMPORTED
     } else if (lastName.isBlank() && firstName.isBlank()) {
-        MdD2DSync.Contact.SyncState.INITIAL
+        Contact.SyncState.INITIAL
     } else {
-        MdD2DSync.Contact.SyncState.CUSTOM
+        Contact.SyncState.CUSTOM
     }
 
-private fun ContactModelData.getSyncReadReceiptPolicyOverride(): MdD2DSync.Contact.ReadReceiptPolicyOverride =
+private fun ContactModelData.getSyncReadReceiptPolicyOverride(): Contact.ReadReceiptPolicyOverride =
     ContactKt.readReceiptPolicyOverride {
         when (readReceiptPolicy) {
             ReadReceiptPolicy.DEFAULT -> default = unit { }
-            ReadReceiptPolicy.SEND -> policy = MdD2DSync.ReadReceiptPolicy.SEND_READ_RECEIPT
-            ReadReceiptPolicy.DONT_SEND -> policy = MdD2DSync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
+            ReadReceiptPolicy.SEND -> policy = ch.threema.protobuf.d2d.sync.ReadReceiptPolicy.SEND_READ_RECEIPT
+            ReadReceiptPolicy.DONT_SEND -> policy = ch.threema.protobuf.d2d.sync.ReadReceiptPolicy.DONT_SEND_READ_RECEIPT
         }
     }
 
-private fun ContactModelData.getSyncTypingIndicatorPolicyOverride(): MdD2DSync.Contact.TypingIndicatorPolicyOverride =
+private fun ContactModelData.getSyncTypingIndicatorPolicyOverride(): Contact.TypingIndicatorPolicyOverride =
     ContactKt.typingIndicatorPolicyOverride {
         when (typingIndicatorPolicy) {
             TypingIndicatorPolicy.DEFAULT -> default = unit { }
-
-            TypingIndicatorPolicy.SEND ->
-                policy = MdD2DSync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR
-
-            TypingIndicatorPolicy.DONT_SEND ->
-                policy = MdD2DSync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
+            TypingIndicatorPolicy.SEND -> policy = ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy.SEND_TYPING_INDICATOR
+            TypingIndicatorPolicy.DONT_SEND -> policy = ch.threema.protobuf.d2d.sync.TypingIndicatorPolicy.DONT_SEND_TYPING_INDICATOR
         }
     }
 
-private fun ContactModelData.getSyncNotificationTriggerPolicyOverride(): MdD2DSync.Contact.NotificationTriggerPolicyOverride {
+private fun ContactModelData.getSyncNotificationTriggerPolicyOverride(): Contact.NotificationTriggerPolicyOverride {
     val notificationTriggerPolicyOverride = NotificationTriggerPolicyOverride.fromDbValueContact(this.notificationTriggerPolicyOverride)
     return ContactKt.notificationTriggerPolicyOverride {
         when (notificationTriggerPolicyOverride) {
             NotMuted -> default = unit {}
 
             MutedIndefinite -> policy = ContactKt.NotificationTriggerPolicyOverrideKt.policy {
-                policy = NotificationTriggerPolicy.NEVER
+                policy = Contact.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
             }
 
             MutedIndefiniteExceptMentions -> throw IllegalStateException(
@@ -154,28 +157,9 @@ private fun ContactModelData.getSyncNotificationTriggerPolicyOverride(): MdD2DSy
             )
 
             is MutedUntil -> policy = ContactKt.NotificationTriggerPolicyOverrideKt.policy {
-                policy = NotificationTriggerPolicy.NEVER
+                policy = Contact.NotificationTriggerPolicyOverride.Policy.NotificationTriggerPolicy.NEVER
                 expiresAt = notificationTriggerPolicyOverride.utcMillis
             }
-        }
-    }
-}
-
-// TODO(ANDR-2998): Use notification sound policy override from new contact model
-private fun ContactModelData.getSyncNotificationSoundPolicyOverride(
-    ringtoneService: RingtoneService?,
-): MdD2DSync.Contact.NotificationSoundPolicyOverride {
-    return if (ringtoneService != null) {
-        ContactKt.notificationSoundPolicyOverride {
-            if (ringtoneService.isSilent(ContactUtil.getUniqueIdString(identity), false)) {
-                policy = NotificationSoundPolicy.MUTED
-            } else {
-                default = unit { }
-            }
-        }
-    } else {
-        ContactKt.notificationSoundPolicyOverride {
-            default = unit { }
         }
     }
 }
@@ -183,34 +167,36 @@ private fun ContactModelData.getSyncNotificationSoundPolicyOverride(
 // TODO(ANDR-3034): Use conversation category from the new contact model
 private fun ContactModelData.getSyncConversationCategory(
     conversationCategoryService: ConversationCategoryService?,
-): MdD2DSync.ConversationCategory {
-    return conversationCategoryService?.getConversationCategory(ContactUtil.getUniqueIdString(identity)) ?: MdD2DSync.ConversationCategory.DEFAULT
+): ConversationCategory {
+    return conversationCategoryService
+        ?.getConversationCategory(ContactUtil.getUniqueIdString(identity))
+        ?: ConversationCategory.DEFAULT
 }
 
 private fun ContactModelData.getSyncConversationVisibility(
     conversationService: ConversationService?,
-): MdD2DSync.ConversationVisibility {
+): ConversationVisibility {
     // TODO(ANDR-3035): Use conversation visibility from the new contact model
     if (conversationService == null) {
-        return MdD2DSync.ConversationVisibility.NORMAL
+        return ConversationVisibility.NORMAL
     }
 
     // Check whether the contact is archived. In case it is archived, it can't be pinned.
     if (isArchived) {
-        return MdD2DSync.ConversationVisibility.ARCHIVED
+        return ConversationVisibility.ARCHIVED
     }
 
     // In case there is a conversation with the contact: Check the pin tag, otherwise it is normal
     conversationService.getAll(true).find { it.contact?.identity == identity }?.let {
         return if (it.isPinTagged) {
-            MdD2DSync.ConversationVisibility.PINNED
+            ConversationVisibility.PINNED
         } else {
-            MdD2DSync.ConversationVisibility.NORMAL
+            ConversationVisibility.NORMAL
         }
     }
 
     // In case there is no conversation with the contact: The visibility is normal.
-    return MdD2DSync.ConversationVisibility.NORMAL
+    return ConversationVisibility.NORMAL
 }
 
 private fun ProfilePictureUploadData?.toDeltaImage(): DeltaImage {
@@ -220,7 +206,7 @@ private fun ProfilePictureUploadData?.toDeltaImage(): DeltaImage {
         val uploadData = this
         deltaImage {
             updated = image {
-                type = Common.Image.Type.JPEG
+                type = Image.Type.JPEG
                 blob = blob {
                     id = uploadData.blobId.toByteString()
                     nonce = ProtocolDefines.CONTACT_PHOTO_NONCE.toByteString()

@@ -3,7 +3,7 @@ package ch.threema.domain.protocol.multidevice
 import ch.threema.base.crypto.NaCl
 import ch.threema.base.utils.Utils
 import ch.threema.domain.protocol.connection.data.D2dMessage
-import ch.threema.protobuf.d2d.MdD2D.TransactionScope
+import ch.threema.protobuf.d2d.TransactionScope
 import ch.threema.protobuf.d2d.transactionScope
 import kotlin.test.Test
 import kotlin.test.assertContentEquals

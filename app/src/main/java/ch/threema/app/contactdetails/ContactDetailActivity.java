@@ -180,10 +180,11 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             logger.error("View model is null. Cannot refresh adapter.");
             return;
         }
-
-        ContactModelData fetchedData = viewModel.contactModelData.getValue();
-        if (fetchedData != null) {
-            contactDetailRecyclerView.setAdapter(setupAdapter(fetchedData));
+        final @Nullable ContactModelData contactModelData = viewModel.contactModelData.getValue();
+        if (contactModelData != null) {
+            contactDetailRecyclerView.setAdapter(
+                setupAdapter(contactModelData)
+            );
         }
     }
 
@@ -583,6 +584,7 @@ public class ContactDetailActivity extends ThreemaToolbarActivity
             this.groupList,
             viewModel.getContactModel(),
             contactModelData,
+            dependencies.getPreferenceService().getEmojiStyle(),
             Glide.with(this)
         );
 

@@ -8,6 +8,7 @@ import ch.threema.app.managers.ListenerManager
 import ch.threema.app.testutils.TestHelpers.TestContact
 import ch.threema.app.testutils.TestHelpers.TestGroup
 import ch.threema.base.crypto.NaCl
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupIdentity
 import ch.threema.domain.models.ContactSyncState
@@ -378,7 +379,9 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         )
 
         // Add a revoked contact
-        serviceManager.modelRepositories.contacts.createFromLocal(revokedContactModelData)
+        serviceManager.modelRepositories.contacts.createFromLocal(
+            contactModelData = revokedContactModelData,
+        )
 
         val newGroup = TestGroup(
             newAGroup.apiGroupId,
@@ -655,6 +658,8 @@ class IncomingGroupSetupTest : GroupConversationListTest<GroupSetupMessage>() {
         jobTitle = null,
         department = null,
         notificationTriggerPolicyOverride = null,
+        availabilityStatus = AvailabilityStatus.None,
+        workLastFullSyncAt = null,
     )
 
     override fun testCommonGroupReceiveStepUnknownGroupUserCreator() {

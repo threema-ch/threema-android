@@ -4,10 +4,13 @@ import ch.threema.domain.models.GroupId
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.messages.BadMessageException
 import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartData.Companion.fromProtobuf
+import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage.Companion.fromByteArray
+import ch.threema.domain.protocol.csp.messages.groupcall.GroupCallStartMessage.Companion.fromReflected
 import ch.threema.domain.protocol.csp.messages.protobuf.AbstractProtobufGroupMessage
 import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.csp.e2e.fs.Version
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.IncomingMessage
+import ch.threema.protobuf.d2d.OutgoingMessage
 import java.nio.charset.StandardCharsets
 import java.util.Arrays
 
@@ -51,7 +54,7 @@ class GroupCallStartMessage(payloadData: GroupCallStartData) :
          *  @see fromByteArray
          */
         @JvmStatic
-        fun fromReflected(message: MdD2D.IncomingMessage): GroupCallStartMessage {
+        fun fromReflected(message: IncomingMessage): GroupCallStartMessage {
             val bodyBytes: ByteArray = message.body.toByteArray()
             val groupCallStartMessage = fromByteArray(bodyBytes, 0, bodyBytes.size)
             groupCallStartMessage.initializeCommonProperties(message)
@@ -70,7 +73,7 @@ class GroupCallStartMessage(payloadData: GroupCallStartData) :
          */
         @JvmStatic
         fun fromReflected(
-            message: MdD2D.OutgoingMessage,
+            message: OutgoingMessage,
             ownIdentity: IdentityString,
         ): GroupCallStartMessage {
             val bodyBytes: ByteArray = message.body.toByteArray()

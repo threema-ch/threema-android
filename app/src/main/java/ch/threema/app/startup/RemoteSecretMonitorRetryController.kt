@@ -3,7 +3,7 @@ package ch.threema.app.startup
 import ch.threema.common.await
 import kotlinx.coroutines.flow.MutableStateFlow
 
-object RemoteSecretMonitorRetryController {
+class RemoteSecretMonitorRetryController {
     private val retryRequestFlow = MutableStateFlow(false)
 
     suspend fun awaitRetryRequest() {

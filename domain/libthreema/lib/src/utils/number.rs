@@ -1,8 +1,8 @@
-//! Number utilities and extensions
+//! Number utilities and extensions.
 
 use duplicate::duplicate_item;
 
-/// Port of <https://doc.rust-lang.org/nightly/std/primitive.u64.html#method.checked_exact_div>
+/// Port of <https://doc.rust-lang.org/nightly/std/primitive.u64.html#method.checked_exact_div>.
 pub(crate) trait CheckedExactDiv: Sized {
     /// Checked integer division without remainder. Computes `self / rhs`, returning `None` if `rhs == 0` or
     /// if `self % rhs != 0`.

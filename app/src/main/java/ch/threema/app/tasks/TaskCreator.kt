@@ -10,7 +10,7 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.types.IdentityString
 import ch.threema.protobuf.csp.e2e.fs.Terminate.Cause
-import ch.threema.protobuf.d2d.sync.MdD2DSync.Settings
+import ch.threema.protobuf.d2d.sync.Settings
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 

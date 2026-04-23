@@ -119,7 +119,7 @@ pub fn blake2b_mac_512(
     )
 }
 
-/// Parameters for [`argon2id`]
+/// Parameters for [`argon2id`].
 #[derive(Clone, Copy, uniffi::Record)]
 pub struct Argon2idParameters {
     /// Memory size in 1 KiB blocks. Between 8*`parallelism` and (2^32)-1.
@@ -172,7 +172,7 @@ pub fn argon2id(
     Ok(output)
 }
 
-/// Parameters for [`scrypt()`]
+/// Parameters for [`scrypt()`].
 #[derive(uniffi::Record)]
 pub struct ScryptParameters {
     /// The logarithm of the CPU/memory cost parameter (aka `N`). Less than 64. The resulting

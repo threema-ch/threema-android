@@ -94,7 +94,7 @@ fn encode_to_vec_padded<TMessage: prost::Message>(
 /// the encoded message and appended afterwards.
 ///
 /// TODO(LIB-47): This does not prevent the usage of `.encode_to_vec()`, so it can be easily missed.
-/// TODO(LIB-72): Add tests
+/// TODO(LIB-72): Add tests.
 pub(crate) trait PaddedMessage: prost::Message {
     /// Encode the message with padding to a newly allocated buffer. The padding is ensured to correctly take
     /// the total encoded length into account but the varint encoding of the padding tag and length adds at

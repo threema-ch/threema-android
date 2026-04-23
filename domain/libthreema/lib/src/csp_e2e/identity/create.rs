@@ -13,6 +13,18 @@ use crate::{
     utils::debug::Name as _,
 };
 
+/// Context for creating an identity.
+pub struct CreateIdentityContext {
+    /// Client info.
+    pub client_info: ClientInfo,
+
+    /// Configuration used by the protocol.
+    pub config: Rc<Config>,
+
+    /// Application flavour.
+    pub flavor: Flavor,
+}
+
 /// 1. Run the HTTPS request as defined by [`HttpsRequest`] and let `response` be the result.
 /// 2. Provide `response` to the associated task as a [`CreateIdentityResponse`] and poll again.
 pub struct CreateIdentityInstruction {
@@ -41,18 +53,6 @@ pub struct CreateIdentityResult {
 
 /// Result of polling a [`CreateIdentityTask`].
 pub type CreateIdentityLoop = TaskLoop<CreateIdentityInstruction, CreateIdentityResult>;
-
-/// Context for creating an identity.
-pub struct CreateIdentityContext {
-    /// Client info.
-    pub client_info: ClientInfo,
-
-    /// Configuration used by the protocol.
-    pub config: Rc<Config>,
-
-    /// Application flavour.
-    pub flavor: Flavor,
-}
 
 struct InitState {
     client_key: ClientKey,

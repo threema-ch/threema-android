@@ -63,7 +63,7 @@ pub struct MessageWithMetadataBox {
     pub bytes: Vec<u8>,
 }
 impl MessageWithMetadataBox {
-    pub(crate) fn decode(mut reader: OwnedVecByteReader) -> Result<Self, CspProtocolError> {
+    fn decode(mut reader: OwnedVecByteReader) -> Result<Self, CspProtocolError> {
         // Truncate to the payload, since we need the raw bytes later
         reader.truncate();
 
@@ -112,6 +112,14 @@ impl MessageWithMetadataBox {
                 source: error,
             })?;
         Ok(())
+    }
+}
+#[cfg(test)]
+impl TryFrom<Vec<u8>> for MessageWithMetadataBox {
+    type Error = CspProtocolError;
+
+    fn try_from(bytes: Vec<u8>) -> Result<Self, Self::Error> {
+        MessageWithMetadataBox::decode(OwnedVecByteReader::new(bytes))
     }
 }
 
@@ -166,7 +174,7 @@ impl MessageAck {
     }
 }
 
-/// APNs server type
+/// APNs server type.
 #[derive(Clone, Copy)]
 pub enum ApnsServerType {
     /// Production server of the APNs service.
@@ -203,32 +211,32 @@ impl From<ApnsServerType> for PushNotificationTokenType {
 /// Sets (or clears) the push notification token on the server.
 #[derive(Name)]
 pub enum PushNotificationToken {
-    /// Clear any existing push notification token of this device
+    /// Clear any existing push notification token of this device.
     Clear,
 
-    /// Set an APNs push notification token
+    /// Set an APNs push notification token.
     ///
     /// Note: For readers with legacy knowledge, this is the one with the `mutable-content` key and the
     /// encryption key. No other variants are in use by modern clients.
     Apns {
-        /// APNs server type
+        /// APNs server type.
         r#type: ApnsServerType,
-        /// Bundle ID of the app (e.g. `ch.threema.iapp` for consumer)
+        /// Bundle ID of the app (e.g. `ch.threema.iapp` for consumer).
         bundle_id: String,
-        /// Payload encryption key (XSalsa20)
+        /// Payload encryption key (XSalsa20).
         encryption_key: [u8; 32],
-        /// APNs device token
+        /// APNs device token.
         token: Vec<u8>,
     },
 
-    /// Set an FCM push notification token
+    /// Set an FCM push notification token.
     Fcm(String),
 
-    /// Set an HMS push notification token
+    /// Set an HMS push notification token.
     Hms {
-        /// App ID (e.g. `103713829` for consumer)
+        /// App ID (e.g. `103713829` for consumer).
         app_id: String,
-        /// HMS push token
+        /// HMS push token.
         token: String,
     },
 }
@@ -353,7 +361,7 @@ impl DeletePushNotificationToken {
     }
 }
 
-/// Set the connection idle timeout (in minutes)
+/// Set the connection idle timeout (in minutes).
 #[derive(Name)]
 pub struct ConnectionIdleTimeout(pub u16);
 impl ConnectionIdleTimeout {
@@ -377,7 +385,7 @@ pub struct CloseError {
     /// been severed.
     pub can_reconnect: bool,
 
-    /// Error message
+    /// Error message.
     pub message: String,
 }
 impl CloseError {
@@ -470,10 +478,10 @@ pub enum IncomingPayload {
     /// The payload type is not known, either due to server misbehavior or as consequence of running an old
     /// version of libthreema. This information might be helpful for debugging.
     UnknownPayload {
-        /// The (unsupported) type of the payload
+        /// The (unsupported) type of the payload.
         payload_type: u8,
 
-        /// The length of the received container
+        /// The length of the received container.
         length: usize,
     },
 }
@@ -615,7 +623,7 @@ pub enum OutgoingPayload {
     /// notification tokens from the server.
     DeletePushNotificationToken(DeletePushNotificationToken),
 
-    /// Set the connection idle timeout
+    /// Set the connection idle timeout.
     SetConnectionIdleTimeout(ConnectionIdleTimeout),
 
     /// Clear the flag that triggers sending of a device-cookie-change-indication.

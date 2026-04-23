@@ -6,19 +6,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import ch.threema.domain.fs.DHSessionId;
 import ch.threema.domain.models.MessageId;
-import ch.threema.protobuf.Common;
+import ch.threema.protobuf.common.GroupIdentity;
 import ch.threema.protobuf.csp.e2e.fs.Envelope;
 import ch.threema.protobuf.csp.e2e.fs.Reject;
 
 public class ForwardSecurityDataReject extends ForwardSecurityData {
     private final @NonNull MessageId rejectedMessageId;
-    private final @Nullable Common.GroupIdentity groupIdentity;
+    private final @Nullable GroupIdentity groupIdentity;
     private final @NonNull Reject.Cause cause;
 
     public ForwardSecurityDataReject(
         @NonNull DHSessionId sessionId,
         @NonNull MessageId rejectedMessageId,
-        @Nullable Common.GroupIdentity groupIdentity,
+        @Nullable GroupIdentity groupIdentity,
         @NonNull Reject.Cause cause
     ) {
         this(
@@ -42,12 +42,12 @@ public class ForwardSecurityDataReject extends ForwardSecurityData {
         this.cause = cause;
 
         if (groupId != null && groupCreator != null) {
-            this.groupIdentity = Common.GroupIdentity.newBuilder()
+            this.groupIdentity = GroupIdentity.newBuilder()
                 .setGroupId(groupId)
                 .setCreatorIdentity(groupCreator)
                 .build();
         } else {
-            this.groupIdentity = Common.GroupIdentity.newBuilder().build();
+            this.groupIdentity = GroupIdentity.newBuilder().build();
         }
     }
 
@@ -57,7 +57,7 @@ public class ForwardSecurityDataReject extends ForwardSecurityData {
     }
 
     @Nullable
-    public Common.GroupIdentity getGroupIdentity() {
+    public GroupIdentity getGroupIdentity() {
         return groupIdentity;
     }
 

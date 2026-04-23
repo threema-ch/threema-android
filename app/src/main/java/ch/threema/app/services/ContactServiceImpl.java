@@ -41,7 +41,6 @@ import androidx.annotation.WorkerThread;
 import androidx.core.content.ContextCompat;
 import ch.threema.app.R;
 import ch.threema.app.ThreemaApplication;
-import ch.threema.app.asynctasks.AddOrUpdateWorkIdentityBackgroundTask;
 import ch.threema.app.glide.AvatarOptions;
 import ch.threema.app.managers.ListenerManager;
 import ch.threema.app.managers.ServiceManager;
@@ -66,7 +65,6 @@ import ch.threema.data.models.ContactModelData;
 import ch.threema.data.models.ModelDeletedException;
 import ch.threema.data.repositories.ContactModelRepository;
 import ch.threema.domain.fs.DHSession;
-import ch.threema.domain.models.BasicContact;
 import ch.threema.domain.models.Contact;
 import ch.threema.domain.models.IdentityState;
 import ch.threema.domain.models.IdentityType;
@@ -1064,24 +1062,6 @@ public class ContactServiceImpl implements ContactService {
         synchronized (this.contactModelCache) {
             this.contactModelCache.remove(identity);
         }
-    }
-
-    /**
-     * Try to fetch a contact from work api and add it to the contact database. Note that this
-     * method does not throw any exceptions when the connection to the server could not be
-     * established.
-     *
-     * @param identity the identity of the contact that might be a work contact
-     */
-    @WorkerThread
-    private void fetchAndCreateWorkContact(@NonNull String identity) {
-        new AddOrUpdateWorkIdentityBackgroundTask(
-            identity,
-            userService.getIdentity(),
-            licenseService,
-            apiConnector,
-            contactModelRepository
-        ).runSynchronously();
     }
 
     @Override

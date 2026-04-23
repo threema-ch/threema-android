@@ -12,7 +12,7 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.createTransaction
 import ch.threema.domain.taskmanager.getEncryptedUserProfileSyncUpdate
-import ch.threema.protobuf.d2d.MdD2D
+import ch.threema.protobuf.d2d.TransactionScope
 import ch.threema.protobuf.d2d.sync.userProfile
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
@@ -38,7 +38,7 @@ class ReflectUserProfileNicknameSyncTask(
 
         handle.createTransaction(
             keys = mdProperties.keys,
-            scope = MdD2D.TransactionScope.Scope.USER_PROFILE_SYNC,
+            scope = TransactionScope.Scope.USER_PROFILE_SYNC,
             ttl = TRANSACTION_TTL_MAX,
         ).execute {
             encryptAndReflectUserProfileUpdate(handle)

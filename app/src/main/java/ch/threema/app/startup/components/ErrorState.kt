@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import ch.threema.app.R
 import ch.threema.app.compose.common.DynamicSpacerSize4
 import ch.threema.app.compose.common.ThemedText
-import ch.threema.app.compose.common.buttons.ButtonPrimary
+import ch.threema.app.compose.common.buttons.primary.ButtonPrimary
 import ch.threema.app.compose.preview.PreviewThreemaAll
 import ch.threema.app.compose.theme.ThreemaThemePreview
 import ch.threema.app.compose.theme.dimens.GridUnit
@@ -31,6 +31,7 @@ import ch.threema.app.utils.ConfigUtils
 fun ErrorState(
     errors: Set<AppStartupError>,
     onClickExportLogs: () -> Unit,
+    onClickCloseApp: () -> Unit,
     onClickRetryRemoteSecrets: () -> Unit,
 ) {
     val errorCodes = errors.mapNotNull { error -> (error as? AppStartupError.Unexpected)?.code }
@@ -41,7 +42,9 @@ fun ErrorState(
             onClickExportLogs = onClickExportLogs,
         )
     } else if (AppStartupError.BlockedByAdmin in errors) {
-        BlockedByAdminState()
+        BlockedByAdminState(
+            onClickCloseApp = onClickCloseApp,
+        )
     } else if (AppStartupError.FailedToFetchRemoteSecret in errors) {
         FailedToFetchRemoteSecretState(
             onClickRetry = onClickRetryRemoteSecrets,
@@ -68,11 +71,20 @@ private fun UnexpectedErrorState(
 }
 
 @Composable
-private fun BlockedByAdminState() {
+private fun BlockedByAdminState(
+    onClickCloseApp: () -> Unit,
+) {
     ErrorState(
         showIcon = false,
         message = stringResource(R.string.remote_secrets_blocked_by_admin),
-    )
+    ) {
+        ButtonPrimary(
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onClickCloseApp,
+            text = stringResource(R.string.remote_secrets_close_app),
+            maxLines = 2,
+        )
+    }
 }
 
 @Composable
@@ -149,6 +161,7 @@ private fun AppStartupScreen_Preview_BlockedByAdmin() = ThreemaThemePreview {
         ErrorState(
             errors = setOf(AppStartupError.BlockedByAdmin),
             onClickRetryRemoteSecrets = {},
+            onClickCloseApp = {},
             onClickExportLogs = {},
         )
     }
@@ -161,6 +174,7 @@ private fun AppStartupScreen_Preview_FailedToFetchRemoteSecrets() = ThreemaTheme
         ErrorState(
             errors = setOf(AppStartupError.FailedToFetchRemoteSecret),
             onClickRetryRemoteSecrets = {},
+            onClickCloseApp = {},
             onClickExportLogs = {},
         )
     }
@@ -176,6 +190,7 @@ private fun AppStartupScreen_Preview_UnexpectedErrors() = ThreemaThemePreview {
                 AppStartupError.Unexpected("ABC"),
             ),
             onClickRetryRemoteSecrets = {},
+            onClickCloseApp = {},
             onClickExportLogs = {},
         )
     }

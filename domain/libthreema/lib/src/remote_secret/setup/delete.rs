@@ -46,8 +46,8 @@ impl State {
         let request = work_directory::delete_remote_secret_authentication_request(
             &context.client_info,
             &context.work_server_url,
-            context.user_identity,
             &context.work_context,
+            context.user_identity,
             &state.remote_secret_authentication_token,
         );
         (
@@ -82,8 +82,8 @@ impl State {
                 request: work_directory::delete_remote_secret_request(
                     &context.client_info,
                     &context.work_server_url,
-                    context.user_identity,
                     &context.work_context,
+                    context.user_identity,
                     authentication,
                     &state.remote_secret_authentication_token,
                 ),

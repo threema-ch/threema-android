@@ -25,7 +25,6 @@ import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TransactionScope
 import ch.threema.domain.taskmanager.createTransaction
-import ch.threema.protobuf.d2d.MdD2D
 import kotlinx.serialization.Serializable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -71,9 +70,9 @@ class GroupUpdateTask(
         val multiDeviceProperties = multiDeviceManager.propertiesProvider.get()
 
         handle.createTransaction(
-            multiDeviceProperties.keys,
-            MdD2D.TransactionScope.Scope.GROUP_SYNC,
-            TRANSACTION_TTL_MAX,
+            keys = multiDeviceProperties.keys,
+            scope = ch.threema.protobuf.d2d.TransactionScope.Scope.GROUP_SYNC,
+            ttl = TRANSACTION_TTL_MAX,
             precondition = {
                 groupModelRepository.getByGroupIdentity(groupIdentity)?.data?.let { it.isMember && it.otherMembers.isNotEmpty() } == true
             },

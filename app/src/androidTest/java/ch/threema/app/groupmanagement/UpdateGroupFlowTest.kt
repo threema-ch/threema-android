@@ -9,6 +9,7 @@ import ch.threema.app.tasks.GroupUpdateTask
 import ch.threema.app.tasks.ReflectLocalGroupUpdate
 import ch.threema.app.testutils.TestHelpers
 import ch.threema.app.testutils.clearDatabaseAndCaches
+import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.models.ContactModelData
 import ch.threema.data.models.GroupIdentity
 import ch.threema.data.models.GroupModel
@@ -71,6 +72,8 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         jobTitle = null,
         department = null,
         notificationTriggerPolicyOverride = null,
+        availabilityStatus = AvailabilityStatus.None,
+        workLastFullSyncAt = null,
     )
 
     /**
@@ -101,6 +104,8 @@ class UpdateGroupFlowTest : GroupFlowTest() {
         jobTitle = null,
         department = null,
         notificationTriggerPolicyOverride = null,
+        availabilityStatus = AvailabilityStatus.None,
+        workLastFullSyncAt = null,
     )
 
     private val myInitialGroupModelData = GroupModelData(

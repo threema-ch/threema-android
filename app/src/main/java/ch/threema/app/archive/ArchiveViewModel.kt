@@ -23,6 +23,7 @@ import ch.threema.app.services.GroupService
 import ch.threema.app.services.RingtoneService
 import ch.threema.app.services.UserService
 import ch.threema.app.usecases.WatchTypingIdentitiesUseCase
+import ch.threema.app.usecases.availabilitystatus.WatchAllContactAvailabilityStatusesUseCase
 import ch.threema.app.usecases.avatar.GetAndPrepareAvatarUseCase
 import ch.threema.app.usecases.contacts.WatchAllMentionNamesUseCase
 import ch.threema.app.usecases.contacts.WatchContactNameFormatSettingUseCase
@@ -78,6 +79,7 @@ class ArchiveViewModel(
     private val watchAvatarIterationsUseCase: WatchAvatarIterationsUseCase,
     private val watchContactNameFormatSettingUseCase: WatchContactNameFormatSettingUseCase,
     private val watchAllMentionNamesUseCase: WatchAllMentionNamesUseCase,
+    private val watchAllContactAvailabilityStatusesUseCase: WatchAllContactAvailabilityStatusesUseCase,
 ) : ViewModel() {
 
     private val watchArchivedConversationListItemsUseCase = WatchArchivedConversationListItemsUseCase(
@@ -92,6 +94,7 @@ class ArchiveViewModel(
         watchAvatarIterationsUseCase = watchAvatarIterationsUseCase,
         watchContactNameFormatSettingUseCase = watchContactNameFormatSettingUseCase,
         watchAllMentionNamesUseCase = watchAllMentionNamesUseCase,
+        watchAllContactAvailabilityStatusesUseCase = watchAllContactAvailabilityStatusesUseCase,
         draftManager = draftManager,
     )
 

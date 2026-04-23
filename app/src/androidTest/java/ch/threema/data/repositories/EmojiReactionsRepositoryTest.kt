@@ -63,7 +63,10 @@ class EmojiReactionsRepositoryTest {
             identityStore = identityStoreMock,
         )
 
-        emojiReactionsRepository = ModelRepositories(testCoreServiceManager, mockk()).emojiReaction
+        emojiReactionsRepository = ModelRepositories(
+            coreServiceManager = testCoreServiceManager,
+            identityProvider = mockk(),
+        ).emojiReaction
         emojiReactionDao = EmojiReactionsDaoImpl(databaseProvider)
     }
 

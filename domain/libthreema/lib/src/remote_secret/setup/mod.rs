@@ -85,24 +85,9 @@ impl From<HttpsEndpointError> for RemoteSecretSetupError {
     }
 }
 
-/// 1. Run the HTTPS request as defined by [`HttpsRequest`] and let `response` be the result.
-/// 2. Provide `response` to the associated task as a [`HttpsResult`] and poll again.
-#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
-pub struct RemoteSecretSetupInstruction {
-    /// The HTTPs request to be made.
-    pub request: HttpsRequest,
-}
-
-/// Possible response to a [`RemoteSecretSetupInstruction`].
-#[derive(Name)]
-pub struct RemoteSecretSetupResponse {
-    /// Result for the HTTPS request.
-    pub result: HttpsResult,
-}
-
 /// Context for creating or removing a remote secret.
 pub struct RemoteSecretSetupContext {
-    /// Client info
+    /// Client info.
     pub client_info: ClientInfo,
 
     /// Work server URL from the configuration.
@@ -116,6 +101,21 @@ pub struct RemoteSecretSetupContext {
 
     /// Client key.
     pub client_key: ClientKey,
+}
+
+/// 1. Run the HTTPS request as defined by [`HttpsRequest`] and let `response` be the result.
+/// 2. Provide `response` to the associated task as a [`HttpsResult`] and poll again.
+#[cfg_attr(feature = "uniffi", derive(uniffi::Record))]
+pub struct RemoteSecretSetupInstruction {
+    /// The HTTPs request to be made.
+    pub request: HttpsRequest,
+}
+
+/// Possible response to a [`RemoteSecretSetupInstruction`].
+#[derive(Name)]
+pub struct RemoteSecretSetupResponse {
+    /// Result for the HTTPS request.
+    pub result: HttpsResult,
 }
 
 #[cfg(test)]
