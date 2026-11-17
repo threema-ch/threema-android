@@ -673,9 +673,6 @@ class HomeActivity : ThreemaAppCompatActivity(), SMSVerificationDialogCallback, 
     private fun initHomeActivity(savedInstanceState: Bundle?) {
         val isAppStart = savedInstanceState == null
 
-        // licensing
-        checkApp()
-
         // start wizard if necessary
         val wizardIsRunning = notificationPreferenceService.getWizardRunning()
         if (wizardIsRunning || !userService.hasIdentity()) {
@@ -715,6 +712,10 @@ class HomeActivity : ThreemaAppCompatActivity(), SMSVerificationDialogCallback, 
                 debugLogHelper.disableDebugLogFileLoggingIfNeeded()
             }
         }
+
+        // It is important that the license check only happens *after* we are certain that no activities will be started,
+        // because that could interfere with the HMS license check and leave it in an invalid state
+        checkApp()
 
         initActionBar()
         initAppLogo()

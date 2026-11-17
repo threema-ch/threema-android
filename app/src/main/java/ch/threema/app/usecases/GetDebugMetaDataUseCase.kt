@@ -80,6 +80,7 @@ class GetDebugMetaDataUseCase(
             )
             keyValuePair("uses multi device", multiDeviceManager?.isMultiDeviceActive)
             keyValuePair("uses threema push", preferenceService.mustUseThreemaPush())
+            keyValuePair("uses contact sync", preferenceService.isContactSyncEnabled())
         }
     }
 

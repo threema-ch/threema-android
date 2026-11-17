@@ -3,6 +3,7 @@ package ch.threema.app.di
 import android.content.Context
 import android.os.PowerManager
 import androidx.annotation.VisibleForTesting
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.getSystemService
 import ch.threema.app.BuildFlavor
 import ch.threema.app.GlobalAppState
@@ -460,6 +461,7 @@ class SessionScopeContainer(
     val notificationService: NotificationService by lazyWithClosedCheck {
         NotificationServiceImpl(
             appContext = appContext,
+            notificationManagerCompat = get<NotificationManagerCompat>(),
             getConversationCategoryUseCase = get<GetConversationCategoryUseCase>(),
             lockAppService = get<LockAppService>(),
             notificationPreferenceService = get<NotificationPreferenceService>(),

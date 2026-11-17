@@ -119,6 +119,7 @@ class SentryServiceTest {
                     ),
                 ),
                 createdAt = timeProvider.get() - 10.minutes,
+                versionCode = 1234,
             ),
         )
 
@@ -140,6 +141,7 @@ class SentryServiceTest {
                     parameters = listOf("test"),
                 ),
                 createdAt = timeProvider.get() - 10.minutes,
+                versionCode = 1234,
             ),
         )
 
@@ -180,6 +182,7 @@ class SentryServiceTest {
                     ),
                 ),
                 createdAt = timeProvider.get() - 10.minutes,
+                versionCode = 1234,
             ),
         )
 

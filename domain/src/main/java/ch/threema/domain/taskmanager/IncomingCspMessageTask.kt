@@ -5,12 +5,14 @@ import ch.threema.domain.protocol.connection.PayloadProcessingException
 import ch.threema.domain.protocol.connection.data.CspMessage
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.protocol.csp.coders.MessageBox
+import kotlinx.coroutines.flow.MutableStateFlow
 
 private val logger = getThreemaLogger("IncomingCspMessageTask")
 
 class IncomingCspMessageTask(
     private val message: CspMessage,
     private val incomingMessageProcessor: IncomingMessageProcessor,
+    private val queueSendCompleteState: MutableStateFlow<QueueSendCompleteState>,
 ) : ActiveTask<Unit> {
     override val type: String = "IncomingCspMessageTask"
 
@@ -68,8 +70,8 @@ class IncomingCspMessageTask(
     }
 
     private fun processQueueSendComplete() {
-        // Note that queue send complete messages are already processed in the task manager
-        logger.warn("Processed queue send complete inside incoming csp message task")
+        logger.info("Incoming message queue was flushed; setting the queue send complete state to DRY")
+        queueSendCompleteState.value = QueueSendCompleteState.DRY
     }
 
     private fun processDeviceCookieChangeIndication() {

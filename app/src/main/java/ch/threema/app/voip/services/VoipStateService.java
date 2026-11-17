@@ -717,6 +717,9 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
         } else if (notificationResult instanceof IncomingCallNotificationResult.IncomingCallNotificationsDisabled) {
             logger.warn("Notifications are disabled. Trying to start call activity.");
             launchCallActivityIntent(inCallPendingIntent);
+        } else if (notificationResult instanceof IncomingCallNotificationResult.Failed) {
+            logger.warn("Failed to display notification. Trying to start call activity.");
+            launchCallActivityIntent(inCallPendingIntent);
         }
 
         // Update conversation timestamp
@@ -1457,7 +1460,6 @@ public class VoipStateService implements AudioManager.OnAudioFocusChangeListener
     }
 
     private void launchCallActivityIntent(@NonNull PendingIntent inCallPendingIntent) {
-        // notifications disabled in system settings - fire inCall pending intent to show CallActivity
         try {
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                 ActivityOptions options = ActivityOptions.makeBasic().setPendingIntentBackgroundActivityStartMode(ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_DENIED);

@@ -6,11 +6,15 @@ import ch.threema.domain.protocol.connection.data.InboundD2mMessage
 import ch.threema.domain.protocol.connection.data.InboundMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 
 private val logger = getThreemaLogger("IncomingMessageTaskQueue")
 
 internal class IncomingMessageTaskQueue(
     private val incomingMessageProcessor: IncomingMessageProcessor,
+    private val queueSendCompleteState: MutableStateFlow<QueueSendCompleteState>,
+    private val reflectionQueueDryState: MutableStateFlow<ReflectionQueueDryState>,
+    private val leaderState: MutableStateFlow<LeaderState>,
     private val getDebugString: Task<*, *>.() -> String,
 ) {
     /**
@@ -122,10 +126,12 @@ internal class IncomingMessageTaskQueue(
     ) : TaskQueue.TaskQueueElement {
         private val task by lazy {
             when (inboundMessage) {
-                is CspMessage -> IncomingCspMessageTask(inboundMessage, incomingMessageProcessor)
+                is CspMessage -> IncomingCspMessageTask(inboundMessage, incomingMessageProcessor, queueSendCompleteState)
                 is InboundD2mMessage -> IncomingD2mMessageTask(
                     inboundMessage,
                     incomingMessageProcessor,
+                    reflectionQueueDryState,
+                    leaderState,
                 )
             }
         }

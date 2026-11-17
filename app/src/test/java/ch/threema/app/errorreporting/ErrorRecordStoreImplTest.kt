@@ -45,6 +45,7 @@ class ErrorRecordStoreImplTest {
             recordsDirectory = recordsDirectory,
             timeProvider = TestTimeProvider(1_762_270_272_000L),
             uuidGenerator = uuidGenerator,
+            currentAppVersionCode = 1234,
         )
 
         errorRecordStore.storeFatalError(createMockException())
@@ -63,6 +64,7 @@ class ErrorRecordStoreImplTest {
             recordsDirectory = recordsDirectory,
             timeProvider = TestTimeProvider(1_762_270_272_000L),
             uuidGenerator = uuidGenerator,
+            currentAppVersionCode = 1234,
         )
 
         errorRecordStore.storeHandledError("This is a %s", listOf("test"), null)
@@ -83,6 +85,7 @@ class ErrorRecordStoreImplTest {
             recordsDirectory = recordsDirectory,
             timeProvider = TestTimeProvider(1_762_270_272_000L),
             uuidGenerator = uuidGenerator,
+            currentAppVersionCode = 1234,
         )
         val file = File("/some/file.txt")
 
@@ -102,6 +105,7 @@ class ErrorRecordStoreImplTest {
             recordsDirectory = recordsDirectory,
             timeProvider = TestTimeProvider(),
             uuidGenerator = uuidGenerator,
+            currentAppVersionCode = 1234,
         )
         assertEquals(emptySet(), errorRecordStore.getErrorTypeIdsFromPendingRecords())
 
@@ -119,6 +123,7 @@ class ErrorRecordStoreImplTest {
             recordsDirectory = recordsDirectory,
             timeProvider = timeProvider,
             uuidGenerator = uuidGenerator,
+            currentAppVersionCode = 1234,
         )
         errorRecordStore.storeFatalError(createMockException())
         assertTrue(errorRecordStore.getConfirmedRecords().toList().isEmpty())
@@ -172,6 +177,7 @@ class ErrorRecordStoreImplTest {
                     ),
                 ),
                 createdAt = timeProvider.get(),
+                versionCode = 1234,
             ),
             errorRecord,
         )
@@ -188,6 +194,7 @@ class ErrorRecordStoreImplTest {
             recordsDirectory = recordsDirectory,
             timeProvider = TestTimeProvider(),
             uuidGenerator = uuidGenerator,
+            currentAppVersionCode = 1234,
         )
 
         val errorRecord = errorRecordStore.getConfirmedRecords().single()
@@ -233,6 +240,7 @@ class ErrorRecordStoreImplTest {
                     ),
                 ),
                 createdAt = Instant.ofEpochMilli(1762270272000),
+                versionCode = 1234,
             ),
             errorRecord,
         )
@@ -247,6 +255,7 @@ class ErrorRecordStoreImplTest {
             recordsDirectory = recordsDirectory,
             timeProvider = TestTimeProvider(),
             uuidGenerator = uuidGenerator,
+            currentAppVersionCode = 1234,
         )
 
         val errorRecord = errorRecordStore.getConfirmedRecords().single()
@@ -259,6 +268,7 @@ class ErrorRecordStoreImplTest {
                     parameters = listOf("test"),
                 ),
                 createdAt = Instant.ofEpochMilli(1762270272000),
+                versionCode = 1234,
             ),
             errorRecord,
         )
@@ -270,6 +280,7 @@ class ErrorRecordStoreImplTest {
             recordsDirectory = recordsDirectory,
             timeProvider = TestTimeProvider(),
             uuidGenerator = uuidGenerator,
+            currentAppVersionCode = 1234,
         )
         errorRecordStore.storeFatalError(createMockException())
         errorRecordStore.confirmPendingRecords()
@@ -291,6 +302,7 @@ class ErrorRecordStoreImplTest {
             recordsDirectory = recordsDirectory,
             timeProvider = TestTimeProvider(),
             uuidGenerator = uuidGenerator,
+            currentAppVersionCode = 1234,
         )
 
         errorRecordStore.deleteConfirmedRecord(uuidFromString(ERROR_RECORD_UUID))

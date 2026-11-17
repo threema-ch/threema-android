@@ -48,7 +48,10 @@ internal class EndToEndLayer(
 
             connectionController.cspAuthenticated.await()
             // Start task manager when csp has been authenticated
-            taskManager.startRunningTasks(this@EndToEndLayer, incomingMessageProcessor)
+            taskManager.startRunningTasks(
+                this@EndToEndLayer,
+                incomingMessageProcessor,
+            )
 
             // Forward inbound messages to task manager after it has been started
             inboundMessageChannel.receiveAsFlow().collect { (inboundMessage, lock) ->

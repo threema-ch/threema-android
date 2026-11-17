@@ -20,9 +20,8 @@ private val logger = getThreemaLogger("BaseNotificationService")
 
 abstract class BaseNotificationService(
     protected val appContext: Context,
+    protected val notificationManagerCompat: NotificationManagerCompat,
 ) {
-    protected val notificationManagerCompat: NotificationManagerCompat = NotificationManagerCompat.from(appContext)
-
     protected fun notify(
         notificationId: Int,
         notification: Notification,
@@ -82,4 +81,7 @@ abstract class BaseNotificationService(
             logger.warn("Failed to cancel notification {}", notificationId, e)
         }
     }
+
+    protected fun hasNotificationPermission(): Boolean =
+        notificationManagerCompat.areNotificationsEnabled()
 }

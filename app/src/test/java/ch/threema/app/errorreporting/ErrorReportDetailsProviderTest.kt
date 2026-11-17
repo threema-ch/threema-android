@@ -98,6 +98,7 @@ class ErrorReportDetailsProviderTest {
                 ),
             ),
             createdAt = Instant.ofEpochMilli(1762270272000),
+            versionCode = 1234,
         )
         private val nonFatalErrorRecord = ErrorRecord(
             id = UUID.fromString(ERROR_RECORD_UUID2),
@@ -107,6 +108,7 @@ class ErrorReportDetailsProviderTest {
                 parameters = listOf("test"),
             ),
             createdAt = Instant.ofEpochMilli(1762270272000),
+            versionCode = 1234,
         )
     }
 }

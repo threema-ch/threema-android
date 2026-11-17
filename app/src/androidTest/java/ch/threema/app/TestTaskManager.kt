@@ -1,6 +1,9 @@
 package ch.threema.app
 
-import ch.threema.domain.taskmanager.QueueSendCompleteListener
+import ch.threema.common.stateFlowOf
+import ch.threema.domain.taskmanager.LeaderState
+import ch.threema.domain.taskmanager.QueueSendCompleteState
+import ch.threema.domain.taskmanager.ReflectionQueueDryState
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
@@ -9,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
@@ -46,11 +50,9 @@ class TestTaskManager(
 
     override fun hasPendingTasks() = false
 
-    override fun addQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-        // Nothing to do
-    }
+    override fun watchQueueSendComplete(): StateFlow<QueueSendCompleteState> = stateFlowOf(QueueSendCompleteState.PENDING)
 
-    override fun removeQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-        // Nothing to do
-    }
+    override fun watchReflectionQueueDry(): StateFlow<ReflectionQueueDryState> = stateFlowOf(ReflectionQueueDryState.PENDING)
+
+    override fun watchLeaderState(): StateFlow<LeaderState> = stateFlowOf(LeaderState.NOT_LEADER)
 }

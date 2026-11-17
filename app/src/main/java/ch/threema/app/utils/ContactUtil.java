@@ -147,7 +147,6 @@ public class ContactUtil {
 
     public static boolean canHaveCustomAvatar(@Nullable ContactModel contact) {
         return contact != null
-            && !contact.isLinkedToAndroidContact()
             && !isGatewayContact(contact.getIdentity());
     }
 

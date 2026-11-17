@@ -62,6 +62,7 @@ class GetDebugMetaDataUseCaseTest : AutoCloseKoinTest() {
             },
             preferenceService = mockk {
                 every { mustUseThreemaPush() } returns true
+                every { isContactSyncEnabled() } returns true
             },
             timeProvider = TestTimeProvider(utcDate(2026, 4, 13)),
         )
@@ -86,6 +87,7 @@ class GetDebugMetaDataUseCaseTest : AutoCloseKoinTest() {
             uses passphrase:	false
             uses multi device:	true
             uses threema push:	true
+            uses contact sync:	true
 
             # restrictions
             mdm source:	m
@@ -126,6 +128,7 @@ class GetDebugMetaDataUseCaseTest : AutoCloseKoinTest() {
             },
             preferenceService = mockk {
                 every { mustUseThreemaPush() } returns false
+                every { isContactSyncEnabled() } returns false
             },
             timeProvider = TestTimeProvider(utcDate(2026, 4, 13)),
         )
@@ -149,6 +152,7 @@ class GetDebugMetaDataUseCaseTest : AutoCloseKoinTest() {
             uses passphrase:	null
             uses multi device:	null
             uses threema push:	false
+            uses contact sync:	false
 
             # app version history
         """.trimIndent().trim()

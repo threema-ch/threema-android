@@ -31,6 +31,10 @@ class CheckLicenseUseCase(
 ) {
     /**
      * Checks the license.
+     *
+     * Warning: The HMS license check might open an activity. It is important that this method is only called if we are certain that
+     * no other activity will be started immediately after. The later activity could cover up HMS license check's activity, which leaves it
+     * in an invalid state from which it can not recover.
      */
     suspend fun call(activity: Activity) {
         logger.info("Running license check")

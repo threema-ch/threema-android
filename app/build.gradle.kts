@@ -35,7 +35,7 @@ if (gradle.startParameter.taskRequests.toString().contains("Hms")) {
 /**
  * Only use the scheme "<major>.<minor>.<patch>" for the appVersion
  */
-val appVersion = "6.6.0"
+val appVersion = "6.6.1"
 
 /**
  * betaSuffix with leading dash (e.g. `-beta1`).
@@ -44,7 +44,7 @@ val appVersion = "6.6.0"
  */
 val betaSuffix = ""
 
-val defaultVersionCode = 1237
+val defaultVersionCode = 1240
 
 /**
  * Map with keystore paths (if found).
@@ -141,7 +141,6 @@ android {
         booleanBuildConfigField("CROSS_PLATFORM_BACKUPS_ENABLED", BuildFeatureFlags["cross_platform_backups"] ?: false)
         booleanBuildConfigField("NEW_CONVERSATION_SCREEN_ENABLED", BuildFeatureFlags["new_conversation_screen"] ?: false)
         booleanBuildConfigField("LOG_TOMBSTONES_FOR_NATIVE_CRASHES", BuildFeatureFlags["log_tombstones"] ?: false)
-        booleanBuildConfigField("EMOJI_REACTION_NOTIFICATIONS_ENABLED", false)
 
         // config fields for action URLs / deep links
         stringBuildConfigField("uriScheme", "threema")
@@ -296,7 +295,6 @@ android {
             stringBuildConfigField("BLOB_MIRROR_SERVER_URL", "https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
 
             booleanBuildConfigField("CROSS_PLATFORM_BACKUPS_ENABLED", true)
-            booleanBuildConfigField("EMOJI_REACTION_NOTIFICATIONS_ENABLED", true)
 
             setSentryConfig(SentryConfig.SANDBOX)
         }
@@ -341,7 +339,6 @@ android {
             stringBuildConfigField("actionUrl", "work.test.threema.ch")
 
             booleanBuildConfigField("AVAILABILITY_STATUS_ENABLED", true)
-            booleanBuildConfigField("EMOJI_REACTION_NOTIFICATIONS_ENABLED", true)
 
             stringBuildConfigField("MD_CLIENT_DOWNLOAD_URL", "https://three.ma/mdw")
 
@@ -443,7 +440,6 @@ android {
             stringBuildConfigField("BLOB_MIRROR_SERVER_URL", "https://blob-mirror-{deviceGroupIdPrefix4}.test.threema.ch/{deviceGroupIdPrefix8}")
 
             booleanBuildConfigField("AVAILABILITY_STATUS_ENABLED", true)
-            booleanBuildConfigField("EMOJI_REACTION_NOTIFICATIONS_ENABLED", true)
             booleanBuildConfigField("LOG_TOMBSTONES_FOR_NATIVE_CRASHES", true)
 
             // config fields for action URLs / deep links

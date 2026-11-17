@@ -260,6 +260,8 @@ interface PreferenceService {
 
     fun watchArePrivateChatsHidden(): Flow<Boolean>
 
+    fun isContactSyncEnabled(): Boolean
+
     fun watchIsContactSyncEnabled(): Flow<Boolean>
 
     fun getLockMechanism(): LockMechanism

@@ -1,2 +1,2 @@
-- Neu: Spam-Gruppenchats melden und Admin blockieren
+- Neu: Sie erhalten eine Benachrichtigung, wenn jemand auf Ihre Nachricht reagiert
 - Verbesserungen und Behebung verschiedener Fehler

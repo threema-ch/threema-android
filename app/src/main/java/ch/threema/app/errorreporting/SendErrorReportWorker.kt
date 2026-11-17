@@ -33,7 +33,7 @@ class SendErrorReportWorker(
 
     override suspend fun doWork(): Result {
         errorRecordStore.getConfirmedRecords().forEach { errorRecord ->
-            if (timeProvider.get() - errorRecord.createdAt < MAX_AGE) {
+            if (isStillRelevant(errorRecord)) {
                 try {
                     logger.info("Sending error record {} to Sentry", errorRecord.id)
                     sentryService.sendErrorRecord(errorRecord)
@@ -46,6 +46,10 @@ class SendErrorReportWorker(
         }
         return Result.success()
     }
+
+    private fun isStillRelevant(errorRecord: ErrorRecord): Boolean =
+        timeProvider.get() - errorRecord.createdAt < MAX_AGE &&
+            errorRecord.versionCode == errorRecordStore.currentAppVersionCode
 
     class Scheduler(
         private val workManager: WorkManager,

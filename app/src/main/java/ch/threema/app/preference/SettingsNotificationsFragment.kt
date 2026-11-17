@@ -17,7 +17,6 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceCategory
 import androidx.preference.TwoStatePreference
 import ch.threema.android.DeviceInfo
-import ch.threema.app.BuildConfig
 import ch.threema.app.BuildFlavor
 import ch.threema.app.R
 import ch.threema.app.dialogs.RingtoneSelectorDialog
@@ -81,9 +80,6 @@ class SettingsNotificationsFragment : ThreemaPreferenceFragment(), RingtoneSelec
 
         initWorkingTimePrefs()
         setVisibilityOfVersionDependentPreferences()
-
-        getPref<PreferenceCategory>(R.string.preferences__emoji_reaction_notifications).isVisible =
-            BuildConfig.EMOJI_REACTION_NOTIFICATIONS_ENABLED
 
         voipRingtonePreference = getPref(R.string.preferences__voip_ringtone)
         voipRingtonePreference.updateRingtoneSummary(R.string.preferences__voip_ringtone)

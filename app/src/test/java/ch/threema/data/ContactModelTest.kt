@@ -4,6 +4,7 @@ import ch.threema.app.multidevice.MultiDeviceManager
 import ch.threema.app.tasks.ReflectContactSyncUpdateTask
 import ch.threema.common.emptyByteArray
 import ch.threema.common.plus
+import ch.threema.common.stateFlowOf
 import ch.threema.data.datatypes.AndroidContactLookupInfo
 import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ConversationCategory
@@ -20,7 +21,9 @@ import ch.threema.domain.models.ReadReceiptPolicy
 import ch.threema.domain.models.TypingIndicatorPolicy
 import ch.threema.domain.models.VerificationLevel
 import ch.threema.domain.models.WorkVerificationLevel
-import ch.threema.domain.taskmanager.QueueSendCompleteListener
+import ch.threema.domain.taskmanager.LeaderState
+import ch.threema.domain.taskmanager.QueueSendCompleteState
+import ch.threema.domain.taskmanager.ReflectionQueueDryState
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
@@ -41,6 +44,7 @@ import kotlin.test.fail
 import kotlin.time.Duration.Companion.days
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.flow.StateFlow
 import testdata.TestData
 
 class ContactModelTest {
@@ -58,13 +62,11 @@ class ContactModelTest {
 
         override fun hasPendingTasks(): Boolean = scheduledTasks.isNotEmpty()
 
-        override fun addQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-            // Nothing to do
-        }
+        override fun watchQueueSendComplete(): StateFlow<QueueSendCompleteState> = stateFlowOf(QueueSendCompleteState.PENDING)
 
-        override fun removeQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-            // Nothing to do
-        }
+        override fun watchReflectionQueueDry(): StateFlow<ReflectionQueueDryState> = stateFlowOf(ReflectionQueueDryState.PENDING)
+
+        override fun watchLeaderState(): StateFlow<LeaderState> = stateFlowOf(LeaderState.NOT_LEADER)
     }
     private val identityProvider = TestIdentityProvider(TestData.Identities.ME)
 

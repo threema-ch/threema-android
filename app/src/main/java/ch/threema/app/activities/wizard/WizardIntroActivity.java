@@ -165,6 +165,8 @@ public class WizardIntroActivity extends ThreemaAppCompatActivity {
         findViewById(R.id.restore_backup_compose).setOnClickListener(v -> restoreBackup());
 
         isContactSyncSettingConflict();
+
+        WizardIntroHelper.checkLicense(this);
     }
 
     @Override

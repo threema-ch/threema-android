@@ -1555,7 +1555,9 @@ sunucularımıza güvenli bir şekilde iletildi. Kişisel anahtar hiçbir zaman 
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Uygulamanın, ${app_name_short} Push\'un çalışması için gerekli olan sunucularla kalıcı bir bağlantı kurmasına izin verilmez. Uygulama arka plandayken yeni mesajlardan haberdar olmazsınız. Bunu düzeltmek için \"Uygulama pil kullanımı\" seçeneğine dokunun ve \"Kısıtlanmamış\" seçeneğini seçin.</string>
     <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">Bu Android sürümü yakında artık desteklenmeyecek</string>
     <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. ${app_name} is a placeholder that should be kept as-is and not translated. -->
+    <string name="problemsolver_explain_android_version_deprecated">Artık yazılım güncellemesi almayan bir Android cihaz kullanıyorsunuz. Güvenlik nedenleriyle, bu Android sürümü kısa süre içinde ${app_name} tarafından desteklenmeyecektir.</string>
     <string name="problemsolver_to_settings">Ayarlara</string>
     <!-- Label on button to dismiss/hide a warning -->
     <string name="problemsolver_dismiss">Reddet</string>
@@ -1885,6 +1887,10 @@ Nasıl Çalışır?</string>
     <plurals name="new_messages">
         <item quantity="one">%d yeni mesaj</item>
         <item quantity="other">%d yeni mesaj</item>
+    </plurals>
+    <plurals name="new_emoji_reactions">
+        <item quantity="one">%d yeni tepki</item>
+        <item quantity="other">%d yeni tepkiler</item>
     </plurals>
     <plurals name="unread_messages">
         <item quantity="one">%d okunmamış Mesaj</item>

@@ -171,9 +171,11 @@
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="backup_sum">Exportovať vaše ${app_name_short} ID</string>
     <string name="backup_and_delete">Záloha a odstránenie</string>
+    <string name="delete_id_menu_title">Odstrániť ID a údaje</string>
     <string name="delete_id_message">Ak ste si nevytvorili zálohu alebo neexportovali a neuložili kópiu tohto ID, už nikdy nebudete môcť odosielať ani prijímať
         správy s týmto ID.\n\nAk už nechcete toto ID používať, odporúčame vám pred jeho vymazaním nastaviť heslo na zrušenie a ID zrušiť na stránke myid.threema.ch/revoke.</string>
     <string name="delete_id_message2">Posledné varovanie: naozaj chcete z tohto zariadenia vymazať vaše ID?</string>
+    <string name="delete_id_summary">Odstrániť svoje ${app_name_short}-ID a všetky údaje z tohto zariadenia</string>
     <string name="delete_all_data_prompt">Odstrániť všetky údaje aplikácie?</string>
     <string name="backup_password_summary">Export vášho ID bude zašifrovaný heslom. Použite kombináciu písmen, čísel a symbolov. Nezabudnite, čo sem zadáte!</string>
     <string name="backup_password_again_summary">Vložte heslo znovu</string>
@@ -241,6 +243,7 @@ alebo naskenovať QR kód pomocou iného zariadenia.</string>
     <string name="an_error_occurred">Vyskytla sa chyba</string>
     <string name="an_error_occurred_more">Vyskytla sa chyba: “%1$s”</string>
     <!-- Error message shown to the user if the app fails to start. ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
+    <string name="startup_error_details">Aplikáciu ${app_name_short} sa nepodarilo otvoriť kvôli neočakávanej chybe.  Prosím, exportujte nižšie uvedený súbor protokolu a kontaktujte náš tím technickej podpory, aby sme mohli tento problém prešetriť. Ospravedlňujeme sa za spôsobené nepríjemnosti.</string>
     <string name="acknowledge">Súhlasím</string>
     <string name="decline">Nesúhlasím</string>
     <string name="forward_message">Preposlať správu</string>
@@ -789,6 +792,8 @@ Už ich nebude možné obnoviť.</string>
     <string name="text">Text</string>
     <string name="undo">Vrátiť späť</string>
     <string name="android_backup_date">Posledná záloha</string>
+    <string name="threema_safe_configuration_title">Konfigurácia</string>
+    <string name="threema_safe_last_backup_date_and_time">Čas</string>
     <string name="discard">Zrušiť</string>
     <string name="android_backup_restart_threema">Vydržte. Aplikácia sa reštartuje o pár sekúnd.</string>
     <string name="battery_optimizations_title">Vypnúť optimalizáciu batérie</string>
@@ -1290,6 +1295,7 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <string name="prefs_header_receipts">Potvrdenia</string>
     <string name="prefs_title_reset_receipts">Vymazať individuálne nastavenia</string>
     <string name="prefs_sum_reset_receipts">Obnovenie predvolených nastavení špecifických pre kontakt pre potvrdenia o prečítaní a indikátor písania</string>
+    <string name="confirm_sum_reset_receipts">Obnoviť predvolené nastavenia pre jednotlivé kontakty týkajúce sa potvrdení o prečítaní a indikátora písania?</string>
     <string name="reset_successful">Predvolené nastavenia úspešne obnovené</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="qr_scanner_id_hint">Naskenujte QR kód kontaktu a overte jeho identitu. Ak chcete zobraziť kód, požiadajte svoj kontakt, aby klikol na profilový obrázok v ľavom hornom rohu domovskej obrazovky ${app_name_short}.</string>
@@ -1554,7 +1560,9 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     <!-- ${app_name_short} is a placeholder for the app's name, e.g. "Threema". It must be left as-is and not translated. -->
     <string name="problemsolver_explain_app_battery_usgae_optimized">Aplikácia nemá povolené udržiavať trvalé pripojenie k serverom, ktoré je potrebné na fungovanie služby ${app_name_short} Push. Keď je aplikácia na pozadí, nebudete informovaní o nových správach. Ak to chcete napraviť, klepnite v informáciach o aplikácii na položku \"Batéria\" a vyberte možnosť \"Neobmedzené\".</string>
     <!-- Title of warning message that informs the user that the version of Android they are using will soon no longer be supported. -->
+    <string name="problemsolver_title_android_version_deprecated">Táto verzia už čoskoro nebude podporovaná</string>
     <!-- Details of warning message that informs the user that the version of Android they are using will soon no longer be supported. ${app_name} is a placeholder that should be kept as-is and not translated. -->
+    <string name="problemsolver_explain_android_version_deprecated">Používate zariadenie s operačným systémom Android, ktoré už nedostáva softvérové aktualizácie. Z bezpečnostných dôvodov bude táto verzia systému Android čoskoro prestane byť podporovaná aplikáciou ${app_name}.</string>
     <string name="problemsolver_to_settings">K nastaveniam</string>
     <!-- Label on button to dismiss/hide a warning -->
     <string name="problemsolver_dismiss">Zatvoriť</string>
@@ -1784,18 +1792,21 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     Placeholder %1$s will be replaced with the emojis.
     Placeholder %2$s will be replaced with a preview of the message that was reacted on.
     -->
+    <string name="emoji_reaction_notification_body_contact">Reagoval %1$s na: %2$s</string>
     <!--
     Text that is displayed in an emoji reaction system notification for a 1 to 1 conversation with many emojis.
     Placeholder %1$s will be replaced with the emojis until a defined count.
     Placeholder %2$d will be replaced with the remaining emoji count that is not displayed in %1$s.
     Placeholder %3$s will be replaced with a preview of the message that was reacted on.
     -->
+    <string name="emoji_reaction_notification_body_contact_more">Reagoval %1$s +%2$d na: %3$s</string>
     <!--
     Text that is displayed in an emoji reaction system notification for a group conversation and a single reactor person.
     Placeholder %1$s will be replaced with the name of the reacting person.
     Placeholder %2$s will be replaced with the emojis.
     Placeholder %3$s will be replaced with a preview of the message that was reacted on.
     -->
+    <string name="emoji_reaction_notification_body_group_one_person">%1$s reagoval(a) %2$s na: %3$s</string>
     <!--
     Text that is displayed in an emoji reaction system notification for a group conversation and a single reactor person with many emojis.
     Placeholder %1$s will be replaced with the name of the reacting person.
@@ -1803,30 +1814,63 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
     Placeholder %3$d will be replaced with the remaining emoji count that is not displayed in %2$s.
     Placeholder %4$s will be replaced with a preview of the message that was reacted on.
     -->
+    <string name="emoji_reaction_notification_body_group_one_person_more">%1$s reagoval(a) %2$s +%3$d na: %4$s</string>
     <!--
     Text that is displayed in an emoji reaction system notification for a group conversation with 2 reacting persons.
     Placeholder %1$s will be replaced with the name of the reacting person.
     Placeholder %2$s will be replaced with the name of the other reacting person.
     Placeholder %3$s will be replaced with a preview of the message that was reacted on.
     -->
+    <string name="emoji_reaction_notification_body_group_two_persons">%1$s a %2$s reagovali na: %3$s</string>
     <!--
     Text that is displayed in an emoji reaction system notification for a group conversation with more than 2 reacting persons.
     Placeholder %1$s will be replaced with the name of the most recent reacting person.
     Placeholder %2$d will be replaced with the remaining person count that also reacted.
     Placeholder %3$s will be replaced with a preview of the message that was reacted on.
     -->
+    <string name="emoji_reaction_notification_body_group_more_persons">%1$s a %2$d ďalších ľudí reagovalo na: %3$s</string>
     <!-- Placeholder %1$s will be replaced with the message body of the text message that was reacted on. -->
+    <string name="emoji_reaction_notification_preview_text">“%1$s”</string>
+    <string name="emoji_reaction_notification_preview_image">Obrázok</string>
     <!-- Placeholder %1$s will be replaced with the caption text of the image message that was reacted on. -->
+    <string name="emoji_reaction_notification_preview_image_caption">“%1$s”</string>
+    <string name="emoji_reaction_notification_preview_video">Video</string>
     <!-- Placeholder %1$s will be replaced with the caption text of the video message that was reacted on. -->
+    <string name="emoji_reaction_notification_preview_video_caption">“%1$s”</string>
     <!-- Placeholder %1$s will be replaced with the duration of the audio message that was reacted on. -->
+    <string name="emoji_reaction_notification_preview_audio">Zvuk (%1$s)</string>
     <!-- Placeholder %1$s will be replaced with the caption text of the audio message that was reacted on. -->
+    <string name="emoji_reaction_notification_preview_audio_caption">Zvuk „%1$s“</string>
     <!-- Placeholder %1$s will be replaced with the duration of the voice message that was reacted on. -->
+    <string name="emoji_reaction_notification_preview_voice_message">Hlasová správa (%1$s)</string>
     <!-- Placeholder %1$s will be replaced with the caption or filename of the file message that was reacted on. -->
+    <string name="emoji_reaction_notification_preview_file">Súbor „%1$s“</string>
+    <string name="emoji_reaction_notification_preview_poll">Anketa</string>
     <!-- Placeholder %1$s will be replaced with the poll's name of the poll message that was reacted on. -->
+    <string name="emoji_reaction_notification_preview_poll_named">Anketa „%1$s“</string>
+    <string name="emoji_reaction_notification_preview_location">Poloha</string>
     <!-- Placeholder %1$s will be replaced with the POI name of the location message that was reacted on. -->
+    <string name="emoji_reaction_notification_preview_location_named">Poloha „%1$s“</string>
+    <string name="emoji_reaction_notification_preview_contact">Kontakt</string>
     <!-- Placeholder %1$s will be replaced with the contact name of the contact message that was reacted on. -->
+    <string name="emoji_reaction_notification_preview_contact_named">Kontakt „%1$s“</string>
+    <string name="prefs_title_emoji_reaction_notifications">Notifikácie o reakciách prostredníctvom emodži</string>
+    <string name="prefs_title_emoji_reaction_contact_notifications">V konverzaciách</string>
+    <string name="prefs_description_emoji_reaction_contact_notifications">Nechajte si zasielať upozornenia na reakcie pomocou emodži na vaše správy v individuálnych konverzáciách</string>
+    <string name="prefs_title_emoji_reaction_group_notifications">V skupinových konverzáciách</string>
+    <string name="prefs_description_emoji_reaction_group_notifications">Nechajte si zasielať upozornenia na reakcie pomocou emodži na vaše správy v skupinových konverzáciách</string>
+    <string name="group_spam_banner_message">Táto skupina pochádza od neznámeho používateľa</string>
+    <string name="group_spam_banner_button_not_spam">Nie je to spam</string>
+    <string name="group_spam_banner_button_report_spam">Nahlásiť spam</string>
     <!-- Placeholder 1 holds the display name of a group conversation -->
+    <string name="group_spam_report_dialog_title_named">Nahlásiť %1$s</string>
+    <string name="group_spam_report_dialog_title">Nahlásiť skupinu</string>
+    <string name="group_spam_report_dialog_message">ID tejto skupiny, počet členov, ako aj ID a prezývka zakladateľa skupiny budú spolu s vaším ID odoslané spoločnosti Threema. Obsah správ ani žiadne ďalšie osobné údaje nebudú zdieľané a nikto zo skupiny o tom nebude informovaný.</string>
+    <string name="group_spam_report_dialog_also_block_and_delete">Tiež zablokovať tvorcu a vymazať konverzáciu</string>
+    <string name="group_spam_report_dialog_cancel">Zrušiť</string>
+    <string name="group_spam_report_dialog_report">Nahlásiť</string>
     <!-- This is shown in a loading indicator dialog while a spam group is being reported -->
+    <string name="reporting_group_in_progress">Nahlasovanie skupiny</string>
     <plurals name="contacts_counter_label">
         <item quantity="one">%d kontakt</item>
         <item quantity="few">%d kontakty</item>
@@ -1862,6 +1906,12 @@ Vykonajte prosím zálohú vašich údajov vhodnou metódou.</string>
         <item quantity="few">%d nové správy</item>
         <item quantity="many">%d nových správ</item>
         <item quantity="other">%d nových správ</item>
+    </plurals>
+    <plurals name="new_emoji_reactions">
+        <item quantity="one">%d nová reakcia</item>
+        <item quantity="few">%d nové reakcie</item>
+        <item quantity="many">%d nových reakcií</item>
+        <item quantity="other">%d nových reakcií</item>
     </plurals>
     <plurals name="unread_messages">
         <item quantity="one">%d neprečítaná správa</item>

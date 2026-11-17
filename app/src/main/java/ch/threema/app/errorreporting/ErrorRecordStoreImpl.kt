@@ -4,6 +4,7 @@ import android.content.Context
 import android.webkit.MimeTypeMap
 import androidx.annotation.VisibleForTesting
 import androidx.annotation.WorkerThread
+import ch.threema.app.BuildConfig
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.common.TimeProvider
 import ch.threema.common.UUIDGenerator
@@ -24,6 +25,7 @@ constructor(
     private val recordsDirectory: File,
     private val timeProvider: TimeProvider,
     private val uuidGenerator: UUIDGenerator,
+    override val currentAppVersionCode: Int,
 ) : ErrorRecordStore {
     @WorkerThread
     override fun storeFatalError(e: Throwable) {
@@ -83,6 +85,7 @@ constructor(
                 )
             },
             createdAt = timeProvider.get(),
+            versionCode = currentAppVersionCode,
         )
 
         recordsDirectory.mkdir()
@@ -185,6 +188,7 @@ constructor(
             recordsDirectory = getRecordsDirectory(context),
             timeProvider = timeProvider,
             uuidGenerator = uuidGenerator,
+            currentAppVersionCode = BuildConfig.DEFAULT_VERSION_CODE,
         )
 
         private fun getRecordsDirectory(context: Context): File =

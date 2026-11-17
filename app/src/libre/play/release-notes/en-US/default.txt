@@ -1,2 +1,2 @@
-- New: Report spam group chats and block the creator
+- New: Receive a notification when someone reacts to your message
 - Various improvements and bug fixes

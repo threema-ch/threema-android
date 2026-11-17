@@ -6,6 +6,7 @@ import ch.threema.domain.protocol.connection.socket.ServerSocketCloseReason
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.runBlocking
 
 internal class TaskQueue(
@@ -76,11 +77,19 @@ internal class TaskQueue(
      * Recreates the incoming message queue. This is needed when the server connection has been re-
      * established. Locally created tasks aren't affected by this.
      */
-    internal fun recreateIncomingMessageQueue(incomingMessageProcessor: IncomingMessageProcessor) {
+    internal fun recreateIncomingMessageQueue(
+        incomingMessageProcessor: IncomingMessageProcessor,
+        queueSendCompleteState: MutableStateFlow<QueueSendCompleteState>,
+        reflectionQueueDryState: MutableStateFlow<ReflectionQueueDryState>,
+        leaderState: MutableStateFlow<LeaderState>,
+    ) {
         dispatcherAsserters.executorDispatcher.assertDispatcherContext()
 
         incomingMessageQueue = IncomingMessageTaskQueue(
             incomingMessageProcessor = incomingMessageProcessor,
+            queueSendCompleteState = queueSendCompleteState,
+            reflectionQueueDryState = reflectionQueueDryState,
+            leaderState = leaderState,
             getDebugString = getDebugString,
         )
     }

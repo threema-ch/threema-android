@@ -3,6 +3,7 @@ package ch.threema.app.services.notification
 import android.content.Context
 import android.media.AudioManager
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import ch.threema.android.buildNotification
 import ch.threema.app.R
 import ch.threema.app.notifications.NotificationChannels
@@ -11,8 +12,9 @@ import ch.threema.app.services.NotificationPreferenceService
 
 class PassphraseNotificationService(
     appContext: Context,
+    notificationManagerCompat: NotificationManagerCompat,
     private val notificationPreferenceService: NotificationPreferenceService,
-) : BaseNotificationService(appContext) {
+) : BaseNotificationService(appContext, notificationManagerCompat) {
     fun showNewMessagesPassphraseNotification() {
         val notification = buildNotification(appContext, NotificationChannels.NOTIFICATION_CHANNEL_CHATS_DEFAULT) {
             setSmallIcon(R.drawable.ic_notification_small)

@@ -14,6 +14,9 @@ import ch.threema.domain.protocol.csp.ProtocolDefines
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 private val logger = getThreemaLogger("TaskManager")
@@ -38,14 +41,35 @@ interface TaskManager {
     fun hasPendingTasks(): Boolean
 
     /**
-     * Add a queue send complete listener.
+     * Watch the state of the message queue of the current connection.
+     *
+     * The [QueueSendCompleteState.DRY] state is only reported while the connection is open, so reading it guarantees that the server has sent the
+     * entire message queue of an open connection. In case the connection is lost, this state is reset to PENDING.
+     *
+     * Note: In multi-device mode, the queue send complete message is only sent to the leader device, so on non-leader devices the state
+     * may remain PENDING while the connection is open.
      */
-    fun addQueueSendCompleteListener(listener: QueueSendCompleteListener)
+    fun watchQueueSendComplete(): StateFlow<QueueSendCompleteState>
 
     /**
-     * Remove a queue send complete listener.
+     * Watch the state of the reflection queue of the current connection.
+     *
+     * The [ReflectionQueueDryState.DRY] state is only reported while the connection is open, so reading it guarantees that the server has sent the
+     * reflection queue dry message of an open connection. In case the connection is lost, this state is reset to PENDING.
+     *
+     * Note: The reflection queue only exists in multi-device mode, so if multi-device is not active, the state remains PENDING.
      */
-    fun removeQueueSendCompleteListener(listener: QueueSendCompleteListener)
+    fun watchReflectionQueueDry(): StateFlow<ReflectionQueueDryState>
+
+    /**
+     * Watch the leader state of this device.
+     *
+     * The [LeaderState.LEADER] state is only reported while the connection is open, so reading it guarantees that the server has promoted this device
+     * to leader on the open connection. In case the connection is lost, this state is reset to NOT_LEADER.
+     *
+     * Note: The leader role only exists in multi-device mode, so if multi-device is not active, the state remains NOT_LEADER.
+     */
+    fun watchLeaderState(): StateFlow<LeaderState>
 }
 
 /**
@@ -83,7 +107,29 @@ internal class TaskManagerImpl(
     private val dispatchers: TaskManagerDispatchers,
     private val getDebugString: Task<*, *>.() -> String,
 ) : InternalTaskManager, TaskManager {
-    private val queueSendCompleteListeners: MutableSet<QueueSendCompleteListener> = mutableSetOf()
+    /**
+     * The state of the message queue of the current connection.
+     *
+     * It is set to [QueueSendCompleteState.DRY] by the incoming csp message task when the 'queue send complete message' of the current connection
+     * has been processed, and reset to [QueueSendCompleteState.PENDING] when a new connection is established or the connection ends.
+     */
+    private val queueSendCompleteState = MutableStateFlow(QueueSendCompleteState.PENDING)
+
+    /**
+     * The state of the reflection queue of the current connection.
+     *
+     * It is set to [ReflectionQueueDryState.DRY] when the server has sent the 'reflection queue dry message', and reset to
+     * [ReflectionQueueDryState.PENDING] when a new connection is established or the connection ends.
+     */
+    private val reflectionQueueDryState = MutableStateFlow(ReflectionQueueDryState.PENDING)
+
+    /**
+     * The state of the leader role of this device.
+     *
+     * It is set to [LeaderState.LEADER] by the incoming d2m message task when the 'role promoted to leader message' of the current connection has
+     * been processed, and reset to [LeaderState.NOT_LEADER] when a new connection is established or the connection ends.
+     */
+    private val leaderState = MutableStateFlow(LeaderState.NOT_LEADER)
 
     private var incomingMessageProcessor: IncomingMessageProcessor? = null
 
@@ -113,12 +159,24 @@ internal class TaskManagerImpl(
     ) {
         this.incomingMessageProcessor = incomingMessageProcessor
 
-        taskRunner.value.startTaskRunner(layer5Codec, incomingMessageProcessor)
+        taskRunner.value.startTaskRunner(
+            layer5Codec,
+            incomingMessageProcessor,
+            queueSendCompleteState,
+            reflectionQueueDryState,
+            leaderState,
+        )
     }
 
     override suspend fun pauseRunningTasks(closeReason: ServerSocketCloseReason) {
         if (taskRunner.isInitialized()) {
             taskRunner.value.stopTaskRunner(closeReason)
+            // The connection is gone, so the states of its queues and its leader role are not valid anymore. Note that stopTaskRunner waits
+            // for all in-flight tasks to finish, so this reset always happens after the last queue send complete message of this connection
+            // has been processed.
+            queueSendCompleteState.value = QueueSendCompleteState.PENDING
+            reflectionQueueDryState.value = ReflectionQueueDryState.PENDING
+            leaderState.value = LeaderState.NOT_LEADER
         }
     }
 
@@ -143,17 +201,11 @@ internal class TaskManagerImpl(
 
     override fun hasPendingTasks(): Boolean = taskQueue.hasPendingTasks()
 
-    override fun addQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-        synchronized(queueSendCompleteListeners) {
-            queueSendCompleteListeners.add(listener)
-        }
-    }
+    override fun watchQueueSendComplete(): StateFlow<QueueSendCompleteState> = queueSendCompleteState.asStateFlow()
 
-    override fun removeQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-        synchronized(queueSendCompleteListeners) {
-            queueSendCompleteListeners.remove(listener)
-        }
-    }
+    override fun watchReflectionQueueDry(): StateFlow<ReflectionQueueDryState> = reflectionQueueDryState.asStateFlow()
+
+    override fun watchLeaderState(): StateFlow<LeaderState> = leaderState.asStateFlow()
 
     override fun processInboundMessage(message: InboundMessage, lock: ConnectionLock) {
         when (message) {
@@ -198,10 +250,7 @@ internal class TaskManagerImpl(
 
             ProtocolDefines.PLTYPE_OUTGOING_MESSAGE_ACK -> schedule(message, lock)
             ProtocolDefines.PLTYPE_INCOMING_MESSAGE -> schedule(message, lock)
-            ProtocolDefines.PLTYPE_QUEUE_SEND_COMPLETE -> {
-                notifyQueueSendComplete()
-                lock.release()
-            }
+            ProtocolDefines.PLTYPE_QUEUE_SEND_COMPLETE -> schedule(message, lock)
             ProtocolDefines.PLTYPE_DEVICE_COOKIE_CHANGE_INDICATION -> {
                 processDeviceCookieChangeIndication()
                 lock.release()
@@ -228,21 +277,6 @@ internal class TaskManagerImpl(
     private fun processDeviceCookieChangeIndication() {
         deviceCookieManager.onChangeIndicationReceived()
         sendClearDeviceCookieChangeIndication()
-    }
-
-    private fun notifyQueueSendComplete() {
-        synchronized(queueSendCompleteListeners) {
-            // Iterate over a copy of the set to prevent concurrent modification. This is necessary,
-            // because the queue complete listeners may remove themselves from the list inside
-            // 'queueSendComplete'.
-            queueSendCompleteListeners.toList().forEach {
-                try {
-                    it.queueSendComplete()
-                } catch (e: Exception) {
-                    logger.warn("Exception while invoking queue send complete listener", e)
-                }
-            }
-        }
     }
 
     private fun sendClearDeviceCookieChangeIndication() {

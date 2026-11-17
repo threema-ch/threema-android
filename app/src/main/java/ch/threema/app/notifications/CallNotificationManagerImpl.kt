@@ -1,5 +1,6 @@
 package ch.threema.app.notifications
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
 import android.content.Context
@@ -15,6 +16,7 @@ import ch.threema.app.R
 import ch.threema.app.preference.service.PreferenceService
 import ch.threema.app.services.ContactService
 import ch.threema.app.services.NotificationPreferenceService
+import ch.threema.app.services.notification.BaseNotificationService
 import ch.threema.app.usecases.contacts.GetPersonUseCase
 import ch.threema.base.utils.getThreemaLogger
 import ch.threema.data.datatypes.ContactConversationId
@@ -24,14 +26,15 @@ import ch.threema.domain.types.IdentityString
 private val logger = getThreemaLogger("CallNotificationManagerImpl")
 
 class CallNotificationManagerImpl(
-    private val appContext: Context,
+    appContext: Context,
+    notificationManagerCompat: NotificationManagerCompat,
     private val notificationPreferenceService: NotificationPreferenceService,
     private val preferenceService: PreferenceService,
     private val contactService: ContactService,
     private val getPersonUseCase: GetPersonUseCase,
-    private val notificationManager: NotificationManagerCompat,
-) : CallNotificationManager {
+) : CallNotificationManager, BaseNotificationService(appContext, notificationManagerCompat) {
 
+    @SuppressLint("MissingPermission")
     override fun showIncomingCallNotification(
         contactModelData: ContactModelData,
         acceptIntent: PendingIntent,
@@ -64,7 +67,45 @@ class CallNotificationManagerImpl(
         )
 
         // Show the notification
-        notificationManager.notify(contactModelData.identity, NotificationIDs.INCOMING_CALL_NOTIFICATION_ID, notification)
+        try {
+            try {
+                notificationManagerCompat.notify(
+                    contactModelData.identity,
+                    NotificationIDs.INCOMING_CALL_NOTIFICATION_ID,
+                    notification,
+                )
+            } catch (e: SecurityException) {
+                if (contactModelData.androidContactLookupInfo == null) {
+                    throw e
+                }
+                logger.warn("Failed to display notification, trying again without contact lookup info", e)
+
+                // It might be that the SecurityException was caused by the Android contact lookup info,
+                // so we try again without it.
+                val notificationWithoutAndroidContactLookupInfo = getPrivateNotification(
+                    callerIdentity = contactModelData.identity,
+                    contactName = contactName,
+                    acceptIntent = acceptIntent,
+                    inCallPendingIntent = inCallPendingIntent,
+                    rejectIntent = rejectIntent,
+                    person = getPersonUseCase.call(
+                        identity = contactModelData.identity,
+                        androidContactLookupInfo = null,
+                        name = contactName,
+                    ),
+                    publicNotification = getPublicNotification(),
+                )
+
+                notificationManagerCompat.notify(
+                    contactModelData.identity,
+                    NotificationIDs.INCOMING_CALL_NOTIFICATION_ID,
+                    notificationWithoutAndroidContactLookupInfo,
+                )
+            }
+        } catch (e: Exception) {
+            logger.error("Failed to display notification", e)
+            return CallNotificationManager.IncomingCallNotificationResult.Failed
+        }
 
         return CallNotificationManager.IncomingCallNotificationResult.Success
     }
@@ -141,7 +182,7 @@ class CallNotificationManagerImpl(
     }
 
     private fun areIncomingCallNotificationsEnabled(): Boolean {
-        if (!notificationManager.areNotificationsEnabled()) {
+        if (!hasNotificationPermission()) {
             logger.warn("Notifications are disabled.")
             return false
         }
@@ -150,14 +191,15 @@ class CallNotificationManagerImpl(
             return true
         }
 
-        val notificationChannel = notificationManager.getNotificationChannel(NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_CALLS) ?: run {
-            logger.warn("Notification channel for incoming calls is missing.")
-            return false
-        }
+        val notificationChannel = notificationManagerCompat.getNotificationChannel(NotificationChannels.NOTIFICATION_CHANNEL_INCOMING_CALLS)
+            ?: run {
+                logger.warn("Notification channel for incoming calls is missing.")
+                return false
+            }
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
             val notificationChannelGroup = notificationChannel.group?.let { groupId ->
-                notificationManager.getNotificationChannelGroup(groupId)
+                notificationManagerCompat.getNotificationChannelGroup(groupId)
             }
             if (notificationChannelGroup?.isBlocked == true) {
                 logger.warn("Notification channel group is blocked.")

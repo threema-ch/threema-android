@@ -109,13 +109,19 @@ internal class MonitoringLayer(
 
     private fun handleInboundD2mMessage(message: InboundD2mMessage) {
         when (message) {
-            is InboundD2mMessage.RolePromotedToLeader -> handlePromotedToLeader()
-            is InboundD2mMessage.ReflectionQueueDry -> mdController.reflectionQueueDry.complete(Unit)
+            is InboundD2mMessage.RolePromotedToLeader -> handlePromotedToLeader(message)
+            is InboundD2mMessage.ReflectionQueueDry -> handleReflectionQueueDry(message)
             else -> inbound.send(message)
         }
     }
 
-    private fun handlePromotedToLeader() {
+    private fun handleReflectionQueueDry(message: InboundD2mMessage.ReflectionQueueDry) {
+        logger.info("Handle ReflectionQueueDry")
+        mdController.reflectionQueueDry.complete(Unit)
+        inbound.send(message)
+    }
+
+    private fun handlePromotedToLeader(message: InboundD2mMessage.RolePromotedToLeader) {
         logger.info("Handle RolePromotedToLeader")
         if (!mdController.reflectionQueueDry.isCompleted || mdController.reflectionQueueDry.isCancelled) {
             throw D2mProtocolException("RolePromotedToLeader was received before ReflectionQueueDry")
@@ -132,6 +138,7 @@ internal class MonitoringLayer(
                 ),
             )
         }
+        inbound.send(message)
     }
 
     private fun handleInboundCspContainer(message: CspContainer) {

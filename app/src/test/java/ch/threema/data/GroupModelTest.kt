@@ -4,6 +4,7 @@ import ch.threema.app.eventbus.EventBus
 import ch.threema.app.eventbus.GlobalEventBuses
 import ch.threema.app.eventbus.events.GroupEvent
 import ch.threema.app.multidevice.MultiDeviceManager
+import ch.threema.common.stateFlowOf
 import ch.threema.data.datatypes.ConversationCategory
 import ch.threema.data.datatypes.ConversationSpamReportingState
 import ch.threema.data.datatypes.ConversationVisibility
@@ -14,7 +15,9 @@ import ch.threema.data.models.GroupModel
 import ch.threema.data.models.GroupModelData
 import ch.threema.data.storage.DatabaseBackend
 import ch.threema.domain.models.UserState
-import ch.threema.domain.taskmanager.QueueSendCompleteListener
+import ch.threema.domain.taskmanager.LeaderState
+import ch.threema.domain.taskmanager.QueueSendCompleteState
+import ch.threema.domain.taskmanager.ReflectionQueueDryState
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
@@ -34,6 +37,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.flow.StateFlow
 
 class GroupModelTest {
     private val databaseBackendMock = mockk<DatabaseBackend> {
@@ -56,13 +60,11 @@ class GroupModelTest {
 
         override fun hasPendingTasks(): Boolean = scheduledTasks.isNotEmpty()
 
-        override fun addQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-            // Nothing to do
-        }
+        override fun watchQueueSendComplete(): StateFlow<QueueSendCompleteState> = stateFlowOf(QueueSendCompleteState.PENDING)
 
-        override fun removeQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-            // Nothing to do
-        }
+        override fun watchReflectionQueueDry(): StateFlow<ReflectionQueueDryState> = stateFlowOf(ReflectionQueueDryState.PENDING)
+
+        override fun watchLeaderState(): StateFlow<LeaderState> = stateFlowOf(LeaderState.NOT_LEADER)
     }
     private val identityProvider = TestIdentityProvider(Identity("TESTTEST"))
 

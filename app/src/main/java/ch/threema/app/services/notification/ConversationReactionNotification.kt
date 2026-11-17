@@ -36,7 +36,7 @@ abstract class ConversationReactionNotification(
     thumbnailMimeType: String?,
     fetchThumbnailUri: FetchCacheUri?,
     senderPerson: Person?,
-    private val targetMessage: MessageModel,
+    val targetMessage: MessageModel,
     val emojiSequences: List<String>,
 ) : ConversationNotification(
     messageId = messageId,

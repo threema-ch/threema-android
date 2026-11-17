@@ -10,6 +10,7 @@ import android.content.Intent
 import android.media.AudioManager
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.Person
 import androidx.core.app.RemoteInput
 import androidx.core.content.ContextCompat
@@ -24,7 +25,6 @@ import ch.threema.android.getPendingIntentForActivity
 import ch.threema.android.getPendingIntentForBroadcast
 import ch.threema.android.getPendingIntentForService
 import ch.threema.app.AppConstants
-import ch.threema.app.BuildConfig
 import ch.threema.app.R
 import ch.threema.app.activities.BackupAdminActivity
 import ch.threema.app.activities.ComposeMessageActivity
@@ -90,6 +90,7 @@ private val logger = getThreemaLogger("NotificationServiceImpl")
 @SessionScoped
 class NotificationServiceImpl(
     appContext: Context,
+    notificationManagerCompat: NotificationManagerCompat,
     private val getConversationCategoryUseCase: GetConversationCategoryUseCase,
     private val lockAppService: LockAppService,
     private val notificationPreferenceService: NotificationPreferenceService,
@@ -100,7 +101,7 @@ class NotificationServiceImpl(
     private val doNotDisturbUtil: DoNotDisturbUtil,
     private val timeProvider: TimeProvider,
     private val widgetUpdater: WidgetUpdater,
-) : BaseNotificationService(appContext), NotificationService, KoinComponent {
+) : BaseNotificationService(appContext, notificationManagerCompat), NotificationService, KoinComponent {
 
     private val conversationNotificationStore = ConversationNotificationStore()
     private var visibleConversationId: ConversationId? = null
@@ -1173,10 +1174,6 @@ class NotificationServiceImpl(
     }
 
     override fun showEmojiReactionNotification(reactionNotification: ConversationReactionNotification) {
-        if (!BuildConfig.EMOJI_REACTION_NOTIFICATIONS_ENABLED) {
-            return
-        }
-
         if (ConfigUtils.hasInvalidCredentials()) {
             logger.debug("Credentials are not (or no longer) valid. Suppressing reaction notification.")
             return
@@ -1237,9 +1234,6 @@ class NotificationServiceImpl(
     }
 
     override fun cancelEmojiReactionNotification(conversationId: ConversationId, messageUid: MessageUid) {
-        if (!BuildConfig.EMOJI_REACTION_NOTIFICATIONS_ENABLED) {
-            return
-        }
         accessExclusively { accessor ->
             accessor.removeReactionNotification(messageUid)
             // It is important here that we cancel the notification even if the conversationNotificationStore does not know about it,
@@ -1365,8 +1359,8 @@ class NotificationServiceImpl(
             }
 
             setContentIntent(
-                createPendingIntentForConversation(
-                    conversationId = conversationId,
+                createPendingIntentForConversationJumpToMessage(
+                    message = headerReaction.targetMessage,
                     requestCode = conversationHandle.getRequestCode(ConversationNotificationAction.OPEN),
                 ),
             )
@@ -1387,6 +1381,17 @@ class NotificationServiceImpl(
             defaultChannelId = defaultChannelId,
         )
         notifyConversationsSummary(defaultChannelId)
+    }
+
+    private fun createPendingIntentForConversationJumpToMessage(message: MessageModel, requestCode: Int): PendingIntent {
+        val intent = ComposeMessageActivity.createIntentJumpToMessage(appContext, message)
+            .setFlags(
+                Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                    Intent.FLAG_ACTIVITY_NO_USER_ACTION,
+            )
+        return createPendingIntentWithTaskStack(intent, requestCode)
     }
 
     override fun cancelAllConversationNotifications(conversationId: ConversationId) {

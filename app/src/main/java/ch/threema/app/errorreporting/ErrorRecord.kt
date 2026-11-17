@@ -18,4 +18,5 @@ data class ErrorRecord(
     val attachments: List<ErrorRecordAttachment>? = null,
     @Serializable(with = InstantSerializer::class)
     val createdAt: Instant,
+    val versionCode: Int,
 )

@@ -1,6 +1,5 @@
 package ch.threema.app.notifications
 
-import ch.threema.app.BuildConfig
 import ch.threema.app.di.injectNullableNonBinding
 import ch.threema.app.eventbus.GlobalEventFlows
 import ch.threema.app.eventbus.events.ConversationEvent
@@ -111,7 +110,6 @@ class ConversationNotificationUpdaterMonitor(
         }
     }
 
-    @Suppress("SimplifyBooleanWithConstants")
     private fun onModifiedMessages(messages: List<MessageModel>) {
         val shouldShowEmojiReactionNotificationsInContactConversations = preferenceService
             .shouldShowEmojiReactionNotificationsInContactConversations()
@@ -121,7 +119,7 @@ class ConversationNotificationUpdaterMonitor(
             if (message.isImageOrVideoMessage()) {
                 showConversationNotification(message, updateExisting = true)
             }
-            if (BuildConfig.EMOJI_REACTION_NOTIFICATIONS_ENABLED && message.isOutbox && !message.isStatusMessage) {
+            if (message.isOutbox && !message.isStatusMessage) {
                 when (message) {
                     is ContactMessageModel -> {
                         if (shouldShowEmojiReactionNotificationsInContactConversations) {
@@ -166,9 +164,6 @@ class ConversationNotificationUpdaterMonitor(
     }
 
     private fun shouldShowEmojiReactionNotification(message: MessageModel): Boolean {
-        if (!BuildConfig.EMOJI_REACTION_NOTIFICATIONS_ENABLED) {
-            return false
-        }
         if (!message.isOutbox || message.isStatusMessage) {
             return false
         }
@@ -180,9 +175,6 @@ class ConversationNotificationUpdaterMonitor(
     }
 
     private fun cancelEmojiReactionNotification(message: MessageModel) {
-        if (!BuildConfig.EMOJI_REACTION_NOTIFICATIONS_ENABLED) {
-            return
-        }
         if (!message.isOutbox || message.isStatusMessage) {
             return
         }

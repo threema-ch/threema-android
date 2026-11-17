@@ -1,1 +1,1 @@
-{"id":"d3bc6807-c4c7-47c2-af55-aa929d86fd09","level":"ERROR","message":{"message":"here be attachments","parameters":[]},"attachments":[{"file":"/some/file.txt","mimeType":"text/plain"}],"createdAt":1762270272000}
+{"id":"d3bc6807-c4c7-47c2-af55-aa929d86fd09","level":"ERROR","message":{"message":"here be attachments","parameters":[]},"attachments":[{"file":"/some/file.txt","mimeType":"text/plain"}],"createdAt":1762270272000,"versionCode":1234}

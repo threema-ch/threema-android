@@ -19,6 +19,7 @@ import ch.threema.app.tasks.TaskCreator
 import ch.threema.app.utils.executor.BackgroundExecutor
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.common.DispatcherProvider
+import ch.threema.common.stateFlowOf
 import ch.threema.data.datatypes.AvailabilityStatus
 import ch.threema.data.datatypes.ConversationCategory
 import ch.threema.data.datatypes.ConversationVisibility
@@ -39,7 +40,9 @@ import ch.threema.domain.protocol.connection.data.DeviceId
 import ch.threema.domain.protocol.connection.data.InboundD2mMessage.DevicesInfo
 import ch.threema.domain.protocol.csp.fs.ForwardSecurityMessageProcessor
 import ch.threema.domain.taskmanager.ActiveTaskCodec
-import ch.threema.domain.taskmanager.QueueSendCompleteListener
+import ch.threema.domain.taskmanager.LeaderState
+import ch.threema.domain.taskmanager.QueueSendCompleteState
+import ch.threema.domain.taskmanager.ReflectionQueueDryState
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
@@ -61,6 +64,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.test.runTest
 
 @DangerousTest
@@ -79,13 +83,11 @@ class MarkContactAsDeletedBackgroundTaskTest {
             return taskQueue.isNotEmpty()
         }
 
-        override fun addQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-            // Nothing to do
-        }
+        override fun watchQueueSendComplete(): StateFlow<QueueSendCompleteState> = stateFlowOf(QueueSendCompleteState.PENDING)
 
-        override fun removeQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-            // Nothing to do
-        }
+        override fun watchReflectionQueueDry(): StateFlow<ReflectionQueueDryState> = stateFlowOf(ReflectionQueueDryState.PENDING)
+
+        override fun watchLeaderState(): StateFlow<LeaderState> = stateFlowOf(LeaderState.NOT_LEADER)
     }
     private lateinit var databaseProvider: TestDatabaseProvider
     private val multiDeviceManager = object : MultiDeviceManager {

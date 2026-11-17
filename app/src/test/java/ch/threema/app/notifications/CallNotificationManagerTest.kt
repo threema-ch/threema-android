@@ -3,11 +3,9 @@ package ch.threema.app.notifications
 import android.app.NotificationChannel
 import androidx.core.app.NotificationManagerCompat
 import ch.threema.android.DeviceInfo
-import ch.threema.app.utils.ConfigUtils
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
-import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import kotlin.test.Test
 import kotlin.test.assertIs
@@ -22,11 +20,11 @@ class CallNotificationManagerTest {
 
         val callNotificationManager = CallNotificationManagerImpl(
             appContext = mockk(),
+            notificationManagerCompat = notificationManagerMock,
             notificationPreferenceService = mockk(),
             preferenceService = mockk(),
             contactService = mockk(),
             getPersonUseCase = mockk(),
-            notificationManager = notificationManagerMock,
         )
 
         val result = callNotificationManager.showIncomingCallNotification(
@@ -50,11 +48,11 @@ class CallNotificationManagerTest {
 
         val callNotificationManager = CallNotificationManagerImpl(
             appContext = mockk(),
+            notificationManagerCompat = notificationManagerMock,
             notificationPreferenceService = mockk(),
             preferenceService = mockk(),
             contactService = mockk(),
             getPersonUseCase = mockk(),
-            notificationManager = notificationManagerMock,
         )
 
         val result = callNotificationManager.showIncomingCallNotification(
@@ -84,11 +82,11 @@ class CallNotificationManagerTest {
         }
         val callNotificationManager = CallNotificationManagerImpl(
             appContext = mockk(),
+            notificationManagerCompat = notificationManagerMock,
             notificationPreferenceService = mockk(),
             preferenceService = mockk(),
             contactService = mockk(),
             getPersonUseCase = mockk(),
-            notificationManager = notificationManagerMock,
         )
 
         val result = callNotificationManager.showIncomingCallNotification(
@@ -99,6 +97,6 @@ class CallNotificationManagerTest {
         )
         assertIs<CallNotificationManager.IncomingCallNotificationResult.IncomingCallNotificationsDisabled>(result)
 
-        unmockkObject(ConfigUtils::class)
+        unmockkStatic(DeviceInfo::class)
     }
 }

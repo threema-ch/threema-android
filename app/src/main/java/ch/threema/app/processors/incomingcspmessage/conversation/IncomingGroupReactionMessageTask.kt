@@ -1,6 +1,5 @@
 package ch.threema.app.processors.incomingcspmessage.conversation
 
-import ch.threema.app.BuildConfig
 import ch.threema.app.di.injectNullableNonBinding
 import ch.threema.app.managers.ServiceManager
 import ch.threema.app.notifications.ConversationNotificationConverter
@@ -102,9 +101,6 @@ class IncomingGroupReactionMessageTask(
     }
 
     private fun handleNotification(targetMessage: MessageModel) {
-        if (!BuildConfig.EMOJI_REACTION_NOTIFICATIONS_ENABLED) {
-            return
-        }
         if (!targetMessage.isOutbox) {
             return
         }

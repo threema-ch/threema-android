@@ -405,6 +405,9 @@ class PreferenceServiceImpl(
     override fun watchArePrivateChatsHidden(): Flow<Boolean> =
         preferenceStore.watchBoolean(getKeyName(R.string.preferences__chats_hidden))
 
+    override fun isContactSyncEnabled(): Boolean =
+        preferenceStore.getBoolean(getKeyName(R.string.preferences__sync_contacts))
+
     override fun watchIsContactSyncEnabled(): Flow<Boolean> =
         preferenceStore.watchBoolean(getKeyName(R.string.preferences__sync_contacts))
 

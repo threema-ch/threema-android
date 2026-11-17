@@ -13,6 +13,7 @@ interface CallNotificationManager {
 
     sealed interface IncomingCallNotificationResult {
         object Success : IncomingCallNotificationResult
+        object Failed : IncomingCallNotificationResult
         object IncomingCallNotificationsDisabled : IncomingCallNotificationResult
     }
 }

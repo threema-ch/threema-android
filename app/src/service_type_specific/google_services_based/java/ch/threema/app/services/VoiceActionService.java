@@ -43,6 +43,8 @@ public class VoiceActionService extends SearchActionVerificationClientService {
 
     private static final String CHANNEL_ID_GOOGLE_ASSISTANT = "Voice_Actions";
 
+    private static final int CONNECTION_LINGER_MS = 5000;
+
     private static final int FG_SERVICE_TYPE =
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
             ? FOREGROUND_SERVICE_TYPE_REMOTE_MESSAGING
@@ -121,14 +123,14 @@ public class VoiceActionService extends SearchActionVerificationClientService {
             @Override
             public void onError(String errorMessage) {
                 logger.debug("Error sending audio message: {}", errorMessage);
-                lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
+                lifetimeService.releaseConnectionLinger(TAG, CONNECTION_LINGER_MS);
             }
 
             @Override
             public void onCompleted() {
                 logger.debug("Audio message sent");
                 messageService.markConversationAsRead(messageReceiver, notificationService);
-                lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
+                lifetimeService.releaseConnectionLinger(TAG, CONNECTION_LINGER_MS);
             }
         });
         return true;
@@ -158,7 +160,7 @@ public class VoiceActionService extends SearchActionVerificationClientService {
                             logger.error("Exception", e);
                         }
 
-                        lifetimeService.releaseConnectionLinger(TAG, PollingHelper.CONNECTION_LINGER);
+                        lifetimeService.releaseConnectionLinger(TAG, CONNECTION_LINGER_MS);
                     }
                 }
             }

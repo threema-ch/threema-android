@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
@@ -152,10 +153,17 @@ internal class TaskRunner(
      * Start the task runner after the connection has been established.
      *
      * @param layer5Codec the current layer 5 codec for sending messages
+     * @param queueSendCompleteState the state of the queue of the current connection, which is set to DRY by the incoming csp message task
+     * when the queue send complete message has been processed
+     * @param reflectionQueueDryState the state of the reflection queue of the current connection
+     * @param leaderState the state of the leader role of the current connection
      */
     internal suspend fun startTaskRunner(
         layer5Codec: Layer5Codec,
         incomingMessageProcessor: IncomingMessageProcessor,
+        queueSendCompleteState: MutableStateFlow<QueueSendCompleteState>,
+        reflectionQueueDryState: MutableStateFlow<ReflectionQueueDryState>,
+        leaderState: MutableStateFlow<LeaderState>,
     ) {
         logger.info("Starting task runner")
 
@@ -180,13 +188,23 @@ internal class TaskRunner(
             logger.info("Old executor job already inactive")
         }
 
+        // All tasks of the previous connection have been stopped, so the states of the new connection have not been set yet.
+        queueSendCompleteState.value = QueueSendCompleteState.PENDING
+        reflectionQueueDryState.value = ReflectionQueueDryState.PENDING
+        leaderState.value = LeaderState.NOT_LEADER
+
         this.layer5Codec = layer5Codec
 
         // Clear incoming message queue to get rid of old unprocessed messages
         withContext(executorCoroutineContext) {
             logger.info("Flushing incoming message queues")
             // As the connection just has been initiated, we will again receive un-acked messages
-            taskQueue.recreateIncomingMessageQueue(incomingMessageProcessor)
+            taskQueue.recreateIncomingMessageQueue(
+                incomingMessageProcessor,
+                queueSendCompleteState,
+                reflectionQueueDryState,
+                leaderState,
+            )
         }
 
         // We handle the exceptions in invokeOnCompletion instead of the exception handler
@@ -234,7 +252,13 @@ internal class TaskRunner(
                         CoroutineScope(scheduleCoroutineContext).launch {
                             // To avoid a busy loop, we delay the restarting of the task runner a bit here
                             delay(10.seconds)
-                            startTaskRunner(layer5Codec, incomingMessageProcessor)
+                            startTaskRunner(
+                                layer5Codec,
+                                incomingMessageProcessor,
+                                queueSendCompleteState,
+                                reflectionQueueDryState,
+                                leaderState,
+                            )
                         }
                     }
                 }

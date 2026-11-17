@@ -197,7 +197,7 @@ public class DistributionListMessageModelFactory extends MessageModelFactory {
     public long countMessages(long distributionListId) {
         return readCountQueryResult(getReadableDatabase().rawQuery(
             "SELECT COUNT(*) FROM " + this.getTableName()
-                + " WHERE " + DistributionListMessageModel.COLUMN_ID + "=?",
+                + " WHERE " + DistributionListMessageModel.COLUMN_DISTRIBUTION_LIST_ID + "=?",
             new String[]{
                 String.valueOf(distributionListId)
             }

@@ -1,5 +1,6 @@
 package ch.threema.domain.protocol.connection
 
+import ch.threema.common.stateFlowOf
 import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.connection.csp.CspConnectionConfiguration
 import ch.threema.domain.protocol.connection.csp.CspConnectionImpl
@@ -21,7 +22,9 @@ import ch.threema.domain.protocol.csp.coders.MessageBox
 import ch.threema.domain.taskmanager.ActiveTaskCodec
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
 import ch.threema.domain.taskmanager.InternalTaskManager
-import ch.threema.domain.taskmanager.QueueSendCompleteListener
+import ch.threema.domain.taskmanager.LeaderState
+import ch.threema.domain.taskmanager.QueueSendCompleteState
+import ch.threema.domain.taskmanager.ReflectionQueueDryState
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskArchiver
 import ch.threema.domain.taskmanager.TaskCodec
@@ -32,6 +35,7 @@ import io.mockk.mockk
 import kotlin.time.Duration
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.flow.StateFlow
 
 internal class CspConnectionTest : ServerConnectionTest() {
     private val connectionLockProvider = object : ConnectionLockProvider {
@@ -69,13 +73,11 @@ internal class CspConnectionTest : ServerConnectionTest() {
 
             override fun hasPendingTasks(): Boolean = false
 
-            override fun addQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-                // Nothing to do
-            }
+            override fun watchQueueSendComplete(): StateFlow<QueueSendCompleteState> = stateFlowOf(QueueSendCompleteState.PENDING)
 
-            override fun removeQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-                // Nothing to do
-            }
+            override fun watchReflectionQueueDry(): StateFlow<ReflectionQueueDryState> = stateFlowOf(ReflectionQueueDryState.PENDING)
+
+            override fun watchLeaderState(): StateFlow<LeaderState> = stateFlowOf(LeaderState.NOT_LEADER)
         }
 
         val dependencyProvider = ServerConnectionDependencyProvider {

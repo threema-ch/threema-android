@@ -1,6 +1,7 @@
 package ch.threema.domain.protocol.connection
 
 import androidx.annotation.WorkerThread
+import ch.threema.common.await
 import ch.threema.domain.protocol.ServerAddressProvider
 import ch.threema.domain.protocol.Version
 import ch.threema.domain.protocol.connection.csp.DeviceCookieManager
@@ -11,7 +12,7 @@ import ch.threema.domain.protocol.connection.util.MainConnectionController
 import ch.threema.domain.protocol.csp.ProtocolDefines
 import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.IncomingMessageProcessor
-import ch.threema.domain.taskmanager.QueueSendCompleteListener
+import ch.threema.domain.taskmanager.QueueSendCompleteState
 import ch.threema.domain.taskmanager.TaskManager
 import java.io.IOException
 import java.net.SocketException
@@ -120,7 +121,7 @@ internal abstract class BaseServerConnection(
             awaitAppReady()
             while (canConnect) {
                 var monitorCloseEventJob: Job? = null
-                var queueSendCompleteListener: QueueSendCompleteListener? = null
+                var queueSendCompleteJob: Job? = null
                 try {
                     setup()
 
@@ -144,16 +145,15 @@ internal abstract class BaseServerConnection(
                         break
                     }
 
-                    // We must keep the CPU awake until we have processed all incoming messages
-                    // to avoid missing messages in deeper sleep states.
-                    queueSendCompleteListener = QueueSendCompleteListener {
+                    // We must keep the CPU awake until we have processed all incoming messages to avoid missing messages in deeper sleep states.
+                    // The state is set to DRY by the task manager once the queue send complete message has been processed. If the connection is
+                    // lost, the state is reset and this job is cancelled, in which case the connection lock is released when the connection
+                    // cycle ends.
+                    queueSendCompleteJob = launch {
+                        dependencies.taskManager.watchQueueSendComplete().await(QueueSendCompleteState.DRY)
                         logger.info("CSP queue was processed, releasing connection lock")
                         connectionLock?.release()
                     }
-                    // The listener must be registered before processing io has been started.
-                    // Otherwise the queue send complete event could already have been triggered
-                    // before the listener was added.
-                    dependencies.taskManager.addQueueSendCompleteListener(queueSendCompleteListener)
 
                     // Handle IO until the connection dies
                     ioJob = launch { processIo() }
@@ -200,7 +200,7 @@ internal abstract class BaseServerConnection(
 
                 controller.connectionClosed.complete(Unit)
 
-                queueSendCompleteListener?.let { dependencies.taskManager.removeQueueSendCompleteListener(it) }
+                queueSendCompleteJob?.cancel()
 
                 if (canConnect) {
                     prepareReconnect()

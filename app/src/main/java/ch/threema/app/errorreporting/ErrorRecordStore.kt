@@ -26,4 +26,6 @@ interface ErrorRecordStore : BaseErrorRecordStore {
 
     @WorkerThread
     fun deleteConfirmedRecord(id: UUID)
+
+    val currentAppVersionCode: Int
 }

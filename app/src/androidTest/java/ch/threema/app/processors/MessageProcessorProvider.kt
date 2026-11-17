@@ -23,6 +23,7 @@ import ch.threema.app.testutils.clearDatabaseAndCaches
 import ch.threema.app.utils.ForwardSecurityStatusSender
 import ch.threema.base.crypto.NonceFactory
 import ch.threema.base.crypto.NonceScope
+import ch.threema.common.stateFlowOf
 import ch.threema.data.datatypes.GroupIdentity
 import ch.threema.data.models.ContactModelDataFactory
 import ch.threema.data.models.GroupModelDataFactory
@@ -55,7 +56,9 @@ import ch.threema.domain.protocol.csp.messages.fs.ForwardSecurityEnvelopeMessage
 import ch.threema.domain.stores.ContactStore
 import ch.threema.domain.stores.IdentityStore
 import ch.threema.domain.taskmanager.ActiveTask
-import ch.threema.domain.taskmanager.QueueSendCompleteListener
+import ch.threema.domain.taskmanager.LeaderState
+import ch.threema.domain.taskmanager.QueueSendCompleteState
+import ch.threema.domain.taskmanager.ReflectionQueueDryState
 import ch.threema.domain.taskmanager.Task
 import ch.threema.domain.taskmanager.TaskCodec
 import ch.threema.domain.taskmanager.TaskManager
@@ -73,6 +76,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import org.junit.Rule
@@ -356,13 +360,11 @@ open class MessageProcessorProvider : KoinComponent {
 
             override fun hasPendingTasks(): Boolean = false
 
-            override fun addQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-                // Nothing to do
-            }
+            override fun watchQueueSendComplete(): StateFlow<QueueSendCompleteState> = stateFlowOf(QueueSendCompleteState.PENDING)
 
-            override fun removeQueueSendCompleteListener(listener: QueueSendCompleteListener) {
-                // Nothing to do
-            }
+            override fun watchReflectionQueueDry(): StateFlow<ReflectionQueueDryState> = stateFlowOf(ReflectionQueueDryState.PENDING)
+
+            override fun watchLeaderState(): StateFlow<LeaderState> = stateFlowOf(LeaderState.NOT_LEADER)
         }
         setTaskManager(mockTaskManager)
 
